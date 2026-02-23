@@ -4,9 +4,9 @@ import (
 	"context"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
 )
@@ -23,8 +23,8 @@ func (q *repository) GetOAuth2ClientTokenByCode(ctx context.Context, code string
 	if code == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.OAuth2ClientTokenCodeKey, code)
-	tracing.AttachToSpan(span, keys.OAuth2ClientTokenCodeKey, code)
+	logger = logger.WithValue(oauthkeys.OAuth2ClientTokenCodeKey, code)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientTokenCodeKey, code)
 
 	encryptedCode, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, code)
 	if err != nil {
@@ -89,8 +89,8 @@ func (q *repository) GetOAuth2ClientTokenByAccess(ctx context.Context, access st
 	if access == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.OAuth2ClientTokenAccessKey, access)
-	tracing.AttachToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
+	logger = logger.WithValue(oauthkeys.OAuth2ClientTokenAccessKey, access)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientTokenAccessKey, access)
 
 	encryptedAccess, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, access)
 	if err != nil {
@@ -155,8 +155,8 @@ func (q *repository) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh 
 	if refresh == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.OAuth2ClientTokenRefreshKey, refresh)
-	tracing.AttachToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
+	logger = logger.WithValue(oauthkeys.OAuth2ClientTokenRefreshKey, refresh)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientTokenRefreshKey, refresh)
 
 	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
 	if err != nil {
@@ -220,7 +220,7 @@ func (q *repository) CreateOAuth2ClientToken(ctx context.Context, input *types.O
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.OAuth2ClientTokenIDKey, input.ID)
+	logger := q.logger.WithValue(oauthkeys.OAuth2ClientTokenIDKey, input.ID)
 	now := q.CurrentTime()
 
 	encryptedCode, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, input.Code)
@@ -292,8 +292,8 @@ func (q *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access
 	if access == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.OAuth2ClientTokenAccessKey, access)
-	tracing.AttachToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
+	logger = logger.WithValue(oauthkeys.OAuth2ClientTokenAccessKey, access)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientTokenAccessKey, access)
 
 	encryptedAccess, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, access)
 	if err != nil {
@@ -320,8 +320,8 @@ func (q *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code str
 	if code == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.OAuth2ClientTokenCodeKey, code)
-	tracing.AttachToSpan(span, keys.OAuth2ClientTokenCodeKey, code)
+	logger = logger.WithValue(oauthkeys.OAuth2ClientTokenCodeKey, code)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientTokenCodeKey, code)
 
 	encryptedCode, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, code)
 	if err != nil {
@@ -348,8 +348,8 @@ func (q *repository) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refre
 	if refresh == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.OAuth2ClientTokenRefreshKey, refresh)
-	tracing.AttachToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
+	logger = logger.WithValue(oauthkeys.OAuth2ClientTokenRefreshKey, refresh)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientTokenRefreshKey, refresh)
 
 	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
 	if err != nil {

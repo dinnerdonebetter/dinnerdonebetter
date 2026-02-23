@@ -7,11 +7,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
 )
@@ -34,8 +34,8 @@ func (q *repository) GetOAuth2ClientByClientID(ctx context.Context, clientID str
 	if clientID == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.OAuth2ClientClientIDKey, clientID)
-	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, clientID)
+	logger = logger.WithValue(oauthkeys.OAuth2ClientClientIDKey, clientID)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientClientIDKey, clientID)
 
 	result, err := q.generatedQuerier.GetOAuth2ClientByClientID(ctx, q.readDB, clientID)
 	if err != nil {
@@ -65,8 +65,8 @@ func (q *repository) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID s
 	if clientID == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.OAuth2ClientClientIDKey, clientID)
-	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, clientID)
+	logger = logger.WithValue(oauthkeys.OAuth2ClientClientIDKey, clientID)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientClientIDKey, clientID)
 
 	result, err := q.generatedQuerier.GetOAuth2ClientByDatabaseID(ctx, q.readDB, clientID)
 	if err != nil {
@@ -151,7 +151,7 @@ func (q *repository) CreateOAuth2Client(ctx context.Context, input *types.OAuth2
 	}
 
 	logger := q.logger.WithValues(map[string]any{
-		keys.OAuth2ClientClientIDKey: input.ClientID,
+		oauthkeys.OAuth2ClientClientIDKey: input.ClientID,
 	})
 
 	tx, err := q.writeDB.BeginTx(ctx, nil)
@@ -170,7 +170,7 @@ func (q *repository) CreateOAuth2Client(ctx context.Context, input *types.OAuth2
 		return nil, observability.PrepareError(writeErr, span, "creating OAuth2 client")
 	}
 
-	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, input.ID)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientClientIDKey, input.ID)
 
 	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:           identifiers.New(),
@@ -207,8 +207,8 @@ func (q *repository) ArchiveOAuth2Client(ctx context.Context, clientID string) e
 	if clientID == "" {
 		return database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, clientID)
-	logger := q.logger.WithValue(keys.OAuth2ClientIDKey, clientID)
+	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientClientIDKey, clientID)
+	logger := q.logger.WithValue(oauthkeys.OAuth2ClientIDKey, clientID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveOAuth2Client(ctx, q.writeDB, clientID)
 	if err != nil {

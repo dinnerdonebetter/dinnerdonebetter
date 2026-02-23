@@ -5,8 +5,10 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
@@ -14,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -196,8 +198,8 @@ func (m *recipeManager) CreateRecipe(ctx context.Context, creatorID string, inpu
 	}
 
 	convertedInput.CreatedByUser = creatorID
-	logger = logger.WithValue(keys.RecipeIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, convertedInput.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateRecipe(ctx, convertedInput)
 	if err != nil {
@@ -210,7 +212,7 @@ func (m *recipeManager) CreateRecipe(ctx context.Context, creatorID string, inpu
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey: recipe.ID,
+		mealplanningkeys.RecipeIDKey: recipe.ID,
 	}))
 
 	return recipe, nil
@@ -220,8 +222,8 @@ func (m *recipeManager) ReadRecipe(ctx context.Context, recipeID string) (*mealp
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	x, err := m.db.GetRecipe(ctx, recipeID)
 	if err != nil {
@@ -235,9 +237,9 @@ func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useSear
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, !useSearchService)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, !useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, !useSearchService)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, !useSearchService)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -277,8 +279,8 @@ func (m *recipeManager) SearchForMealEligibleRecipes(ctx context.Context, query 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -302,8 +304,8 @@ func (m *recipeManager) UpdateRecipe(ctx context.Context, recipeID string, input
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	existingRecipe, err := m.db.GetRecipe(ctx, recipeID)
 	if err != nil {
@@ -316,7 +318,7 @@ func (m *recipeManager) UpdateRecipe(ctx context.Context, recipeID string, input
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey: recipeID,
+		mealplanningkeys.RecipeIDKey: recipeID,
 	}))
 
 	return nil
@@ -326,8 +328,8 @@ func (m *recipeManager) UpdateRecipeStatus(ctx context.Context, recipeID, newSta
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID).WithValue("new_status", newStatus)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID).WithValue("new_status", newStatus)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, "new_status", newStatus)
 
 	if err := m.db.UpdateRecipeStatus(ctx, recipeID, newStatus); err != nil {
@@ -335,7 +337,7 @@ func (m *recipeManager) UpdateRecipeStatus(ctx context.Context, recipeID, newSta
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey: recipeID,
+		mealplanningkeys.RecipeIDKey: recipeID,
 	}))
 
 	return nil
@@ -346,18 +348,18 @@ func (m *recipeManager) ArchiveRecipe(ctx context.Context, recipeID, ownerID str
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey: recipeID,
-		keys.UserIDKey:   ownerID,
+		mealplanningkeys.RecipeIDKey: recipeID,
+		identitykeys.UserIDKey:       ownerID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	if err := m.db.ArchiveRecipe(ctx, recipeID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeArchivedServiceEventType, map[string]any{
-		keys.RecipeIDKey: recipeID,
+		mealplanningkeys.RecipeIDKey: recipeID,
 	}))
 
 	return nil
@@ -367,8 +369,8 @@ func (m *recipeManager) RecipeEstimatedPrepSteps(ctx context.Context, recipeID s
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	x, err := m.db.GetRecipe(ctx, recipeID)
 	if err != nil {
@@ -401,8 +403,8 @@ func (m *recipeManager) RecipeMermaid(ctx context.Context, recipeID string) (str
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	recipe, err := m.db.GetRecipe(ctx, recipeID)
 	if err != nil {
@@ -500,11 +502,11 @@ func (m *recipeManager) CloneRecipe(ctx context.Context, recipeID, newOwnerID st
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey: recipeID,
-		"new_owner":      newOwnerID,
+		mealplanningkeys.RecipeIDKey: recipeID,
+		"new_owner":                  newOwnerID,
 	})
-	tracing.AttachToSpan(span, keys.UserIDKey, newOwnerID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, newOwnerID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	original, err := m.db.GetRecipe(ctx, recipeID)
 	if err != nil {
@@ -517,7 +519,7 @@ func (m *recipeManager) CloneRecipe(ctx context.Context, recipeID, newOwnerID st
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeClonedServiceEventType, map[string]any{
-		keys.RecipeIDKey: recipeID,
+		mealplanningkeys.RecipeIDKey: recipeID,
 	}))
 
 	return newRecipe, nil
@@ -598,11 +600,11 @@ func (m *recipeManager) UpdateRecipeList(ctx context.Context, recipeListID, user
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeListIDKey: recipeListID,
-		keys.UserIDKey:       userID,
+		mealplanningkeys.RecipeListIDKey: recipeListID,
+		identitykeys.UserIDKey:           userID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeListIDKey, recipeListID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeListIDKey, recipeListID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if input == nil {
 		return internalerrors.ErrNilInputParameter
@@ -632,13 +634,13 @@ func (m *recipeManager) UpdateRecipeListItem(ctx context.Context, recipeListItem
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeListIDKey:     recipeListID,
-		keys.RecipeListItemIDKey: recipeListItemID,
-		keys.RecipeIDKey:         recipeID,
+		mealplanningkeys.RecipeListIDKey:     recipeListID,
+		mealplanningkeys.RecipeListItemIDKey: recipeListItemID,
+		mealplanningkeys.RecipeIDKey:         recipeID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeListIDKey, recipeListID)
-	tracing.AttachToSpan(span, keys.RecipeListItemIDKey, recipeListItemID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeListIDKey, recipeListID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeListItemIDKey, recipeListItemID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if input == nil {
 		return internalerrors.ErrNilInputParameter
@@ -728,8 +730,8 @@ func (m *recipeManager) ListRecipeSteps(ctx context.Context, recipeID string, fi
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -753,13 +755,13 @@ func (m *recipeManager) CreateRecipeStep(ctx context.Context, recipeID string, i
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	convertedInput := converters.ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input)
 	convertedInput.BelongsToRecipe = recipeID
-	logger = logger.WithValue(keys.RecipeStepIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, convertedInput.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, convertedInput.ID)
 
 	// Populate derived IDs from bridge table entries for ingredients
 	for _, ingredient := range convertedInput.Ingredients {
@@ -807,8 +809,8 @@ func (m *recipeManager) CreateRecipeStep(ctx context.Context, recipeID string, i
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: convertedInput.ID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -819,11 +821,11 @@ func (m *recipeManager) ReadRecipeStep(ctx context.Context, recipeID, recipeStep
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	x, err := m.db.GetRecipeStep(ctx, recipeID, recipeStepID)
 	if err != nil {
@@ -842,11 +844,11 @@ func (m *recipeManager) UpdateRecipeStep(ctx context.Context, recipeID, recipeSt
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	existingRecipeStep, err := m.db.GetRecipeStep(ctx, recipeID, recipeStepID)
 	if err != nil {
@@ -859,8 +861,8 @@ func (m *recipeManager) UpdateRecipeStep(ctx context.Context, recipeID, recipeSt
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	}))
 
 	return nil
@@ -871,19 +873,19 @@ func (m *recipeManager) ArchiveRecipeStep(ctx context.Context, recipeID, recipeS
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	if err := m.db.ArchiveRecipeStep(ctx, recipeID, recipeStepID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepArchivedServiceEventType, map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	}))
 
 	return nil
@@ -901,11 +903,11 @@ func (m *recipeManager) ListRecipeStepProducts(ctx context.Context, recipeID, re
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -930,16 +932,16 @@ func (m *recipeManager) CreateRecipeStepProduct(ctx context.Context, recipeID, r
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	convertedInput := converters.ConvertRecipeStepProductCreationInputToRecipeStepProductDatabaseCreationInput(input)
 	convertedInput.BelongsToRecipeStep = recipeStepID
-	logger = logger.WithValue(keys.RecipeStepProductIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, convertedInput.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepProductIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepProductIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateRecipeStepProduct(ctx, convertedInput)
 	if err != nil {
@@ -947,9 +949,9 @@ func (m *recipeManager) CreateRecipeStepProduct(ctx context.Context, recipeID, r
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepProductCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:            recipeID,
-		keys.RecipeStepIDKey:        recipeStepID,
-		keys.RecipeStepProductIDKey: convertedInput.ID,
+		mealplanningkeys.RecipeIDKey:            recipeID,
+		mealplanningkeys.RecipeStepIDKey:        recipeStepID,
+		mealplanningkeys.RecipeStepProductIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -960,13 +962,13 @@ func (m *recipeManager) ReadRecipeStepProduct(ctx context.Context, recipeID, rec
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:            recipeID,
-		keys.RecipeStepIDKey:        recipeStepID,
-		keys.RecipeStepProductIDKey: recipeStepProductID,
+		mealplanningkeys.RecipeIDKey:            recipeID,
+		mealplanningkeys.RecipeStepIDKey:        recipeStepID,
+		mealplanningkeys.RecipeStepProductIDKey: recipeStepProductID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepProductIDKey, recipeStepProductID)
 
 	x, err := m.db.GetRecipeStepProduct(ctx, recipeID, recipeStepID, recipeStepProductID)
 	if err != nil {
@@ -985,13 +987,13 @@ func (m *recipeManager) UpdateRecipeStepProduct(ctx context.Context, recipeID, r
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:            recipeID,
-		keys.RecipeStepIDKey:        recipeStepID,
-		keys.RecipeStepProductIDKey: recipeStepProductID,
+		mealplanningkeys.RecipeIDKey:            recipeID,
+		mealplanningkeys.RecipeStepIDKey:        recipeStepID,
+		mealplanningkeys.RecipeStepProductIDKey: recipeStepProductID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepProductIDKey, recipeStepProductID)
 
 	existingRecipeStepProduct, err := m.db.GetRecipeStepProduct(ctx, recipeID, recipeStepID, recipeStepProductID)
 	if err != nil {
@@ -1004,9 +1006,9 @@ func (m *recipeManager) UpdateRecipeStepProduct(ctx context.Context, recipeID, r
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepProductUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:            recipeID,
-		keys.RecipeStepIDKey:        recipeStepID,
-		keys.RecipeStepProductIDKey: recipeStepProductID,
+		mealplanningkeys.RecipeIDKey:            recipeID,
+		mealplanningkeys.RecipeStepIDKey:        recipeStepID,
+		mealplanningkeys.RecipeStepProductIDKey: recipeStepProductID,
 	}))
 
 	return nil
@@ -1017,13 +1019,13 @@ func (m *recipeManager) ArchiveRecipeStepProduct(ctx context.Context, recipeID, 
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:            recipeID,
-		keys.RecipeStepIDKey:        recipeStepID,
-		keys.RecipeStepProductIDKey: recipeStepProductID,
+		mealplanningkeys.RecipeIDKey:            recipeID,
+		mealplanningkeys.RecipeStepIDKey:        recipeStepID,
+		mealplanningkeys.RecipeStepProductIDKey: recipeStepProductID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepProductIDKey, recipeStepProductID)
 
 	// TODO: refactor this to include recipe ID
 	if err := m.db.ArchiveRecipeStepProduct(ctx, recipeStepID, recipeStepProductID); err != nil {
@@ -1031,9 +1033,9 @@ func (m *recipeManager) ArchiveRecipeStepProduct(ctx context.Context, recipeID, 
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepProductArchivedServiceEventType, map[string]any{
-		keys.RecipeIDKey:            recipeID,
-		keys.RecipeStepIDKey:        recipeStepID,
-		keys.RecipeStepProductIDKey: recipeStepProductID,
+		mealplanningkeys.RecipeIDKey:            recipeID,
+		mealplanningkeys.RecipeStepIDKey:        recipeStepID,
+		mealplanningkeys.RecipeStepProductIDKey: recipeStepProductID,
 	}))
 
 	return nil
@@ -1044,11 +1046,11 @@ func (m *recipeManager) ListRecipeStepInstruments(ctx context.Context, recipeID,
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -1073,11 +1075,11 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	if input.Index == nil {
 		return nil, fmt.Errorf("index is required when creating a recipe step instrument outside of initial recipe creation")
@@ -1085,8 +1087,8 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 
 	convertedInput := converters.ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(input, 0)
 	convertedInput.BelongsToRecipeStep = recipeStepID
-	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, convertedInput.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepInstrumentIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepInstrumentIDKey, convertedInput.ID)
 
 	// If ValidPreparationInstrumentID is provided, look it up and populate InstrumentID
 	if convertedInput.ValidPreparationInstrumentID != nil && *convertedInput.ValidPreparationInstrumentID != "" {
@@ -1103,9 +1105,9 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepInstrumentCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepInstrumentIDKey: convertedInput.ID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepInstrumentIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1116,13 +1118,13 @@ func (m *recipeManager) ReadRecipeStepInstrument(ctx context.Context, recipeID, 
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
 	x, err := m.db.GetRecipeStepInstrument(ctx, recipeID, recipeStepID, recipeStepInstrumentID)
 	if err != nil {
@@ -1141,13 +1143,13 @@ func (m *recipeManager) UpdateRecipeStepInstrument(ctx context.Context, recipeID
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
 	existingRecipeStepInstrument, err := m.db.GetRecipeStepInstrument(ctx, recipeID, recipeStepID, recipeStepInstrumentID)
 	if err != nil {
@@ -1160,9 +1162,9 @@ func (m *recipeManager) UpdateRecipeStepInstrument(ctx context.Context, recipeID
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepInstrumentUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
 	}))
 
 	return nil
@@ -1173,13 +1175,13 @@ func (m *recipeManager) ArchiveRecipeStepInstrument(ctx context.Context, recipeI
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
 	// TODO: refactor this to accept recipe ID
 	if err := m.db.ArchiveRecipeStepInstrument(ctx, recipeStepID, recipeStepInstrumentID); err != nil {
@@ -1187,9 +1189,9 @@ func (m *recipeManager) ArchiveRecipeStepInstrument(ctx context.Context, recipeI
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepInstrumentArchivedServiceEventType, map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
 	}))
 
 	return nil
@@ -1200,11 +1202,11 @@ func (m *recipeManager) ListRecipeStepIngredients(ctx context.Context, recipeID,
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -1229,11 +1231,11 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	if input.Index == nil {
 		return nil, fmt.Errorf("index is required when creating a recipe step ingredient outside of initial recipe creation")
@@ -1241,8 +1243,8 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 
 	convertedInput := converters.ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input, 0)
 	convertedInput.BelongsToRecipeStep = recipeStepID
-	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, convertedInput.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepIngredientIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIngredientIDKey, convertedInput.ID)
 
 	// If ValidIngredientPreparationID is provided, look it up and populate IngredientID
 	if convertedInput.ValidIngredientPreparationID != nil && *convertedInput.ValidIngredientPreparationID != "" {
@@ -1268,9 +1270,9 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepIngredientCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepIngredientIDKey: convertedInput.ID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepIngredientIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1281,13 +1283,13 @@ func (m *recipeManager) ReadRecipeStepIngredient(ctx context.Context, recipeID, 
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepIngredientIDKey: recipeStepIngredientID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepIngredientIDKey: recipeStepIngredientID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
 	x, err := m.db.GetRecipeStepIngredient(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {
@@ -1306,12 +1308,12 @@ func (m *recipeManager) UpdateRecipeStepIngredient(ctx context.Context, recipeID
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepIngredientIDKey: recipeStepIngredientID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepIngredientIDKey: recipeStepIngredientID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	existingRecipeStepIngredient, err := m.db.GetRecipeStepIngredient(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {
@@ -1324,9 +1326,9 @@ func (m *recipeManager) UpdateRecipeStepIngredient(ctx context.Context, recipeID
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepIngredientUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepIngredientIDKey: recipeStepIngredientID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepIngredientIDKey: recipeStepIngredientID,
 	}))
 
 	return nil
@@ -1337,13 +1339,13 @@ func (m *recipeManager) ArchiveRecipeStepIngredient(ctx context.Context, recipeI
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepIngredientIDKey: recipeStepIngredientID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepIngredientIDKey: recipeStepIngredientID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
 	// TODO: refactor this to include recipe ID
 	if err := m.db.ArchiveRecipeStepIngredient(ctx, recipeStepID, recipeStepIngredientID); err != nil {
@@ -1351,9 +1353,9 @@ func (m *recipeManager) ArchiveRecipeStepIngredient(ctx context.Context, recipeI
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepIngredientArchivedServiceEventType, map[string]any{
-		keys.RecipeIDKey:               recipeID,
-		keys.RecipeStepIDKey:           recipeStepID,
-		keys.RecipeStepIngredientIDKey: recipeStepIngredientID,
+		mealplanningkeys.RecipeIDKey:               recipeID,
+		mealplanningkeys.RecipeStepIDKey:           recipeStepID,
+		mealplanningkeys.RecipeStepIngredientIDKey: recipeStepIngredientID,
 	}))
 
 	return nil
@@ -1363,8 +1365,8 @@ func (m *recipeManager) ListRecipePrepTask(ctx context.Context, recipeID string,
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -1388,13 +1390,13 @@ func (m *recipeManager) CreateRecipePrepTask(ctx context.Context, recipeID strin
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	convertedInput := converters.ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationInput(input)
 	convertedInput.BelongsToRecipe = recipeID
-	logger = logger.WithValue(keys.RecipePrepTaskIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, convertedInput.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateRecipePrepTask(ctx, convertedInput)
 	if err != nil {
@@ -1402,8 +1404,8 @@ func (m *recipeManager) CreateRecipePrepTask(ctx context.Context, recipeID strin
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipePrepTaskCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:         recipeID,
-		keys.RecipePrepTaskIDKey: convertedInput.ID,
+		mealplanningkeys.RecipeIDKey:         recipeID,
+		mealplanningkeys.RecipePrepTaskIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1414,11 +1416,11 @@ func (m *recipeManager) ReadRecipePrepTask(ctx context.Context, recipeID, recipe
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:         recipeID,
-		keys.RecipePrepTaskIDKey: recipePrepTaskID,
+		mealplanningkeys.RecipeIDKey:         recipeID,
+		mealplanningkeys.RecipePrepTaskIDKey: recipePrepTaskID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	x, err := m.db.GetRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if err != nil {
@@ -1437,11 +1439,11 @@ func (m *recipeManager) UpdateRecipePrepTask(ctx context.Context, recipeID, reci
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:         recipeID,
-		keys.RecipePrepTaskIDKey: recipePrepTaskID,
+		mealplanningkeys.RecipeIDKey:         recipeID,
+		mealplanningkeys.RecipePrepTaskIDKey: recipePrepTaskID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	existingRecipePrepTask, err := m.db.GetRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if err != nil {
@@ -1454,8 +1456,8 @@ func (m *recipeManager) UpdateRecipePrepTask(ctx context.Context, recipeID, reci
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipePrepTaskUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:         recipeID,
-		keys.RecipePrepTaskIDKey: recipePrepTaskID,
+		mealplanningkeys.RecipeIDKey:         recipeID,
+		mealplanningkeys.RecipePrepTaskIDKey: recipePrepTaskID,
 	}))
 
 	return nil
@@ -1466,19 +1468,19 @@ func (m *recipeManager) ArchiveRecipePrepTask(ctx context.Context, recipeID, rec
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:         recipeID,
-		keys.RecipePrepTaskIDKey: recipePrepTaskID,
+		mealplanningkeys.RecipeIDKey:         recipeID,
+		mealplanningkeys.RecipePrepTaskIDKey: recipePrepTaskID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	if err := m.db.ArchiveRecipePrepTask(ctx, recipeID, recipePrepTaskID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe prep task")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipePrepTaskArchivedServiceEventType, map[string]any{
-		keys.RecipeIDKey:         recipeID,
-		keys.RecipePrepTaskIDKey: recipePrepTaskID,
+		mealplanningkeys.RecipeIDKey:         recipeID,
+		mealplanningkeys.RecipePrepTaskIDKey: recipePrepTaskID,
 	}))
 
 	return nil
@@ -1489,11 +1491,11 @@ func (m *recipeManager) ListRecipeStepCompletionConditions(ctx context.Context, 
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -1518,16 +1520,16 @@ func (m *recipeManager) CreateRecipeStepCompletionCondition(ctx context.Context,
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	convertedInput := converters.ConvertRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput(input)
 	convertedInput.BelongsToRecipeStep = recipeStepID
-	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, convertedInput.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepCompletionConditionIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepCompletionConditionIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateRecipeStepCompletionCondition(ctx, convertedInput)
 	if err != nil {
@@ -1535,9 +1537,9 @@ func (m *recipeManager) CreateRecipeStepCompletionCondition(ctx context.Context,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCompletionConditionCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:                        recipeID,
-		keys.RecipeStepIDKey:                    recipeStepID,
-		keys.RecipeStepCompletionConditionIDKey: convertedInput.ID,
+		mealplanningkeys.RecipeIDKey:                        recipeID,
+		mealplanningkeys.RecipeStepIDKey:                    recipeStepID,
+		mealplanningkeys.RecipeStepCompletionConditionIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1548,13 +1550,13 @@ func (m *recipeManager) ReadRecipeStepCompletionCondition(ctx context.Context, r
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:                        recipeID,
-		keys.RecipeStepIDKey:                    recipeStepID,
-		keys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
+		mealplanningkeys.RecipeIDKey:                        recipeID,
+		mealplanningkeys.RecipeStepIDKey:                    recipeStepID,
+		mealplanningkeys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
 	x, err := m.db.GetRecipeStepCompletionCondition(ctx, recipeID, recipeStepID, recipeStepCompletionConditionID)
 	if err != nil {
@@ -1573,13 +1575,13 @@ func (m *recipeManager) UpdateRecipeStepCompletionCondition(ctx context.Context,
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:                        recipeID,
-		keys.RecipeStepIDKey:                    recipeStepID,
-		keys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
+		mealplanningkeys.RecipeIDKey:                        recipeID,
+		mealplanningkeys.RecipeStepIDKey:                    recipeStepID,
+		mealplanningkeys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
 	existingRecipeStepCompletionCondition, err := m.db.GetRecipeStepCompletionCondition(ctx, recipeID, recipeStepID, recipeStepCompletionConditionID)
 	if err != nil {
@@ -1592,9 +1594,9 @@ func (m *recipeManager) UpdateRecipeStepCompletionCondition(ctx context.Context,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCompletionConditionUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:                        recipeID,
-		keys.RecipeStepIDKey:                    recipeStepID,
-		keys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
+		mealplanningkeys.RecipeIDKey:                        recipeID,
+		mealplanningkeys.RecipeStepIDKey:                    recipeStepID,
+		mealplanningkeys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
 	}))
 
 	return nil
@@ -1605,13 +1607,13 @@ func (m *recipeManager) ArchiveRecipeStepCompletionCondition(ctx context.Context
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:                        recipeID,
-		keys.RecipeStepIDKey:                    recipeStepID,
-		keys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
+		mealplanningkeys.RecipeIDKey:                        recipeID,
+		mealplanningkeys.RecipeStepIDKey:                    recipeStepID,
+		mealplanningkeys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
 	// TODO: refactor this to include recipe ID
 	if err := m.db.ArchiveRecipeStepCompletionCondition(ctx, recipeStepID, recipeStepCompletionConditionID); err != nil {
@@ -1619,9 +1621,9 @@ func (m *recipeManager) ArchiveRecipeStepCompletionCondition(ctx context.Context
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCompletionConditionArchivedServiceEventType, map[string]any{
-		keys.RecipeIDKey:                        recipeID,
-		keys.RecipeStepIDKey:                    recipeStepID,
-		keys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
+		mealplanningkeys.RecipeIDKey:                        recipeID,
+		mealplanningkeys.RecipeStepIDKey:                    recipeStepID,
+		mealplanningkeys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
 	}))
 
 	return nil
@@ -1632,11 +1634,11 @@ func (m *recipeManager) ListRecipeStepVessels(ctx context.Context, recipeID, rec
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -1661,11 +1663,11 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		mealplanningkeys.RecipeIDKey:     recipeID,
+		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	if input.Index == nil {
 		return nil, fmt.Errorf("index is required when creating a recipe step vessel outside of initial recipe creation")
@@ -1673,8 +1675,8 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 
 	convertedInput := converters.ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input, 0)
 	convertedInput.BelongsToRecipeStep = recipeStepID
-	logger = logger.WithValue(keys.RecipeStepVesselIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, convertedInput.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepVesselIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepVesselIDKey, convertedInput.ID)
 
 	// If ValidPreparationVesselID is provided, look it up and populate VesselID
 	if convertedInput.ValidPreparationVesselID != nil && *convertedInput.ValidPreparationVesselID != "" {
@@ -1691,9 +1693,9 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepVesselCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:           recipeID,
-		keys.RecipeStepIDKey:       recipeStepID,
-		keys.RecipeStepVesselIDKey: convertedInput.ID,
+		mealplanningkeys.RecipeIDKey:           recipeID,
+		mealplanningkeys.RecipeStepIDKey:       recipeStepID,
+		mealplanningkeys.RecipeStepVesselIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1704,13 +1706,13 @@ func (m *recipeManager) ReadRecipeStepVessel(ctx context.Context, recipeID, reci
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:           recipeID,
-		keys.RecipeStepIDKey:       recipeStepID,
-		keys.RecipeStepVesselIDKey: recipeStepVesselID,
+		mealplanningkeys.RecipeIDKey:           recipeID,
+		mealplanningkeys.RecipeStepIDKey:       recipeStepID,
+		mealplanningkeys.RecipeStepVesselIDKey: recipeStepVesselID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepVesselIDKey, recipeStepVesselID)
 
 	x, err := m.db.GetRecipeStepVessel(ctx, recipeID, recipeStepID, recipeStepVesselID)
 	if err != nil {
@@ -1729,13 +1731,13 @@ func (m *recipeManager) UpdateRecipeStepVessel(ctx context.Context, recipeID, re
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:           recipeID,
-		keys.RecipeStepIDKey:       recipeStepID,
-		keys.RecipeStepVesselIDKey: recipeStepVesselID,
+		mealplanningkeys.RecipeIDKey:           recipeID,
+		mealplanningkeys.RecipeStepIDKey:       recipeStepID,
+		mealplanningkeys.RecipeStepVesselIDKey: recipeStepVesselID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepVesselIDKey, recipeStepVesselID)
 
 	existingRecipeStepVessel, err := m.db.GetRecipeStepVessel(ctx, recipeID, recipeStepID, recipeStepVesselID)
 	if err != nil {
@@ -1748,9 +1750,9 @@ func (m *recipeManager) UpdateRecipeStepVessel(ctx context.Context, recipeID, re
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepVesselUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:           recipeID,
-		keys.RecipeStepIDKey:       recipeStepID,
-		keys.RecipeStepVesselIDKey: recipeStepVesselID,
+		mealplanningkeys.RecipeIDKey:           recipeID,
+		mealplanningkeys.RecipeStepIDKey:       recipeStepID,
+		mealplanningkeys.RecipeStepVesselIDKey: recipeStepVesselID,
 	}))
 
 	return nil
@@ -1761,22 +1763,22 @@ func (m *recipeManager) ArchiveRecipeStepVessel(ctx context.Context, recipeID, r
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:           recipeID,
-		keys.RecipeStepIDKey:       recipeStepID,
-		keys.RecipeStepVesselIDKey: recipeStepVesselID,
+		mealplanningkeys.RecipeIDKey:           recipeID,
+		mealplanningkeys.RecipeStepIDKey:       recipeStepID,
+		mealplanningkeys.RecipeStepVesselIDKey: recipeStepVesselID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepVesselIDKey, recipeStepVesselID)
 
 	if err := m.db.ArchiveRecipeStepVessel(ctx, recipeStepID, recipeStepVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step vessel")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepVesselArchivedServiceEventType, map[string]any{
-		keys.RecipeIDKey:           recipeID,
-		keys.RecipeStepIDKey:       recipeStepID,
-		keys.RecipeStepVesselIDKey: recipeStepVesselID,
+		mealplanningkeys.RecipeIDKey:           recipeID,
+		mealplanningkeys.RecipeStepIDKey:       recipeStepID,
+		mealplanningkeys.RecipeStepVesselIDKey: recipeStepVesselID,
 	}))
 
 	return nil
@@ -1786,8 +1788,8 @@ func (m *recipeManager) ListRecipeRatings(ctx context.Context, recipeID string, 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -1808,11 +1810,11 @@ func (m *recipeManager) ReadRecipeRating(ctx context.Context, recipeID, recipeRa
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:       recipeID,
-		keys.RecipeRatingIDKey: recipeRatingID,
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
 
 	x, err := m.db.GetRecipeRating(ctx, recipeID, recipeRatingID)
 	if err != nil {
@@ -1830,12 +1832,12 @@ func (m *recipeManager) CreateRecipeRating(ctx context.Context, recipeID string,
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	convertedInput := converters.ConvertRecipeRatingCreationRequestInputToRecipeRatingDatabaseCreationInput(input)
-	logger = logger.WithValue(keys.RecipeRatingIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, convertedInput.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipeRatingIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateRecipeRating(ctx, convertedInput)
 	if err != nil {
@@ -1843,8 +1845,8 @@ func (m *recipeManager) CreateRecipeRating(ctx context.Context, recipeID string,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeRatingCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:       recipeID,
-		keys.RecipeRatingIDKey: convertedInput.ID,
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1859,11 +1861,11 @@ func (m *recipeManager) UpdateRecipeRating(ctx context.Context, recipeID, recipe
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:       recipeID,
-		keys.RecipeRatingIDKey: recipeRatingID,
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
 
 	existingRecipeRating, err := m.db.GetRecipeRating(ctx, recipeID, recipeRatingID)
 	if err != nil {
@@ -1876,8 +1878,8 @@ func (m *recipeManager) UpdateRecipeRating(ctx context.Context, recipeID, recipe
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeRatingUpdatedServiceEventType, map[string]any{
-		keys.RecipeIDKey:       recipeID,
-		keys.RecipeRatingIDKey: recipeRatingID,
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
 	}))
 
 	return nil
@@ -1888,19 +1890,19 @@ func (m *recipeManager) ArchiveRecipeRating(ctx context.Context, recipeID, recip
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.RecipeIDKey:       recipeID,
-		keys.RecipeRatingIDKey: recipeRatingID,
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
 	})
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
 
 	if err := m.db.ArchiveRecipeRating(ctx, recipeID, recipeRatingID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeRatingArchivedServiceEventType, map[string]any{
-		keys.RecipeIDKey:       recipeID,
-		keys.RecipeRatingIDKey: recipeRatingID,
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
 	}))
 
 	return nil

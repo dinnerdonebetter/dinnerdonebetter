@@ -5,10 +5,10 @@ import (
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -141,7 +141,7 @@ func TestValidEnumerationManager_CreateValidIngredientGroup(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientGroup), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientGroupDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidIngredientGroupCreatedServiceEventType: {keys.ValidIngredientGroupIDKey},
+				types.ValidIngredientGroupCreatedServiceEventType: {mealplanningkeys.ValidIngredientGroupIDKey},
 			},
 		)
 
@@ -198,7 +198,7 @@ func TestValidEnumerationManager_UpdateValidIngredientGroup(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientGroup), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientGroup]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientGroupUpdatedServiceEventType: {keys.ValidIngredientGroupIDKey},
+				types.ValidIngredientGroupUpdatedServiceEventType: {mealplanningkeys.ValidIngredientGroupIDKey},
 			},
 		)
 
@@ -227,7 +227,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientGroup(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientGroup), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientGroupArchivedServiceEventType: {keys.ValidIngredientGroupIDKey},
+				types.ValidIngredientGroupArchivedServiceEventType: {mealplanningkeys.ValidIngredientGroupIDKey},
 			},
 		)
 
@@ -281,7 +281,7 @@ func TestValidEnumerationManager_CreateValidIngredientMeasurementUnit(T *testing
 				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientMeasurementUnitDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidIngredientMeasurementUnitCreatedServiceEventType: {keys.ValidIngredientMeasurementUnitIDKey},
+				types.ValidIngredientMeasurementUnitCreatedServiceEventType: {mealplanningkeys.ValidIngredientMeasurementUnitIDKey},
 			},
 		)
 
@@ -338,7 +338,7 @@ func TestValidEnumerationManager_UpdateValidIngredientMeasurementUnit(T *testing
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientMeasurementUnit]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientMeasurementUnitUpdatedServiceEventType: {keys.ValidIngredientMeasurementUnitIDKey},
+				types.ValidIngredientMeasurementUnitUpdatedServiceEventType: {mealplanningkeys.ValidIngredientMeasurementUnitIDKey},
 			},
 		)
 
@@ -367,7 +367,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientMeasurementUnit(T *testin
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientMeasurementUnitArchivedServiceEventType: {keys.ValidIngredientMeasurementUnitIDKey},
+				types.ValidIngredientMeasurementUnitArchivedServiceEventType: {mealplanningkeys.ValidIngredientMeasurementUnitIDKey},
 			},
 		)
 
@@ -475,7 +475,7 @@ func TestValidEnumerationManager_CreateValidIngredientPreparation(T *testing.T) 
 				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientPreparationDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidIngredientPreparationCreatedServiceEventType: {keys.ValidIngredientPreparationIDKey},
+				types.ValidIngredientPreparationCreatedServiceEventType: {mealplanningkeys.ValidIngredientPreparationIDKey},
 			},
 		)
 
@@ -532,7 +532,7 @@ func TestValidEnumerationManager_UpdateValidIngredientPreparation(T *testing.T) 
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientPreparation]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientPreparationUpdatedServiceEventType: {keys.ValidIngredientPreparationIDKey},
+				types.ValidIngredientPreparationUpdatedServiceEventType: {mealplanningkeys.ValidIngredientPreparationIDKey},
 			},
 		)
 
@@ -561,7 +561,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientPreparation(T *testing.T)
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientPreparation), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientPreparationArchivedServiceEventType: {keys.ValidIngredientPreparationIDKey},
+				types.ValidIngredientPreparationArchivedServiceEventType: {mealplanningkeys.ValidIngredientPreparationIDKey},
 			},
 		)
 
@@ -669,7 +669,7 @@ func TestValidEnumerationManager_CreateValidPrepTaskConfig(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.CreateValidPrepTaskConfig), testutils.ContextMatcher, testutils.MatchType[*types.ValidPrepTaskConfigDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidPrepTaskConfigCreatedServiceEventType: {keys.ValidPrepTaskConfigIDKey},
+				types.ValidPrepTaskConfigCreatedServiceEventType: {mealplanningkeys.ValidPrepTaskConfigIDKey},
 			},
 		)
 
@@ -726,7 +726,7 @@ func TestValidEnumerationManager_UpdateValidPrepTaskConfig(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidPrepTaskConfig), testutils.ContextMatcher, testutils.MatchType[*types.ValidPrepTaskConfig]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidPrepTaskConfigUpdatedServiceEventType: {keys.ValidPrepTaskConfigIDKey},
+				types.ValidPrepTaskConfigUpdatedServiceEventType: {mealplanningkeys.ValidPrepTaskConfigIDKey},
 			},
 		)
 
@@ -755,7 +755,7 @@ func TestValidEnumerationManager_ArchiveValidPrepTaskConfig(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidPrepTaskConfig), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidPrepTaskConfigArchivedServiceEventType: {keys.ValidPrepTaskConfigIDKey},
+				types.ValidPrepTaskConfigArchivedServiceEventType: {mealplanningkeys.ValidPrepTaskConfigIDKey},
 			},
 		)
 
@@ -918,7 +918,7 @@ func TestValidEnumerationManager_CreateValidIngredient(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.CreateValidIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidIngredientCreatedServiceEventType: {keys.ValidIngredientIDKey},
+				types.ValidIngredientCreatedServiceEventType: {mealplanningkeys.ValidIngredientIDKey},
 			},
 		)
 
@@ -1001,7 +1001,7 @@ func TestValidEnumerationManager_UpdateValidIngredient(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredient]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientUpdatedServiceEventType: {keys.ValidIngredientIDKey},
+				types.ValidIngredientUpdatedServiceEventType: {mealplanningkeys.ValidIngredientIDKey},
 			},
 		)
 
@@ -1030,7 +1030,7 @@ func TestValidEnumerationManager_ArchiveValidIngredient(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredient), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientArchivedServiceEventType: {keys.ValidIngredientIDKey},
+				types.ValidIngredientArchivedServiceEventType: {mealplanningkeys.ValidIngredientIDKey},
 			},
 		)
 
@@ -1112,7 +1112,7 @@ func TestValidEnumerationManager_CreateValidIngredientStateIngredient(T *testing
 				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientStateIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientStateIngredientDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidIngredientStateIngredientCreatedServiceEventType: {keys.ValidIngredientStateIngredientIDKey},
+				types.ValidIngredientStateIngredientCreatedServiceEventType: {mealplanningkeys.ValidIngredientStateIngredientIDKey},
 			},
 		)
 
@@ -1169,7 +1169,7 @@ func TestValidEnumerationManager_UpdateValidIngredientStateIngredient(T *testing
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientStateIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientStateIngredient]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientStateIngredientUpdatedServiceEventType: {keys.ValidIngredientStateIngredientIDKey},
+				types.ValidIngredientStateIngredientUpdatedServiceEventType: {mealplanningkeys.ValidIngredientStateIngredientIDKey},
 			},
 		)
 
@@ -1198,7 +1198,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientStateIngredient(T *testin
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientStateIngredient), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientStateIngredientArchivedServiceEventType: {keys.ValidIngredientStateIngredientIDKey},
+				types.ValidIngredientStateIngredientArchivedServiceEventType: {mealplanningkeys.ValidIngredientStateIngredientIDKey},
 			},
 		)
 
@@ -1333,7 +1333,7 @@ func TestValidEnumerationManager_CreateValidIngredientState(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientState), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientStateDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidIngredientStateCreatedServiceEventType: {keys.ValidIngredientStateIDKey},
+				types.ValidIngredientStateCreatedServiceEventType: {mealplanningkeys.ValidIngredientStateIDKey},
 			},
 		)
 
@@ -1390,7 +1390,7 @@ func TestValidEnumerationManager_UpdateValidIngredientState(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientState), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientState]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientStateUpdatedServiceEventType: {keys.ValidIngredientStateIDKey},
+				types.ValidIngredientStateUpdatedServiceEventType: {mealplanningkeys.ValidIngredientStateIDKey},
 			},
 		)
 
@@ -1419,7 +1419,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientState(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientState), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidIngredientStateArchivedServiceEventType: {keys.ValidIngredientStateIDKey},
+				types.ValidIngredientStateArchivedServiceEventType: {mealplanningkeys.ValidIngredientStateIDKey},
 			},
 		)
 
@@ -1527,7 +1527,7 @@ func TestValidEnumerationManager_CreateValidMeasurementUnit(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.CreateValidMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnitDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidMeasurementUnitCreatedServiceEventType: {keys.ValidMeasurementUnitIDKey},
+				types.ValidMeasurementUnitCreatedServiceEventType: {mealplanningkeys.ValidMeasurementUnitIDKey},
 			},
 		)
 
@@ -1584,7 +1584,7 @@ func TestValidEnumerationManager_UpdateValidMeasurementUnit(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnit]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidMeasurementUnitUpdatedServiceEventType: {keys.ValidMeasurementUnitIDKey},
+				types.ValidMeasurementUnitUpdatedServiceEventType: {mealplanningkeys.ValidMeasurementUnitIDKey},
 			},
 		)
 
@@ -1613,7 +1613,7 @@ func TestValidEnumerationManager_ArchiveValidMeasurementUnit(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidMeasurementUnitArchivedServiceEventType: {keys.ValidMeasurementUnitIDKey},
+				types.ValidMeasurementUnitArchivedServiceEventType: {mealplanningkeys.ValidMeasurementUnitIDKey},
 			},
 		)
 
@@ -1694,7 +1694,7 @@ func TestValidEnumerationManager_CreateValidInstrument(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.CreateValidInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidInstrumentDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidInstrumentCreatedServiceEventType: {keys.ValidInstrumentIDKey},
+				types.ValidInstrumentCreatedServiceEventType: {mealplanningkeys.ValidInstrumentIDKey},
 			},
 		)
 
@@ -1777,7 +1777,7 @@ func TestValidEnumerationManager_UpdateValidInstrument(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidInstrument]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidInstrumentUpdatedServiceEventType: {keys.ValidInstrumentIDKey},
+				types.ValidInstrumentUpdatedServiceEventType: {mealplanningkeys.ValidInstrumentIDKey},
 			},
 		)
 
@@ -1806,7 +1806,7 @@ func TestValidEnumerationManager_ArchiveValidInstrument(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidInstrument), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidInstrumentArchivedServiceEventType: {keys.ValidInstrumentIDKey},
+				types.ValidInstrumentArchivedServiceEventType: {mealplanningkeys.ValidInstrumentIDKey},
 			},
 		)
 
@@ -1861,7 +1861,7 @@ func TestValidEnumerationManager_CreateValidMeasurementUnitConversion(T *testing
 				db.On(reflection.GetMethodName(vem.db.CreateValidMeasurementUnitConversion), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnitConversionDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidMeasurementUnitConversionCreatedServiceEventType: {keys.ValidMeasurementUnitConversionIDKey},
+				types.ValidMeasurementUnitConversionCreatedServiceEventType: {mealplanningkeys.ValidMeasurementUnitConversionIDKey},
 			},
 		)
 
@@ -1918,7 +1918,7 @@ func TestValidEnumerationManager_UpdateValidMeasurementUnitConversion(T *testing
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidMeasurementUnitConversion), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnitConversion]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidMeasurementUnitConversionUpdatedServiceEventType: {keys.ValidMeasurementUnitConversionIDKey},
+				types.ValidMeasurementUnitConversionUpdatedServiceEventType: {mealplanningkeys.ValidMeasurementUnitConversionIDKey},
 			},
 		)
 
@@ -1947,7 +1947,7 @@ func TestValidEnumerationManager_ArchiveValidMeasurementUnitConversion(T *testin
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidMeasurementUnitConversion), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidMeasurementUnitConversionArchivedServiceEventType: {keys.ValidMeasurementUnitConversionIDKey},
+				types.ValidMeasurementUnitConversionArchivedServiceEventType: {mealplanningkeys.ValidMeasurementUnitConversionIDKey},
 			},
 		)
 
@@ -2001,7 +2001,7 @@ func TestValidEnumerationManager_CreateValidPreparationInstrument(T *testing.T) 
 				db.On(reflection.GetMethodName(vem.db.CreateValidPreparationInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationInstrumentDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidPreparationInstrumentCreatedServiceEventType: {keys.ValidPreparationInstrumentIDKey},
+				types.ValidPreparationInstrumentCreatedServiceEventType: {mealplanningkeys.ValidPreparationInstrumentIDKey},
 			},
 		)
 
@@ -2058,7 +2058,7 @@ func TestValidEnumerationManager_UpdateValidPreparationInstrument(T *testing.T) 
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidPreparationInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationInstrument]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidPreparationInstrumentUpdatedServiceEventType: {keys.ValidPreparationInstrumentIDKey},
+				types.ValidPreparationInstrumentUpdatedServiceEventType: {mealplanningkeys.ValidPreparationInstrumentIDKey},
 			},
 		)
 
@@ -2087,7 +2087,7 @@ func TestValidEnumerationManager_ArchiveValidPreparationInstrument(T *testing.T)
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidPreparationInstrument), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidPreparationInstrumentArchivedServiceEventType: {keys.ValidPreparationInstrumentIDKey},
+				types.ValidPreparationInstrumentArchivedServiceEventType: {mealplanningkeys.ValidPreparationInstrumentIDKey},
 			},
 		)
 
@@ -2222,7 +2222,7 @@ func TestValidEnumerationManager_CreateValidPreparation(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.CreateValidPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidPreparationCreatedServiceEventType: {keys.ValidPreparationIDKey},
+				types.ValidPreparationCreatedServiceEventType: {mealplanningkeys.ValidPreparationIDKey},
 			},
 		)
 
@@ -2305,7 +2305,7 @@ func TestValidEnumerationManager_UpdateValidPreparation(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparation]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidPreparationUpdatedServiceEventType: {keys.ValidPreparationIDKey},
+				types.ValidPreparationUpdatedServiceEventType: {mealplanningkeys.ValidPreparationIDKey},
 			},
 		)
 
@@ -2334,7 +2334,7 @@ func TestValidEnumerationManager_ArchiveValidPreparation(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidPreparation), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidPreparationArchivedServiceEventType: {keys.ValidPreparationIDKey},
+				types.ValidPreparationArchivedServiceEventType: {mealplanningkeys.ValidPreparationIDKey},
 			},
 		)
 
@@ -2388,7 +2388,7 @@ func TestValidEnumerationManager_CreateValidPreparationVessel(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.CreateValidPreparationVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationVesselDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidPreparationVesselCreatedServiceEventType: {keys.ValidPreparationVesselIDKey},
+				types.ValidPreparationVesselCreatedServiceEventType: {mealplanningkeys.ValidPreparationVesselIDKey},
 			},
 		)
 
@@ -2445,7 +2445,7 @@ func TestValidEnumerationManager_UpdateValidPreparationVessel(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidPreparationVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationVessel]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidPreparationVesselUpdatedServiceEventType: {keys.ValidPreparationVesselIDKey},
+				types.ValidPreparationVesselUpdatedServiceEventType: {mealplanningkeys.ValidPreparationVesselIDKey},
 			},
 		)
 
@@ -2474,7 +2474,7 @@ func TestValidEnumerationManager_ArchiveValidPreparationVessel(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidPreparationVessel), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidPreparationVesselArchivedServiceEventType: {keys.ValidPreparationVesselIDKey},
+				types.ValidPreparationVesselArchivedServiceEventType: {mealplanningkeys.ValidPreparationVesselIDKey},
 			},
 		)
 
@@ -2609,7 +2609,7 @@ func TestValidEnumerationManager_CreateValidVessel(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.CreateValidVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidVesselDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				types.ValidVesselCreatedServiceEventType: {keys.ValidVesselIDKey},
+				types.ValidVesselCreatedServiceEventType: {mealplanningkeys.ValidVesselIDKey},
 			},
 		)
 
@@ -2692,7 +2692,7 @@ func TestValidEnumerationManager_UpdateValidVessel(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidVessel]()).Return(nil)
 			},
 			map[string][]string{
-				types.ValidVesselUpdatedServiceEventType: {keys.ValidVesselIDKey},
+				types.ValidVesselUpdatedServiceEventType: {mealplanningkeys.ValidVesselIDKey},
 			},
 		)
 
@@ -2721,7 +2721,7 @@ func TestValidEnumerationManager_ArchiveValidVessel(T *testing.T) {
 				db.On(reflection.GetMethodName(vem.db.ArchiveValidVessel), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
-				types.ValidVesselArchivedServiceEventType: {keys.ValidVesselIDKey},
+				types.ValidVesselArchivedServiceEventType: {mealplanningkeys.ValidVesselIDKey},
 			},
 		)
 

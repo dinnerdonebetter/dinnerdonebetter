@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -44,13 +44,13 @@ func (g *groceryListCreator) processRecipeIngredients(
 	logger logging.Logger,
 ) {
 	for _, step := range recipe.Steps {
-		logger = logger.WithValue(keys.RecipeStepIDKey, step.ID)
+		logger = logger.WithValue(mealplanningkeys.RecipeStepIDKey, step.ID)
 		for _, ingredient := range step.Ingredients {
 			if ingredient.Ingredient == nil {
 				continue
 			}
 
-			logger = logger.WithValue(keys.RecipeStepIngredientIDKey, ingredient.ID)
+			logger = logger.WithValue(mealplanningkeys.RecipeStepIngredientIDKey, ingredient.ID)
 
 			minQty := float32(recipeScale.Mul(decimal.NewFromFloat32(ingredient.Quantity.Min)).Truncate(2).InexactFloat64())
 			var maxQty *float32
@@ -146,7 +146,7 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 	// Slice for option items (items with alternatives): these are not aggregated
 	optionInputs := []*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{}
 
-	logger := g.logger.Clone().WithValue(keys.MealPlanIDKey, mealPlan.ID)
+	logger := g.logger.Clone().WithValue(mealplanningkeys.MealPlanIDKey, mealPlan.ID)
 
 	// Build a lookup map for user selections: key is (recipeStepID, ingredientIndex, selectionType), value is selectedOptionIndex
 	selectionLookup := make(map[string]uint16)
@@ -206,14 +206,14 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 
 	// Second pass: process ingredients from main recipes and associated recipes
 	for _, event := range mealPlan.Events {
-		logger = logger.WithValue(keys.MealPlanEventIDKey, event.ID)
+		logger = logger.WithValue(mealplanningkeys.MealPlanEventIDKey, event.ID)
 		for _, option := range event.Options {
 			if option.Chosen {
 				mealScale := decimal.NewFromFloat32(option.MealScale)
-				logger = logger.WithValue(keys.MealPlanOptionIDKey, option.ID)
+				logger = logger.WithValue(mealplanningkeys.MealPlanOptionIDKey, option.ID)
 				for _, component := range option.Meal.Components {
 					recipeScale := decimal.NewFromFloat32(component.RecipeScale).Mul(mealScale)
-					logger = logger.WithValue(keys.RecipeIDKey, component.Recipe.ID)
+					logger = logger.WithValue(mealplanningkeys.RecipeIDKey, component.Recipe.ID)
 
 					// Process main recipe ingredients
 					g.processRecipeIngredients(
@@ -230,7 +230,7 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 
 					// Process associated recipe ingredients
 					for _, associatedRecipe := range component.Recipe.AssociatedRecipes {
-						logger = logger.WithValue(keys.RecipeIDKey, associatedRecipe.ID)
+						logger = logger.WithValue(mealplanningkeys.RecipeIDKey, associatedRecipe.ID)
 						g.processRecipeIngredients(
 							associatedRecipe,
 							recipeScale,

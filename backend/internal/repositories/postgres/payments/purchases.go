@@ -5,11 +5,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments/generated"
 )
@@ -23,8 +23,8 @@ func (r *repository) CreatePurchase(ctx context.Context, input *payments.Purchas
 	defer span.End()
 
 	logger := r.logger.Clone()
-	logger = logger.WithValue(keys.PurchaseIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.PurchaseIDKey, input.ID)
+	logger = logger.WithValue(paymentskeys.PurchaseIDKey, input.ID)
+	tracing.AttachToSpan(span, paymentskeys.PurchaseIDKey, input.ID)
 
 	arg := &generated.CreatePurchaseParams{
 		ID:                    input.ID,
@@ -61,8 +61,8 @@ func (r *repository) GetPurchase(ctx context.Context, id string) (*payments.Purc
 	if id == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.PurchaseIDKey, id)
-	tracing.AttachToSpan(span, keys.PurchaseIDKey, id)
+	logger = logger.WithValue(paymentskeys.PurchaseIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.PurchaseIDKey, id)
 
 	result, err := r.generatedQuerier.GetPurchase(ctx, r.readDB, id)
 	if err != nil {

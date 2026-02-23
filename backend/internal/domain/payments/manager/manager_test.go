@@ -7,10 +7,10 @@ import (
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments/fakes"
+	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	paymentsmock "github.com/dinnerdonebetter/backend/internal/domain/payments/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
@@ -90,7 +90,7 @@ func TestPaymentsManager_CreateProduct(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.CreateProduct), testutils.ContextMatcher, testutils.MatchType[*payments.ProductDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				payments.ProductCreatedServiceEventType: {keys.ProductIDKey},
+				payments.ProductCreatedServiceEventType: {paymentskeys.ProductIDKey},
 			},
 		)
 
@@ -125,7 +125,7 @@ func TestPaymentsManager_UpdateProduct(t *testing.T) {
 				})).Return(nil)
 			},
 			map[string][]string{
-				payments.ProductUpdatedServiceEventType: {keys.ProductIDKey},
+				payments.ProductUpdatedServiceEventType: {paymentskeys.ProductIDKey},
 			},
 		)
 
@@ -153,7 +153,7 @@ func TestPaymentsManager_ArchiveProduct(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveProduct), testutils.ContextMatcher, productID).Return(nil)
 			},
 			map[string][]string{
-				payments.ProductArchivedServiceEventType: {keys.ProductIDKey},
+				payments.ProductArchivedServiceEventType: {paymentskeys.ProductIDKey},
 			},
 		)
 
@@ -184,7 +184,7 @@ func TestPaymentsManager_CreateSubscription(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.CreateSubscription), testutils.ContextMatcher, testutils.MatchType[*payments.SubscriptionDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				payments.SubscriptionCreatedServiceEventType: {keys.SubscriptionIDKey},
+				payments.SubscriptionCreatedServiceEventType: {paymentskeys.SubscriptionIDKey},
 			},
 		)
 
@@ -221,7 +221,7 @@ func TestPaymentsManager_UpdateSubscription(t *testing.T) {
 				})).Return(nil)
 			},
 			map[string][]string{
-				payments.SubscriptionUpdatedServiceEventType: {keys.SubscriptionIDKey},
+				payments.SubscriptionUpdatedServiceEventType: {paymentskeys.SubscriptionIDKey},
 			},
 		)
 
@@ -249,7 +249,7 @@ func TestPaymentsManager_ArchiveSubscription(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveSubscription), testutils.ContextMatcher, subID).Return(nil)
 			},
 			map[string][]string{
-				payments.SubscriptionArchivedServiceEventType: {keys.SubscriptionIDKey},
+				payments.SubscriptionArchivedServiceEventType: {paymentskeys.SubscriptionIDKey},
 			},
 		)
 
@@ -281,7 +281,7 @@ func TestPaymentsManager_CancelSubscription(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.UpdateSubscriptionStatus), testutils.ContextMatcher, subID, payments.SubscriptionStatusCancelled).Return(nil)
 			},
 			map[string][]string{
-				payments.SubscriptionCanceledServiceEventType: {keys.SubscriptionIDKey},
+				payments.SubscriptionCanceledServiceEventType: {paymentskeys.SubscriptionIDKey},
 			},
 		)
 

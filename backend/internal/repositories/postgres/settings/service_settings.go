@@ -7,11 +7,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
+	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
 )
@@ -35,8 +36,8 @@ func (q *Repository) ServiceSettingExists(ctx context.Context, serviceSettingID 
 	if serviceSettingID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
-	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
+	logger = logger.WithValue(settingskeys.ServiceSettingIDKey, serviceSettingID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingIDKey, serviceSettingID)
 
 	result, err := q.generatedQuerier.CheckServiceSettingExistence(ctx, q.readDB, serviceSettingID)
 	if err != nil {
@@ -61,8 +62,8 @@ func (q *Repository) getServiceSetting(ctx context.Context, db database.SQLQuery
 	if serviceSettingID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
-	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
+	logger = logger.WithValue(settingskeys.ServiceSettingIDKey, serviceSettingID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingIDKey, serviceSettingID)
 
 	result, err := q.generatedQuerier.GetServiceSetting(ctx, db, serviceSettingID)
 	if err != nil {
@@ -102,8 +103,8 @@ func (q *Repository) SearchForServiceSettings(ctx context.Context, query string,
 	if query == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, query)
+	logger = logger.WithValue(platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -246,8 +247,8 @@ func (q *Repository) CreateServiceSetting(ctx context.Context, input *types.Serv
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, input.ID)
-	logger := q.logger.WithValue(keys.ServiceSettingIDKey, input.ID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingIDKey, input.ID)
+	logger := q.logger.WithValue(settingskeys.ServiceSettingIDKey, input.ID)
 
 	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -308,8 +309,8 @@ func (q *Repository) ArchiveServiceSetting(ctx context.Context, serviceSettingID
 	if serviceSettingID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
-	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
+	logger = logger.WithValue(settingskeys.ServiceSettingIDKey, serviceSettingID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingIDKey, serviceSettingID)
 
 	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {

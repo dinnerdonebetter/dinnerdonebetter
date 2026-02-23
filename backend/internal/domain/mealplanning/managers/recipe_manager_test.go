@@ -6,12 +6,12 @@ import (
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -143,7 +143,7 @@ func TestRecipeManager_CreateRecipe(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeCreatedServiceEventType: {
-					keys.RecipeIDKey,
+					mealplanningkeys.RecipeIDKey,
 				},
 			},
 		)
@@ -249,7 +249,7 @@ func TestRecipeManager_UpdateRecipe(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeUpdatedServiceEventType: {
-					keys.RecipeIDKey,
+					mealplanningkeys.RecipeIDKey,
 				},
 			},
 		)
@@ -279,7 +279,7 @@ func TestRecipeManager_ArchiveRecipe(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeArchivedServiceEventType: {
-					keys.RecipeIDKey,
+					mealplanningkeys.RecipeIDKey,
 				},
 			},
 		)
@@ -382,7 +382,7 @@ func TestRecipeManager_CloneRecipe(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeClonedServiceEventType: {
-					keys.RecipeIDKey,
+					mealplanningkeys.RecipeIDKey,
 				},
 			},
 		)
@@ -682,8 +682,8 @@ func TestRecipeManager_CreateRecipeStep(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepCreatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
 				},
 			},
 		)
@@ -744,8 +744,8 @@ func TestRecipeManager_UpdateRecipeStep(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepUpdatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
 				},
 			},
 		)
@@ -775,8 +775,8 @@ func TestRecipeManager_ArchiveRecipeStep(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepArchivedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
 				},
 			},
 		)
@@ -846,9 +846,9 @@ func TestRecipeManager_CreateRecipeStepProduct(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepProductCreatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepProductIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepProductIDKey,
 				},
 			},
 		)
@@ -911,9 +911,9 @@ func TestRecipeManager_UpdateRecipeStepProduct(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepProductUpdatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepProductIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepProductIDKey,
 				},
 			},
 		)
@@ -944,9 +944,9 @@ func TestRecipeManager_ArchiveRecipeStepProduct(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepProductArchivedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepProductIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepProductIDKey,
 				},
 			},
 		)
@@ -1011,9 +1011,9 @@ func TestRecipeManager_CreateRecipeStepInstrument(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepInstrumentCreatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepInstrumentIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepInstrumentIDKey,
 				},
 			},
 		)
@@ -1076,9 +1076,9 @@ func TestRecipeManager_UpdateRecipeStepInstrument(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepInstrumentUpdatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepInstrumentIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepInstrumentIDKey,
 				},
 			},
 		)
@@ -1109,9 +1109,9 @@ func TestRecipeManager_ArchiveRecipeStepInstrument(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepInstrumentArchivedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepInstrumentIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepInstrumentIDKey,
 				},
 			},
 		)
@@ -1178,9 +1178,9 @@ func TestRecipeManager_CreateRecipeStepIngredient(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepIngredientCreatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepIngredientIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepIngredientIDKey,
 				},
 			},
 		)
@@ -1243,9 +1243,9 @@ func TestRecipeManager_UpdateRecipeStepIngredient(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepIngredientUpdatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepIngredientIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepIngredientIDKey,
 				},
 			},
 		)
@@ -1276,9 +1276,9 @@ func TestRecipeManager_ArchiveRecipeStepIngredient(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepIngredientArchivedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepIngredientIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepIngredientIDKey,
 				},
 			},
 		)
@@ -1336,8 +1336,8 @@ func TestRecipeManager_CreateRecipePrepTask(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipePrepTaskCreatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipePrepTaskIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipePrepTaskIDKey,
 				},
 			},
 		)
@@ -1398,8 +1398,8 @@ func TestRecipeManager_UpdateRecipePrepTask(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipePrepTaskUpdatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipePrepTaskIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipePrepTaskIDKey,
 				},
 			},
 		)
@@ -1429,8 +1429,8 @@ func TestRecipeManager_ArchiveRecipePrepTask(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipePrepTaskArchivedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipePrepTaskIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipePrepTaskIDKey,
 				},
 			},
 		)
@@ -1490,9 +1490,9 @@ func TestRecipeManager_CreateRecipeStepCompletionCondition(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepCompletionConditionCreatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepCompletionConditionIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepCompletionConditionIDKey,
 				},
 			},
 		)
@@ -1555,9 +1555,9 @@ func TestRecipeManager_UpdateRecipeStepCompletionCondition(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepCompletionConditionUpdatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepCompletionConditionIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepCompletionConditionIDKey,
 				},
 			},
 		)
@@ -1588,9 +1588,9 @@ func TestRecipeManager_ArchiveRecipeStepCompletionCondition(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepCompletionConditionArchivedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepCompletionConditionIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepCompletionConditionIDKey,
 				},
 			},
 		)
@@ -1655,9 +1655,9 @@ func TestRecipeManager_CreateRecipeStepVessel(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepVesselCreatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepVesselIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepVesselIDKey,
 				},
 			},
 		)
@@ -1720,9 +1720,9 @@ func TestRecipeManager_UpdateRecipeStepVessel(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepVesselUpdatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepVesselIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepVesselIDKey,
 				},
 			},
 		)
@@ -1753,9 +1753,9 @@ func TestRecipeManager_ArchiveRecipeStepVessel(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeStepVesselArchivedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeStepIDKey,
-					keys.RecipeStepVesselIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeStepIDKey,
+					mealplanningkeys.RecipeStepVesselIDKey,
 				},
 			},
 		)
@@ -1840,8 +1840,8 @@ func TestRecipeManager_CreateRecipeRating(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeRatingCreatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeRatingIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeRatingIDKey,
 				},
 			},
 		)
@@ -1875,8 +1875,8 @@ func TestRecipeManager_UpdateRecipeRating(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeRatingUpdatedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeRatingIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeRatingIDKey,
 				},
 			},
 		)
@@ -1906,8 +1906,8 @@ func TestRecipeManager_ArchiveRecipeRating(T *testing.T) {
 			},
 			map[string][]string{
 				types.RecipeRatingArchivedServiceEventType: {
-					keys.RecipeIDKey,
-					keys.RecipeRatingIDKey,
+					mealplanningkeys.RecipeIDKey,
+					mealplanningkeys.RecipeRatingIDKey,
 				},
 			},
 		)

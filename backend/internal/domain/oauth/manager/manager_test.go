@@ -7,10 +7,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/fakes"
+	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
@@ -115,7 +115,7 @@ func TestOAuth2Manager_CreateOAuth2Client(t *testing.T) {
 				gen.On(reflection.GetMethodName(gen.GenerateHexEncodedString), testutils.ContextMatcher, 16).Return("eeddccbb55443322eeddccbb55443322", nil).Once()
 			},
 			map[string][]string{
-				oauth.OAuth2ClientCreatedServiceEventType: {keys.OAuth2ClientIDKey},
+				oauth.OAuth2ClientCreatedServiceEventType: {oauthkeys.OAuth2ClientIDKey},
 			},
 		)
 
@@ -145,7 +145,7 @@ func TestOAuth2Manager_ArchiveOAuth2Client(t *testing.T) {
 			},
 			nil,
 			map[string][]string{
-				oauth.OAuth2ClientArchivedServiceEventType: {keys.OAuth2ClientIDKey},
+				oauth.OAuth2ClientArchivedServiceEventType: {oauthkeys.OAuth2ClientIDKey},
 			},
 		)
 

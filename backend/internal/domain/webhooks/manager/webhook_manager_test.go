@@ -8,11 +8,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
+	webhookkeys "github.com/dinnerdonebetter/backend/internal/domain/webhooks/keys"
 	webhookmock "github.com/dinnerdonebetter/backend/internal/domain/webhooks/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
@@ -92,7 +92,7 @@ func TestWebhookDataManager_CreateWebhook(t *testing.T) {
 				})).Return(expectedWebhook, nil)
 			},
 			map[string][]string{
-				webhooks.WebhookCreatedServiceEventType: {keys.WebhookIDKey},
+				webhooks.WebhookCreatedServiceEventType: {webhookkeys.WebhookIDKey},
 			},
 		)
 
@@ -220,7 +220,7 @@ func TestWebhookDataManager_ArchiveWebhook(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveWebhook), testutils.ContextMatcher, webhookID, accountID).Return(nil)
 			},
 			map[string][]string{
-				webhooks.WebhookArchivedServiceEventType: {keys.WebhookIDKey},
+				webhooks.WebhookArchivedServiceEventType: {webhookkeys.WebhookIDKey},
 			},
 		)
 
@@ -255,7 +255,7 @@ func TestWebhookDataManager_AddWebhookTriggerConfig(t *testing.T) {
 				})).Return(expectedConfig, nil)
 			},
 			map[string][]string{
-				webhooks.WebhookTriggerConfigCreatedServiceEventType: {keys.WebhookIDKey, keys.WebhookTriggerConfigIDKey},
+				webhooks.WebhookTriggerConfigCreatedServiceEventType: {webhookkeys.WebhookIDKey, webhookkeys.WebhookTriggerConfigIDKey},
 			},
 		)
 
@@ -298,7 +298,7 @@ func TestWebhookDataManager_ArchiveWebhookTriggerConfig(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveWebhookTriggerConfig), testutils.ContextMatcher, webhookID, configID).Return(nil)
 			},
 			map[string][]string{
-				webhooks.WebhookTriggerConfigArchivedServiceEventType: {keys.WebhookIDKey, keys.WebhookTriggerConfigIDKey},
+				webhooks.WebhookTriggerConfigArchivedServiceEventType: {webhookkeys.WebhookIDKey, webhookkeys.WebhookTriggerConfigIDKey},
 			},
 		)
 

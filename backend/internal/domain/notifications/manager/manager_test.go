@@ -7,10 +7,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications/fakes"
+	notificationkeys "github.com/dinnerdonebetter/backend/internal/domain/notifications/keys"
 	notificationsmock "github.com/dinnerdonebetter/backend/internal/domain/notifications/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
@@ -87,7 +87,7 @@ func TestNotificationsManager_CreateUserNotification(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.CreateUserNotification), testutils.ContextMatcher, testutils.MatchType[*notifications.UserNotificationDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				notifications.UserNotificationCreatedServiceEventType: {keys.UserNotificationIDKey},
+				notifications.UserNotificationCreatedServiceEventType: {notificationkeys.UserNotificationIDKey},
 			},
 		)
 
@@ -117,7 +117,7 @@ func TestNotificationsManager_UpdateUserNotification(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.UpdateUserNotification), testutils.ContextMatcher, updated).Return(nil)
 			},
 			map[string][]string{
-				notifications.UserNotificationUpdatedServiceEventType: {keys.UserNotificationIDKey},
+				notifications.UserNotificationUpdatedServiceEventType: {notificationkeys.UserNotificationIDKey},
 			},
 		)
 

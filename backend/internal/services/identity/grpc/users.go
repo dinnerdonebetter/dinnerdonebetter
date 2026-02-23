@@ -3,10 +3,11 @@ package grpc
 import (
 	"context"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -51,7 +52,7 @@ func (s *serviceImpl) GetUser(ctx context.Context, request *identitysvc.GetUserR
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UserIDKey: request.UserId,
+		identitykeys.UserIDKey: request.UserId,
 	}, span, s.logger)
 
 	user, err := s.identityDataManager.GetUser(ctx, request.UserId)
@@ -122,7 +123,7 @@ func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.S
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.SearchQueryKey: request.Query,
+		platformkeys.SearchQueryKey: request.Query,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)

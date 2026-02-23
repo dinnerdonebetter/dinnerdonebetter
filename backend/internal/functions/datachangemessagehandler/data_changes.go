@@ -11,14 +11,16 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	authkeys "github.com/dinnerdonebetter/backend/internal/domain/auth/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	coreemails "github.com/dinnerdonebetter/backend/internal/services/identity/emails"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
@@ -143,7 +145,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.RecipeCreatedServiceEventType,
 		mealplanning.RecipeUpdatedServiceEventType,
 		mealplanning.RecipeArchivedServiceEventType:
-		recipe, parseError := parseValueFromEventContext[mealplanning.Recipe](ctx, changeMessage, a.decoder, keys.RecipeKey)
+		recipe, parseError := parseValueFromEventContext[mealplanning.Recipe](ctx, changeMessage, a.decoder, mealplanningkeys.RecipeKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -164,7 +166,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.MealCreatedServiceEventType,
 		mealplanning.MealUpdatedServiceEventType,
 		mealplanning.MealArchivedServiceEventType:
-		meal, parseError := parseValueFromEventContext[mealplanning.Meal](ctx, changeMessage, a.decoder, keys.MealKey)
+		meal, parseError := parseValueFromEventContext[mealplanning.Meal](ctx, changeMessage, a.decoder, mealplanningkeys.MealKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -185,7 +187,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidIngredientCreatedServiceEventType,
 		mealplanning.ValidIngredientUpdatedServiceEventType,
 		mealplanning.ValidIngredientArchivedServiceEventType:
-		validIngredient, parseError := parseValueFromEventContext[mealplanning.ValidIngredient](ctx, changeMessage, a.decoder, keys.ValidIngredientKey)
+		validIngredient, parseError := parseValueFromEventContext[mealplanning.ValidIngredient](ctx, changeMessage, a.decoder, mealplanningkeys.ValidIngredientKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -206,7 +208,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidInstrumentCreatedServiceEventType,
 		mealplanning.ValidInstrumentUpdatedServiceEventType,
 		mealplanning.ValidInstrumentArchivedServiceEventType:
-		validInstrument, parseError := parseValueFromEventContext[mealplanning.ValidInstrument](ctx, changeMessage, a.decoder, keys.ValidInstrumentKey)
+		validInstrument, parseError := parseValueFromEventContext[mealplanning.ValidInstrument](ctx, changeMessage, a.decoder, mealplanningkeys.ValidInstrumentKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -227,7 +229,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidMeasurementUnitCreatedServiceEventType,
 		mealplanning.ValidMeasurementUnitUpdatedServiceEventType,
 		mealplanning.ValidMeasurementUnitArchivedServiceEventType:
-		validMeasurementUnit, parseError := parseValueFromEventContext[mealplanning.ValidMeasurementUnit](ctx, changeMessage, a.decoder, keys.ValidMeasurementUnitKey)
+		validMeasurementUnit, parseError := parseValueFromEventContext[mealplanning.ValidMeasurementUnit](ctx, changeMessage, a.decoder, mealplanningkeys.ValidMeasurementUnitKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -248,7 +250,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidPreparationCreatedServiceEventType,
 		mealplanning.ValidPreparationUpdatedServiceEventType,
 		mealplanning.ValidPreparationArchivedServiceEventType:
-		validPreparation, parseError := parseValueFromEventContext[mealplanning.ValidPreparation](ctx, changeMessage, a.decoder, keys.ValidPreparationKey)
+		validPreparation, parseError := parseValueFromEventContext[mealplanning.ValidPreparation](ctx, changeMessage, a.decoder, mealplanningkeys.ValidPreparationKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -269,7 +271,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidIngredientStateCreatedServiceEventType,
 		mealplanning.ValidIngredientStateUpdatedServiceEventType,
 		mealplanning.ValidIngredientStateArchivedServiceEventType:
-		validIngredientState, parseError := parseValueFromEventContext[mealplanning.ValidIngredientState](ctx, changeMessage, a.decoder, keys.ValidIngredientStateKey)
+		validIngredientState, parseError := parseValueFromEventContext[mealplanning.ValidIngredientState](ctx, changeMessage, a.decoder, mealplanningkeys.ValidIngredientStateKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -290,7 +292,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidIngredientMeasurementUnitCreatedServiceEventType,
 		mealplanning.ValidIngredientMeasurementUnitUpdatedServiceEventType,
 		mealplanning.ValidIngredientMeasurementUnitArchivedServiceEventType:
-		validIngredientMeasurementUnit, parseError := parseValueFromEventContext[mealplanning.ValidIngredientMeasurementUnit](ctx, changeMessage, a.decoder, keys.ValidIngredientMeasurementUnitKey)
+		validIngredientMeasurementUnit, parseError := parseValueFromEventContext[mealplanning.ValidIngredientMeasurementUnit](ctx, changeMessage, a.decoder, mealplanningkeys.ValidIngredientMeasurementUnitKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -311,7 +313,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidPreparationInstrumentCreatedServiceEventType,
 		mealplanning.ValidPreparationInstrumentUpdatedServiceEventType,
 		mealplanning.ValidPreparationInstrumentArchivedServiceEventType:
-		validPreparationInstrument, parseError := parseValueFromEventContext[mealplanning.ValidPreparationInstrument](ctx, changeMessage, a.decoder, keys.ValidPreparationInstrumentKey)
+		validPreparationInstrument, parseError := parseValueFromEventContext[mealplanning.ValidPreparationInstrument](ctx, changeMessage, a.decoder, mealplanningkeys.ValidPreparationInstrumentKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -332,7 +334,7 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidIngredientPreparationCreatedServiceEventType,
 		mealplanning.ValidIngredientPreparationUpdatedServiceEventType,
 		mealplanning.ValidIngredientPreparationArchivedServiceEventType:
-		validIngredientPreparation, parseError := parseValueFromEventContext[mealplanning.ValidIngredientPreparation](ctx, changeMessage, a.decoder, keys.ValidIngredientPreparationKey)
+		validIngredientPreparation, parseError := parseValueFromEventContext[mealplanning.ValidIngredientPreparation](ctx, changeMessage, a.decoder, mealplanningkeys.ValidIngredientPreparationKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -392,7 +394,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 			observability.AcknowledgeError(err, logger, span, "notifying customer data platform")
 		}
 
-		evf, parseError := parseValueFromEventContext[string](ctx, changeMessage, a.decoder, keys.UserEmailVerificationTokenKey)
+		evf, parseError := parseValueFromEventContext[string](ctx, changeMessage, a.decoder, identitykeys.UserEmailVerificationTokenKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -405,7 +407,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case identity.UserEmailAddressVerificationEmailRequestedEventType:
 		emailType = "email address verification"
-		evf, parseError := parseValueFromEventContext[string](ctx, changeMessage, a.decoder, keys.UserEmailVerificationTokenKey)
+		evf, parseError := parseValueFromEventContext[string](ctx, changeMessage, a.decoder, identitykeys.UserEmailVerificationTokenKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -418,7 +420,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case mealplanning.MealPlanCreatedServiceEventType:
 		emailType = "meal plan created"
-		mealPlan, parseError := parseValueFromEventContext[mealplanning.MealPlan](ctx, changeMessage, a.decoder, keys.MealPlanKey)
+		mealPlan, parseError := parseValueFromEventContext[mealplanning.MealPlan](ctx, changeMessage, a.decoder, mealplanningkeys.MealPlanKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -445,7 +447,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 		}
 	case identity.PasswordResetTokenCreatedEventType:
 		emailType = "password reset request"
-		prt, parseError := parseValueFromEventContext[auth.PasswordResetToken](ctx, changeMessage, a.decoder, keys.PasswordResetTokenKey)
+		prt, parseError := parseValueFromEventContext[auth.PasswordResetToken](ctx, changeMessage, a.decoder, authkeys.PasswordResetTokenKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}
@@ -490,7 +492,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case identity.AccountInvitationCreatedServiceEventType:
 		emailType = "account invitation created"
-		accountInvite, parseError := parseValueFromEventContext[identity.AccountInvitation](ctx, changeMessage, a.decoder, keys.AccountInvitationKey)
+		accountInvite, parseError := parseValueFromEventContext[identity.AccountInvitation](ctx, changeMessage, a.decoder, identitykeys.AccountInvitationKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}

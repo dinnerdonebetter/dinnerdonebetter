@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
+	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	issuereportssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -24,7 +25,7 @@ func (s *serviceImpl) CreateIssueReport(ctx context.Context, request *issuerepor
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID).WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID).WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	input := converters.ConvertGRPCIssueReportCreationRequestInputToIssueReportDatabaseCreationInput(request.Input, sessionContextData.Requester.UserID, sessionContextData.GetActiveAccountID())
 	if err = input.ValidateWithContext(ctx); err != nil {
@@ -51,13 +52,13 @@ func (s *serviceImpl) GetIssueReport(ctx context.Context, request *issuereportss
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.IssueReportIDKey, request.IssueReportId)
+	logger := s.logger.WithSpan(span).WithValue(issuereportkeys.IssueReportIDKey, request.IssueReportId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	issueReport, err := s.issueReportsManager.GetIssueReport(ctx, request.IssueReportId)
 	if err != nil {
@@ -90,7 +91,7 @@ func (s *serviceImpl) GetIssueReports(ctx context.Context, request *issuereports
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
@@ -124,7 +125,7 @@ func (s *serviceImpl) GetIssueReportsForAccount(ctx context.Context, request *is
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
@@ -158,7 +159,7 @@ func (s *serviceImpl) GetIssueReportsForTable(ctx context.Context, request *issu
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
@@ -192,7 +193,7 @@ func (s *serviceImpl) GetIssueReportsForRecord(ctx context.Context, request *iss
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
@@ -220,13 +221,13 @@ func (s *serviceImpl) UpdateIssueReport(ctx context.Context, request *issuerepor
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.IssueReportIDKey, request.IssueReportId)
+	logger := s.logger.WithSpan(span).WithValue(issuereportkeys.IssueReportIDKey, request.IssueReportId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	// Fetch the existing issue report
 	issueReport, err := s.issueReportsManager.GetIssueReport(ctx, request.IssueReportId)
@@ -266,13 +267,13 @@ func (s *serviceImpl) ArchiveIssueReport(ctx context.Context, request *issuerepo
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.IssueReportIDKey, request.IssueReportId)
+	logger := s.logger.WithSpan(span).WithValue(issuereportkeys.IssueReportIDKey, request.IssueReportId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	// Fetch the existing issue report to verify ownership
 	issueReport, err := s.issueReportsManager.GetIssueReport(ctx, request.IssueReportId)

@@ -8,13 +8,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	webhooksfakes "github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
 	encodingmock "github.com/dinnerdonebetter/backend/internal/platform/encoding/mock"
 	msgqueuemock "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
@@ -256,7 +257,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 			UserID:    "test-user-id",
 			AccountID: "test-account-id",
 			Context: map[string]any{
-				keys.RecipeKey: string(recipeBytes),
+				mealplanningkeys.RecipeKey: string(recipeBytes),
 			},
 		}
 
@@ -350,7 +351,7 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 			UserID:    user.ID,
 			AccountID: "test-account-id",
 			Context: map[string]any{
-				keys.UserEmailVerificationTokenKey: []byte(evf), // Use byte slice to avoid DecodeBytes call
+				identitykeys.UserEmailVerificationTokenKey: []byte(evf), // Use byte slice to avoid DecodeBytes call
 			},
 		}
 

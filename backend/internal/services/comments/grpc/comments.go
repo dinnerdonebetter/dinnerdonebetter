@@ -5,11 +5,12 @@ import (
 	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
+	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	commentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	converters "github.com/dinnerdonebetter/backend/internal/services/comments/grpc/converters"
 
@@ -21,7 +22,7 @@ func (s *serviceImpl) AddCommentToRecipe(ctx context.Context, request *commentss
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -57,7 +58,7 @@ func (s *serviceImpl) AddCommentToMeal(ctx context.Context, request *commentssvc
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealIDKey: request.MealId,
+		mealplanningkeys.MealIDKey: request.MealId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -93,7 +94,7 @@ func (s *serviceImpl) AddCommentToMealPlan(ctx context.Context, request *comment
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -188,8 +189,8 @@ func (s *serviceImpl) GetCommentsForReference(ctx context.Context, request *comm
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.CommentIDKey: request.ReferencedId,
-		"target_type":     request.TargetType,
+		commentskeys.CommentIDKey: request.ReferencedId,
+		"target_type":             request.TargetType,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -234,7 +235,7 @@ func (s *serviceImpl) UpdateComment(ctx context.Context, request *commentssvc.Up
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.CommentIDKey: request.CommentId,
+		commentskeys.CommentIDKey: request.CommentId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -278,7 +279,7 @@ func (s *serviceImpl) ArchiveComment(ctx context.Context, request *commentssvc.A
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.CommentIDKey: request.CommentId,
+		commentskeys.CommentIDKey: request.CommentId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)

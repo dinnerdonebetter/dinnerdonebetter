@@ -9,11 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 )
@@ -34,7 +34,7 @@ func (r *repository) GetAccount(ctx context.Context, accountID string) (*identit
 	if accountID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	results, err := r.generatedQuerier.GetAccountByIDWithMemberships(ctx, r.readDB, accountID)
 	if err != nil {
@@ -117,8 +117,8 @@ func (r *repository) getAccountsForUser(ctx context.Context, querier database.SQ
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -202,7 +202,7 @@ func (r *repository) CreateAccount(ctx context.Context, input *identity.AccountD
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := r.logger.WithValue(keys.UserIDKey, input.BelongsToUser)
+	logger := r.logger.WithValue(identitykeys.UserIDKey, input.BelongsToUser)
 
 	// begin account creation transaction
 	tx, err := r.writeDB.BeginTx(ctx, nil)
@@ -287,7 +287,7 @@ func (r *repository) CreateAccount(ctx context.Context, input *identity.AccountD
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	tracing.AttachToSpan(span, keys.AccountIDKey, account.ID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, account.ID)
 	logger.Info("account created")
 
 	return account, nil
@@ -301,8 +301,8 @@ func (r *repository) UpdateAccountBillingFields(ctx context.Context, accountID s
 	if accountID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := r.logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger := r.logger.WithValue(identitykeys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	if _, err := r.generatedQuerier.UpdateAccountBillingFields(ctx, r.writeDB, &generated.UpdateAccountBillingFieldsParams{
 		ID:                                accountID,
@@ -325,8 +325,8 @@ func (r *repository) UpdateAccount(ctx context.Context, updated *identity.Accoun
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.AccountIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, updated.ID)
+	logger := r.logger.WithValue(identitykeys.AccountIDKey, updated.ID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, updated.ID)
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -464,10 +464,10 @@ func (r *repository) ArchiveAccount(ctx context.Context, accountID, ownerID stri
 	if accountID == "" || ownerID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
-	logger = logger.WithValue(keys.UserIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
+	logger = logger.WithValue(identitykeys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {

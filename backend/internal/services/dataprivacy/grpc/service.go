@@ -7,12 +7,13 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
+	dataprivacykeys "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/keys"
 	dataprivacymanager "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/manager"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
@@ -66,13 +67,13 @@ func (s *serviceImpl) AggregateUserDataReport(ctx context.Context, _ *dataprivac
 	}
 
 	userID := sessionContextData.Requester.UserID
-	logger := s.logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger := s.logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	// Generate a unique report ID
 	reportID := identifiers.New()
-	logger = logger.WithValue(keys.UserDataAggregationReportIDKey, reportID)
-	tracing.AttachToSpan(span, keys.UserDataAggregationReportIDKey, reportID)
+	logger = logger.WithValue(dataprivacykeys.UserDataAggregationReportIDKey, reportID)
+	tracing.AttachToSpan(span, dataprivacykeys.UserDataAggregationReportIDKey, reportID)
 
 	logger.Info("aggregating user data")
 
@@ -113,8 +114,8 @@ func (s *serviceImpl) DestroyAllUserData(ctx context.Context, _ *dataprivacysvc.
 	}
 
 	userID := sessionContextData.Requester.UserID
-	logger := s.logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger := s.logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	logger.Info("destroying all user data")
 
@@ -138,8 +139,8 @@ func (s *serviceImpl) FetchUserDataReport(ctx context.Context, request *datapriv
 	defer span.End()
 
 	reportID := request.GetUserDataAggregationReportId()
-	logger := s.logger.WithValue(keys.UserDataAggregationReportIDKey, reportID)
-	tracing.AttachToSpan(span, keys.UserDataAggregationReportIDKey, reportID)
+	logger := s.logger.WithValue(dataprivacykeys.UserDataAggregationReportIDKey, reportID)
+	tracing.AttachToSpan(span, dataprivacykeys.UserDataAggregationReportIDKey, reportID)
 
 	logger.Info("fetching user data report")
 

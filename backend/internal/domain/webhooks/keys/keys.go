@@ -1,6 +1,8 @@
 package keys
 
 const (
+	idSuffix = ".id"
+
 	// WebhookIDKey is the standard key for referring to a webhook's ID.
 	WebhookIDKey = "webhook" + idSuffix
 	// WebhookTriggerConfigIDKey is the standard key for referring to a webhook trigger config's ID.

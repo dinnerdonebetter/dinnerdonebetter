@@ -6,10 +6,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists"
+	waitlistkeys "github.com/dinnerdonebetter/backend/internal/domain/waitlists/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -92,9 +92,9 @@ func (m *waitlistManager) CreateWaitlist(ctx context.Context, input *waitlists.W
 		return nil, err
 	}
 
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, created.ID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, created.ID)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, waitlists.WaitlistCreatedServiceEventType, map[string]any{
-		keys.WaitlistIDKey: created.ID,
+		waitlistkeys.WaitlistIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -104,15 +104,15 @@ func (m *waitlistManager) UpdateWaitlist(ctx context.Context, waitlist *waitlist
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.WaitlistIDKey, waitlist.ID)
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlist.ID)
+	logger := m.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistIDKey, waitlist.ID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlist.ID)
 
 	if err := m.repo.UpdateWaitlist(ctx, waitlist); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, waitlists.WaitlistUpdatedServiceEventType, map[string]any{
-		keys.WaitlistIDKey: waitlist.ID,
+		waitlistkeys.WaitlistIDKey: waitlist.ID,
 	}))
 
 	return nil
@@ -122,15 +122,15 @@ func (m *waitlistManager) ArchiveWaitlist(ctx context.Context, waitlistID string
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.WaitlistIDKey, waitlistID)
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
+	logger := m.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
 
 	if err := m.repo.ArchiveWaitlist(ctx, waitlistID); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, waitlists.WaitlistArchivedServiceEventType, map[string]any{
-		keys.WaitlistIDKey: waitlistID,
+		waitlistkeys.WaitlistIDKey: waitlistID,
 	}))
 
 	return nil
@@ -165,10 +165,10 @@ func (m *waitlistManager) CreateWaitlistSignup(ctx context.Context, input *waitl
 		return nil, err
 	}
 
-	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, created.ID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, created.ID)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, waitlists.WaitlistSignupCreatedServiceEventType, map[string]any{
-		keys.WaitlistSignupIDKey: created.ID,
-		keys.WaitlistIDKey:       created.BelongsToWaitlist,
+		waitlistkeys.WaitlistSignupIDKey: created.ID,
+		waitlistkeys.WaitlistIDKey:       created.BelongsToWaitlist,
 	}))
 
 	return created, nil
@@ -178,16 +178,16 @@ func (m *waitlistManager) UpdateWaitlistSignup(ctx context.Context, signup *wait
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.WaitlistSignupIDKey, signup.ID).WithValue(keys.WaitlistIDKey, signup.BelongsToWaitlist)
-	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, signup.ID)
+	logger := m.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistSignupIDKey, signup.ID).WithValue(waitlistkeys.WaitlistIDKey, signup.BelongsToWaitlist)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, signup.ID)
 
 	if err := m.repo.UpdateWaitlistSignup(ctx, signup); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, waitlists.WaitlistSignupUpdatedServiceEventType, map[string]any{
-		keys.WaitlistSignupIDKey: signup.ID,
-		keys.WaitlistIDKey:       signup.BelongsToWaitlist,
+		waitlistkeys.WaitlistSignupIDKey: signup.ID,
+		waitlistkeys.WaitlistIDKey:       signup.BelongsToWaitlist,
 	}))
 
 	return nil
@@ -197,15 +197,15 @@ func (m *waitlistManager) ArchiveWaitlistSignup(ctx context.Context, waitlistSig
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.WaitlistSignupIDKey, waitlistSignupID)
-	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, waitlistSignupID)
+	logger := m.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)
 
 	if err := m.repo.ArchiveWaitlistSignup(ctx, waitlistSignupID); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, waitlists.WaitlistSignupArchivedServiceEventType, map[string]any{
-		keys.WaitlistSignupIDKey: waitlistSignupID,
+		waitlistkeys.WaitlistSignupIDKey: waitlistSignupID,
 	}))
 
 	return nil

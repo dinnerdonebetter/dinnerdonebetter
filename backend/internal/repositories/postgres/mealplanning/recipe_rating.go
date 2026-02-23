@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
@@ -27,14 +28,14 @@ func (q *repository) RecipeRatingExists(ctx context.Context, recipeID, recipeRat
 	if recipeID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
-	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
+	logger = logger.WithValue(mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
 
 	result, err := q.generatedQuerier.CheckRecipeRatingExistence(ctx, q.readDB, recipeRatingID)
 	if err != nil {
@@ -54,14 +55,14 @@ func (q *repository) GetRecipeRating(ctx context.Context, recipeID, recipeRating
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
-	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
+	logger = logger.WithValue(mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
 
 	result, err := q.generatedQuerier.GetRecipeRating(ctx, q.readDB, recipeRatingID)
 	if err != nil {
@@ -102,8 +103,8 @@ func (q *repository) GetRecipeRatingsForRecipe(ctx context.Context, recipeID str
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	var (
 		data          []*types.RecipeRating
@@ -173,8 +174,8 @@ func (q *repository) GetRecipeRatingsForUser(ctx context.Context, userID string,
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	var (
 		data          []*types.RecipeRating
@@ -237,7 +238,7 @@ func (q *repository) CreateRecipeRating(ctx context.Context, input *types.Recipe
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.RecipeRatingIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.RecipeRatingIDKey, input.ID)
 
 	// create the recipe rating.
 	if err := q.generatedQuerier.CreateRecipeRating(ctx, q.writeDB, &generated.CreateRecipeRatingParams{
@@ -267,7 +268,7 @@ func (q *repository) CreateRecipeRating(ctx context.Context, input *types.Recipe
 		CreatedAt:    q.CurrentTime(),
 	}
 
-	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, x.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, x.ID)
 	logger.Info("recipe rating created")
 
 	return x, nil
@@ -281,8 +282,8 @@ func (q *repository) UpdateRecipeRating(ctx context.Context, updated *types.Reci
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.RecipeRatingIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.RecipeRatingIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeRating(ctx, q.writeDB, &generated.UpdateRecipeRatingParams{
 		RecipeID:     updated.RecipeID,
@@ -312,14 +313,14 @@ func (q *repository) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRa
 	if recipeID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
-	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
+	logger = logger.WithValue(mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveRecipeRating(ctx, q.writeDB, recipeRatingID)
 	if err != nil {

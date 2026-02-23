@@ -6,10 +6,10 @@ import (
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	randommock "github.com/dinnerdonebetter/backend/internal/platform/random/mock"
@@ -122,7 +122,7 @@ func TestIdentityDataManager_AcceptAccountInvitation(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountInvitationCanceledServiceEventType: {keys.AccountInvitationIDKey},
+				identity.AccountInvitationCanceledServiceEventType: {identitykeys.AccountInvitationIDKey},
 			},
 		)
 
@@ -160,7 +160,7 @@ func TestIdentityDataManager_RejectAccountInvitation(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountInvitationRejectedServiceEventType: {keys.AccountInvitationIDKey},
+				identity.AccountInvitationRejectedServiceEventType: {identitykeys.AccountInvitationIDKey},
 			},
 		)
 
@@ -194,7 +194,7 @@ func TestIdentityDataManager_CancelAccountInvitation(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountInvitationCanceledServiceEventType: {keys.AccountInvitationIDKey},
+				identity.AccountInvitationCanceledServiceEventType: {identitykeys.AccountInvitationIDKey},
 			},
 		)
 
@@ -227,7 +227,7 @@ func TestIdentityDataManager_ArchiveAccount(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountArchivedServiceEventType: {keys.AccountIDKey, keys.UserIDKey},
+				identity.AccountArchivedServiceEventType: {identitykeys.AccountIDKey, identitykeys.UserIDKey},
 			},
 		)
 
@@ -260,7 +260,7 @@ func TestIdentityDataManager_ArchiveUserMembership(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountMemberRemovedServiceEventType: {keys.AccountIDKey, keys.UserIDKey},
+				identity.AccountMemberRemovedServiceEventType: {identitykeys.AccountIDKey, identitykeys.UserIDKey},
 			},
 		)
 
@@ -292,7 +292,7 @@ func TestIdentityDataManager_ArchiveUser(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.UserArchivedServiceEventType: {keys.UserIDKey},
+				identity.UserArchivedServiceEventType: {identitykeys.UserIDKey},
 			},
 		)
 
@@ -325,7 +325,7 @@ func TestIdentityDataManager_CreateAccount(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountCreatedServiceEventType: {keys.AccountIDKey},
+				identity.AccountCreatedServiceEventType: {identitykeys.AccountIDKey},
 			},
 		)
 
@@ -364,7 +364,7 @@ func TestIdentityDataManager_CreateAccountInvitation(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountInvitationCreatedServiceEventType: {keys.AccountInvitationIDKey, keys.UserIDKey, "destination_account"},
+				identity.AccountInvitationCreatedServiceEventType: {identitykeys.AccountInvitationIDKey, identitykeys.UserIDKey, "destination_account"},
 			},
 		)
 
@@ -408,7 +408,7 @@ func TestIdentityDataManager_CreateUser(T *testing.T) {
 			},
 			nil,
 			map[string][]string{
-				identity.UserSignedUpServiceEventType: {keys.AccountIDKey, keys.UserIDKey, keys.UserEmailVerificationTokenKey},
+				identity.UserSignedUpServiceEventType: {identitykeys.AccountIDKey, identitykeys.UserIDKey, identitykeys.UserEmailVerificationTokenKey},
 			},
 		)
 
@@ -761,7 +761,7 @@ func TestIdentityDataManager_SetDefaultAccount(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountSetAsDefaultServiceEventType: {keys.AccountIDKey, keys.UserIDKey},
+				identity.AccountSetAsDefaultServiceEventType: {identitykeys.AccountIDKey, identitykeys.UserIDKey},
 			},
 		)
 
@@ -794,7 +794,7 @@ func TestIdentityDataManager_TransferAccountOwnership(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountOwnershipTransferredServiceEventType: {keys.AccountIDKey},
+				identity.AccountOwnershipTransferredServiceEventType: {identitykeys.AccountIDKey},
 			},
 		)
 
@@ -830,7 +830,7 @@ func TestIdentityDataManager_UpdateAccount(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountUpdatedServiceEventType: {keys.AccountIDKey},
+				identity.AccountUpdatedServiceEventType: {identitykeys.AccountIDKey},
 			},
 		)
 
@@ -864,7 +864,7 @@ func TestIdentityDataManager_UpdateAccountMemberPermissions(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountMembershipPermissionsUpdatedServiceEventType: {keys.AccountIDKey},
+				identity.AccountMembershipPermissionsUpdatedServiceEventType: {identitykeys.AccountIDKey},
 			},
 		)
 
@@ -897,7 +897,7 @@ func TestIdentityDataManager_UpdateUserDetails(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.UserDetailsChangedEventType: {keys.UserIDKey},
+				identity.UserDetailsChangedEventType: {identitykeys.UserIDKey},
 			},
 		)
 
@@ -930,7 +930,7 @@ func TestIdentityDataManager_UpdateUserEmailAddress(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.EmailAddressChangedEventType: {keys.UserIDKey},
+				identity.EmailAddressChangedEventType: {identitykeys.UserIDKey},
 			},
 		)
 
@@ -963,7 +963,7 @@ func TestIdentityDataManager_UpdateUserUsername(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.UsernameChangedEventType: {keys.UserIDKey},
+				identity.UsernameChangedEventType: {identitykeys.UserIDKey},
 			},
 		)
 
@@ -996,7 +996,7 @@ func TestIdentityDataManager_UploadUserAvatar(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.UserAvatarChangedEventType: {keys.UserIDKey},
+				identity.UserAvatarChangedEventType: {identitykeys.UserIDKey},
 			},
 		)
 
@@ -1031,7 +1031,7 @@ func TestIdentityDataManager_AdminUpdateUserStatus(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.UserStatusChangedServiceEventType: {keys.UserIDKey},
+				identity.UserStatusChangedServiceEventType: {identitykeys.UserIDKey},
 			},
 		)
 

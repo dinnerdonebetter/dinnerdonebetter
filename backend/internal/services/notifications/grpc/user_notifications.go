@@ -3,12 +3,13 @@ package grpc
 import (
 	"context"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
+	notificationkeys "github.com/dinnerdonebetter/backend/internal/domain/notifications/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -18,7 +19,7 @@ func (s *serviceImpl) GetUserNotification(ctx context.Context, request *notifica
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.UserNotificationIDKey, request.UserNotificationId)
+	logger := s.logger.WithSpan(span).WithValue(notificationkeys.UserNotificationIDKey, request.UserNotificationId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
@@ -53,7 +54,7 @@ func (s *serviceImpl) GetUserNotifications(ctx context.Context, request *notific
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	notifs, err := s.notificationsManager.GetUserNotifications(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
@@ -84,7 +85,7 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
-	logger = logger.WithValue(keys.UserNotificationIDKey, request.UserNotificationId)
+	logger = logger.WithValue(notificationkeys.UserNotificationIDKey, request.UserNotificationId)
 
 	existing, err := s.notificationsManager.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {

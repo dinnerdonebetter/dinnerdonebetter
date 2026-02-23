@@ -9,10 +9,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 )
@@ -35,8 +35,8 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID,
 		return nil, database.ErrInvalidIDProvided
 	}
 
-	logger := r.logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	results, err := r.generatedQuerier.GetAccountUserMembershipsForUser(ctx, r.readDB, userID)
 	if err != nil {
@@ -97,8 +97,8 @@ func (r *repository) GetDefaultAccountIDForUser(ctx context.Context, userID stri
 	if userID == "" {
 		return "", database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 
 	id, err := r.generatedQuerier.GetDefaultAccountIDForUser(ctx, r.readDB, userID)
 	if err != nil {
@@ -118,12 +118,12 @@ func (r *repository) markAccountAsUserDefault(ctx context.Context, querier datab
 	}
 
 	logger := r.logger.WithValues(map[string]any{
-		keys.UserIDKey:    userID,
-		keys.AccountIDKey: accountID,
+		identitykeys.UserIDKey:    userID,
+		identitykeys.AccountIDKey: accountID,
 	})
 
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -176,8 +176,8 @@ func (r *repository) UserIsMemberOfAccount(ctx context.Context, userID, accountI
 	if userID == "" || accountID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	result, err := r.generatedQuerier.UserIsAccountMember(ctx, r.readDB, &generated.UserIsAccountMemberParams{
 		BelongsToAccount: accountID,
@@ -204,13 +204,13 @@ func (r *repository) ModifyUserPermissions(ctx context.Context, accountID, userI
 	}
 
 	logger := r.logger.WithValues(map[string]any{
-		keys.AccountIDKey: accountID,
-		keys.UserIDKey:    userID,
-		"new_roles":       input.NewRole,
+		identitykeys.AccountIDKey: accountID,
+		identitykeys.UserIDKey:    userID,
+		"new_roles":               input.NewRole,
 	})
 
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -281,13 +281,13 @@ func (r *repository) TransferAccountOwnership(ctx context.Context, accountID str
 	}
 
 	logger := r.logger.WithValues(map[string]any{
-		keys.AccountIDKey: accountID,
-		"current_owner":   input.CurrentOwner,
-		"new_owner":       input.NewOwner,
+		identitykeys.AccountIDKey: accountID,
+		"current_owner":           input.CurrentOwner,
+		"new_owner":               input.NewOwner,
 	})
 
-	tracing.AttachToSpan(span, keys.UserIDKey, input.NewOwner)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, input.NewOwner)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -367,12 +367,12 @@ func (r *repository) addUserToAccount(ctx context.Context, querier database.SQLQ
 	}
 
 	logger := r.logger.WithValues(map[string]any{
-		keys.UserIDKey:    input.UserID,
-		keys.AccountIDKey: input.AccountID,
+		identitykeys.UserIDKey:    input.UserID,
+		identitykeys.AccountIDKey: input.AccountID,
 	})
 
-	tracing.AttachToSpan(span, keys.UserIDKey, input.UserID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, input.AccountID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, input.UserID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, input.AccountID)
 
 	// create the membership.
 	if err := r.generatedQuerier.AddUserToAccount(ctx, querier, &generated.AddUserToAccountParams{
@@ -407,12 +407,12 @@ func (r *repository) removeUserFromAccount(ctx context.Context, querier database
 	if userID == "" || accountID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	logger := r.logger.WithValues(map[string]any{
-		keys.UserIDKey:    userID,
-		keys.AccountIDKey: accountID,
+		identitykeys.UserIDKey:    userID,
+		identitykeys.AccountIDKey: accountID,
 	})
 
 	// remove the membership.
@@ -469,16 +469,16 @@ func (r *repository) RemoveUserFromAccount(ctx context.Context, userID, accountI
 	if userID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if accountID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	logger := r.logger.WithValues(map[string]any{
-		keys.UserIDKey:    userID,
-		keys.AccountIDKey: accountID,
+		identitykeys.UserIDKey:    userID,
+		identitykeys.AccountIDKey: accountID,
 	})
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)

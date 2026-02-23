@@ -5,11 +5,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -78,7 +78,7 @@ func (w *Worker) Work(ctx context.Context) error {
 
 	result := &multierror.Error{}
 	for mealPlanID, steps := range mealPlansAndSteps {
-		l := logger.Clone().WithValue(keys.MealPlanIDKey, mealPlanID).WithValue("creatable_prep_step_qty", len(steps))
+		l := logger.Clone().WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID).WithValue("creatable_prep_step_qty", len(steps))
 
 		createdMealPlanTasks, creationErr := w.dataManager.CreateMealPlanTasksForMealPlanOption(ctx, steps)
 		if creationErr != nil {
@@ -93,9 +93,9 @@ func (w *Worker) Work(ctx context.Context) error {
 			if publishErr := w.postUpdatesPublisher.Publish(ctx, &audit.DataChangeMessage{
 				EventType: mealplanning.MealPlanTaskCreatedServiceEventType,
 				Context: map[string]any{
-					keys.MealPlanIDKey:     mealPlanID,
-					keys.MealPlanTaskIDKey: createdTask.ID,
-					"meal_plan_task":       createdTask,
+					mealplanningkeys.MealPlanIDKey:     mealPlanID,
+					mealplanningkeys.MealPlanTaskIDKey: createdTask.ID,
+					"meal_plan_task":                   createdTask,
 				},
 			}); publishErr != nil {
 				observability.AcknowledgeError(publishErr, l, span, "publishing data change event")
@@ -131,11 +131,11 @@ func (w *Worker) determineCreatableMealPlanTasks(ctx context.Context) (map[strin
 	inputs := map[string][]*mealplanning.MealPlanTaskDatabaseCreationInput{}
 	for _, result := range results {
 		l := logger.Clone().WithValues(map[string]any{
-			keys.MealPlanIDKey:       result.MealPlanID,
-			keys.MealPlanEventIDKey:  result.MealPlanEventID,
-			keys.MealPlanOptionIDKey: result.MealPlanOptionID,
-			keys.MealIDKey:           result.MealID,
-			"recipe_ids":             result.RecipeIDs,
+			mealplanningkeys.MealPlanIDKey:       result.MealPlanID,
+			mealplanningkeys.MealPlanEventIDKey:  result.MealPlanEventID,
+			mealplanningkeys.MealPlanOptionIDKey: result.MealPlanOptionID,
+			mealplanningkeys.MealIDKey:           result.MealID,
+			"recipe_ids":                         result.RecipeIDs,
 		})
 		l.Info("fetching meal plan event")
 

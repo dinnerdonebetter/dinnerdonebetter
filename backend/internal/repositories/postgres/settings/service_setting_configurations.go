@@ -6,12 +6,13 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
+	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
 )
@@ -34,8 +35,8 @@ func (q *Repository) ServiceSettingConfigurationExists(ctx context.Context, serv
 	if serviceSettingConfigurationID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
-	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+	logger = logger.WithValue(settingskeys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	result, err := q.generatedQuerier.CheckServiceSettingConfigurationExistence(ctx, q.readDB, serviceSettingConfigurationID)
 	if err != nil {
@@ -55,8 +56,8 @@ func (q *Repository) GetServiceSettingConfiguration(ctx context.Context, service
 	if serviceSettingConfigurationID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
-	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+	logger = logger.WithValue(settingskeys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	result, err := q.generatedQuerier.GetServiceSettingConfigurationByID(ctx, q.readDB, serviceSettingConfigurationID)
 	if err != nil {
@@ -106,14 +107,14 @@ func (q *Repository) GetServiceSettingConfigurationForUserByName(ctx context.Con
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 
 	if settingName == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ServiceSettingNameKey, settingName)
-	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
+	logger = logger.WithValue(settingskeys.ServiceSettingNameKey, settingName)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingNameKey, settingName)
 
 	result, err := q.generatedQuerier.GetServiceSettingConfigurationForUserBySettingName(ctx, q.readDB, &generated.GetServiceSettingConfigurationForUserBySettingNameParams{
 		Name:          settingName,
@@ -166,14 +167,14 @@ func (q *Repository) GetServiceSettingConfigurationForAccountByName(ctx context.
 	if accountID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
 
 	if settingName == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ServiceSettingNameKey, settingName)
-	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
+	logger = logger.WithValue(settingskeys.ServiceSettingNameKey, settingName)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingNameKey, settingName)
 
 	result, err := q.generatedQuerier.GetServiceSettingConfigurationForAccountBySettingName(ctx, q.readDB, &generated.GetServiceSettingConfigurationForAccountBySettingNameParams{
 		Name:             settingName,
@@ -226,8 +227,8 @@ func (q *Repository) GetServiceSettingConfigurationsForUser(ctx context.Context,
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -312,8 +313,8 @@ func (q *Repository) GetServiceSettingConfigurationsForAccount(ctx context.Conte
 	if accountID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -396,8 +397,8 @@ func (q *Repository) CreateServiceSettingConfiguration(ctx context.Context, inpu
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, input.ID)
-	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, input.ID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, input.ID)
+	logger := q.logger.WithValue(settingskeys.ServiceSettingConfigurationIDKey, input.ID)
 
 	// begin account creation transaction
 	tx, err := q.writeDB.BeginTx(ctx, nil)
@@ -463,8 +464,8 @@ func (q *Repository) UpdateServiceSettingConfiguration(ctx context.Context, upda
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, updated.ID)
+	logger := q.logger.WithValue(settingskeys.ServiceSettingConfigurationIDKey, updated.ID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, updated.ID)
 
 	// begin account creation transaction
 	tx, err := q.writeDB.BeginTx(ctx, nil)
@@ -515,8 +516,8 @@ func (q *Repository) ArchiveServiceSettingConfiguration(ctx context.Context, ser
 	if serviceSettingConfigurationID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
-	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+	logger = logger.WithValue(settingskeys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	// begin account creation transaction
 	tx, err := q.writeDB.BeginTx(ctx, nil)

@@ -5,10 +5,11 @@ import (
 	"database/sql"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
@@ -27,8 +28,8 @@ func (q *repository) ValidMeasurementUnitExists(ctx context.Context, validMeasur
 	if validMeasurementUnitID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	result, err := q.generatedQuerier.CheckValidMeasurementUnitExistence(ctx, q.readDB, validMeasurementUnitID)
 	if err != nil {
@@ -48,8 +49,8 @@ func (q *repository) GetValidMeasurementUnit(ctx context.Context, validMeasureme
 	if validMeasurementUnitID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	result, err := q.generatedQuerier.GetValidMeasurementUnit(ctx, q.readDB, validMeasurementUnitID)
 	if err != nil {
@@ -114,8 +115,8 @@ func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query s
 	if query == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, query)
+	logger = logger.WithValue(platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, query)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -183,8 +184,8 @@ func (q *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, v
 	if validIngredientID == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 
 	results, err := q.generatedQuerier.SearchValidMeasurementUnitsByIngredientID(ctx, q.readDB, &generated.SearchValidMeasurementUnitsByIngredientIDParams{
 		CreatedBefore:     database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -359,8 +360,8 @@ func (q *repository) CreateValidMeasurementUnit(ctx context.Context, input *type
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, input.ID)
-	logger := q.logger.WithValue(keys.ValidMeasurementUnitIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, input.ID)
 
 	// create the valid measurement unit.
 	if err := q.generatedQuerier.CreateValidMeasurementUnit(ctx, q.writeDB, &generated.CreateValidMeasurementUnitParams{
@@ -405,8 +406,8 @@ func (q *repository) UpdateValidMeasurementUnit(ctx context.Context, updated *ty
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidMeasurementUnitIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidMeasurementUnit(ctx, q.writeDB, &generated.UpdateValidMeasurementUnitParams{
 		Name:        updated.Name,
@@ -438,8 +439,8 @@ func (q *repository) MarkValidMeasurementUnitAsIndexed(ctx context.Context, vali
 	if validMeasurementUnitID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	if _, err := q.generatedQuerier.UpdateValidMeasurementUnitLastIndexedAt(ctx, q.writeDB, validMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid measurement unit as indexed")
@@ -460,8 +461,8 @@ func (q *repository) ArchiveValidMeasurementUnit(ctx context.Context, validMeasu
 	if validMeasurementUnitID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveValidMeasurementUnit(ctx, q.writeDB, validMeasurementUnitID)
 	if err != nil {

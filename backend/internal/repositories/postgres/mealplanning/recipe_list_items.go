@@ -5,10 +5,10 @@ import (
 	"database/sql"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
@@ -27,8 +27,8 @@ func (q *repository) GetRecipeListItems(ctx context.Context, recipeListID string
 	if recipeListID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeListIDKey, recipeListID)
-	tracing.AttachToSpan(span, keys.RecipeListIDKey, recipeListID)
+	logger = logger.WithValue(mealplanningkeys.RecipeListIDKey, recipeListID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeListIDKey, recipeListID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -113,8 +113,8 @@ func (q *repository) CreateRecipeListItem(ctx context.Context, input *types.Reci
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.RecipeListItemIDKey, input.ID)
-	logger := q.logger.WithValue(keys.RecipeListItemIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeListItemIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.RecipeListItemIDKey, input.ID)
 
 	if err := q.generatedQuerier.CreateRecipeListItem(ctx, q.writeDB, &generated.CreateRecipeListItemParams{
 		ID:                  input.ID,
@@ -146,8 +146,8 @@ func (q *repository) UpdateRecipeListItem(ctx context.Context, updated *types.Re
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.RecipeListItemIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.RecipeListItemIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.RecipeListItemIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeListItemIDKey, updated.ID)
 
 	rowsAffected, err := q.generatedQuerier.UpdateRecipeListItem(ctx, q.writeDB, &generated.UpdateRecipeListItemParams{
 		RecipeID:            updated.Recipe.ID,
@@ -178,14 +178,14 @@ func (q *repository) ArchiveRecipeListItem(ctx context.Context, recipeListItemID
 	if recipeListID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeListIDKey, recipeListID)
-	tracing.AttachToSpan(span, keys.RecipeListIDKey, recipeListID)
+	logger = logger.WithValue(mealplanningkeys.RecipeListIDKey, recipeListID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeListIDKey, recipeListID)
 
 	if recipeListItemID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeListItemIDKey, recipeListItemID)
-	tracing.AttachToSpan(span, keys.RecipeListItemIDKey, recipeListItemID)
+	logger = logger.WithValue(mealplanningkeys.RecipeListItemIDKey, recipeListItemID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeListItemIDKey, recipeListItemID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveRecipeListItem(ctx, q.writeDB, &generated.ArchiveRecipeListItemParams{
 		BelongsToRecipeList: recipeListID,

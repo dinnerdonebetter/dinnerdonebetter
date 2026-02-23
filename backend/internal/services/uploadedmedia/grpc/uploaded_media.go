@@ -8,13 +8,14 @@ import (
 	"io"
 	"path/filepath"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	uploadedmediakeys "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -36,7 +37,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 	if err != nil {
 		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	// Receive first message which should contain metadata
 	firstReq, err := stream.Recv()
@@ -174,7 +175,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
 	}
 
-	logger = logger.WithValue(keys.UploadedMediaIDKey, created.ID)
+	logger = logger.WithValue(uploadedmediakeys.UploadedMediaIDKey, created.ID)
 
 	// Send response
 	response := &uploadedmediasvc.UploadResponse{
@@ -201,7 +202,7 @@ func (s *serviceImpl) CreateUploadedMedia(ctx context.Context, request *uploaded
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	input := converters.ConvertGRPCUploadedMediaCreationRequestInputToUploadedMediaDatabaseCreationInput(request.Input, sessionContextData.Requester.UserID)
 	if err = input.ValidateWithContext(ctx); err != nil {
@@ -228,13 +229,13 @@ func (s *serviceImpl) GetUploadedMedia(ctx context.Context, request *uploadedmed
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.UploadedMediaIDKey, request.UploadedMediaId)
+	logger := s.logger.WithSpan(span).WithValue(uploadedmediakeys.UploadedMediaIDKey, request.UploadedMediaId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	uploadedMedia, err := s.uploadedMediaManager.GetUploadedMedia(ctx, request.UploadedMediaId)
 	if err != nil {
@@ -267,7 +268,7 @@ func (s *serviceImpl) GetUploadedMediaWithIDs(ctx context.Context, request *uplo
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	if len(request.Ids) == 0 {
 		return nil, observability.PrepareAndLogGRPCStatus(errors.New("no IDs provided"), logger, span, codes.InvalidArgument, "no IDs provided")
@@ -299,7 +300,7 @@ func (s *serviceImpl) GetUploadedMediaForUser(ctx context.Context, request *uplo
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.UserIDKey, request.UserId)
+	logger := s.logger.WithSpan(span).WithValue(identitykeys.UserIDKey, request.UserId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
@@ -337,13 +338,13 @@ func (s *serviceImpl) UpdateUploadedMedia(ctx context.Context, request *uploaded
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.UploadedMediaIDKey, request.UploadedMediaId)
+	logger := s.logger.WithSpan(span).WithValue(uploadedmediakeys.UploadedMediaIDKey, request.UploadedMediaId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	// Fetch the existing uploaded media
 	uploadedMedia, err := s.uploadedMediaManager.GetUploadedMedia(ctx, request.UploadedMediaId)
@@ -383,13 +384,13 @@ func (s *serviceImpl) ArchiveUploadedMedia(ctx context.Context, request *uploade
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.UploadedMediaIDKey, request.UploadedMediaId)
+	logger := s.logger.WithSpan(span).WithValue(uploadedmediakeys.UploadedMediaIDKey, request.UploadedMediaId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	// Fetch the existing uploaded media to verify ownership
 	uploadedMedia, err := s.uploadedMediaManager.GetUploadedMedia(ctx, request.UploadedMediaId)

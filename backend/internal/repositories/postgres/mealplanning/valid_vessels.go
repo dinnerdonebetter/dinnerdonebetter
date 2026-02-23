@@ -6,10 +6,11 @@ import (
 	"fmt"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
@@ -28,8 +29,8 @@ func (q *repository) ValidVesselExists(ctx context.Context, validVesselID string
 	if validVesselID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
+	logger = logger.WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
 
 	result, err := q.generatedQuerier.CheckValidVesselExistence(ctx, q.readDB, validVesselID)
 	if err != nil {
@@ -49,8 +50,8 @@ func (q *repository) GetValidVessel(ctx context.Context, validVesselID string) (
 	if validVesselID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
+	logger = logger.WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
 
 	result, err := q.generatedQuerier.GetValidVessel(ctx, q.readDB, validVesselID)
 	if err != nil {
@@ -153,8 +154,8 @@ func (q *repository) SearchForValidVessels(ctx context.Context, query string, fi
 	if query == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, query)
+	logger = logger.WithValue(platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, query)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -379,7 +380,7 @@ func (q *repository) CreateValidVessel(ctx context.Context, input *types.ValidVe
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidVesselIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidVesselIDKey, input.ID)
 
 	// create the valid vessel.
 	if err := q.generatedQuerier.CreateValidVessel(ctx, q.writeDB, &generated.CreateValidVesselParams{
@@ -424,7 +425,7 @@ func (q *repository) CreateValidVessel(ctx context.Context, input *types.ValidVe
 		x.CapacityUnit = &types.ValidMeasurementUnit{ID: *input.CapacityUnitID}
 	}
 
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, x.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, x.ID)
 	logger.Info("valid vessel created")
 
 	return x, nil
@@ -438,8 +439,8 @@ func (q *repository) UpdateValidVessel(ctx context.Context, updated *types.Valid
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidVesselIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidVesselIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, updated.ID)
 
 	if updated.CapacityUnit == nil {
 		return fmt.Errorf("capacity unit: %w", database.ErrNilInputProvided)
@@ -480,8 +481,8 @@ func (q *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID
 	if validVesselID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
+	logger = logger.WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
 
 	if _, err := q.generatedQuerier.UpdateValidVesselLastIndexedAt(ctx, q.writeDB, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid vessel as indexed")
@@ -502,8 +503,8 @@ func (q *repository) ArchiveValidVessel(ctx context.Context, validVesselID strin
 	if validVesselID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
+	logger = logger.WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveValidVessel(ctx, q.writeDB, validVesselID)
 	if err != nil {

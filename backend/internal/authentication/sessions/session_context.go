@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 )
@@ -88,8 +88,8 @@ func (x *ContextData) ServiceRolePermissionChecker() authorization.ServiceRolePe
 // AttachToLogger provides a consistent way to attach a ContextData object to a logger.
 func (x *ContextData) AttachToLogger(logger logging.Logger) logging.Logger {
 	if x != nil {
-		logger = logger.WithValue(keys.RequesterIDKey, x.GetUserID()).
-			WithValue(keys.ActiveAccountIDKey, x.ActiveAccountID)
+		logger = logger.WithValue(platformkeys.RequesterIDKey, x.GetUserID()).
+			WithValue(platformkeys.ActiveAccountIDKey, x.ActiveAccountID)
 	}
 
 	return logger

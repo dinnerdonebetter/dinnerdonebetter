@@ -7,10 +7,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
+	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
 	settingsmock "github.com/dinnerdonebetter/backend/internal/domain/settings/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
@@ -87,7 +87,7 @@ func TestSettingsManager_CreateServiceSetting(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.CreateServiceSetting), testutils.ContextMatcher, testutils.MatchType[*settings.ServiceSettingDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				settings.ServiceSettingCreatedServiceEventType: {keys.ServiceSettingIDKey},
+				settings.ServiceSettingCreatedServiceEventType: {settingskeys.ServiceSettingIDKey},
 			},
 		)
 
@@ -116,7 +116,7 @@ func TestSettingsManager_ArchiveServiceSetting(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveServiceSetting), testutils.ContextMatcher, serviceSettingID).Return(nil)
 			},
 			map[string][]string{
-				settings.ServiceSettingArchivedServiceEventType: {keys.ServiceSettingIDKey},
+				settings.ServiceSettingArchivedServiceEventType: {settingskeys.ServiceSettingIDKey},
 			},
 		)
 
@@ -145,7 +145,7 @@ func TestSettingsManager_CreateServiceSettingConfiguration(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.CreateServiceSettingConfiguration), testutils.ContextMatcher, testutils.MatchType[*settings.ServiceSettingConfigurationDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				settings.ServiceSettingConfigurationCreatedServiceEventType: {keys.ServiceSettingConfigurationIDKey},
+				settings.ServiceSettingConfigurationCreatedServiceEventType: {settingskeys.ServiceSettingConfigurationIDKey},
 			},
 		)
 
@@ -174,7 +174,7 @@ func TestSettingsManager_UpdateServiceSettingConfiguration(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.UpdateServiceSettingConfiguration), testutils.ContextMatcher, updated).Return(nil)
 			},
 			map[string][]string{
-				settings.ServiceSettingConfigurationUpdatedServiceEventType: {keys.ServiceSettingConfigurationIDKey},
+				settings.ServiceSettingConfigurationUpdatedServiceEventType: {settingskeys.ServiceSettingConfigurationIDKey},
 			},
 		)
 
@@ -202,7 +202,7 @@ func TestSettingsManager_ArchiveServiceSettingConfiguration(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveServiceSettingConfiguration), testutils.ContextMatcher, serviceSettingConfigurationID).Return(nil)
 			},
 			map[string][]string{
-				settings.ServiceSettingConfigurationArchivedServiceEventType: {keys.ServiceSettingConfigurationIDKey},
+				settings.ServiceSettingConfigurationArchivedServiceEventType: {settingskeys.ServiceSettingConfigurationIDKey},
 			},
 		)
 

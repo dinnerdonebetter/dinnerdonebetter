@@ -3,11 +3,12 @@ package grpc
 import (
 	"context"
 
+	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/settings/grpc/converters"
 
@@ -44,7 +45,7 @@ func (s *serviceImpl) GetServiceSetting(ctx context.Context, request *settingssv
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.ServiceSettingId)
+	logger := s.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingIDKey, request.ServiceSettingId)
 
 	serviceSetting, err := s.settingsManager.GetServiceSetting(ctx, request.ServiceSettingId)
 	if err != nil {
@@ -91,7 +92,7 @@ func (s *serviceImpl) SearchForServiceSettings(ctx context.Context, request *set
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.SearchQueryKey, request.Query)
+	logger := s.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, request.Query)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -119,7 +120,7 @@ func (s *serviceImpl) ArchiveServiceSetting(ctx context.Context, request *settin
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.ServiceSettingId)
+	logger := s.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingIDKey, request.ServiceSettingId)
 
 	if err := s.settingsManager.ArchiveServiceSetting(ctx, request.ServiceSettingId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive service setting")

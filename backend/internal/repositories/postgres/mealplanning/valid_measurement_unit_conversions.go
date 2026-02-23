@@ -5,10 +5,10 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -28,8 +28,8 @@ func (q *repository) ValidMeasurementUnitConversionExists(ctx context.Context, v
 	if validMeasurementUnitConversionID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	result, err := q.generatedQuerier.CheckValidMeasurementUnitConversionExistence(ctx, q.readDB, validMeasurementUnitConversionID)
 	if err != nil {
@@ -49,8 +49,8 @@ func (q *repository) GetValidMeasurementUnitConversion(ctx context.Context, vali
 	if validMeasurementUnitConversionID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	result, err := q.generatedQuerier.GetValidMeasurementUnitConversion(ctx, q.readDB, validMeasurementUnitConversionID)
 	if err != nil {
@@ -153,8 +153,8 @@ func (q *repository) GetValidMeasurementUnitConversionsForUnit(ctx context.Conte
 	if validMeasurementUnitID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -292,7 +292,7 @@ func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, input.ID)
 
 	// Normalize to canonical ordering (smaller ID first) to satisfy CHECK constraint
 	// This ensures duplicate entries hit the unique constraint rather than the check constraint
@@ -356,7 +356,7 @@ func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 		x.From = *from
 	}
 
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, x.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, x.ID)
 	logger.Info("valid measurement conversion created")
 
 	return x, nil
@@ -371,8 +371,8 @@ func (q *repository) UpdateValidMeasurementUnitConversion(ctx context.Context, u
 		return database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, updated.ID)
 
 	var ingredientID *string
 	if updated.OnlyForIngredient != nil {
@@ -405,8 +405,8 @@ func (q *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, 
 	if validMeasurementUnitConversionID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveValidMeasurementUnitConversion(ctx, q.writeDB, validMeasurementUnitConversionID)
 	if err != nil {

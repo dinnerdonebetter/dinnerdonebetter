@@ -7,13 +7,13 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	webhookkeys "github.com/dinnerdonebetter/backend/internal/domain/webhooks/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -109,9 +109,9 @@ func (m *webhookManager) CreateWebhook(ctx context.Context, userID, accountID st
 		return nil, err
 	}
 
-	tracing.AttachToSpan(span, keys.WebhookIDKey, created.ID)
+	tracing.AttachToSpan(span, webhookkeys.WebhookIDKey, created.ID)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, webhooks.WebhookCreatedServiceEventType, map[string]any{
-		keys.WebhookIDKey: created.ID,
+		webhookkeys.WebhookIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -135,15 +135,15 @@ func (m *webhookManager) ArchiveWebhook(ctx context.Context, webhookID, accountI
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.WebhookIDKey, webhookID)
-	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
+	logger := m.logger.WithSpan(span).WithValue(webhookkeys.WebhookIDKey, webhookID)
+	tracing.AttachToSpan(span, webhookkeys.WebhookIDKey, webhookID)
 
 	if err := m.repo.ArchiveWebhook(ctx, webhookID, accountID); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, webhooks.WebhookArchivedServiceEventType, map[string]any{
-		keys.WebhookIDKey: webhookID,
+		webhookkeys.WebhookIDKey: webhookID,
 	}))
 
 	return nil
@@ -170,11 +170,11 @@ func (m *webhookManager) AddWebhookTriggerConfig(ctx context.Context, accountID 
 		return nil, err
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.WebhookTriggerConfigIDKey, created.ID)
-	tracing.AttachToSpan(span, keys.WebhookTriggerConfigIDKey, created.ID)
+	logger := m.logger.WithSpan(span).WithValue(webhookkeys.WebhookTriggerConfigIDKey, created.ID)
+	tracing.AttachToSpan(span, webhookkeys.WebhookTriggerConfigIDKey, created.ID)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, webhooks.WebhookTriggerConfigCreatedServiceEventType, map[string]any{
-		keys.WebhookIDKey:              input.BelongsToWebhook,
-		keys.WebhookTriggerConfigIDKey: created.ID,
+		webhookkeys.WebhookIDKey:              input.BelongsToWebhook,
+		webhookkeys.WebhookTriggerConfigIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -184,17 +184,17 @@ func (m *webhookManager) ArchiveWebhookTriggerConfig(ctx context.Context, webhoo
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.WebhookIDKey, webhookID).WithValue(keys.WebhookTriggerConfigIDKey, configID)
-	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
-	tracing.AttachToSpan(span, keys.WebhookTriggerConfigIDKey, configID)
+	logger := m.logger.WithSpan(span).WithValue(webhookkeys.WebhookIDKey, webhookID).WithValue(webhookkeys.WebhookTriggerConfigIDKey, configID)
+	tracing.AttachToSpan(span, webhookkeys.WebhookIDKey, webhookID)
+	tracing.AttachToSpan(span, webhookkeys.WebhookTriggerConfigIDKey, configID)
 
 	if err := m.repo.ArchiveWebhookTriggerConfig(ctx, webhookID, configID); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, webhooks.WebhookTriggerConfigArchivedServiceEventType, map[string]any{
-		keys.WebhookIDKey:              webhookID,
-		keys.WebhookTriggerConfigIDKey: configID,
+		webhookkeys.WebhookIDKey:              webhookID,
+		webhookkeys.WebhookTriggerConfigIDKey: configID,
 	}))
 
 	return nil

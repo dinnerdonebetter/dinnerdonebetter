@@ -5,12 +5,13 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	uploadedmediakeys "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia/generated"
 )
@@ -33,8 +34,8 @@ func (r *repository) GetUploadedMedia(ctx context.Context, uploadedMediaID strin
 	if uploadedMediaID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UploadedMediaIDKey, uploadedMediaID)
-	tracing.AttachToSpan(span, keys.UploadedMediaIDKey, uploadedMediaID)
+	logger = logger.WithValue(uploadedmediakeys.UploadedMediaIDKey, uploadedMediaID)
+	tracing.AttachToSpan(span, uploadedmediakeys.UploadedMediaIDKey, uploadedMediaID)
 
 	result, err := r.generatedQuerier.GetUploadedMedia(ctx, r.readDB, uploadedMediaID)
 	if err != nil {
@@ -98,8 +99,8 @@ func (r *repository) GetUploadedMediaForUser(ctx context.Context, userID string,
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -163,8 +164,8 @@ func (r *repository) CreateUploadedMedia(ctx context.Context, input *types.Uploa
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, input.CreatedByUser)
-	logger = logger.WithValue(keys.UserIDKey, input.CreatedByUser)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, input.CreatedByUser)
+	logger = logger.WithValue(identitykeys.UserIDKey, input.CreatedByUser)
 
 	logger.Debug("CreateUploadedMedia invoked")
 
@@ -207,7 +208,7 @@ func (r *repository) CreateUploadedMedia(ctx context.Context, input *types.Uploa
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing database transaction")
 	}
 
-	tracing.AttachToSpan(span, keys.UploadedMediaIDKey, x.ID)
+	tracing.AttachToSpan(span, uploadedmediakeys.UploadedMediaIDKey, x.ID)
 
 	return x, nil
 }
@@ -222,8 +223,8 @@ func (r *repository) UpdateUploadedMedia(ctx context.Context, uploadedMedia *typ
 	if uploadedMedia == nil {
 		return database.ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.UploadedMediaIDKey, uploadedMedia.ID)
-	tracing.AttachToSpan(span, keys.UploadedMediaIDKey, uploadedMedia.ID)
+	logger = logger.WithValue(uploadedmediakeys.UploadedMediaIDKey, uploadedMedia.ID)
+	tracing.AttachToSpan(span, uploadedmediakeys.UploadedMediaIDKey, uploadedMedia.ID)
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -275,8 +276,8 @@ func (r *repository) ArchiveUploadedMedia(ctx context.Context, uploadedMediaID s
 	if uploadedMediaID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UploadedMediaIDKey, uploadedMediaID)
-	tracing.AttachToSpan(span, keys.UploadedMediaIDKey, uploadedMediaID)
+	logger = logger.WithValue(uploadedmediakeys.UploadedMediaIDKey, uploadedMediaID)
+	tracing.AttachToSpan(span, uploadedmediakeys.UploadedMediaIDKey, uploadedMediaID)
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {

@@ -6,10 +6,10 @@ import (
 	"errors"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
@@ -28,8 +28,8 @@ func (q *repository) GetMealPlanRecipeOptionSelection(ctx context.Context, mealP
 	if mealPlanOptionID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if recipeStepID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -82,8 +82,8 @@ func (q *repository) GetSelectionsForMealPlanOption(ctx context.Context, mealPla
 	if mealPlanOptionID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -152,8 +152,8 @@ func (q *repository) GetSelectionsForMealPlan(ctx context.Context, mealPlanID st
 	if mealPlanID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
 
 	results, err := q.generatedQuerier.GetMealPlanRecipeOptionSelectionsForMealPlan(ctx, q.readDB, &generated.GetMealPlanRecipeOptionSelectionsForMealPlanParams{
 		MealPlanID:    mealPlanID,
@@ -248,8 +248,8 @@ func (q *repository) UpdateMealPlanRecipeOptionSelection(ctx context.Context, me
 	if mealPlanOptionID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if recipeStepID == "" {
 		return database.ErrInvalidIDProvided
@@ -307,8 +307,8 @@ func (q *repository) ArchiveMealPlanRecipeOptionSelection(ctx context.Context, m
 	if mealPlanOptionID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if recipeStepID == "" {
 		return database.ErrInvalidIDProvided

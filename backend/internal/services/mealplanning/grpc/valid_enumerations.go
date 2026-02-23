@@ -3,10 +3,10 @@ package grpc
 import (
 	"context"
 
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	mealplanningconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
@@ -17,8 +17,8 @@ func (s *serviceImpl) ArchiveValidIngredient(ctx context.Context, request *mealp
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
 
 	if err := s.validEnumerationsManager.ArchiveValidIngredient(ctx, request.ValidIngredientId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient")
@@ -33,8 +33,8 @@ func (s *serviceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
 
 	if err := s.validEnumerationsManager.ArchiveValidIngredientGroup(ctx, request.ValidIngredientGroupId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient group")
@@ -49,8 +49,8 @@ func (s *serviceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context,
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
-	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
 
 	if err := s.validEnumerationsManager.ArchiveValidIngredientMeasurementUnit(ctx, request.ValidIngredientMeasurementUnitId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient measurement unit")
@@ -65,8 +65,8 @@ func (s *serviceImpl) ArchiveValidIngredientPreparation(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
-	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
 
 	if err := s.validEnumerationsManager.ArchiveValidIngredientPreparation(ctx, request.ValidIngredientPreparationId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient preparation")
@@ -81,8 +81,8 @@ func (s *serviceImpl) ArchiveValidPrepTaskConfig(ctx context.Context, request *m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
 
 	if err := s.validEnumerationsManager.ArchiveValidPrepTaskConfig(ctx, request.ValidPrepTaskConfigId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid prep task config")
@@ -97,8 +97,8 @@ func (s *serviceImpl) ArchiveValidIngredientState(ctx context.Context, request *
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
 
 	if err := s.validEnumerationsManager.ArchiveValidIngredientState(ctx, request.ValidIngredientStateId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient state")
@@ -113,8 +113,8 @@ func (s *serviceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context,
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
 
 	if err := s.validEnumerationsManager.ArchiveValidIngredientStateIngredient(ctx, request.ValidIngredientStateIngredientId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient state ingredient")
@@ -129,8 +129,8 @@ func (s *serviceImpl) ArchiveValidInstrument(ctx context.Context, request *mealp
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, request.ValidInstrumentId)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, request.ValidInstrumentId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidInstrumentIDKey, request.ValidInstrumentId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, request.ValidInstrumentId)
 
 	if err := s.validEnumerationsManager.ArchiveValidInstrument(ctx, request.ValidInstrumentId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid instrument")
@@ -145,8 +145,8 @@ func (s *serviceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
 
 	if err := s.validEnumerationsManager.ArchiveValidMeasurementUnit(ctx, request.ValidMeasurementUnitId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid measurement unit")
@@ -161,8 +161,8 @@ func (s *serviceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context,
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
 
 	if err := s.validEnumerationsManager.ArchiveValidMeasurementUnitConversion(ctx, request.ValidMeasurementUnitConversionId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid measurement unit conversion")
@@ -177,8 +177,8 @@ func (s *serviceImpl) ArchiveValidPreparation(ctx context.Context, request *meal
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
 
 	if err := s.validEnumerationsManager.ArchiveValidPreparation(ctx, request.ValidPreparationId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation")
@@ -193,8 +193,8 @@ func (s *serviceImpl) ArchiveValidPreparationInstrument(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
-	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
 
 	if err := s.validEnumerationsManager.ArchiveValidPreparationInstrument(ctx, request.ValidPreparationInstrumentId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation instrument")
@@ -209,8 +209,8 @@ func (s *serviceImpl) ArchiveValidPreparationVessel(ctx context.Context, request
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
-	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
 
 	if err := s.validEnumerationsManager.ArchiveValidPreparationVessel(ctx, request.ValidPreparationVesselId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation vessel")
@@ -225,8 +225,8 @@ func (s *serviceImpl) ArchiveValidVessel(ctx context.Context, request *mealplann
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, request.ValidVesselId)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, request.ValidVesselId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidVesselIDKey, request.ValidVesselId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, request.ValidVesselId)
 
 	if err := s.validEnumerationsManager.ArchiveValidVessel(ctx, request.ValidVesselId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid vessel")
@@ -247,7 +247,7 @@ func (s *serviceImpl) CreateValidIngredient(ctx context.Context, request *mealpl
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient")
 	}
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, created.ID)
 
 	result := &mealplanning.CreateValidIngredientResponse{
 		Result: mealplanningconverters.ConvertValidIngredientToGRPCValidIngredient(created),
@@ -266,7 +266,7 @@ func (s *serviceImpl) CreateValidIngredientGroup(ctx context.Context, request *m
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient")
 	}
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, created.ID)
 
 	result := &mealplanning.CreateValidIngredientGroupResponse{
 		Result: mealplanningconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(created),
@@ -285,7 +285,7 @@ func (s *serviceImpl) CreateValidIngredientMeasurementUnit(ctx context.Context, 
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient measurement unit")
 	}
-	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientMeasurementUnitIDKey, created.ID)
 
 	result := &mealplanning.CreateValidIngredientMeasurementUnitResponse{
 		Result: mealplanningconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(created),
@@ -304,7 +304,7 @@ func (s *serviceImpl) CreateValidIngredientPreparation(ctx context.Context, requ
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient preparation")
 	}
-	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, created.ID)
 
 	result := &mealplanning.CreateValidIngredientPreparationResponse{
 		Result: mealplanningconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(created),
@@ -323,7 +323,7 @@ func (s *serviceImpl) CreateValidPrepTaskConfig(ctx context.Context, request *me
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid prep task config")
 	}
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, created.ID)
 
 	result := &mealplanning.CreateValidPrepTaskConfigResponse{
 		Result: mealplanningconverters.ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(created),
@@ -343,7 +343,7 @@ func (s *serviceImpl) CreateValidIngredientState(ctx context.Context, request *m
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient state")
 	}
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, created.ID)
 
 	result := &mealplanning.CreateValidIngredientStateResponse{
 		Result: mealplanningconverters.ConvertValidIngredientStateToGRPCValidIngredientState(created),
@@ -362,7 +362,7 @@ func (s *serviceImpl) CreateValidIngredientStateIngredient(ctx context.Context, 
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient state ingredient")
 	}
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIngredientIDKey, created.ID)
 
 	result := &mealplanning.CreateValidIngredientStateIngredientResponse{
 		Result: mealplanningconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(created),
@@ -381,7 +381,7 @@ func (s *serviceImpl) CreateValidInstrument(ctx context.Context, request *mealpl
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid instrument")
 	}
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, created.ID)
 
 	result := &mealplanning.CreateValidInstrumentResponse{
 		Result: mealplanningconverters.ConvertValidInstrumentToGRPCValidInstrument(created),
@@ -400,7 +400,7 @@ func (s *serviceImpl) CreateValidMeasurementUnit(ctx context.Context, request *m
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid measurement unit")
 	}
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, created.ID)
 
 	result := &mealplanning.CreateValidMeasurementUnitResponse{
 		Result: mealplanningconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(created),
@@ -419,7 +419,7 @@ func (s *serviceImpl) CreateValidMeasurementUnitConversion(ctx context.Context, 
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid measurement unit conversion")
 	}
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, created.ID)
 
 	result := &mealplanning.CreateValidMeasurementUnitConversionResponse{
 		Result: mealplanningconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(created),
@@ -438,7 +438,7 @@ func (s *serviceImpl) CreateValidPreparation(ctx context.Context, request *mealp
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid preparation")
 	}
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, created.ID)
 
 	result := &mealplanning.CreateValidPreparationResponse{
 		Result: mealplanningconverters.ConvertValidPreparationToGRPCValidPreparation(created),
@@ -457,7 +457,7 @@ func (s *serviceImpl) CreateValidPreparationInstrument(ctx context.Context, requ
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid preparation instrument")
 	}
-	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, created.ID)
 
 	result := &mealplanning.CreateValidPreparationInstrumentResponse{
 		Result: mealplanningconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(created),
@@ -476,7 +476,7 @@ func (s *serviceImpl) CreateValidPreparationVessel(ctx context.Context, request 
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid preparation vessel")
 	}
-	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationVesselIDKey, created.ID)
 
 	result := &mealplanning.CreateValidPreparationVesselResponse{
 		Result: mealplanningconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(created),
@@ -495,7 +495,7 @@ func (s *serviceImpl) CreateValidVessel(ctx context.Context, request *mealplanni
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid vessel")
 	}
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, created.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, created.ID)
 
 	result := &mealplanning.CreateValidVesselResponse{
 		Result: mealplanningconverters.ConvertValidVesselToGRPCValidVessel(created),
@@ -514,7 +514,7 @@ func (s *serviceImpl) GetRandomValidIngredient(ctx context.Context, _ *mealplann
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching random valid ingredient")
 	}
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, selected.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, selected.ID)
 
 	res := &mealplanning.GetRandomValidIngredientResponse{
 		Result: mealplanningconverters.ConvertValidIngredientToGRPCValidIngredient(selected),
@@ -533,7 +533,7 @@ func (s *serviceImpl) GetRandomValidInstrument(ctx context.Context, _ *mealplann
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching random valid instrument")
 	}
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, selected.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, selected.ID)
 
 	res := &mealplanning.GetRandomValidInstrumentResponse{
 		Result: mealplanningconverters.ConvertValidInstrumentToGRPCValidInstrument(selected),
@@ -552,7 +552,7 @@ func (s *serviceImpl) GetRandomValidPreparation(ctx context.Context, _ *mealplan
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching random valid preparation")
 	}
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, selected.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, selected.ID)
 
 	res := &mealplanning.GetRandomValidPreparationResponse{
 		Result: mealplanningconverters.ConvertValidPreparationToGRPCValidPreparation(selected),
@@ -571,7 +571,7 @@ func (s *serviceImpl) GetRandomValidVessel(ctx context.Context, _ *mealplanning.
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching random valid vessel")
 	}
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, selected.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, selected.ID)
 
 	res := &mealplanning.GetRandomValidVesselResponse{
 		Result: mealplanningconverters.ConvertValidVesselToGRPCValidVessel(selected),
@@ -584,8 +584,8 @@ func (s *serviceImpl) GetValidIngredient(ctx context.Context, request *mealplann
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
 
 	x, err := s.validEnumerationsManager.ReadValidIngredient(ctx, request.ValidIngredientId)
 	if err != nil {
@@ -603,8 +603,8 @@ func (s *serviceImpl) GetValidIngredientGroup(ctx context.Context, request *meal
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
 
 	x, err := s.validEnumerationsManager.ReadValidIngredientGroup(ctx, request.ValidIngredientGroupId)
 	if err != nil {
@@ -645,8 +645,8 @@ func (s *serviceImpl) GetValidIngredientMeasurementUnit(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
-	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
 
 	x, err := s.validEnumerationsManager.ReadValidIngredientMeasurementUnit(ctx, request.ValidIngredientMeasurementUnitId)
 	if err != nil {
@@ -687,8 +687,8 @@ func (s *serviceImpl) GetValidIngredientMeasurementUnitsByIngredient(ctx context
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -736,8 +736,8 @@ func (s *serviceImpl) GetValidIngredientPreparation(ctx context.Context, request
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
-	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
 
 	x, err := s.validEnumerationsManager.ReadValidIngredientPreparation(ctx, request.ValidIngredientPreparationId)
 	if err != nil {
@@ -779,8 +779,8 @@ func (s *serviceImpl) GetValidIngredientPreparationsByIngredient(ctx context.Con
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -804,8 +804,8 @@ func (s *serviceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Co
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -829,8 +829,8 @@ func (s *serviceImpl) GetValidPrepTaskConfig(ctx context.Context, request *mealp
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
 
 	x, err := s.validEnumerationsManager.ReadValidPrepTaskConfig(ctx, request.ValidPrepTaskConfigId)
 	if err != nil {
@@ -872,8 +872,8 @@ func (s *serviceImpl) GetValidPrepTaskConfigsByIngredient(ctx context.Context, r
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -897,8 +897,8 @@ func (s *serviceImpl) GetValidPrepTaskConfigsByPreparation(ctx context.Context, 
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -923,10 +923,10 @@ func (s *serviceImpl) GetValidPrepTaskConfigsByIngredientAndPreparation(ctx cont
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).
-		WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId).
-		WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+		WithValue(mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId).
+		WithValue(mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -950,8 +950,8 @@ func (s *serviceImpl) GetValidIngredientState(ctx context.Context, request *meal
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
 
 	x, err := s.validEnumerationsManager.ReadValidIngredientState(ctx, request.ValidIngredientStateId)
 	if err != nil {
@@ -969,8 +969,8 @@ func (s *serviceImpl) GetValidIngredientStateIngredient(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
 
 	x, err := s.validEnumerationsManager.ReadValidIngredientStateIngredient(ctx, request.ValidIngredientStateIngredientId)
 	if err != nil {
@@ -1012,8 +1012,8 @@ func (s *serviceImpl) GetValidIngredientStateIngredientsByIngredient(ctx context
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -1037,8 +1037,8 @@ func (s *serviceImpl) GetValidIngredientStateIngredientsByIngredientState(ctx co
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -1112,8 +1112,8 @@ func (s *serviceImpl) GetValidInstrument(ctx context.Context, request *mealplann
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, request.ValidInstrumentId)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, request.ValidInstrumentId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidInstrumentIDKey, request.ValidInstrumentId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, request.ValidInstrumentId)
 
 	x, err := s.validEnumerationsManager.ReadValidInstrument(ctx, request.ValidInstrumentId)
 	if err != nil {
@@ -1155,8 +1155,8 @@ func (s *serviceImpl) GetValidMeasurementUnit(ctx context.Context, request *meal
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
 
 	x, err := s.validEnumerationsManager.ReadValidMeasurementUnit(ctx, request.ValidMeasurementUnitId)
 	if err != nil {
@@ -1174,8 +1174,8 @@ func (s *serviceImpl) GetValidMeasurementUnitConversion(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
 
 	x, err := s.validEnumerationsManager.ReadValidMeasurementUnitConversion(ctx, request.ValidMeasurementUnitConversionId)
 	if err != nil {
@@ -1193,8 +1193,8 @@ func (s *serviceImpl) GetValidMeasurementUnitConversionsForUnit(ctx context.Cont
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -1242,8 +1242,8 @@ func (s *serviceImpl) GetValidPreparation(ctx context.Context, request *mealplan
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
 
 	x, err := s.validEnumerationsManager.ReadValidPreparation(ctx, request.ValidPreparationId)
 	if err != nil {
@@ -1261,8 +1261,8 @@ func (s *serviceImpl) GetValidPreparationInstrument(ctx context.Context, request
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
-	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
 
 	x, err := s.validEnumerationsManager.ReadValidPreparationInstrument(ctx, request.ValidPreparationInstrumentId)
 	if err != nil {
@@ -1304,8 +1304,8 @@ func (s *serviceImpl) GetValidPreparationInstrumentsByInstrument(ctx context.Con
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, request.ValidInstrumentId)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, request.ValidInstrumentId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidInstrumentIDKey, request.ValidInstrumentId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, request.ValidInstrumentId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -1329,8 +1329,8 @@ func (s *serviceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Co
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -1354,8 +1354,8 @@ func (s *serviceImpl) GetValidPreparationVessel(ctx context.Context, request *me
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
-	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
 
 	x, err := s.validEnumerationsManager.ReadValidPreparationVessel(ctx, request.ValidPreparationVesselId)
 	if err != nil {
@@ -1397,8 +1397,8 @@ func (s *serviceImpl) GetValidPreparationVesselsByPreparation(ctx context.Contex
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -1422,8 +1422,8 @@ func (s *serviceImpl) GetValidPreparationVesselsByVessel(ctx context.Context, re
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, request.ValidVesselId)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, request.ValidVesselId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidVesselIDKey, request.ValidVesselId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, request.ValidVesselId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -1471,8 +1471,8 @@ func (s *serviceImpl) GetValidVessel(ctx context.Context, request *mealplanning.
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, request.ValidVesselId)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, request.ValidVesselId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidVesselIDKey, request.ValidVesselId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, request.ValidVesselId)
 
 	x, err := s.validEnumerationsManager.ReadValidVessel(ctx, request.ValidVesselId)
 	if err != nil {
@@ -1682,8 +1682,8 @@ func (s *serviceImpl) SearchValidIngredientsByPreparation(ctx context.Context, r
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -1707,8 +1707,8 @@ func (s *serviceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Contex
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -1732,8 +1732,8 @@ func (s *serviceImpl) UpdateValidIngredient(ctx context.Context, request *mealpl
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, request.ValidIngredientId)
 
 	input := mealplanningconverters.ConvertGRPCValidIngredientUpdateRequestInputToValidIngredientUpdateRequestInput(request.Input)
 	updated, err := s.validEnumerationsManager.UpdateValidIngredient(ctx, request.ValidIngredientId, input)
@@ -1752,8 +1752,8 @@ func (s *serviceImpl) UpdateValidIngredientGroup(ctx context.Context, request *m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, request.ValidIngredientGroupId)
 
 	input := mealplanningconverters.ConvertGRPCValidIngredientGroupUpdateRequestInputToValidIngredientGroupUpdateRequestInput(request.Input)
 
@@ -1773,8 +1773,8 @@ func (s *serviceImpl) UpdateValidIngredientMeasurementUnit(ctx context.Context, 
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
-	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitId)
 
 	input := mealplanningconverters.ConvertGRPCValidIngredientMeasurementUnitUpdateRequestInputToValidIngredientMeasurementUnitUpdateRequestInput(request.Input)
 
@@ -1794,8 +1794,8 @@ func (s *serviceImpl) UpdateValidIngredientPreparation(ctx context.Context, requ
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
-	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationId)
 
 	input := mealplanningconverters.ConvertGRPCValidIngredientPreparationUpdateRequestInputToValidIngredientPreparationUpdateRequestInput(request.Input)
 
@@ -1815,8 +1815,8 @@ func (s *serviceImpl) UpdateValidPrepTaskConfig(ctx context.Context, request *me
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
 
 	input := mealplanningconverters.ConvertGRPCValidPrepTaskConfigUpdateRequestInputToValidPrepTaskConfigUpdateRequestInput(request.Input)
 
@@ -1836,8 +1836,8 @@ func (s *serviceImpl) UpdateValidIngredientState(ctx context.Context, request *m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, request.ValidIngredientStateId)
 
 	input := mealplanningconverters.ConvertGRPCValidIngredientStateUpdateRequestInputToValidIngredientStateUpdateRequestInput(request.Input)
 
@@ -1857,8 +1857,8 @@ func (s *serviceImpl) UpdateValidIngredientStateIngredient(ctx context.Context, 
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientId)
 
 	input := mealplanningconverters.ConvertGRPCValidIngredientStateIngredientUpdateRequestInputToValidIngredientStateIngredientUpdateRequestInput(request.Input)
 
@@ -1878,8 +1878,8 @@ func (s *serviceImpl) UpdateValidInstrument(ctx context.Context, request *mealpl
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, request.ValidInstrumentId)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, request.ValidInstrumentId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidInstrumentIDKey, request.ValidInstrumentId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, request.ValidInstrumentId)
 
 	input := mealplanningconverters.ConvertGRPCValidInstrumentUpdateRequestInputToValidInstrumentUpdateRequestInput(request.Input)
 
@@ -1899,8 +1899,8 @@ func (s *serviceImpl) UpdateValidMeasurementUnit(ctx context.Context, request *m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitId)
 
 	input := mealplanningconverters.ConvertGRPCValidMeasurementUnitUpdateRequestInputToValidMeasurementUnitUpdateRequestInput(request.Input)
 
@@ -1920,8 +1920,8 @@ func (s *serviceImpl) UpdateValidMeasurementUnitConversion(ctx context.Context, 
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionId)
 
 	input := mealplanningconverters.ConvertGRPCValidMeasurementUnitConversionUpdateRequestInputToValidMeasurementUnitConversionUpdateRequestInput(request.Input)
 
@@ -1941,8 +1941,8 @@ func (s *serviceImpl) UpdateValidPreparation(ctx context.Context, request *mealp
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, request.ValidPreparationId)
 
 	input := mealplanningconverters.ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateRequestInput(request.Input)
 
@@ -1962,8 +1962,8 @@ func (s *serviceImpl) UpdateValidPreparationInstrument(ctx context.Context, requ
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
-	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentId)
 
 	input := mealplanningconverters.ConvertGRPCValidPreparationInstrumentUpdateRequestInputToValidPreparationInstrumentUpdateRequestInput(request.Input)
 
@@ -1983,8 +1983,8 @@ func (s *serviceImpl) UpdateValidPreparationVessel(ctx context.Context, request 
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
-	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationVesselIDKey, request.ValidPreparationVesselId)
 
 	input := mealplanningconverters.ConvertGRPCValidPreparationVesselUpdateRequestInputToValidPreparationVesselUpdateRequestInput(request.Input)
 
@@ -2004,8 +2004,8 @@ func (s *serviceImpl) UpdateValidVessel(ctx context.Context, request *mealplanni
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, request.ValidVesselId)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, request.ValidVesselId)
+	logger := s.logger.WithSpan(span).WithValue(mealplanningkeys.ValidVesselIDKey, request.ValidVesselId)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, request.ValidVesselId)
 
 	input := mealplanningconverters.ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(request.Input)
 

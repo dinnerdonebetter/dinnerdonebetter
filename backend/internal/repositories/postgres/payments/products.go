@@ -5,11 +5,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments/generated"
 )
@@ -23,8 +23,8 @@ func (r *repository) CreateProduct(ctx context.Context, input *payments.ProductD
 	defer span.End()
 
 	logger := r.logger.Clone()
-	logger = logger.WithValue(keys.ProductIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.ProductIDKey, input.ID)
+	logger = logger.WithValue(paymentskeys.ProductIDKey, input.ID)
+	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, input.ID)
 
 	arg := &generated.CreateProductParams{
 		ID:                    input.ID,
@@ -61,8 +61,8 @@ func (r *repository) GetProduct(ctx context.Context, id string) (*payments.Produ
 	if id == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ProductIDKey, id)
-	tracing.AttachToSpan(span, keys.ProductIDKey, id)
+	logger = logger.WithValue(paymentskeys.ProductIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, id)
 
 	result, err := r.generatedQuerier.GetProduct(ctx, r.readDB, id)
 	if err != nil {
@@ -106,8 +106,8 @@ func (r *repository) UpdateProduct(ctx context.Context, product *payments.Produc
 	defer span.End()
 
 	logger := r.logger.Clone()
-	logger = logger.WithValue(keys.ProductIDKey, product.ID)
-	tracing.AttachToSpan(span, keys.ProductIDKey, product.ID)
+	logger = logger.WithValue(paymentskeys.ProductIDKey, product.ID)
+	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, product.ID)
 
 	arg := &generated.UpdateProductParams{
 		ID:                    product.ID,
@@ -145,8 +145,8 @@ func (r *repository) ArchiveProduct(ctx context.Context, id string) error {
 	if id == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ProductIDKey, id)
-	tracing.AttachToSpan(span, keys.ProductIDKey, id)
+	logger = logger.WithValue(paymentskeys.ProductIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, id)
 
 	_, err := r.generatedQuerier.ArchiveProduct(ctx, r.writeDB, id)
 	if err != nil {

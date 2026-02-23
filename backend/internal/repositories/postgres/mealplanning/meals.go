@@ -4,12 +4,13 @@ import (
 	"context"
 	"database/sql"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -29,8 +30,8 @@ func (q *repository) MealExists(ctx context.Context, mealID string) (exists bool
 	if mealID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
+	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
 
 	result, err := q.generatedQuerier.CheckMealExistence(ctx, q.readDB, mealID)
 	if err != nil {
@@ -50,8 +51,8 @@ func (q *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.
 	if mealID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
+	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
 
 	results, err := q.generatedQuerier.GetMeal(ctx, q.readDB, mealID)
 	if err != nil {
@@ -400,7 +401,7 @@ func (q *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
+	logger := q.logger.WithValue(mealplanningkeys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
 
 	// create the meal.
 	if err := q.generatedQuerier.CreateMeal(ctx, querier, &generated.CreateMealParams{
@@ -436,7 +437,7 @@ func (q *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 		}
 	}
 
-	tracing.AttachToSpan(span, keys.MealIDKey, x.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, x.ID)
 	logger.Info("meal created")
 
 	return x, nil
@@ -482,8 +483,8 @@ func (q *repository) CreateMealComponent(ctx context.Context, querier database.S
 	if mealID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
+	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
 
 	// create the meal.
 	if err := q.generatedQuerier.CreateMealComponent(ctx, querier, &generated.CreateMealComponentParams{
@@ -509,8 +510,8 @@ func (q *repository) MarkMealAsIndexed(ctx context.Context, mealID string) error
 	if mealID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
+	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
 
 	if _, err := q.generatedQuerier.UpdateMealLastIndexedAt(ctx, q.writeDB, mealID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal as indexed")
@@ -531,14 +532,14 @@ func (q *repository) ArchiveMeal(ctx context.Context, mealID, userID string) err
 	if mealID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
+	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveMeal(ctx, q.writeDB, &generated.ArchiveMealParams{
 		CreatedByUser: userID,

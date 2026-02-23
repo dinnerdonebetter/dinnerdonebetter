@@ -6,10 +6,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
 	"github.com/dinnerdonebetter/backend/internal/domain/comments/fakes"
+	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
 	commentsmock "github.com/dinnerdonebetter/backend/internal/domain/comments/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
@@ -86,7 +86,7 @@ func TestCommentsManager_CreateComment(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.CreateComment), testutils.ContextMatcher, testutils.MatchType[*comments.CommentDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				comments.CommentCreatedServiceEventType: {keys.CommentIDKey},
+				comments.CommentCreatedServiceEventType: {commentskeys.CommentIDKey},
 			},
 		)
 
@@ -118,7 +118,7 @@ func TestCommentsManager_UpdateComment(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.UpdateComment), testutils.ContextMatcher, commentID, belongsToUser, input.Content).Return(nil)
 			},
 			map[string][]string{
-				comments.CommentUpdatedServiceEventType: {keys.CommentIDKey},
+				comments.CommentUpdatedServiceEventType: {commentskeys.CommentIDKey},
 			},
 		)
 
@@ -146,7 +146,7 @@ func TestCommentsManager_ArchiveComment(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveComment), testutils.ContextMatcher, commentID).Return(nil)
 			},
 			map[string][]string{
-				comments.CommentArchivedServiceEventType: {keys.CommentIDKey},
+				comments.CommentArchivedServiceEventType: {commentskeys.CommentIDKey},
 			},
 		)
 

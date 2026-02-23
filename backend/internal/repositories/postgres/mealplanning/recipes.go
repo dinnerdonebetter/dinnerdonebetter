@@ -7,13 +7,14 @@ import (
 	"log"
 	"maps"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -32,7 +33,7 @@ func (q *repository) RecipeExists(ctx context.Context, recipeID string) (exists 
 	if recipeID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	result, err := q.generatedQuerier.CheckRecipeExistence(ctx, q.readDB, recipeID)
 	if err != nil {
@@ -51,7 +52,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	// Check for circular dependency to prevent infinite recursion
 	var seen map[string]bool
@@ -491,8 +492,8 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	results, err := q.generatedQuerier.GetRecipesCreatedByUser(ctx, q.readDB, &generated.GetRecipesCreatedByUserParams{
 		CreatedByUser:   userID,
@@ -891,8 +892,8 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.RecipeIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.RecipeIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, input.ID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating recipe input")
@@ -1162,9 +1163,9 @@ func (q *repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Rec
 		return database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.RecipeIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.UserIDKey, updated.CreatedByUser)
+	logger := q.logger.WithValue(mealplanningkeys.RecipeIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, updated.ID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, updated.CreatedByUser)
 
 	if _, err := q.generatedQuerier.UpdateRecipe(ctx, q.writeDB, &generated.UpdateRecipeParams{
 		Name:                 updated.Name,
@@ -1199,8 +1200,8 @@ func (q *repository) UpdateRecipeStatus(ctx context.Context, recipeID, newStatus
 	if recipeID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeStatus(ctx, q.writeDB, &generated.UpdateRecipeStatusParams{
 		Status: generated.RecipeStatus(newStatus),
@@ -1222,8 +1223,8 @@ func (q *repository) MarkRecipeAsIndexed(ctx context.Context, recipeID string) e
 	if recipeID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeLastIndexedAt(ctx, q.writeDB, recipeID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking recipe as indexed")
@@ -1365,14 +1366,14 @@ func (q *repository) ArchiveRecipe(ctx context.Context, recipeID, userID string)
 	if recipeID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := q.logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := q.logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveRecipe(ctx, q.writeDB, &generated.ArchiveRecipeParams{
 		CreatedByUser: userID,

@@ -7,10 +7,11 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	auditkeys "github.com/dinnerdonebetter/backend/internal/domain/audit/keys"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries/generated"
 )
@@ -29,8 +30,8 @@ func (q *repository) GetAuditLogEntry(ctx context.Context, auditLogEntryID strin
 	if auditLogEntryID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AuditLogEntryIDKey, auditLogEntryID)
-	tracing.AttachToSpan(span, keys.AuditLogEntryIDKey, auditLogEntryID)
+	logger = logger.WithValue(auditkeys.AuditLogEntryIDKey, auditLogEntryID)
+	tracing.AttachToSpan(span, auditkeys.AuditLogEntryIDKey, auditLogEntryID)
 
 	result, err := q.generatedQuerier.GetAuditLogEntry(ctx, q.readDB, auditLogEntryID)
 	if err != nil {
@@ -64,8 +65,8 @@ func (q *repository) GetAuditLogEntriesForUser(ctx context.Context, userID strin
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -131,14 +132,14 @@ func (q *repository) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Conte
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if len(resourceTypes) == 0 {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.AuditLogEntryResourceTypesKey, resourceTypes)
-	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
+	logger = logger.WithValue(auditkeys.AuditLogEntryResourceTypesKey, resourceTypes)
+	tracing.AttachToSpan(span, auditkeys.AuditLogEntryResourceTypesKey, resourceTypes)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -205,8 +206,8 @@ func (q *repository) GetAuditLogEntriesForAccount(ctx context.Context, accountID
 	if accountID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -272,14 +273,14 @@ func (q *repository) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Co
 	if accountID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	if len(resourceTypes) == 0 {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.AuditLogEntryResourceTypesKey, resourceTypes)
-	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
+	logger = logger.WithValue(auditkeys.AuditLogEntryResourceTypesKey, resourceTypes)
+	tracing.AttachToSpan(span, auditkeys.AuditLogEntryResourceTypesKey, resourceTypes)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -347,11 +348,11 @@ func (q *repository) CreateAuditLogEntry(ctx context.Context, querier database.S
 		return nil, database.ErrNilInputProvided
 	}
 
-	tracing.AttachToSpan(span, keys.AccountIDKey, input.BelongsToAccount)
-	logger = logger.WithValue(keys.AccountIDKey, input.BelongsToAccount)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, input.BelongsToAccount)
+	logger = logger.WithValue(identitykeys.AccountIDKey, input.BelongsToAccount)
 
-	tracing.AttachToSpan(span, keys.UserIDKey, input.BelongsToUser)
-	logger = logger.WithValue(keys.UserIDKey, input.BelongsToUser)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, input.BelongsToUser)
+	logger = logger.WithValue(identitykeys.UserIDKey, input.BelongsToUser)
 
 	marshaledChanges, err := json.Marshal(input.Changes)
 	if err != nil {
@@ -381,7 +382,7 @@ func (q *repository) CreateAuditLogEntry(ctx context.Context, querier database.S
 		BelongsToUser:    input.BelongsToUser,
 	}
 
-	tracing.AttachToSpan(span, keys.AuditLogEntryIDKey, x.ID)
+	tracing.AttachToSpan(span, auditkeys.AuditLogEntryIDKey, x.ID)
 
 	return x, nil
 }

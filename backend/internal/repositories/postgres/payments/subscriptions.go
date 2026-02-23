@@ -6,11 +6,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments/generated"
 )
@@ -24,8 +24,8 @@ func (r *repository) CreateSubscription(ctx context.Context, input *payments.Sub
 	defer span.End()
 
 	logger := r.logger.Clone()
-	logger = logger.WithValue(keys.SubscriptionIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.SubscriptionIDKey, input.ID)
+	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, input.ID)
+	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, input.ID)
 
 	arg := &generated.CreateSubscriptionParams{
 		ID:                     input.ID,
@@ -62,8 +62,8 @@ func (r *repository) GetSubscription(ctx context.Context, id string) (*payments.
 	if id == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.SubscriptionIDKey, id)
-	tracing.AttachToSpan(span, keys.SubscriptionIDKey, id)
+	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, id)
 
 	result, err := r.generatedQuerier.GetSubscription(ctx, r.readDB, id)
 	if err != nil {
@@ -125,8 +125,8 @@ func (r *repository) UpdateSubscription(ctx context.Context, sub *payments.Subsc
 	defer span.End()
 
 	logger := r.logger.Clone()
-	logger = logger.WithValue(keys.SubscriptionIDKey, sub.ID)
-	tracing.AttachToSpan(span, keys.SubscriptionIDKey, sub.ID)
+	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, sub.ID)
+	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, sub.ID)
 
 	arg := &generated.UpdateSubscriptionParams{
 		ID:                     sub.ID,
@@ -162,8 +162,8 @@ func (r *repository) UpdateSubscriptionStatus(ctx context.Context, id, status st
 	if id == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.SubscriptionIDKey, id)
-	tracing.AttachToSpan(span, keys.SubscriptionIDKey, id)
+	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, id)
 
 	arg := &generated.UpdateSubscriptionStatusParams{
 		ID:     id,
@@ -196,8 +196,8 @@ func (r *repository) ArchiveSubscription(ctx context.Context, id string) error {
 	if id == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.SubscriptionIDKey, id)
-	tracing.AttachToSpan(span, keys.SubscriptionIDKey, id)
+	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, id)
 
 	_, err := r.generatedQuerier.ArchiveSubscription(ctx, r.writeDB, id)
 	if err != nil {
