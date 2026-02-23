@@ -19,8 +19,8 @@ struct LoginView: View {
   @State private var isLoading: Bool = false
   @State private var loginTask: Task<Void, Never>?
   #if DEBUG
-  @State private var showEnvironmentPicker: Bool = false
-  @State private var selectedEnvironment: AppEnvironment = APIConfiguration.currentEnvironment
+    @State private var showEnvironmentPicker: Bool = false
+    @State private var selectedEnvironment: AppEnvironment = APIConfiguration.currentEnvironment
   #endif
 
   var body: some View {
@@ -59,13 +59,29 @@ struct LoginView: View {
         .accessibilityIdentifier("passwordTextField")
 
         if requiresTOTP {
-          DSTextField(
-            "2FA Code",
-            text: $totpCode,
-            type: .number,
-            isDisabled: isLoading
-          )
-          .accessibilityIdentifier("totpTextField")
+          HStack(spacing: DSTheme.Spacing.sm) {
+            DSTextField(
+              "2FA Code",
+              text: $totpCode,
+              type: .number,
+              isDisabled: isLoading
+            )
+            .accessibilityIdentifier("totpTextField")
+
+            PasteButton(payloadType: String.self) { strings in
+              if let code = strings.first?.trimmingCharacters(in: .whitespacesAndNewlines),
+                !code.isEmpty
+              {
+                totpCode = code
+                loginTask?.cancel()
+                loginTask = Task { await handleLogin() }
+              }
+            }
+            .labelStyle(.iconOnly)
+            .disabled(isLoading)
+            .accessibilityLabel("Paste 2FA code and sign in")
+            .accessibilityIdentifier("totpPasteButton")
+          }
         }
 
         if !errorMessage.isEmpty {
@@ -106,45 +122,45 @@ struct LoginView: View {
       Spacer()
 
       #if DEBUG
-      // Environment selector (Local vs Production) — dev builds only
-      environmentButton
+        // Environment selector (Local vs Production) — dev builds only
+        environmentButton
       #endif
     }
     .dsScreenPadding()
     #if DEBUG
-    .sheet(isPresented: $showEnvironmentPicker) {
-      EnvironmentPickerSheet(
-        selectedEnvironment: $selectedEnvironment,
-        onDismiss: { showEnvironmentPicker = false }
-      )
-      .presentationDetents([.medium])
-    }
+      .sheet(isPresented: $showEnvironmentPicker) {
+        EnvironmentPickerSheet(
+          selectedEnvironment: $selectedEnvironment,
+          onDismiss: { showEnvironmentPicker = false }
+        )
+        .presentationDetents([.medium])
+      }
     #endif
   }
 
   #if DEBUG
-  // MARK: - Environment Button
+    // MARK: - Environment Button
 
-  private var environmentButton: some View {
-    Button {
-      showEnvironmentPicker = true
-    } label: {
-      HStack(spacing: DSTheme.Spacing.xs) {
-        Image(systemName: selectedEnvironment.iconName)
-          .font(.system(size: 12))
-        Text(selectedEnvironment.displayName)
-          .font(DSTheme.Typography.caption)
-        Image(systemName: "chevron.up")
-          .font(.system(size: 10, weight: .semibold))
+    private var environmentButton: some View {
+      Button {
+        showEnvironmentPicker = true
+      } label: {
+        HStack(spacing: DSTheme.Spacing.xs) {
+          Image(systemName: selectedEnvironment.iconName)
+            .font(.system(size: 12))
+          Text(selectedEnvironment.displayName)
+            .font(DSTheme.Typography.caption)
+          Image(systemName: "chevron.up")
+            .font(.system(size: 10, weight: .semibold))
+        }
+        .foregroundColor(DSTheme.Colors.textSecondary)
+        .padding(.horizontal, DSTheme.Spacing.md)
+        .padding(.vertical, DSTheme.Spacing.sm)
+        .background(DSTheme.Colors.cardBackground)
+        .cornerRadius(DSTheme.Radius.full)
       }
-      .foregroundColor(DSTheme.Colors.textSecondary)
-      .padding(.horizontal, DSTheme.Spacing.md)
-      .padding(.vertical, DSTheme.Spacing.sm)
-      .background(DSTheme.Colors.cardBackground)
-      .cornerRadius(DSTheme.Radius.full)
+      .padding(.bottom, DSTheme.Spacing.sm)
     }
-    .padding(.bottom, DSTheme.Spacing.sm)
-  }
   #endif
 
   private func handleLogin() async {
