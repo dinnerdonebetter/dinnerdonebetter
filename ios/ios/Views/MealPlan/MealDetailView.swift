@@ -42,8 +42,8 @@ struct MealDetailView: View {
                   // Overall Info Section
                   overallInfoSection(meal: meal)
 
-                  // Aggregated Ingredients & Instruments/Vessels
-                  if !loadedRecipes.isEmpty {
+                  // Aggregated Ingredients & Instruments/Vessels (consolidated from all recipes)
+                  if !meal.components.isEmpty {
                     aggregatedListsSection
                   }
 
@@ -699,6 +699,11 @@ struct EmbeddedRecipeView: View {
         Task {
           await viewModel?.loadRecipe()
         }
+      }
+    }
+    .onChange(of: viewModel?.recipe) { _, newRecipe in
+      if let recipe = newRecipe {
+        onRecipeLoaded?(recipe)
       }
     }
   }
