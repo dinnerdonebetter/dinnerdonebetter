@@ -3,11 +3,12 @@ package grpc
 import (
 	"context"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
+	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/settings/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -17,7 +18,7 @@ func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.Input.ServiceSettingId)
+	logger := s.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingIDKey, request.Input.ServiceSettingId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
@@ -57,7 +58,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationByName(ctx context.Context, 
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	serviceSettingConfig, err := s.settingsManager.GetServiceSettingConfigurationForAccountByName(ctx, sessionContextData.ActiveAccountID, request.ServiceSettingConfigurationName)
 	if err != nil {
@@ -84,7 +85,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Cont
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
@@ -117,7 +118,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForUser(ctx context.Context
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	serviceSettingConfigs, err := s.settingsManager.GetServiceSettingConfigurationsForUser(ctx, sessionContextData.GetUserID(), filter)
@@ -143,7 +144,7 @@ func (s *serviceImpl) UpdateServiceSettingConfiguration(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, request.ServiceSettingConfigurationId)
+	logger := s.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingConfigurationIDKey, request.ServiceSettingConfigurationId)
 
 	existing, err := s.settingsManager.GetServiceSettingConfiguration(ctx, request.ServiceSettingConfigurationId)
 	if err != nil {
@@ -170,7 +171,7 @@ func (s *serviceImpl) ArchiveServiceSettingConfiguration(ctx context.Context, re
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, request.ServiceSettingConfigurationId)
+	logger := s.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingConfigurationIDKey, request.ServiceSettingConfigurationId)
 
 	if err := s.settingsManager.ArchiveServiceSettingConfiguration(ctx, request.ServiceSettingConfigurationId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive service setting configuration")

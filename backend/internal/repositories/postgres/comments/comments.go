@@ -6,11 +6,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/comments"
+	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/comments/generated"
 )
@@ -136,8 +136,8 @@ func (q *repository) GetComment(ctx context.Context, id string) (*types.Comment,
 	if id == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.CommentIDKey, id)
-	tracing.AttachToSpan(span, keys.CommentIDKey, id)
+	logger = logger.WithValue(commentskeys.CommentIDKey, id)
+	tracing.AttachToSpan(span, commentskeys.CommentIDKey, id)
 
 	result, err := q.generatedQuerier.GetComment(ctx, q.readDB, id)
 	if err != nil {
@@ -211,8 +211,8 @@ func (q *repository) UpdateComment(ctx context.Context, id, belongsToUser, conte
 	if id == "" || belongsToUser == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := q.logger.WithValue(keys.CommentIDKey, id)
-	tracing.AttachToSpan(span, keys.CommentIDKey, id)
+	logger := q.logger.WithValue(commentskeys.CommentIDKey, id)
+	tracing.AttachToSpan(span, commentskeys.CommentIDKey, id)
 
 	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -259,8 +259,8 @@ func (q *repository) ArchiveComment(ctx context.Context, id string) error {
 	if id == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := q.logger.WithValue(keys.CommentIDKey, id)
-	tracing.AttachToSpan(span, keys.CommentIDKey, id)
+	logger := q.logger.WithValue(commentskeys.CommentIDKey, id)
+	tracing.AttachToSpan(span, commentskeys.CommentIDKey, id)
 
 	comment, err := q.GetComment(ctx, id)
 	if err != nil {

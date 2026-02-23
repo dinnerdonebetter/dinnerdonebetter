@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -390,7 +390,7 @@ func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.C
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := g.logger.Clone().WithValue(keys.RecipeIDKey, recipe.ID)
+	logger := g.logger.Clone().WithValue(mealplanningkeys.RecipeIDKey, recipe.ID)
 
 	frozenIngredientSteps := frozenIngredientDefrostStepsFilter(recipe)
 	logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen stepSet inputs")

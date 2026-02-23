@@ -5,11 +5,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -116,7 +116,7 @@ func TestMealPlanningManager_CreateMeal(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.CreateMeal), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				mealplanning.MealCreatedServiceEventType: {keys.MealIDKey},
+				mealplanning.MealCreatedServiceEventType: {mealplanningkeys.MealIDKey},
 			},
 		)
 
@@ -198,7 +198,7 @@ func TestMealPlanningManager_ArchiveMeal(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.ArchiveMeal), testutils.ContextMatcher, expected.ID, expected.CreatedByUser).Return(nil)
 			},
 			map[string][]string{
-				mealplanning.MealArchivedServiceEventType: {keys.MealIDKey},
+				mealplanning.MealArchivedServiceEventType: {mealplanningkeys.MealIDKey},
 			},
 		)
 
@@ -501,7 +501,7 @@ func TestMealPlanningManager_CreateMealPlan(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.CreateMealPlan), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlanDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanCreatedServiceEventType: {keys.MealPlanIDKey},
+				mealplanning.MealPlanCreatedServiceEventType: {mealplanningkeys.MealPlanIDKey},
 			},
 		)
 
@@ -560,7 +560,7 @@ func TestMealPlanningManager_UpdateMealPlan(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateMealPlan), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlan]()).Return(nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanUpdatedServiceEventType: {keys.MealPlanIDKey},
+				mealplanning.MealPlanUpdatedServiceEventType: {mealplanningkeys.MealPlanIDKey},
 			},
 		)
 
@@ -587,7 +587,7 @@ func TestMealPlanningManager_ArchiveMealPlan(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.ArchiveMealPlan), testutils.ContextMatcher, expected.ID, expected.CreatedByUser).Return(nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanArchivedServiceEventType: {keys.MealPlanIDKey},
+				mealplanning.MealPlanArchivedServiceEventType: {mealplanningkeys.MealPlanIDKey},
 			},
 		)
 
@@ -615,7 +615,7 @@ func TestMealPlanningManager_FinalizeMealPlan(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.AttemptToFinalizeMealPlan), testutils.ContextMatcher, expected.ID, expected.CreatedByUser).Return(true, nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanFinalizedServiceEventType: {keys.MealPlanIDKey},
+				mealplanning.MealPlanFinalizedServiceEventType: {mealplanningkeys.MealPlanIDKey},
 			},
 		)
 
@@ -672,7 +672,7 @@ func TestMealPlanningManager_CreateMealPlanEvent(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.CreateMealPlanEvent), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlanEventDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanEventCreatedServiceEventType: {keys.MealPlanEventIDKey},
+				mealplanning.MealPlanEventCreatedServiceEventType: {mealplanningkeys.MealPlanEventIDKey},
 			},
 		)
 
@@ -732,8 +732,8 @@ func TestMealPlanningManager_UpdateMealPlanEvent(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.MealPlanEventUpdatedServiceEventType: {
-					keys.MealPlanIDKey,
-					keys.MealPlanEventIDKey,
+					mealplanningkeys.MealPlanIDKey,
+					mealplanningkeys.MealPlanEventIDKey,
 				},
 			},
 		)
@@ -763,8 +763,8 @@ func TestMealPlanningManager_ArchiveMealPlanEvent(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.MealPlanEventArchivedServiceEventType: {
-					keys.MealPlanIDKey,
-					keys.MealPlanEventIDKey,
+					mealplanningkeys.MealPlanIDKey,
+					mealplanningkeys.MealPlanEventIDKey,
 				},
 			},
 		)
@@ -822,7 +822,7 @@ func TestMealPlanningManager_CreateMealPlanOption(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.CreateMealPlanOption), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlanOptionDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanOptionCreatedServiceEventType: {keys.MealPlanOptionIDKey},
+				mealplanning.MealPlanOptionCreatedServiceEventType: {mealplanningkeys.MealPlanOptionIDKey},
 			},
 		)
 
@@ -884,9 +884,9 @@ func TestMealPlanningManager_UpdateMealPlanOption(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.MealPlanOptionUpdatedServiceEventType: {
-					keys.MealPlanIDKey,
-					keys.MealPlanEventIDKey,
-					keys.MealPlanOptionIDKey,
+					mealplanningkeys.MealPlanIDKey,
+					mealplanningkeys.MealPlanEventIDKey,
+					mealplanningkeys.MealPlanOptionIDKey,
 				},
 			},
 		)
@@ -917,9 +917,9 @@ func TestMealPlanningManager_ArchiveMealPlanOption(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.MealPlanOptionArchivedServiceEventType: {
-					keys.MealPlanIDKey,
-					keys.MealPlanEventIDKey,
-					keys.MealPlanOptionIDKey,
+					mealplanningkeys.MealPlanIDKey,
+					mealplanningkeys.MealPlanEventIDKey,
+					mealplanningkeys.MealPlanOptionIDKey,
 				},
 			},
 		)
@@ -1043,10 +1043,10 @@ func TestMealPlanningManager_UpdateMealPlanOptionVote(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.MealPlanOptionVoteUpdatedServiceEventType: {
-					keys.MealPlanIDKey,
-					keys.MealPlanEventIDKey,
-					keys.MealPlanOptionIDKey,
-					keys.MealPlanOptionVoteIDKey,
+					mealplanningkeys.MealPlanIDKey,
+					mealplanningkeys.MealPlanEventIDKey,
+					mealplanningkeys.MealPlanOptionIDKey,
+					mealplanningkeys.MealPlanOptionVoteIDKey,
 				},
 			},
 		)
@@ -1078,10 +1078,10 @@ func TestMealPlanningManager_ArchiveMealPlanOptionVote(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.MealPlanOptionVoteArchivedServiceEventType: {
-					keys.MealPlanIDKey,
-					keys.MealPlanEventIDKey,
-					keys.MealPlanOptionIDKey,
-					keys.MealPlanOptionVoteIDKey,
+					mealplanningkeys.MealPlanIDKey,
+					mealplanningkeys.MealPlanEventIDKey,
+					mealplanningkeys.MealPlanOptionIDKey,
+					mealplanningkeys.MealPlanOptionVoteIDKey,
 				},
 			},
 		)
@@ -1165,7 +1165,7 @@ func TestMealPlanningManager_CreateMealPlanTask(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.CreateMealPlanTask), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlanTaskDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanTaskCreatedServiceEventType: {keys.MealPlanTaskIDKey},
+				mealplanning.MealPlanTaskCreatedServiceEventType: {mealplanningkeys.MealPlanTaskIDKey},
 			},
 		)
 
@@ -1195,7 +1195,7 @@ func TestMealPlanningManager_MealPlanTaskStatusChange(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.MealPlanTaskStatusChangedServiceEventType: {
-					keys.MealPlanTaskIDKey,
+					mealplanningkeys.MealPlanTaskIDKey,
 				},
 			},
 		)
@@ -1251,7 +1251,7 @@ func TestMealPlanningManager_CreateMealPlanGroceryListItem(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.CreateMealPlanGroceryListItem), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlanGroceryListItemDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanGroceryListItemCreatedServiceEventType: {keys.MealPlanGroceryListItemIDKey},
+				mealplanning.MealPlanGroceryListItemCreatedServiceEventType: {mealplanningkeys.MealPlanGroceryListItemIDKey},
 			},
 		)
 
@@ -1311,8 +1311,8 @@ func TestMealPlanningManager_UpdateMealPlanGroceryListItem(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.MealPlanGroceryListItemUpdatedServiceEventType: {
-					keys.MealPlanIDKey,
-					keys.MealPlanGroceryListItemIDKey,
+					mealplanningkeys.MealPlanIDKey,
+					mealplanningkeys.MealPlanGroceryListItemIDKey,
 				},
 			},
 		)
@@ -1342,8 +1342,8 @@ func TestMealPlanningManager_ArchiveMealPlanGroceryListItem(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.MealPlanGroceryListItemArchivedServiceEventType: {
-					keys.MealPlanIDKey,
-					keys.MealPlanGroceryListItemIDKey,
+					mealplanningkeys.MealPlanIDKey,
+					mealplanningkeys.MealPlanGroceryListItemIDKey,
 				},
 			},
 		)
@@ -1431,7 +1431,7 @@ func TestMealPlanningManager_CreateMealPlanRecipeOptionSelection(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.CreateMealPlanRecipeOptionSelection), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanRecipeOptionSelectionCreatedServiceEventType: {"meal_plan_recipe_option_selection_id", keys.MealPlanOptionIDKey},
+				mealplanning.MealPlanRecipeOptionSelectionCreatedServiceEventType: {"meal_plan_recipe_option_selection_id", mealplanningkeys.MealPlanOptionIDKey},
 			},
 		)
 
@@ -1466,7 +1466,7 @@ func TestMealPlanningManager_UpdateMealPlanRecipeOptionSelection(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.UpdateMealPlanRecipeOptionSelection), testutils.ContextMatcher, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType, testutils.MatchType[*mealplanning.MealPlanRecipeOptionSelectionUpdateRequestInput]()).Return(nil)
 			},
 			map[string][]string{
-				mealplanning.MealPlanRecipeOptionSelectionUpdatedServiceEventType: {"meal_plan_recipe_option_selection_id", keys.MealPlanOptionIDKey},
+				mealplanning.MealPlanRecipeOptionSelectionUpdatedServiceEventType: {"meal_plan_recipe_option_selection_id", mealplanningkeys.MealPlanOptionIDKey},
 			},
 		)
 
@@ -1498,7 +1498,7 @@ func TestMealPlanningManager_ArchiveMealPlanRecipeOptionSelection(T *testing.T) 
 			},
 			map[string][]string{
 				mealplanning.MealPlanRecipeOptionSelectionArchivedServiceEventType: {
-					keys.MealPlanOptionIDKey,
+					mealplanningkeys.MealPlanOptionIDKey,
 					"recipe_step_id",
 					"ingredient_index",
 					"selection_type",
@@ -1559,7 +1559,7 @@ func TestMealPlanningManager_CreateUserIngredientPreference(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.CreateUserIngredientPreference), testutils.ContextMatcher, testutils.MatchType[*mealplanning.UserIngredientPreferenceDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				mealplanning.UserIngredientPreferenceCreatedServiceEventType: {keys.ValidIngredientGroupIDKey, keys.ValidIngredientIDKey, "created"},
+				mealplanning.UserIngredientPreferenceCreatedServiceEventType: {mealplanningkeys.ValidIngredientGroupIDKey, mealplanningkeys.ValidIngredientIDKey, "created"},
 			},
 		)
 
@@ -1592,7 +1592,7 @@ func TestMealPlanningManager_UpdateUserIngredientPreference(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.UserIngredientPreferenceUpdatedServiceEventType: {
-					keys.UserIngredientPreferenceIDKey,
+					mealplanningkeys.UserIngredientPreferenceIDKey,
 				},
 			},
 		)
@@ -1622,7 +1622,7 @@ func TestMealPlanningManager_ArchiveUserIngredientPreference(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.UserIngredientPreferenceArchivedServiceEventType: {
-					keys.UserIngredientPreferenceIDKey,
+					mealplanningkeys.UserIngredientPreferenceIDKey,
 				},
 			},
 		)
@@ -1680,7 +1680,7 @@ func TestMealPlanningManager_CreateAccountInstrumentOwnership(T *testing.T) {
 				db.On(reflection.GetMethodName(mpm.db.CreateAccountInstrumentOwnership), testutils.ContextMatcher, testutils.MatchType[*mealplanning.AccountInstrumentOwnershipDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
-				mealplanning.AccountInstrumentOwnershipCreatedServiceEventType: {keys.AccountInstrumentOwnershipIDKey},
+				mealplanning.AccountInstrumentOwnershipCreatedServiceEventType: {mealplanningkeys.AccountInstrumentOwnershipIDKey},
 			},
 		)
 
@@ -1740,7 +1740,7 @@ func TestMealPlanningManager_UpdateAccountInstrumentOwnership(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.AccountInstrumentOwnershipUpdatedServiceEventType: {
-					keys.AccountInstrumentOwnershipIDKey,
+					mealplanningkeys.AccountInstrumentOwnershipIDKey,
 				},
 			},
 		)
@@ -1770,7 +1770,7 @@ func TestMealPlanningManager_ArchiveAccountInstrumentOwnership(T *testing.T) {
 			},
 			map[string][]string{
 				mealplanning.AccountInstrumentOwnershipArchivedServiceEventType: {
-					keys.AccountInstrumentOwnershipIDKey,
+					mealplanningkeys.AccountInstrumentOwnershipIDKey,
 				},
 			},
 		)

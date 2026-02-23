@@ -3,12 +3,12 @@ package grpc
 import (
 	"context"
 
+	auditkeys "github.com/dinnerdonebetter/backend/internal/domain/audit/keys"
 	auditmanager "github.com/dinnerdonebetter/backend/internal/domain/audit/manager"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc/converters"
@@ -101,7 +101,7 @@ func (s *serviceImpl) GetAuditLogEntryByID(ctx context.Context, request *auditsv
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.AuditLogEntryIDKey, request.AuditLogEntryId)
+	logger := s.logger.WithValue(auditkeys.AuditLogEntryIDKey, request.AuditLogEntryId)
 	auditLogEntry, err := s.auditManager.GetAuditLogEntry(ctx, request.AuditLogEntryId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")

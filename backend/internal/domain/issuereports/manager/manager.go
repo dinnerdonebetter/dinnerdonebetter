@@ -6,10 +6,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/issuereports"
+	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -93,9 +93,9 @@ func (m *issueReportsManager) CreateIssueReport(ctx context.Context, input *issu
 		return nil, err
 	}
 
-	tracing.AttachToSpan(span, keys.IssueReportIDKey, created.ID)
+	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, created.ID)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, issuereports.IssueReportCreatedServiceEventType, map[string]any{
-		keys.IssueReportIDKey: created.ID,
+		issuereportkeys.IssueReportIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -105,15 +105,15 @@ func (m *issueReportsManager) UpdateIssueReport(ctx context.Context, issueReport
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.IssueReportIDKey, issueReport.ID)
-	tracing.AttachToSpan(span, keys.IssueReportIDKey, issueReport.ID)
+	logger := m.logger.WithSpan(span).WithValue(issuereportkeys.IssueReportIDKey, issueReport.ID)
+	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, issueReport.ID)
 
 	if err := m.repo.UpdateIssueReport(ctx, issueReport); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, issuereports.IssueReportUpdatedServiceEventType, map[string]any{
-		keys.IssueReportIDKey: issueReport.ID,
+		issuereportkeys.IssueReportIDKey: issueReport.ID,
 	}))
 
 	return nil
@@ -123,15 +123,15 @@ func (m *issueReportsManager) ArchiveIssueReport(ctx context.Context, issueRepor
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.IssueReportIDKey, issueReportID)
-	tracing.AttachToSpan(span, keys.IssueReportIDKey, issueReportID)
+	logger := m.logger.WithSpan(span).WithValue(issuereportkeys.IssueReportIDKey, issueReportID)
+	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, issueReportID)
 
 	if err := m.repo.ArchiveIssueReport(ctx, issueReportID); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, issuereports.IssueReportArchivedServiceEventType, map[string]any{
-		keys.IssueReportIDKey: issueReportID,
+		issuereportkeys.IssueReportIDKey: issueReportID,
 	}))
 
 	return nil

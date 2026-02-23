@@ -4,12 +4,13 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/notifications"
+	notificationkeys "github.com/dinnerdonebetter/backend/internal/domain/notifications/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications/generated"
 )
@@ -32,14 +33,14 @@ func (q *Repository) UserNotificationExists(ctx context.Context, userID, userNot
 	if userID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if userNotificationID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserNotificationIDKey, userNotificationID)
-	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotificationID)
+	logger = logger.WithValue(notificationkeys.UserNotificationIDKey, userNotificationID)
+	tracing.AttachToSpan(span, notificationkeys.UserNotificationIDKey, userNotificationID)
 
 	result, err := q.generatedQuerier.CheckUserNotificationExistence(ctx, q.readDB, &generated.CheckUserNotificationExistenceParams{
 		ID:            userNotificationID,
@@ -62,14 +63,14 @@ func (q *Repository) GetUserNotification(ctx context.Context, userID, userNotifi
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if userNotificationID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserNotificationIDKey, userNotificationID)
-	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotificationID)
+	logger = logger.WithValue(notificationkeys.UserNotificationIDKey, userNotificationID)
+	tracing.AttachToSpan(span, notificationkeys.UserNotificationIDKey, userNotificationID)
 
 	result, err := q.generatedQuerier.GetUserNotification(ctx, q.readDB, &generated.GetUserNotificationParams{
 		BelongsToUser: userID,
@@ -101,8 +102,8 @@ func (q *Repository) GetUserNotifications(ctx context.Context, userID string, fi
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -160,8 +161,8 @@ func (q *Repository) CreateUserNotification(ctx context.Context, input *types.Us
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.UserNotificationIDKey, input.ID)
-	logger := q.logger.WithValue(keys.UserNotificationIDKey, input.ID)
+	tracing.AttachToSpan(span, notificationkeys.UserNotificationIDKey, input.ID)
+	logger := q.logger.WithValue(notificationkeys.UserNotificationIDKey, input.ID)
 
 	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -185,7 +186,7 @@ func (q *Repository) CreateUserNotification(ctx context.Context, input *types.Us
 		Status:        types.UserNotificationStatusTypeUnread,
 		BelongsToUser: input.BelongsToUser,
 	}
-	tracing.AttachToSpan(span, keys.UserNotificationIDKey, x.ID)
+	tracing.AttachToSpan(span, notificationkeys.UserNotificationIDKey, x.ID)
 	logger.Info("user notification created")
 
 	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
@@ -214,8 +215,8 @@ func (q *Repository) UpdateUserNotification(ctx context.Context, updated *types.
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.UserNotificationIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.UserNotificationIDKey, updated.ID)
+	logger := q.logger.WithValue(notificationkeys.UserNotificationIDKey, updated.ID)
+	tracing.AttachToSpan(span, notificationkeys.UserNotificationIDKey, updated.ID)
 
 	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {

@@ -13,10 +13,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -87,7 +87,7 @@ func (m *manager) validateLogin(ctx context.Context, user *identity.User, loginI
 	loginInput.Username = strings.TrimSpace(loginInput.Username)
 
 	// alias the relevant data.
-	logger := m.logger.WithValue(keys.UsernameKey, user.Username)
+	logger := m.logger.WithValue(identitykeys.UsernameKey, user.Username)
 
 	// check for login validity.
 	loginValid, err := m.authenticator.CredentialsAreValid(
@@ -126,7 +126,7 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
-	logger = logger.WithValue(keys.UsernameKey, loginData.Username)
+	logger = logger.WithValue(identitykeys.UsernameKey, loginData.Username)
 
 	userFunc := m.userAuthDataManager.GetUserByUsername
 	if adminOnly {
@@ -142,8 +142,8 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 		return nil, observability.PrepareError(err, span, "fetching user")
 	}
 
-	logger = logger.WithValue(keys.UserIDKey, user.ID)
-	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
+	logger = logger.WithValue(identitykeys.UserIDKey, user.ID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, user.ID)
 
 	if user.IsBanned() {
 		return nil, observability.PrepareError(err, span, "user is banned")
@@ -239,8 +239,8 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desire
 		return nil, observability.PrepareError(err, span, "fetching user")
 	}
 
-	logger = logger.WithValue(keys.UserIDKey, user.ID)
-	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
+	logger = logger.WithValue(identitykeys.UserIDKey, user.ID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, user.ID)
 
 	if user.IsBanned() {
 		return nil, observability.PrepareError(err, span, "user is banned")

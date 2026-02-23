@@ -3,11 +3,12 @@ package grpc
 import (
 	"context"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
+	waitlistkeys "github.com/dinnerdonebetter/backend/internal/domain/waitlists/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -23,7 +24,7 @@ func (s *serviceImpl) CreateWaitlist(ctx context.Context, request *waitlistssvc.
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	input := converters.ConvertGRPCWaitlistCreationRequestInputToWaitlistDatabaseCreationInput(request.Input)
 	if err = input.ValidateWithContext(ctx); err != nil {
@@ -49,7 +50,7 @@ func (s *serviceImpl) GetWaitlist(ctx context.Context, request *waitlistssvc.Get
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WaitlistIDKey, request.WaitlistId)
+	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistIDKey, request.WaitlistId)
 
 	waitlist, err := s.waitlistsManager.GetWaitlist(ctx, request.WaitlistId)
 	if err != nil {
@@ -122,7 +123,7 @@ func (s *serviceImpl) UpdateWaitlist(ctx context.Context, request *waitlistssvc.
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WaitlistIDKey, request.WaitlistId)
+	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistIDKey, request.WaitlistId)
 
 	waitlist, err := s.waitlistsManager.GetWaitlist(ctx, request.WaitlistId)
 	if err != nil {
@@ -150,7 +151,7 @@ func (s *serviceImpl) ArchiveWaitlist(ctx context.Context, request *waitlistssvc
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WaitlistIDKey, request.WaitlistId)
+	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistIDKey, request.WaitlistId)
 
 	if err := s.waitlistsManager.ArchiveWaitlist(ctx, request.WaitlistId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive waitlist")
@@ -169,7 +170,7 @@ func (s *serviceImpl) WaitlistIsNotExpired(ctx context.Context, request *waitlis
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WaitlistIDKey, request.WaitlistId)
+	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistIDKey, request.WaitlistId)
 
 	isNotExpired, err := s.waitlistsManager.WaitlistIsNotExpired(ctx, request.WaitlistId)
 	if err != nil {
@@ -196,8 +197,8 @@ func (s *serviceImpl) CreateWaitlistSignup(ctx context.Context, request *waitlis
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
-	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	input := converters.ConvertGRPCWaitlistSignupCreationRequestInputToWaitlistSignupDatabaseCreationInput(request.Input)
 	input.BelongsToUser = sessionContextData.GetUserID()
@@ -226,7 +227,7 @@ func (s *serviceImpl) GetWaitlistSignup(ctx context.Context, request *waitlistss
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WaitlistSignupIDKey, request.WaitlistSignupId).WithValue(keys.WaitlistIDKey, request.WaitlistId)
+	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistSignupIDKey, request.WaitlistSignupId).WithValue(waitlistkeys.WaitlistIDKey, request.WaitlistId)
 
 	signup, err := s.waitlistsManager.GetWaitlistSignup(ctx, request.WaitlistSignupId, request.WaitlistId)
 	if err != nil {
@@ -247,7 +248,7 @@ func (s *serviceImpl) GetWaitlistSignupsForWaitlist(ctx context.Context, request
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WaitlistIDKey, request.WaitlistId)
+	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistIDKey, request.WaitlistId)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	retrieved, err := s.waitlistsManager.GetWaitlistSignupsForWaitlist(ctx, request.WaitlistId, filter)
@@ -273,7 +274,7 @@ func (s *serviceImpl) UpdateWaitlistSignup(ctx context.Context, request *waitlis
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WaitlistSignupIDKey, request.WaitlistSignupId).WithValue(keys.WaitlistIDKey, request.WaitlistId)
+	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistSignupIDKey, request.WaitlistSignupId).WithValue(waitlistkeys.WaitlistIDKey, request.WaitlistId)
 
 	signup, err := s.waitlistsManager.GetWaitlistSignup(ctx, request.WaitlistSignupId, request.WaitlistId)
 	if err != nil {
@@ -301,7 +302,7 @@ func (s *serviceImpl) ArchiveWaitlistSignup(ctx context.Context, request *waitli
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WaitlistSignupIDKey, request.WaitlistSignupId)
+	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistSignupIDKey, request.WaitlistSignupId)
 
 	if err := s.waitlistsManager.ArchiveWaitlistSignup(ctx, request.WaitlistSignupId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive waitlist signup")

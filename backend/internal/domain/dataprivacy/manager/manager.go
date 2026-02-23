@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -55,7 +55,7 @@ func (m *dataPrivacyManager) CreateUserDataDisclosure(ctx context.Context, input
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.UserIDKey, input.BelongsToUser)
+	logger := m.logger.WithSpan(span).WithValue(identitykeys.UserIDKey, input.BelongsToUser)
 
 	created, err := m.repo.CreateUserDataDisclosure(ctx, input)
 	if err != nil {

@@ -5,15 +5,17 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -169,8 +171,8 @@ func (m *mealPlanningManager) CreateMeal(ctx context.Context, creatorID string, 
 
 	convertedInput := converters.ConvertMealCreationRequestInputToMealDatabaseCreationInput(input)
 	convertedInput.CreatedByUser = creatorID
-	logger := m.logger.WithSpan(span).WithValue(keys.MealIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.MealIDKey, convertedInput.ID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMeal(ctx, convertedInput)
 	if err != nil {
@@ -178,7 +180,7 @@ func (m *mealPlanningManager) CreateMeal(ctx context.Context, creatorID string, 
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealCreatedServiceEventType, map[string]any{
-		keys.MealIDKey: created.ID,
+		mealplanningkeys.MealIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -188,8 +190,8 @@ func (m *mealPlanningManager) ReadMeal(ctx context.Context, mealID string) (*typ
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealIDKey, mealID)
-	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
 
 	meal, err := m.db.GetMeal(ctx, mealID)
 	if err != nil {
@@ -207,8 +209,8 @@ func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, use
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
 
 	var results *filtering.QueryFilteredResult[types.Meal]
 	if useDatabase {
@@ -247,18 +249,18 @@ func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID s
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealIDKey: mealID,
-		keys.UserIDKey: ownerID,
+		mealplanningkeys.MealIDKey: mealID,
+		identitykeys.UserIDKey:     ownerID,
 	})
-	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	if err := m.db.ArchiveMeal(ctx, mealID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealArchivedServiceEventType, map[string]any{
-		keys.MealIDKey: mealID,
+		mealplanningkeys.MealIDKey: mealID,
 	}))
 
 	return nil
@@ -328,11 +330,11 @@ func (m *mealPlanningManager) UpdateMealList(ctx context.Context, mealListID, us
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealListIDKey: mealListID,
-		keys.UserIDKey:     userID,
+		mealplanningkeys.MealListIDKey: mealListID,
+		identitykeys.UserIDKey:         userID,
 	})
-	tracing.AttachToSpan(span, keys.MealListIDKey, mealListID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealListIDKey, mealListID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if input == nil {
 		return internalerrors.ErrNilInputParameter
@@ -404,13 +406,13 @@ func (m *mealPlanningManager) UpdateMealListItem(ctx context.Context, mealListIt
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealListIDKey:     mealListID,
-		keys.MealListItemIDKey: mealListItemID,
-		keys.MealIDKey:         mealID,
+		mealplanningkeys.MealListIDKey:     mealListID,
+		mealplanningkeys.MealListItemIDKey: mealListItemID,
+		mealplanningkeys.MealIDKey:         mealID,
 	})
-	tracing.AttachToSpan(span, keys.MealListIDKey, mealListID)
-	tracing.AttachToSpan(span, keys.MealListItemIDKey, mealListItemID)
-	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealListIDKey, mealListID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealListItemIDKey, mealListItemID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
 
 	if input == nil {
 		return internalerrors.ErrNilInputParameter
@@ -479,8 +481,8 @@ func (m *mealPlanningManager) ListMealPlans(ctx context.Context, ownerID string,
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.AccountIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, ownerID)
+	logger := m.logger.WithSpan(span).WithValue(identitykeys.AccountIDKey, ownerID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, ownerID)
 
 	mealPlans, err := m.db.GetMealPlansForAccount(ctx, ownerID, filter)
 	if err != nil {
@@ -510,8 +512,8 @@ func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, ownerID, creat
 	convertedInput.CreatedByUser = creatorID
 	convertedInput.BelongsToAccount = ownerID
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, convertedInput.ID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlan(ctx, convertedInput)
 	if err != nil {
@@ -519,7 +521,7 @@ func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, ownerID, creat
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanCreatedServiceEventType, map[string]any{
-		keys.MealPlanIDKey: created.ID,
+		mealplanningkeys.MealPlanIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -530,11 +532,11 @@ func (m *mealPlanningManager) ReadMealPlan(ctx context.Context, mealPlanID, owne
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey: mealPlanID,
-		keys.UserIDKey:     ownerID,
+		mealplanningkeys.MealPlanIDKey: mealPlanID,
+		identitykeys.UserIDKey:         ownerID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	mealPlan, err := m.db.GetMealPlan(ctx, mealPlanID, ownerID)
 	if err != nil {
@@ -553,11 +555,11 @@ func (m *mealPlanningManager) UpdateMealPlan(ctx context.Context, mealPlanID, ow
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey: mealPlanID,
-		keys.UserIDKey:     ownerID,
+		mealplanningkeys.MealPlanIDKey: mealPlanID,
+		identitykeys.UserIDKey:         ownerID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	existingMealPlan, err := m.db.GetMealPlan(ctx, mealPlanID, ownerID)
 	if err != nil {
@@ -570,7 +572,7 @@ func (m *mealPlanningManager) UpdateMealPlan(ctx context.Context, mealPlanID, ow
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanUpdatedServiceEventType, map[string]any{
-		keys.MealPlanIDKey: mealPlanID,
+		mealplanningkeys.MealPlanIDKey: mealPlanID,
 	}))
 
 	return nil
@@ -581,18 +583,18 @@ func (m *mealPlanningManager) ArchiveMealPlan(ctx context.Context, mealPlanID, o
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey: mealPlanID,
-		keys.UserIDKey:     ownerID,
+		mealplanningkeys.MealPlanIDKey: mealPlanID,
+		identitykeys.UserIDKey:         ownerID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	if err := m.db.ArchiveMealPlan(ctx, mealPlanID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanArchivedServiceEventType, map[string]any{
-		keys.MealPlanIDKey: mealPlanID,
+		mealplanningkeys.MealPlanIDKey: mealPlanID,
 	}))
 
 	return nil
@@ -603,11 +605,11 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey: mealPlanID,
-		keys.UserIDKey:     ownerID,
+		mealplanningkeys.MealPlanIDKey: mealPlanID,
+		identitykeys.UserIDKey:         ownerID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	finalized, err := m.db.AttemptToFinalizeMealPlan(ctx, mealPlanID, ownerID)
 	if err != nil {
@@ -615,7 +617,7 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanFinalizedServiceEventType, map[string]any{
-		keys.MealPlanIDKey: mealPlanID,
+		mealplanningkeys.MealPlanIDKey: mealPlanID,
 	}))
 
 	return finalized, nil
@@ -629,8 +631,8 @@ func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
 
 	mealPlanEvents, err := m.db.GetMealPlanEvents(ctx, mealPlanID, filter)
 	if err != nil {
@@ -650,8 +652,8 @@ func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, mealPlanI
 
 	convertedInput := converters.ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(input)
 	convertedInput.BelongsToMealPlan = mealPlanID
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanEventIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, convertedInput.ID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanEventIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanEvent(ctx, convertedInput)
 	if err != nil {
@@ -659,7 +661,7 @@ func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, mealPlanI
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventCreatedServiceEventType, map[string]any{
-		keys.MealPlanEventIDKey: created.ID,
+		mealplanningkeys.MealPlanEventIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -670,11 +672,11 @@ func (m *mealPlanningManager) ReadMealPlanEvent(ctx context.Context, mealPlanID,
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:      mealPlanID,
-		keys.MealPlanEventIDKey: mealPlanEventID,
+		mealplanningkeys.MealPlanIDKey:      mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey: mealPlanEventID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
 
 	mealPlanEvent, err := m.db.GetMealPlanEvent(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
@@ -693,11 +695,11 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:      mealPlanID,
-		keys.MealPlanEventIDKey: mealPlanEventID,
+		mealplanningkeys.MealPlanIDKey:      mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey: mealPlanEventID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
 
 	existingMealPlanEvent, err := m.db.GetMealPlanEvent(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
@@ -710,8 +712,8 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventUpdatedServiceEventType, map[string]any{
-		keys.MealPlanIDKey:      mealPlanID,
-		keys.MealPlanEventIDKey: mealPlanEventID,
+		mealplanningkeys.MealPlanIDKey:      mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey: mealPlanEventID,
 	}))
 
 	return nil
@@ -722,19 +724,19 @@ func (m *mealPlanningManager) ArchiveMealPlanEvent(ctx context.Context, mealPlan
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:      mealPlanID,
-		keys.MealPlanEventIDKey: mealPlanEventID,
+		mealplanningkeys.MealPlanIDKey:      mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey: mealPlanEventID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
 
 	if err := m.db.ArchiveMealPlanEvent(ctx, mealPlanID, mealPlanEventID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan event")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventArchivedServiceEventType, map[string]any{
-		keys.MealPlanIDKey:      mealPlanID,
-		keys.MealPlanEventIDKey: mealPlanEventID,
+		mealplanningkeys.MealPlanIDKey:      mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey: mealPlanEventID,
 	}))
 
 	return nil
@@ -749,11 +751,11 @@ func (m *mealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanI
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:      mealPlanID,
-		keys.MealPlanEventIDKey: mealPlanEventID,
+		mealplanningkeys.MealPlanIDKey:      mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey: mealPlanEventID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
 
 	results, err := m.db.GetMealPlanOptions(ctx, mealPlanID, mealPlanEventID, filter)
 	if err != nil {
@@ -772,8 +774,8 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, convertedInput.ID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanOptionIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanOption(ctx, convertedInput)
 	if err != nil {
@@ -781,7 +783,7 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionCreatedServiceEventType, map[string]any{
-		keys.MealPlanOptionIDKey: convertedInput.ID,
+		mealplanningkeys.MealPlanOptionIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -803,8 +805,8 @@ func (m *mealPlanningManager) CreateMealPlanOptionWithEventID(ctx context.Contex
 	// Set the meal plan event ID that was missing before
 	convertedInput.BelongsToMealPlanEvent = mealPlanEventID
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, convertedInput.ID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanOptionIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanOption(ctx, convertedInput)
 	if err != nil {
@@ -812,7 +814,7 @@ func (m *mealPlanningManager) CreateMealPlanOptionWithEventID(ctx context.Contex
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionCreatedServiceEventType, map[string]any{
-		keys.MealPlanOptionIDKey: convertedInput.ID,
+		mealplanningkeys.MealPlanOptionIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -823,13 +825,13 @@ func (m *mealPlanningManager) ReadMealPlanOption(ctx context.Context, mealPlanID
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:       mealPlanID,
-		keys.MealPlanEventIDKey:  mealPlanEventID,
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
+		mealplanningkeys.MealPlanIDKey:       mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:  mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	mealPlanOption, err := m.db.GetMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
@@ -848,13 +850,13 @@ func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlan
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:       mealPlanID,
-		keys.MealPlanEventIDKey:  mealPlanEventID,
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
+		mealplanningkeys.MealPlanIDKey:       mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:  mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	existingMealPlanOption, err := m.db.GetMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
@@ -867,9 +869,9 @@ func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlan
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionUpdatedServiceEventType, map[string]any{
-		keys.MealPlanIDKey:       mealPlanID,
-		keys.MealPlanEventIDKey:  mealPlanEventID,
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
+		mealplanningkeys.MealPlanIDKey:       mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:  mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
 	}))
 
 	return nil
@@ -880,22 +882,22 @@ func (m *mealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mealPla
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:       mealPlanID,
-		keys.MealPlanEventIDKey:  mealPlanEventID,
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
+		mealplanningkeys.MealPlanIDKey:       mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:  mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if err := m.db.ArchiveMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionArchivedServiceEventType, map[string]any{
-		keys.MealPlanIDKey:       mealPlanID,
-		keys.MealPlanEventIDKey:  mealPlanEventID,
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
+		mealplanningkeys.MealPlanIDKey:       mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:  mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
 	}))
 
 	return nil
@@ -910,13 +912,13 @@ func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealP
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:       mealPlanID,
-		keys.MealPlanEventIDKey:  mealPlanEventID,
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
+		mealplanningkeys.MealPlanIDKey:       mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:  mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	results, err := m.db.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 	if err != nil {
@@ -960,15 +962,15 @@ func (m *mealPlanningManager) ReadMealPlanOptionVote(ctx context.Context, mealPl
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:           mealPlanID,
-		keys.MealPlanEventIDKey:      mealPlanEventID,
-		keys.MealPlanOptionIDKey:     mealPlanOptionID,
-		keys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
+		mealplanningkeys.MealPlanIDKey:           mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:      mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey:     mealPlanOptionID,
+		mealplanningkeys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	mealPlanOptionVote, err := m.db.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
@@ -987,15 +989,15 @@ func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, meal
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:           mealPlanID,
-		keys.MealPlanEventIDKey:      mealPlanEventID,
-		keys.MealPlanOptionIDKey:     mealPlanOptionID,
-		keys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
+		mealplanningkeys.MealPlanIDKey:           mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:      mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey:     mealPlanOptionID,
+		mealplanningkeys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	existingMealPlanOptionVote, err := m.db.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
@@ -1008,10 +1010,10 @@ func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, meal
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionVoteUpdatedServiceEventType, map[string]any{
-		keys.MealPlanIDKey:           mealPlanID,
-		keys.MealPlanEventIDKey:      mealPlanEventID,
-		keys.MealPlanOptionIDKey:     mealPlanOptionID,
-		keys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
+		mealplanningkeys.MealPlanIDKey:           mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:      mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey:     mealPlanOptionID,
+		mealplanningkeys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
 	}))
 
 	return nil
@@ -1022,25 +1024,25 @@ func (m *mealPlanningManager) ArchiveMealPlanOptionVote(ctx context.Context, mea
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:           mealPlanID,
-		keys.MealPlanEventIDKey:      mealPlanEventID,
-		keys.MealPlanOptionIDKey:     mealPlanOptionID,
-		keys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
+		mealplanningkeys.MealPlanIDKey:           mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:      mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey:     mealPlanOptionID,
+		mealplanningkeys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	if err := m.db.ArchiveMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option vote")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionVoteArchivedServiceEventType, map[string]any{
-		keys.MealPlanIDKey:           mealPlanID,
-		keys.MealPlanEventIDKey:      mealPlanEventID,
-		keys.MealPlanOptionIDKey:     mealPlanOptionID,
-		keys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
+		mealplanningkeys.MealPlanIDKey:           mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey:      mealPlanEventID,
+		mealplanningkeys.MealPlanOptionIDKey:     mealPlanOptionID,
+		mealplanningkeys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
 	}))
 
 	return nil
@@ -1050,8 +1052,8 @@ func (m *mealPlanningManager) ListMealPlanTasksByMealPlan(ctx context.Context, m
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
 
 	results, err := m.db.GetMealPlanTasksForMealPlan(ctx, mealPlanID, filter)
 	if err != nil {
@@ -1066,11 +1068,11 @@ func (m *mealPlanningManager) ReadMealPlanTask(ctx context.Context, mealPlanID, 
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:     mealPlanID,
-		keys.MealPlanTaskIDKey: mealPlanTaskID,
+		mealplanningkeys.MealPlanIDKey:     mealPlanID,
+		mealplanningkeys.MealPlanTaskIDKey: mealPlanTaskID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanTaskIDKey, mealPlanTaskID)
 
 	result, err := m.db.GetMealPlanTask(ctx, mealPlanTaskID)
 	if err != nil {
@@ -1089,8 +1091,8 @@ func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *typ
 	}
 
 	convertedInput := converters.ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanTaskIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, convertedInput.ID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanTaskIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanTaskIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanTask(ctx, convertedInput)
 	if err != nil {
@@ -1098,7 +1100,7 @@ func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *typ
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanTaskCreatedServiceEventType, map[string]any{
-		keys.MealPlanTaskIDKey: convertedInput.ID,
+		mealplanningkeys.MealPlanTaskIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1112,15 +1114,15 @@ func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, inpu
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanTaskIDKey, input.MealPlanTaskID)
-	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, input.MealPlanTaskID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanTaskIDKey, input.MealPlanTaskID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanTaskIDKey, input.MealPlanTaskID)
 
 	if err := m.db.ChangeMealPlanTaskStatus(ctx, input); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "changing meal plan task status")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanTaskStatusChangedServiceEventType, map[string]any{
-		keys.MealPlanTaskIDKey: input.MealPlanTaskID,
+		mealplanningkeys.MealPlanTaskIDKey: input.MealPlanTaskID,
 	}))
 
 	return nil
@@ -1130,8 +1132,8 @@ func (m *mealPlanningManager) ListMealPlanGroceryListItemsByMealPlan(ctx context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
 
 	results, err := m.db.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID, filter)
 	if err != nil {
@@ -1150,8 +1152,8 @@ func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context,
 	}
 
 	convertedInput := converters.ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanGroceryListItemIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, convertedInput.ID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanGroceryListItem(ctx, convertedInput)
 	if err != nil {
@@ -1159,7 +1161,7 @@ func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanGroceryListItemCreatedServiceEventType, map[string]any{
-		keys.MealPlanGroceryListItemIDKey: convertedInput.ID,
+		mealplanningkeys.MealPlanGroceryListItemIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1170,11 +1172,11 @@ func (m *mealPlanningManager) ReadMealPlanGroceryListItem(ctx context.Context, m
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:                mealPlanID,
-		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
+		mealplanningkeys.MealPlanIDKey:                mealPlanID,
+		mealplanningkeys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	result, err := m.db.GetMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
@@ -1193,11 +1195,11 @@ func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context,
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:                mealPlanID,
-		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
+		mealplanningkeys.MealPlanIDKey:                mealPlanID,
+		mealplanningkeys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	existingMealPlanGroceryListItem, err := m.db.GetMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
@@ -1210,8 +1212,8 @@ func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanGroceryListItemUpdatedServiceEventType, map[string]any{
-		keys.MealPlanIDKey:                mealPlanID,
-		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
+		mealplanningkeys.MealPlanIDKey:                mealPlanID,
+		mealplanningkeys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	}))
 
 	return nil
@@ -1222,19 +1224,19 @@ func (m *mealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Context
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanIDKey:                mealPlanID,
-		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
+		mealplanningkeys.MealPlanIDKey:                mealPlanID,
+		mealplanningkeys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	if err := m.db.ArchiveMealPlanGroceryListItem(ctx, mealPlanGroceryListItemID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan grocery list item")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanGroceryListItemArchivedServiceEventType, map[string]any{
-		keys.MealPlanIDKey:                mealPlanID,
-		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
+		mealplanningkeys.MealPlanIDKey:                mealPlanID,
+		mealplanningkeys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	}))
 
 	return nil
@@ -1245,12 +1247,12 @@ func (m *mealPlanningManager) GetMealPlanRecipeOptionSelection(ctx context.Conte
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
-		"recipe_step_id":         recipeStepID,
-		"ingredient_index":       ingredientIndex,
-		"selection_type":         selectionType,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
+		"recipe_step_id":                     recipeStepID,
+		"ingredient_index":                   ingredientIndex,
+		"selection_type":                     selectionType,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, "recipe_step_id", recipeStepID)
 	tracing.AttachToSpan(span, "ingredient_index", ingredientIndex)
 	tracing.AttachToSpan(span, "selection_type", selectionType)
@@ -1271,8 +1273,8 @@ func (m *mealPlanningManager) GetMealPlanRecipeOptionSelectionsForMealPlanOption
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	results, err := m.db.GetSelectionsForMealPlanOption(ctx, mealPlanOptionID, filter)
@@ -1307,7 +1309,7 @@ func (m *mealPlanningManager) CreateMealPlanRecipeOptionSelection(ctx context.Co
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanRecipeOptionSelectionCreatedServiceEventType, map[string]any{
 		"meal_plan_recipe_option_selection_id": created.ID,
-		keys.MealPlanOptionIDKey:               created.BelongsToMealPlanOption,
+		mealplanningkeys.MealPlanOptionIDKey:   created.BelongsToMealPlanOption,
 	}))
 
 	return created, nil
@@ -1322,12 +1324,12 @@ func (m *mealPlanningManager) UpdateMealPlanRecipeOptionSelection(ctx context.Co
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
-		"recipe_step_id":         recipeStepID,
-		"ingredient_index":       ingredientIndex,
-		"selection_type":         selectionType,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
+		"recipe_step_id":                     recipeStepID,
+		"ingredient_index":                   ingredientIndex,
+		"selection_type":                     selectionType,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, "recipe_step_id", recipeStepID)
 	tracing.AttachToSpan(span, "ingredient_index", ingredientIndex)
 	tracing.AttachToSpan(span, "selection_type", selectionType)
@@ -1346,7 +1348,7 @@ func (m *mealPlanningManager) UpdateMealPlanRecipeOptionSelection(ctx context.Co
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanRecipeOptionSelectionUpdatedServiceEventType, map[string]any{
 		"meal_plan_recipe_option_selection_id": existingSelection.ID,
-		keys.MealPlanOptionIDKey:               mealPlanOptionID,
+		mealplanningkeys.MealPlanOptionIDKey:   mealPlanOptionID,
 	}))
 
 	return nil
@@ -1357,12 +1359,12 @@ func (m *mealPlanningManager) ArchiveMealPlanRecipeOptionSelection(ctx context.C
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
-		"recipe_step_id":         recipeStepID,
-		"ingredient_index":       ingredientIndex,
-		"selection_type":         selectionType,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
+		"recipe_step_id":                     recipeStepID,
+		"ingredient_index":                   ingredientIndex,
+		"selection_type":                     selectionType,
 	})
-	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, "recipe_step_id", recipeStepID)
 	tracing.AttachToSpan(span, "ingredient_index", ingredientIndex)
 	tracing.AttachToSpan(span, "selection_type", selectionType)
@@ -1372,10 +1374,10 @@ func (m *mealPlanningManager) ArchiveMealPlanRecipeOptionSelection(ctx context.C
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanRecipeOptionSelectionArchivedServiceEventType, map[string]any{
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
-		"recipe_step_id":         recipeStepID,
-		"ingredient_index":       ingredientIndex,
-		"selection_type":         selectionType,
+		mealplanningkeys.MealPlanOptionIDKey: mealPlanOptionID,
+		"recipe_step_id":                     recipeStepID,
+		"ingredient_index":                   ingredientIndex,
+		"selection_type":                     selectionType,
 	}))
 
 	return nil
@@ -1393,8 +1395,8 @@ func (m *mealPlanningManager) ListUserIngredientPreferences(ctx context.Context,
 	if ownerID == "" {
 		return nil, internalerrors.ErrEmptyInputParameter
 	}
-	logger := m.logger.WithSpan(span).WithValue(keys.UserIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	logger := m.logger.WithSpan(span).WithValue(identitykeys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	results, err := m.db.GetUserIngredientPreferences(ctx, ownerID, filter)
 	if err != nil {
@@ -1408,8 +1410,8 @@ func (m *mealPlanningManager) ReadUserIngredientPreference(ctx context.Context, 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.UserIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	logger := m.logger.WithSpan(span).WithValue(identitykeys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	result, err := m.db.GetUserIngredientPreference(ctx, ingredientPreferenceID, ownerID)
 	if err != nil {
@@ -1432,11 +1434,11 @@ func (m *mealPlanningManager) CreateUserIngredientPreference(ctx context.Context
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.ValidIngredientGroupIDKey: input.ValidIngredientGroupID,
-		keys.ValidIngredientIDKey:      input.ValidIngredientID,
+		mealplanningkeys.ValidIngredientGroupIDKey: input.ValidIngredientGroupID,
+		mealplanningkeys.ValidIngredientIDKey:      input.ValidIngredientID,
 	})
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, input.ValidIngredientGroupID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, input.ValidIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, input.ValidIngredientGroupID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, input.ValidIngredientID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating ingredient preference creation request input")
@@ -1451,9 +1453,9 @@ func (m *mealPlanningManager) CreateUserIngredientPreference(ctx context.Context
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.UserIngredientPreferenceCreatedServiceEventType, map[string]any{
-		keys.ValidIngredientGroupIDKey: input.ValidIngredientGroupID,
-		keys.ValidIngredientIDKey:      input.ValidIngredientID,
-		"created":                      len(created),
+		mealplanningkeys.ValidIngredientGroupIDKey: input.ValidIngredientGroupID,
+		mealplanningkeys.ValidIngredientIDKey:      input.ValidIngredientID,
+		"created":                                  len(created),
 	}))
 
 	return created, nil
@@ -1468,11 +1470,11 @@ func (m *mealPlanningManager) UpdateUserIngredientPreference(ctx context.Context
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
-		keys.UserIDKey:                     ownerID,
+		mealplanningkeys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
+		identitykeys.UserIDKey:                         ownerID,
 	})
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, ingredientPreferenceID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.UserIngredientPreferenceIDKey, ingredientPreferenceID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	existingUserIngredientPreference, err := m.db.GetUserIngredientPreference(ctx, ingredientPreferenceID, ownerID)
 	if err != nil {
@@ -1485,7 +1487,7 @@ func (m *mealPlanningManager) UpdateUserIngredientPreference(ctx context.Context
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.UserIngredientPreferenceUpdatedServiceEventType, map[string]any{
-		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
+		mealplanningkeys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
 	}))
 
 	return nil
@@ -1496,18 +1498,18 @@ func (m *mealPlanningManager) ArchiveUserIngredientPreference(ctx context.Contex
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
-		keys.UserIDKey:                     ownerID,
+		mealplanningkeys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
+		identitykeys.UserIDKey:                         ownerID,
 	})
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, ingredientPreferenceID)
-	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.UserIngredientPreferenceIDKey, ingredientPreferenceID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 
 	if err := m.db.ArchiveUserIngredientPreference(ctx, ingredientPreferenceID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving ingredient preference")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.UserIngredientPreferenceArchivedServiceEventType, map[string]any{
-		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
+		mealplanningkeys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
 	}))
 
 	return nil
@@ -1521,8 +1523,8 @@ func (m *mealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Contex
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.AccountIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, ownerID)
+	logger := m.logger.WithSpan(span).WithValue(identitykeys.AccountIDKey, ownerID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, ownerID)
 
 	results, err := m.db.GetAccountInstrumentOwnerships(ctx, ownerID, filter)
 	if err != nil {
@@ -1539,8 +1541,8 @@ func (m *mealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Conte
 	convertedInput := converters.ConvertAccountInstrumentOwnershipCreationRequestInputToAccountInstrumentOwnershipDatabaseCreationInput(input)
 	convertedInput.BelongsToAccount = ownerID
 
-	logger := m.logger.WithSpan(span).WithValue(keys.AccountInstrumentOwnershipIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, convertedInput.ID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.AccountInstrumentOwnershipIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.AccountInstrumentOwnershipIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateAccountInstrumentOwnership(ctx, convertedInput)
 	if err != nil {
@@ -1548,7 +1550,7 @@ func (m *mealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.AccountInstrumentOwnershipCreatedServiceEventType, map[string]any{
-		keys.AccountInstrumentOwnershipIDKey: convertedInput.ID,
+		mealplanningkeys.AccountInstrumentOwnershipIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1559,11 +1561,11 @@ func (m *mealPlanningManager) ReadAccountInstrumentOwnership(ctx context.Context
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.AccountIDKey:                    ownerID,
-		keys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
+		identitykeys.AccountIDKey:                        ownerID,
+		mealplanningkeys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
 	})
-	tracing.AttachToSpan(span, keys.AccountIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, instrumentOwnershipID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.AccountInstrumentOwnershipIDKey, instrumentOwnershipID)
 
 	result, err := m.db.GetAccountInstrumentOwnership(ctx, instrumentOwnershipID, ownerID)
 	if err != nil {
@@ -1582,11 +1584,11 @@ func (m *mealPlanningManager) UpdateAccountInstrumentOwnership(ctx context.Conte
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.AccountIDKey:                    ownerID,
-		keys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
+		identitykeys.AccountIDKey:                        ownerID,
+		mealplanningkeys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
 	})
-	tracing.AttachToSpan(span, keys.AccountIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, instrumentOwnershipID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.AccountInstrumentOwnershipIDKey, instrumentOwnershipID)
 
 	existingAccountInstrumentOwnership, err := m.db.GetAccountInstrumentOwnership(ctx, instrumentOwnershipID, ownerID)
 	if err != nil {
@@ -1599,7 +1601,7 @@ func (m *mealPlanningManager) UpdateAccountInstrumentOwnership(ctx context.Conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.AccountInstrumentOwnershipUpdatedServiceEventType, map[string]any{
-		keys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
+		mealplanningkeys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
 	}))
 
 	return nil
@@ -1610,18 +1612,18 @@ func (m *mealPlanningManager) ArchiveAccountInstrumentOwnership(ctx context.Cont
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
-		keys.AccountIDKey:                    ownerID,
-		keys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
+		identitykeys.AccountIDKey:                        ownerID,
+		mealplanningkeys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
 	})
-	tracing.AttachToSpan(span, keys.AccountIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, instrumentOwnershipID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, ownerID)
+	tracing.AttachToSpan(span, mealplanningkeys.AccountInstrumentOwnershipIDKey, instrumentOwnershipID)
 
 	if err := m.db.ArchiveAccountInstrumentOwnership(ctx, instrumentOwnershipID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving instrument ownership")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.AccountInstrumentOwnershipArchivedServiceEventType, map[string]any{
-		keys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
+		mealplanningkeys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
 	}))
 
 	return nil

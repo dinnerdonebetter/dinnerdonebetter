@@ -6,12 +6,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
+	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -67,8 +67,8 @@ func (m *settingsManager) CreateServiceSetting(ctx context.Context, input *setti
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
 	}
-	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, input.ID)
+	logger := m.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingIDKey, input.ID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingIDKey, input.ID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating service setting creation input")
@@ -80,7 +80,7 @@ func (m *settingsManager) CreateServiceSetting(ctx context.Context, input *setti
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingCreatedServiceEventType, map[string]any{
-		keys.ServiceSettingIDKey: created.ID,
+		settingskeys.ServiceSettingIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -114,15 +114,15 @@ func (m *settingsManager) ArchiveServiceSetting(ctx context.Context, serviceSett
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, serviceSettingID)
-	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
+	logger := m.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingIDKey, serviceSettingID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingIDKey, serviceSettingID)
 
 	if err := m.repo.ArchiveServiceSetting(ctx, serviceSettingID); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingArchivedServiceEventType, map[string]any{
-		keys.ServiceSettingIDKey: serviceSettingID,
+		settingskeys.ServiceSettingIDKey: serviceSettingID,
 	}))
 
 	return nil
@@ -172,8 +172,8 @@ func (m *settingsManager) CreateServiceSettingConfiguration(ctx context.Context,
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
 	}
-	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, input.ID)
+	logger := m.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingConfigurationIDKey, input.ID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, input.ID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating service setting configuration creation input")
@@ -185,7 +185,7 @@ func (m *settingsManager) CreateServiceSettingConfiguration(ctx context.Context,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingConfigurationCreatedServiceEventType, map[string]any{
-		keys.ServiceSettingConfigurationIDKey: created.ID,
+		settingskeys.ServiceSettingConfigurationIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -198,15 +198,15 @@ func (m *settingsManager) UpdateServiceSettingConfiguration(ctx context.Context,
 	if updated == nil {
 		return internalerrors.ErrNilInputParameter
 	}
-	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, updated.ID)
+	logger := m.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingConfigurationIDKey, updated.ID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, updated.ID)
 
 	if err := m.repo.UpdateServiceSettingConfiguration(ctx, updated); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingConfigurationUpdatedServiceEventType, map[string]any{
-		keys.ServiceSettingConfigurationIDKey: updated.ID,
+		settingskeys.ServiceSettingConfigurationIDKey: updated.ID,
 	}))
 
 	return nil
@@ -216,15 +216,15 @@ func (m *settingsManager) ArchiveServiceSettingConfiguration(ctx context.Context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
-	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+	logger := m.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	if err := m.repo.ArchiveServiceSettingConfiguration(ctx, serviceSettingConfigurationID); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingConfigurationArchivedServiceEventType, map[string]any{
-		keys.ServiceSettingConfigurationIDKey: serviceSettingConfigurationID,
+		settingskeys.ServiceSettingConfigurationIDKey: serviceSettingConfigurationID,
 	}))
 
 	return nil

@@ -5,10 +5,10 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -28,14 +28,14 @@ func (q *repository) MealPlanGroceryListItemExists(ctx context.Context, mealPlan
 	if mealPlanID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanGroceryListItemID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	result, err := q.generatedQuerier.CheckMealPlanGroceryListItemExistence(ctx, q.readDB, &generated.CheckMealPlanGroceryListItemExistenceParams{
 		MealPlanID:                mealPlanID,
@@ -57,8 +57,8 @@ func (q *repository) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPl
 	if mealPlanGroceryListItem == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
 
 	validIngredient, err := q.GetValidIngredient(ctx, mealPlanGroceryListItem.Ingredient.ID)
 	if err != nil {
@@ -93,14 +93,14 @@ func (q *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 	if mealPlanID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanGroceryListItemID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	result, err := q.generatedQuerier.GetMealPlanGroceryListItem(ctx, q.readDB, &generated.GetMealPlanGroceryListItemParams{
 		MealPlanID:                mealPlanID,
@@ -216,8 +216,8 @@ func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 	if mealPlanID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -364,7 +364,7 @@ func (q *repository) createMealPlanGroceryListItem(ctx context.Context, querier 
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.MealPlanGroceryListItemIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, input.ID)
 
 	// create the meal plan grocery list.
 	if err := q.generatedQuerier.CreateMealPlanGroceryListItem(ctx, querier, &generated.CreateMealPlanGroceryListItemParams{
@@ -415,7 +415,7 @@ func (q *repository) createMealPlanGroceryListItem(ctx context.Context, querier 
 		x.PurchasedMeasurementUnit = &mealplanning.ValidMeasurementUnit{ID: *input.PurchasedMeasurementUnitID}
 	}
 
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, x.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, x.ID)
 	logger.Info("meal plan grocery list created")
 
 	return x, nil
@@ -434,8 +434,8 @@ func (q *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.MealPlanGroceryListItemIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, updated.ID)
 
 	var purchasedMeasurementUnitID *string
 	if updated.PurchasedMeasurementUnit != nil {
@@ -479,8 +479,8 @@ func (q *repository) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPla
 	if mealPlanGroceryListItemID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
-	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+	logger = logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanGroceryListItem(ctx, q.writeDB, mealPlanGroceryListItemID)
 	if err != nil {

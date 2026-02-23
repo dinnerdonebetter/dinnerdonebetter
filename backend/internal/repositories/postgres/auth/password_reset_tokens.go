@@ -5,10 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	authkeys "github.com/dinnerdonebetter/backend/internal/domain/auth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth/generated"
 )
@@ -29,7 +29,7 @@ func (r *repository) GetPasswordResetTokenByToken(ctx context.Context, token str
 	if token == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
-	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, token)
+	tracing.AttachToSpan(span, authkeys.PasswordResetTokenIDKey, token)
 
 	result, err := r.generatedQuerier.GetPasswordResetToken(ctx, r.readDB, token)
 	if err != nil {
@@ -57,8 +57,8 @@ func (r *repository) CreatePasswordResetToken(ctx context.Context, input *auth.P
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.PasswordResetTokenIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, input.ID)
+	logger := r.logger.WithValue(authkeys.PasswordResetTokenIDKey, input.ID)
+	tracing.AttachToSpan(span, authkeys.PasswordResetTokenIDKey, input.ID)
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -113,8 +113,8 @@ func (r *repository) RedeemPasswordResetToken(ctx context.Context, passwordReset
 	if passwordResetTokenID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.PasswordResetTokenIDKey, passwordResetTokenID)
-	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, passwordResetTokenID)
+	logger = logger.WithValue(authkeys.PasswordResetTokenIDKey, passwordResetTokenID)
+	tracing.AttachToSpan(span, authkeys.PasswordResetTokenIDKey, passwordResetTokenID)
 
 	token, err := r.generatedQuerier.GetPasswordResetTokenByID(ctx, r.readDB, passwordResetTokenID)
 	if err != nil {

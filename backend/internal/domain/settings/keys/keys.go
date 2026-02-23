@@ -1,6 +1,8 @@
 package keys
 
 const (
+	idSuffix = ".id"
+
 	// ServiceSettingIDKey is the standard key for referring to a service setting's ID.
 	ServiceSettingIDKey = "service_setting" + idSuffix
 	// ServiceSettingNameKey is the standard key for referring to a service setting's name.

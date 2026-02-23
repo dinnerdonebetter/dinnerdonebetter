@@ -5,10 +5,10 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -28,14 +28,14 @@ func (q *repository) RecipeStepExists(ctx context.Context, recipeID, recipeStepI
 	if recipeID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	result, err := q.generatedQuerier.CheckRecipeStepExistence(ctx, q.readDB, &generated.CheckRecipeStepExistenceParams{
 		RecipeID:     recipeID,
@@ -58,14 +58,14 @@ func (q *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	result, err := q.generatedQuerier.GetRecipeStep(ctx, q.readDB, &generated.GetRecipeStepParams{
 		RecipeID:     recipeID,
@@ -203,8 +203,8 @@ func (q *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 	if recipeStepID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	result, err := q.generatedQuerier.GetRecipeStepByRecipeID(ctx, querier, recipeStepID)
 	if err != nil {
@@ -339,8 +339,8 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -556,7 +556,7 @@ func (q *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		StartTimerAutomatically: input.StartTimerAutomatically,
 		CreatedAt:               q.CurrentTime(),
 	}
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, x.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, x.ID)
 
 	for i, ingredientInput := range input.Ingredients {
 		ingredientInput.BelongsToRecipeStep = x.ID
@@ -624,8 +624,8 @@ func (q *repository) UpdateRecipeStep(ctx context.Context, updated *mealplanning
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.RecipeStepIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.RecipeStepIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeStep(ctx, q.writeDB, &generated.UpdateRecipeStepParams{
 		ConditionExpression:           updated.ConditionExpression,
@@ -658,14 +658,14 @@ func (q *repository) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStep
 	if recipeID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+	logger = logger.WithValue(mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStep(ctx, q.writeDB, &generated.ArchiveRecipeStepParams{
 		BelongsToRecipe: recipeID,

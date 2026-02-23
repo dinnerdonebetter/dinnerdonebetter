@@ -3,10 +3,10 @@ package manager
 import (
 	"context"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -61,7 +61,7 @@ func (m *uploadedMediaManager) CreateUploadedMedia(ctx context.Context, input *u
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.UserIDKey, input.CreatedByUser)
+	logger := m.logger.WithSpan(span).WithValue(identitykeys.UserIDKey, input.CreatedByUser)
 
 	created, err := m.repo.CreateUploadedMedia(ctx, input)
 	if err != nil {

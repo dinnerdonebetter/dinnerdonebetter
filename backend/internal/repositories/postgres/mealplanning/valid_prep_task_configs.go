@@ -5,10 +5,10 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -28,8 +28,8 @@ func (q *repository) ValidPrepTaskConfigExists(ctx context.Context, validPrepTas
 	if validPrepTaskConfigID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	logger = logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
 	result, err := q.generatedQuerier.CheckValidPrepTaskConfigExistence(ctx, q.readDB, validPrepTaskConfigID)
 	if err != nil {
@@ -49,8 +49,8 @@ func (q *repository) GetValidPrepTaskConfig(ctx context.Context, validPrepTaskCo
 	if validPrepTaskConfigID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	logger = logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
 	result, err := q.generatedQuerier.GetValidPrepTaskConfig(ctx, q.readDB, validPrepTaskConfigID)
 	if err != nil {
@@ -305,8 +305,8 @@ func (q *repository) GetValidPrepTaskConfigsForPreparation(ctx context.Context, 
 	if preparationID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, preparationID)
+	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, preparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, preparationID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -455,8 +455,8 @@ func (q *repository) GetValidPrepTaskConfigsForIngredient(ctx context.Context, i
 	if ingredientID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredientID)
+	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, ingredientID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -605,14 +605,14 @@ func (q *repository) GetValidPrepTaskConfigsForIngredientAndPreparation(ctx cont
 	if ingredientID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredientID)
+	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, ingredientID)
 
 	if preparationID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, preparationID)
+	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, preparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, preparationID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -760,8 +760,8 @@ func (q *repository) CreateValidPrepTaskConfig(ctx context.Context, input *mealp
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, input.ID)
-	logger := q.logger.WithValue(keys.ValidPrepTaskConfigIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, input.ID)
 
 	// create the valid prep task config.
 	if err := q.generatedQuerier.CreateValidPrepTaskConfig(ctx, q.writeDB, &generated.CreateValidPrepTaskConfigParams{
@@ -822,8 +822,8 @@ func (q *repository) UpdateValidPrepTaskConfig(ctx context.Context, updated *mea
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidPrepTaskConfigIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidPrepTaskConfig(ctx, q.writeDB, &generated.UpdateValidPrepTaskConfigParams{
 		ValidIngredientID:                  updated.Ingredient.ID,
@@ -856,8 +856,8 @@ func (q *repository) ArchiveValidPrepTaskConfig(ctx context.Context, validPrepTa
 	if validPrepTaskConfigID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	logger = logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveValidPrepTaskConfig(ctx, q.writeDB, validPrepTaskConfigID)
 	if err != nil {

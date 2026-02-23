@@ -5,9 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
@@ -121,6 +122,6 @@ func (s *service) RevokeHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing user logged out event")
 	}
 
-	logger.WithValue(keys.OAuth2ClientIDKey, clientID).WithValue(keys.UserIDKey, tokenInfo.BelongsToUser).Info("oauth2 token revoked")
+	logger.WithValue(oauthkeys.OAuth2ClientIDKey, clientID).WithValue(identitykeys.UserIDKey, tokenInfo.BelongsToUser).Info("oauth2 token revoked")
 	res.WriteHeader(http.StatusOK)
 }

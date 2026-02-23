@@ -3,10 +3,10 @@ package grpc
 import (
 	"context"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -17,7 +17,7 @@ func (s *serviceImpl) ArchiveAccount(ctx context.Context, request *identitysvc.A
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountIDKey: request.AccountId,
+		identitykeys.AccountIDKey: request.AccountId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -161,7 +161,7 @@ func (s *serviceImpl) SetDefaultAccount(ctx context.Context, request *identitysv
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountIDKey: request.AccountId,
+		identitykeys.AccountIDKey: request.AccountId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -186,7 +186,7 @@ func (s *serviceImpl) TransferAccountOwnership(ctx context.Context, request *ide
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountIDKey: request.AccountId,
+		identitykeys.AccountIDKey: request.AccountId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -213,7 +213,7 @@ func (s *serviceImpl) UpdateAccount(ctx context.Context, request *identitysvc.Up
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountIDKey: request.AccountId,
+		identitykeys.AccountIDKey: request.AccountId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -239,7 +239,7 @@ func (s *serviceImpl) UpdateAccountMemberPermissions(ctx context.Context, reques
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UserIDKey: request.UserId,
+		identitykeys.UserIDKey: request.UserId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)

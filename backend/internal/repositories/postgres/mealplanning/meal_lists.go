@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
@@ -104,8 +105,8 @@ func (q *repository) CreateMealList(ctx context.Context, input *types.MealListDa
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.MealListIDKey, input.ID)
-	logger := q.logger.WithValue(keys.MealListIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealListIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.MealListIDKey, input.ID)
 
 	if err := q.generatedQuerier.CreateMealList(ctx, q.writeDB, &generated.CreateMealListParams{
 		ID:            input.ID,
@@ -137,8 +138,8 @@ func (q *repository) UpdateMealList(ctx context.Context, updated *types.MealList
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.MealListIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.MealListIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.MealListIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealListIDKey, updated.ID)
 
 	rowsAffected, err := q.generatedQuerier.UpdateMealList(ctx, q.writeDB, &generated.UpdateMealListParams{
 		Name:          updated.Name,
@@ -169,14 +170,14 @@ func (q *repository) ArchiveMealList(ctx context.Context, mealListID, userID str
 	if userID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if mealListID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealListIDKey, mealListID)
-	tracing.AttachToSpan(span, keys.MealListIDKey, mealListID)
+	logger = logger.WithValue(mealplanningkeys.MealListIDKey, mealListID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealListIDKey, mealListID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveMealList(ctx, q.writeDB, &generated.ArchiveMealListParams{
 		BelongsToUser: userID,

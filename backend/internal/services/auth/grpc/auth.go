@@ -6,11 +6,11 @@ import (
 	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/converters"
 	identityconverters "github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
@@ -116,7 +116,7 @@ func (s *serviceImpl) CheckPermissions(ctx context.Context, request *authsvc.Use
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	input := converters.ConvertGRPCCheckPermissionsRequestToUserPermissionsRequestInput(request)
 	result, err := s.authManager.CheckUserPermissions(ctx, input)
@@ -144,7 +144,7 @@ func (s *serviceImpl) GetActiveAccount(ctx context.Context, request *authsvc.Get
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	account, err := s.identityDataManager.GetAccount(ctx, sessionContextData.GetActiveAccountID())
 	if err != nil {
@@ -174,7 +174,7 @@ func (s *serviceImpl) GetSelf(ctx context.Context, request *authsvc.GetSelfReque
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	user, err := s.identityDataManager.GetUser(ctx, sessionContextData.GetUserID())
 	if err != nil {
@@ -204,7 +204,7 @@ func (s *serviceImpl) RedeemPasswordResetToken(ctx context.Context, request *aut
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	input := converters.ConvertGRPCRedeemPasswordResetTokenRequestToPasswordResetTokenRedemptionRequestInput(request)
 	if err = s.authManager.PasswordResetTokenRedemption(ctx, input); err != nil {
@@ -230,7 +230,7 @@ func (s *serviceImpl) RefreshTOTPSecret(ctx context.Context, request *authsvc.Re
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	input := converters.ConvertGRPCRefreshTOTPSecretRequestToTOTPSecretRefreshInput(request)
 	totpSecretResponse, err := s.authManager.NewTOTPSecret(ctx, input)
@@ -258,7 +258,7 @@ func (s *serviceImpl) RequestEmailVerificationEmail(ctx context.Context, request
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	if err = s.authManager.RequestEmailVerificationEmail(ctx); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to request email verification email")
@@ -283,7 +283,7 @@ func (s *serviceImpl) RequestPasswordResetToken(ctx context.Context, request *au
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	input := converters.ConvertGRPCRequestPasswordResetTokenRequestToPasswordResetTokenCreationRequestInput(request)
 	if err = s.authManager.CreatePasswordResetToken(ctx, input); err != nil {
@@ -309,7 +309,7 @@ func (s *serviceImpl) RequestUsernameReminder(ctx context.Context, request *auth
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	input := converters.ConvertGRPCRequestUsernameReminderRequestToUsernameReminderRequestInput(request)
 	if err = s.authManager.RequestUsernameReminder(ctx, input); err != nil {
@@ -335,7 +335,7 @@ func (s *serviceImpl) VerifyEmailAddress(ctx context.Context, request *authsvc.V
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	input := converters.ConvertGRPCVerifyEmailAddressRequestToEmailAddressVerificationRequestInput(request)
 	if err = s.authManager.VerifyUserEmailAddress(ctx, input); err != nil {
@@ -356,7 +356,7 @@ func (s *serviceImpl) VerifyTOTPSecret(ctx context.Context, request *authsvc.Ver
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.UserIDKey, request.UserId)
+	logger := s.logger.WithSpan(span).WithValue(identitykeys.UserIDKey, request.UserId)
 
 	input := converters.ConvertGRPCVerifyTOTPSecretRequestToTOTPSecretVerificationInput(request)
 	if err := s.authManager.TOTPSecretVerification(ctx, input); err != nil {
@@ -383,7 +383,7 @@ func (s *serviceImpl) UpdatePassword(ctx context.Context, request *authsvc.Updat
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	input := converters.ConvertGRPCUpdatePasswordRequestToPasswordUpdateInput(request)
 	if err = s.authManager.UpdatePassword(ctx, input); err != nil {

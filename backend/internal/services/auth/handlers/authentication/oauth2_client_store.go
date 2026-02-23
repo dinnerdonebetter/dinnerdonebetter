@@ -4,8 +4,8 @@ import (
 	"context"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -35,7 +35,7 @@ func (s *oauth2ClientStoreImpl) GetByID(ctx context.Context, id string) (oauth2.
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.OAuth2ClientIDKey, id)
+	logger := s.logger.WithValue(oauthkeys.OAuth2ClientIDKey, id)
 	logger.Debug("getting oauth2 client by ID")
 
 	client, err := s.dataManager.GetOAuth2ClientByClientID(ctx, id)

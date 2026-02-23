@@ -5,12 +5,13 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
+	waitlistkeys "github.com/dinnerdonebetter/backend/internal/domain/waitlists/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists/generated"
 )
@@ -34,8 +35,8 @@ func (r *Repository) WaitlistIsNotExpired(ctx context.Context, waitlistID string
 	if waitlistID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.WaitlistIDKey, waitlistID)
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
+	logger = logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
 
 	exists, err := r.generatedQuerier.CheckWaitlistExistence(ctx, r.readDB, waitlistID)
 	if err != nil {
@@ -64,8 +65,8 @@ func (r *Repository) GetWaitlist(ctx context.Context, waitlistID string) (*types
 	if waitlistID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.WaitlistIDKey, waitlistID)
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
+	logger = logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
 
 	result, err := r.generatedQuerier.GetWaitlist(ctx, r.readDB, waitlistID)
 	if err != nil {
@@ -210,8 +211,8 @@ func (r *Repository) CreateWaitlist(ctx context.Context, input *types.WaitlistDa
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := r.logger.WithValue(keys.WaitlistIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, input.ID)
+	logger := r.logger.WithValue(waitlistkeys.WaitlistIDKey, input.ID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, input.ID)
 
 	if err := r.generatedQuerier.CreateWaitlist(ctx, r.writeDB, &generated.CreateWaitlistParams{
 		ID:          input.ID,
@@ -251,8 +252,8 @@ func (r *Repository) UpdateWaitlist(ctx context.Context, updated *types.Waitlist
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.WaitlistIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, updated.ID)
+	logger := r.logger.WithValue(waitlistkeys.WaitlistIDKey, updated.ID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, updated.ID)
 
 	if _, err := r.generatedQuerier.UpdateWaitlist(ctx, r.writeDB, &generated.UpdateWaitlistParams{
 		Name:        updated.Name,
@@ -283,8 +284,8 @@ func (r *Repository) ArchiveWaitlist(ctx context.Context, waitlistID string) err
 	if waitlistID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := r.logger.WithValue(keys.WaitlistIDKey, waitlistID)
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
+	logger := r.logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
 
 	recordsChanged, err := r.generatedQuerier.ArchiveWaitlist(ctx, r.writeDB, waitlistID)
 	if err != nil {
@@ -318,14 +319,14 @@ func (r *Repository) GetWaitlistSignup(ctx context.Context, waitlistSignupID, wa
 	if waitlistSignupID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.WaitlistSignupIDKey, waitlistSignupID)
-	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, waitlistSignupID)
+	logger = logger.WithValue(waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)
 
 	if waitlistID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.WaitlistIDKey, waitlistID)
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
+	logger = logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
 
 	result, err := r.generatedQuerier.GetWaitlistSignup(ctx, r.readDB, &generated.GetWaitlistSignupParams{
 		ID:                waitlistSignupID,
@@ -359,8 +360,8 @@ func (r *Repository) GetWaitlistSignupsForWaitlist(ctx context.Context, waitlist
 	if waitlistID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.WaitlistIDKey, waitlistID)
-	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
+	logger = logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -425,8 +426,8 @@ func (r *Repository) GetWaitlistSignupsForUser(ctx context.Context, userID strin
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -488,8 +489,8 @@ func (r *Repository) CreateWaitlistSignup(ctx context.Context, input *types.Wait
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := r.logger.WithValue(keys.WaitlistSignupIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, input.ID)
+	logger := r.logger.WithValue(waitlistkeys.WaitlistSignupIDKey, input.ID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, input.ID)
 
 	if err := r.generatedQuerier.CreateWaitlistSignup(ctx, r.writeDB, &generated.CreateWaitlistSignupParams{
 		ID:                input.ID,
@@ -532,8 +533,8 @@ func (r *Repository) UpdateWaitlistSignup(ctx context.Context, updated *types.Wa
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.WaitlistSignupIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, updated.ID)
+	logger := r.logger.WithValue(waitlistkeys.WaitlistSignupIDKey, updated.ID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, updated.ID)
 
 	if _, err := r.generatedQuerier.UpdateWaitlistSignup(ctx, r.writeDB, &generated.UpdateWaitlistSignupParams{
 		Notes: updated.Notes,
@@ -563,8 +564,8 @@ func (r *Repository) ArchiveWaitlistSignup(ctx context.Context, waitlistSignupID
 	if waitlistSignupID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := r.logger.WithValue(keys.WaitlistSignupIDKey, waitlistSignupID)
-	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, waitlistSignupID)
+	logger := r.logger.WithValue(waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)
+	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)
 
 	recordsChanged, err := r.generatedQuerier.ArchiveWaitlistSignup(ctx, r.writeDB, waitlistSignupID)
 	if err != nil {

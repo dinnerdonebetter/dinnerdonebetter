@@ -6,11 +6,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments/generated"
 )
@@ -24,8 +24,8 @@ func (r *repository) CreatePaymentTransaction(ctx context.Context, input *paymen
 	defer span.End()
 
 	logger := r.logger.Clone()
-	logger = logger.WithValue(keys.PaymentTransactionIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.PaymentTransactionIDKey, input.ID)
+	logger = logger.WithValue(paymentskeys.PaymentTransactionIDKey, input.ID)
+	tracing.AttachToSpan(span, paymentskeys.PaymentTransactionIDKey, input.ID)
 
 	arg := &generated.CreatePaymentTransactionParams{
 		ID:                    input.ID,

@@ -7,12 +7,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -227,9 +228,9 @@ func (m *validEnumerationManager) SearchValidIngredientGroups(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
 
 	results, err := m.db.SearchForValidIngredientGroups(ctx, query, filter)
 	if err != nil {
@@ -281,7 +282,7 @@ func (m *validEnumerationManager) CreateValidIngredientGroup(ctx context.Context
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientGroupCreatedServiceEventType, map[string]any{
-		keys.ValidIngredientGroupIDKey: created.ID,
+		mealplanningkeys.ValidIngredientGroupIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -292,8 +293,8 @@ func (m *validEnumerationManager) ReadValidIngredientGroup(ctx context.Context, 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	result, err := m.db.GetValidIngredientGroup(ctx, validIngredientGroupID)
 	if err != nil {
@@ -308,8 +309,8 @@ func (m *validEnumerationManager) UpdateValidIngredientGroup(ctx context.Context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -326,7 +327,7 @@ func (m *validEnumerationManager) UpdateValidIngredientGroup(ctx context.Context
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientGroupUpdatedServiceEventType, map[string]any{
-		keys.ValidIngredientGroupIDKey: existingValidIngredientGroup.ID,
+		mealplanningkeys.ValidIngredientGroupIDKey: existingValidIngredientGroup.ID,
 	}))
 
 	existingValidIngredientGroup, err = m.db.GetValidIngredientGroup(ctx, validIngredientGroupID)
@@ -342,15 +343,15 @@ func (m *validEnumerationManager) ArchiveValidIngredientGroup(ctx context.Contex
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	if err := m.db.ArchiveValidIngredientGroup(ctx, validIngredientGroupID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientGroupArchivedServiceEventType, map[string]any{
-		keys.ValidIngredientGroupIDKey: validIngredientGroupID,
+		mealplanningkeys.ValidIngredientGroupIDKey: validIngredientGroupID,
 	}))
 
 	return nil
@@ -398,7 +399,7 @@ func (m *validEnumerationManager) CreateValidIngredientMeasurementUnit(ctx conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitCreatedServiceEventType, map[string]any{
-		keys.ValidIngredientMeasurementUnitIDKey: created.ID,
+		mealplanningkeys.ValidIngredientMeasurementUnitIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -409,8 +410,8 @@ func (m *validEnumerationManager) ReadValidIngredientMeasurementUnit(ctx context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	result, err := m.db.GetValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID)
 	if err != nil {
@@ -425,8 +426,8 @@ func (m *validEnumerationManager) UpdateValidIngredientMeasurementUnit(ctx conte
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -443,7 +444,7 @@ func (m *validEnumerationManager) UpdateValidIngredientMeasurementUnit(ctx conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitUpdatedServiceEventType, map[string]any{
-		keys.ValidIngredientMeasurementUnitIDKey: existingValidIngredientMeasurementUnit.ID,
+		mealplanningkeys.ValidIngredientMeasurementUnitIDKey: existingValidIngredientMeasurementUnit.ID,
 	}))
 
 	existingValidIngredientMeasurementUnit, err = m.db.GetValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID)
@@ -459,15 +460,15 @@ func (m *validEnumerationManager) ArchiveValidIngredientMeasurementUnit(ctx cont
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	if err := m.db.ArchiveValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient measurement unit")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitArchivedServiceEventType, map[string]any{
-		keys.ValidIngredientMeasurementUnitIDKey: validIngredientMeasurementUnitID,
+		mealplanningkeys.ValidIngredientMeasurementUnitIDKey: validIngredientMeasurementUnitID,
 	}))
 
 	return nil
@@ -483,8 +484,8 @@ func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByIngredi
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 
 	results, err := m.db.GetValidIngredientMeasurementUnitsForIngredient(ctx, validIngredientID, filter)
 	if err != nil {
@@ -504,8 +505,8 @@ func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByMeasure
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	results, err := m.db.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, validMeasurementUnitID, filter)
 	if err != nil {
@@ -557,7 +558,7 @@ func (m *validEnumerationManager) CreateValidIngredientPreparation(ctx context.C
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationCreatedServiceEventType, map[string]any{
-		keys.ValidIngredientPreparationIDKey: created.ID,
+		mealplanningkeys.ValidIngredientPreparationIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -568,8 +569,8 @@ func (m *validEnumerationManager) ReadValidIngredientPreparation(ctx context.Con
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	result, err := m.db.GetValidIngredientPreparation(ctx, validIngredientPreparationID)
 	if err != nil {
@@ -584,8 +585,8 @@ func (m *validEnumerationManager) UpdateValidIngredientPreparation(ctx context.C
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -602,7 +603,7 @@ func (m *validEnumerationManager) UpdateValidIngredientPreparation(ctx context.C
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationUpdatedServiceEventType, map[string]any{
-		keys.ValidIngredientPreparationIDKey: existingValidIngredientPreparation.ID,
+		mealplanningkeys.ValidIngredientPreparationIDKey: existingValidIngredientPreparation.ID,
 	}))
 
 	existingValidIngredientPreparation, err = m.db.GetValidIngredientPreparation(ctx, validIngredientPreparationID)
@@ -618,15 +619,15 @@ func (m *validEnumerationManager) ArchiveValidIngredientPreparation(ctx context.
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	if err := m.db.ArchiveValidIngredientPreparation(ctx, validIngredientPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationArchivedServiceEventType, map[string]any{
-		keys.ValidIngredientPreparationIDKey: validIngredientPreparationID,
+		mealplanningkeys.ValidIngredientPreparationIDKey: validIngredientPreparationID,
 	}))
 
 	return nil
@@ -642,8 +643,8 @@ func (m *validEnumerationManager) SearchValidIngredientPreparationsByIngredient(
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, ingredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, ingredientID)
 
 	results, err := m.db.GetValidIngredientPreparationsForIngredient(ctx, ingredientID, filter)
 	if err != nil {
@@ -663,8 +664,8 @@ func (m *validEnumerationManager) SearchValidIngredientPreparationsByPreparation
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	results, err := m.db.GetValidIngredientPreparationsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
@@ -716,7 +717,7 @@ func (m *validEnumerationManager) CreateValidPrepTaskConfig(ctx context.Context,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPrepTaskConfigCreatedServiceEventType, map[string]any{
-		keys.ValidPrepTaskConfigIDKey: created.ID,
+		mealplanningkeys.ValidPrepTaskConfigIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -727,8 +728,8 @@ func (m *validEnumerationManager) ReadValidPrepTaskConfig(ctx context.Context, v
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
 	result, err := m.db.GetValidPrepTaskConfig(ctx, validPrepTaskConfigID)
 	if err != nil {
@@ -743,8 +744,8 @@ func (m *validEnumerationManager) UpdateValidPrepTaskConfig(ctx context.Context,
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -761,7 +762,7 @@ func (m *validEnumerationManager) UpdateValidPrepTaskConfig(ctx context.Context,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPrepTaskConfigUpdatedServiceEventType, map[string]any{
-		keys.ValidPrepTaskConfigIDKey: existingValidPrepTaskConfig.ID,
+		mealplanningkeys.ValidPrepTaskConfigIDKey: existingValidPrepTaskConfig.ID,
 	}))
 
 	existingValidPrepTaskConfig, err = m.db.GetValidPrepTaskConfig(ctx, validPrepTaskConfigID)
@@ -777,15 +778,15 @@ func (m *validEnumerationManager) ArchiveValidPrepTaskConfig(ctx context.Context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
-	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
 	if err := m.db.ArchiveValidPrepTaskConfig(ctx, validPrepTaskConfigID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid prep task config")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPrepTaskConfigArchivedServiceEventType, map[string]any{
-		keys.ValidPrepTaskConfigIDKey: validPrepTaskConfigID,
+		mealplanningkeys.ValidPrepTaskConfigIDKey: validPrepTaskConfigID,
 	}))
 
 	return nil
@@ -801,8 +802,8 @@ func (m *validEnumerationManager) SearchValidPrepTaskConfigsByIngredient(ctx con
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, ingredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, ingredientID)
 
 	results, err := m.db.GetValidPrepTaskConfigsForIngredient(ctx, ingredientID, filter)
 	if err != nil {
@@ -822,8 +823,8 @@ func (m *validEnumerationManager) SearchValidPrepTaskConfigsByPreparation(ctx co
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, preparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, preparationID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, preparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, preparationID)
 
 	results, err := m.db.GetValidPrepTaskConfigsForPreparation(ctx, preparationID, filter)
 	if err != nil {
@@ -844,10 +845,10 @@ func (m *validEnumerationManager) SearchValidPrepTaskConfigsByIngredientAndPrepa
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	logger := m.logger.WithSpan(span).
-		WithValue(keys.ValidIngredientIDKey, ingredientID).
-		WithValue(keys.ValidPreparationIDKey, preparationID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredientID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, preparationID)
+		WithValue(mealplanningkeys.ValidIngredientIDKey, ingredientID).
+		WithValue(mealplanningkeys.ValidPreparationIDKey, preparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, preparationID)
 
 	results, err := m.db.GetValidPrepTaskConfigsForIngredientAndPreparation(ctx, ingredientID, preparationID, filter)
 	if err != nil {
@@ -867,9 +868,9 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidIngredient]
@@ -954,7 +955,7 @@ func (m *validEnumerationManager) CreateValidIngredient(ctx context.Context, inp
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientCreatedServiceEventType, map[string]any{
-		keys.ValidIngredientIDKey: created.ID,
+		mealplanningkeys.ValidIngredientIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -965,8 +966,8 @@ func (m *validEnumerationManager) ReadValidIngredient(ctx context.Context, valid
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 
 	result, err := m.db.GetValidIngredient(ctx, validIngredientID)
 	if err != nil {
@@ -996,8 +997,8 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -1018,7 +1019,7 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientUpdatedServiceEventType, map[string]any{
-		keys.ValidIngredientIDKey: existingValidIngredient.ID,
+		mealplanningkeys.ValidIngredientIDKey: existingValidIngredient.ID,
 	}))
 
 	existingValidIngredient, err = m.db.GetValidIngredient(ctx, validIngredientID)
@@ -1034,15 +1035,15 @@ func (m *validEnumerationManager) ArchiveValidIngredient(ctx context.Context, va
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 
 	if err := m.db.ArchiveValidIngredient(ctx, validIngredientID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientArchivedServiceEventType, map[string]any{
-		keys.ValidIngredientIDKey: validIngredientID,
+		mealplanningkeys.ValidIngredientIDKey: validIngredientID,
 	}))
 
 	return nil
@@ -1058,9 +1059,9 @@ func (m *validEnumerationManager) SearchValidIngredientsByPreparationAndIngredie
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	validIngredients, err := m.db.SearchForValidIngredientsForPreparation(ctx, validPreparationID, query, filter)
 	if err != nil {
@@ -1112,7 +1113,7 @@ func (m *validEnumerationManager) CreateValidIngredientStateIngredient(ctx conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientCreatedServiceEventType, map[string]any{
-		keys.ValidIngredientStateIngredientIDKey: created.ID,
+		mealplanningkeys.ValidIngredientStateIngredientIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -1123,8 +1124,8 @@ func (m *validEnumerationManager) ReadValidIngredientStateIngredient(ctx context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	result, err := m.db.GetValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
 	if err != nil {
@@ -1139,8 +1140,8 @@ func (m *validEnumerationManager) UpdateValidIngredientStateIngredient(ctx conte
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -1157,7 +1158,7 @@ func (m *validEnumerationManager) UpdateValidIngredientStateIngredient(ctx conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientUpdatedServiceEventType, map[string]any{
-		keys.ValidIngredientStateIngredientIDKey: existingValidIngredientStateIngredient.ID,
+		mealplanningkeys.ValidIngredientStateIngredientIDKey: existingValidIngredientStateIngredient.ID,
 	}))
 
 	existingValidIngredientStateIngredient, err = m.db.GetValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
@@ -1173,15 +1174,15 @@ func (m *validEnumerationManager) ArchiveValidIngredientStateIngredient(ctx cont
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	if err := m.db.ArchiveValidIngredientStateIngredient(ctx, validIngredientStateIngredientID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientArchivedServiceEventType, map[string]any{
-		keys.ValidIngredientStateIngredientIDKey: validIngredientStateIngredientID,
+		mealplanningkeys.ValidIngredientStateIngredientIDKey: validIngredientStateIngredientID,
 	}))
 
 	return nil
@@ -1197,8 +1198,8 @@ func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredi
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 
 	results, err := m.db.GetValidIngredientStateIngredientsForIngredient(ctx, validIngredientID, filter)
 	if err != nil {
@@ -1218,8 +1219,8 @@ func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredi
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIDKey, validIngredientStateID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	results, err := m.db.GetValidIngredientStateIngredientsForIngredientState(ctx, validIngredientStateID, filter)
 	if err != nil {
@@ -1239,9 +1240,9 @@ func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidIngredientState]
@@ -1320,7 +1321,7 @@ func (m *validEnumerationManager) CreateValidIngredientState(ctx context.Context
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateCreatedServiceEventType, map[string]any{
-		keys.ValidIngredientStateIDKey: created.ID,
+		mealplanningkeys.ValidIngredientStateIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -1331,8 +1332,8 @@ func (m *validEnumerationManager) ReadValidIngredientState(ctx context.Context, 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIDKey, validIngredientStateID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	result, err := m.db.GetValidIngredientState(ctx, validIngredientStateID)
 	if err != nil {
@@ -1347,8 +1348,8 @@ func (m *validEnumerationManager) UpdateValidIngredientState(ctx context.Context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIDKey, validIngredientStateID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -1365,7 +1366,7 @@ func (m *validEnumerationManager) UpdateValidIngredientState(ctx context.Context
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateUpdatedServiceEventType, map[string]any{
-		keys.ValidIngredientStateIDKey: existingValidIngredientState.ID,
+		mealplanningkeys.ValidIngredientStateIDKey: existingValidIngredientState.ID,
 	}))
 
 	existingValidIngredientState, err = m.db.GetValidIngredientState(ctx, validIngredientStateID)
@@ -1381,15 +1382,15 @@ func (m *validEnumerationManager) ArchiveValidIngredientState(ctx context.Contex
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientStateIDKey, validIngredientStateID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	if err := m.db.ArchiveValidIngredientState(ctx, validIngredientStateID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateArchivedServiceEventType, map[string]any{
-		keys.ValidIngredientStateIDKey: validIngredientStateID,
+		mealplanningkeys.ValidIngredientStateIDKey: validIngredientStateID,
 	}))
 
 	return nil
@@ -1405,9 +1406,9 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidMeasurementUnit]
@@ -1454,8 +1455,8 @@ func (m *validEnumerationManager) SearchValidMeasurementUnitsByIngredientID(ctx 
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 
 	validMeasurementUnits, err := m.db.ValidMeasurementUnitsForIngredientID(ctx, validIngredientID, filter)
 	if err != nil {
@@ -1507,7 +1508,7 @@ func (m *validEnumerationManager) CreateValidMeasurementUnit(ctx context.Context
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitCreatedServiceEventType, map[string]any{
-		keys.ValidMeasurementUnitIDKey: created.ID,
+		mealplanningkeys.ValidMeasurementUnitIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -1518,7 +1519,7 @@ func (m *validEnumerationManager) ReadValidMeasurementUnit(ctx context.Context, 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	result, err := m.db.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
 	if err != nil {
@@ -1533,8 +1534,8 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnit(ctx context.Context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -1551,7 +1552,7 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnit(ctx context.Context
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitUpdatedServiceEventType, map[string]any{
-		keys.ValidMeasurementUnitIDKey: existingValidMeasurementUnit.ID,
+		mealplanningkeys.ValidMeasurementUnitIDKey: existingValidMeasurementUnit.ID,
 	}))
 
 	existingValidMeasurementUnit, err = m.db.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
@@ -1567,15 +1568,15 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnit(ctx context.Contex
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	if err := m.db.ArchiveValidMeasurementUnit(ctx, validMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitArchivedServiceEventType, map[string]any{
-		keys.ValidMeasurementUnitIDKey: validMeasurementUnitID,
+		mealplanningkeys.ValidMeasurementUnitIDKey: validMeasurementUnitID,
 	}))
 
 	return nil
@@ -1591,9 +1592,9 @@ func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, qu
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidInstrument]
@@ -1678,7 +1679,7 @@ func (m *validEnumerationManager) CreateValidInstrument(ctx context.Context, inp
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentCreatedServiceEventType, map[string]any{
-		keys.ValidInstrumentIDKey: created.ID,
+		mealplanningkeys.ValidInstrumentIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -1689,7 +1690,7 @@ func (m *validEnumerationManager) ReadValidInstrument(ctx context.Context, valid
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidInstrumentIDKey, validInstrumentID)
 
 	result, err := m.db.GetValidInstrument(ctx, validInstrumentID)
 	if err != nil {
@@ -1719,8 +1720,8 @@ func (m *validEnumerationManager) UpdateValidInstrument(ctx context.Context, val
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidInstrumentIDKey, validInstrumentID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, validInstrumentID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -1737,7 +1738,7 @@ func (m *validEnumerationManager) UpdateValidInstrument(ctx context.Context, val
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentUpdatedServiceEventType, map[string]any{
-		keys.ValidInstrumentIDKey: existingValidInstrument.ID,
+		mealplanningkeys.ValidInstrumentIDKey: existingValidInstrument.ID,
 	}))
 
 	existingValidInstrument, err = m.db.GetValidInstrument(ctx, validInstrumentID)
@@ -1753,15 +1754,15 @@ func (m *validEnumerationManager) ArchiveValidInstrument(ctx context.Context, va
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidInstrumentIDKey, validInstrumentID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, validInstrumentID)
 
 	if err := m.db.ArchiveValidInstrument(ctx, validInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentArchivedServiceEventType, map[string]any{
-		keys.ValidInstrumentIDKey: validInstrumentID,
+		mealplanningkeys.ValidInstrumentIDKey: validInstrumentID,
 	}))
 
 	return nil
@@ -1772,8 +1773,8 @@ func (m *validEnumerationManager) ValidMeasurementUnitConversionsForMeasurementU
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -1810,7 +1811,7 @@ func (m *validEnumerationManager) CreateValidMeasurementUnitConversion(ctx conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitConversionCreatedServiceEventType, map[string]any{
-		keys.ValidMeasurementUnitConversionIDKey: created.ID,
+		mealplanningkeys.ValidMeasurementUnitConversionIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -1821,8 +1822,8 @@ func (m *validEnumerationManager) ReadValidMeasurementUnitConversion(ctx context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	result, err := m.db.GetValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
 	if err != nil {
@@ -1837,8 +1838,8 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnitConversion(ctx conte
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -1855,7 +1856,7 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnitConversion(ctx conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitConversionUpdatedServiceEventType, map[string]any{
-		keys.ValidMeasurementUnitConversionIDKey: existingValidMeasurementUnitConversion.ID,
+		mealplanningkeys.ValidMeasurementUnitConversionIDKey: existingValidMeasurementUnitConversion.ID,
 	}))
 
 	existingValidMeasurementUnitConversion, err = m.db.GetValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
@@ -1871,15 +1872,15 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnitConversion(ctx cont
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	if err := m.db.ArchiveValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit conversion")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitConversionArchivedServiceEventType, map[string]any{
-		keys.ValidMeasurementUnitConversionIDKey: validMeasurementUnitConversionID,
+		mealplanningkeys.ValidMeasurementUnitConversionIDKey: validMeasurementUnitConversionID,
 	}))
 
 	return nil
@@ -1927,7 +1928,7 @@ func (m *validEnumerationManager) CreateValidPreparationInstrument(ctx context.C
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentCreatedServiceEventType, map[string]any{
-		keys.ValidPreparationInstrumentIDKey: created.ID,
+		mealplanningkeys.ValidPreparationInstrumentIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -1938,8 +1939,8 @@ func (m *validEnumerationManager) ReadValidPreparationInstrument(ctx context.Con
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
-	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	result, err := m.db.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
 	if err != nil {
@@ -1954,8 +1955,8 @@ func (m *validEnumerationManager) UpdateValidPreparationInstrument(ctx context.C
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
-	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -1972,7 +1973,7 @@ func (m *validEnumerationManager) UpdateValidPreparationInstrument(ctx context.C
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentUpdatedServiceEventType, map[string]any{
-		keys.ValidPreparationInstrumentIDKey: existingValidPreparationInstrument.ID,
+		mealplanningkeys.ValidPreparationInstrumentIDKey: existingValidPreparationInstrument.ID,
 	}))
 
 	existingValidPreparationInstrument, err = m.db.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
@@ -1988,15 +1989,15 @@ func (m *validEnumerationManager) ArchiveValidPreparationInstrument(ctx context.
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
-	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	if err := m.db.ArchiveValidPreparationInstrument(ctx, validPreparationInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation instrument")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentArchivedServiceEventType, map[string]any{
-		keys.ValidPreparationInstrumentIDKey: validPreparationInstrumentID,
+		mealplanningkeys.ValidPreparationInstrumentIDKey: validPreparationInstrumentID,
 	}))
 
 	return nil
@@ -2012,8 +2013,8 @@ func (m *validEnumerationManager) SearchValidPreparationInstrumentsByPreparation
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	validPreparationInstruments, err := m.db.GetValidPreparationInstrumentsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
@@ -2033,8 +2034,8 @@ func (m *validEnumerationManager) SearchValidPreparationInstrumentsByInstrument(
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidInstrumentIDKey, validInstrumentID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, validInstrumentID)
 
 	validPreparationInstruments, err := m.db.GetValidPreparationInstrumentsForInstrument(ctx, validInstrumentID, filter)
 	if err != nil {
@@ -2054,9 +2055,9 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidPreparation]
@@ -2135,7 +2136,7 @@ func (m *validEnumerationManager) CreateValidPreparation(ctx context.Context, in
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationCreatedServiceEventType, map[string]any{
-		keys.ValidPreparationIDKey: created.ID,
+		mealplanningkeys.ValidPreparationIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -2146,8 +2147,8 @@ func (m *validEnumerationManager) ReadValidPreparation(ctx context.Context, vali
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	result, err := m.db.GetValidPreparation(ctx, validPreparationID)
 	if err != nil {
@@ -2193,7 +2194,7 @@ func (m *validEnumerationManager) UpdateValidPreparation(ctx context.Context, va
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationUpdatedServiceEventType, map[string]any{keys.ValidPreparationIDKey: existingValidPreparation.ID}))
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationUpdatedServiceEventType, map[string]any{mealplanningkeys.ValidPreparationIDKey: existingValidPreparation.ID}))
 
 	existingValidPreparation, err = m.db.GetValidPreparation(ctx, validPreparationID)
 	if err != nil {
@@ -2208,15 +2209,15 @@ func (m *validEnumerationManager) ArchiveValidPreparation(ctx context.Context, v
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	if err := m.db.ArchiveValidPreparation(ctx, validPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationArchivedServiceEventType, map[string]any{
-		keys.ValidPreparationIDKey: validPreparationID,
+		mealplanningkeys.ValidPreparationIDKey: validPreparationID,
 	}))
 
 	return nil
@@ -2264,7 +2265,7 @@ func (m *validEnumerationManager) CreateValidPreparationVessel(ctx context.Conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselCreatedServiceEventType, map[string]any{
-		keys.ValidPreparationVesselIDKey: created.ID,
+		mealplanningkeys.ValidPreparationVesselIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -2275,8 +2276,8 @@ func (m *validEnumerationManager) ReadValidPreparationVessel(ctx context.Context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
-	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	result, err := m.db.GetValidPreparationVessel(ctx, validPreparationVesselID)
 	if err != nil {
@@ -2291,8 +2292,8 @@ func (m *validEnumerationManager) UpdateValidPreparationVessel(ctx context.Conte
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
-	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -2309,7 +2310,7 @@ func (m *validEnumerationManager) UpdateValidPreparationVessel(ctx context.Conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselUpdatedServiceEventType, map[string]any{
-		keys.ValidPreparationVesselIDKey: existingValidPreparationVessel.ID,
+		mealplanningkeys.ValidPreparationVesselIDKey: existingValidPreparationVessel.ID,
 	}))
 
 	existingValidPreparationVessel, err = m.db.GetValidPreparationVessel(ctx, validPreparationVesselID)
@@ -2325,15 +2326,15 @@ func (m *validEnumerationManager) ArchiveValidPreparationVessel(ctx context.Cont
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
-	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	if err := m.db.ArchiveValidPreparationVessel(ctx, validPreparationVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation vessel")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselArchivedServiceEventType, map[string]any{
-		keys.ValidPreparationVesselIDKey: validPreparationVesselID,
+		mealplanningkeys.ValidPreparationVesselIDKey: validPreparationVesselID,
 	}))
 
 	return nil
@@ -2349,8 +2350,8 @@ func (m *validEnumerationManager) SearchValidPreparationVesselsByPreparation(ctx
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	validPreparationVessels, err := m.db.GetValidPreparationVesselsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
@@ -2370,8 +2371,8 @@ func (m *validEnumerationManager) SearchValidPreparationVesselsByVessel(ctx cont
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
 
 	validPreparationVessels, err := m.db.GetValidPreparationVesselsForVessel(ctx, validVesselID, filter)
 	if err != nil {
@@ -2391,9 +2392,9 @@ func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query 
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
 
 	var (
 		validVessels *filtering.QueryFilteredResult[types.ValidVessel]
@@ -2471,7 +2472,7 @@ func (m *validEnumerationManager) CreateValidVessel(ctx context.Context, input *
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidVesselCreatedServiceEventType, map[string]any{
-		keys.ValidVesselIDKey: created.ID,
+		mealplanningkeys.ValidVesselIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -2482,8 +2483,8 @@ func (m *validEnumerationManager) ReadValidVessel(ctx context.Context, validVess
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
 
 	result, err := m.db.GetValidVessel(ctx, validVesselID)
 	if err != nil {
@@ -2513,8 +2514,8 @@ func (m *validEnumerationManager) UpdateValidVessel(ctx context.Context, validVe
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
@@ -2531,7 +2532,7 @@ func (m *validEnumerationManager) UpdateValidVessel(ctx context.Context, validVe
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidVesselUpdatedServiceEventType, map[string]any{
-		keys.ValidVesselIDKey: existingValidVessel.ID,
+		mealplanningkeys.ValidVesselIDKey: existingValidVessel.ID,
 	}))
 
 	existingValidVessel, err = m.db.GetValidVessel(ctx, validVesselID)
@@ -2547,15 +2548,15 @@ func (m *validEnumerationManager) ArchiveValidVessel(ctx context.Context, validV
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
 
 	if err := m.db.ArchiveValidVessel(ctx, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidVesselArchivedServiceEventType, map[string]any{
-		keys.ValidVesselIDKey: validVesselID,
+		mealplanningkeys.ValidVesselIDKey: validVesselID,
 	}))
 
 	return nil

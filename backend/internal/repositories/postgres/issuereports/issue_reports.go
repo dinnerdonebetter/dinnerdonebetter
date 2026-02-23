@@ -5,12 +5,13 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/issuereports"
+	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports/generated"
 )
@@ -33,8 +34,8 @@ func (r *repository) GetIssueReport(ctx context.Context, issueReportID string) (
 	if issueReportID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.IssueReportIDKey, issueReportID)
-	tracing.AttachToSpan(span, keys.IssueReportIDKey, issueReportID)
+	logger = logger.WithValue(issuereportkeys.IssueReportIDKey, issueReportID)
+	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, issueReportID)
 
 	result, err := r.generatedQuerier.GetIssueReport(ctx, r.readDB, issueReportID)
 	if err != nil {
@@ -128,8 +129,8 @@ func (r *repository) GetIssueReportsForAccount(ctx context.Context, accountID st
 	if accountID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -196,8 +197,8 @@ func (r *repository) CreateIssueReport(ctx context.Context, input *types.IssueRe
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.AccountIDKey, input.BelongsToAccount)
-	logger = logger.WithValue(keys.AccountIDKey, input.BelongsToAccount)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, input.BelongsToAccount)
+	logger = logger.WithValue(identitykeys.AccountIDKey, input.BelongsToAccount)
 
 	logger.Debug("CreateIssueReport invoked")
 
@@ -245,7 +246,7 @@ func (r *repository) CreateIssueReport(ctx context.Context, input *types.IssueRe
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing database transaction")
 	}
 
-	tracing.AttachToSpan(span, keys.IssueReportIDKey, x.ID)
+	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, x.ID)
 
 	return x, nil
 }
@@ -260,8 +261,8 @@ func (r *repository) UpdateIssueReport(ctx context.Context, issueReport *types.I
 	if issueReport == nil {
 		return database.ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.IssueReportIDKey, issueReport.ID)
-	tracing.AttachToSpan(span, keys.IssueReportIDKey, issueReport.ID)
+	logger = logger.WithValue(issuereportkeys.IssueReportIDKey, issueReport.ID)
+	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, issueReport.ID)
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -453,9 +454,9 @@ func (r *repository) ArchiveIssueReport(ctx context.Context, issueReportID strin
 	if issueReportID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.IssueReportIDKey, issueReportID)
+	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, issueReportID)
 
-	logger := r.logger.WithValue(keys.IssueReportIDKey, issueReportID)
+	logger := r.logger.WithValue(issuereportkeys.IssueReportIDKey, issueReportID)
 
 	issueReport, err := r.GetIssueReport(ctx, issueReportID)
 	if err != nil {

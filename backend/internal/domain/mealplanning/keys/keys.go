@@ -1,6 +1,8 @@
 package keys
 
 const (
+	idSuffix = ".id"
+
 	// ValidInstrumentKey is the standard key for referring to a valid instrument.
 	ValidInstrumentKey = "valid_instrument"
 	// ValidInstrumentIDKey is the standard key for referring to a valid instrument's ID.

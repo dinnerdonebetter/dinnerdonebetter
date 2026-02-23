@@ -5,10 +5,10 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -26,7 +26,7 @@ func (q *repository) ValidPreparationVesselExists(ctx context.Context, validPrep
 	if validPreparationVesselID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validPreparationVesselID)
 
 	exists, err = q.generatedQuerier.CheckValidPreparationVesselExistence(ctx, q.readDB, validPreparationVesselID)
 	if err != nil {
@@ -44,7 +44,7 @@ func (q *repository) GetValidPreparationVessel(ctx context.Context, validPrepara
 	if validPreparationVesselID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validPreparationVesselID)
 
 	result, err := q.generatedQuerier.GetValidPreparationVessel(ctx, q.readDB, validPreparationVesselID)
 	if err != nil {
@@ -262,8 +262,8 @@ func (q *repository) GetValidPreparationVesselsForPreparation(ctx context.Contex
 	if preparationID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, preparationID)
+	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, preparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, preparationID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -399,8 +399,8 @@ func (q *repository) GetValidPreparationVesselsForVessel(ctx context.Context, ve
 	if vesselID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, vesselID)
-	logger = logger.WithValue(keys.ValidVesselIDKey, vesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, vesselID)
+	logger = logger.WithValue(mealplanningkeys.ValidVesselIDKey, vesselID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -633,8 +633,8 @@ func (q *repository) CreateValidPreparationVessel(ctx context.Context, input *me
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidPreparationVesselIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, input.ID)
 
 	// create the valid preparation vessel.
 	if err := q.generatedQuerier.CreateValidPreparationVessel(ctx, q.writeDB, &generated.CreateValidPreparationVesselParams{
@@ -685,8 +685,8 @@ func (q *repository) UpdateValidPreparationVessel(ctx context.Context, updated *
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidPreparationVesselIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidPreparationVessel(ctx, q.writeDB, &generated.UpdateValidPreparationVesselParams{
 		Notes:              updated.Notes,
@@ -710,8 +710,8 @@ func (q *repository) ArchiveValidPreparationVessel(ctx context.Context, validPre
 	if validPreparationVesselID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validPreparationVesselID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveValidPreparationVessel(ctx, q.writeDB, validPreparationVesselID)
 	if err != nil {

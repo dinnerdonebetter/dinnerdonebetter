@@ -6,11 +6,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy/generated"
 )
@@ -34,9 +34,9 @@ func (r *repository) CreateUserDataDisclosure(ctx context.Context, input *datapr
 	}
 
 	tracing.AttachToSpan(span, disclosureIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.UserIDKey, input.BelongsToUser)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, input.BelongsToUser)
 
-	logger := r.logger.WithValue(disclosureIDKey, input.ID).WithValue(keys.UserIDKey, input.BelongsToUser)
+	logger := r.logger.WithValue(disclosureIDKey, input.ID).WithValue(identitykeys.UserIDKey, input.BelongsToUser)
 	logger.Info("creating user data disclosure")
 
 	if err := r.generatedQuerier.CreateUserDataDisclosure(ctx, r.writeDB, &generated.CreateUserDataDisclosureParams{
@@ -115,8 +115,8 @@ func (r *repository) GetUserDataDisclosuresForUser(ctx context.Context, userID s
 		return nil, database.ErrInvalidIDProvided
 	}
 
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := r.logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()

@@ -3,10 +3,10 @@ package grpc
 import (
 	"context"
 
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -17,7 +17,7 @@ func (s *serviceImpl) AcceptAccountInvitation(ctx context.Context, request *iden
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInvitationIDKey: request.AccountInvitationId,
+		identitykeys.AccountInvitationIDKey: request.AccountInvitationId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -42,7 +42,7 @@ func (s *serviceImpl) RejectAccountInvitation(ctx context.Context, request *iden
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInvitationIDKey: request.AccountInvitationId,
+		identitykeys.AccountInvitationIDKey: request.AccountInvitationId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -67,7 +67,7 @@ func (s *serviceImpl) CancelAccountInvitation(ctx context.Context, request *iden
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInvitationIDKey: request.AccountInvitationId,
+		identitykeys.AccountInvitationIDKey: request.AccountInvitationId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)

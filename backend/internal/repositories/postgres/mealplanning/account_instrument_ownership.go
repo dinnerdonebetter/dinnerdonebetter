@@ -5,12 +5,13 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
@@ -33,14 +34,14 @@ func (q *repository) AccountInstrumentOwnershipExists(ctx context.Context, accou
 	if accountInstrumentOwnershipID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
-	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	logger = logger.WithValue(mealplanningkeys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	tracing.AttachToSpan(span, mealplanningkeys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
 	if accountID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	result, err := q.generatedQuerier.CheckAccountInstrumentOwnershipExistence(ctx, q.readDB, &generated.CheckAccountInstrumentOwnershipExistenceParams{
 		ID:               accountInstrumentOwnershipID,
@@ -63,14 +64,14 @@ func (q *repository) GetAccountInstrumentOwnership(ctx context.Context, accountI
 	if accountInstrumentOwnershipID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
-	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	logger = logger.WithValue(mealplanningkeys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	tracing.AttachToSpan(span, mealplanningkeys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
 	if accountID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	result, err := q.generatedQuerier.GetAccountInstrumentOwnership(ctx, q.readDB, &generated.GetAccountInstrumentOwnershipParams{
 		ID:               accountInstrumentOwnershipID,
@@ -189,8 +190,8 @@ func (q *repository) CreateAccountInstrumentOwnership(ctx context.Context, input
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, input.ID)
-	logger := q.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.AccountInstrumentOwnershipIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.AccountInstrumentOwnershipIDKey, input.ID)
 
 	// create the account instrument ownership.
 	if err := q.generatedQuerier.CreateAccountInstrumentOwnership(ctx, q.writeDB, &generated.CreateAccountInstrumentOwnershipParams{
@@ -235,8 +236,8 @@ func (q *repository) UpdateAccountInstrumentOwnership(ctx context.Context, updat
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.AccountInstrumentOwnershipIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.AccountInstrumentOwnershipIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateAccountInstrumentOwnership(ctx, q.writeDB, &generated.UpdateAccountInstrumentOwnershipParams{
 		Notes:             updated.Notes,
@@ -273,14 +274,14 @@ func (q *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, acco
 	if accountInstrumentOwnershipID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
-	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	logger = logger.WithValue(mealplanningkeys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	tracing.AttachToSpan(span, mealplanningkeys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
 	if accountID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveAccountInstrumentOwnership(ctx, q.writeDB, &generated.ArchiveAccountInstrumentOwnershipParams{
 		ID:               accountInstrumentOwnershipID,

@@ -8,10 +8,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -128,7 +129,7 @@ func buildClientInfoHandler() func(*http.Request) (string, string, error) {
 
 func buildPasswordAuthorizationHandler(logger logging.Logger, authenticator authentication.Authenticator, dataManager identitymanager.IdentityDataManager) func(context.Context, string, string, string) (string, error) {
 	return func(ctx context.Context, clientID, username, password string) (userID string, err error) {
-		l := logger.WithValue(keys.OAuth2ClientIDKey, clientID).WithValue(keys.UsernameKey, username)
+		l := logger.WithValue(oauthkeys.OAuth2ClientIDKey, clientID).WithValue(identitykeys.UsernameKey, username)
 		l.Info("PasswordAuthorizationHandler invoked")
 
 		user, err := dataManager.GetUserByUsername(ctx, username)

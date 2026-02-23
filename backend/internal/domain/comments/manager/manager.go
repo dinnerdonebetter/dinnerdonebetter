@@ -6,13 +6,14 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
+	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -59,7 +60,7 @@ func (m *commentsManager) CreateComment(ctx context.Context, input *comments.Com
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
 	}
-	logger := m.logger.WithSpan(span).WithValue(keys.UserIDKey, input.BelongsToUser)
+	logger := m.logger.WithSpan(span).WithValue(identitykeys.UserIDKey, input.BelongsToUser)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating comment creation input")
@@ -79,9 +80,9 @@ func (m *commentsManager) CreateComment(ctx context.Context, input *comments.Com
 		return nil, err
 	}
 
-	tracing.AttachToSpan(span, keys.CommentIDKey, created.ID)
+	tracing.AttachToSpan(span, commentskeys.CommentIDKey, created.ID)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, comments.CommentCreatedServiceEventType, map[string]any{
-		keys.CommentIDKey: created.ID,
+		commentskeys.CommentIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -108,8 +109,8 @@ func (m *commentsManager) UpdateComment(ctx context.Context, id, belongsToUser s
 	if input == nil {
 		return internalerrors.ErrNilInputParameter
 	}
-	logger := m.logger.WithSpan(span).WithValue(keys.CommentIDKey, id).WithValue(keys.UserIDKey, belongsToUser)
-	tracing.AttachToSpan(span, keys.CommentIDKey, id)
+	logger := m.logger.WithSpan(span).WithValue(commentskeys.CommentIDKey, id).WithValue(identitykeys.UserIDKey, belongsToUser)
+	tracing.AttachToSpan(span, commentskeys.CommentIDKey, id)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "validating comment update input")
@@ -120,7 +121,7 @@ func (m *commentsManager) UpdateComment(ctx context.Context, id, belongsToUser s
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, comments.CommentUpdatedServiceEventType, map[string]any{
-		keys.CommentIDKey: id,
+		commentskeys.CommentIDKey: id,
 	}))
 
 	return nil
@@ -130,15 +131,15 @@ func (m *commentsManager) ArchiveComment(ctx context.Context, id string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.CommentIDKey, id)
-	tracing.AttachToSpan(span, keys.CommentIDKey, id)
+	logger := m.logger.WithSpan(span).WithValue(commentskeys.CommentIDKey, id)
+	tracing.AttachToSpan(span, commentskeys.CommentIDKey, id)
 
 	if err := m.repo.ArchiveComment(ctx, id); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, comments.CommentArchivedServiceEventType, map[string]any{
-		keys.CommentIDKey: id,
+		commentskeys.CommentIDKey: id,
 	}))
 
 	return nil

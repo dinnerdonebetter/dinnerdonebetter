@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
@@ -21,7 +21,7 @@ func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanningsvc.
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealIDKey: request.MealId,
+		mealplanningkeys.MealIDKey: request.MealId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -51,7 +51,7 @@ func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -81,8 +81,8 @@ func (s *serviceImpl) ArchiveMealPlanEvent(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:      request.MealPlanId,
-		keys.MealPlanEventIDKey: request.MealPlanEventId,
+		mealplanningkeys.MealPlanIDKey:      request.MealPlanId,
+		mealplanningkeys.MealPlanEventIDKey: request.MealPlanEventId,
 	}, span, s.logger)
 
 	if err := s.mealPlanningManager.ArchiveMealPlanEvent(ctx, request.MealPlanId, request.MealPlanEventId); err != nil {
@@ -103,8 +103,8 @@ func (s *serviceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, reques
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:                request.MealPlanId,
-		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemId,
+		mealplanningkeys.MealPlanIDKey:                request.MealPlanId,
+		mealplanningkeys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemId,
 	}, span, s.logger)
 
 	if err := s.mealPlanningManager.ArchiveMealPlanGroceryListItem(ctx, request.MealPlanId, request.MealPlanGroceryListItemId); err != nil {
@@ -125,9 +125,9 @@ func (s *serviceImpl) ArchiveMealPlanOption(ctx context.Context, request *mealpl
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:       request.MealPlanId,
-		keys.MealPlanEventIDKey:  request.MealPlanEventId,
-		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		mealplanningkeys.MealPlanIDKey:       request.MealPlanId,
+		mealplanningkeys.MealPlanEventIDKey:  request.MealPlanEventId,
+		mealplanningkeys.MealPlanOptionIDKey: request.MealPlanOptionId,
 	}, span, s.logger)
 
 	if err := s.mealPlanningManager.ArchiveMealPlanOption(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId); err != nil {
@@ -148,10 +148,10 @@ func (s *serviceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *me
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteId,
-		keys.MealPlanOptionIDKey:     request.MealPlanOptionId,
-		keys.MealPlanEventIDKey:      request.MealPlanEventId,
-		keys.MealPlanIDKey:           request.MealPlanId,
+		mealplanningkeys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteId,
+		mealplanningkeys.MealPlanOptionIDKey:     request.MealPlanOptionId,
+		mealplanningkeys.MealPlanEventIDKey:      request.MealPlanEventId,
+		mealplanningkeys.MealPlanIDKey:           request.MealPlanId,
 	}, span, s.logger)
 
 	if err := s.mealPlanningManager.ArchiveMealPlanOptionVote(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId, request.MealPlanOptionVoteId); err != nil {
@@ -172,7 +172,7 @@ func (s *serviceImpl) ArchiveUserIngredientPreference(ctx context.Context, reque
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UserIngredientPreferenceIDKey: request.UserIngredientPreferenceId,
+		mealplanningkeys.UserIngredientPreferenceIDKey: request.UserIngredientPreferenceId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -286,7 +286,7 @@ func (s *serviceImpl) UpdateMealList(ctx context.Context, request *mealplannings
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealListIDKey: request.MealListId,
+		mealplanningkeys.MealListIDKey: request.MealListId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -313,7 +313,7 @@ func (s *serviceImpl) ArchiveMealList(ctx context.Context, request *mealplanning
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealListIDKey: request.MealListId,
+		mealplanningkeys.MealListIDKey: request.MealListId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -339,7 +339,7 @@ func (s *serviceImpl) GetMealListItems(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealListIDKey: request.MealListId,
+		mealplanningkeys.MealListIDKey: request.MealListId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -369,8 +369,8 @@ func (s *serviceImpl) CreateMealListItem(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealListIDKey: request.Input.BelongsToMealList,
-		keys.MealIDKey:     request.Input.MealId,
+		mealplanningkeys.MealListIDKey: request.Input.BelongsToMealList,
+		mealplanningkeys.MealIDKey:     request.Input.MealId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealListItemCreationRequestInputToMealListItemCreationRequestInput(request.Input)
@@ -395,7 +395,7 @@ func (s *serviceImpl) UpdateMealListItem(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealListItemIDKey: request.MealListItemId,
+		mealplanningkeys.MealListItemIDKey: request.MealListItemId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealListItemUpdateRequestInputToMealListItemUpdateRequestInput(request.Input)
@@ -418,8 +418,8 @@ func (s *serviceImpl) ArchiveMealListItem(ctx context.Context, request *mealplan
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealListItemIDKey: request.MealListItemId,
-		keys.MealListIDKey:     request.MealListId,
+		mealplanningkeys.MealListItemIDKey: request.MealListItemId,
+		mealplanningkeys.MealListIDKey:     request.MealListId,
 	}, span, s.logger)
 
 	if err := s.mealPlanningManager.RemoveMealFromMealList(ctx, request.MealListId, request.MealListItemId); err != nil {
@@ -468,7 +468,7 @@ func (s *serviceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplan
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestInput(request.Input)
@@ -493,7 +493,7 @@ func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanOptionCreationRequestInputToMealPlanOptionCreationRequestInput(request.Input)
@@ -518,7 +518,7 @@ func (s *serviceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mea
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -554,7 +554,7 @@ func (s *serviceImpl) CreateMealPlanTask(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanTaskCreationRequestInputToMealPlanTaskCreationRequestInput(request.Input)
@@ -610,7 +610,7 @@ func (s *serviceImpl) FinalizeMealPlan(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -638,7 +638,7 @@ func (s *serviceImpl) GetMeal(ctx context.Context, request *mealplanningsvc.GetM
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealIDKey: request.MealId,
+		mealplanningkeys.MealIDKey: request.MealId,
 	}, span, s.logger)
 
 	meal, err := s.mealPlanningManager.ReadMeal(ctx, request.MealId)
@@ -661,7 +661,7 @@ func (s *serviceImpl) GetMealPlan(ctx context.Context, request *mealplanningsvc.
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -721,8 +721,8 @@ func (s *serviceImpl) GetMealPlanEvent(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:      request.MealPlanId,
-		keys.MealPlanEventIDKey: request.MealPlanEventId,
+		mealplanningkeys.MealPlanIDKey:      request.MealPlanId,
+		mealplanningkeys.MealPlanEventIDKey: request.MealPlanEventId,
 	}, span, s.logger)
 
 	mealPlanEvent, err := s.mealPlanningManager.ReadMealPlanEvent(ctx, request.MealPlanId, request.MealPlanEventId)
@@ -745,7 +745,7 @@ func (s *serviceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanni
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -773,8 +773,8 @@ func (s *serviceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *m
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:                request.MealPlanId,
-		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemId,
+		mealplanningkeys.MealPlanIDKey:                request.MealPlanId,
+		mealplanningkeys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemId,
 	}, span, s.logger)
 
 	mealPlanGroceryListItem, err := s.mealPlanningManager.ReadMealPlanGroceryListItem(ctx, request.MealPlanId, request.MealPlanGroceryListItemId)
@@ -797,7 +797,7 @@ func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -825,10 +825,10 @@ func (s *serviceImpl) GetMealPlanRecipeOptionSelection(ctx context.Context, requ
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
-		"recipe_step_id":         request.RecipeStepId,
-		"ingredient_index":       request.IngredientIndex,
-		"selection_type":         request.SelectionType,
+		mealplanningkeys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		"recipe_step_id":                     request.RecipeStepId,
+		"ingredient_index":                   request.IngredientIndex,
+		"selection_type":                     request.SelectionType,
 	}, span, s.logger)
 
 	selection, err := s.mealPlanningManager.GetMealPlanRecipeOptionSelection(ctx, request.MealPlanOptionId, request.RecipeStepId, uint16(request.IngredientIndex), converters.ConvertMealPlanRecipeOptionSelectionTypeToString(request.SelectionType))
@@ -854,7 +854,7 @@ func (s *serviceImpl) GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx con
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		mealplanningkeys.MealPlanOptionIDKey: request.MealPlanOptionId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -883,7 +883,7 @@ func (s *serviceImpl) CreateMealPlanRecipeOptionSelection(ctx context.Context, r
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanOptionIDKey: request.Input.BelongsToMealPlanOption,
+		mealplanningkeys.MealPlanOptionIDKey: request.Input.BelongsToMealPlanOption,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(request.Input)
@@ -908,10 +908,10 @@ func (s *serviceImpl) UpdateMealPlanRecipeOptionSelection(ctx context.Context, r
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
-		"recipe_step_id":         request.RecipeStepId,
-		"ingredient_index":       request.IngredientIndex,
-		"selection_type":         request.SelectionType,
+		mealplanningkeys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		"recipe_step_id":                     request.RecipeStepId,
+		"ingredient_index":                   request.IngredientIndex,
+		"selection_type":                     request.SelectionType,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanRecipeOptionSelectionUpdateRequestInputToMealPlanRecipeOptionSelectionUpdateRequestInput(request.Input)
@@ -941,10 +941,10 @@ func (s *serviceImpl) ArchiveMealPlanRecipeOptionSelection(ctx context.Context, 
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
-		"recipe_step_id":         request.RecipeStepId,
-		"ingredient_index":       request.IngredientIndex,
-		"selection_type":         request.SelectionType,
+		mealplanningkeys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		"recipe_step_id":                     request.RecipeStepId,
+		"ingredient_index":                   request.IngredientIndex,
+		"selection_type":                     request.SelectionType,
 	}, span, s.logger)
 
 	selectionTypeStr := converters.ConvertMealPlanRecipeOptionSelectionTypeToString(request.SelectionType)
@@ -966,9 +966,9 @@ func (s *serviceImpl) GetMealPlanOption(ctx context.Context, request *mealplanni
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:       request.MealPlanId,
-		keys.MealPlanEventIDKey:  request.MealPlanEventId,
-		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		mealplanningkeys.MealPlanIDKey:       request.MealPlanId,
+		mealplanningkeys.MealPlanEventIDKey:  request.MealPlanEventId,
+		mealplanningkeys.MealPlanOptionIDKey: request.MealPlanOptionId,
 	}, span, s.logger)
 
 	mealPlanOption, err := s.mealPlanningManager.ReadMealPlanOption(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId)
@@ -991,10 +991,10 @@ func (s *serviceImpl) GetMealPlanOptionVote(ctx context.Context, request *mealpl
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:           request.MealPlanId,
-		keys.MealPlanOptionIDKey:     request.MealPlanOptionId,
-		keys.MealPlanEventIDKey:      request.MealPlanEventId,
-		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteId,
+		mealplanningkeys.MealPlanIDKey:           request.MealPlanId,
+		mealplanningkeys.MealPlanOptionIDKey:     request.MealPlanOptionId,
+		mealplanningkeys.MealPlanEventIDKey:      request.MealPlanEventId,
+		mealplanningkeys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteId,
 	}, span, s.logger)
 
 	mealPlanOptionVote, err := s.mealPlanningManager.ReadMealPlanOptionVote(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId, request.MealPlanOptionVoteId)
@@ -1017,9 +1017,9 @@ func (s *serviceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealp
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:       request.MealPlanId,
-		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
-		keys.MealPlanEventIDKey:  request.MealPlanEventId,
+		mealplanningkeys.MealPlanIDKey:       request.MealPlanId,
+		mealplanningkeys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		mealplanningkeys.MealPlanEventIDKey:  request.MealPlanEventId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -1047,7 +1047,7 @@ func (s *serviceImpl) GetMealPlanOptions(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -1075,8 +1075,8 @@ func (s *serviceImpl) GetMealPlanTask(ctx context.Context, request *mealplanning
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:     request.MealPlanId,
-		keys.MealPlanTaskIDKey: request.MealPlanTaskId,
+		mealplanningkeys.MealPlanIDKey:     request.MealPlanId,
+		mealplanningkeys.MealPlanTaskIDKey: request.MealPlanTaskId,
 	}, span, s.logger)
 
 	mealPlanTask, err := s.mealPlanningManager.ReadMealPlanTask(ctx, request.MealPlanId, request.MealPlanTaskId)
@@ -1099,7 +1099,7 @@ func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -1297,7 +1297,7 @@ func (s *serviceImpl) UpdateMealPlan(ctx context.Context, request *mealplannings
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
+		mealplanningkeys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -1331,8 +1331,8 @@ func (s *serviceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplan
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:      request.MealPlanId,
-		keys.MealPlanEventIDKey: request.MealPlanEventId,
+		mealplanningkeys.MealPlanIDKey:      request.MealPlanId,
+		mealplanningkeys.MealPlanEventIDKey: request.MealPlanEventId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput(request.Input)
@@ -1361,8 +1361,8 @@ func (s *serviceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:                request.MealPlanId,
-		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemId,
+		mealplanningkeys.MealPlanIDKey:                request.MealPlanId,
+		mealplanningkeys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListItemUpdateRequestInput(request.Input)
@@ -1391,9 +1391,9 @@ func (s *serviceImpl) UpdateMealPlanOption(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:       request.MealPlanId,
-		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
-		keys.MealPlanEventIDKey:  request.MealPlanEventId,
+		mealplanningkeys.MealPlanIDKey:       request.MealPlanId,
+		mealplanningkeys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		mealplanningkeys.MealPlanEventIDKey:  request.MealPlanEventId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanOptionUpdateRequestInputToMealPlanOptionUpdateRequestInput(request.Input)
@@ -1422,9 +1422,9 @@ func (s *serviceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mea
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:           request.MealPlanId,
-		keys.MealPlanOptionIDKey:     request.MealPlanOptionId,
-		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteId,
+		mealplanningkeys.MealPlanIDKey:           request.MealPlanId,
+		mealplanningkeys.MealPlanOptionIDKey:     request.MealPlanOptionId,
+		mealplanningkeys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanOptionVoteUpdateRequestInputToMealPlanOptionVoteUpdateRequestInput(request.Input)
@@ -1453,8 +1453,8 @@ func (s *serviceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mea
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:     request.MealPlanId,
-		keys.MealPlanTaskIDKey: request.MealPlanTaskId,
+		mealplanningkeys.MealPlanIDKey:     request.MealPlanId,
+		mealplanningkeys.MealPlanTaskIDKey: request.MealPlanTaskId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanTaskStatusChangeRequestInputToMealPlanTaskStatusChangeRequestInput(request.Input)
@@ -1484,7 +1484,7 @@ func (s *serviceImpl) UpdateUserIngredientPreference(ctx context.Context, reques
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UserIngredientPreferenceIDKey: request.UserIngredientPreferenceId,
+		mealplanningkeys.UserIngredientPreferenceIDKey: request.UserIngredientPreferenceId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -1554,7 +1554,7 @@ func (s *serviceImpl) GetAccountInstrumentOwnership(ctx context.Context, request
 	}
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipId,
+		mealplanningkeys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipId,
 	}, span, s.logger)
 
 	result, err := s.mealPlanningManager.ReadAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipId)
@@ -1613,7 +1613,7 @@ func (s *serviceImpl) UpdateAccountInstrumentOwnership(ctx context.Context, requ
 	}
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipId,
+		mealplanningkeys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCAccountInstrumentOwnershipUpdateRequestInputToAccountInstrumentOwnershipUpdateRequestInput(request.Input)
@@ -1646,7 +1646,7 @@ func (s *serviceImpl) ArchiveAccountInstrumentOwnership(ctx context.Context, req
 	}
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipId,
+		mealplanningkeys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipId,
 	}, span, s.logger)
 
 	if err = s.mealPlanningManager.ArchiveAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipId); err != nil {

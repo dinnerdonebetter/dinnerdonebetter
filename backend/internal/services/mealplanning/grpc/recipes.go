@@ -4,11 +4,12 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
@@ -20,7 +21,7 @@ func (s *serviceImpl) ArchiveRecipe(ctx context.Context, request *mealplanning.A
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -50,8 +51,8 @@ func (s *serviceImpl) ArchiveRecipePrepTask(ctx context.Context, request *mealpl
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:         request.RecipeId,
-		keys.RecipePrepTaskIDKey: request.RecipePrepTaskId,
+		mealplanningkeys.RecipeIDKey:         request.RecipeId,
+		mealplanningkeys.RecipePrepTaskIDKey: request.RecipePrepTaskId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId); err != nil {
@@ -72,8 +73,8 @@ func (s *serviceImpl) ArchiveRecipeRating(ctx context.Context, request *mealplan
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:       request.RecipeId,
-		keys.RecipeRatingIDKey: request.RecipeRatingId,
+		mealplanningkeys.RecipeIDKey:       request.RecipeId,
+		mealplanningkeys.RecipeRatingIDKey: request.RecipeRatingId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeRating(ctx, request.RecipeId, request.RecipeRatingId); err != nil {
@@ -94,8 +95,8 @@ func (s *serviceImpl) ArchiveRecipeStep(ctx context.Context, request *mealplanni
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStep(ctx, request.RecipeId, request.RecipeStepId); err != nil {
@@ -116,9 +117,9 @@ func (s *serviceImpl) ArchiveRecipeStepCompletionCondition(ctx context.Context, 
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:                        request.RecipeId,
-		keys.RecipeStepIDKey:                    request.RecipeStepId,
-		keys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionId,
+		mealplanningkeys.RecipeIDKey:                        request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:                    request.RecipeStepId,
+		mealplanningkeys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId); err != nil {
@@ -139,9 +140,9 @@ func (s *serviceImpl) ArchiveRecipeStepIngredient(ctx context.Context, request *
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:               request.RecipeId,
-		keys.RecipeStepIDKey:           request.RecipeStepId,
-		keys.RecipeStepIngredientIDKey: request.RecipeStepIngredientId,
+		mealplanningkeys.RecipeIDKey:               request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:           request.RecipeStepId,
+		mealplanningkeys.RecipeStepIngredientIDKey: request.RecipeStepIngredientId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId); err != nil {
@@ -162,9 +163,9 @@ func (s *serviceImpl) ArchiveRecipeStepInstrument(ctx context.Context, request *
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:               request.RecipeId,
-		keys.RecipeStepIDKey:           request.RecipeStepId,
-		keys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentId,
+		mealplanningkeys.RecipeIDKey:               request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:           request.RecipeStepId,
+		mealplanningkeys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId); err != nil {
@@ -185,9 +186,9 @@ func (s *serviceImpl) ArchiveRecipeStepProduct(ctx context.Context, request *mea
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:            request.RecipeId,
-		keys.RecipeStepIDKey:        request.RecipeStepId,
-		keys.RecipeStepProductIDKey: request.RecipeStepProductId,
+		mealplanningkeys.RecipeIDKey:            request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:        request.RecipeStepId,
+		mealplanningkeys.RecipeStepProductIDKey: request.RecipeStepProductId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId); err != nil {
@@ -208,9 +209,9 @@ func (s *serviceImpl) ArchiveRecipeStepVessel(ctx context.Context, request *meal
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:           request.RecipeId,
-		keys.RecipeStepIDKey:       request.RecipeStepId,
-		keys.RecipeStepVesselIDKey: request.RecipeStepVesselId,
+		mealplanningkeys.RecipeIDKey:           request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:       request.RecipeStepId,
+		mealplanningkeys.RecipeStepVesselIDKey: request.RecipeStepVesselId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId); err != nil {
@@ -231,7 +232,7 @@ func (s *serviceImpl) CloneRecipe(ctx context.Context, request *mealplanning.Clo
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -287,7 +288,7 @@ func (s *serviceImpl) CreateRecipePrepTask(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipePrepTaskCreationRequestInputToRecipePrepTaskCreationRequestInput(request.Input)
@@ -312,7 +313,7 @@ func (s *serviceImpl) CreateRecipeRating(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -343,7 +344,7 @@ func (s *serviceImpl) CreateRecipeStep(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	recipeStepInput := converters.ConvertGRPCRecipeStepCreationRequestInputToRecipeStepCreationRequestInput(request.Input)
@@ -368,8 +369,8 @@ func (s *serviceImpl) CreateRecipeStepCompletionCondition(ctx context.Context, r
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	creationInput := converters.ConvertGRPCRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(request.Input)
@@ -394,8 +395,8 @@ func (s *serviceImpl) CreateRecipeStepIngredient(ctx context.Context, request *m
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	creationInput := converters.ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCreationRequestInput(request.Input)
@@ -420,8 +421,8 @@ func (s *serviceImpl) CreateRecipeStepInstrument(ctx context.Context, request *m
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	creationInput := converters.ConvertGRPCRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentCreationRequestInput(request.Input)
@@ -446,8 +447,8 @@ func (s *serviceImpl) CreateRecipeStepProduct(ctx context.Context, request *meal
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	creationInput := converters.ConvertGRPCRecipeStepProductCreationRequestInputToRecipeStepProductCreationRequestInput(request.Input)
@@ -472,8 +473,8 @@ func (s *serviceImpl) CreateRecipeStepVessel(ctx context.Context, request *mealp
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	creationInput := converters.ConvertGRPCRecipeStepVesselCreationRequestInputToRecipeStepVesselCreationRequestInput(request.Input)
@@ -498,7 +499,7 @@ func (s *serviceImpl) GetMermaidDiagramForRecipe(ctx context.Context, request *m
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	mermaidDiagram, err := s.recipeManager.RecipeMermaid(ctx, request.RecipeId)
@@ -521,7 +522,7 @@ func (s *serviceImpl) GetRecipe(ctx context.Context, request *mealplanning.GetRe
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	recipe, err := s.recipeManager.ReadRecipe(ctx, request.RecipeId)
@@ -545,7 +546,7 @@ func (s *serviceImpl) EstimateRecipePrepTasks(ctx context.Context, request *meal
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	estimatedPrepSteps, err := s.recipeManager.RecipeEstimatedPrepSteps(ctx, request.RecipeId)
@@ -571,8 +572,8 @@ func (s *serviceImpl) GetRecipePrepTask(ctx context.Context, request *mealplanni
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:         request.RecipeId,
-		keys.RecipePrepTaskIDKey: request.RecipePrepTaskId,
+		mealplanningkeys.RecipeIDKey:         request.RecipeId,
+		mealplanningkeys.RecipePrepTaskIDKey: request.RecipePrepTaskId,
 	}, span, s.logger)
 
 	recipePrepTask, err := s.recipeManager.ReadRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId)
@@ -595,7 +596,7 @@ func (s *serviceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -625,8 +626,8 @@ func (s *serviceImpl) GetRecipeRating(ctx context.Context, request *mealplanning
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:       request.RecipeId,
-		keys.RecipeRatingIDKey: request.RecipeRatingId,
+		mealplanningkeys.RecipeIDKey:       request.RecipeId,
+		mealplanningkeys.RecipeRatingIDKey: request.RecipeRatingId,
 	}, span, s.logger)
 
 	recipeRating, err := s.recipeManager.ReadRecipeRating(ctx, request.RecipeId, request.RecipeRatingId)
@@ -649,7 +650,7 @@ func (s *serviceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *me
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -678,8 +679,8 @@ func (s *serviceImpl) GetRecipeStep(ctx context.Context, request *mealplanning.G
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	recipeStep, err := s.recipeManager.ReadRecipeStep(ctx, request.RecipeId, request.RecipeStepId)
@@ -702,9 +703,9 @@ func (s *serviceImpl) GetRecipeStepCompletionCondition(ctx context.Context, requ
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:                        request.RecipeId,
-		keys.RecipeStepIDKey:                    request.RecipeStepId,
-		keys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionId,
+		mealplanningkeys.RecipeIDKey:                        request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:                    request.RecipeStepId,
+		mealplanningkeys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionId,
 	}, span, s.logger)
 
 	recipeStepCompletionCondition, err := s.recipeManager.ReadRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId)
@@ -727,8 +728,8 @@ func (s *serviceImpl) GetRecipeStepCompletionConditions(ctx context.Context, req
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -757,9 +758,9 @@ func (s *serviceImpl) GetRecipeStepIngredient(ctx context.Context, request *meal
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:               request.RecipeId,
-		keys.RecipeStepIDKey:           request.RecipeStepId,
-		keys.RecipeStepIngredientIDKey: request.RecipeStepIngredientId,
+		mealplanningkeys.RecipeIDKey:               request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:           request.RecipeStepId,
+		mealplanningkeys.RecipeStepIngredientIDKey: request.RecipeStepIngredientId,
 	}, span, s.logger)
 
 	recipeStepIngredient, err := s.recipeManager.ReadRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId)
@@ -782,8 +783,8 @@ func (s *serviceImpl) GetRecipeStepIngredients(ctx context.Context, request *mea
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -812,9 +813,9 @@ func (s *serviceImpl) GetRecipeStepInstrument(ctx context.Context, request *meal
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:               request.RecipeId,
-		keys.RecipeStepIDKey:           request.RecipeStepId,
-		keys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentId,
+		mealplanningkeys.RecipeIDKey:               request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:           request.RecipeStepId,
+		mealplanningkeys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentId,
 	}, span, s.logger)
 
 	recipeStepInstrument, err := s.recipeManager.ReadRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId)
@@ -837,8 +838,8 @@ func (s *serviceImpl) GetRecipeStepInstruments(ctx context.Context, request *mea
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -867,9 +868,9 @@ func (s *serviceImpl) GetRecipeStepProduct(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:            request.RecipeId,
-		keys.RecipeStepIDKey:        request.RecipeStepId,
-		keys.RecipeStepProductIDKey: request.RecipeStepProductId,
+		mealplanningkeys.RecipeIDKey:            request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:        request.RecipeStepId,
+		mealplanningkeys.RecipeStepProductIDKey: request.RecipeStepProductId,
 	}, span, s.logger)
 
 	recipeStepProduct, err := s.recipeManager.ReadRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId)
@@ -892,8 +893,8 @@ func (s *serviceImpl) GetRecipeStepProducts(ctx context.Context, request *mealpl
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -922,9 +923,9 @@ func (s *serviceImpl) GetRecipeStepVessel(ctx context.Context, request *mealplan
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:           request.RecipeId,
-		keys.RecipeStepIDKey:       request.RecipeStepId,
-		keys.RecipeStepVesselIDKey: request.RecipeStepVesselId,
+		mealplanningkeys.RecipeIDKey:           request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:       request.RecipeStepId,
+		mealplanningkeys.RecipeStepVesselIDKey: request.RecipeStepVesselId,
 	}, span, s.logger)
 
 	recipeStepVessel, err := s.recipeManager.ReadRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId)
@@ -947,8 +948,8 @@ func (s *serviceImpl) GetRecipeStepVessels(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -977,7 +978,7 @@ func (s *serviceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -1062,7 +1063,7 @@ func (s *serviceImpl) UpdateRecipeList(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeListIDKey: request.RecipeListId,
+		mealplanningkeys.RecipeListIDKey: request.RecipeListId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -1089,7 +1090,7 @@ func (s *serviceImpl) ArchiveRecipeList(ctx context.Context, request *mealplanni
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeListIDKey: request.RecipeListId,
+		mealplanningkeys.RecipeListIDKey: request.RecipeListId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -1115,7 +1116,7 @@ func (s *serviceImpl) GetRecipeListItems(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeListIDKey: request.RecipeListId,
+		mealplanningkeys.RecipeListIDKey: request.RecipeListId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -1145,8 +1146,8 @@ func (s *serviceImpl) CreateRecipeListItem(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeListIDKey: request.Input.BelongsToRecipeList,
-		keys.RecipeIDKey:     request.Input.RecipeId,
+		mealplanningkeys.RecipeListIDKey: request.Input.BelongsToRecipeList,
+		mealplanningkeys.RecipeIDKey:     request.Input.RecipeId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeListItemCreationRequestInputToRecipeListItemCreationRequestInput(request.Input)
@@ -1171,7 +1172,7 @@ func (s *serviceImpl) UpdateRecipeListItem(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeListItemIDKey: request.RecipeListItemId,
+		mealplanningkeys.RecipeListItemIDKey: request.RecipeListItemId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeListItemUpdateRequestInputToRecipeListItemUpdateRequestInput(request.Input)
@@ -1194,8 +1195,8 @@ func (s *serviceImpl) ArchiveRecipeListItem(ctx context.Context, request *mealpl
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeListItemIDKey: request.RecipeListItemId,
-		keys.RecipeListIDKey:     request.RecipeListId,
+		mealplanningkeys.RecipeListItemIDKey: request.RecipeListItemId,
+		mealplanningkeys.RecipeListIDKey:     request.RecipeListId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.RemoveRecipeFromRecipeList(ctx, request.RecipeListId, request.RecipeListItemId); err != nil {
@@ -1243,7 +1244,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.SearchQueryKey: request.Query,
+		platformkeys.SearchQueryKey: request.Query,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -1272,7 +1273,7 @@ func (s *serviceImpl) SearchForMealEligibleRecipes(ctx context.Context, request 
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.SearchQueryKey: request.Query,
+		platformkeys.SearchQueryKey: request.Query,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -1301,7 +1302,7 @@ func (s *serviceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.Up
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeUpdateRequestInputToRecipeUpdateRequestInput(request.Input)
@@ -1330,7 +1331,7 @@ func (s *serviceImpl) UpdateRecipeStatus(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey: request.RecipeId,
+		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
 	if err := s.recipeManager.UpdateRecipeStatus(ctx, request.RecipeId, request.NewStatus); err != nil {
@@ -1357,8 +1358,8 @@ func (s *serviceImpl) UpdateRecipePrepTask(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:         request.RecipeId,
-		keys.RecipePrepTaskIDKey: request.RecipePrepTaskId,
+		mealplanningkeys.RecipeIDKey:         request.RecipeId,
+		mealplanningkeys.RecipePrepTaskIDKey: request.RecipePrepTaskId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipePrepTaskUpdateRequestInputToRecipePrepTaskUpdateRequestInput(request.Input)
@@ -1387,8 +1388,8 @@ func (s *serviceImpl) UpdateRecipeRating(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:       request.RecipeId,
-		keys.RecipeRatingIDKey: request.RecipeRatingId,
+		mealplanningkeys.RecipeIDKey:       request.RecipeId,
+		mealplanningkeys.RecipeRatingIDKey: request.RecipeRatingId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeRatingUpdateRequestInputToRecipeRatingUpdateRequestInput(request.Input)
@@ -1417,8 +1418,8 @@ func (s *serviceImpl) UpdateRecipeStep(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:     request.RecipeId,
-		keys.RecipeStepIDKey: request.RecipeStepId,
+		mealplanningkeys.RecipeIDKey:     request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeStepUpdateRequestInputToRecipeStepUpdateRequestInput(request.Input)
@@ -1447,9 +1448,9 @@ func (s *serviceImpl) UpdateRecipeStepCompletionCondition(ctx context.Context, r
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:                        request.RecipeId,
-		keys.RecipeStepIDKey:                    request.RecipeStepId,
-		keys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionId,
+		mealplanningkeys.RecipeIDKey:                        request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:                    request.RecipeStepId,
+		mealplanningkeys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeStepCompletionConditionUpdateRequestInputToRecipeStepCompletionConditionUpdateRequestInput(request.Input)
@@ -1478,9 +1479,9 @@ func (s *serviceImpl) UpdateRecipeStepIngredient(ctx context.Context, request *m
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:               request.RecipeId,
-		keys.RecipeStepIDKey:           request.RecipeStepId,
-		keys.RecipeStepIngredientIDKey: request.RecipeStepIngredientId,
+		mealplanningkeys.RecipeIDKey:               request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:           request.RecipeStepId,
+		mealplanningkeys.RecipeStepIngredientIDKey: request.RecipeStepIngredientId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeStepIngredientUpdateRequestInputToRecipeStepIngredientUpdateRequestInput(request.Input)
@@ -1509,9 +1510,9 @@ func (s *serviceImpl) UpdateRecipeStepInstrument(ctx context.Context, request *m
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:               request.RecipeId,
-		keys.RecipeStepIDKey:           request.RecipeStepId,
-		keys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentId,
+		mealplanningkeys.RecipeIDKey:               request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:           request.RecipeStepId,
+		mealplanningkeys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeStepInstrumentUpdateRequestInputToRecipeStepInstrumentUpdateRequestInput(request.Input)
@@ -1540,9 +1541,9 @@ func (s *serviceImpl) UpdateRecipeStepProduct(ctx context.Context, request *meal
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:            request.RecipeId,
-		keys.RecipeStepIDKey:        request.RecipeStepId,
-		keys.RecipeStepProductIDKey: request.RecipeStepProductId,
+		mealplanningkeys.RecipeIDKey:            request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:        request.RecipeStepId,
+		mealplanningkeys.RecipeStepProductIDKey: request.RecipeStepProductId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeStepProductUpdateRequestInputToRecipeStepProductUpdateRequestInput(request.Input)
@@ -1571,9 +1572,9 @@ func (s *serviceImpl) UpdateRecipeStepVessel(ctx context.Context, request *mealp
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.RecipeIDKey:           request.RecipeId,
-		keys.RecipeStepIDKey:       request.RecipeStepId,
-		keys.RecipeStepVesselIDKey: request.RecipeStepVesselId,
+		mealplanningkeys.RecipeIDKey:           request.RecipeId,
+		mealplanningkeys.RecipeStepIDKey:       request.RecipeStepId,
+		mealplanningkeys.RecipeStepVesselIDKey: request.RecipeStepVesselId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCRecipeStepVesselUpdateRequestInputToRecipeStepVesselUpdateRequestInput(request.Input)

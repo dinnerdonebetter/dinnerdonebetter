@@ -7,11 +7,11 @@ import (
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/domain/issuereports/fakes"
+	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
 	issuereportsmock "github.com/dinnerdonebetter/backend/internal/domain/issuereports/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
@@ -81,7 +81,7 @@ func TestIssueReportsDataManager_CreateIssueReport(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.CreateIssueReport), testutils.ContextMatcher, mock.Anything).Return(createdReport, nil)
 			},
 			map[string][]string{
-				types.IssueReportCreatedServiceEventType: {keys.IssueReportIDKey},
+				types.IssueReportCreatedServiceEventType: {issuereportkeys.IssueReportIDKey},
 			},
 		)
 
@@ -177,7 +177,7 @@ func TestIssueReportsDataManager_UpdateIssueReport(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.UpdateIssueReport), testutils.ContextMatcher, issueReport).Return(nil)
 			},
 			map[string][]string{
-				types.IssueReportUpdatedServiceEventType: {keys.IssueReportIDKey},
+				types.IssueReportUpdatedServiceEventType: {issuereportkeys.IssueReportIDKey},
 			},
 		)
 
@@ -205,7 +205,7 @@ func TestIssueReportsDataManager_ArchiveIssueReport(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveIssueReport), testutils.ContextMatcher, issueReportID).Return(nil)
 			},
 			map[string][]string{
-				types.IssueReportArchivedServiceEventType: {keys.IssueReportIDKey},
+				types.IssueReportArchivedServiceEventType: {issuereportkeys.IssueReportIDKey},
 			},
 		)
 

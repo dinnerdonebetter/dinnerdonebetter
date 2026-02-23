@@ -8,13 +8,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
+	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
@@ -108,7 +108,7 @@ func (m *manager) CreateOAuth2Client(ctx context.Context, input *oauth.OAuth2Cli
 	m.dataChangesPublisher.PublishAsync(ctx, &audit.DataChangeMessage{
 		EventType: oauth.OAuth2ClientCreatedServiceEventType,
 		Context: map[string]any{
-			keys.OAuth2ClientIDKey: created.ID,
+			oauthkeys.OAuth2ClientIDKey: created.ID,
 		},
 		UserID:    sessionContextData.GetUserID(),
 		AccountID: sessionContextData.GetActiveAccountID(),
@@ -122,7 +122,7 @@ func (m *manager) GetOAuth2Client(ctx context.Context, oauth2ClientID string) (*
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.OAuth2ClientIDKey: oauth2ClientID,
+		oauthkeys.OAuth2ClientIDKey: oauth2ClientID,
 	}, span, m.logger)
 
 	oauth2Client, err := m.oauthRepository.GetOAuth2ClientByDatabaseID(ctx, oauth2ClientID)
@@ -157,7 +157,7 @@ func (m *manager) ArchiveOAuth2Client(ctx context.Context, oauth2ClientID string
 	}
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.OAuth2ClientIDKey: oauth2ClientID,
+		oauthkeys.OAuth2ClientIDKey: oauth2ClientID,
 	}, span, m.logger)
 
 	if err = m.oauthRepository.ArchiveOAuth2Client(ctx, oauth2ClientID); err != nil {
@@ -167,7 +167,7 @@ func (m *manager) ArchiveOAuth2Client(ctx context.Context, oauth2ClientID string
 	m.dataChangesPublisher.PublishAsync(ctx, &audit.DataChangeMessage{
 		EventType: oauth.OAuth2ClientArchivedServiceEventType,
 		Context: map[string]any{
-			keys.OAuth2ClientIDKey: oauth2ClientID,
+			oauthkeys.OAuth2ClientIDKey: oauth2ClientID,
 		},
 		UserID:    sessionContextData.GetUserID(),
 		AccountID: sessionContextData.GetActiveAccountID(),

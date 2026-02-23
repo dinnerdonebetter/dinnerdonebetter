@@ -15,7 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
@@ -50,7 +50,7 @@ func (a *AsyncDataChangeMessageHandler) handleWebhookExecutionRequest(
 		return errRequiredDataIsNil
 	}
 
-	logger := a.logger.WithValue(keys.RequestIDKey, webhookExecutionRequest.RequestID)
+	logger := a.logger.WithValue(platformkeys.RequestIDKey, webhookExecutionRequest.RequestID)
 
 	account, err := a.identityRepo.GetAccount(ctx, webhookExecutionRequest.AccountID)
 	if err != nil {

@@ -6,10 +6,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -83,7 +83,7 @@ func (w *Worker) Work(ctx context.Context) error {
 	errorResult := &multierror.Error{}
 
 	for _, mealPlan := range mealPlans {
-		l := logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
+		l := logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlan.ID)
 
 		var dbInputs []*mealplanning.MealPlanGroceryListItemDatabaseCreationInput
 		dbInputs, err = w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
@@ -110,9 +110,9 @@ func (w *Worker) Work(ctx context.Context) error {
 			if err = w.postUpdatesPublisher.Publish(ctx, &audit.DataChangeMessage{
 				EventType: mealplanning.MealPlanGroceryListItemCreatedServiceEventType,
 				Context: map[string]any{
-					"groceryListItem":                 createdItem,
-					keys.MealPlanGroceryListItemIDKey: createdItem.ID,
-					keys.MealPlanIDKey:                dbInput.BelongsToMealPlan,
+					"groceryListItem": createdItem,
+					mealplanningkeys.MealPlanGroceryListItemIDKey: createdItem.ID,
+					mealplanningkeys.MealPlanIDKey:                dbInput.BelongsToMealPlan,
 				},
 			}); err != nil {
 				l.Error("failed to write update message for meal plan grocery list item", err)

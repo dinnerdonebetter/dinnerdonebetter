@@ -8,11 +8,11 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
+	waitlistkeys "github.com/dinnerdonebetter/backend/internal/domain/waitlists/keys"
 	waitlistmock "github.com/dinnerdonebetter/backend/internal/domain/waitlists/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
@@ -83,7 +83,7 @@ func TestWaitlistDataManager_CreateWaitlist(t *testing.T) {
 				})).Return(exampleWaitlist, nil)
 			},
 			map[string][]string{
-				types.WaitlistCreatedServiceEventType: {keys.WaitlistIDKey},
+				types.WaitlistCreatedServiceEventType: {waitlistkeys.WaitlistIDKey},
 			},
 		)
 
@@ -177,7 +177,7 @@ func TestWaitlistDataManager_UpdateWaitlist(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.UpdateWaitlist), testutils.ContextMatcher, waitlist).Return(nil)
 			},
 			map[string][]string{
-				types.WaitlistUpdatedServiceEventType: {keys.WaitlistIDKey},
+				types.WaitlistUpdatedServiceEventType: {waitlistkeys.WaitlistIDKey},
 			},
 		)
 
@@ -205,7 +205,7 @@ func TestWaitlistDataManager_ArchiveWaitlist(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveWaitlist), testutils.ContextMatcher, waitlistID).Return(nil)
 			},
 			map[string][]string{
-				types.WaitlistArchivedServiceEventType: {keys.WaitlistIDKey},
+				types.WaitlistArchivedServiceEventType: {waitlistkeys.WaitlistIDKey},
 			},
 		)
 
@@ -236,7 +236,7 @@ func TestWaitlistDataManager_CreateWaitlistSignup(t *testing.T) {
 				})).Return(exampleSignup, nil)
 			},
 			map[string][]string{
-				types.WaitlistSignupCreatedServiceEventType: {keys.WaitlistSignupIDKey, keys.WaitlistIDKey},
+				types.WaitlistSignupCreatedServiceEventType: {waitlistkeys.WaitlistSignupIDKey, waitlistkeys.WaitlistIDKey},
 			},
 		)
 
@@ -266,7 +266,7 @@ func TestWaitlistDataManager_UpdateWaitlistSignup(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.UpdateWaitlistSignup), testutils.ContextMatcher, signup).Return(nil)
 			},
 			map[string][]string{
-				types.WaitlistSignupUpdatedServiceEventType: {keys.WaitlistSignupIDKey, keys.WaitlistIDKey},
+				types.WaitlistSignupUpdatedServiceEventType: {waitlistkeys.WaitlistSignupIDKey, waitlistkeys.WaitlistIDKey},
 			},
 		)
 
@@ -294,7 +294,7 @@ func TestWaitlistDataManager_ArchiveWaitlistSignup(t *testing.T) {
 				repo.On(reflection.GetMethodName(repo.ArchiveWaitlistSignup), testutils.ContextMatcher, waitlistSignupID).Return(nil)
 			},
 			map[string][]string{
-				types.WaitlistSignupArchivedServiceEventType: {keys.WaitlistSignupIDKey},
+				types.WaitlistSignupArchivedServiceEventType: {waitlistkeys.WaitlistSignupIDKey},
 			},
 		)
 

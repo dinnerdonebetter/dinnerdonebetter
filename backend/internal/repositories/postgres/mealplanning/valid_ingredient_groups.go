@@ -5,10 +5,11 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -28,8 +29,8 @@ func (q *repository) ValidIngredientGroupExists(ctx context.Context, validIngred
 	if validIngredientGroupID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	logger = logger.WithValue(mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	result, err := q.generatedQuerier.CheckValidIngredientGroupExistence(ctx, q.readDB, validIngredientGroupID)
 	if err != nil {
@@ -49,8 +50,8 @@ func (q *repository) GetValidIngredientGroup(ctx context.Context, validIngredien
 	if validIngredientGroupID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	logger = logger.WithValue(mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	result, err := q.generatedQuerier.GetValidIngredientGroup(ctx, q.readDB, validIngredientGroupID)
 	if err != nil {
@@ -136,8 +137,8 @@ func (q *repository) SearchForValidIngredientGroups(ctx context.Context, query s
 	if query == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, query)
+	logger = logger.WithValue(platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, query)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -369,8 +370,8 @@ func (q *repository) CreateValidIngredientGroup(ctx context.Context, input *meal
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, input.ID)
-	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidIngredientGroupIDKey, input.ID)
 
 	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -427,8 +428,8 @@ func (q *repository) CreateValidIngredientGroupMember(ctx context.Context, db da
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, input.ID).WithValue(keys.ValidIngredientIDKey, input.ValidIngredientID)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, input.ID)
+	logger = logger.WithValue(mealplanningkeys.ValidIngredientGroupIDKey, input.ID).WithValue(mealplanningkeys.ValidIngredientIDKey, input.ValidIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, input.ID)
 
 	// create the valid ingredient group.
 	if err := q.generatedQuerier.CreateValidIngredientGroupMember(ctx, db, &generated.CreateValidIngredientGroupMemberParams{
@@ -446,7 +447,7 @@ func (q *repository) CreateValidIngredientGroupMember(ctx context.Context, db da
 		CreatedAt:       q.CurrentTime(),
 	}
 
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, x.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, x.ID)
 	logger.Info("valid ingredient group member created")
 
 	return x, nil
@@ -460,8 +461,8 @@ func (q *repository) UpdateValidIngredientGroup(ctx context.Context, updated *me
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidIngredientGroupIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidIngredientGroup(ctx, q.writeDB, &generated.UpdateValidIngredientGroupParams{
 		Name:        updated.Name,
@@ -487,8 +488,8 @@ func (q *repository) ArchiveValidIngredientGroup(ctx context.Context, validIngre
 	if validIngredientGroupID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	logger = logger.WithValue(mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveValidIngredientGroup(ctx, q.writeDB, validIngredientGroupID)
 	if err != nil {

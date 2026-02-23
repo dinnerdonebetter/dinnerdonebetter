@@ -7,14 +7,15 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -87,9 +88,9 @@ func (m *paymentsManager) CreateProduct(ctx context.Context, input *payments.Pro
 	}
 
 	logger := m.logger.WithSpan(span)
-	tracing.AttachToSpan(span, keys.ProductIDKey, created.ID)
+	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, created.ID)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.ProductCreatedServiceEventType, map[string]any{
-		keys.ProductIDKey: created.ID,
+		paymentskeys.ProductIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -145,9 +146,9 @@ func (m *paymentsManager) UpdateProduct(ctx context.Context, id string, input *p
 	}
 
 	logger := m.logger.WithSpan(span)
-	tracing.AttachToSpan(span, keys.ProductIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, id)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.ProductUpdatedServiceEventType, map[string]any{
-		keys.ProductIDKey: id,
+		paymentskeys.ProductIDKey: id,
 	}))
 
 	return nil
@@ -162,9 +163,9 @@ func (m *paymentsManager) ArchiveProduct(ctx context.Context, id string) error {
 	}
 
 	logger := m.logger.WithSpan(span)
-	tracing.AttachToSpan(span, keys.ProductIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, id)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.ProductArchivedServiceEventType, map[string]any{
-		keys.ProductIDKey: id,
+		paymentskeys.ProductIDKey: id,
 	}))
 
 	return nil
@@ -196,9 +197,9 @@ func (m *paymentsManager) CreateSubscription(ctx context.Context, input *payment
 	}
 
 	logger := m.logger.WithSpan(span)
-	tracing.AttachToSpan(span, keys.SubscriptionIDKey, created.ID)
+	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, created.ID)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.SubscriptionCreatedServiceEventType, map[string]any{
-		keys.SubscriptionIDKey: created.ID,
+		paymentskeys.SubscriptionIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -242,9 +243,9 @@ func (m *paymentsManager) UpdateSubscription(ctx context.Context, id string, inp
 	}
 
 	logger := m.logger.WithSpan(span)
-	tracing.AttachToSpan(span, keys.SubscriptionIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, id)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.SubscriptionUpdatedServiceEventType, map[string]any{
-		keys.SubscriptionIDKey: id,
+		paymentskeys.SubscriptionIDKey: id,
 	}))
 
 	return nil
@@ -259,9 +260,9 @@ func (m *paymentsManager) ArchiveSubscription(ctx context.Context, id string) er
 	}
 
 	logger := m.logger.WithSpan(span)
-	tracing.AttachToSpan(span, keys.SubscriptionIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, id)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.SubscriptionArchivedServiceEventType, map[string]any{
-		keys.SubscriptionIDKey: id,
+		paymentskeys.SubscriptionIDKey: id,
 	}))
 
 	return nil
@@ -288,9 +289,9 @@ func (m *paymentsManager) CancelSubscription(ctx context.Context, id string) err
 	}
 
 	logger := m.logger.WithSpan(span)
-	tracing.AttachToSpan(span, keys.SubscriptionIDKey, id)
+	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, id)
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.SubscriptionCanceledServiceEventType, map[string]any{
-		keys.SubscriptionIDKey: id,
+		paymentskeys.SubscriptionIDKey: id,
 	}))
 
 	return nil
@@ -369,7 +370,7 @@ func (m *paymentsManager) ProcessWebhookEvent(ctx context.Context, payload []byt
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountIDKey: accountID,
+		identitykeys.AccountIDKey: accountID,
 	}, span, m.logger)
 
 	if !m.processor.VerifyWebhookSignature(ctx, payload, signature, accountID) {

@@ -5,10 +5,11 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -28,8 +29,8 @@ func (q *repository) ValidPreparationExists(ctx context.Context, validPreparatio
 	if validPreparationID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	exists, err := q.generatedQuerier.CheckValidPreparationExistence(ctx, q.readDB, validPreparationID)
 	if err != nil {
@@ -49,8 +50,8 @@ func (q *repository) GetValidPreparation(ctx context.Context, validPreparationID
 	if validPreparationID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	result, err := q.generatedQuerier.GetValidPreparation(ctx, q.readDB, validPreparationID)
 	if err != nil {
@@ -145,8 +146,8 @@ func (q *repository) SearchForValidPreparations(ctx context.Context, query strin
 	if query == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
-	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	logger = logger.WithValue(platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -364,8 +365,8 @@ func (q *repository) CreateValidPreparation(ctx context.Context, input *mealplan
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidPreparationIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, input.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidPreparationIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, input.ID)
 
 	// create the valid preparation.
 	if err := q.generatedQuerier.CreateValidPreparation(ctx, q.writeDB, &generated.CreateValidPreparationParams{
@@ -434,8 +435,8 @@ func (q *repository) UpdateValidPreparation(ctx context.Context, updated *mealpl
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidPreparationIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, updated.ID)
+	logger := q.logger.WithValue(mealplanningkeys.ValidPreparationIDKey, updated.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidPreparation(ctx, q.writeDB, &generated.UpdateValidPreparationParams{
 		Description:                 updated.Description,
@@ -476,8 +477,8 @@ func (q *repository) MarkValidPreparationAsIndexed(ctx context.Context, validPre
 	if validPreparationID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	if _, err := q.generatedQuerier.UpdateValidPreparationLastIndexedAt(ctx, q.writeDB, validPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid preparation as indexed")
@@ -498,8 +499,8 @@ func (q *repository) ArchiveValidPreparation(ctx context.Context, validPreparati
 	if validPreparationID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveValidPreparation(ctx, q.writeDB, validPreparationID)
 	if err != nil {

@@ -7,8 +7,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 )
 
 // validateLogin takes login information and returns whether the login is valid.
@@ -18,7 +18,7 @@ func (s *service) validateLogin(ctx context.Context, user *types.User, loginInpu
 	defer span.End()
 
 	// alias the relevant data.
-	logger := s.logger.WithValue(keys.UsernameKey, user.Username)
+	logger := s.logger.WithValue(identitykeys.UsernameKey, user.Username)
 
 	// check for login validity.
 	loginValid, err := s.authenticator.CredentialsAreValid(

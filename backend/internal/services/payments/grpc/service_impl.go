@@ -3,11 +3,11 @@ package grpc
 import (
 	"context"
 
+	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	paymentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/payments/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -35,7 +35,7 @@ func (s *serviceImpl) GetProduct(ctx context.Context, request *paymentssvc.GetPr
 
 	product, err := s.paymentsManager.GetProduct(ctx, request.ProductId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(keys.ProductIDKey, request.ProductId), span, codes.Internal, "failed to retrieve product")
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(paymentskeys.ProductIDKey, request.ProductId), span, codes.Internal, "failed to retrieve product")
 	}
 
 	return &paymentssvc.GetProductResponse{
@@ -70,7 +70,7 @@ func (s *serviceImpl) UpdateProduct(ctx context.Context, request *paymentssvc.Up
 
 	input := converters.ConvertProductUpdateRequestInputToDomain(request.Input)
 	if err := s.paymentsManager.UpdateProduct(ctx, request.ProductId, input); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(keys.ProductIDKey, request.ProductId), span, codes.Internal, "failed to update product")
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(paymentskeys.ProductIDKey, request.ProductId), span, codes.Internal, "failed to update product")
 	}
 
 	return &paymentssvc.UpdateProductResponse{
@@ -83,7 +83,7 @@ func (s *serviceImpl) ArchiveProduct(ctx context.Context, request *paymentssvc.A
 	defer span.End()
 
 	if err := s.paymentsManager.ArchiveProduct(ctx, request.ProductId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(keys.ProductIDKey, request.ProductId), span, codes.Internal, "failed to archive product")
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(paymentskeys.ProductIDKey, request.ProductId), span, codes.Internal, "failed to archive product")
 	}
 
 	return &paymentssvc.ArchiveProductResponse{
@@ -130,7 +130,7 @@ func (s *serviceImpl) GetSubscription(ctx context.Context, request *paymentssvc.
 
 	sub, err := s.paymentsManager.GetSubscription(ctx, request.SubscriptionId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(keys.SubscriptionIDKey, request.SubscriptionId), span, codes.Internal, "failed to retrieve subscription")
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(paymentskeys.SubscriptionIDKey, request.SubscriptionId), span, codes.Internal, "failed to retrieve subscription")
 	}
 
 	return &paymentssvc.GetSubscriptionResponse{
@@ -165,7 +165,7 @@ func (s *serviceImpl) UpdateSubscription(ctx context.Context, request *paymentss
 
 	input := converters.ConvertSubscriptionUpdateRequestInputToDomain(request.Input)
 	if err := s.paymentsManager.UpdateSubscription(ctx, request.SubscriptionId, input); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(keys.SubscriptionIDKey, request.SubscriptionId), span, codes.Internal, "failed to update subscription")
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(paymentskeys.SubscriptionIDKey, request.SubscriptionId), span, codes.Internal, "failed to update subscription")
 	}
 
 	return &paymentssvc.UpdateSubscriptionResponse{
@@ -178,7 +178,7 @@ func (s *serviceImpl) ArchiveSubscription(ctx context.Context, request *payments
 	defer span.End()
 
 	if err := s.paymentsManager.ArchiveSubscription(ctx, request.SubscriptionId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(keys.SubscriptionIDKey, request.SubscriptionId), span, codes.Internal, "failed to archive subscription")
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(paymentskeys.SubscriptionIDKey, request.SubscriptionId), span, codes.Internal, "failed to archive subscription")
 	}
 
 	return &paymentssvc.ArchiveSubscriptionResponse{
@@ -191,7 +191,7 @@ func (s *serviceImpl) CancelSubscription(ctx context.Context, request *paymentss
 	defer span.End()
 
 	if err := s.paymentsManager.CancelSubscription(ctx, request.SubscriptionId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(keys.SubscriptionIDKey, request.SubscriptionId), span, codes.Internal, "failed to cancel subscription")
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(paymentskeys.SubscriptionIDKey, request.SubscriptionId), span, codes.Internal, "failed to cancel subscription")
 	}
 
 	return &paymentssvc.CancelSubscriptionResponse{

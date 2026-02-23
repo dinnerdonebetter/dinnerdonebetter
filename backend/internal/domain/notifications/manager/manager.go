@@ -6,12 +6,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
+	notificationkeys "github.com/dinnerdonebetter/backend/internal/domain/notifications/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -87,8 +87,8 @@ func (m *notificationsManager) CreateUserNotification(ctx context.Context, input
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
 	}
-	logger := m.logger.WithSpan(span).WithValue(keys.UserNotificationIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.UserNotificationIDKey, input.ID)
+	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserNotificationIDKey, input.ID)
+	tracing.AttachToSpan(span, notificationkeys.UserNotificationIDKey, input.ID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating user notification creation input")
@@ -100,7 +100,7 @@ func (m *notificationsManager) CreateUserNotification(ctx context.Context, input
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, notifications.UserNotificationCreatedServiceEventType, map[string]any{
-		keys.UserNotificationIDKey: created.ID,
+		notificationkeys.UserNotificationIDKey: created.ID,
 	}))
 
 	return created, nil
@@ -113,15 +113,15 @@ func (m *notificationsManager) UpdateUserNotification(ctx context.Context, updat
 	if updated == nil {
 		return internalerrors.ErrNilInputParameter
 	}
-	logger := m.logger.WithSpan(span).WithValue(keys.UserNotificationIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.UserNotificationIDKey, updated.ID)
+	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserNotificationIDKey, updated.ID)
+	tracing.AttachToSpan(span, notificationkeys.UserNotificationIDKey, updated.ID)
 
 	if err := m.repo.UpdateUserNotification(ctx, updated); err != nil {
 		return err
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, notifications.UserNotificationUpdatedServiceEventType, map[string]any{
-		keys.UserNotificationIDKey: updated.ID,
+		notificationkeys.UserNotificationIDKey: updated.ID,
 	}))
 
 	return nil

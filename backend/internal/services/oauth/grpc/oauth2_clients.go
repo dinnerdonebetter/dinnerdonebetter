@@ -3,11 +3,11 @@ package grpc
 import (
 	"context"
 
+	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	oauthgrpcconverters "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -57,7 +57,7 @@ func (s *serviceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.Get
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.OAuth2ClientIDKey, request.Oauth2ClientId)
+	logger := s.logger.WithValue(oauthkeys.OAuth2ClientIDKey, request.Oauth2ClientId)
 
 	oauth2Client, err := s.oauthDataManager.GetOAuth2Client(ctx, request.Oauth2ClientId)
 	if err != nil {

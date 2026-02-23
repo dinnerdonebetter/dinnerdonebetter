@@ -5,10 +5,10 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -28,14 +28,14 @@ func (q *repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipeP
 	if recipeID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipePrepTaskID == "" {
 		return false, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
-	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
+	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	result, err := q.generatedQuerier.CheckRecipePrepTaskExistence(ctx, q.readDB, &generated.CheckRecipePrepTaskExistenceParams{
 		RecipeID:         recipeID,
@@ -60,14 +60,14 @@ func (q *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrep
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipePrepTaskID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
-	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
+	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	results, err := q.generatedQuerier.GetRecipePrepTask(ctx, q.readDB, recipePrepTaskID)
 	if err != nil {
@@ -130,8 +130,8 @@ func (q *repository) createRecipePrepTask(ctx context.Context, querier database.
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.MealPlanIDKey, input.ID)
-	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, input.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, input.ID)
 
 	// create the recipe prep task.
 	if err := q.generatedQuerier.CreateRecipePrepTask(ctx, querier, &generated.CreateRecipePrepTaskParams{
@@ -198,7 +198,7 @@ func (q *repository) CreateRecipePrepTask(ctx context.Context, input *mealplanni
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, input.ID)
 
 	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
@@ -229,8 +229,8 @@ func (q *repository) createRecipePrepTaskStep(ctx context.Context, querier datab
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, input.BelongsToRecipePrepTask)
+	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, input.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, input.BelongsToRecipePrepTask)
 
 	// create the meal plan.
 	if err := q.generatedQuerier.CreateRecipePrepTaskStep(ctx, querier, &generated.CreateRecipePrepTaskStepParams{
@@ -265,8 +265,8 @@ func (q *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID s
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	results, err := q.generatedQuerier.ListAllRecipePrepTasksByRecipe(ctx, q.readDB, recipeID)
 	if err != nil {
@@ -338,8 +338,8 @@ func (q *repository) GetRecipePrepTasks(ctx context.Context, recipeID string, fi
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -377,7 +377,7 @@ func (q *repository) UpdateRecipePrepTask(ctx context.Context, updated *mealplan
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.RecipePrepTaskIDKey, updated.ID)
+	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateRecipePrepTask(ctx, q.writeDB, &generated.UpdateRecipePrepTaskParams{
 		Name:                                   updated.Name,
@@ -411,14 +411,14 @@ func (q *repository) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipe
 	if recipeID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipePrepTaskID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
-	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
+	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	rowsAffected, err := q.generatedQuerier.ArchiveRecipePrepTask(ctx, q.writeDB, recipePrepTaskID)
 	if err != nil {

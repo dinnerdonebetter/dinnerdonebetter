@@ -57,4 +57,15 @@ const (
 	IndexNameKey = "index.name"
 	// UseDatabaseKey is the standard key for referring to whether or not the database was used in search.
 	UseDatabaseKey = "use_database"
+
+	// RequesterIDKey is the standard key for referring to a requesting user's ID (session/request context).
+	RequesterIDKey = "request.made_by"
+	// ActiveAccountIDKey is the standard key for referring to an active account ID (session context).
+	ActiveAccountIDKey = "active_account" + idSuffix
+	// UserIsServiceAdminKey is the standard key for referring to a user's admin status (session context).
+	UserIsServiceAdminKey = "user.is_admin"
+	// UserIDKey is the standard key for referring to a user ID (request/session context).
+	UserIDKey = "user" + idSuffix
+	// UsernameKey is the standard key for referring to a username (request context).
+	UsernameKey = "user.username"
 )
