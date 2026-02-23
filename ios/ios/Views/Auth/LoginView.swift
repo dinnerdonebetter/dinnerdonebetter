@@ -18,8 +18,10 @@ struct LoginView: View {
   @State private var errorMessage: String = ""
   @State private var isLoading: Bool = false
   @State private var loginTask: Task<Void, Never>?
+  #if DEBUG
   @State private var showEnvironmentPicker: Bool = false
   @State private var selectedEnvironment: AppEnvironment = APIConfiguration.currentEnvironment
+  #endif
 
   var body: some View {
     VStack(spacing: DSTheme.Spacing.xl) {
@@ -103,10 +105,13 @@ struct LoginView: View {
       Spacer()
       Spacer()
 
-      // Environment selector at the bottom of the screen
+      #if DEBUG
+      // Environment selector (Local vs Production) — dev builds only
       environmentButton
+      #endif
     }
     .dsScreenPadding()
+    #if DEBUG
     .sheet(isPresented: $showEnvironmentPicker) {
       EnvironmentPickerSheet(
         selectedEnvironment: $selectedEnvironment,
@@ -114,8 +119,10 @@ struct LoginView: View {
       )
       .presentationDetents([.medium])
     }
+    #endif
   }
 
+  #if DEBUG
   // MARK: - Environment Button
 
   private var environmentButton: some View {
@@ -138,6 +145,7 @@ struct LoginView: View {
     }
     .padding(.bottom, DSTheme.Spacing.sm)
   }
+  #endif
 
   private func handleLogin() async {
     guard !Task.isCancelled else { return }

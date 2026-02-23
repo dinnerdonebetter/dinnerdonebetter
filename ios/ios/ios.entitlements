@@ -4,10 +4,16 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<!-- Development environment -->
+		<!-- Development environment - Universal Links -->
 		<string>applinks:www.dinnerdonebetter.dev</string>
-		<!-- Production environment -->
+		<!-- Development environment - Password AutoFill / 1Password -->
+		<string>webcredentials:www.dinnerdonebetter.dev</string>
+		<!-- Production environment - Universal Links -->
 		<string>applinks:www.dinnerdonebetter.com</string>
+		<!-- Production environment - Password AutoFill / 1Password -->
+		<string>webcredentials:www.dinnerdonebetter.com</string>
+		<!-- Production root domain (matches 1Password entries saved as dinnerdonebetter.com) -->
+		<string>webcredentials:dinnerdonebetter.com</string>
 	</array>
 </dict>
 </plist>

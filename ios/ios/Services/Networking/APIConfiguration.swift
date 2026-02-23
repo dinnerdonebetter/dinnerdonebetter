@@ -10,13 +10,11 @@ import Foundation
 /// Represents the different deployment environments for the app.
 enum AppEnvironment: String, CaseIterable {
   case local
-  case development
   case production
 
   var displayName: String {
     switch self {
     case .local: return "Local"
-    case .development: return "Development"
     case .production: return "Production"
     }
   }
@@ -24,7 +22,6 @@ enum AppEnvironment: String, CaseIterable {
   var subtitle: String {
     switch self {
     case .local: return "localhost"
-    case .development: return "dinnerdonebetter.dev"
     case .production: return "dinnerdonebetter.com"
     }
   }
@@ -32,7 +29,6 @@ enum AppEnvironment: String, CaseIterable {
   var iconName: String {
     switch self {
     case .local: return "laptopcomputer"
-    case .development: return "hammer"
     case .production: return "globe"
     }
   }
@@ -67,8 +63,6 @@ struct APIConfiguration {
     switch currentEnvironment {
     case .local:
       return "http://localhost:8000"
-    case .development:
-      return "https://api.dinnerdonebetter.dev"
     case .production:
       return "https://http-api.dinnerdonebetter.com"
     }
@@ -80,8 +74,6 @@ struct APIConfiguration {
     switch currentEnvironment {
     case .local:
       return "http://localhost:3000"
-    case .development:
-      return "https://www.dinnerdonebetter.dev"
     case .production:
       return "https://www.dinnerdonebetter.com"
     }
@@ -92,8 +84,6 @@ struct APIConfiguration {
     switch currentEnvironment {
     case .local:
       return "0.0.0.0"
-    case .development:
-      return "grpc.dinnerdonebetter.dev"
     case .production:
       return "api.dinnerdonebetter.com"
     }
@@ -104,7 +94,7 @@ struct APIConfiguration {
     switch currentEnvironment {
     case .local:
       return 8001
-    case .development, .production:
+    case .production:
       return 443
     }
   }
@@ -115,7 +105,7 @@ struct APIConfiguration {
     switch currentEnvironment {
     case .local:
       return false
-    case .development, .production:
+    case .production:
       return true
     }
   }

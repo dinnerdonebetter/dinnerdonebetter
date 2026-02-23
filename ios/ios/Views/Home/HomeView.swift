@@ -59,9 +59,6 @@ struct HomeView: View {
                   {
                     emptyStateView
                   }
-
-                  // Sign Out Button
-                  signOutButton
                 }
                 .dsScreenPadding()
               }
@@ -332,14 +329,6 @@ struct HomeView: View {
       message: "Create a meal plan to get started!",
       size: .large
     )
-  }
-
-  // MARK: - Sign Out Button
-  private var signOutButton: some View {
-    DSButton("Sign Out", style: .ghost, fullWidth: true) {
-      authManager.logout()
-    }
-    .padding(.top, DSTheme.Spacing.xl)
   }
 
   // MARK: - Helper Functions
