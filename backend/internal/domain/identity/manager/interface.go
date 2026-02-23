@@ -45,6 +45,6 @@ type (
 
 		// Session/context helpers used by auth service and interceptors.
 		GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error)
-		BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error)
+		BuildSessionContextDataForUser(ctx context.Context, userID, activeAccountID string) (*sessions.ContextData, error)
 	}
 )

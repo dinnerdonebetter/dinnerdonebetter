@@ -29,6 +29,7 @@ message AdminLoginForTokenResponse {
 
 message ExchangeTokenRequest {
   string refresh_token = 1;
+  string desired_account_id = 2;
 }
 
 message ExchangeTokenResponse {

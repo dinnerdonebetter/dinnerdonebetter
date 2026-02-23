@@ -285,8 +285,8 @@ func (m *RepositoryMock) MarkUserAsIndexed(ctx context.Context, userID string) e
 }
 
 // BuildSessionContextDataForUser satisfies our interface contract.
-func (m *RepositoryMock) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
-	returnValues := m.Called(ctx, userID)
+func (m *RepositoryMock) BuildSessionContextDataForUser(ctx context.Context, userID, activeAccountID string) (*sessions.ContextData, error) {
+	returnValues := m.Called(ctx, userID, activeAccountID)
 
 	return returnValues.Get(0).(*sessions.ContextData), returnValues.Error(1)
 }

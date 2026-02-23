@@ -258,7 +258,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	waitlistsMethodPermissions := grpc14.ProvideMethodPermissions()
 	webhooksMethodPermissions := grpc13.ProvideMethodPermissions()
 	methodPermissionsMap := AggregateMethodPermissions(auditMethodPermissions, authMethodPermissions, commentsMethodPermissions, identityMethodPermissions, internalOpsMethodPermissions, issueReportsMethodPermissions, mealPlanningMethodPermissions, notificationsMethodPermissions, oAuthMethodPermissions, paymentsMethodPermissions, settingsMethodPermissions, uploadedMediaMethodPermissions, waitlistsMethodPermissions, webhooksMethodPermissions)
-	authInterceptor := interceptors.ProvideAuthInterceptor(tracerProvider, logger, identityDataManager, manageManager, methodPermissionsMap)
+	authInterceptor := interceptors.ProvideAuthInterceptor(tracerProvider, logger, identityDataManager, manageManager, issuer, methodPermissionsMap)
 	v2 := BuildUnaryServerInterceptors(authInterceptor)
 	v3 := BuildStreamServerInterceptors()
 	commentsServiceServer := grpc15.NewService(logger, tracerProvider, commentsDataManager, mealPlanningManager)

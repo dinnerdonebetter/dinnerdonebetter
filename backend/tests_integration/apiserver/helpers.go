@@ -80,6 +80,16 @@ func buildAuthedGRPCClient(ctx context.Context, token string) (client.Client, er
 	return c, nil
 }
 
+// buildAuthedGRPCClientWithBearerToken builds a client that sends the JWT directly as Bearer.
+// Use this when the token has an account_id claim (e.g. from LoginForToken with DesiredAccountId)
+// so that GetAuthStatus and other calls use that account as the active one.
+func buildAuthedGRPCClientWithBearerToken(token string) (client.Client, error) {
+	return client.BuildUnauthenticatedGRPCClientWithBearerToken(
+		fmt.Sprintf(":%d", apiServiceConfig.GRPCServer.Port),
+		token,
+	)
+}
+
 func hashStringToNumber(s string) uint64 {
 	// Create a new FNV-1a 64-bit hash object
 	h := fnv.New64a()

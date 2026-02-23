@@ -131,6 +131,8 @@ public struct Auth_ExchangeTokenRequest: Sendable {
 
   public var refreshToken: String = String()
 
+  public var desiredAccountID: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -937,7 +939,7 @@ extension Auth_AdminLoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Auth_ExchangeTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ExchangeTokenRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}refresh_token\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}refresh_token\0\u{3}desired_account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -946,6 +948,7 @@ extension Auth_ExchangeTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.refreshToken) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.desiredAccountID) }()
       default: break
       }
     }
@@ -955,11 +958,15 @@ extension Auth_ExchangeTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if !self.refreshToken.isEmpty {
       try visitor.visitSingularStringField(value: self.refreshToken, fieldNumber: 1)
     }
+    if !self.desiredAccountID.isEmpty {
+      try visitor.visitSingularStringField(value: self.desiredAccountID, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Auth_ExchangeTokenRequest, rhs: Auth_ExchangeTokenRequest) -> Bool {
     if lhs.refreshToken != rhs.refreshToken {return false}
+    if lhs.desiredAccountID != rhs.desiredAccountID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

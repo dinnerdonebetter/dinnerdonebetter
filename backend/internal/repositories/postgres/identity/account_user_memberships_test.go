@@ -67,7 +67,7 @@ func TestQuerier_Integration_AccountUserMemberships(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, exampleAccount.ID, defaultAccountID)
 
-	sessionCtxData, err := dbc.BuildSessionContextDataForUser(ctx, memberUserIDs[1])
+	sessionCtxData, err := dbc.BuildSessionContextDataForUser(ctx, memberUserIDs[1], "")
 	assert.NoError(t, err)
 	assert.NotNil(t, sessionCtxData)
 	assert.Equal(t, exampleAccount.ID, sessionCtxData.ActiveAccountID)
@@ -95,7 +95,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.BuildSessionContextDataForUser(ctx, "")
+		actual, err := c.BuildSessionContextDataForUser(ctx, "", "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -39,6 +40,7 @@ type AuthInterceptor struct {
 	identityDataManager   identitymanager.IdentityDataManager
 	methodPermissions     map[string][]authorization.Permission
 	oauth2ClientManager   *manage.Manager
+	tokenIssuer           tokens.Issuer
 	unauthenticatedRoutes []string
 	methodScopesHat       sync.Mutex
 }
@@ -52,6 +54,7 @@ func ProvideAuthInterceptor(
 	logger logging.Logger,
 	identityDataManager identitymanager.IdentityDataManager,
 	oauth2ClientManager *manage.Manager,
+	tokenIssuer tokens.Issuer,
 	aggregatedPermissions MethodPermissionsMap,
 ) *AuthInterceptor {
 	return &AuthInterceptor{
@@ -59,6 +62,7 @@ func ProvideAuthInterceptor(
 		logger:              logging.EnsureLogger(logger).WithName(o11yName),
 		identityDataManager: identityDataManager,
 		oauth2ClientManager: oauth2ClientManager,
+		tokenIssuer:         tokenIssuer,
 		methodPermissions:   aggregatedPermissions,
 		// TODO: configure this elsewhere
 		unauthenticatedRoutes: []string{
@@ -117,7 +121,7 @@ func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metaData metada
 	return "", "", nil
 }
 
-func (s *AuthInterceptor) extractSessionContextDataFromOAuth2(ctx context.Context, metaData metadata.MD) (*sessions.ContextData, error) {
+func (s *AuthInterceptor) extractSessionContextData(ctx context.Context, metaData metadata.MD) (*sessions.ContextData, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -130,37 +134,52 @@ func (s *AuthInterceptor) extractSessionContextDataFromOAuth2(ctx context.Contex
 
 	accessToken := strings.TrimPrefix(authHeader[0], tokenPrefix)
 
+	// Try OAuth2 token first.
 	token, err := s.oauth2ClientManager.LoadAccessToken(ctx, accessToken)
-	if err != nil {
-		return nil, fmt.Errorf("loading access token: %w", err)
+	if err == nil {
+		if userID := token.GetUserID(); userID != "" {
+			sessionCtxData, sessionErr := s.identityDataManager.BuildSessionContextDataForUser(ctx, userID, "")
+			if sessionErr != nil {
+				return nil, observability.PrepareAndLogError(sessionErr, logger, span, "fetching user info for cookie")
+			}
+			return s.applyZuckMode(ctx, metaData, sessionCtxData)
+		}
 	}
 
-	if userID := token.GetUserID(); userID != "" {
-		sessionCtxData, sessionErr := s.identityDataManager.BuildSessionContextDataForUser(ctx, userID)
+	// Fallback: treat Bearer token as JWT (e.g. from LoginForToken with DesiredAccountID).
+	userID, accountID, parseErr := s.tokenIssuer.ParseUserIDAndAccountIDFromToken(ctx, accessToken)
+	if parseErr == nil && userID != "" {
+		sessionCtxData, sessionErr := s.identityDataManager.BuildSessionContextDataForUser(ctx, userID, accountID)
 		if sessionErr != nil {
-			return nil, observability.PrepareAndLogError(sessionErr, logger, span, "fetching user info for cookie")
+			return nil, observability.PrepareAndLogError(sessionErr, logger, span, "fetching user info from token")
 		}
-
-		zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metaData, sessionCtxData)
-		if zuckErr != nil {
-			return nil, observability.PrepareAndLogError(zuckErr, logger, span, "fetching user info for zuck mode")
-		}
-
-		if zuckUserID != "" {
-			sessionCtxData.Requester.UserID = zuckUserID
-		}
-
-		if zuckAccountID != "" {
-			sessionCtxData.ActiveAccountID = zuckAccountID
-			sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String())
-		}
-
-		if sessionCtxData != nil {
-			return sessionCtxData, nil
-		}
+		return s.applyZuckMode(ctx, metaData, sessionCtxData)
 	}
 
-	return nil, Unauthenticated("invalid OAuth2 token")
+	return nil, Unauthenticated("invalid or expired token")
+}
+
+func (s *AuthInterceptor) applyZuckMode(ctx context.Context, metaData metadata.MD, sessionCtxData *sessions.ContextData) (*sessions.ContextData, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metaData, sessionCtxData)
+	if zuckErr != nil {
+		return nil, observability.PrepareAndLogError(zuckErr, logger, span, "fetching user info for zuck mode")
+	}
+
+	if zuckUserID != "" {
+		sessionCtxData.Requester.UserID = zuckUserID
+	}
+
+	if zuckAccountID != "" {
+		sessionCtxData.ActiveAccountID = zuckAccountID
+		sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String())
+	}
+
+	return sessionCtxData, nil
 }
 
 func (s *AuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
@@ -182,7 +201,7 @@ func (s *AuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.Unauthenticated, "missing authorization header")
 		}
 
-		sessionContextData, err := s.extractSessionContextDataFromOAuth2(ctx, md)
+		sessionContextData, err := s.extractSessionContextData(ctx, md)
 		if err != nil {
 			return nil, status.Error(codes.Internal, "building session context data for user")
 		}

@@ -23,7 +23,7 @@ func (m *Manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 }
 
 // ExchangeTokenForUser is a mock method.
-func (m *Manager) ExchangeTokenForUser(ctx context.Context, refreshToken string) (*auth.TokenResponse, error) {
+func (m *Manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desiredAccountID string) (*auth.TokenResponse, error) {
 	args := m.Called(ctx, refreshToken)
 	return args.Get(0).(*auth.TokenResponse), args.Error(1)
 }

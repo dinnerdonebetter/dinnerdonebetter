@@ -101,7 +101,7 @@ func TestServiceImpl_ExchangeToken(t *testing.T) {
 			ExpiresUTC:   time.Now().Add(time.Hour),
 		}
 
-		authenticationManager.On(reflection.GetMethodName(authenticationManager.ExchangeTokenForUser), mock.Anything, "refresh-token").Return(fakeTokenResponse, nil)
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ExchangeTokenForUser), mock.Anything, "refresh-token", mock.Anything).Return(fakeTokenResponse, nil)
 
 		request := &authsvc.ExchangeTokenRequest{
 			RefreshToken: "refresh-token",
@@ -147,7 +147,7 @@ func TestServiceImpl_ExchangeToken(t *testing.T) {
 		service, _, _, authenticationManager := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authenticationManager.On(reflection.GetMethodName(authenticationManager.ExchangeTokenForUser), mock.Anything, "refresh-token").Return((*auth.TokenResponse)(nil), errors.New("exchange failed"))
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ExchangeTokenForUser), mock.Anything, "refresh-token", mock.Anything).Return((*auth.TokenResponse)(nil), errors.New("exchange failed"))
 
 		request := &authsvc.ExchangeTokenRequest{
 			RefreshToken: "refresh-token",

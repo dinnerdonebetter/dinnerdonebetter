@@ -84,6 +84,7 @@ type (
 	OAuth2Service interface {
 		AuthorizeHandler(res http.ResponseWriter, req *http.Request)
 		TokenHandler(res http.ResponseWriter, req *http.Request)
+		RevokeHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

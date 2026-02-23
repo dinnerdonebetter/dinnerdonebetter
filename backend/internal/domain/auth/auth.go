@@ -93,6 +93,7 @@ type (
 	AuthDataService interface {
 		AuthorizeHandler(res http.ResponseWriter, req *http.Request)
 		TokenHandler(res http.ResponseWriter, req *http.Request)
+		RevokeHandler(res http.ResponseWriter, req *http.Request)
 
 		SSOLoginHandler(http.ResponseWriter, *http.Request)
 		SSOLoginCallbackHandler(http.ResponseWriter, *http.Request)

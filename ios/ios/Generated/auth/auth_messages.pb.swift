@@ -144,6 +144,8 @@ public struct Auth_UserLoginInput: Sendable {
 
   public var totpToken: String = String()
 
+  public var desiredAccountID: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -359,7 +361,7 @@ extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserLoginInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}username\0\u{1}password\0\u{3}totp_token\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}username\0\u{1}password\0\u{3}totp_token\0\u{3}desired_account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -370,6 +372,7 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       case 1: try { try decoder.decodeSingularStringField(value: &self.username) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.password) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.desiredAccountID) }()
       default: break
       }
     }
@@ -385,6 +388,9 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if !self.totpToken.isEmpty {
       try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 3)
     }
+    if !self.desiredAccountID.isEmpty {
+      try visitor.visitSingularStringField(value: self.desiredAccountID, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -392,6 +398,7 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if lhs.username != rhs.username {return false}
     if lhs.password != rhs.password {return false}
     if lhs.totpToken != rhs.totpToken {return false}
+    if lhs.desiredAccountID != rhs.desiredAccountID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

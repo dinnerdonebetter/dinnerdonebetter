@@ -61,6 +61,7 @@ func ProvideAPIRouter(
 	router.Route("/oauth2", func(userRouter routing.Router) {
 		userRouter.Get("/authorize", authService.AuthorizeHandler)
 		userRouter.Post("/token", authService.TokenHandler)
+		userRouter.Post("/revoke", authService.RevokeHandler)
 	})
 
 	router.Route("/api/payments/webhooks", func(paymentsRouter routing.Router) {

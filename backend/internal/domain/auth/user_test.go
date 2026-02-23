@@ -70,6 +70,20 @@ func TestUserLoginInput_ValidateWithContext(T *testing.T) {
 
 		assert.Error(t, err)
 	})
+
+	T.Run("with desired account ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		x := &UserLoginInput{
+			Username:         t.Name(),
+			Password:         t.Name(),
+			TOTPToken:        "123456",
+			DesiredAccountID: "550e8400-e29b-41d4-a716-446655440000",
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
 }
 
 func TestPasswordUpdateInput_ValidateWithContext(T *testing.T) {

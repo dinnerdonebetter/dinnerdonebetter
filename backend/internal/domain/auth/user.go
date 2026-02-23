@@ -24,9 +24,10 @@ type (
 	UserLoginInput struct {
 		_ struct{} `json:"-"`
 
-		Username  string `json:"username"`
-		Password  string `json:"password"`
-		TOTPToken string `json:"totpToken"`
+		Username         string `json:"username"`
+		Password         string `json:"password"`
+		TOTPToken        string `json:"totpToken"`
+		DesiredAccountID string `json:"desiredAccountID"`
 	}
 
 	// PasswordUpdateInput represents input a User would provide when updating their passwords.
@@ -118,6 +119,7 @@ func (i *UserLoginInput) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&i.Username, validation.Required, validation.Length(4, math.MaxInt8)),
 		validation.Field(&i.Password, validation.Required, validation.Length(8, math.MaxInt8)),
 		validation.Field(&i.TOTPToken, is.Digit, validation.RuneLength(6, 6)),
+		validation.Field(&i.DesiredAccountID, validation.When(i.DesiredAccountID != "", validation.Required, validation.Length(1, math.MaxInt8))),
 	)
 }
 

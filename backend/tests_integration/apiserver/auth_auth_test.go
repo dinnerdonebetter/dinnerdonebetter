@@ -1,18 +1,120 @@
 package integration
 
 import (
+	"fmt"
+	"net/http"
+	"net/url"
+	"strings"
 	"testing"
+	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestAuth_LoginForToken_DesiredAccount(T *testing.T) {
+	T.Parallel()
+
+	T.Run("login for non-default account", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		// Create inviter user + client; inviter gets account A (default from registration).
+		_, testClient := createUserAndClientForTest(t)
+		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
+		require.NoError(t, err)
+		inviterAccountID := accountRes.Result.Id
+
+		// Create invitee user + client; invitee gets account B (their default from registration).
+		inviteeEmailAddress := fmt.Sprintf("invitee%d@testing.com", time.Now().UnixMicro())
+		input := &identity.UserRegistrationInput{
+			Birthday:              pointer.To(time.Now()),
+			EmailAddress:          inviteeEmailAddress,
+			FirstName:             fmt.Sprintf("invitee_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AccountName:           fmt.Sprintf("invitee_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			LastName:              fmt.Sprintf("invitee_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Password:              fmt.Sprintf("invitee_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Username:              fmt.Sprintf("invitee_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AcceptedPrivacyPolicy: true,
+			AcceptedTOS:           true,
+		}
+		invitee, inviteeClient := createUserAndClientForTestWithRegistrationInput(t, input)
+
+		// Inviter creates invitation for invitee.
+		invitation, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
+			Input: &identitysvc.AccountInvitationCreationRequestInput{
+				Note:    t.Name(),
+				ToName:  t.Name(),
+				ToEmail: inviteeEmailAddress,
+			},
+		})
+		require.NoError(t, err)
+
+		// Invitee accepts invitation. Invitee now has accounts A and B; B remains default.
+		_, err = inviteeClient.AcceptAccountInvitation(ctx, &identitysvc.AcceptAccountInvitationRequest{
+			AccountInvitationId: invitation.Created.Id,
+			Input: &identitysvc.AccountInvitationUpdateRequestInput{
+				Token: invitation.Created.Token,
+				Note:  t.Name(),
+			},
+		})
+		require.NoError(t, err)
+
+		// Login with DesiredAccountId set to inviter's account (non-default for invitee).
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
+			Input: &authsvc.UserLoginInput{
+				Username:         invitee.Username,
+				Password:         invitee.HashedPassword,
+				TotpToken:        generateTOTPCodeForUserForTest(t, invitee),
+				DesiredAccountId: inviterAccountID,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, tokenRes)
+		require.NotEmpty(t, tokenRes.Result.AccessToken)
+		assert.Equal(t, inviterAccountID, tokenRes.Result.AccountId, "token response should include the desired (non-default) account")
+
+		// Use JWT directly as Bearer so session context uses the token's account_id claim.
+		jwtClient, err := buildAuthedGRPCClientWithBearerToken(tokenRes.Result.AccessToken)
+		require.NoError(t, err)
+		status, err := jwtClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, status)
+		assert.Equal(t, inviterAccountID, status.ActiveAccount, "session context should use account from token")
+	})
+
+	T.Run("login with invalid desired account returns error", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, _ := createUserAndClientForTest(t)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		// Use a made-up account ID the user is not a member of.
+		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
+			Input: &authsvc.UserLoginInput{
+				Username:         user.Username,
+				Password:         user.HashedPassword,
+				TotpToken:        generateTOTPCodeForUserForTest(t, user),
+				DesiredAccountId: nonexistentID,
+			},
+		})
+		assert.Error(t, err)
+		assert.Nil(t, tokenRes)
+	})
+}
 
 func TestAuth_LoginForToken(T *testing.T) {
 	T.Parallel()
@@ -370,9 +472,53 @@ func TestAuth_InvalidateToken(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
-		/*
-			there's currently no logout mechanism surfaced in the client, but there should be, and it should be tested
-		*/
-		t.Skipf("TODO")
+		ctx := t.Context()
+
+		user, _ := createUserAndClientForTest(t)
+		loginInput := &authsvc.UserLoginInput{
+			Username:  user.Username,
+			Password:  user.HashedPassword,
+			TotpToken: generateTOTPCodeForUserForTest(t, user),
+		}
+
+		oauth2Token, err := localdev.FetchOAuth2TokenForUser(
+			ctx,
+			httpTestServerAddress,
+			fmt.Sprintf(":%d", apiServiceConfig.GRPCServer.Port),
+			createdClientID,
+			createdClientSecret,
+			loginInput,
+		)
+		require.NoError(t, err)
+		require.NotNil(t, oauth2Token)
+		require.NotEmpty(t, oauth2Token.AccessToken)
+
+		// Verify token works before revocation
+		clientWithToken, err := buildAuthedGRPCClientWithBearerToken(oauth2Token.AccessToken)
+		require.NoError(t, err)
+		_, err = clientWithToken.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+		require.NoError(t, err)
+
+		// Revoke the access token
+		form := url.Values{}
+		form.Set("token", oauth2Token.AccessToken)
+		form.Set("token_type_hint", "access_token")
+		form.Set("client_id", createdClientID)
+		form.Set("client_secret", createdClientSecret)
+
+		revokeReq, err := http.NewRequestWithContext(ctx, http.MethodPost, httpTestServerAddress+"/oauth2/revoke", strings.NewReader(form.Encode()))
+		require.NoError(t, err)
+		revokeReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+		httpClient := &http.Client{}
+		revokeRes, err := httpClient.Do(revokeReq)
+		require.NoError(t, err)
+		defer revokeRes.Body.Close()
+
+		assert.Equal(t, http.StatusOK, revokeRes.StatusCode, "revoke endpoint should return 200")
+
+		// Token should be invalid after revocation
+		_, err = clientWithToken.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+		assert.Error(t, err, "API calls with revoked token should fail")
 	})
 }

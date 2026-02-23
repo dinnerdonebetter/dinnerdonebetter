@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	issuer = "dinner-done-better"
+	issuer       = "dinner-done-better"
+	accountIDKey = "account_id"
 )
 
 type (
@@ -39,6 +40,11 @@ func NewJWTSigner(logger logging.Logger, tracerProvider tracing.TracerProvider, 
 
 // IssueToken issues a new JSON web token.
 func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.Duration) (string, error) {
+	return s.IssueTokenWithAccount(ctx, user, expiry, "")
+}
+
+// IssueTokenWithAccount issues a new JSON web token, optionally including an account ID claim.
+func (s *signer) IssueTokenWithAccount(ctx context.Context, user tokens.User, expiry time.Duration, accountID string) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -46,7 +52,7 @@ func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.D
 		expiry = time.Minute * 10
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	claims := jwt.MapClaims{
 		"exp": jwt.NewNumericDate(time.Now().Add(expiry).UTC()),           /* expiration time */
 		"nbf": jwt.NewNumericDate(time.Now().Add(-1 * time.Minute).UTC()), /* not before */
 		"iat": jwt.NewNumericDate(time.Now().UTC()),                       /* issued at */
@@ -54,7 +60,12 @@ func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.D
 		"iss": issuer,                                                     /* issuer */
 		"sub": user.GetID(),                                               /* subject */
 		"jti": identifiers.New(),                                          /* JWT ID */
-	})
+	}
+	if accountID != "" {
+		claims[accountIDKey] = accountID
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, err := token.SignedString(s.signingKey)
 	if err != nil {
@@ -67,26 +78,37 @@ func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.D
 
 // ParseUserIDFromToken parses a AccessToken and returns the associated user ID.
 func (s *signer) ParseUserIDFromToken(ctx context.Context, token string) (string, error) {
+	userID, _, err := s.ParseUserIDAndAccountIDFromToken(ctx, token)
+	return userID, err
+}
+
+// ParseUserIDAndAccountIDFromToken parses a JWT and returns the user ID and optional account ID.
+func (s *signer) ParseUserIDAndAccountIDFromToken(ctx context.Context, tokenString string) (userID, accountID string, err error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
-		// Don't forget to validate the alg is what you expect:
+	parsedToken, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-
 		return s.signingKey, nil
 	})
 	if err != nil {
 		s.logger.Error("parsing JWT", err)
-		return "", err
+		return "", "", err
 	}
 
 	subject, err := parsedToken.Claims.GetSubject()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return subject, nil
+	// Extract optional account_id claim
+	if claims, ok := parsedToken.Claims.(jwt.MapClaims); ok {
+		if aid, ok2 := claims[accountIDKey].(string); ok2 && aid != "" {
+			return subject, aid, nil
+		}
+	}
+
+	return subject, "", nil
 }

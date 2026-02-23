@@ -640,11 +640,11 @@ func (m *manager) GetDefaultAccountIDForUser(ctx context.Context, userID string)
 	return m.identityRepo.GetDefaultAccountIDForUser(ctx, userID)
 }
 
-func (m *manager) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
+func (m *manager) BuildSessionContextDataForUser(ctx context.Context, userID, activeAccountID string) (*sessions.ContextData, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return m.identityRepo.BuildSessionContextDataForUser(ctx, userID)
+	return m.identityRepo.BuildSessionContextDataForUser(ctx, userID, activeAccountID)
 }
 
 func (m *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
