@@ -2,10 +2,11 @@
 name: deploy_ios
 
 on:
-  push:
-    branches: [prod]
-    paths:
-      - ios/**
+  gollum:
+  # push:
+  #   branches: [prod]
+  #   paths:
+  #     - ios/**
 
 jobs:
   deploy:
