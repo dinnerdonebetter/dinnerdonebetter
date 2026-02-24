@@ -385,7 +385,8 @@ struct HomeView: View {
       return title
     }
 
-    let startDate = mealPlan.events
+    let startDate =
+      mealPlan.events
       .map { HomeViewModel.timestampToDate($0.startsAt) }
       .min() ?? Date()
     let formatter = DateFormatter()

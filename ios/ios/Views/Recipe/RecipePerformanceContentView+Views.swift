@@ -26,19 +26,26 @@ struct StepCardView: View {
   var selectedInstrumentOptions: [String: UInt32] = [:]
   var selectedVesselOptions: [String: UInt32] = [:]
   var scale: Float = 1.0
+  /// Override for merged meal steps (multiple recipes)
+  var isCompletedOverride: Bool?
+  var canCheckOverride: Bool?
+  var onToggleOverride: (() -> Void)?
 
   var body: some View {
-    // Use new API for associated recipe steps, old API for main recipe steps
+    // Use overrides for merged steps, otherwise use viewModel
     let isCompleted: Bool
     let canCheck: Bool
     let prerequisites: [Int]
 
-    if isAssociatedRecipeStep {
+    if let overrideCompleted = isCompletedOverride, let overrideCanCheck = canCheckOverride {
+      isCompleted = overrideCompleted
+      canCheck = overrideCanCheck
+      prerequisites = []
+    } else if isAssociatedRecipeStep {
       isCompleted = viewModel.isStepCompleted(recipeID: recipeID, stepID: step.id)
       canCheck = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
-      // For associated recipe steps, get prerequisite keys and convert to indices if needed
       _ = viewModel.getPrerequisiteStepKeys(recipeID: recipeID, stepID: step.id)
-      prerequisites = []  // We'll handle prerequisites differently for associated steps
+      prerequisites = []
     } else {
       isCompleted = viewModel.isStepCompleted(index)
       canCheck = viewModel.canCheckStep(index)
@@ -56,7 +63,9 @@ struct StepCardView: View {
         // Checkbox (works for both main and associated recipe steps)
         Button(
           action: {
-            if isAssociatedRecipeStep {
+            if let onToggle = onToggleOverride {
+              onToggle()
+            } else if isAssociatedRecipeStep {
               viewModel.toggleStep(recipeID: recipeID, stepID: step.id)
             } else {
               viewModel.toggleStep(index)

@@ -441,66 +441,15 @@ struct MealDetailView: View {
     .cornerRadius(12)
   }
 
-  private struct UnifiedMealStep: Identifiable {
-    enum Category {
-      case upNext
-      case forLater
-      case done
-    }
-
-    let componentID: String
-    let componentIndex: Int
-    let componentName: String
-    let step: Mealplanning_RecipeStep
-    let stepIndex: Int
-    let recipeID: String
-    let scale: Float
-    let viewModel: PerformRecipeViewModel
-    let category: Category
-
-    var id: String {
-      "\(componentID):\(recipeID):\(step.id)"
-    }
-  }
-
-  private func collectUnifiedMealSteps(meal: Mealplanning_Meal) -> [UnifiedMealStep] {
-    var result: [UnifiedMealStep] = []
-
-    for (componentIndex, component) in meal.components.enumerated() {
-      let componentID = component.recipe.id
-      guard let viewModel = componentViewModels[componentID], let recipe = viewModel.recipe else {
-        continue
-      }
-
-      for (index, step) in recipe.steps.enumerated() {
-        let category: UnifiedMealStep.Category
-        switch viewModel.categorizeStep(recipeID: recipe.id, stepID: step.id) {
-        case .upNext: category = .upNext
-        case .forLater: category = .forLater
-        case .done: category = .done
-        }
-        result.append(
-          UnifiedMealStep(
-            componentID: componentID,
-            componentIndex: componentIndex,
-            componentName: recipe.name.isEmpty
-              ? formatComponentType(component.componentType) : recipe.name,
-            step: step,
-            stepIndex: index,
-            recipeID: recipe.id,
-            scale: loadedRecipes[componentID]?.scale ?? (baseComponentScales[componentID] ?? 1.0)
-              * mealScale,
-            viewModel: viewModel,
-            category: category
-          ))
-      }
-    }
-
-    return result
-  }
-
   private func unifiedMealStepsSection(meal: Mealplanning_Meal) -> some View {
-    let allSteps = collectUnifiedMealSteps(meal: meal)
+    let allSteps = collectUnifiedMealStepsWithMerging(
+      meal: meal,
+      componentViewModels: componentViewModels,
+      loadedRecipes: loadedRecipes,
+      baseComponentScales: baseComponentScales,
+      mealScale: mealScale,
+      formatComponentType: formatComponentType
+    )
     let upNext = allSteps.filter { $0.category == .upNext }
     let forLater = allSteps.filter { $0.category == .forLater }
 
@@ -529,7 +478,7 @@ struct MealDetailView: View {
       rowContent: { item in
         VStack(alignment: .leading, spacing: 6) {
           let tagStyle = componentTagStyle(for: item.componentIndex)
-          Text(item.componentName)
+          Text(item.componentNamesForTag)
             .font(.caption2)
             .padding(.horizontal, 8)
             .padding(.vertical, 3)
@@ -545,7 +494,27 @@ struct MealDetailView: View {
               formatUnifiedStepTitle(step: step, index: item.stepIndex)
             },
             recipeID: item.recipeID,
-            scale: item.scale
+            scale: item.isMerged ? 1.0 : item.scale,
+            isCompletedOverride: item.isMerged
+              ? item.sources.allSatisfy {
+                $0.viewModel.isStepCompleted(recipeID: $0.recipeID, stepID: $0.step.id)
+              }
+              : nil,
+            canCheckOverride: item.isMerged
+              ? item.sources.allSatisfy { source in
+                let prereqs = source.viewModel.getPrerequisiteStepKeys(
+                  recipeID: source.recipeID, stepID: source.step.id
+                )
+                return prereqs.allSatisfy { source.viewModel.completedSteps.contains($0) }
+              }
+              : nil,
+            onToggleOverride: item.isMerged
+              ? {
+                for source in item.sources {
+                  source.viewModel.toggleStep(recipeID: source.recipeID, stepID: source.step.id)
+                }
+              }
+              : nil
           )
         }
       }
