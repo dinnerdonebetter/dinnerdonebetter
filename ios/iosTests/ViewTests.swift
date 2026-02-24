@@ -468,3 +468,66 @@ struct DateFormattingTests {
     }
   }
 }
+
+// MARK: - Discrete Quantity Scaling Tests
+
+struct DiscreteQuantityScalingTests {
+  @Test("Uint32 discrete scaling keeps min and max at sub-1 scale")
+  func testUint32SubOneScaleKeepsBaseline() {
+    var quantity = Common_Uint32RangeWithOptionalMax()
+    quantity.min = 1
+    quantity.max = 3
+
+    let scaled = DiscreteQuantityScaling.scaled(quantity, scale: 0.5)
+
+    #expect(scaled.min == 1)
+    #expect(scaled.hasMax)
+    #expect(scaled.max == 3)
+  }
+
+  @Test("Uint32 discrete scaling rounds max up when scaling up")
+  func testUint32ScaleUpRoundsMax() {
+    var quantity = Common_Uint32RangeWithOptionalMax()
+    quantity.min = 2
+    quantity.max = 3
+
+    let scaled = DiscreteQuantityScaling.scaled(quantity, scale: 1.5)
+
+    #expect(scaled.min == 2)
+    #expect(scaled.hasMax)
+    #expect(scaled.max == 5)
+  }
+
+  @Test("Uint16 discrete scaling keeps open-ended quantities open-ended")
+  func testUint16OpenEndedQuantityRemainsOpenEnded() {
+    var quantity = Common_Uint16RangeWithOptionalMax()
+    quantity.min = 1
+
+    let scaled = DiscreteQuantityScaling.scaled(quantity, scale: 2.0)
+
+    #expect(scaled.min == 1)
+    #expect(!scaled.hasMax)
+  }
+
+  @Test("Uint16 discrete max scaling clamps overflow")
+  func testUint16ScaleUpClampsOverflow() {
+    let scaled = DiscreteQuantityScaling.scaledMax(UInt16.max, scale: 2.0)
+    #expect(scaled == UInt16.max)
+  }
+
+  @Test("Aggregated instrument quantity text keeps min and scales max")
+  func testAggregatedInstrumentQuantityTextUsesDiscreteRules() {
+    var aggregated = AggregatedInstrumentVessel(
+      itemID: "instrument-id",
+      name: "Mixing bowl",
+      type: .instrument
+    )
+    var quantity = Common_Uint32RangeWithOptionalMax()
+    quantity.min = 1
+    quantity.max = 1
+    aggregated.addQuantity(quantity)
+
+    #expect(aggregated.quantityText(scale: 0.5) == "1")
+    #expect(aggregated.quantityText(scale: 2.0) == "1 - 2")
+  }
+}

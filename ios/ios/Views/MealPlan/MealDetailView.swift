@@ -449,11 +449,7 @@ extension MealDetailView {
               }
 
               if instrument.hasQuantity, var current = aggregated[itemID] {
-                var scaledQuantity = instrument.quantity
-                scaledQuantity.min = UInt32(Float(scaledQuantity.min) * scale)
-                if scaledQuantity.hasMax {
-                  scaledQuantity.max = UInt32(Float(scaledQuantity.max) * scale)
-                }
+                let scaledQuantity = DiscreteQuantityScaling.scaled(instrument.quantity, scale: scale)
                 current.addQuantity(scaledQuantity)
                 aggregated[itemID] = current
               }
@@ -475,11 +471,7 @@ extension MealDetailView {
               }
 
               if vessel.hasQuantity, var current = aggregated[itemID] {
-                var scaledQuantity = vessel.quantity
-                scaledQuantity.min = UInt32(Float(scaledQuantity.min) * scale)
-                if scaledQuantity.hasMax {
-                  scaledQuantity.max = UInt32(Float(scaledQuantity.max) * scale)
-                }
+                let scaledQuantity = DiscreteQuantityScaling.scaled(vessel.quantity, scale: scale)
                 current.addQuantity(scaledQuantity)
                 aggregated[itemID] = current
               }

@@ -12,6 +12,48 @@ import SwiftUI
 
 // MARK: - Helper Types
 
+enum DiscreteQuantityScaling {
+  static func scaled(
+    _ quantity: Common_Uint32RangeWithOptionalMax,
+    scale: Float
+  ) -> Common_Uint32RangeWithOptionalMax {
+    var scaledQuantity = quantity
+    scaledQuantity.min = quantity.min
+    if quantity.hasMax {
+      scaledQuantity.max = scale > 1 ? scaledMax(quantity.max, scale: scale) : quantity.max
+    }
+    return scaledQuantity
+  }
+
+  static func scaled(
+    _ quantity: Common_Uint16RangeWithOptionalMax,
+    scale: Float
+  ) -> Common_Uint16RangeWithOptionalMax {
+    var scaledQuantity = quantity
+    scaledQuantity.min = quantity.min
+    if quantity.hasMax {
+      scaledQuantity.max = scale > 1 ? scaledMax(quantity.max, scale: scale) : quantity.max
+    }
+    return scaledQuantity
+  }
+
+  static func scaledMax(_ value: UInt32, scale: Float) -> UInt32 {
+    let scaled = ceil(Double(value) * Double(scale))
+    if scaled >= Double(UInt32.max) {
+      return UInt32.max
+    }
+    return UInt32(scaled)
+  }
+
+  static func scaledMax(_ value: UInt16, scale: Float) -> UInt16 {
+    let scaled = ceil(Double(value) * Double(scale))
+    if scaled >= Double(UInt16.max) {
+      return UInt16.max
+    }
+    return UInt16(scaled)
+  }
+}
+
 struct StepItem {
   let name: String
   let isProduct: Bool
@@ -92,8 +134,13 @@ struct AggregatedInstrumentVessel: Identifiable {
   func quantityText(scale: Float) -> String? {
     guard hasAnyQuantity else { return nil }
 
-    let scaledMin = UInt32(Float(totalMin) * scale)
-    let scaledMax = totalMax.map { UInt32(Float($0) * scale) }
+    // Instruments/vessels are discrete items. Keep the baseline minimum required quantity
+    // and only expand the possible upper bound when scaling up.
+    let scaledMin = totalMin
+    let scaledMax = totalMax.map { maxQuantity -> UInt32 in
+      guard scale > 1 else { return maxQuantity }
+      return DiscreteQuantityScaling.scaledMax(maxQuantity, scale: scale)
+    }
 
     if let max = scaledMax {
       if scaledMin == max {
