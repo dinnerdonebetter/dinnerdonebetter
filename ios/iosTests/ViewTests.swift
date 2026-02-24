@@ -585,4 +585,35 @@ struct WashHandsGatingTests {
 
     #expect(viewModel.canCheckStep(recipeID: "recipe-id", stepID: "step-1") == true)
   }
+
+  @Test("Steps with completion conditions remain blocked until conditions are checked")
+  @MainActor
+  func testCanCheckStepRequiresCompletionConditions() async {
+    let authManager = AuthenticationManager()
+    let viewModel = PerformRecipeViewModel(recipeID: "recipe-id", authManager: authManager)
+
+    var completionCondition = Mealplanning_RecipeStepCompletionCondition()
+    completionCondition.id = "condition-1"
+    completionCondition.notes = "Chicken reaches 165F"
+
+    var step = Mealplanning_RecipeStep()
+    step.id = "step-1"
+    step.completionConditions = [completionCondition]
+
+    var recipe = Mealplanning_Recipe()
+    recipe.id = "recipe-id"
+    recipe.steps = [step]
+    viewModel.recipe = recipe
+    viewModel.washHandsCompleted = true
+
+    #expect(viewModel.canCheckStep(recipeID: "recipe-id", stepID: "step-1") == false)
+
+    viewModel.toggleStepCompletionCondition(
+      recipeID: "recipe-id",
+      stepID: "step-1",
+      conditionIdentifier: "condition-1"
+    )
+
+    #expect(viewModel.canCheckStep(recipeID: "recipe-id", stepID: "step-1") == true)
+  }
 }

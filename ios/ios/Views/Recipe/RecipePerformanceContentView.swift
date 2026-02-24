@@ -1162,7 +1162,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         Spacer()
 
         if allowCompletedStepsToggle {
-          Button(showCompletedSteps ? "Focus mode" : "Show completed") {
+          Button(showCompletedSteps ? "Focus mode" : "Complete view") {
             withAnimation {
               showCompletedSteps.toggle()
             }
@@ -1181,7 +1181,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
             .foregroundColor(.secondary)
             .padding(.horizontal, 4)
 
-          if showWashHandsStepCard, allSteps.first != nil {
+          if showWashHandsStepCard, !sharedWashHandsValue, allSteps.first != nil {
             washHandsStepCard(viewModel: viewModel)
           }
 
@@ -1214,7 +1214,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
               .padding(.horizontal, 4)
 
             // Wash hands step (only show once, before first up next step)
-            if showWashHandsStepCard, upNextSteps.first != nil {
+            if showWashHandsStepCard, !sharedWashHandsValue, upNextSteps.first != nil {
               washHandsStepCard(viewModel: viewModel)
             }
 
@@ -1241,7 +1241,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         // For Later section
         if !forLaterSteps.isEmpty {
           VStack(alignment: .leading, spacing: 8) {
-            Text("For Later")
+            Text("Not Yet")
               .font(.subheadline)
               .fontWeight(.semibold)
               .foregroundColor(.blue)
@@ -1362,7 +1362,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
         // Step title
         VStack(alignment: .leading, spacing: 4) {
-          Text("🧼 Wash your hands 🧼")
+          Text("🧼 Wash your hands")
             .font(.headline)
             .foregroundColor(isCompleted ? .secondary : .primary)
             .italic(isCompleted)

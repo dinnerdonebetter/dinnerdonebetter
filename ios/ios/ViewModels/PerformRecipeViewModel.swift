@@ -25,6 +25,9 @@ class PerformRecipeViewModel {
   // Track which prep tasks are completed (by prep task ID)
   var completedPrepTasks: Set<String> = []
 
+  // Track which completion conditions are checked (by key: "recipeID:stepID:conditionID")
+  var completedStepCompletionConditions: Set<String> = []
+
   // Special step: wash hands (index -1)
   var washHandsCompleted: Bool = false
 
@@ -153,6 +156,96 @@ class PerformRecipeViewModel {
     return "\(recipeID):\(stepID)"
   }
 
+  private func completionConditionKey(recipeID: String, stepID: String, conditionIdentifier: String)
+    -> String
+  {
+    return "\(recipeID):\(stepID):\(conditionIdentifier)"
+  }
+
+  private func stepFor(recipeID: String, stepID: String) -> Mealplanning_RecipeStep? {
+    guard let recipe = recipe else {
+      return nil
+    }
+
+    if recipeID == recipe.id {
+      return recipe.steps.first { $0.id == stepID }
+    }
+
+    return recipe.associatedRecipes.first { $0.id == recipeID }?.steps.first { $0.id == stepID }
+  }
+
+  func stepCompletionConditionIdentifier(
+    condition: Mealplanning_RecipeStepCompletionCondition,
+    index: Int
+  ) -> String {
+    if !condition.id.isEmpty {
+      return condition.id
+    }
+
+    return "condition-\(index)"
+  }
+
+  func isStepCompletionConditionCompleted(
+    recipeID: String,
+    stepID: String,
+    conditionIdentifier: String
+  ) -> Bool {
+    let key = completionConditionKey(
+      recipeID: recipeID,
+      stepID: stepID,
+      conditionIdentifier: conditionIdentifier
+    )
+    return completedStepCompletionConditions.contains(key)
+  }
+
+  func toggleStepCompletionCondition(
+    recipeID: String,
+    stepID: String,
+    conditionIdentifier: String
+  ) {
+    let key = completionConditionKey(
+      recipeID: recipeID,
+      stepID: stepID,
+      conditionIdentifier: conditionIdentifier
+    )
+
+    if completedStepCompletionConditions.contains(key) {
+      completedStepCompletionConditions.remove(key)
+
+      // If a required condition becomes unchecked, the step should also become unchecked.
+      let stepKey = stepKey(recipeID: recipeID, stepID: stepID)
+      if completedSteps.contains(stepKey) {
+        uncheckStepAndDependents(stepKey: stepKey)
+      }
+      return
+    }
+
+    completedStepCompletionConditions.insert(key)
+  }
+
+  func areStepCompletionConditionsCompleted(recipeID: String, stepID: String) -> Bool {
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
+      return false
+    }
+
+    for (index, condition) in step.completionConditions.enumerated() where !condition.optional {
+      let conditionIdentifier = stepCompletionConditionIdentifier(condition: condition, index: index)
+      if !isStepCompletionConditionCompleted(
+        recipeID: recipeID,
+        stepID: stepID,
+        conditionIdentifier: conditionIdentifier
+      ) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  func clearStepCompletionConditionProgress() {
+    completedStepCompletionConditions.removeAll()
+  }
+
   // Check if a step can be checked off (all prerequisites are completed)
   // Supports both old API (stepIndex for main recipe) and new API (recipeID + stepID)
   func canCheckStep(_ stepIndex: Int) -> Bool {
@@ -174,19 +267,7 @@ class PerformRecipeViewModel {
       return false
     }
 
-    guard let recipe = recipe else {
-      return false
-    }
-
-    // Find the step (could be in main recipe or associated recipe)
-    let step: Mealplanning_RecipeStep?
-    if recipeID == recipe.id {
-      step = recipe.steps.first { $0.id == stepID }
-    } else {
-      step = recipe.associatedRecipes.first { $0.id == recipeID }?.steps.first { $0.id == stepID }
-    }
-
-    guard let step = step else {
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
       return false
     }
 
@@ -220,7 +301,7 @@ class PerformRecipeViewModel {
       }
     }
 
-    return true
+    return areStepCompletionConditionsCompleted(recipeID: recipeID, stepID: stepID)
   }
 
   // Toggle step completion
@@ -232,6 +313,7 @@ class PerformRecipeViewModel {
       // If unchecking wash hands, uncheck all other steps
       if !washHandsCompleted {
         completedSteps.removeAll()
+        clearStepCompletionConditionProgress()
       }
       return
     }

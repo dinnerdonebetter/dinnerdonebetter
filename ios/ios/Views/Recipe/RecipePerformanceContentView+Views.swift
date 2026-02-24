@@ -47,6 +47,8 @@ struct StepCardView: View {
 
     let hasPrerequisites = !prerequisites.isEmpty
     let allPrerequisitesCompleted = prerequisites.allSatisfy { viewModel.isStepCompleted($0) }
+    let completionConditions = step.completionConditions
+    let hasCompletionConditions = !completionConditions.isEmpty
 
     return VStack(alignment: .leading, spacing: 12) {
       // Step header with checkbox
@@ -127,6 +129,12 @@ struct StepCardView: View {
           scale: scale
         )
       }
+
+      if hasCompletionConditions {
+        completionConditionsSection(
+          completionConditions: completionConditions
+        )
+      }
     }
     .padding()
     .background(
@@ -144,6 +152,96 @@ struct StepCardView: View {
           lineWidth: 2
         )
     )
+  }
+
+  @ViewBuilder
+  private func completionConditionsSection(
+    completionConditions: [Mealplanning_RecipeStepCompletionCondition]
+  ) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("Completion checks")
+        .font(.caption)
+        .fontWeight(.semibold)
+        .foregroundColor(.secondary)
+        .padding(.leading, 44)
+
+      ForEach(Array(completionConditions.enumerated()), id: \.offset) { conditionIndex, condition in
+        let conditionIdentifier = viewModel.stepCompletionConditionIdentifier(
+          condition: condition,
+          index: conditionIndex
+        )
+        let isConditionCompleted = viewModel.isStepCompletionConditionCompleted(
+          recipeID: recipeID,
+          stepID: step.id,
+          conditionIdentifier: conditionIdentifier
+        )
+
+        HStack(alignment: .top, spacing: 12) {
+          Button(
+            action: {
+              viewModel.toggleStepCompletionCondition(
+                recipeID: recipeID,
+                stepID: step.id,
+                conditionIdentifier: conditionIdentifier
+              )
+            },
+            label: {
+              Image(systemName: isConditionCompleted ? "checkmark.circle.fill" : "circle")
+                .font(.title3)
+                .foregroundColor(isConditionCompleted ? .green : .secondary)
+            }
+          )
+          .buttonStyle(.plain)
+
+          VStack(alignment: .leading, spacing: 4) {
+            Text(completionConditionLabel(condition, position: conditionIndex))
+              .font(.caption)
+              .foregroundColor(isConditionCompleted ? .secondary : .primary)
+              .strikethrough(isConditionCompleted)
+
+            if condition.optional {
+              Text("Optional")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+            }
+          }
+
+          Spacer()
+        }
+        .padding(.leading, 44)
+      }
+    }
+  }
+
+  private func completionConditionLabel(
+    _ condition: Mealplanning_RecipeStepCompletionCondition,
+    position: Int
+  ) -> String {
+    if !condition.notes.isEmpty {
+      return condition.notes
+    }
+
+    var ingredientNamesByID: [String: String] = [:]
+    for ingredient in step.ingredients where !ingredient.id.isEmpty {
+      ingredientNamesByID[ingredient.id] = ingredient.name
+    }
+    let conditionIngredientNames = condition.ingredients.compactMap { conditionIngredient in
+      ingredientNamesByID[conditionIngredient.recipeStepIngredient]
+    }
+
+    if !condition.ingredientState.name.isEmpty && !conditionIngredientNames.isEmpty {
+      return "\(condition.ingredientState.name): \(conditionIngredientNames.joined(separator: ", "))"
+    }
+
+    if !condition.ingredientState.name.isEmpty {
+      return condition.ingredientState.name
+    }
+
+    if !conditionIngredientNames.isEmpty {
+      return conditionIngredientNames.joined(separator: ", ")
+    }
+
+    return "Condition \(position + 1)"
   }
 }
 

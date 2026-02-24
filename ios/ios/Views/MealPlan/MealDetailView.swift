@@ -85,7 +85,7 @@ struct MealDetailView: View {
                     aggregatedListsSection
                   }
 
-                  if !meal.components.isEmpty {
+                  if !meal.components.isEmpty && !mealWashHandsCompleted {
                     mealWashHandsSection
                   }
 
@@ -318,7 +318,7 @@ struct MealDetailView: View {
         .buttonStyle(.plain)
 
         VStack(alignment: .leading, spacing: 4) {
-          Text("🧼 Wash your hands 🧼")
+          Text("🧼 Wash your hands")
             .font(.headline)
             .foregroundColor(mealWashHandsCompleted ? .secondary : .primary)
             .italic(mealWashHandsCompleted)
@@ -512,7 +512,7 @@ struct MealDetailView: View {
 
         Spacer()
 
-        Button(showUnifiedCompletedSteps ? "Focus mode" : "Show completed") {
+        Button(showUnifiedCompletedSteps ? "Focus mode" : "Overview") {
           withAnimation {
             showUnifiedCompletedSteps.toggle()
           }
@@ -529,7 +529,7 @@ struct MealDetailView: View {
           unifiedMealStepGroup(title: "Up Next", color: .orange, steps: upNext)
         }
         if !forLater.isEmpty {
-          unifiedMealStepGroup(title: "For Later", color: .blue, steps: forLater)
+          unifiedMealStepGroup(title: "Not Yet", color: .blue, steps: forLater)
         }
       }
 
@@ -622,6 +622,7 @@ struct MealDetailView: View {
       viewModel.washHandsCompleted = isCompleted
       if !isCompleted {
         viewModel.completedSteps.removeAll()
+        viewModel.clearStepCompletionConditionProgress()
       }
     }
   }
