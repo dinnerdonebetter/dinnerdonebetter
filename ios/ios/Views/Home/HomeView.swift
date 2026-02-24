@@ -374,6 +374,26 @@ struct HomeView: View {
       return "\(startString) - \(endString)"
     }
   }
+
+  static func mealPlanDisplayTitle(_ mealPlan: Mealplanning_MealPlan, fallback: String) -> String {
+    let title = mealPlan.notes.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !title.isEmpty else {
+      return fallback
+    }
+
+    guard mealPlan.events.count == 1, title.hasPrefix("Meal Plan for ") else {
+      return title
+    }
+
+    let startDate = mealPlan.events
+      .map { HomeViewModel.timestampToDate($0.startsAt) }
+      .min() ?? Date()
+    let formatter = DateFormatter()
+    formatter.dateStyle = .medium
+    formatter.timeStyle = .none
+
+    return "Meal Plan for \(formatter.string(from: startDate))"
+  }
 }
 
 // MARK: - Quick Access Button
@@ -449,7 +469,7 @@ struct PendingVoteCardContent: View {
       }
 
       VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
-        Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+        Text(HomeView.mealPlanDisplayTitle(mealPlan, fallback: "Meal Plan"))
           .font(DSTheme.Typography.label)
           .foregroundColor(DSTheme.Colors.textPrimary)
 
@@ -504,7 +524,7 @@ struct UpcomingMealCardContent: View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       HStack {
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
-          Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+          Text(HomeView.mealPlanDisplayTitle(mealPlan, fallback: "Meal Plan"))
             .font(DSTheme.Typography.label)
             .foregroundColor(DSTheme.Colors.textPrimary)
 
@@ -651,7 +671,7 @@ struct GroceryListCard: View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       HStack {
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
-          Text(mealPlan.notes.isEmpty ? "Grocery List" : mealPlan.notes)
+          Text(HomeView.mealPlanDisplayTitle(mealPlan, fallback: "Grocery List"))
             .font(DSTheme.Typography.label)
             .foregroundColor(DSTheme.Colors.textPrimary)
 
