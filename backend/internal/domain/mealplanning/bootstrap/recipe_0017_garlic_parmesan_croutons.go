@@ -12,6 +12,7 @@ import (
 // The createdRecipes map should contain the "caesar-dressing" recipe keyed by its slug.
 func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string]*mealplanning.Recipe) []*mealplanning.RecipeCreationRequestInput {
 	// Get preparations
+	grindPrep := enums.Preparations["grind"]
 	preheatPrep := enums.Preparations["preheat"]
 	addPrep := enums.Preparations["add"]
 	tossPrep := enums.Preparations["toss"]
@@ -27,15 +28,18 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 	heartyBread := enums.Ingredients["hearty bread"]
 	parmesanCheese := enums.Ingredients["parmesan cheese"]
 	salt := enums.Ingredients["salt"]
-	blackPepper := enums.Ingredients["black pepper"]
+	wholePeppercorns := enums.Ingredients["whole black peppercorns"]
 
 	// Get measurement units
+	gramMeasurement := enums.MeasurementUnits["gram"]
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	cupMeasurement := enums.MeasurementUnits["cup"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
 
 	// Get instruments
+	mortarAndPestle := enums.Instruments["mortar and pestle"]
+	spiceGrinder := enums.Instruments["spice grinder"]
 	knife := enums.Instruments["knife"]
 	cheeseGrater := enums.Instruments["cheese grater"]
 
@@ -49,6 +53,12 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 	goldenBrownState := enums.IngredientStates["browned"]
 
 	// === CROUTONS BRIDGE TABLE ENTRIES ===
+	// Grind preparation bridges
+	grindPeppercornsVIP := enums.IngredientPreparations[grindPrep.ID][wholePeppercorns.ID]
+	peppercornsGramVIMU := enums.IngredientMeasurementUnits[wholePeppercorns.ID][gramMeasurement.ID]
+	grindMortarAndPestleVPI := enums.PreparationInstruments[grindPrep.ID][mortarAndPestle.ID]
+	grindSpiceGrinderVPI := enums.PreparationInstruments[grindPrep.ID][spiceGrinder.ID]
+
 	// Preheat preparation bridges
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
 
@@ -72,7 +82,6 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Season preparation bridges
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
-	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
 
 	// Transfer preparation bridges
 	transferBreadVIP := enums.IngredientPreparations[transferPrep.ID][heartyBread.ID]
@@ -90,14 +99,62 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 	breadCupVIMU := enums.IngredientMeasurementUnits[heartyBread.ID][cupMeasurement.ID]
 	parmesanTablespoonVIMU := enums.IngredientMeasurementUnits[parmesanCheese.ID][tablespoonMeasurement.ID]
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
-	pepperTeaspoonVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][teaspoonMeasurement.ID]
 
 	// ==================== CROUTONS RECIPE STEPS ====================
 
-	// Step 0: Preheat oven to 375°F
+	// Step 0: Grind whole black peppercorns
 	crStep0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
+		PreparationID:        grindPrep.ID,
 		Index:                0,
+		Optional:             false,
+		ExplicitInstructions: "Using a mortar and pestle or spice grinder, coarsely grind the whole black peppercorns.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
+				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
+				Name:                             "whole black peppercorns",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1, // approximately 0.5 teaspoon
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
+				Name:                         "mortar and pestle",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
+				Name:                         "spice grinder",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "freshly ground black pepper",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &gramMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 1: Preheat oven to 375°F
+	crStep1 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        preheatPrep.ID,
+		Index:                1,
 		ExplicitInstructions: "Adjust the oven rack to the middle position and preheat the oven to 375°F (190°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](190),
@@ -120,10 +177,10 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 	}
 
-	// Step 1: Cut bread into 3/4-inch cubes
-	crStep1 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 2: Cut bread into 3/4-inch cubes
+	crStep2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        cubePrep.ID,
-		Index:                1,
+		Index:                2,
 		ExplicitInstructions: "Cut the hearty bread into 3/4-inch cubes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -166,17 +223,17 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 	}
 
-	// Step 2: Add bread cubes to garlic-infused olive oil and toss to coat
-	crStep2 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 3: Add bread cubes to garlic-infused olive oil and toss to coat
+	crStep3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        addPrep.ID,
-		Index:                2,
+		Index:                3,
 		ExplicitInstructions: "Add the bread cubes to the garlic-infused olive oil from the dressing recipe and toss to coat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				// RecipeStepProductRecipeID references the "Caesar Dressing" recipe (slug: "caesar-dressing")
-				// The product "garlic-infused olive oil" is from step 2 (index 2), product index 0
+				// The product "garlic-infused olive oil" is from step 3 (index 3) after grind was added at step 0, product index 0
 				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
-				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
@@ -186,7 +243,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &addBreadVIP.ID,
 				Name:                            "hearty bread, cut into 3/4-inch cubes",
@@ -222,10 +279,10 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 	}
 
-	// Step 3: Grate parmesan cheese
-	crStep3 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 4: Grate parmesan cheese
+	crStep4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        gratePrep.ID,
-		Index:                3,
+		Index:                4,
 		ExplicitInstructions: "Finely grate 4 tablespoons parmesan cheese.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -268,14 +325,14 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 	}
 
-	// Step 4: Add parmesan, toss, and season
-	crStep4 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 5: Add parmesan, toss, and season
+	crStep5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        tossPrep.ID,
-		Index:                4,
+		Index:                5,
 		ExplicitInstructions: "Add 2 tablespoons grated parmesan cheese, toss again, and season to taste with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &tossBreadVIP.ID,
 				Name:                            "oiled bread cubes",
@@ -284,7 +341,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &tossParmesanVIP.ID,
 				Name:                            "finely grated parmesan cheese",
@@ -296,7 +353,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -322,14 +379,14 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 	}
 
-	// Step 5: Season bread cubes with salt and pepper
-	crStep5 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 6: Season bread cubes with salt and pepper
+	crStep6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                5,
+		Index:                6,
 		ExplicitInstructions: "Season to taste with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "cheesy bread cubes",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -347,19 +404,19 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Optional: true,
 			},
 			{
-				ValidIngredientPreparationID:     &seasonPepperVIP.ID,
-				ValidIngredientMeasurementUnitID: &pepperTeaspoonVIMU.ID,
-				Name:                             "freshly ground black pepper",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "freshly ground black pepper",
 				QuantityNotes:                    "to taste",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 0.25,
+					Min: 1,
 				},
 				Optional: true,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -385,14 +442,14 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 	}
 
-	// Step 6: Transfer to rimmed baking sheet
-	crStep6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 7: Transfer to rimmed baking sheet
+	crStep7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
-		Index:                6,
+		Index:                7,
 		ExplicitInstructions: "Transfer to a rimmed baking sheet.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &transferBreadVIP.ID,
 				Name:                            "seasoned bread cubes",
@@ -428,10 +485,10 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 	}
 
-	// Step 7: Bake until pale golden brown and crisp
-	crStep7 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 8: Bake until pale golden brown and crisp
+	crStep8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        bakePrep.ID,
-		Index:                7,
+		Index:                8,
 		ExplicitInstructions: "Bake until the croutons are pale golden brown and crisp, about 15 minutes.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](190),
@@ -441,7 +498,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &bakeBreadVIP.ID,
 				Name:                            "bread cubes on baking sheet",
@@ -452,7 +509,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -460,7 +517,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &bakeOvenVPV.ID,
 				Name:                            "preheated oven",
@@ -495,14 +552,14 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 	}
 
-	// Step 8: Toss with more parmesan
-	crStep8 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 9: Toss with more parmesan
+	crStep9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        tossPrep.ID,
-		Index:                8,
+		Index:                9,
 		ExplicitInstructions: "Remove from the oven and toss with 2 more tablespoons grated parmesan.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &tossBreadVIP.ID,
 				Name:                            "baked croutons",
@@ -511,7 +568,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &tossParmesanVIP.ID,
 				Name:                            "finely grated parmesan cheese",
@@ -523,7 +580,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -544,17 +601,17 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 	}
 
-	// Step 9: Allow to cool
-	crStep9 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 10: Allow to cool
+	crStep10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        coolPrep.ID,
-		Index:                9,
+		Index:                10,
 		ExplicitInstructions: "Allow the croutons to cool.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](600), // 10 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &coolBreadVIP.ID,
 				Name:                            "parmesan croutons",
@@ -565,7 +622,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -599,7 +656,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		PluralPortionName: "cups",
 		EligibleForMeals:  false,
 		Steps: []*mealplanning.RecipeStepCreationRequestInput{
-			crStep0, crStep1, crStep2, crStep3, crStep4, crStep5, crStep6, crStep7, crStep8, crStep9,
+			crStep0, crStep1, crStep2, crStep3, crStep4, crStep5, crStep6, crStep7, crStep8, crStep9, crStep10,
 		},
 		PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
 		Media:     []*mealplanning.RecipeMediaCreationRequestInput{},

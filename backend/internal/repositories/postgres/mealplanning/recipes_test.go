@@ -623,7 +623,8 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 			},
 		}
 
-		findCreatedRecipeStepProductsForInstruments(exampleRecipeInput)
+		c := buildInertClientForTest(t)
+		c.findCreatedRecipeStepProductsForInstruments(exampleRecipeInput)
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Instruments[0].RecipeStepProductID)
 		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Instruments[0].RecipeStepProductID)

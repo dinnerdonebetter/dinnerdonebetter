@@ -66,7 +66,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "bread", Description: "White sandwich bread", PluralName: "bread", StorageInstructions: "Store at room temperature in a bread box or sealed bag", Slug: "bread", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "olive oil", Description: "Extra virgin olive oil", PluralName: "olive oil", StorageInstructions: "Store in a cool, dark place away from light", Slug: "olive-oil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "salt", Description: "Fine sea salt", PluralName: "salt", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "salt", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
-		{ID: identifiers.New(), Name: "black pepper", Description: "Ground black pepper", PluralName: "black pepper", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "black-pepper", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "black pepper", Description: "Ground black pepper (deprecated: use whole black peppercorns)", PluralName: "black pepper", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "black-pepper", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: true},
 		{ID: identifiers.New(), Name: "whole black peppercorns", Description: "Whole dried black peppercorns for grinding", PluralName: "whole black peppercorns", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "whole-black-peppercorns", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "basil", Description: "Fresh basil leaves", PluralName: "basil", StorageInstructions: "Store in the refrigerator, stems in water", Slug: "basil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "oregano", Description: "Dried oregano", PluralName: "oregano", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "oregano", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -2002,7 +2002,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	// Get ingredients
 	ribeye := enums.Ingredients["ribeye steak"]
 	salt := enums.Ingredients["salt"]
-	blackPepper := enums.Ingredients["black pepper"]
 	vegetableOil := enums.Ingredients["vegetable oil"]
 	butter := enums.Ingredients["butter"]
 	thyme := enums.Ingredients["thyme"]
@@ -2128,18 +2127,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(seasonPrep, salt); err != nil {
 		return err
 	}
-	if err = createVIP(seasonPrep, blackPepper); err != nil {
-		return err
-	}
 
 	// Ingredient-MeasurementUnit links
 	if err = createVIMU(ribeye, gramMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(salt, gramMeasurement); err != nil {
-		return err
-	}
-	if err = createVIMU(blackPepper, gramMeasurement); err != nil {
 		return err
 	}
 
@@ -2359,9 +2352,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(chickenGrillPrep, salt); err != nil {
 		return err
 	}
-	if err = createVIP(chickenGrillPrep, blackPepper); err != nil {
-		return err
-	}
 
 	// Ingredient-MeasurementUnit links
 	if err = createVIMU(oliveOil, milliliterMeasurement); err != nil {
@@ -2565,7 +2555,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	roastChickenBakingPowder := enums.Ingredients["baking powder"]
 	roastChickenVegetableOil := enums.Ingredients["vegetable oil"]
 	roastChickenSalt := enums.Ingredients["salt"]
-	roastChickenBlackPepper := enums.Ingredients["black pepper"]
 	roastChickenWholePeppercorns := enums.Ingredients["whole black peppercorns"]
 
 	// Get instruments for roast chicken recipe
@@ -2611,9 +2600,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(roastChickenMixPrep, roastChickenSalt); err != nil {
 		return err
 	}
-	if err = createVIP(roastChickenMixPrep, roastChickenBlackPepper); err != nil {
-		return err
-	}
 	if err = createVIP(roastChickenMixPrep, roastChickenBakingPowder); err != nil {
 		return err
 	}
@@ -2626,9 +2612,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIMU(salt, tablespoonMeasurement); err != nil {
-		return err
-	}
-	if err = createVIMU(blackPepper, teaspoonMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(vegetableOil, tablespoonMeasurement); err != nil {
@@ -2960,7 +2943,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	pickle := enums.Ingredients["pickle"]
 	burgerOnion := enums.Ingredients["onion"]
 	burgerSalt := enums.Ingredients["salt"]
-	burgerPepper := enums.Ingredients["black pepper"]
 	burgerVegOil := enums.Ingredients["vegetable oil"]
 
 	// Get instruments for burger recipe
@@ -3109,9 +3091,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === SEASON PREPARATION for burger ingredients ===
 	if err = createVIP(burgerSeasonPrep, burgerSalt); err != nil {
-		return err
-	}
-	if err = createVIP(burgerSeasonPrep, burgerPepper); err != nil {
 		return err
 	}
 	if err = createVPV(burgerSeasonPrep, burgerBakingSheet); err != nil {
@@ -3395,7 +3374,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Get ingredients for mashed potatoes recipe
 	potato := enums.Ingredients["potato"]
-	mashedPepper := enums.Ingredients["black pepper"]
 	mashedButter := enums.Ingredients["butter"]
 	milk := enums.Ingredients["milk"]
 	mashedWater := enums.Ingredients["water"]
@@ -3542,9 +3520,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(mashedSeasonPrep, potato); err != nil {
 		return err
 	}
-	if err = createVIP(mashedSeasonPrep, mashedPepper); err != nil {
-		return err
-	}
 	if err = createVPV(mashedSeasonPrep, mashedPot); err != nil {
 		return err
 	}
@@ -3584,7 +3559,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	caesarBroccoli := enums.Ingredients["broccoli"]
 	caesarOliveOil := enums.Ingredients["olive oil"]
 	caesarSalt := enums.Ingredients["salt"]
-	caesarPepper := enums.Ingredients["black pepper"]
 	caesarParmesan := enums.Ingredients["parmesan cheese"]
 
 	// Get instruments for caesar roasted broccoli recipe
@@ -3605,7 +3579,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	caesarTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	caesarCupMeasurement := enums.MeasurementUnits["cup"]
 	caesarPoundMeasurement := enums.MeasurementUnits["pound"]
-	caesarGramMeasurement := enums.MeasurementUnits["gram"]
 	caesarUnitMeasurement := enums.MeasurementUnits["unit"]
 
 	// === MELT PREPARATION ===
@@ -3708,9 +3681,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(caesarTossPrep, caesarSalt); err != nil {
 		return err
 	}
-	if err = createVIP(caesarTossPrep, caesarPepper); err != nil {
-		return err
-	}
 	if err = createVIP(caesarTossPrep, caesarLemon); err != nil {
 		return err
 	}
@@ -3779,9 +3749,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(caesarSalt, caesarTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err = createVIMU(caesarPepper, caesarGramMeasurement); err != nil {
-		return err
-	}
 
 	// === HARICOTS VERTS AMANDINE RECIPE BRIDGE ENTRIES ===
 	// Get preparations for haricots verts amandine recipe
@@ -3808,7 +3775,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	hvaShallot := enums.Ingredients["shallot"]
 	hvaLemon := enums.Ingredients["lemon"]
 	hvaSalt := enums.Ingredients["salt"]
-	hvaPepper := enums.Ingredients["black pepper"]
 	hvaWater := enums.Ingredients["water"]
 	hvaIceCubes := enums.Ingredients["ice cubes"]
 
@@ -3963,9 +3929,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// === SEASON PREPARATION for sauce ===
-	if err = createVIP(hvaSeasonPrep, hvaPepper); err != nil {
-		return err
-	}
 	if err = createVPV(hvaSeasonPrep, hvaMediumSkillet); err != nil {
 		return err
 	}
@@ -4673,7 +4636,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	// Get ingredients for grilled pork tenderloin recipe
 	gptPorkTenderloin := enums.Ingredients["pork tenderloin"]
 	gptSalt := enums.Ingredients["salt"]
-	gptBlackPepper := enums.Ingredients["black pepper"]
 	gptVegetableOil := enums.Ingredients["vegetable oil"]
 
 	// Get vessels for grilled pork tenderloin recipe
@@ -4710,9 +4672,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIP(gptSeasonPrep, gptSalt); err != nil {
-		return err
-	}
-	if err = createVIP(gptSeasonPrep, gptBlackPepper); err != nil {
 		return err
 	}
 	if err = createVPI(gptSeasonPrep, gptBareHands); err != nil {
@@ -4828,9 +4787,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(gptSalt, gptTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err = createVIMU(gptBlackPepper, gptTeaspoonMeasurement); err != nil {
-		return err
-	}
 	if err = createVIMU(gptVegetableOil, gptTablespoonMeasurement); err != nil {
 		return err
 	}
@@ -4849,7 +4805,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	// Get ingredients for pan-seared salmon fillets recipe
 	pssfSalmonFillet := enums.Ingredients["salmon fillet"]
 	pssfSalt := enums.Ingredients["salt"]
-	pssfBlackPepper := enums.Ingredients["black pepper"]
 	pssfVegetableOil := enums.Ingredients["vegetable oil"]
 
 	// Get vessels for pan-seared salmon fillets recipe
@@ -4881,9 +4836,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIP(pssfSeasonPrep, pssfSalt); err != nil {
-		return err
-	}
-	if err = createVIP(pssfSeasonPrep, pssfBlackPepper); err != nil {
 		return err
 	}
 	if err = createVPI(pssfSeasonPrep, pssfBareHands); err != nil {
@@ -4960,9 +4912,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(pssfSalt, pssfTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err = createVIMU(pssfBlackPepper, pssfTeaspoonMeasurement); err != nil {
-		return err
-	}
 	if err = createVIMU(pssfVegetableOil, pssfTablespoonMeasurement); err != nil {
 		return err
 	}
@@ -4990,7 +4939,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	rbsBrusselsSprouts := enums.Ingredients["Brussels sprouts"]
 	rbsOliveOil := enums.Ingredients["olive oil"]
 	rbsSalt := enums.Ingredients["salt"]
-	rbsBlackPepper := enums.Ingredients["black pepper"]
 	rbsShallots := enums.Ingredients["shallot"]
 	rbsBalsamicVinegar := enums.Ingredients["balsamic vinegar"]
 
@@ -5035,9 +4983,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIP(rbsTossPrep, rbsSalt); err != nil {
-		return err
-	}
-	if err = createVIP(rbsTossPrep, rbsBlackPepper); err != nil {
 		return err
 	}
 	if err = createVIP(rbsTossPrep, rbsShallots); err != nil {
@@ -5196,9 +5141,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(rbsSeasonPrep, rbsSalt); err != nil {
 		return err
 	}
-	if err = createVIP(rbsSeasonPrep, rbsBlackPepper); err != nil {
-		return err
-	}
 	if err = createVPI(rbsSeasonPrep, rbsBareHands); err != nil {
 		return err
 	}
@@ -5211,9 +5153,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIMU(rbsSalt, rbsTeaspoonMeasurement); err != nil {
-		return err
-	}
-	if err = createVIMU(rbsBlackPepper, rbsTeaspoonMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(rbsShallots, rbsUnitMeasurement); err != nil {
@@ -7289,7 +7228,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	csHeartyBread := enums.Ingredients["hearty bread"]
 	csParmesanCheese := enums.Ingredients["parmesan cheese"]
 	csSalt := enums.Ingredients["salt"]
-	csBlackPepper := enums.Ingredients["black pepper"]
 	csEggYolk := enums.Ingredients["egg yolk"]
 	csLemonJuice := enums.Ingredients["lemon juice"]
 	csAnchovies := enums.Ingredients["anchovies"]
@@ -7535,9 +7473,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(csSeasonPrep, csSalt); err != nil {
 		return err
 	}
-	if err = createVIP(csSeasonPrep, csBlackPepper); err != nil {
-		return err
-	}
 	if err = createVPV(csSeasonPrep, csLargeBowl); err != nil {
 		return err
 	}
@@ -7657,9 +7592,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(csSalt, csTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err = createVIMU(csBlackPepper, csTeaspoonMeasurement); err != nil {
-		return err
-	}
 	if err = createVIMU(csEggYolk, csUnitMeasurement); err != nil {
 		return err
 	}
@@ -7758,7 +7690,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	gcChickenStock := enums.Ingredients["chicken stock"]
 	gcHoney := enums.Ingredients["honey"]
 	gcSalt := enums.Ingredients["salt"]
-	gcBlackPepper := enums.Ingredients["black pepper"]
 	gcAppleCiderVinegar := enums.Ingredients["apple cider vinegar"]
 	gcParsley := enums.Ingredients["parsley"]
 	gcChives := enums.Ingredients["chives"]
@@ -7851,9 +7782,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIP(gcAddPrep, gcSalt); err != nil {
-		return err
-	}
-	if err = createVIP(gcAddPrep, gcBlackPepper); err != nil {
 		return err
 	}
 	if err = createVIP(gcAddPrep, gcAppleCiderVinegar); err != nil {

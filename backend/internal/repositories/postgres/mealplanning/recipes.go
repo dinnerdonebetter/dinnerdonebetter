@@ -962,8 +962,8 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		q.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "finding recipe step products for ingredients")
 	}
-	findCreatedRecipeStepProductsForInstruments(input)
-	findCreatedRecipeStepProductsForVessels(input)
+	q.findCreatedRecipeStepProductsForInstruments(ctx, input)
+	q.findCreatedRecipeStepProductsForVessels(ctx, input)
 
 	for i, stepInput := range input.Steps {
 		stepInput.Index = uint32(i)
@@ -1115,7 +1115,10 @@ func (q *repository) findCreatedRecipeStepProductsForIngredients(ctx context.Con
 	return nil
 }
 
-func findCreatedRecipeStepProductsForInstruments(recipe *mealplanning.RecipeDatabaseCreationInput) {
+func (q *repository) findCreatedRecipeStepProductsForInstruments(ctx context.Context, recipe *mealplanning.RecipeDatabaseCreationInput) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
 	for _, step := range recipe.Steps {
 		for _, instrument := range step.Instruments {
 			if instrument.ProductOfRecipeStepIndex != nil && instrument.ProductOfRecipeStepProductIndex != nil {
@@ -1132,7 +1135,10 @@ func findCreatedRecipeStepProductsForInstruments(recipe *mealplanning.RecipeData
 	}
 }
 
-func findCreatedRecipeStepProductsForVessels(recipe *mealplanning.RecipeDatabaseCreationInput) {
+func (q *repository) findCreatedRecipeStepProductsForVessels(ctx context.Context, recipe *mealplanning.RecipeDatabaseCreationInput) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
 	for _, step := range recipe.Steps {
 		for _, vessel := range step.Vessels {
 			if vessel.ProductOfRecipeStepIndex != nil && vessel.ProductOfRecipeStepProductIndex != nil {

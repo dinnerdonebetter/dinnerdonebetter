@@ -8,6 +8,7 @@ import (
 
 func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
 	// Get preparations
+	grindPrep := enums.Preparations["grind"]
 	heatPrep := enums.Preparations["heat"]
 	seasonPrep := enums.Preparations["season"]
 	bagPrep := enums.Preparations["bag"]
@@ -21,7 +22,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	// Get ingredients
 	porkChop := enums.Ingredients["pork chop"]
 	salt := enums.Ingredients["salt"]
-	blackPepper := enums.Ingredients["black pepper"]
+	wholePeppercorns := enums.Ingredients["whole black peppercorns"]
 	vegetableOil := enums.Ingredients["vegetable oil"]
 	butter := enums.Ingredients["butter"]
 	thyme := enums.Ingredients["thyme"]
@@ -38,6 +39,8 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	quartMeasurement := enums.MeasurementUnits["quart"]
 
 	// Get instruments
+	mortarAndPestle := enums.Instruments["mortar and pestle"]
+	spiceGrinder := enums.Instruments["spice grinder"]
 	sousVideCooker := enums.Instruments["sous vide cooker"]
 	paperTowels := enums.Instruments["paper towels"]
 	tongs := enums.Instruments["tongs"]
@@ -58,6 +61,12 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	brownedState := enums.IngredientStates["browned"]
 
 	// Get bridge table entries
+	// Grind preparation bridges
+	grindPeppercornsVIP := enums.IngredientPreparations[grindPrep.ID][wholePeppercorns.ID]
+	peppercornsGramVIMU := enums.IngredientMeasurementUnits[wholePeppercorns.ID][gramMeasurement.ID]
+	grindMortarAndPestleVPI := enums.PreparationInstruments[grindPrep.ID][mortarAndPestle.ID]
+	grindSpiceGrinderVPI := enums.PreparationInstruments[grindPrep.ID][spiceGrinder.ID]
+
 	// Heat preparation bridges (for preheating water bath)
 	heatSousVideCookerVPI := enums.PreparationInstruments[heatPrep.ID][sousVideCooker.ID]
 	heatWaterVIP := enums.IngredientPreparations[heatPrep.ID][water.ID]
@@ -66,10 +75,8 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	// Season preparation bridges
 	seasonPorkChopVIP := enums.IngredientPreparations[seasonPrep.ID][porkChop.ID]
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
-	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
 	porkChopUnitVIMU := enums.IngredientMeasurementUnits[porkChop.ID][unitMeasurement.ID]
 	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
-	pepperGramVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][gramMeasurement.ID]
 	seasonBareHandsVPI := enums.PreparationInstruments[seasonPrep.ID][bareHands.ID]
 
 	// Bag preparation bridges
@@ -118,10 +125,58 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	restWireRackVPV := enums.PreparationVessels[restPrep.ID][wireRack.ID]
 	restBakingSheetVPV := enums.PreparationVessels[restPrep.ID][bakingSheet.ID]
 
-	// Step 0: Preheat water bath
+	// Step 0: Grind whole black peppercorns
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        heatPrep.ID,
+		PreparationID:        grindPrep.ID,
 		Index:                0,
+		ExplicitInstructions: "Using a mortar and pestle or spice grinder, coarsely grind the whole black peppercorns.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
+				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
+				Name:                             "whole black peppercorns",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
+				Name:                         "mortar and pestle",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
+				Name:                         "spice grinder",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "freshly ground black pepper",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &gramMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 1: Preheat water bath
+	step1 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        heatPrep.ID,
+		Index:                1,
 		ExplicitInstructions: "Place an immersion circulator in a water bath and set the circulator to the desired final temperature. For medium-rare, set to 140°F (60°C). Allow the water bath to come to temperature.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](60), // 140°F = 60°C (medium-rare default)
@@ -166,10 +221,10 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 1: Season pork chops
-	step1 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 2: Season pork chops
+	step2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                1,
+		Index:                2,
 		ExplicitInstructions: "Season the pork chops generously with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -190,9 +245,9 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ToTaste: true,
 			},
 			{
-				ValidIngredientPreparationID:     &seasonPepperVIP.ID,
-				ValidIngredientMeasurementUnitID: &pepperGramVIMU.ID,
-				Name:                             "freshly ground black pepper",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "freshly ground black pepper",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0,
 				},
@@ -221,14 +276,14 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 2: Bag pork chops
-	step2 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 3: Bag pork chops
+	step3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        bagPrep.ID,
-		Index:                2,
+		Index:                3,
 		ExplicitInstructions: "Place the pork chops in vacuum-seal or zipper-lock bags.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "seasoned pork chops",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -263,14 +318,14 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 3: Seal bags
-	step3 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 4: Seal bags
+	step4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        sealPrep.ID,
-		Index:                3,
+		Index:                4,
 		ExplicitInstructions: "Seal the bags. If using zipper-lock bags, use the displacement method: seal the bag almost entirely closed, slowly lower into the water to press out air, then seal completely just above the waterline.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "bagged pork chops",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -280,7 +335,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &sealVacuumBagVPV.ID,
 				Name:                            "vacuum bag with pork chops",
@@ -302,10 +357,10 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 4: Cook sous vide
-	step4 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 5: Cook sous vide
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        sousVidePrep.ID,
-		Index:                4,
+		Index:                5,
 		ExplicitInstructions: "Place the sealed bagged pork chops in the preheated water bath and cook for the recommended time. For 1 1/2 inch thick chops at 140°F (60°C), cook for 1 to 4 hours.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](3600),  // 1 hour minimum
@@ -317,7 +372,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "sealed bagged pork chops",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -325,7 +380,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "water bath",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -335,7 +390,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationInstrumentID:    &sousVideCookerVPI.ID,
 				Name:                            "sous vide cooker",
@@ -346,7 +401,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID: &sousVideWaterBathVPV.ID,
 				Name:                     "preheated water bath",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -375,14 +430,14 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 5: Pat dry pork chops
-	step5 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 6: Pat dry pork chops
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        dryPrep.ID,
-		Index:                5,
+		Index:                6,
 		ExplicitInstructions: "Remove the pork chops from the water bath and bag. Carefully pat dry with paper towels.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &dryPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
@@ -414,10 +469,10 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 6: Heat oil in skillet (Optional - Pan Finish)
-	step6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 7: Heat oil in skillet (Optional - Pan Finish)
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        heatPrep.ID,
-		Index:                6,
+		Index:                7,
 		Optional:             true,
 		ExplicitInstructions: "To finish in a pan: Turn on your vents and open your windows. Add 2 tablespoons canola oil to a heavy cast iron or stainless steel skillet, place it over the hottest burner you have, and preheat the skillet until the oil starts to smoke.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
@@ -474,10 +529,10 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 7: Pan-sear first side (Optional - Pan Finish)
-	step7 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 8: Pan-sear first side (Optional - Pan Finish)
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        panSearPrep.ID,
-		Index:                7,
+		Index:                8,
 		Optional:             true,
 		ExplicitInstructions: "Using your fingers or a set of tongs, gently lay two pork chops in the skillet. If desired, add 1 tablespoon butter; for a cleaner-tasting sear, omit butter at this stage. Carefully lift and peek under the pork as it cooks to gauge how quickly it is browning. Let it continue to cook until the crust is deep brown and very crisp, about 45 seconds.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -485,7 +540,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &panSearPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
@@ -506,7 +561,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
 				Name:                            "heated skillet with smoking oil",
@@ -537,10 +592,10 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 8: Flip and baste (Optional - Pan Finish)
-	step8 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 9: Flip and baste (Optional - Pan Finish)
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        bastePrep.ID,
-		Index:                8,
+		Index:                9,
 		Optional:             true,
 		ExplicitInstructions: "Flip the pork chops. If desired, add 1 more tablespoon butter, along with half of the thyme, rosemary, garlic, and/or shallots. Spoon the butter over the pork chops as they cook, if using. Continue cooking until the second side is browned, about 45 seconds longer. When the pork is browned, pick it up with a pair of tongs, rotate it sideways, and make sure to brown the edges as well. Transfer the cooked pork chops to a wire rack set over a rimmed baking sheet. Discard aromatics. Repeat with the remaining pork chops, butter, and aromatics, adding additional oil to the skillet if necessary.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -549,7 +604,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &bastePorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
@@ -623,7 +678,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "cast iron skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -661,10 +716,10 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 9: Rest on wire rack (Optional - Pan Finish)
-	step9 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 10: Rest on wire rack (Optional - Pan Finish)
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        restPrep.ID,
-		Index:                9,
+		Index:                10,
 		Optional:             true,
 		ExplicitInstructions: "Transfer the cooked pork chops to a wire rack set over a rimmed baking sheet. Let the chops rest for 3 to 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -673,7 +728,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &restPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
@@ -721,15 +776,15 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 10: Reheat drippings and pour over (Optional - Pan Finish)
-	step10 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 11: Reheat drippings and pour over (Optional - Pan Finish)
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        bastePrep.ID,
-		Index:                10,
+		Index:                11,
 		Optional:             true,
 		ExplicitInstructions: "Just before serving, reheat the drippings in the pan until sizzling-hot, then pour them over the pork chops in order to re-crisp their exteriors. Serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "rested pork chops",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -748,7 +803,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "cast iron skillet with drippings",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -789,7 +844,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			PortionName:       "pork chop",
 			PluralPortionName: "pork chops",
 			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10},
+			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11},
 			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,

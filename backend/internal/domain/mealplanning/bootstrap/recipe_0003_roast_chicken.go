@@ -23,7 +23,6 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	// Get ingredients
 	wholeChicken := enums.Ingredients["whole chicken"]
 	salt := enums.Ingredients["salt"]
-	blackPepper := enums.Ingredients["black pepper"]
 	wholePeppercorns := enums.Ingredients["whole black peppercorns"]
 	bakingPowder := enums.Ingredients["baking powder"]
 	vegetableOil := enums.Ingredients["vegetable oil"]
@@ -63,10 +62,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Mix preparation bridges
 	mixSaltVIP := enums.IngredientPreparations[mixPrep.ID][salt.ID]
-	mixPepperVIP := enums.IngredientPreparations[mixPrep.ID][blackPepper.ID]
 	mixBakingPowderVIP := enums.IngredientPreparations[mixPrep.ID][bakingPowder.ID]
 	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
-	pepperGramVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][gramMeasurement.ID]
 	bakingPowderGramVIMU := enums.IngredientMeasurementUnits[bakingPowder.ID][gramMeasurement.ID]
 	mixSmallBowlVPV := enums.PreparationVessels[mixPrep.ID][smallBowl.ID]
 
@@ -104,11 +101,11 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	// Rest preparation bridges
 	restCarvingBoardVPV := enums.PreparationVessels[restPrep.ID][carvingBoard.ID]
 
-	// Step 0: Grind whole black peppercorns (optional)
+	// Step 0: Grind whole black peppercorns
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        grindPrep.ID,
 		Index:                0,
-		Optional:             true,
+		Optional:             false,
 		ExplicitInstructions: "Using a mortar and pestle or spice grinder, coarsely grind the whole black peppercorns.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -157,7 +154,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        mixPrep.ID,
 		Index:                1,
-		ExplicitInstructions: "In a small bowl, thoroughly mix the salt with black pepper and baking powder (if using).",
+		ExplicitInstructions: "In a small bowl, thoroughly mix the salt with freshly ground black pepper and baking powder (if using).",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &mixSaltVIP.ID,
@@ -175,19 +172,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1, // 0.5 teaspoon ≈ 1g
 				},
-				Optional: true,
-				Index:    pointer.To[uint16](1),
-			},
-			{
-				ValidIngredientPreparationID:     &mixPepperVIP.ID,
-				ValidIngredientMeasurementUnitID: &pepperGramVIMU.ID,
-				Name:                             "pre-ground black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1, // 0.5 teaspoon ≈ 1g
-				},
-				Optional:    true,
-				Index:       pointer.To[uint16](1),
-				OptionIndex: 1,
+				Index: pointer.To[uint16](1),
 			},
 			{
 				ValidIngredientPreparationID:     &mixBakingPowderVIP.ID,
@@ -226,7 +211,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
 		Index:                2,
-		ExplicitInstructions: "Season the chicken all over, inside and out, with the salt mixture (or just plain salt if not using pepper and baking powder).",
+		ExplicitInstructions: "Season the chicken all over, inside and out, with the salt mixture (or just plain salt if not using baking powder).",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
