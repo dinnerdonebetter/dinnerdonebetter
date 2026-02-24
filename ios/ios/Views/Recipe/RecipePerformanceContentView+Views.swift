@@ -37,7 +37,7 @@ struct StepCardView: View {
       isCompleted = viewModel.isStepCompleted(recipeID: recipeID, stepID: step.id)
       canCheck = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
       // For associated recipe steps, get prerequisite keys and convert to indices if needed
-      let prerequisiteKeys = viewModel.getPrerequisiteStepKeys(recipeID: recipeID, stepID: step.id)
+      _ = viewModel.getPrerequisiteStepKeys(recipeID: recipeID, stepID: step.id)
       prerequisites = []  // We'll handle prerequisites differently for associated steps
     } else {
       isCompleted = viewModel.isStepCompleted(index)
@@ -92,19 +92,6 @@ struct StepCardView: View {
               .font(.body)
               .foregroundColor(isCompleted ? .secondary : .primary)
               .strikethrough(isCompleted)
-          }
-
-          // Wash hands requirement warning (show first if blocking)
-          if !viewModel.washHandsCompleted && !canCheck {
-            HStack(spacing: 4) {
-              Image(systemName: "exclamationmark.triangle.fill")
-                .font(.caption)
-                .foregroundColor(.orange)
-              Text("Wash your hands first")
-                .font(.caption)
-                .foregroundColor(.orange)
-            }
-            .padding(.top, 4)
           }
 
           // Prerequisites warning (only show if wash hands is done)
@@ -164,6 +151,8 @@ struct StepCardView: View {
 
 // swiftlint:disable:next type_body_length
 struct StepDetailsView: View {
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
   let step: Mealplanning_RecipeStep
   let viewModel: PerformRecipeViewModel
   let stepIndex: Int
@@ -174,116 +163,141 @@ struct StepDetailsView: View {
   var selectedVesselOptions: [String: UInt32] = [:]
   var scale: Float = 1.0
 
+  private struct InstrumentVesselSectionData {
+    let items: [StepItem]
+    let instrumentOptionGroups: [InstrumentOptionGroupAggregate]
+    let vesselOptionGroups: [VesselOptionGroupAggregate]
+  }
+
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      // Ingredients
-      if !step.ingredients.isEmpty {
-        let (regular, optionGroups) = groupIngredientsForStep(
-          step.ingredients,
-          stepID: step.id,
-          stepIndex: stepIndex,
-          recipeID: recipeID
-        )
+    Group {
+      if horizontalSizeClass == .regular {
+        VStack(alignment: .leading, spacing: 10) {
+          HStack(alignment: .top, spacing: 20) {
+            ingredientSection
+              .frame(maxWidth: .infinity, alignment: .topLeading)
+            instrumentsAndVesselsSection
+              .frame(maxWidth: .infinity, alignment: .topLeading)
+          }
 
-        StepItemsSectionView(
-          title: "Ingredients",
-          items: regular.map { ingredient in
-            let isProduct = ingredient.hasRecipeStepProductID
-            let productID = isProduct ? ingredient.recipeStepProductID : nil
-            let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
-            let prerequisiteCompleted =
-              prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
-
-            return StepItem(
-              name: ingredient.name,
-              isProduct: isProduct,
-              prerequisiteStepIndex: prerequisiteStepIndex,
-              prerequisiteCompleted: prerequisiteCompleted
-            )
-          },
-          ingredientOptionGroups: filterOptionGroups(
-            optionGroups, for: .ingredient, selectedOptions: selectedIngredientOptions),
-          scale: scale
-        )
-      }
-
-      // Instruments
-      if !step.instruments.isEmpty {
-        let (regular, optionGroups) = groupInstrumentsForStep(
-          step.instruments,
-          stepID: step.id,
-          stepIndex: stepIndex,
-          recipeID: recipeID
-        )
-
-        StepItemsSectionView(
-          title: "Instruments",
-          items: regular.map { instrument in
-            let isProduct = instrument.hasRecipeStepProductID
-            let productID = isProduct ? instrument.recipeStepProductID : nil
-            let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
-            let prerequisiteCompleted =
-              prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
-
-            return StepItem(
-              name: instrument.name,
-              isProduct: isProduct,
-              prerequisiteStepIndex: prerequisiteStepIndex,
-              prerequisiteCompleted: prerequisiteCompleted
-            )
-          },
-          instrumentOptionGroups: filterInstrumentOptionGroups(
-            optionGroups, selectedOptions: selectedInstrumentOptions),
-          scale: scale
-        )
-      }
-
-      // Vessels
-      if !step.vessels.isEmpty {
-        let (regular, optionGroups) = groupVesselsForStep(
-          step.vessels,
-          stepID: step.id,
-          stepIndex: stepIndex,
-          recipeID: recipeID
-        )
-
-        StepItemsSectionView(
-          title: "Vessels",
-          items: regular.map { vessel in
-            let isProduct = vessel.hasRecipeStepProductID
-            let productID = isProduct ? vessel.recipeStepProductID : nil
-            let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
-            let prerequisiteCompleted =
-              prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
-
-            return StepItem(
-              name: vessel.name,
-              isProduct: isProduct,
-              prerequisiteStepIndex: prerequisiteStepIndex,
-              prerequisiteCompleted: prerequisiteCompleted
-            )
-          },
-          vesselOptionGroups: filterVesselOptionGroups(
-            optionGroups, selectedOptions: selectedVesselOptions),
-          scale: scale
-        )
-      }
-
-      // Products
-      if !step.products.isEmpty {
-        StepProductsSectionView(products: step.products, scale: scale)
-      }
-
-      // Notes
-      if !step.notes.isEmpty {
-        Text(step.notes)
-          .font(.caption)
-          .foregroundColor(.secondary)
-          .italic()
-          .padding(.top, 4)
+          notesSection
+        }
+      } else {
+        VStack(alignment: .leading, spacing: 8) {
+          ingredientSection
+          instrumentsAndVesselsSection
+          notesSection
+        }
       }
     }
     .padding(.leading, 44)  // Align with step content
+  }
+
+  @ViewBuilder
+  private var ingredientSection: some View {
+    let (regular, optionGroups) = groupIngredientsForStep(
+      step.ingredients,
+      stepID: step.id,
+      stepIndex: stepIndex,
+      recipeID: recipeID
+    )
+
+    StepItemsSectionView(
+      title: "Ingredients",
+      items: regular.map { ingredient in
+        let isProduct = ingredient.hasRecipeStepProductID
+        let productID = isProduct ? ingredient.recipeStepProductID : nil
+        let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
+        let prerequisiteCompleted =
+          prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
+
+        return StepItem(
+          name: formatStepIngredientDisplay(ingredient, scale: scale),
+          isProduct: isProduct,
+          prerequisiteStepIndex: prerequisiteStepIndex,
+          prerequisiteCompleted: prerequisiteCompleted
+        )
+      },
+      ingredientOptionGroups: filterOptionGroups(
+        optionGroups, for: .ingredient, selectedOptions: selectedIngredientOptions),
+      scale: scale
+    )
+  }
+
+  @ViewBuilder
+  private var instrumentsAndVesselsSection: some View {
+    let data = instrumentVesselSectionData()
+    StepItemsSectionView(
+      title: "Equipment",
+      items: data.items,
+      instrumentOptionGroups: data.instrumentOptionGroups,
+      vesselOptionGroups: data.vesselOptionGroups,
+      scale: scale
+    )
+  }
+
+  @ViewBuilder
+  private var notesSection: some View {
+    if !step.notes.isEmpty {
+      Text(step.notes)
+        .font(.caption)
+        .foregroundColor(.secondary)
+        .italic()
+        .padding(.top, 4)
+    }
+  }
+
+  private func instrumentVesselSectionData() -> InstrumentVesselSectionData {
+    let (regularInstruments, instrumentGroups) = groupInstrumentsForStep(
+      step.instruments,
+      stepID: step.id,
+      stepIndex: stepIndex,
+      recipeID: recipeID
+    )
+    let (regularVessels, vesselGroups) = groupVesselsForStep(
+      step.vessels,
+      stepID: step.id,
+      stepIndex: stepIndex,
+      recipeID: recipeID
+    )
+
+    let mappedInstruments: [StepItem] = regularInstruments.map { instrument in
+      let isProduct = instrument.hasRecipeStepProductID
+      let productID = isProduct ? instrument.recipeStepProductID : nil
+      let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
+      let prerequisiteCompleted =
+        prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
+
+      return StepItem(
+        name: instrument.name,
+        isProduct: isProduct,
+        prerequisiteStepIndex: prerequisiteStepIndex,
+        prerequisiteCompleted: prerequisiteCompleted
+      )
+    }
+
+    let mappedVessels: [StepItem] = regularVessels.map { vessel in
+      let isProduct = vessel.hasRecipeStepProductID
+      let productID = isProduct ? vessel.recipeStepProductID : nil
+      let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
+      let prerequisiteCompleted =
+        prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
+
+      return StepItem(
+        name: vessel.name,
+        isProduct: isProduct,
+        prerequisiteStepIndex: prerequisiteStepIndex,
+        prerequisiteCompleted: prerequisiteCompleted
+      )
+    }
+
+    return InstrumentVesselSectionData(
+      items: mappedInstruments + mappedVessels,
+      instrumentOptionGroups: filterInstrumentOptionGroups(
+        instrumentGroups, selectedOptions: selectedInstrumentOptions),
+      vesselOptionGroups: filterVesselOptionGroups(
+        vesselGroups, selectedOptions: selectedVesselOptions)
+    )
   }
 
   // Helper functions to group items for a single step
@@ -680,6 +694,8 @@ struct StepDetailsView: View {
 // MARK: - Step Items Section View
 
 struct StepItemsSectionView: View {
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
   let title: String
   let items: [StepItem]
   var ingredientOptionGroups: [OptionGroupAggregate] = []
@@ -694,25 +710,19 @@ struct StepItemsSectionView: View {
         .fontWeight(.semibold)
         .foregroundColor(.secondary)
 
+      if items.isEmpty
+        && ingredientOptionGroups.isEmpty
+        && instrumentOptionGroups.isEmpty
+        && vesselOptionGroups.isEmpty
+      {
+        Text("none")
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+
       // Regular items
       ForEach(Array(items.enumerated()), id: \.offset) { _, item in
-        HStack(spacing: 6) {
-          if item.isProduct && !item.prerequisiteCompleted {
-            Image(systemName: "clock.fill")
-              .font(.caption)
-              .foregroundColor(.orange)
-          }
-          Text(item.name)
-            .font(.caption)
-            .foregroundColor(
-              (item.isProduct && !item.prerequisiteCompleted) ? .orange : .secondary
-            )
-          if let prerequisiteStepIndex = item.prerequisiteStepIndex {
-            Text("(from step \(prerequisiteStepIndex + 1))")
-              .font(.caption2)
-              .foregroundColor(.secondary)
-          }
-        }
+        itemRow(item)
       }
 
       // Ingredient option groups
@@ -728,6 +738,28 @@ struct StepItemsSectionView: View {
       // Vessel option groups
       ForEach(vesselOptionGroups) { group in
         VesselOptionGroupView(group: group, scale: scale)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func itemRow(_ item: StepItem) -> some View {
+    HStack(spacing: 6) {
+      if item.isProduct && !item.prerequisiteCompleted {
+        Image(systemName: "clock.fill")
+          .font(.caption)
+          .foregroundColor(.orange)
+      }
+      Text(item.name)
+        .font(.caption)
+        .foregroundColor(
+          (item.isProduct && !item.prerequisiteCompleted) ? .orange : .secondary
+        )
+        .lineLimit(2)
+      if let prerequisiteStepIndex = item.prerequisiteStepIndex {
+        Text("(from step \(prerequisiteStepIndex + 1))")
+          .font(.caption2)
+          .foregroundColor(.secondary)
       }
     }
   }
@@ -747,15 +779,15 @@ struct OptionGroupView: View {
     {
       // Selected option - show like a regular ingredient (no indentation, no "one of:" label)
       HStack(spacing: 6) {
-        Text(option.ingredient.name)
-          .font(.caption)
-          .foregroundColor(.secondary)
-
         if let quantityText = option.aggregated.quantityText(scale: scale) {
           Text(quantityText)
             .font(.caption)
             .foregroundColor(.secondary)
         }
+
+        Text(option.ingredient.name)
+          .font(.caption)
+          .foregroundColor(.secondary)
       }
     } else {
       // No selection - show all options with "one of:" label (indented)
@@ -767,15 +799,15 @@ struct OptionGroupView: View {
 
         ForEach(group.options) { option in
           HStack(spacing: 6) {
-            Text(option.ingredient.name)
-              .font(.caption)
-              .foregroundColor(.secondary)
-
             if let quantityText = option.aggregated.quantityText(scale: scale) {
               Text(quantityText)
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
+
+            Text(option.ingredient.name)
+              .font(.caption)
+              .foregroundColor(.secondary)
           }
           .padding(.leading, 16)
         }
@@ -799,12 +831,6 @@ struct InstrumentOptionGroupView: View {
         Text(option.instrument.name)
           .font(.caption)
           .foregroundColor(.secondary)
-
-        if let quantityText = option.aggregated.quantityText(scale: scale) {
-          Text(quantityText)
-            .font(.caption)
-            .foregroundColor(.secondary)
-        }
       }
     } else {
       // No selection - show all options with "one of:" label (indented)
@@ -819,12 +845,6 @@ struct InstrumentOptionGroupView: View {
             Text(option.instrument.name)
               .font(.caption)
               .foregroundColor(.secondary)
-
-            if let quantityText = option.aggregated.quantityText(scale: scale) {
-              Text(quantityText)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            }
           }
           .padding(.leading, 16)
         }
@@ -848,12 +868,6 @@ struct VesselOptionGroupView: View {
         Text(option.vessel.name)
           .font(.caption)
           .foregroundColor(.secondary)
-
-        if let quantityText = option.aggregated.quantityText(scale: scale) {
-          Text(quantityText)
-            .font(.caption)
-            .foregroundColor(.secondary)
-        }
       }
     } else {
       // No selection - show all options with "one of:" label (indented)
@@ -868,12 +882,6 @@ struct VesselOptionGroupView: View {
             Text(option.vessel.name)
               .font(.caption)
               .foregroundColor(.secondary)
-
-            if let quantityText = option.aggregated.quantityText(scale: scale) {
-              Text(quantityText)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            }
           }
           .padding(.leading, 16)
         }

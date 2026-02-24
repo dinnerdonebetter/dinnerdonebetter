@@ -297,6 +297,27 @@ struct VesselOptionGroupAggregate: Identifiable {
 
 // MARK: - Helper Functions
 
+func formatStepIngredientDisplay(_ ingredient: Mealplanning_RecipeStepIngredient, scale: Float)
+  -> String
+{
+  var aggregated = AggregatedIngredient(
+    ingredientID: ingredient.hasIngredient ? ingredient.ingredient.id : ingredient.id,
+    name: ingredient.name,
+    quantityNotes: ingredient.quantityNotes,
+    measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil
+  )
+
+  if ingredient.hasQuantity {
+    aggregated.addQuantity(ingredient.quantity)
+  }
+
+  if let quantityText = aggregated.quantityText(scale: scale) {
+    return "\(quantityText) \(ingredient.name)"
+  }
+
+  return ingredient.name
+}
+
 extension RecipePerformanceContentView {
   // swiftlint:disable:next cyclomatic_complexity function_body_length
   func getAggregatedInstrumentsAndVessels(

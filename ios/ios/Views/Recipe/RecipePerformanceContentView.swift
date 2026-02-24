@@ -24,6 +24,9 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   var highlightedStepIDs: Set<String>?
   var prepTaskContext: PerformRecipeView.PrepTaskContext?
   @Binding var externalScale: Float?  // Optional external scale binding (for meal components)
+  var showWashHandsStepCard: Bool = true
+  var sharedWashHandsCompleted: Binding<Bool>?
+  var allowCompletedStepsToggle: Bool = false
 
   // State for option selections (for interactive selection outside meal plan context)
   @State private var selectedIngredientOptions: [String: UInt32] = [:]  // optionGroupID -> selectedOptionIndex
@@ -34,6 +37,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @State private var internalRecipeScale: Float = 1.0
   @State private var scaleText: String = "1.0"
   @FocusState private var isScaleFocused: Bool
+  @State private var showCompletedSteps: Bool = true
 
   // Helper to get current scale value
   private var recipeScale: Float {
@@ -60,7 +64,10 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]? = nil,
     highlightedStepIDs: Set<String>? = nil,
     prepTaskContext: PerformRecipeView.PrepTaskContext? = nil,
-    externalScale: Binding<Float?> = .constant(nil)
+    externalScale: Binding<Float?> = .constant(nil),
+    showWashHandsStepCard: Bool = true,
+    sharedWashHandsCompleted: Binding<Bool>? = nil,
+    allowCompletedStepsToggle: Bool = false
   ) {
     self._checkedIngredients = checkedIngredients
     self._checkedInstrumentsVessels = checkedInstrumentsVessels
@@ -73,6 +80,9 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     self.highlightedStepIDs = highlightedStepIDs
     self.prepTaskContext = prepTaskContext
     self._externalScale = externalScale
+    self.showWashHandsStepCard = showWashHandsStepCard
+    self.sharedWashHandsCompleted = sharedWashHandsCompleted
+    self.allowCompletedStepsToggle = allowCompletedStepsToggle
   }
 
   @Environment(AuthenticationManager.self) private var authManager
@@ -107,6 +117,19 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         stepsList(recipe: recipe, viewModel: viewModel, scale: recipeScale)
       }
       .padding()
+    }
+    .onAppear {
+      if let sharedWashHandsCompleted {
+        viewModel.washHandsCompleted = sharedWashHandsCompleted.wrappedValue
+      }
+      if allowCompletedStepsToggle {
+        showCompletedSteps = false
+      }
+    }
+    .onChange(of: sharedWashHandsValue) { _, newValue in
+      if sharedWashHandsCompleted != nil {
+        viewModel.washHandsCompleted = newValue
+      }
     }
   }
 
@@ -174,8 +197,9 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       }
 
       // Progress indicator
-      let completedCount = viewModel.completedSteps.count + (viewModel.washHandsCompleted ? 1 : 0)
-      let totalSteps = recipe.steps.count + 1  // +1 for wash hands step
+      let completedCount =
+        viewModel.completedSteps.count + ((showWashHandsStepCard && sharedWashHandsValue) ? 1 : 0)
+      let totalSteps = recipe.steps.count + (showWashHandsStepCard ? 1 : 0)
       Text("\(completedCount) of \(totalSteps) steps completed")
         .font(.caption)
         .foregroundColor(.secondary)
@@ -222,31 +246,30 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
               .font(.subheadline)
               .foregroundColor(.secondary)
 
-            // Quick scale buttons
-            HStack(spacing: 4) {
-              Button("0.5x") {
-                setRecipeScale(0.5)
-                scaleText = String(format: "%.2f", recipeScale)
-              }
-              .buttonStyle(.bordered)
-              .controlSize(.small)
-
-              Button("1x") {
-                setRecipeScale(1.0)
-                scaleText = String(format: "%.2f", recipeScale)
-              }
-              .buttonStyle(.bordered)
-              .controlSize(.small)
-
-              Button("2x") {
-                setRecipeScale(2.0)
-                scaleText = String(format: "%.2f", recipeScale)
-              }
-              .buttonStyle(.bordered)
-              .controlSize(.small)
+            Button {
+              adjustRecipeScale(by: -0.25)
+            } label: {
+              Image(systemName: "minus.circle")
             }
+            .buttonStyle(.plain)
+
+            Button {
+              adjustRecipeScale(by: 0.25)
+            } label: {
+              Image(systemName: "plus.circle")
+            }
+            .buttonStyle(.plain)
           }
         }
+
+        Slider(
+          value: Binding(
+            get: { Double(recipeScale) },
+            set: { setRecipeScale(Float($0)) }
+          ),
+          in: 0.25...4.0,
+          step: 0.25
+        )
       }
     }
     .padding()
@@ -270,12 +293,18 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
   private func updateScaleFromText() {
     if let scale = Float(scaleText), scale > 0 {
-      setRecipeScale(scale)
+      setRecipeScale(min(max(scale, 0.25), 4.0))
       scaleText = String(format: "%.2f", recipeScale)
     } else {
       // Reset to current scale if invalid input
       scaleText = String(format: "%.2f", recipeScale)
     }
+  }
+
+  private func adjustRecipeScale(by delta: Float) {
+    let next = min(max(recipeScale + delta, 0.25), 4.0)
+    setRecipeScale(next)
+    scaleText = String(format: "%.2f", recipeScale)
   }
 
   // MARK: - Instruments & Vessels Section
@@ -303,7 +332,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         },
         label: {
           HStack {
-            Text("Instruments & Vessels")
+            Text("Equipment")
               .font(.headline)
               .foregroundColor(.primary)
             Spacer()
@@ -368,7 +397,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           // Vessel option groups
           if !filteredVesselGroups.isEmpty {
             if !filteredInstrumentGroups.isEmpty {
-              Text("Vessel Options")
+              Text("Equipment Options")
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
@@ -459,13 +488,6 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
               checkedInstrumentsVessels.contains(item.itemID) ? .secondary : .primary
             )
             .strikethrough(checkedInstrumentsVessels.contains(item.itemID))
-
-          if let quantityText = item.quantityText(scale: recipeScale) {
-            Text(quantityText)
-              .font(.subheadline)
-              .fontWeight(.medium)
-              .foregroundColor(.secondary)
-          }
 
           if let sourceRecipeName = item.sourceRecipeName {
             Text("(from \(sourceRecipeName))")
@@ -673,19 +695,19 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
       VStack(alignment: .leading, spacing: 2) {
         HStack {
-          Text(aggregated.name)
-            .font(.subheadline)
-            .foregroundColor(
-              checkedIngredients.contains(aggregated.ingredientID) ? .secondary : .primary
-            )
-            .strikethrough(checkedIngredients.contains(aggregated.ingredientID))
-
           if let quantityText = aggregated.quantityText(scale: recipeScale) {
             Text(quantityText)
               .font(.subheadline)
               .fontWeight(.medium)
               .foregroundColor(.secondary)
           }
+
+          Text(aggregated.name)
+            .font(.subheadline)
+            .foregroundColor(
+              checkedIngredients.contains(aggregated.ingredientID) ? .secondary : .primary
+            )
+            .strikethrough(checkedIngredients.contains(aggregated.ingredientID))
 
           if let sourceRecipeName = aggregated.sourceRecipeName {
             Text("(from \(sourceRecipeName))")
@@ -1132,25 +1154,38 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     }
 
     return VStack(alignment: .leading, spacing: 16) {
-      Text("Steps")
-        .font(.headline)
-        .padding(.horizontal, 4)
+      HStack {
+        Text("Steps")
+          .font(.headline)
+          .padding(.horizontal, 4)
 
-      // Up Next section
-      if !upNextSteps.isEmpty {
+        Spacer()
+
+        if allowCompletedStepsToggle {
+          Button(showCompletedSteps ? "Focus mode" : "Show completed") {
+            withAnimation {
+              showCompletedSteps.toggle()
+            }
+          }
+          .font(.caption)
+          .buttonStyle(.bordered)
+          .controlSize(.small)
+        }
+      }
+
+      if allowCompletedStepsToggle && showCompletedSteps {
         VStack(alignment: .leading, spacing: 8) {
-          Text("Up Next")
+          Text("All Steps")
             .font(.subheadline)
             .fontWeight(.semibold)
-            .foregroundColor(.orange)
+            .foregroundColor(.secondary)
             .padding(.horizontal, 4)
 
-          // Wash hands step (only show once, before first up next step)
-          if upNextSteps.first != nil {
+          if showWashHandsStepCard, allSteps.first != nil {
             washHandsStepCard(viewModel: viewModel)
           }
 
-          ForEach(upNextSteps) { stepInfo in
+          ForEach(allSteps) { stepInfo in
             StepCardView(
               step: stepInfo.step,
               index: stepInfo.index,
@@ -1168,65 +1203,71 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
             )
           }
         }
-      }
+      } else {
+        // Up Next section
+        if !upNextSteps.isEmpty {
+          VStack(alignment: .leading, spacing: 8) {
+            Text("Up Next")
+              .font(.subheadline)
+              .fontWeight(.semibold)
+              .foregroundColor(.orange)
+              .padding(.horizontal, 4)
 
-      // For Later section
-      if !forLaterSteps.isEmpty {
-        VStack(alignment: .leading, spacing: 8) {
-          Text("For Later")
-            .font(.subheadline)
-            .fontWeight(.semibold)
-            .foregroundColor(.blue)
-            .padding(.horizontal, 4)
+            // Wash hands step (only show once, before first up next step)
+            if showWashHandsStepCard, upNextSteps.first != nil {
+              washHandsStepCard(viewModel: viewModel)
+            }
 
-          ForEach(forLaterSteps) { stepInfo in
-            StepCardView(
-              step: stepInfo.step,
-              index: stepInfo.index,
-              viewModel: viewModel,
-              formatStepTitle: formatStepTitle,
-              recipeID: stepInfo.recipeID,
-              mealPlanSelections: mealPlanSelections,
-              isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
-              associatedRecipeName: stepInfo.associatedRecipeName,
-              highlightedStepIDs: highlightedStepIDs,
-              selectedIngredientOptions: selectedIngredientOptions,
-              selectedInstrumentOptions: selectedInstrumentOptions,
-              selectedVesselOptions: selectedVesselOptions,
-              scale: scale
-            )
+            ForEach(upNextSteps) { stepInfo in
+              StepCardView(
+                step: stepInfo.step,
+                index: stepInfo.index,
+                viewModel: viewModel,
+                formatStepTitle: formatStepTitle,
+                recipeID: stepInfo.recipeID,
+                mealPlanSelections: mealPlanSelections,
+                isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
+                associatedRecipeName: stepInfo.associatedRecipeName,
+                highlightedStepIDs: highlightedStepIDs,
+                selectedIngredientOptions: selectedIngredientOptions,
+                selectedInstrumentOptions: selectedInstrumentOptions,
+                selectedVesselOptions: selectedVesselOptions,
+                scale: scale
+              )
+            }
+          }
+        }
+
+        // For Later section
+        if !forLaterSteps.isEmpty {
+          VStack(alignment: .leading, spacing: 8) {
+            Text("For Later")
+              .font(.subheadline)
+              .fontWeight(.semibold)
+              .foregroundColor(.blue)
+              .padding(.horizontal, 4)
+
+            ForEach(forLaterSteps) { stepInfo in
+              StepCardView(
+                step: stepInfo.step,
+                index: stepInfo.index,
+                viewModel: viewModel,
+                formatStepTitle: formatStepTitle,
+                recipeID: stepInfo.recipeID,
+                mealPlanSelections: mealPlanSelections,
+                isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
+                associatedRecipeName: stepInfo.associatedRecipeName,
+                highlightedStepIDs: highlightedStepIDs,
+                selectedIngredientOptions: selectedIngredientOptions,
+                selectedInstrumentOptions: selectedInstrumentOptions,
+                selectedVesselOptions: selectedVesselOptions,
+                scale: scale
+              )
+            }
           }
         }
       }
 
-      // Done section
-      if !doneSteps.isEmpty {
-        VStack(alignment: .leading, spacing: 8) {
-          Text("Done")
-            .font(.subheadline)
-            .fontWeight(.semibold)
-            .foregroundColor(.green)
-            .padding(.horizontal, 4)
-
-          ForEach(doneSteps) { stepInfo in
-            StepCardView(
-              step: stepInfo.step,
-              index: stepInfo.index,
-              viewModel: viewModel,
-              formatStepTitle: formatStepTitle,
-              recipeID: stepInfo.recipeID,
-              mealPlanSelections: mealPlanSelections,
-              isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
-              associatedRecipeName: stepInfo.associatedRecipeName,
-              highlightedStepIDs: highlightedStepIDs,
-              selectedIngredientOptions: selectedIngredientOptions,
-              selectedInstrumentOptions: selectedInstrumentOptions,
-              selectedVesselOptions: selectedVesselOptions,
-              scale: scale
-            )
-          }
-        }
-      }
     }
   }
 
@@ -1298,7 +1339,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   // MARK: - Wash Hands Step Card
 
   private func washHandsStepCard(viewModel: PerformRecipeViewModel) -> some View {
-    let isCompleted = viewModel.isStepCompleted(PerformRecipeViewModel.washHandsStepIndex)
+    let isCompleted = sharedWashHandsValue
     let canCheck = viewModel.canCheckStep(PerformRecipeViewModel.washHandsStepIndex)
 
     return VStack(alignment: .leading, spacing: 12) {
@@ -1307,7 +1348,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         // Checkbox
         Button(
           action: {
-            viewModel.toggleStep(PerformRecipeViewModel.washHandsStepIndex)
+            toggleWashHandsStep()
           },
           label: {
             Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
@@ -1321,7 +1362,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
         // Step title
         VStack(alignment: .leading, spacing: 4) {
-          Text("Wash your hands")
+          Text("🧼 Wash your hands 🧼")
             .font(.headline)
             .foregroundColor(isCompleted ? .secondary : .primary)
             .italic(isCompleted)
@@ -1342,6 +1383,24 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           lineWidth: 2
         )
     )
+  }
+
+  private var sharedWashHandsValue: Bool {
+    sharedWashHandsCompleted?.wrappedValue ?? viewModel.washHandsCompleted
+  }
+
+  private func toggleWashHandsStep() {
+    if let sharedWashHandsCompleted {
+      let nextValue = !sharedWashHandsCompleted.wrappedValue
+      sharedWashHandsCompleted.wrappedValue = nextValue
+      viewModel.washHandsCompleted = nextValue
+      if !nextValue {
+        viewModel.completedSteps.removeAll()
+      }
+      return
+    }
+
+    viewModel.toggleStep(PerformRecipeViewModel.washHandsStepIndex)
   }
 
 }

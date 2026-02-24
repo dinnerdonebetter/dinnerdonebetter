@@ -531,3 +531,58 @@ struct DiscreteQuantityScalingTests {
     #expect(aggregated.quantityText(scale: 2.0) == "1 - 2")
   }
 }
+
+// MARK: - Recipe Performance Step Formatting Tests
+
+struct RecipePerformanceStepFormattingTests {
+  @Test("Step ingredient display includes scaled quantity and unit")
+  func testStepIngredientDisplayIncludesQuantityAndUnit() {
+    var ingredient = Mealplanning_RecipeStepIngredient()
+    ingredient.name = "Flour"
+    var quantity = Common_Float32RangeWithOptionalMax()
+    quantity.min = 2
+    ingredient.quantity = quantity
+    var unit = Mealplanning_ValidMeasurementUnit()
+    unit.name = "cups"
+    ingredient.measurementUnit = unit
+
+    let display = formatStepIngredientDisplay(ingredient, scale: 1.5)
+
+    #expect(display == "Flour 3 cups")
+  }
+
+  @Test("Step ingredient display falls back to name without quantity")
+  func testStepIngredientDisplayFallsBackToName() {
+    var ingredient = Mealplanning_RecipeStepIngredient()
+    ingredient.name = "Salt"
+
+    let display = formatStepIngredientDisplay(ingredient, scale: 2.0)
+
+    #expect(display == "Salt")
+  }
+}
+
+// MARK: - Wash Hands Gating Tests
+
+@Suite(.serialized)
+struct WashHandsGatingTests {
+  @Test("Steps remain blocked until wash hands completed")
+  @MainActor
+  func testCanCheckStepRequiresWashHands() async {
+    let authManager = AuthenticationManager()
+    let viewModel = PerformRecipeViewModel(recipeID: "recipe-id", authManager: authManager)
+
+    var recipe = Mealplanning_Recipe()
+    recipe.id = "recipe-id"
+    var step = Mealplanning_RecipeStep()
+    step.id = "step-1"
+    recipe.steps = [step]
+    viewModel.recipe = recipe
+
+    #expect(viewModel.canCheckStep(recipeID: "recipe-id", stepID: "step-1") == false)
+
+    viewModel.washHandsCompleted = true
+
+    #expect(viewModel.canCheckStep(recipeID: "recipe-id", stepID: "step-1") == true)
+  }
+}
