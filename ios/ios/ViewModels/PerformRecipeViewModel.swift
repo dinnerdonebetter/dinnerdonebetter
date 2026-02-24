@@ -229,7 +229,8 @@ class PerformRecipeViewModel {
     }
 
     for (index, condition) in step.completionConditions.enumerated() where !condition.optional {
-      let conditionIdentifier = stepCompletionConditionIdentifier(condition: condition, index: index)
+      let conditionIdentifier = stepCompletionConditionIdentifier(
+        condition: condition, index: index)
       if !isStepCompletionConditionCompleted(
         recipeID: recipeID,
         stepID: stepID,

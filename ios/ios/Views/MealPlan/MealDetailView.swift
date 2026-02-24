@@ -57,7 +57,7 @@ struct MealDetailView: View {
   @State private var mealWashHandsCompleted = false
   @State private var componentViewModels: [String: PerformRecipeViewModel] = [:]
   @State private var mealFlowMode: MealFlowMode = .unified
-  @State private var showUnifiedCompletedSteps = false
+  @State private var showMealCompletedSteps = false
 
   let mealID: String
 
@@ -504,55 +504,29 @@ struct MealDetailView: View {
     let upNext = allSteps.filter { $0.category == .upNext }
     let forLater = allSteps.filter { $0.category == .forLater }
 
-    return VStack(alignment: .leading, spacing: 12) {
-      HStack {
+    let focusedGroups = [
+      StepFlowGroup(title: "Up Next", color: .orange, items: upNext),
+      StepFlowGroup(title: "Not Yet", color: .blue, items: forLater),
+    ]
+
+    return StepFlowSection(
+      showCompleted: $showMealCompletedSteps,
+      allSteps: allSteps,
+      focusedGroups: focusedGroups,
+      allStepsTitle: "All Steps",
+      emptyMessage: "Loading component steps...",
+      headerContent: {
         Text("Cook Flow")
           .font(.title2)
           .fontWeight(.bold)
-
-        Spacer()
-
-        Button(showUnifiedCompletedSteps ? "Focus mode" : "Overview") {
-          withAnimation {
-            showUnifiedCompletedSteps.toggle()
-          }
-        }
-        .font(.caption)
-        .buttonStyle(.bordered)
-        .controlSize(.small)
-      }
-
-      if showUnifiedCompletedSteps {
-        unifiedMealStepGroup(title: "All Steps", color: .secondary, steps: allSteps)
-      } else {
-        if !upNext.isEmpty {
-          unifiedMealStepGroup(title: "Up Next", color: .orange, steps: upNext)
-        }
-        if !forLater.isEmpty {
-          unifiedMealStepGroup(title: "Not Yet", color: .blue, steps: forLater)
-        }
-      }
-
-      if allSteps.isEmpty {
-        Text("Loading component steps...")
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
-    }
-  }
-
-  private func unifiedMealStepGroup(
-    title: String,
-    color: Color,
-    steps: [UnifiedMealStep]
-  ) -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text(title)
-        .font(.subheadline)
-        .fontWeight(.semibold)
-        .foregroundColor(color)
-
-      ForEach(steps) { item in
+      },
+      allModeLeadingContent: {
+        EmptyView()
+      },
+      focusModeLeadingContent: {
+        EmptyView()
+      },
+      rowContent: { item in
         VStack(alignment: .leading, spacing: 6) {
           let tagStyle = componentTagStyle(for: item.componentIndex)
           Text(item.componentName)
@@ -575,7 +549,7 @@ struct MealDetailView: View {
           )
         }
       }
-    }
+    )
   }
 
   private func formatUnifiedStepTitle(step: Mealplanning_RecipeStep, index: Int) -> String {
@@ -838,6 +812,7 @@ extension MealDetailView {
           componentType: component.componentType,
           sharedViewModel: componentViewModels[component.recipe.id],
           globalWashHandsCompleted: mealWashHandsCompleted,
+          sharedShowCompletedSteps: $showMealCompletedSteps,
           onGlobalWashHandsToggle: { isCompleted in
             setMealWashHandsCompleted(isCompleted)
           },
@@ -890,6 +865,7 @@ struct EmbeddedRecipeView: View {
   let componentType: Mealplanning_MealComponentType
   let sharedViewModel: PerformRecipeViewModel?
   let globalWashHandsCompleted: Bool
+  let sharedShowCompletedSteps: Binding<Bool>?
   let onGlobalWashHandsToggle: ((Bool) -> Void)?
   let onViewModelReady: ((PerformRecipeViewModel) -> Void)?
   let onRecipeLoaded: ((Mealplanning_Recipe) -> Void)?
@@ -985,6 +961,7 @@ struct EmbeddedRecipeView: View {
                   onGlobalWashHandsToggle?(newValue)
                 }
               ),
+              sharedCompletedStepsVisibility: sharedShowCompletedSteps,
               allowCompletedStepsToggle: true
             )
             .onAppear {

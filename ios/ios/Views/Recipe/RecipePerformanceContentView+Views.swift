@@ -230,7 +230,8 @@ struct StepCardView: View {
     }
 
     if !condition.ingredientState.name.isEmpty && !conditionIngredientNames.isEmpty {
-      return "\(condition.ingredientState.name): \(conditionIngredientNames.joined(separator: ", "))"
+      return
+        "\(condition.ingredientState.name): \(conditionIngredientNames.joined(separator: ", "))"
     }
 
     if !condition.ingredientState.name.isEmpty {

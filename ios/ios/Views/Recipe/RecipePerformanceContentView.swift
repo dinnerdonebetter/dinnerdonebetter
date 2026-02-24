@@ -26,6 +26,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @Binding var externalScale: Float?  // Optional external scale binding (for meal components)
   var showWashHandsStepCard: Bool = true
   var sharedWashHandsCompleted: Binding<Bool>?
+  var sharedCompletedStepsVisibility: Binding<Bool>?
   var allowCompletedStepsToggle: Bool = false
 
   // State for option selections (for interactive selection outside meal plan context)
@@ -38,6 +39,18 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @State private var scaleText: String = "1.0"
   @FocusState private var isScaleFocused: Bool
   @State private var showCompletedSteps: Bool = true
+
+  private var isShowingCompletedSteps: Bool {
+    sharedCompletedStepsVisibility?.wrappedValue ?? showCompletedSteps
+  }
+
+  private func setShowingCompletedSteps(_ newValue: Bool) {
+    if let sharedCompletedStepsVisibility {
+      sharedCompletedStepsVisibility.wrappedValue = newValue
+    } else {
+      showCompletedSteps = newValue
+    }
+  }
 
   // Helper to get current scale value
   private var recipeScale: Float {
@@ -67,6 +80,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     externalScale: Binding<Float?> = .constant(nil),
     showWashHandsStepCard: Bool = true,
     sharedWashHandsCompleted: Binding<Bool>? = nil,
+    sharedCompletedStepsVisibility: Binding<Bool>? = nil,
     allowCompletedStepsToggle: Bool = false
   ) {
     self._checkedIngredients = checkedIngredients
@@ -82,6 +96,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     self._externalScale = externalScale
     self.showWashHandsStepCard = showWashHandsStepCard
     self.sharedWashHandsCompleted = sharedWashHandsCompleted
+    self.sharedCompletedStepsVisibility = sharedCompletedStepsVisibility
     self.allowCompletedStepsToggle = allowCompletedStepsToggle
   }
 
@@ -122,7 +137,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       if let sharedWashHandsCompleted {
         viewModel.washHandsCompleted = sharedWashHandsCompleted.wrappedValue
       }
-      if allowCompletedStepsToggle {
+      if allowCompletedStepsToggle && sharedCompletedStepsVisibility == nil {
         showCompletedSteps = false
       }
     }
@@ -1149,126 +1164,53 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       viewModel.categorizeStep(recipeID: stepInfo.recipeID, stepID: stepInfo.step.id) == .forLater
     }
 
-    let doneSteps = allSteps.filter { stepInfo in
-      viewModel.categorizeStep(recipeID: stepInfo.recipeID, stepID: stepInfo.step.id) == .done
-    }
+    let focusedGroups = [
+      StepFlowGroup(title: "Up Next", color: .orange, items: upNextSteps),
+      StepFlowGroup(title: "Not Yet", color: .blue, items: forLaterSteps),
+    ]
 
-    return VStack(alignment: .leading, spacing: 16) {
-      HStack {
+    return StepFlowSection(
+      showCompleted: Binding(
+        get: { isShowingCompletedSteps },
+        set: { setShowingCompletedSteps($0) }
+      ),
+      allSteps: allSteps,
+      focusedGroups: focusedGroups,
+      allowToggle: allowCompletedStepsToggle,
+      allStepsTitle: "All Steps",
+      headerContent: {
         Text("Steps")
           .font(.headline)
           .padding(.horizontal, 4)
-
-        Spacer()
-
-        if allowCompletedStepsToggle {
-          Button(showCompletedSteps ? "Focus mode" : "Complete view") {
-            withAnimation {
-              showCompletedSteps.toggle()
-            }
-          }
-          .font(.caption)
-          .buttonStyle(.bordered)
-          .controlSize(.small)
+      },
+      allModeLeadingContent: {
+        if showWashHandsStepCard, !sharedWashHandsValue, allSteps.first != nil {
+          washHandsStepCard(viewModel: viewModel)
         }
+      },
+      focusModeLeadingContent: {
+        if showWashHandsStepCard, !sharedWashHandsValue, upNextSteps.first != nil {
+          washHandsStepCard(viewModel: viewModel)
+        }
+      },
+      rowContent: { stepInfo in
+        StepCardView(
+          step: stepInfo.step,
+          index: stepInfo.index,
+          viewModel: viewModel,
+          formatStepTitle: formatStepTitle,
+          recipeID: stepInfo.recipeID,
+          mealPlanSelections: mealPlanSelections,
+          isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
+          associatedRecipeName: stepInfo.associatedRecipeName,
+          highlightedStepIDs: highlightedStepIDs,
+          selectedIngredientOptions: selectedIngredientOptions,
+          selectedInstrumentOptions: selectedInstrumentOptions,
+          selectedVesselOptions: selectedVesselOptions,
+          scale: scale
+        )
       }
-
-      if allowCompletedStepsToggle && showCompletedSteps {
-        VStack(alignment: .leading, spacing: 8) {
-          Text("All Steps")
-            .font(.subheadline)
-            .fontWeight(.semibold)
-            .foregroundColor(.secondary)
-            .padding(.horizontal, 4)
-
-          if showWashHandsStepCard, !sharedWashHandsValue, allSteps.first != nil {
-            washHandsStepCard(viewModel: viewModel)
-          }
-
-          ForEach(allSteps) { stepInfo in
-            StepCardView(
-              step: stepInfo.step,
-              index: stepInfo.index,
-              viewModel: viewModel,
-              formatStepTitle: formatStepTitle,
-              recipeID: stepInfo.recipeID,
-              mealPlanSelections: mealPlanSelections,
-              isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
-              associatedRecipeName: stepInfo.associatedRecipeName,
-              highlightedStepIDs: highlightedStepIDs,
-              selectedIngredientOptions: selectedIngredientOptions,
-              selectedInstrumentOptions: selectedInstrumentOptions,
-              selectedVesselOptions: selectedVesselOptions,
-              scale: scale
-            )
-          }
-        }
-      } else {
-        // Up Next section
-        if !upNextSteps.isEmpty {
-          VStack(alignment: .leading, spacing: 8) {
-            Text("Up Next")
-              .font(.subheadline)
-              .fontWeight(.semibold)
-              .foregroundColor(.orange)
-              .padding(.horizontal, 4)
-
-            // Wash hands step (only show once, before first up next step)
-            if showWashHandsStepCard, !sharedWashHandsValue, upNextSteps.first != nil {
-              washHandsStepCard(viewModel: viewModel)
-            }
-
-            ForEach(upNextSteps) { stepInfo in
-              StepCardView(
-                step: stepInfo.step,
-                index: stepInfo.index,
-                viewModel: viewModel,
-                formatStepTitle: formatStepTitle,
-                recipeID: stepInfo.recipeID,
-                mealPlanSelections: mealPlanSelections,
-                isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
-                associatedRecipeName: stepInfo.associatedRecipeName,
-                highlightedStepIDs: highlightedStepIDs,
-                selectedIngredientOptions: selectedIngredientOptions,
-                selectedInstrumentOptions: selectedInstrumentOptions,
-                selectedVesselOptions: selectedVesselOptions,
-                scale: scale
-              )
-            }
-          }
-        }
-
-        // For Later section
-        if !forLaterSteps.isEmpty {
-          VStack(alignment: .leading, spacing: 8) {
-            Text("Not Yet")
-              .font(.subheadline)
-              .fontWeight(.semibold)
-              .foregroundColor(.blue)
-              .padding(.horizontal, 4)
-
-            ForEach(forLaterSteps) { stepInfo in
-              StepCardView(
-                step: stepInfo.step,
-                index: stepInfo.index,
-                viewModel: viewModel,
-                formatStepTitle: formatStepTitle,
-                recipeID: stepInfo.recipeID,
-                mealPlanSelections: mealPlanSelections,
-                isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
-                associatedRecipeName: stepInfo.associatedRecipeName,
-                highlightedStepIDs: highlightedStepIDs,
-                selectedIngredientOptions: selectedIngredientOptions,
-                selectedInstrumentOptions: selectedInstrumentOptions,
-                selectedVesselOptions: selectedVesselOptions,
-                scale: scale
-              )
-            }
-          }
-        }
-      }
-
-    }
+    )
   }
 
   // MARK: - Associated Recipe Steps Header
