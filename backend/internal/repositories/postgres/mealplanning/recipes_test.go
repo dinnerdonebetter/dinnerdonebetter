@@ -548,6 +548,8 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 	T.Run("example", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+
 		bake := fakes.BuildFakeValidPreparation()
 		line := fakes.BuildFakeValidPreparation()
 		bakingSheet := fakes.BuildFakeValidInstrument()
@@ -624,7 +626,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 		}
 
 		c := buildInertClientForTest(t)
-		c.findCreatedRecipeStepProductsForInstruments(exampleRecipeInput)
+		c.findCreatedRecipeStepProductsForInstruments(ctx, exampleRecipeInput)
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Instruments[0].RecipeStepProductID)
 		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Instruments[0].RecipeStepProductID)

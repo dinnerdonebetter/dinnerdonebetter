@@ -566,7 +566,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "freshly ground black pepper",
-				QuantityNotes:                    "to taste",
+				QuantityNotes:                   "to taste",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
