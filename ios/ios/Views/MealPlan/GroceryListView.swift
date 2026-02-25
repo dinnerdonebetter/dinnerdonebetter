@@ -59,44 +59,47 @@ struct GroceryListView: View {
 
   private var menuView: some View {
     ScrollView {
-      VStack(alignment: .leading, spacing: DSTheme.Spacing.xl) {
+      LazyVStack(alignment: .leading, spacing: DSTheme.Spacing.xl, pinnedViews: [.sectionHeaders]) {
         headerSection
+          .padding(.horizontal, DSTheme.Spacing.md)
 
         if viewModel.isLoading {
           DSLoadingView("Loading grocery list...")
+            .padding(.horizontal, DSTheme.Spacing.md)
         } else if viewModel.items.isEmpty {
           emptyStateView
+            .padding(.horizontal, DSTheme.Spacing.md)
         } else {
           if !viewModel.needsItems.isEmpty {
-            itemsSection(
-              title: "Needed",
-              items: viewModel.needsItems,
-              color: .orange
-            )
+            Section {
+              itemRows(items: viewModel.needsItems)
+            } header: {
+              sectionHeader(title: "Needed", color: .orange)
+            }
           }
 
           if !viewModel.alreadyOwnedItems.isEmpty {
-            itemsSection(
-              title: "Already Owned",
-              items: viewModel.alreadyOwnedItems,
-              color: .blue
-            )
+            Section {
+              itemRows(items: viewModel.alreadyOwnedItems)
+            } header: {
+              sectionHeader(title: "Already Owned", color: .blue)
+            }
           }
 
           if !viewModel.acquiredItems.isEmpty {
-            itemsSection(
-              title: "Acquired",
-              items: viewModel.acquiredItems,
-              color: .green
-            )
+            Section {
+              itemRows(items: viewModel.acquiredItems)
+            } header: {
+              sectionHeader(title: "Acquired", color: .green)
+            }
           }
 
           if !viewModel.unavailableItems.isEmpty {
-            itemsSection(
-              title: "Unavailable",
-              items: viewModel.unavailableItems,
-              color: .red
-            )
+            Section {
+              itemRows(items: viewModel.unavailableItems)
+            } header: {
+              sectionHeader(title: "Unavailable", color: .red)
+            }
           }
         }
 
@@ -107,8 +110,18 @@ struct GroceryListView: View {
             .padding()
         }
       }
-      .dsScreenPadding()
+      .padding(.vertical, DSTheme.Spacing.md)
     }
+  }
+
+  private func sectionHeader(title: String, color: Color) -> some View {
+    Text(title)
+      .font(DSTheme.Typography.label)
+      .foregroundColor(color)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.horizontal, DSTheme.Spacing.md)
+      .padding(.vertical, DSTheme.Spacing.sm)
+      .background(.regularMaterial)
   }
 
   private var headerSection: some View {
@@ -131,16 +144,10 @@ struct GroceryListView: View {
     )
   }
 
-  private func itemsSection(
-    title: String,
-    items: [Mealplanning_MealPlanGroceryListItem],
-    color: Color
+  private func itemRows(
+    items: [Mealplanning_MealPlanGroceryListItem]
   ) -> some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      Text(title)
-        .font(DSTheme.Typography.label)
-        .foregroundColor(color)
-
       ForEach(items, id: \.id) { item in
         EnhancedGroceryItemRow(
           item: item,
@@ -211,6 +218,7 @@ struct GroceryListView: View {
         )
       }
     }
+    .padding(.horizontal, DSTheme.Spacing.md)
   }
 
   private func handleQuantityPurchasedSubmit(for item: Mealplanning_MealPlanGroceryListItem) async {
@@ -338,10 +346,11 @@ private struct ResistantSwipeReviewRow: View {
   let onMarkAsNeed: () -> Void
 
   private let swipeThreshold: CGFloat = 60
-  private let resistanceFactor: CGFloat = 0.25  // Only moves 25% when already in that state
+  private let resistanceFactor: CGFloat = 0.25
 
   @State private var dragOffset: CGFloat = 0
   @State private var hasTriggeredResistanceHaptic = false
+  @State private var isHorizontalDrag: Bool?
 
   private var isAlreadyHave: Bool {
     item.status == .acquired || item.status == .alreadyOwned
@@ -402,9 +411,17 @@ private struct ResistantSwipeReviewRow: View {
         }
         .frame(width: geometry.size.width, height: geometry.size.height)
         .offset(x: appliedOffset)
-        .gesture(
-          DragGesture()
+        .simultaneousGesture(
+          DragGesture(minimumDistance: 10)
             .onChanged { value in
+              if isHorizontalDrag == nil {
+                let horizontal = abs(value.translation.width)
+                let vertical = abs(value.translation.height)
+                isHorizontalDrag = horizontal > vertical
+              }
+
+              guard isHorizontalDrag == true else { return }
+
               let translation = value.translation.width
               dragOffset = translation
 
@@ -419,6 +436,13 @@ private struct ResistantSwipeReviewRow: View {
               }
             }
             .onEnded { value in
+              defer {
+                isHorizontalDrag = nil
+                hasTriggeredResistanceHaptic = false
+              }
+
+              guard isHorizontalDrag == true else { return }
+
               let translation = value.translation.width
 
               if translation > swipeThreshold, !isAlreadyNeed {
@@ -430,7 +454,6 @@ private struct ResistantSwipeReviewRow: View {
               withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
                 dragOffset = 0
               }
-              hasTriggeredResistanceHaptic = false
             }
         )
       }
@@ -559,9 +582,6 @@ struct EnhancedGroceryItemRow: View {
               .font(.caption)
               .foregroundColor(.green)
           }
-
-          // Status badge
-          statusBadge
         }
 
         Spacer()
@@ -629,65 +649,6 @@ struct EnhancedGroceryItemRow: View {
     }
     .animation(.easeInOut(duration: 0.2), value: showingQuantityInput)
     .animation(.easeInOut(duration: 0.2), value: showingEditQuantityNeeded)
-  }
-
-  private var statusBadge: some View {
-    HStack(spacing: 4) {
-      Image(systemName: statusIcon)
-        .font(.caption2)
-      Text(statusText)
-        .font(.caption2)
-    }
-    .padding(.horizontal, 6)
-    .padding(.vertical, 2)
-    .background(statusColor.opacity(0.2))
-    .foregroundColor(statusColor)
-    .cornerRadius(4)
-  }
-
-  private var statusIcon: String {
-    switch item.status {
-    case .acquired:
-      return "checkmark.circle.fill"
-    case .alreadyOwned:
-      return "house.fill"
-    case .needs:
-      return "cart.fill"
-    case .unavailable:
-      return "xmark.circle.fill"
-    default:
-      return "questionmark.circle"
-    }
-  }
-
-  private var statusText: String {
-    switch item.status {
-    case .acquired:
-      return "Acquired"
-    case .alreadyOwned:
-      return "Already Owned"
-    case .needs:
-      return "Needs"
-    case .unavailable:
-      return "Unavailable"
-    default:
-      return "Unknown"
-    }
-  }
-
-  private var statusColor: Color {
-    switch item.status {
-    case .acquired:
-      return .green
-    case .alreadyOwned:
-      return .blue
-    case .needs:
-      return .orange
-    case .unavailable:
-      return .red
-    default:
-      return .gray
-    }
   }
 
   private var quantityPurchasedInputSection: some View {

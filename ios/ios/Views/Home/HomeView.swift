@@ -36,26 +36,29 @@ struct HomeView: View {
                     pendingVotesSection(viewModel: viewModel)
                   }
 
-                  // Upcoming Meals Section
+                  // Active Meal Plan Section
+                  if let activeMealPlan = viewModel.activeMealPlan {
+                    activeMealPlanSection(mealPlan: activeMealPlan)
+                  }
+
+                  // Upcoming Meal Plans (non-finalized, after active plan end)
                   if !viewModel.upcomingMealPlans.isEmpty {
-                    upcomingMealsSection(viewModel: viewModel)
+                    upcomingMealPlansSection(viewModel: viewModel)
                   }
 
-                  // My Tasks Section
-                  if !viewModel.userTasks.isEmpty {
-                    myTasksSection(viewModel: viewModel)
-                  }
-
-                  // Grocery Lists Section
-                  if !viewModel.activeGroceryLists.isEmpty {
-                    groceryListsSection(viewModel: viewModel)
+                  // My Tasks & Grocery Lists
+                  if !viewModel.mealPlansWithTasks.isEmpty
+                    || !viewModel.mealPlansWithGroceryLists.isEmpty
+                  {
+                    actionButtonsSection(viewModel: viewModel)
                   }
 
                   // Empty State
                   if viewModel.pendingVoteMealPlans.isEmpty
+                    && viewModel.activeMealPlan == nil
                     && viewModel.upcomingMealPlans.isEmpty
-                    && viewModel.userTasks.isEmpty
-                    && viewModel.activeGroceryLists.isEmpty
+                    && viewModel.mealPlansWithTasks.isEmpty
+                    && viewModel.mealPlansWithGroceryLists.isEmpty
                   {
                     emptyStateView
                   }
@@ -220,11 +223,30 @@ struct HomeView: View {
     }
   }
 
-  // MARK: - Upcoming Meals Section
-  private func upcomingMealsSection(viewModel: HomeViewModel) -> some View {
+  // MARK: - Active Meal Plan Section
+  private func activeMealPlanSection(mealPlan: Mealplanning_MealPlan) -> some View {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+      Label("Active Meal Plan", systemImage: "star.circle.fill")
+        .font(DSTheme.Typography.title2)
+        .foregroundColor(DSTheme.Colors.textPrimary)
+
+      NavigationLink(
+        destination: MealPlanDetailView(
+          mealPlan: mealPlan,
+          groceryListItems: nil
+        )
+      ) {
+        UpcomingMealCardContent(mealPlan: mealPlan)
+      }
+      .buttonStyle(.plain)
+    }
+  }
+
+  // MARK: - Upcoming Meal Plans Section
+  private func upcomingMealPlansSection(viewModel: HomeViewModel) -> some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
       HStack {
-        Label("Upcoming Meals", systemImage: "calendar")
+        Label("Upcoming Meal Plans", systemImage: "calendar")
           .font(DSTheme.Typography.title2)
           .foregroundColor(DSTheme.Colors.textPrimary)
 
@@ -251,58 +273,34 @@ struct HomeView: View {
     }
   }
 
-  // MARK: - My Tasks Section
-  private func myTasksSection(viewModel: HomeViewModel) -> some View {
-    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      HStack {
-        Label("My Tasks", systemImage: "checklist")
-          .font(DSTheme.Typography.title2)
-          .foregroundColor(DSTheme.Colors.textPrimary)
-
-        Spacer()
-
-        let unfinishedCount = viewModel.userTasks.filter { $0.status != .finished }.count
-        if unfinishedCount > 0 {
-          Text("\(unfinishedCount) remaining")
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.warning)
-        }
-      }
-
-      let groupedTasks = Dictionary(grouping: viewModel.userTasks) { task in
-        formatTaskDate(task)
-      }
-      let sortedDates = groupedTasks.keys.sorted()
-
-      ForEach(sortedDates, id: \.self) { date in
-        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
-          Text(date)
-            .font(DSTheme.Typography.caption)
-            .fontWeight(.medium)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-            .padding(.horizontal, DSTheme.Spacing.xs)
-
-          ForEach(groupedTasks[date] ?? [], id: \.id) { task in
-            TaskCard(task: task)
+  // MARK: - Action Buttons Section
+  private func actionButtonsSection(viewModel: HomeViewModel) -> some View {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+      ForEach(viewModel.mealPlansWithTasks, id: \.mealPlanID) { entry in
+        if let mealPlan = viewModel.allMealPlans.first(where: { $0.id == entry.mealPlanID }) {
+          let summary = taskSummary(tasks: entry.tasks, mealPlan: mealPlan)
+          NavigationLink(
+            destination: TaskListView(
+              mealPlan: mealPlan,
+              tasks: [],
+              authManager: viewModel.authManager
+            )
+          ) {
+            InfoButton(
+              icon: "checklist",
+              text: summary.text,
+              color: summary.color
+            )
           }
+          .buttonStyle(.plain)
         }
       }
-    }
-  }
 
-  // MARK: - Grocery Lists Section
-  private func groceryListsSection(viewModel: HomeViewModel) -> some View {
-    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      HStack {
-        Label("Grocery Lists", systemImage: "cart.fill")
-          .font(DSTheme.Typography.title2)
-          .foregroundColor(DSTheme.Colors.textPrimary)
-
-        Spacer()
-      }
-
-      ForEach(viewModel.activeGroceryLists, id: \.mealPlanID) { groceryList in
-        if let mealPlan = viewModel.allMealPlans.first(where: { $0.id == groceryList.mealPlanID }) {
+      ForEach(viewModel.mealPlansWithGroceryLists, id: \.mealPlanID) { entry in
+        if let mealPlan = viewModel.allMealPlans.first(where: { $0.id == entry.mealPlanID }) {
+          let neededCount = entry.items.filter {
+            $0.status == .needs || $0.status == .unknown
+          }.count
           NavigationLink(
             destination: GroceryListView(
               mealPlan: mealPlan,
@@ -310,15 +308,80 @@ struct HomeView: View {
               authManager: viewModel.authManager
             )
           ) {
-            GroceryListCard(
-              mealPlan: mealPlan,
-              items: groceryList.items
+            InfoButton(
+              icon: "cart.fill",
+              text: neededCount > 0
+                ? "\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed"
+                : "All ingredients acquired",
+              color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
             )
           }
           .buttonStyle(.plain)
         }
       }
     }
+  }
+
+  private func taskSummary(
+    tasks: [Mealplanning_MealPlanTask], mealPlan: Mealplanning_MealPlan
+  ) -> (text: String, color: Color) {
+    let now = Date()
+    let unfinished = tasks.filter { $0.status == .unfinished }
+
+    guard !unfinished.isEmpty else {
+      return ("All tasks done", DSTheme.Colors.success)
+    }
+
+    var readyCount = 0
+    var earliestStart: Date?
+
+    for task in unfinished {
+      if let startDate = taskStartDate(task: task, mealPlan: mealPlan) {
+        if now >= startDate {
+          readyCount += 1
+        } else if earliestStart.map({ startDate < $0 }) ?? true {
+          earliestStart = startDate
+        }
+      } else {
+        readyCount += 1
+      }
+    }
+
+    if readyCount > 0 {
+      return (
+        "\(readyCount) task\(readyCount == 1 ? "" : "s") ready now",
+        DSTheme.Colors.warning
+      )
+    }
+
+    if let earliest = earliestStart {
+      let formatter = DateFormatter()
+      formatter.dateStyle = .none
+      formatter.timeStyle = .short
+      return (
+        "Next task at \(formatter.string(from: earliest))",
+        DSTheme.Colors.textSecondary
+      )
+    }
+
+    return ("No tasks ready yet", DSTheme.Colors.textSecondary)
+  }
+
+  private func taskStartDate(
+    task: Mealplanning_MealPlanTask, mealPlan: Mealplanning_MealPlan
+  ) -> Date? {
+    guard task.hasRecipePrepTask,
+      task.recipePrepTask.hasTimeBufferBeforeRecipeInSeconds,
+      task.recipePrepTask.timeBufferBeforeRecipeInSeconds.hasMax,
+      task.hasMealPlanOption
+    else { return nil }
+    let eventID = task.mealPlanOption.belongsToMealPlanEvent
+    guard !eventID.isEmpty,
+      let event = mealPlan.events.first(where: { $0.id == eventID })
+    else { return nil }
+    let eventTime = HomeViewModel.timestampToDate(event.startsAt)
+    return eventTime.addingTimeInterval(
+      -Double(task.recipePrepTask.timeBufferBeforeRecipeInSeconds.max))
   }
 
   // MARK: - Empty State
@@ -332,16 +395,6 @@ struct HomeView: View {
   }
 
   // MARK: - Helper Functions
-
-  private func formatTaskDate(_ task: Mealplanning_MealPlanTask) -> String {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .medium
-    formatter.timeStyle = .none
-
-    let timestamp = task.completedAt.seconds > 0 ? task.completedAt : task.createdAt
-    let date = timestampToDate(timestamp)
-    return formatter.string(from: date)
-  }
 
   private func timestampToDate(_ timestamp: SwiftProtobuf.Google_Protobuf_Timestamp) -> Date {
     return HomeViewModel.timestampToDate(timestamp)
@@ -615,97 +668,33 @@ struct UpcomingMealCard: View {
   }
 }
 
-// MARK: - Task Card
-struct TaskCard: View {
-  let task: Mealplanning_MealPlanTask
+// MARK: - Info Button
+struct InfoButton: View {
+  let icon: String
+  let text: String
+  let color: Color
 
   var body: some View {
     HStack(spacing: DSTheme.Spacing.md) {
       ZStack {
         Circle()
-          .fill(
-            task.status == .finished
-              ? DSTheme.Colors.success.opacity(0.15) : DSTheme.Colors.warning.opacity(0.15)
-          )
+          .fill(color.opacity(0.15))
           .frame(width: 36, height: 36)
 
-        Image(systemName: task.status == .finished ? "checkmark" : "circle")
-          .font(.system(size: 14, weight: .medium))
-          .foregroundColor(
-            task.status == .finished ? DSTheme.Colors.success : DSTheme.Colors.warning)
+        Image(systemName: icon)
+          .font(.system(size: 15, weight: .medium))
+          .foregroundColor(color)
       }
 
-      VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
-        Text(task.creationExplanation)
-          .font(DSTheme.Typography.body)
-          .foregroundColor(DSTheme.Colors.textPrimary)
-
-        if !task.statusExplanation.isEmpty {
-          Text(task.statusExplanation)
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-        }
-      }
+      Text(text)
+        .font(DSTheme.Typography.label)
+        .foregroundColor(DSTheme.Colors.textPrimary)
 
       Spacer()
-    }
-    .padding(DSTheme.Spacing.md)
-    .background(DSTheme.Colors.cardBackground)
-    .cornerRadius(DSTheme.Radius.md)
-    .overlay(
-      RoundedRectangle(cornerRadius: DSTheme.Radius.md)
-        .stroke(DSTheme.Colors.border, lineWidth: 1)
-    )
-  }
-}
 
-// MARK: - Grocery List Card
-struct GroceryListCard: View {
-  let mealPlan: Mealplanning_MealPlan
-  let items: [Mealplanning_MealPlanGroceryListItem]
-
-  private var itemsToShow: [Mealplanning_MealPlanGroceryListItem] {
-    Array(items.prefix(3))
-  }
-
-  var body: some View {
-    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
-      HStack {
-        VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
-          Text(HomeView.mealPlanDisplayTitle(mealPlan, fallback: "Grocery List"))
-            .font(DSTheme.Typography.label)
-            .foregroundColor(DSTheme.Colors.textPrimary)
-
-          Text(HomeView.formatMealPlanTimeRange(mealPlan))
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-        }
-
-        Spacer()
-
-        Text("\(items.count)")
-          .font(DSTheme.Typography.caption)
-          .fontWeight(.semibold)
-          .foregroundColor(DSTheme.Colors.primary)
-          .padding(.horizontal, DSTheme.Spacing.sm)
-          .padding(.vertical, DSTheme.Spacing.xxs)
-          .background(DSTheme.Colors.primary.opacity(0.1))
-          .cornerRadius(DSTheme.Radius.full)
-      }
-
-      if !itemsToShow.isEmpty {
-        Divider()
-
-        ForEach(itemsToShow, id: \.id) { item in
-          GroceryItemRow(item: item)
-        }
-
-        if items.count > 3 {
-          Text("+ \(items.count - 3) more items")
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.textTertiary)
-        }
-      }
+      Image(systemName: "chevron.right")
+        .font(.system(size: 13, weight: .semibold))
+        .foregroundColor(DSTheme.Colors.textTertiary)
     }
     .padding(DSTheme.Spacing.md)
     .background(DSTheme.Colors.cardBackground)
@@ -714,44 +703,6 @@ struct GroceryListCard: View {
       RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
         .stroke(DSTheme.Colors.border, lineWidth: 1)
     )
-  }
-}
-
-// MARK: - Grocery Item Row
-struct GroceryItemRow: View {
-  let item: Mealplanning_MealPlanGroceryListItem
-
-  var body: some View {
-    HStack {
-      Circle()
-        .stroke(DSTheme.Colors.textTertiary, lineWidth: 1.5)
-        .frame(width: 16, height: 16)
-
-      Text(item.ingredient.name)
-        .font(DSTheme.Typography.body)
-        .foregroundColor(DSTheme.Colors.textPrimary)
-
-      Spacer()
-
-      if item.hasQuantityNeeded {
-        Text(formatQuantity(item.quantityNeeded))
-          .font(DSTheme.Typography.caption)
-          .foregroundColor(DSTheme.Colors.textSecondary)
-      }
-    }
-  }
-
-  private func formatQuantity(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
-    if quantity.hasMax && quantity.min != quantity.max {
-      return "\(formatNumber(quantity.min)) - \(formatNumber(quantity.max))"
-    } else {
-      return "\(formatNumber(quantity.min))"
-    }
-  }
-
-  private func formatNumber(_ value: Float) -> String {
-    value.truncatingRemainder(dividingBy: 1) == 0
-      ? String(format: "%.0f", value) : String(format: "%g", value)
   }
 }
 
