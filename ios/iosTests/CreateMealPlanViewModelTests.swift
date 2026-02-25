@@ -286,7 +286,7 @@ struct EventManagementTests {
     viewModel.updateEventStartDate(eventID, date: newStartDate)
 
     #expect(viewModel.events[0].startDate == newStartDate)
-    let expectedEnd = Calendar.current.date(byAdding: .hour, value: 2, to: newStartDate)
+    let expectedEnd = Calendar.current.date(byAdding: .hour, value: 1, to: newStartDate)  // autoEndDate adds 1 hour
     #expect(abs(viewModel.events[0].endDate.timeIntervalSince(expectedEnd ?? newStartDate)) < 60.0)
   }
 

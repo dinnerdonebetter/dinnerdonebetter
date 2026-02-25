@@ -541,6 +541,7 @@ struct RecipePerformanceStepFormattingTests {
     ingredient.name = "Flour"
     var quantity = Common_Float32RangeWithOptionalMax()
     quantity.min = 2
+    quantity.max = 2  // same as min → exact quantity, avoids "3+" when no max
     ingredient.quantity = quantity
     var unit = Mealplanning_ValidMeasurementUnit()
     unit.name = "cups"
@@ -548,7 +549,7 @@ struct RecipePerformanceStepFormattingTests {
 
     let display = formatStepIngredientDisplay(ingredient, scale: 1.5)
 
-    #expect(display == "Flour 3 cups")
+    #expect(display == "3 cups Flour")
   }
 
   @Test("Step ingredient display falls back to name without quantity")
