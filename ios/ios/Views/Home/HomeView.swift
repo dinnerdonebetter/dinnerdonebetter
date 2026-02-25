@@ -733,7 +733,7 @@ struct GroceryItemRow: View {
 
       Spacer()
 
-      if item.hasQuantityNeeded && item.quantityNeeded.hasMax {
+      if item.hasQuantityNeeded {
         Text(formatQuantity(item.quantityNeeded))
           .font(DSTheme.Typography.caption)
           .foregroundColor(DSTheme.Colors.textSecondary)
@@ -742,11 +742,16 @@ struct GroceryItemRow: View {
   }
 
   private func formatQuantity(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
-    if quantity.hasMax {
-      return "\(quantity.min) - \(quantity.max)"
+    if quantity.hasMax && quantity.min != quantity.max {
+      return "\(formatNumber(quantity.min)) - \(formatNumber(quantity.max))"
     } else {
-      return "\(quantity.min)+"
+      return "\(formatNumber(quantity.min))"
     }
+  }
+
+  private func formatNumber(_ value: Float) -> String {
+    value.truncatingRemainder(dividingBy: 1) == 0
+      ? String(format: "%.0f", value) : String(format: "%g", value)
   }
 }
 

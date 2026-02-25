@@ -490,15 +490,16 @@ private struct ResistantSwipeReviewRow: View {
 
   private func formatQuantityNeeded(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
     let unit = item.measurementUnit.name.isEmpty ? "" : " \(item.measurementUnit.name)"
-    if quantity.hasMax {
-      if quantity.min == quantity.max {
-        return "\(quantity.min)\(unit)"
-      } else {
-        return "\(quantity.min)–\(quantity.max)\(unit)"
-      }
+    if quantity.hasMax && quantity.min != quantity.max {
+      return "\(formatNumber(quantity.min))–\(formatNumber(quantity.max))\(unit)"
     } else {
-      return "\(quantity.min)+\(unit)"
+      return "\(formatNumber(quantity.min))\(unit)"
     }
+  }
+
+  private func formatNumber(_ value: Float) -> String {
+    value.truncatingRemainder(dividingBy: 1) == 0
+      ? String(format: "%.0f", value) : String(format: "%g", value)
   }
 }
 
@@ -853,20 +854,21 @@ struct EnhancedGroceryItemRow: View {
 
   private func formatQuantityNeeded(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
     let unit = item.measurementUnit.name.isEmpty ? "" : " \(item.measurementUnit.name)"
-    if quantity.hasMax {
-      if quantity.min == quantity.max {
-        return "\(quantity.min)\(unit) needed"
-      } else {
-        return "\(quantity.min) - \(quantity.max)\(unit) needed"
-      }
+    if quantity.hasMax && quantity.min != quantity.max {
+      return "\(formatNumber(quantity.min)) - \(formatNumber(quantity.max))\(unit) needed"
     } else {
-      return "\(quantity.min)+\(unit) needed"
+      return "\(formatNumber(quantity.min))\(unit) needed"
     }
+  }
+
+  private func formatNumber(_ value: Float) -> String {
+    value.truncatingRemainder(dividingBy: 1) == 0
+      ? String(format: "%.0f", value) : String(format: "%g", value)
   }
 
   private func formatQuantity(_ quantity: Float, unit: String) -> String {
     let unitText = unit.isEmpty ? "" : " \(unit)"
-    return "\(quantity)\(unitText)"
+    return "\(formatNumber(quantity))\(unitText)"
   }
 }
 
