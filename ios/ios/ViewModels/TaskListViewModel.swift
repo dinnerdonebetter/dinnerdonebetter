@@ -90,11 +90,11 @@ class TaskListViewModel {
   }
 
   func toggleExpanded(taskID: String) {
-    expandedTasks[taskID] = !(expandedTasks[taskID] ?? true)  // Default to true (expanded)
+    expandedTasks[taskID] = !(expandedTasks[taskID] ?? false)  // Default to false (minimized)
   }
 
   func isExpanded(taskID: String) -> Bool {
-    return expandedTasks[taskID] ?? true  // Default to true (expanded)
+    return expandedTasks[taskID] ?? false  // Default to false (minimized)
   }
 
   func toggleSubtaskCompletion(parentTaskID: String, stepID: String) {
@@ -391,13 +391,19 @@ class TaskListViewModel {
 
       print("🔄 Updating task \(task.id) to status: \(newStatus)")
 
-      // If unchecking the parent task, also uncheck all subtasks
+      // Keep subtask state in sync: unchecking clears all; checking marks all done
       if newStatus == .unfinished {
         if let stepStates = subtaskCompletionState[task.id] {
           for stepID in stepStates.keys {
             subtaskCompletionState[task.id]?[stepID] = false
           }
-          print("✅ Unchecked all subtasks for task \(task.id)")
+        }
+      } else if task.hasRecipePrepTask {
+        for taskStep in task.recipePrepTask.taskSteps {
+          if subtaskCompletionState[task.id] == nil {
+            subtaskCompletionState[task.id] = [:]
+          }
+          subtaskCompletionState[task.id]?[taskStep.id] = true
         }
       }
 

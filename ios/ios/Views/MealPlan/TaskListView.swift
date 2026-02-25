@@ -115,6 +115,7 @@ struct TaskListView: View {
           loadedRecipes: viewModel.loadedRecipes,
           loadedPrepTasks: viewModel.loadedPrepTasks
         )
+        .padding(.bottom, DSTheme.Spacing.sm)
       }
     }
   }
@@ -141,6 +142,7 @@ struct TaskListView: View {
               loadedRecipes: viewModel.loadedRecipes,
               loadedPrepTasks: viewModel.loadedPrepTasks
             )
+            .padding(.bottom, DSTheme.Spacing.sm)
           }
         }
       }
@@ -225,89 +227,85 @@ struct TaskGroupRow: View {
         }
       )
 
-      // Subtasks (shown when expanded)
+      // Steps preview - "What's involved" when expanded (read-only, tappable to open recipe)
       if hasSubtasks && isExpanded {
-        ForEach(group.subtasks) { subtask in
-          SubtaskRow(
-            subtask: subtask,
-            parentTask: group.parent,
-            viewModel: viewModel
-          )
-          .padding(.leading, 32)
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+          Text("What's involved")
+            .font(DSTheme.Typography.labelSmall)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+            .padding(.bottom, DSTheme.Spacing.xs)
+
+          ForEach(group.subtasks) { subtask in
+            StepPreviewRow(
+              subtask: subtask,
+              parentTask: group.parent,
+              viewModel: viewModel
+            )
+          }
         }
+        .padding(DSTheme.Spacing.md)
+        .background(DSTheme.Colors.cardBackgroundElevated)
+        .cornerRadius(DSTheme.Radius.sm)
+        .padding(.leading, DSTheme.Spacing.lg)  // Align with task content
+        .padding(.top, DSTheme.Spacing.sm)
       }
     }
   }
 }
 
-// MARK: - Subtask Row
+// MARK: - Step Preview Row
 
-struct SubtaskRow: View {
+/// Read-only step display—tappable to open recipe. No individual checkboxes; the whole task is the unit.
+struct StepPreviewRow: View {
   let subtask: SubtaskDisplayInfo
   let parentTask: Mealplanning_MealPlanTask
   let viewModel: TaskListViewModel
 
-  private var isCompleted: Bool {
-    viewModel.isSubtaskCompleted(parentTaskID: subtask.parentTaskID, stepID: subtask.stepID)
-      || parentTask.status == .finished
+  private var label: String {
+    subtask.ingredientNames.isEmpty
+      ? subtask.description
+      : "\(subtask.description) — \(subtask.ingredientNames.joined(separator: ", "))"
   }
 
   var body: some View {
-    HStack(alignment: .top, spacing: 12) {
-      Spacer()
-        .frame(width: 20)
-
-      // Checkbox
-      Button {
-        viewModel.toggleSubtaskCompletion(
-          parentTaskID: subtask.parentTaskID, stepID: subtask.stepID)
-      } label: {
-        Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
-          .font(.body)
-          .foregroundColor(isCompleted ? .green : .blue)
-      }
-      .buttonStyle(.plain)
-      .disabled(viewModel.isUpdating)
-
-      // Subtask content -- tappable to navigate when a recipe step is available
+    Group {
       if let recipeID = subtask.recipeID, let recipeStepID = subtask.recipeStepID {
-        NavigationLink(
-          destination: PerformRecipeView(
+        NavigationLink {
+          PerformRecipeView(
             recipeID: recipeID,
-            highlightedStepIDs: [recipeStepID]
+            highlightedStepIDs: Set([recipeStepID])
           )
-        ) {
-          subtaskContent
+        } label: {
+          stepContent
         }
         .buttonStyle(.plain)
       } else {
-        subtaskContent
-      }
-
-      Spacer()
-
-      if subtask.recipeID != nil && subtask.recipeStepID != nil {
-        Image(systemName: "chevron.right")
-          .font(.caption2)
-          .foregroundColor(.secondary)
+        stepContent
       }
     }
-    .padding()
-    .background(Color(.systemGray5))
-    .cornerRadius(8)
-    .opacity(isCompleted ? 0.7 : 1.0)
   }
 
-  private var subtaskContent: some View {
-    let label =
-      subtask.ingredientNames.isEmpty
-      ? subtask.description
-      : "\(subtask.description) \(subtask.ingredientNames.joined(separator: ", "))"
+  private var stepContent: some View {
+    HStack(alignment: .center, spacing: DSTheme.Spacing.sm) {
+      Image(systemName: "circle.fill")
+        .font(.system(size: 4))
+        .foregroundColor(DSTheme.Colors.textTertiary)
 
-    return Text(label)
-      .font(.body)
-      .foregroundColor(isCompleted ? .secondary : .primary)
-      .strikethrough(isCompleted)
+      Text(label)
+        .font(DSTheme.Typography.bodySmall)
+        .foregroundColor(DSTheme.Colors.textPrimary)
+
+      Spacer(minLength: 0)
+
+      if subtask.recipeID != nil && subtask.recipeStepID != nil {
+        Image(systemName: "arrow.up.right")
+          .font(.caption2)
+          .foregroundColor(DSTheme.Colors.textTertiary)
+      }
+    }
+    .padding(.vertical, DSTheme.Spacing.xs)
+    .padding(.horizontal, DSTheme.Spacing.sm)
+    .contentShape(Rectangle())
   }
 }
 
@@ -386,55 +384,13 @@ struct TaskRow: View {
   }
 
   var body: some View {
-    HStack(alignment: .top, spacing: 12) {
-      // Disclosure indicator for parent tasks
-      if isParent {
-        Button {
-          onToggleExpand?()
-        } label: {
-          Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .frame(width: 20)
-        }
-        .buttonStyle(.plain)
-      } else {
-        // Spacer for alignment when not a parent
-        Spacer()
-          .frame(width: 20)
-      }
+    let hasNavigation = recipeID != nil && highlightedStepIDs != nil
+    let isCompleted = task.status == .finished
+    let context = prepTaskContext
 
-      // Checkbox - enabled for parent tasks when all subtasks are completed, or when already finished (to allow unchecking)
-      if isParent {
-        let allSubtasksCompleted = viewModel.areAllSubtasksCompleted(parentTaskID: task.id)
-        let canCheckParent = allSubtasksCompleted || task.status == .finished
-
-        if canCheckParent {
-          // Parent task can be checked when all subtasks are done, or unchecked when finished
-          Button {
-            print("🔘 Clicked parent task checkbox for task \(task.id)")
-            Task {
-              await viewModel.toggleTaskStatus(task)
-            }
-          } label: {
-            Image(systemName: task.status == .finished ? "checkmark.circle.fill" : "circle")
-              .font(.title2)
-              .foregroundColor(
-                task.status == .finished ? .green : .blue
-              )
-              .contentShape(Rectangle())
-          }
-          .buttonStyle(.plain)
-          .disabled(viewModel.isUpdating)
-          .frame(minWidth: 44, minHeight: 44)  // Ensure tappable area
-        } else {
-          // Parent task shows status but can't be checked (not all subtasks done yet)
-          Image(systemName: task.status == .finished ? "checkmark.circle.fill" : "circle")
-            .font(.title2)
-            .foregroundColor(.gray)
-        }
-      } else {
-        // Standalone tasks can be checked
+    VStack(alignment: .leading, spacing: 0) {
+      HStack(alignment: .top, spacing: DSTheme.Spacing.md) {
+        // Checkbox - single action for the whole task (parent or standalone)
         Button {
           Task {
             await viewModel.toggleTaskStatus(task)
@@ -443,41 +399,136 @@ struct TaskRow: View {
           Image(systemName: task.status == .finished ? "checkmark.circle.fill" : "circle")
             .font(.title2)
             .foregroundColor(
-              task.status == .finished ? .green : .blue
+              task.status == .finished ? DSTheme.Colors.success : DSTheme.Colors.info
             )
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .disabled(viewModel.isUpdating)
-      }
+        .frame(minWidth: 44, minHeight: 24)
 
-      // Task content - make clickable if it has a recipe prep task
-      let hasNavigation = recipeID != nil && highlightedStepIDs != nil
-      let isCompleted = task.status == .finished
-      let context = prepTaskContext
+        // Task content + meta - tappable to navigate (when has recipe)
+        Group {
+          if hasNavigation, let recipeID = recipeID, let highlightedStepIDs = highlightedStepIDs {
+            NavigationLink {
+              PerformRecipeView(
+                recipeID: recipeID,
+                highlightedStepIDs: highlightedStepIDs,
+                prepTaskContext: context
+              )
+            } label: {
+              VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+                taskDescriptionContent(isCompleted: isCompleted)
+                if task.status != .finished {
+                  taskMetaRow
+                }
+              }
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+          } else {
+            VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+              taskDescriptionContent(isCompleted: isCompleted)
+              if task.status != .finished {
+                taskMetaRow
+              }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+          }
+        }
 
-      Group {
-        if hasNavigation, let recipeID = recipeID, let highlightedStepIDs = highlightedStepIDs {
-          NavigationLink(
-            destination: PerformRecipeView(
-              recipeID: recipeID,
-              highlightedStepIDs: highlightedStepIDs,
-              prepTaskContext: context
-            )
-          ) {
-            taskDescriptionContent(isCompleted: isCompleted)
+        // Disclosure indicator for parent tasks (only this excludes navigation)
+        if isParent {
+          Button {
+            onToggleExpand?()
+          } label: {
+            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+              .font(.subheadline.weight(.semibold))
+              .foregroundColor(DSTheme.Colors.textSecondary)
+              .frame(width: 24)
           }
           .buttonStyle(.plain)
-        } else {
-          taskDescriptionContent(isCompleted: isCompleted)
         }
       }
-
-      Spacer()
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(8)
+    .padding(DSTheme.Spacing.lg)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.md)
     .opacity(task.status == .finished ? 0.7 : 1.0)
+  }
+
+  @ViewBuilder
+  private var taskMetaRow: some View {
+    let hasStorage =
+      task.hasRecipePrepTask
+      && (!task.recipePrepTask.explicitStorageInstructions.isEmpty
+        || !task.recipePrepTask.storageType.isEmpty
+        || task.recipePrepTask.hasStorageTemperatureInCelsius)
+    let hasCountdown = eventStartTime != nil && task.status != .finished
+    let (startDate, endDate) = taskTimeRange
+
+    if hasStorage || hasCountdown {
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+        if hasCountdown, let end = endDate {
+          if let start = startDate {
+            TaskTimeRangeView(startDate: start, endDate: end)
+          } else {
+            TaskCountdownTimer(dueDate: end)
+          }
+        }
+        if hasStorage {
+          storagePill(prepTask: task.recipePrepTask)
+        }
+      }
+    }
+  }
+
+  /// Returns (startDate, endDate) when we have a time buffer. Otherwise (nil, eventTime).
+  private var taskTimeRange: (Date?, Date?) {
+    guard let eventTime = eventStartTime else { return (nil, nil) }
+    guard task.hasRecipePrepTask,
+      task.recipePrepTask.hasTimeBufferBeforeRecipeInSeconds,
+      task.recipePrepTask.timeBufferBeforeRecipeInSeconds.min > 0
+    else {
+      return (nil, eventTime)
+    }
+    let startTime = eventTime.addingTimeInterval(
+      -Double(task.recipePrepTask.timeBufferBeforeRecipeInSeconds.min))
+    return (startTime, eventTime)
+  }
+
+  @ViewBuilder
+  private func storagePill(prepTask: Mealplanning_RecipePrepTask) -> some View {
+    let hasExplicit = !prepTask.explicitStorageInstructions.isEmpty
+    let hasType = !prepTask.storageType.isEmpty
+    let temp = formatStorageTemperature(prepTask.storageTemperatureInCelsius)
+
+    if hasExplicit || hasType || !temp.isEmpty {
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+        if hasExplicit {
+          Label {
+            Text(prepTask.explicitStorageInstructions)
+              .lineLimit(2)
+              .truncationMode(.tail)
+          } icon: {
+            Image(systemName: "info.circle")
+          }
+        }
+        if hasType || !temp.isEmpty {
+          HStack(spacing: DSTheme.Spacing.xs) {
+            if hasType {
+              Label(prepTask.storageType, systemImage: "archivebox")
+            }
+            if !temp.isEmpty {
+              Label(temp, systemImage: "thermometer.medium")
+            }
+          }
+        }
+      }
+      .font(DSTheme.Typography.caption)
+      .foregroundColor(DSTheme.Colors.textSecondary)
+    }
   }
 
   // Get event start time for countdown
@@ -493,83 +544,30 @@ struct TaskRow: View {
   }
 
   private func taskDescriptionContent(isCompleted: Bool) -> some View {
-    VStack(alignment: .leading, spacing: 4) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
       // Task description - show prep task name or creation explanation
       if task.hasRecipePrepTask && !task.recipePrepTask.name.isEmpty {
         Text(task.recipePrepTask.name)
-          .font(.body)
-          .fontWeight(.medium)
+          .font(DSTheme.Typography.body)
+          .fontWeight(.semibold)
           .strikethrough(isCompleted)
           .foregroundColor(
-            isCompleted ? .secondary : .primary
+            isCompleted ? DSTheme.Colors.textSecondary : DSTheme.Colors.textPrimary
           )
       } else {
         Text(task.creationExplanation)
-          .font(.body)
-          .fontWeight(.medium)
+          .font(DSTheme.Typography.body)
+          .fontWeight(.semibold)
           .strikethrough(isCompleted)
           .foregroundColor(
-            isCompleted ? .secondary : .primary
+            isCompleted ? DSTheme.Colors.textSecondary : DSTheme.Colors.textPrimary
           )
       }
 
       if !task.statusExplanation.isEmpty {
         Text(task.statusExplanation)
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
-
-      // Storage info (when task has a recipe prep task with storage data)
-      if task.hasRecipePrepTask {
-        storageInfoView(prepTask: task.recipePrepTask, isCompleted: isCompleted)
-      }
-
-      // Time window for when this task can/should be started
-      if !isCompleted, task.hasRecipePrepTask {
-        timeWindowView(prepTask: task.recipePrepTask)
-      }
-
-      // Countdown timer (only show if task is not completed and we have an event time)
-      if !isCompleted, let eventTime = eventStartTime {
-        TaskCountdownTimer(dueDate: eventTime)
-      }
-    }
-  }
-
-  @ViewBuilder
-  private func storageInfoView(
-    prepTask: Mealplanning_RecipePrepTask,
-    isCompleted: Bool
-  ) -> some View {
-    let hasExplicit = !prepTask.explicitStorageInstructions.isEmpty
-    let hasType = !prepTask.storageType.isEmpty
-    let temp = formatStorageTemperature(prepTask.storageTemperatureInCelsius)
-    let hasTemp = !temp.isEmpty
-
-    if hasExplicit || hasType || hasTemp {
-      VStack(alignment: .leading, spacing: 2) {
-        if hasExplicit {
-          Label(prepTask.explicitStorageInstructions, systemImage: "info.circle")
-            .font(.caption)
-            .foregroundColor(isCompleted ? .secondary : .secondary)
-            .strikethrough(isCompleted)
-        }
-        if hasType || hasTemp {
-          HStack(spacing: 6) {
-            if hasType {
-              Label(prepTask.storageType, systemImage: "archivebox")
-                .font(.caption)
-                .foregroundColor(isCompleted ? .secondary : .secondary)
-                .strikethrough(isCompleted)
-            }
-            if hasTemp {
-              Label(temp, systemImage: "thermometer.medium")
-                .font(.caption)
-                .foregroundColor(isCompleted ? .secondary : .secondary)
-                .strikethrough(isCompleted)
-            }
-          }
-        }
+          .font(DSTheme.Typography.caption)
+          .foregroundColor(DSTheme.Colors.textSecondary)
       }
     }
   }
@@ -589,38 +587,6 @@ struct TaskRow: View {
       return "above \(Int(range.min.rounded()))°C"
     }
     return ""
-  }
-
-  @ViewBuilder
-  private func timeWindowView(prepTask: Mealplanning_RecipePrepTask) -> some View {
-    if prepTask.hasTimeBufferBeforeRecipeInSeconds,
-      prepTask.timeBufferBeforeRecipeInSeconds.min > 0,
-      let eventTime = eventStartTime
-    {
-      let mustStartBy = eventTime.addingTimeInterval(
-        -Double(prepTask.timeBufferBeforeRecipeInSeconds.min))
-
-      HStack(spacing: 6) {
-        Image(systemName: "calendar")
-          .font(.caption2)
-        Text("Start by \(formatShortDate(mustStartBy))")
-          .font(.caption)
-      }
-      .foregroundColor(.secondary)
-    }
-  }
-
-  private func formatShortDate(_ date: Date) -> String {
-    let formatter = DateFormatter()
-    let calendar = Calendar.current
-    if calendar.isDateInToday(date) {
-      formatter.dateFormat = "'today at' h:mm a"
-    } else if calendar.isDateInTomorrow(date) {
-      formatter.dateFormat = "'tomorrow at' h:mm a"
-    } else {
-      formatter.dateFormat = "EEE h:mm a"
-    }
-    return formatter.string(from: date)
   }
 
   // Helper struct for step data
@@ -746,6 +712,96 @@ struct TaskRow: View {
 // Make MealPlanTask Identifiable
 extension Mealplanning_MealPlanTask: Identifiable {
   // Already has id property, so this extension just makes it conform to Identifiable
+}
+
+// MARK: - Task Time Range View
+
+struct TaskTimeRangeView: View {
+  let startDate: Date
+  let endDate: Date
+  @State private var timeRemaining: TimeInterval = 0
+  @State private var timer: Timer?
+
+  var body: some View {
+    HStack(spacing: 6) {
+      Image(systemName: "clock.fill")
+        .font(.caption2)
+      Text(formattedDisplayText)
+        .font(.caption)
+        .fontWeight(.semibold)
+        .monospacedDigit()
+    }
+    .foregroundColor(timeRemainingColor)
+    .onAppear {
+      updateTimeRemaining()
+      startTimer()
+    }
+    .onDisappear {
+      stopTimer()
+    }
+  }
+
+  private var formattedDisplayText: String {
+    let startStr = formatShortDate(startDate)
+    let endStr = formatShortDate(endDate)
+    let countdownStr = formattedTimeRemaining
+    return "Between \(startStr) and \(endStr) (\(countdownStr))"
+  }
+
+  private var formattedTimeRemaining: String {
+    if timeRemaining <= 0 {
+      return "Overdue"
+    }
+    let days = Int(timeRemaining) / 86400
+    let hours = (Int(timeRemaining) % 86400) / 3600
+    let minutes = (Int(timeRemaining) % 3600) / 60
+    let seconds = Int(timeRemaining) % 60
+    if days > 0 {
+      return String(format: "%dd %02d:%02d:%02d", days, hours, minutes, seconds)
+    } else if hours > 0 {
+      return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    } else {
+      return String(format: "%02d:%02d", minutes, seconds)
+    }
+  }
+
+  private var timeRemainingColor: Color {
+    if timeRemaining <= 0 { return .red }
+    if timeRemaining < 3600 { return .red }
+    if timeRemaining < 86400 { return .orange }
+    return .secondary
+  }
+
+  private func formatShortDate(_ date: Date) -> String {
+    let formatter = DateFormatter()
+    let calendar = Calendar.current
+    if calendar.isDateInToday(date) {
+      formatter.dateFormat = "'today at' h:mm a"
+    } else if calendar.isDateInTomorrow(date) {
+      formatter.dateFormat = "'tomorrow at' h:mm a"
+    } else {
+      formatter.dateFormat = "EEE h:mm a"
+    }
+    return formatter.string(from: date)
+  }
+
+  private func updateTimeRemaining() {
+    timeRemaining = max(0, endDate.timeIntervalSince(Date()))
+  }
+
+  private func startTimer() {
+    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+      updateTimeRemaining()
+    }
+    if let timer = timer {
+      RunLoop.main.add(timer, forMode: .common)
+    }
+  }
+
+  private func stopTimer() {
+    timer?.invalidate()
+    timer = nil
+  }
 }
 
 // MARK: - Task Countdown Timer
