@@ -72,7 +72,7 @@ struct HomeView: View {
         ToolbarItem(placement: .navigationBarTrailing) {
           NavigationLink(destination: AccountSettingsView()) {
             DSAvatarView(
-              name: authManager.username,
+              name: viewModel?.currentUserDisplayName ?? authManager.username,
               size: .sm
             )
           }
@@ -107,7 +107,7 @@ struct HomeView: View {
   private func heroSection(viewModel: HomeViewModel) -> some View {
     VStack(spacing: DSTheme.Spacing.lg) {
       // Greeting
-      Text("\(greeting), \(authManager.username)!")
+      Text("\(greeting), \(viewModel.currentUserDisplayName)!")
         .font(DSTheme.Typography.largeTitle)
         .foregroundColor(DSTheme.Colors.textPrimary)
         .frame(maxWidth: .infinity, alignment: .leading)

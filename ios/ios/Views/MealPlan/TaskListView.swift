@@ -442,11 +442,71 @@ struct TaskRow: View {
           .foregroundColor(.secondary)
       }
 
+      // Storage info (when task has a recipe prep task with storage data)
+      if task.hasRecipePrepTask {
+        storageInfoView(prepTask: task.recipePrepTask, isCompleted: isCompleted)
+      }
+
       // Countdown timer (only show if task is not completed and we have an event time)
       if !isCompleted, let eventTime = eventStartTime {
         TaskCountdownTimer(dueDate: eventTime)
       }
     }
+  }
+
+  @ViewBuilder
+  private func storageInfoView(
+    prepTask: Mealplanning_RecipePrepTask,
+    isCompleted: Bool
+  ) -> some View {
+    let hasExplicit = !prepTask.explicitStorageInstructions.isEmpty
+    let hasType = !prepTask.storageType.isEmpty
+    let temp = formatStorageTemperature(prepTask.storageTemperatureInCelsius)
+    let hasTemp = !temp.isEmpty
+
+    if hasExplicit || hasType || hasTemp {
+      VStack(alignment: .leading, spacing: 2) {
+        if hasExplicit {
+          Label(prepTask.explicitStorageInstructions, systemImage: "info.circle")
+            .font(.caption)
+            .foregroundColor(isCompleted ? .secondary : .secondary)
+            .strikethrough(isCompleted)
+        }
+        if hasType || hasTemp {
+          HStack(spacing: 6) {
+            if hasType {
+              Label(prepTask.storageType, systemImage: "archivebox")
+                .font(.caption)
+                .foregroundColor(isCompleted ? .secondary : .secondary)
+                .strikethrough(isCompleted)
+            }
+            if hasTemp {
+              Label(temp, systemImage: "thermometer.medium")
+                .font(.caption)
+                .foregroundColor(isCompleted ? .secondary : .secondary)
+                .strikethrough(isCompleted)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private func formatStorageTemperature(_ range: Common_OptionalFloat32Range) -> String {
+    let hasMin = range.hasMin
+    let hasMax = range.hasMax
+    if hasMin && hasMax {
+      let minVal = Int(range.min.rounded())
+      let maxVal = Int(range.max.rounded())
+      return minVal == maxVal ? "\(minVal)°C" : "\(minVal)–\(maxVal)°C"
+    }
+    if hasMax {
+      return "below \(Int(range.max.rounded()))°C"
+    }
+    if hasMin {
+      return "above \(Int(range.min.rounded()))°C"
+    }
+    return ""
   }
 
   // Helper struct for step data

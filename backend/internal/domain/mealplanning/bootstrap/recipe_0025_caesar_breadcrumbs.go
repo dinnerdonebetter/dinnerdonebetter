@@ -23,6 +23,7 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	breadcrumbs := enums.Ingredients["breadcrumbs"]
 	anchovyPaste := enums.Ingredients["anchovy paste"]
 	garlic := enums.Ingredients["garlic"]
+	lemon := enums.Ingredients["lemon"]
 	salt := enums.Ingredients["salt"]
 
 	// Get measurement units

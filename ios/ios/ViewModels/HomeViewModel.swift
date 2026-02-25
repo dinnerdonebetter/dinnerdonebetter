@@ -29,6 +29,18 @@ class HomeViewModel {
   var allMealPlans: [Mealplanning_MealPlan] = []
   var userTasks: [Mealplanning_MealPlanTask] = []
   var groceryLists: [String: [Mealplanning_MealPlanGroceryListItem]] = [:]  // Keyed by meal plan ID
+  var currentUser: Identity_User?
+
+  /// Display name for welcome message: first name if set, otherwise username.
+  var currentUserDisplayName: String {
+    guard let user = currentUser else {
+      return authManager.username
+    }
+    if !user.firstName.isEmpty {
+      return user.firstName
+    }
+    return user.username.isEmpty ? authManager.username : user.username
+  }
 
   // Loading states
   var isLoading = false
@@ -97,6 +109,11 @@ class HomeViewModel {
     errorMessage = nil
 
     do {
+      // Fetch current user for welcome message
+      if let user = try? await fetchCurrentUser() {
+        self.currentUser = user
+      }
+
       // First fetch meal plans
       let mealPlans = try await fetchMealPlans()
       self.allMealPlans = mealPlans
@@ -119,6 +136,36 @@ class HomeViewModel {
     }
 
     isLoading = false
+  }
+
+  private func fetchCurrentUser() async throws -> Identity_User {
+    guard let clientManager = try? authManager.getClientManager() else {
+      throw NSError(
+        domain: "HomeViewModel", code: 1,
+        userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
+    }
+
+    guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+      throw NSError(
+        domain: "HomeViewModel", code: 2,
+        userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+    }
+
+    let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+    let response = try await clientManager.client.auth.getSelf(
+      Auth_GetSelfRequest(),
+      metadata: metadata,
+      options: clientManager.defaultCallOptions
+    )
+
+    guard response.hasResult else {
+      throw NSError(
+        domain: "HomeViewModel", code: 3,
+        userInfo: [NSLocalizedDescriptionKey: "No user in response"])
+    }
+
+    return response.result
   }
 
   private func fetchMealPlans() async throws -> [Mealplanning_MealPlan] {
