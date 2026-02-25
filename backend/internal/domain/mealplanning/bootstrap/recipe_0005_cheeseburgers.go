@@ -576,6 +576,26 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Grind peppercorns",
+		Description:                 "Pre-grind the whole black peppercorns using a mortar and pestle or spice grinder.",
+		Notes:                       "Freshly ground pepper can be stored at room temperature in an airtight container for up to a week without significant loss of flavor.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the ground pepper in an airtight container at room temperature for up to 7 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Min: pointer.To[float32](18),
+			Max: pointer.To[float32](25),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](604800), // 7 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Classic Smashed Burgers",
@@ -590,7 +610,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			PluralPortionName: "burgers",
 			EligibleForMeals:  true,
 			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9},
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,
 		},

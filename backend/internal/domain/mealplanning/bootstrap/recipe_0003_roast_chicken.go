@@ -639,6 +639,29 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Season, truss, and dry-brine chicken",
+		Description:                 "Mix the seasoning blend, season the chicken inside and out, truss it, and place on a wire rack set in a rimmed baking sheet to dry-brine uncovered in the refrigerator for at least 1 hour and up to 2 days.",
+		Notes:                       "The longer the chicken dry-brines, the more evenly seasoned and crisp-skinned the result will be.",
+		Optional:                    false,
+		ExplicitStorageInstructions: "Store the seasoned, trussed chicken on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 1 hour and up to 2 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 3600,                       // 1 hour
+			Max: pointer.To[uint32](172800), // 2 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Perfect Roast Chicken",
@@ -653,7 +676,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10},
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,
 		},

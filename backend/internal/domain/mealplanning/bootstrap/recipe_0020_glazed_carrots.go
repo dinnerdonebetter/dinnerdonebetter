@@ -983,6 +983,45 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Peel and slice carrots",
+		Description:                 "Peel the carrots and slice on the bias into 1/2-inch-thick discs. Peeled and cut carrots keep 4-5 days in an airtight container or submerged in cold water in the fridge.",
+		Notes:                       "If storing in water, drain and dry thoroughly before cooking.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the peeled and sliced carrots in an airtight container in the refrigerator for up to 4 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](345600), // 4 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: true},
+		},
+	}
+
+	prepTask2 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Chop fresh herbs",
+		Description:                 "Chop the parsley, chives, and tarragon into small pieces. Picked herbs keep 2-3 days wrapped in a slightly damp paper towel in the fridge.",
+		Notes:                       "Store the herbs wrapped in a barely damp paper towel inside a bag or container.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the chopped herbs in an airtight container lined with a damp paper towel in the refrigerator for up to 2 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](172800), // 2 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 13, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Glazed Carrots with Brown Butter and Sage",
@@ -1000,7 +1039,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14,
 			},
-			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}

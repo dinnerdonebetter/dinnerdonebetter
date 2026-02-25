@@ -1291,6 +1291,29 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Wash, dry, and prepare salad greens",
+		Description:                 "Inspect, wash, dry, slice, and combine all greens and herbs ahead of time. Washed and dried greens keep 2-3 days when wrapped in paper towels in the fridge.",
+		Notes:                       "Make sure greens are thoroughly dried to prevent wilting and to help the dressing cling properly.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the washed, dried, and prepared greens in an airtight container lined with paper towels in the refrigerator for up to 2 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](172800), // 2 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Mixed Green Salad",
@@ -1305,7 +1328,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6},
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,
 		},

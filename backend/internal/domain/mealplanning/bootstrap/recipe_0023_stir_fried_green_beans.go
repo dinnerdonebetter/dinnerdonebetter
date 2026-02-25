@@ -720,6 +720,26 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Trim and snap green beans",
+		Description:                 "Stem the green beans, removing the tough stem end, and snap each bean in half. Prepared green beans keep 3-4 days in an airtight container in the fridge.",
+		Notes:                       "Having the beans trimmed and snapped ahead of time makes the stir-fry come together very quickly.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the trimmed and snapped green beans in an airtight container in the refrigerator for up to 3 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Stir-Fried Green Beans",
@@ -737,7 +757,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12,
 			},
-			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}

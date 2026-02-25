@@ -726,6 +726,26 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Mix dry ingredients",
+		Description:                 "Whisk together the flour, cornmeal, sugar, baking powder, baking soda, and salt. The dry mix can be prepared well ahead of time.",
+		Notes:                       "Having the dry ingredients pre-mixed saves time and ensures even distribution of leavening agents.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the dry ingredient mixture in an airtight container at room temperature for up to 7 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Min: pointer.To[float32](18),
+			Max: pointer.To[float32](25),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](604800), // 7 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 5, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Cornbread",
@@ -742,7 +762,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2a, step2b, step2c, step2, step3, step4, step5, step6, step7, step8,
 			},
-			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}

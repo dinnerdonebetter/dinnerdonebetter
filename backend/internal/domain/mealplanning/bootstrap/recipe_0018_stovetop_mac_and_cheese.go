@@ -922,6 +922,27 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Grate and prepare cheeses",
+		Description:                 "Grate the cheddar cheese, cut the American cheese into 1/2-inch cubes, and toss both cheeses with cornstarch. This can be done up to 2 days ahead.",
+		Notes:                       "Tossing with cornstarch ahead of time is fine; it helps the cheeses melt smoothly.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the cornstarch-coated cheese mixture in an airtight container in the refrigerator for up to 2 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](172800), // 2 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 6, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 7, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 8, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Stovetop Mac and Cheese",
@@ -939,7 +960,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step3, step4, step5, step5a, step5b, step6, step7, step8, step8a, step9, step10, step11,
 			},
-			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}

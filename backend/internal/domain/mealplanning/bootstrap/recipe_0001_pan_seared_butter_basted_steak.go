@@ -694,6 +694,28 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		step8,
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Season and dry-brine steak",
+		Description:                 "Grind pepper, pat the steak dry, season liberally, and refrigerate loosely covered on a wire rack for up to 3 days. This dry-brines the steak, improving seasoning penetration and surface dryness for a better sear.",
+		Notes:                       "The longer the steak sits uncovered in the fridge, the drier the surface will be, which promotes better browning.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the seasoned steak on a wire rack set in a rimmed baking sheet in the refrigerator, loosely covered, for up to 3 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Pan-Seared Butter-Basted Steak",
@@ -709,7 +731,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps:             steps,
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,
 		},

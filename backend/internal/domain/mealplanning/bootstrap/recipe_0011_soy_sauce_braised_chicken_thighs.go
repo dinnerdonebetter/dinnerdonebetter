@@ -1192,6 +1192,28 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
+	prepTask2 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Prepare aromatics",
+		Description:                 "Cut scallions into 2-inch segments, peel and thinly slice ginger, and peel garlic cloves ahead of time.",
+		Notes:                       "Scallions keep 3-4 days, ginger up to 1 week, and whole peeled garlic cloves up to 1 week in the fridge.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the prepared aromatics in separate airtight containers in the refrigerator for up to 3 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 5, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 6, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 7, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 8, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Soy Sauce–Braised Chicken Thighs",
@@ -1206,7 +1228,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17},
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
+			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,
 		},
