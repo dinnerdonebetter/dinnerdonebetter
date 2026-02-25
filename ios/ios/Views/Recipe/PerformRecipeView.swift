@@ -16,10 +16,13 @@ struct PerformRecipeView: View {
   @State private var checkedIngredients: Set<String> = []
   // Track by ValidInstrument/ValidVessel ID
   @State private var checkedInstrumentsVessels: Set<String> = []
+  @State private var scaleFromMealPlan: Float?
 
   let recipeID: String
   let highlightedStepIDs: Set<String>?
   let prepTaskContext: PrepTaskContext?
+  /// Scale from meal plan (e.g. 0.5 for half recipe). nil = use default 1.0.
+  let initialScale: Float?
 
   struct PrepTaskContext {
     let prepTaskName: String?
@@ -30,11 +33,13 @@ struct PerformRecipeView: View {
 
   init(
     recipeID: String, highlightedStepIDs: Set<String>? = nil,
-    prepTaskContext: PrepTaskContext? = nil
+    prepTaskContext: PrepTaskContext? = nil,
+    initialScale: Float? = nil
   ) {
     self.recipeID = recipeID
     self.highlightedStepIDs = highlightedStepIDs
     self.prepTaskContext = prepTaskContext
+    self.initialScale = initialScale
   }
 
   var body: some View {
@@ -57,7 +62,7 @@ struct PerformRecipeView: View {
                   viewModel: viewModel,
                   highlightedStepIDs: highlightedStepIDs,
                   prepTaskContext: prepTaskContext,
-                  externalScale: .constant(nil)
+                  externalScale: externalScaleBinding
                 )
                 .navigationTitle(navigationTitle)
                 .navigationBarTitleDisplayMode(.inline)
@@ -78,6 +83,16 @@ struct PerformRecipeView: View {
         }
       }
     }
+  }
+
+  private var externalScaleBinding: Binding<Float?> {
+    if initialScale != nil {
+      return Binding(
+        get: { scaleFromMealPlan ?? initialScale },
+        set: { scaleFromMealPlan = $0 }
+      )
+    }
+    return .constant(nil)
   }
 
   private var navigationTitle: String {

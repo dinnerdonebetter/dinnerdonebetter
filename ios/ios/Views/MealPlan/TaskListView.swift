@@ -261,6 +261,11 @@ struct StepPreviewRow: View {
   let parentTask: Mealplanning_MealPlanTask
   let viewModel: TaskListViewModel
 
+  private var recipeScaleFromMealPlan: Float? {
+    guard let recipeID = subtask.recipeID else { return nil }
+    return parentTask.recipeScaleForMealPlan(recipeID: recipeID)
+  }
+
   private var label: String {
     subtask.ingredientNames.isEmpty
       ? subtask.description
@@ -273,7 +278,8 @@ struct StepPreviewRow: View {
         NavigationLink {
           PerformRecipeView(
             recipeID: recipeID,
-            highlightedStepIDs: Set([recipeStepID])
+            highlightedStepIDs: Set([recipeStepID]),
+            initialScale: recipeScaleFromMealPlan
           )
         } label: {
           stepContent
@@ -349,6 +355,11 @@ struct TaskRow: View {
   }
 
   // Get prep task context information
+  private var recipeScaleFromMealPlan: Float? {
+    guard let recipeID = recipeID else { return nil }
+    return task.recipeScaleForMealPlan(recipeID: recipeID)
+  }
+
   private var prepTaskContext: PerformRecipeView.PrepTaskContext? {
     guard task.hasRecipePrepTask else { return nil }
     let prepTask = task.recipePrepTask
@@ -414,7 +425,8 @@ struct TaskRow: View {
               PerformRecipeView(
                 recipeID: recipeID,
                 highlightedStepIDs: highlightedStepIDs,
-                prepTaskContext: context
+                prepTaskContext: context,
+                initialScale: recipeScaleFromMealPlan
               )
             } label: {
               VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
@@ -712,6 +724,26 @@ struct TaskRow: View {
 // Make MealPlanTask Identifiable
 extension Mealplanning_MealPlanTask: Identifiable {
   // Already has id property, so this extension just makes it conform to Identifiable
+}
+
+// MARK: - Recipe Scale from Meal Plan
+
+extension Mealplanning_MealPlanTask {
+  /// Returns the recipe scale from the meal plan option for the given recipe ID.
+  /// Scale = component.recipeScale * option.mealScale. Treats 0 as 1.0.
+  /// Returns nil if task has no meal plan option or recipe not found in meal.
+  func recipeScaleForMealPlan(recipeID: String) -> Float? {
+    guard hasMealPlanOption else { return nil }
+    let meal = mealPlanOption.meal
+    let optionMealScale = mealPlanOption.mealScale
+    let mealScale = (optionMealScale == 0 ? 1.0 : optionMealScale)
+    for component in meal.components where component.recipe.id == recipeID {
+      let compScale = component.recipeScale
+      let baseScale = (compScale == 0 ? 1.0 : compScale)
+      return baseScale * mealScale
+    }
+    return nil
+  }
 }
 
 // MARK: - Task Time Range View
