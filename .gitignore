@@ -59,4 +59,10 @@ ios/**/DerivedData/
 # iOS secrets (use Secrets.xcconfig.example as template)
 ios/Secrets.xcconfig
 
+# Fastlane
+ios/fastlane/report.xml
+ios/fastlane/README.md
+ios/fastlane/test_output/
+ios/vendor/bundle/
+
 legacy_frontend

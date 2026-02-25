@@ -5,7 +5,7 @@ metadata:
   name: dinner-done-better-job-search-data-index-scheduler
 spec:
   concurrencyPolicy: Replace
-  schedule: "*/30 * * * *" # every 30 minutes
+  schedule: "*/10 * * * *" # every 10 minutes
   jobTemplate:
     spec:
       template:

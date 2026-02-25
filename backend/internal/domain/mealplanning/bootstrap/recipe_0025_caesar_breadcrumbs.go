@@ -16,6 +16,7 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	coatPrep := enums.Preparations["coat"]
 	seasonPrep := enums.Preparations["season"]
 	transferPrep := enums.Preparations["transfer"]
+	zestPrep := enums.Preparations["zest"]
 
 	// Get ingredients for breadcrumbs
 	saltedButter := enums.Ingredients["salted butter"]
@@ -33,6 +34,7 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Get instruments
 	rubberSpatula := enums.Instruments["rubber spatula"]
+	microplane := enums.Instruments["microplane"]
 
 	// Get vessels
 	smallNonstickSkillet := enums.Vessels["small nonstick skillet"]
@@ -45,8 +47,10 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	stirAnchovyVIP := enums.IngredientPreparations[stirPrep.ID][anchovyPaste.ID]
 	stirGarlicVIP := enums.IngredientPreparations[stirPrep.ID][garlic.ID]
 	stirBreadcrumbsVIP := enums.IngredientPreparations[stirPrep.ID][breadcrumbs.ID]
-	stirLemonVIP := enums.IngredientPreparations[stirPrep.ID][lemon.ID]
 	stirSpatulaVPI := enums.PreparationInstruments[stirPrep.ID][rubberSpatula.ID]
+
+	zestLemonVIP := enums.IngredientPreparations[zestPrep.ID][lemon.ID]
+	zestMicroplaneVPI := enums.PreparationInstruments[zestPrep.ID][microplane.ID]
 
 	mixButterVIP := enums.IngredientPreparations[mixPrep.ID][saltedButter.ID]
 
@@ -64,7 +68,7 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	breadcrumbsCupVIMU := enums.IngredientMeasurementUnits[breadcrumbs.ID][cupMeasurement.ID]
 	anchovyTeaspoonVIMU := enums.IngredientMeasurementUnits[anchovyPaste.ID][teaspoonMeasurement.ID]
 	garlicUnitVIMU := enums.IngredientMeasurementUnits[garlic.ID][unitMeasurement.ID]
-	lemonTeaspoonVIMU := enums.IngredientMeasurementUnits[lemon.ID][teaspoonMeasurement.ID]
+	lemonUnitVIMU := enums.IngredientMeasurementUnits[lemon.ID][unitMeasurement.ID]
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
 
 	// Breadcrumbs Step 0: Melt butter in a small nonstick skillet
@@ -342,10 +346,47 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Breadcrumbs Step 5: Stir in lemon zest (off heat)
+	// Breadcrumbs Step 5: Zest the lemon
 	bcStep5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        stirPrep.ID,
+		PreparationID:        zestPrep.ID,
 		Index:                5,
+		ExplicitInstructions: "Using a microplane, zest the lemon.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ValidIngredientPreparationID:     &zestLemonVIP.ID,
+				ValidIngredientMeasurementUnitID: &lemonUnitVIMU.ID,
+				Name:                             "lemon",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &zestMicroplaneVPI.ID,
+				Name:                         "microplane",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "lemon zest",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &teaspoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](0.5),
+				},
+			},
+		},
+	}
+
+	// Breadcrumbs Step 6: Stir in lemon zest (off heat)
+	bcStep6 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        stirPrep.ID,
+		Index:                6,
 		ExplicitInstructions: "Off heat, stir in 1/2 teaspoon lemon zest.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -357,9 +398,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				},
 			},
 			{
-				ValidIngredientPreparationID:     &stirLemonVIP.ID,
-				ValidIngredientMeasurementUnitID: &lemonTeaspoonVIMU.ID,
-				Name:                             "lemon zest",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "lemon zest",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
@@ -402,14 +443,14 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Breadcrumbs Step 6: Season breadcrumbs with salt
-	bcStep6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Breadcrumbs Step 7: Season breadcrumbs with salt
+	bcStep7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                6,
+		Index:                7,
 		ExplicitInstructions: "Season with salt to taste.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &seasonBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
@@ -430,7 +471,7 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -451,14 +492,14 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Breadcrumbs Step 7: Transfer breadcrumbs to bowl and let cool
-	bcStep7 := &mealplanning.RecipeStepCreationRequestInput{
+	// Breadcrumbs Step 8: Transfer breadcrumbs to bowl and let cool
+	bcStep8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
-		Index:                7,
+		Index:                8,
 		ExplicitInstructions: "Transfer to a bowl and let cool completely.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &transferBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
@@ -502,7 +543,7 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		PortionName:       "cup",
 		PluralPortionName: "cups",
 		EligibleForMeals:  false, // This is a component, not a standalone meal
-		Steps:             []*mealplanning.RecipeStepCreationRequestInput{bcStep0, bcStep1, bcStep2, bcStep3, bcStep4, bcStep5, bcStep6, bcStep7},
+		Steps:             []*mealplanning.RecipeStepCreationRequestInput{bcStep0, bcStep1, bcStep2, bcStep3, bcStep4, bcStep5, bcStep6, bcStep7, bcStep8},
 		PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
 		Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 		AlsoCreateMeal:    false,

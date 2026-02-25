@@ -119,6 +119,14 @@ func (w *Worker) Work(ctx context.Context) error {
 			}
 		}
 		w.recordsProcessedCounter.Add(ctx, createdCount)
+
+		if err = w.dataManager.MarkMealPlanAsGroceryListInitialized(ctx, mealPlan.ID); err != nil {
+			errorResult = multierror.Append(errorResult, err)
+			l.Error("failed to mark meal plan as grocery list initialized", err)
+			continue
+		}
+
+		l.Info("marked meal plan as grocery list initialized")
 	}
 
 	return errorResult.ErrorOrNil()

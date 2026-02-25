@@ -41,6 +41,7 @@ spec:
     - app.dinnerdonebetter.com
     - admin.dinnerdonebetter.com
     - www.dinnerdonebetter.com
+    - dinnerdonebetter.com
 
   # Issuer references are always required.
   issuerRef:

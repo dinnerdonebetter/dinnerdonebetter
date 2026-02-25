@@ -478,6 +478,27 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Wash and dry romaine lettuce",
+		Description:                 "Select the inner romaine leaves, wash in several changes of water, and dry thoroughly. Washed and dried greens keep 2-3 days wrapped in paper towels in the fridge.",
+		Notes:                       "Thoroughly drying the lettuce is essential for the dressing to cling properly.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the washed and dried romaine leaves in an airtight container lined with paper towels in the refrigerator for up to 2 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](172800), // 2 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: true},
+		},
+	}
+
 	saladRecipe := &mealplanning.RecipeCreationRequestInput{
 		Name:                "Caesar Salad",
 		Slug:                "caesar-salad",
@@ -493,7 +514,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		Steps: []*mealplanning.RecipeStepCreationRequestInput{
 			slStep0, slStep1, slStep2, slStep3, slStep4, slStep5, slStep6, slStep7,
 		},
-		PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+		PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 		Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 	}
 

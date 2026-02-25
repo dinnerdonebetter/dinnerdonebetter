@@ -5,13 +5,20 @@ receivers:
       grpc:
         endpoint: "0.0.0.0:4317"
 
+  # kube-state-metrics with severe allowlist: only deployment + pod phase metrics (~100-300 series vs 5k+ unfiltered).
+  # Add more metric names to the regex if you need them; remove to disable entirely.
   prometheus:
     config:
       scrape_configs:
         - job_name: 'kube-state-metrics'
-          scrape_interval: 30s
+          scrape_interval: 60s
           static_configs:
             - targets: ['kube-state-metrics.prod.svc.cluster.local:8080']
+          metric_relabel_configs:
+            # Keep only these kube metrics; drop the rest (configmaps, secrets, jobs, etc.)
+            - source_labels: [__name__]
+              regex: 'kube_deployment_status_replicas(_ready|_available|_unavailable|_updated)?|kube_deployment_spec_replicas|kube_deployment_status_observed_generation|kube_pod_status_phase'
+              action: keep
 
   googlecloudmonitoring:
     project_id: dinner-done-better-prod
@@ -115,7 +122,6 @@ service:
         - otlp
         - prometheus
         - googlecloudmonitoring
-        # - googlecloudmonitoring
       processors:
         - memory_limiter
         - batch

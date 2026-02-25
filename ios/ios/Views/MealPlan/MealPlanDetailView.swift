@@ -188,14 +188,38 @@ struct MealPlanDetailView: View {
     }
   }
 
+  private var upcomingEvents: [Mealplanning_MealPlanEvent] {
+    let now = Date()
+    return mealPlan.events.filter { HomeViewModel.timestampToDate($0.startsAt) >= now }
+  }
+
+  private var pastEvents: [Mealplanning_MealPlanEvent] {
+    let now = Date()
+    return mealPlan.events.filter { HomeViewModel.timestampToDate($0.startsAt) < now }
+  }
+
   private var eventsSection: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text("Events")
-        .font(.title2)
-        .fontWeight(.bold)
+      if !upcomingEvents.isEmpty {
+        Text("Upcoming")
+          .font(.title2)
+          .fontWeight(.bold)
 
-      ForEach(mealPlan.events, id: \.id) { event in
-        EventCard(event: event)
+        ForEach(upcomingEvents, id: \.id) { event in
+          EventCard(event: event)
+        }
+      }
+
+      if !pastEvents.isEmpty {
+        Text("Past")
+          .font(.title2)
+          .fontWeight(.bold)
+          .foregroundColor(.secondary)
+
+        ForEach(pastEvents, id: \.id) { event in
+          EventCard(event: event)
+            .opacity(0.7)
+        }
       }
     }
   }

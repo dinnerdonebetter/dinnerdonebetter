@@ -1615,6 +1615,78 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	}
 
 	// Create the main recipe
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Marinate chicken",
+		Description:                 "Toast and grind fenugreek, peel and grate ginger, combine the yogurt marinade, coat the chicken pieces, and transfer to a prepared baking sheet. The marinated chicken can be refrigerated for up to 24 hours.",
+		Notes:                       "Longer marinating gives the spices more time to penetrate the chicken.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Cover the baking sheet with the marinated chicken and store in the refrigerator for up to 24 hours.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeCovered,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](86400), // 24 hours
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 5, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 6, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 7, SatisfiesRecipeStep: true},
+		},
+	}
+
+	prepTask2 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Toast and grind sauce spices",
+		Description:                 "Toast the fenugreek, chiles de arbol, cardamom, and clove, then grind with garam masala and salt. Ground spices can be stored at room temperature for up to a week.",
+		Notes:                       "This is a separate spice blend from the marinade spices.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the ground spice mixture in an airtight container at room temperature for up to 7 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Min: pointer.To[float32](18),
+			Max: pointer.To[float32](25),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](604800), // 7 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 8, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 9, SatisfiesRecipeStep: true},
+		},
+	}
+
+	prepTask3 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Prepare aromatics",
+		Description:                 "Peel and dice the onion, peel and slice the ginger, and peel, smash, and chop the garlic ahead of time.",
+		Notes:                       "Onions keep 3-5 days, garlic 3-5 days, and ginger up to 1 week in the fridge.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the prepared aromatics in separate airtight containers in the refrigerator for up to 3 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 13, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 14, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 16, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 17, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 18, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 19, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 20, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Butter Chicken",
@@ -1634,7 +1706,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				step10, step10a, step10b, step11, step11a, step11b, step11c, step11d, step11e, step12, step13, step14, step15, step16, step17, step18, step18a, step19,
 				step20, step21,
 			},
-			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2, prepTask3},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}

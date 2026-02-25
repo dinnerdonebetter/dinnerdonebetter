@@ -48,15 +48,15 @@ struct InteractiveIngredientOptionGroupView: View {
                 selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
                   ? .green : .gray)
 
-              Text(option.ingredient.name)
-                .font(.caption)
-                .foregroundColor(.secondary)
-
               if let quantityText = option.aggregated.quantityText(scale: scale) {
                 Text(quantityText)
                   .font(.caption)
                   .foregroundColor(.secondary)
               }
+
+              Text(option.ingredient.name)
+                .font(.caption)
+                .foregroundColor(.secondary)
             }
             .padding(.leading, 16)
             .padding(.horizontal)
@@ -112,12 +112,6 @@ struct InteractiveInstrumentOptionGroupView: View {
               Text(option.instrument.name)
                 .font(.caption)
                 .foregroundColor(.secondary)
-
-              if let quantityText = option.aggregated.quantityText(scale: scale) {
-                Text(quantityText)
-                  .font(.caption)
-                  .foregroundColor(.secondary)
-              }
             }
             .padding(.leading, 16)
             .padding(.horizontal)
@@ -173,12 +167,6 @@ struct InteractiveVesselOptionGroupView: View {
               Text(option.vessel.name)
                 .font(.caption)
                 .foregroundColor(.secondary)
-
-              if let quantityText = option.aggregated.quantityText(scale: scale) {
-                Text(quantityText)
-                  .font(.caption)
-                  .foregroundColor(.secondary)
-              }
             }
             .padding(.leading, 16)
             .padding(.horizontal)

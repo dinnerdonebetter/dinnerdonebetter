@@ -64,6 +64,8 @@ class AuthenticationManager: AuthenticationManaging {
       print("🎭 AuthenticationManager: Using mock mode")
     }
 
+    restoreCredentials()
+
     NotificationCenter.default.addObserver(
       forName: .environmentDidChange,
       object: nil,
@@ -71,6 +73,56 @@ class AuthenticationManager: AuthenticationManaging {
     ) { [weak self] _ in
       self?.handleEnvironmentChange()
     }
+  }
+
+  // MARK: - Keychain Persistence
+
+  /// Save current credential state to the Keychain so it survives app restarts / redeploys.
+  private func persistCredentials() {
+    KeychainManager.save(accessToken, for: .accessToken)
+    KeychainManager.save(refreshToken, for: .refreshToken)
+    KeychainManager.save(oauth2AccessToken, for: .oauth2AccessToken)
+    KeychainManager.save(oauth2RefreshToken, for: .oauth2RefreshToken)
+    KeychainManager.save(username, for: .username)
+    KeychainManager.save(userID, for: .userID)
+    KeychainManager.save(accountID, for: .accountID)
+
+    if let expiresAt = oauth2TokenExpiresAt {
+      KeychainManager.save(
+        String(expiresAt.timeIntervalSince1970), for: .oauth2TokenExpiresAt)
+    }
+  }
+
+  /// Restore credentials from the Keychain. Called once during init.
+  private func restoreCredentials() {
+    guard let savedToken = KeychainManager.loadString(for: .oauth2AccessToken),
+      !savedToken.isEmpty
+    else {
+      print("🔧 No saved credentials found in Keychain")
+      return
+    }
+
+    self.accessToken = KeychainManager.loadString(for: .accessToken) ?? ""
+    self.refreshToken = KeychainManager.loadString(for: .refreshToken) ?? ""
+    self.oauth2AccessToken = savedToken
+    self.oauth2RefreshToken = KeychainManager.loadString(for: .oauth2RefreshToken) ?? ""
+    self.username = KeychainManager.loadString(for: .username) ?? ""
+    self.userID = KeychainManager.loadString(for: .userID) ?? ""
+    self.accountID = KeychainManager.loadString(for: .accountID) ?? ""
+
+    if let expiresString = KeychainManager.loadString(for: .oauth2TokenExpiresAt),
+      let interval = Double(expiresString)
+    {
+      self.oauth2TokenExpiresAt = Date(timeIntervalSince1970: interval)
+    }
+
+    self.isAuthenticated = true
+    print("🔧 Restored credentials from Keychain for user: \(self.username)")
+  }
+
+  /// Clear all saved credentials from the Keychain.
+  private func clearPersistedCredentials() {
+    KeychainManager.deleteAll()
   }
 
   /// Tear down the existing gRPC client so the next request creates one
@@ -194,6 +246,9 @@ class AuthenticationManager: AuthenticationManaging {
             requiresTOTP: false)
         } else {
           print("✅ OAuth2 token obtained successfully")
+          await MainActor.run {
+            self.persistCredentials()
+          }
         }
 
         return LoginResult(success: true, error: nil, requiresTOTP: false)
@@ -461,6 +516,7 @@ class AuthenticationManager: AuthenticationManaging {
         self.oauth2AccessToken = accessToken
         self.oauth2RefreshToken = refreshToken
         self.oauth2TokenExpiresAt = expiresAt
+        self.persistCredentials()
       }
 
       print("✅ OAuth2 token refreshed successfully")
@@ -598,5 +654,6 @@ class AuthenticationManager: AuthenticationManaging {
     self.oauth2TokenExpiresAt = nil
     self.userID = ""
     self.accountID = ""
+    clearPersistedCredentials()
   }
 }

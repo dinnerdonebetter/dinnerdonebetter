@@ -282,6 +282,8 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 			}
 		}
 
+		mdm.On(reflection.GetMethodName(mdm.MarkMealPlanAsGroceryListInitialized), testutils.ContextMatcher, expectedMealPlans[0].ID).Return(nil)
+
 		w.postUpdatesPublisher = pup
 		w.dataManager = mdm
 

@@ -5,7 +5,7 @@ metadata:
   name: dinner-done-better-ingress
   annotations:
     kubernetes.io/ingress.class: gce
-    external-dns.alpha.kubernetes.io/hostname: "api.dinnerdonebetter.com,http-api.dinnerdonebetter.com,admin.dinnerdonebetter.com"
+    external-dns.alpha.kubernetes.io/hostname: "api.dinnerdonebetter.com,http-api.dinnerdonebetter.com,admin.dinnerdonebetter.com,dinnerdonebetter.com,www.dinnerdonebetter.com"
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
 spec:
   tls:
@@ -13,6 +13,8 @@ spec:
         - api.dinnerdonebetter.com
         - http-api.dinnerdonebetter.com
         - admin.dinnerdonebetter.com
+        - dinnerdonebetter.com
+        - www.dinnerdonebetter.com
       secretName: dinner-done-better-cert
   rules:
     - host: "api.dinnerdonebetter.com"
@@ -45,4 +47,24 @@ spec:
                 name: dinner-done-better-admin-webapp-svc
                 port:
                   number: 8888
+    - host: "dinnerdonebetter.com"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: dinner-done-better-root-site-svc
+                port:
+                  number: 80
+    - host: "www.dinnerdonebetter.com"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: dinner-done-better-root-site-svc
+                port:
+                  number: 80
 ---

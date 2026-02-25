@@ -202,25 +202,6 @@ struct CreateMealPlanView: View {
           }
           .frame(maxWidth: .infinity)
 
-          // End Time
-          VStack(alignment: .leading, spacing: 8) {
-            Text("End Time")
-              .font(.subheadline)
-              .foregroundColor(.secondary)
-            DatePicker(
-              "End Time",
-              selection: Binding(
-                get: { event.endDate },
-                set: { newValue in
-                  viewModel.updateEventEndDate(event.id, date: newValue)
-                }
-              ),
-              displayedComponents: [.date, .hourAndMinute]
-            )
-            .datePickerStyle(.compact)
-            .labelsHidden()
-          }
-          .frame(maxWidth: .infinity)
         }
       } else {
         // Vertical layout for iPhone
@@ -278,22 +259,6 @@ struct CreateMealPlanView: View {
           }
         }
 
-        VStack(alignment: .leading, spacing: 12) {
-          Text("End Time")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
-          DatePicker(
-            "End Time",
-            selection: Binding(
-              get: { event.endDate },
-              set: { newValue in
-                viewModel.updateEventEndDate(event.id, date: newValue)
-              }
-            ),
-            displayedComponents: [.date, .hourAndMinute]
-          )
-          .datePickerStyle(.compact)
-        }
       }
 
       // Notes Section

@@ -468,3 +468,153 @@ struct DateFormattingTests {
     }
   }
 }
+
+// MARK: - Discrete Quantity Scaling Tests
+
+struct DiscreteQuantityScalingTests {
+  @Test("Uint32 discrete scaling keeps min and max at sub-1 scale")
+  func testUint32SubOneScaleKeepsBaseline() {
+    var quantity = Common_Uint32RangeWithOptionalMax()
+    quantity.min = 1
+    quantity.max = 3
+
+    let scaled = DiscreteQuantityScaling.scaled(quantity, scale: 0.5)
+
+    #expect(scaled.min == 1)
+    #expect(scaled.hasMax)
+    #expect(scaled.max == 3)
+  }
+
+  @Test("Uint32 discrete scaling rounds max up when scaling up")
+  func testUint32ScaleUpRoundsMax() {
+    var quantity = Common_Uint32RangeWithOptionalMax()
+    quantity.min = 2
+    quantity.max = 3
+
+    let scaled = DiscreteQuantityScaling.scaled(quantity, scale: 1.5)
+
+    #expect(scaled.min == 2)
+    #expect(scaled.hasMax)
+    #expect(scaled.max == 5)
+  }
+
+  @Test("Uint16 discrete scaling keeps open-ended quantities open-ended")
+  func testUint16OpenEndedQuantityRemainsOpenEnded() {
+    var quantity = Common_Uint16RangeWithOptionalMax()
+    quantity.min = 1
+
+    let scaled = DiscreteQuantityScaling.scaled(quantity, scale: 2.0)
+
+    #expect(scaled.min == 1)
+    #expect(!scaled.hasMax)
+  }
+
+  @Test("Uint16 discrete max scaling clamps overflow")
+  func testUint16ScaleUpClampsOverflow() {
+    let scaled = DiscreteQuantityScaling.scaledMax(UInt16.max, scale: 2.0)
+    #expect(scaled == UInt16.max)
+  }
+
+  @Test("Aggregated instrument quantity text keeps min and scales max")
+  func testAggregatedInstrumentQuantityTextUsesDiscreteRules() {
+    var aggregated = AggregatedInstrumentVessel(
+      itemID: "instrument-id",
+      name: "Mixing bowl",
+      type: .instrument
+    )
+    var quantity = Common_Uint32RangeWithOptionalMax()
+    quantity.min = 1
+    quantity.max = 1
+    aggregated.addQuantity(quantity)
+
+    #expect(aggregated.quantityText(scale: 0.5) == "1")
+    #expect(aggregated.quantityText(scale: 2.0) == "1 - 2")
+  }
+}
+
+// MARK: - Recipe Performance Step Formatting Tests
+
+struct RecipePerformanceStepFormattingTests {
+  @Test("Step ingredient display includes scaled quantity and unit")
+  func testStepIngredientDisplayIncludesQuantityAndUnit() {
+    var ingredient = Mealplanning_RecipeStepIngredient()
+    ingredient.name = "Flour"
+    var quantity = Common_Float32RangeWithOptionalMax()
+    quantity.min = 2
+    quantity.max = 2  // same as min → exact quantity, avoids "3+" when no max
+    ingredient.quantity = quantity
+    var unit = Mealplanning_ValidMeasurementUnit()
+    unit.name = "cups"
+    ingredient.measurementUnit = unit
+
+    let display = formatStepIngredientDisplay(ingredient, scale: 1.5)
+
+    #expect(display == "3 cups Flour")
+  }
+
+  @Test("Step ingredient display falls back to name without quantity")
+  func testStepIngredientDisplayFallsBackToName() {
+    var ingredient = Mealplanning_RecipeStepIngredient()
+    ingredient.name = "Salt"
+
+    let display = formatStepIngredientDisplay(ingredient, scale: 2.0)
+
+    #expect(display == "Salt")
+  }
+}
+
+// MARK: - Wash Hands Gating Tests
+
+@Suite(.serialized)
+struct WashHandsGatingTests {
+  @Test("Steps remain blocked until wash hands completed")
+  @MainActor
+  func testCanCheckStepRequiresWashHands() async {
+    let authManager = AuthenticationManager()
+    let viewModel = PerformRecipeViewModel(recipeID: "recipe-id", authManager: authManager)
+
+    var recipe = Mealplanning_Recipe()
+    recipe.id = "recipe-id"
+    var step = Mealplanning_RecipeStep()
+    step.id = "step-1"
+    recipe.steps = [step]
+    viewModel.recipe = recipe
+
+    #expect(viewModel.canCheckStep(recipeID: "recipe-id", stepID: "step-1") == false)
+
+    viewModel.washHandsCompleted = true
+
+    #expect(viewModel.canCheckStep(recipeID: "recipe-id", stepID: "step-1") == true)
+  }
+
+  @Test("Steps with completion conditions remain blocked until conditions are checked")
+  @MainActor
+  func testCanCheckStepRequiresCompletionConditions() async {
+    let authManager = AuthenticationManager()
+    let viewModel = PerformRecipeViewModel(recipeID: "recipe-id", authManager: authManager)
+
+    var completionCondition = Mealplanning_RecipeStepCompletionCondition()
+    completionCondition.id = "condition-1"
+    completionCondition.notes = "Chicken reaches 165F"
+
+    var step = Mealplanning_RecipeStep()
+    step.id = "step-1"
+    step.completionConditions = [completionCondition]
+
+    var recipe = Mealplanning_Recipe()
+    recipe.id = "recipe-id"
+    recipe.steps = [step]
+    viewModel.recipe = recipe
+    viewModel.washHandsCompleted = true
+
+    #expect(viewModel.canCheckStep(recipeID: "recipe-id", stepID: "step-1") == false)
+
+    viewModel.toggleStepCompletionCondition(
+      recipeID: "recipe-id",
+      stepID: "step-1",
+      conditionIdentifier: "condition-1"
+    )
+
+    #expect(viewModel.canCheckStep(recipeID: "recipe-id", stepID: "step-1") == true)
+  }
+}

@@ -28,7 +28,20 @@ class HomeViewModel {
   // Data
   var allMealPlans: [Mealplanning_MealPlan] = []
   var userTasks: [Mealplanning_MealPlanTask] = []
+  var tasksByMealPlan: [String: [Mealplanning_MealPlanTask]] = [:]
   var groceryLists: [String: [Mealplanning_MealPlanGroceryListItem]] = [:]  // Keyed by meal plan ID
+  var currentUser: Identity_User?
+
+  /// Display name for welcome message: first name if set, otherwise username.
+  var currentUserDisplayName: String {
+    guard let user = currentUser else {
+      return authManager.username
+    }
+    if !user.firstName.isEmpty {
+      return user.firstName
+    }
+    return user.username.isEmpty ? authManager.username : user.username
+  }
 
   // Loading states
   var isLoading = false
@@ -48,21 +61,116 @@ class HomeViewModel {
     }
   }
 
+  /// The active meal plan: finalized plan whose start/end range is closest to the current date.
+  var activeMealPlan: Mealplanning_MealPlan? {
+    let now = Date()
+    let candidates = allMealPlans.filter { mealPlan in
+      mealPlan.status == .finalized && !mealPlan.events.isEmpty
+    }
+    guard !candidates.isEmpty else { return nil }
+    return candidates.min { lhs, rhs in
+      distanceFromNow(to: lhs) < distanceFromNow(to: rhs)
+    }
+  }
+
+  /// Distance from now to a plan's date range: 0 if within, otherwise seconds to nearest boundary.
+  private func distanceFromNow(to mealPlan: Mealplanning_MealPlan) -> TimeInterval {
+    let now = Date()
+    let start = mealPlanStartDate(mealPlan)
+    let end = mealPlanEndDate(mealPlan)
+    if now < start { return start.timeIntervalSince(now) }
+    if now > end { return now.timeIntervalSince(end) }
+    return 0
+  }
+
+  /// Meal plans that are not finalized and start after the active meal plan's end date.
+  /// Only meaningful when there are such plans; used to conditionally show "Upcoming Meal Plans".
   var upcomingMealPlans: [Mealplanning_MealPlan] {
     let now = Date()
-    let fourWeeksFromNow = Calendar.current.date(byAdding: .day, value: 28, to: now) ?? now
-
+    let activeEnd = activeMealPlan.map { mealPlanEndDate($0) } ?? now
     return allMealPlans.filter { mealPlan in
-      // Finalized meal plans with events in the next 2 weeks
-      guard mealPlan.status == .finalized else {
-        return false
+      guard mealPlan.status != .finalized else { return false }
+      guard !mealPlan.events.isEmpty else { return false }
+      let planStart = mealPlanStartDate(mealPlan)
+      return planStart > activeEnd
+    }
+  }
+
+  private func mealPlanStartDate(_ mealPlan: Mealplanning_MealPlan) -> Date {
+    mealPlan.events.map { timestampToDate($0.startsAt) }.min() ?? Date.distantPast
+  }
+
+  private func mealPlanEndDate(_ mealPlan: Mealplanning_MealPlan) -> Date {
+    mealPlan.events.map { timestampToDate($0.endsAt) }.max() ?? Date.distantFuture
+  }
+
+  var activeTaskLists: [(mealPlanID: String, tasks: [Mealplanning_MealPlanTask])] {
+    return tasksByMealPlan.compactMap { mealPlanID, tasks in
+      let mealPlan = allMealPlans.first { $0.id == mealPlanID }
+      guard let mealPlan = mealPlan,
+        mealPlan.status == .finalized,
+        mealPlan.tasksCreated
+      else {
+        return nil
       }
 
-      // Check if any event is in the next 2 weeks
-      return mealPlan.events.contains { event in
-        let eventStart = timestampToDate(event.startsAt)
-        return eventStart >= now && eventStart <= fourWeeksFromNow
-      }
+      let unfinishedTasks = tasks.filter { $0.status != .finished }
+      return unfinishedTasks.isEmpty ? nil : (mealPlanID, tasks)
+    }
+  }
+
+  var mealPlansWithTasks: [(mealPlanID: String, tasks: [Mealplanning_MealPlanTask])] {
+    return tasksByMealPlan.compactMap { mealPlanID, tasks in
+      guard let mealPlan = allMealPlans.first(where: { $0.id == mealPlanID }),
+        mealPlan.status == .finalized,
+        mealPlan.tasksCreated,
+        !tasks.isEmpty
+      else { return nil }
+      return (mealPlanID, tasks)
+    }
+  }
+
+  var mealPlansWithGroceryLists:
+    [(mealPlanID: String, items: [Mealplanning_MealPlanGroceryListItem])]
+  {
+    return groceryLists.compactMap { mealPlanID, items in
+      guard let mealPlan = allMealPlans.first(where: { $0.id == mealPlanID }),
+        mealPlan.status == .finalized,
+        mealPlan.groceryListInitialized,
+        !items.isEmpty
+      else { return nil }
+      return (mealPlanID, items)
+    }
+  }
+
+  var readyNowTaskCount: Int {
+    let now = Date()
+    return tasksByMealPlan.reduce(0) { total, entry in
+      let (mealPlanID, tasks) = entry
+      guard let mealPlan = allMealPlans.first(where: { $0.id == mealPlanID }) else { return total }
+      return total
+        + tasks.filter { task in
+          guard task.status == .unfinished else { return false }
+          guard task.hasRecipePrepTask,
+            task.recipePrepTask.hasTimeBufferBeforeRecipeInSeconds,
+            task.recipePrepTask.timeBufferBeforeRecipeInSeconds.hasMax,
+            task.hasMealPlanOption
+          else { return true }
+          let eventID = task.mealPlanOption.belongsToMealPlanEvent
+          guard !eventID.isEmpty,
+            let event = mealPlan.events.first(where: { $0.id == eventID })
+          else { return true }
+          let eventTime = Self.timestampToDate(event.startsAt)
+          let startDate = eventTime.addingTimeInterval(
+            -Double(task.recipePrepTask.timeBufferBeforeRecipeInSeconds.max))
+          return now >= startDate
+        }.count
+    }
+  }
+
+  var neededIngredientCount: Int {
+    groceryLists.values.reduce(0) { total, items in
+      total + items.filter { $0.status == .needs || $0.status == .unknown }.count
     }
   }
 
@@ -97,6 +205,11 @@ class HomeViewModel {
     errorMessage = nil
 
     do {
+      // Fetch current user for welcome message
+      if let user = try? await fetchCurrentUser() {
+        self.currentUser = user
+      }
+
       // First fetch meal plans
       let mealPlans = try await fetchMealPlans()
       self.allMealPlans = mealPlans
@@ -119,6 +232,36 @@ class HomeViewModel {
     }
 
     isLoading = false
+  }
+
+  private func fetchCurrentUser() async throws -> Identity_User {
+    guard let clientManager = try? authManager.getClientManager() else {
+      throw NSError(
+        domain: "HomeViewModel", code: 1,
+        userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
+    }
+
+    guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+      throw NSError(
+        domain: "HomeViewModel", code: 2,
+        userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+    }
+
+    let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+    let response = try await clientManager.client.auth.getSelf(
+      Auth_GetSelfRequest(),
+      metadata: metadata,
+      options: clientManager.defaultCallOptions
+    )
+
+    guard response.hasResult else {
+      throw NSError(
+        domain: "HomeViewModel", code: 3,
+        userInfo: [NSLocalizedDescriptionKey: "No user in response"])
+    }
+
+    return response.result
   }
 
   private func fetchMealPlans() async throws -> [Mealplanning_MealPlan] {
@@ -168,7 +311,8 @@ class HomeViewModel {
       $0.status == .finalized && $0.tasksCreated
     }
 
-    var allTasks: [Mealplanning_MealPlanTask] = []
+    var allUserTasks: [Mealplanning_MealPlanTask] = []
+    var grouped: [String: [Mealplanning_MealPlanTask]] = [:]
 
     for mealPlan in finalizedMealPlans {
       var request = Mealplanning_GetMealPlanTasksRequest()
@@ -181,19 +325,19 @@ class HomeViewModel {
           options: clientManager.defaultCallOptions
         )
 
-        // Filter tasks assigned to current user
+        grouped[mealPlan.id] = response.results
+
         let userTasks = response.results.filter { task in
           task.assignedToUser == authManager.userID
         }
-
-        allTasks.append(contentsOf: userTasks)
+        allUserTasks.append(contentsOf: userTasks)
       } catch {
         print("⚠️ Failed to fetch tasks for meal plan \(mealPlan.id): \(error)")
-        // Continue with other meal plans
       }
     }
 
-    return allTasks
+    self.tasksByMealPlan = grouped
+    return allUserTasks
   }
 
   private func fetchGroceryLists(for mealPlans: [Mealplanning_MealPlan]) async {

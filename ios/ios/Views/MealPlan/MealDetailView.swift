@@ -9,6 +9,40 @@ import SwiftProtobuf
 import SwiftUI
 
 struct MealDetailView: View {
+  private enum MealFlowMode: String, CaseIterable, Identifiable {
+    case unified = "Unified"
+    case byComponent = "By Component"
+
+    var id: String { rawValue }
+  }
+
+  private static let componentTagColors: [Color] = [
+    .indigo, .green, .yellow,
+    .purple, .orange, .blue,
+    .mint, .red, .teal,
+    .pink, .cyan, .brown,
+    Color(red: 0.85, green: 0.20, blue: 0.20),
+    Color(red: 0.90, green: 0.45, blue: 0.10),
+    Color(red: 0.75, green: 0.65, blue: 0.15),
+    Color(red: 0.25, green: 0.65, blue: 0.25),
+    Color(red: 0.15, green: 0.70, blue: 0.55),
+    Color(red: 0.15, green: 0.65, blue: 0.70),
+    Color(red: 0.20, green: 0.45, blue: 0.85),
+    Color(red: 0.30, green: 0.35, blue: 0.85),
+    Color(red: 0.45, green: 0.25, blue: 0.80),
+    Color(red: 0.70, green: 0.20, blue: 0.70),
+    Color(red: 0.85, green: 0.20, blue: 0.50),
+    Color(red: 0.60, green: 0.35, blue: 0.20),
+    Color(red: 0.55, green: 0.20, blue: 0.20),
+    Color(red: 0.60, green: 0.35, blue: 0.10),
+    Color(red: 0.55, green: 0.50, blue: 0.10),
+    Color(red: 0.20, green: 0.55, blue: 0.20),
+    Color(red: 0.10, green: 0.55, blue: 0.45),
+    Color(red: 0.15, green: 0.45, blue: 0.70),
+    Color(red: 0.25, green: 0.25, blue: 0.65),
+    Color(red: 0.55, green: 0.20, blue: 0.60),
+  ]
+
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: MealDetailViewModel?
   @State private var loadedRecipes: [String: (recipe: Mealplanning_Recipe, scale: Float)] = [:]
@@ -20,6 +54,10 @@ struct MealDetailView: View {
   @State private var isIngredientsExpanded = false
   @State private var checkedIngredients: Set<String> = []
   @State private var checkedInstrumentsVessels: Set<String> = []
+  @State private var mealWashHandsCompleted = false
+  @State private var componentViewModels: [String: PerformRecipeViewModel] = [:]
+  @State private var mealFlowMode: MealFlowMode = .unified
+  @State private var showMealCompletedSteps = false
 
   let mealID: String
 
@@ -42,14 +80,22 @@ struct MealDetailView: View {
                   // Overall Info Section
                   overallInfoSection(meal: meal)
 
-                  // Aggregated Ingredients & Instruments/Vessels
-                  if !loadedRecipes.isEmpty {
+                  // Aggregated Ingredients & Instruments/Vessels (consolidated from all recipes)
+                  if !meal.components.isEmpty {
                     aggregatedListsSection
                   }
 
-                  // Components
+                  if !meal.components.isEmpty && !mealWashHandsCompleted {
+                    mealWashHandsSection
+                  }
+
                   if !meal.components.isEmpty {
-                    componentsSection(meal: meal)
+                    mealFlowModeSection
+                    if mealFlowMode == .unified {
+                      unifiedMealStepsSection(meal: meal)
+                    } else {
+                      componentsSection(meal: meal)
+                    }
                   }
                 }
                 .dsScreenPadding()
@@ -81,7 +127,15 @@ struct MealDetailView: View {
               baseComponentScales[component.recipe.id] = component.recipeScale
             }
           }
+          if let meal = viewModel.meal {
+            ensureComponentDataLoaded(for: meal)
+          }
         }
+      }
+    }
+    .onChange(of: viewModel?.meal?.id) { _, _ in
+      if let meal = viewModel?.meal {
+        ensureComponentDataLoaded(for: meal)
       }
     }
   }
@@ -148,28 +202,30 @@ struct MealDetailView: View {
             .font(.subheadline)
             .foregroundColor(.secondary)
 
-          // Quick scale buttons
-          HStack(spacing: 4) {
-            Button("0.5x") {
-              setMealScale(0.5)
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
-
-            Button("1x") {
-              setMealScale(1.0)
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
-
-            Button("2x") {
-              setMealScale(2.0)
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
+          Button {
+            adjustMealScale(by: -0.25)
+          } label: {
+            Image(systemName: "minus.circle")
           }
+          .buttonStyle(.plain)
+
+          Button {
+            adjustMealScale(by: 0.25)
+          } label: {
+            Image(systemName: "plus.circle")
+          }
+          .buttonStyle(.plain)
         }
       }
+
+      Slider(
+        value: Binding(
+          get: { Double(mealScale) },
+          set: { setMealScale(Float($0)) }
+        ),
+        in: 0.25...4.0,
+        step: 0.25
+      )
     }
     .padding()
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -186,7 +242,7 @@ struct MealDetailView: View {
   }
 
   private func setMealScale(_ newScale: Float) {
-    mealScale = newScale
+    mealScale = min(max(newScale, 0.25), 4.0)
     mealScaleText = String(format: "%.2f", mealScale)
     // Update loadedRecipes with new scales
     for (recipeID, baseScale) in baseComponentScales {
@@ -195,6 +251,10 @@ struct MealDetailView: View {
         loadedRecipes[recipeID] = (recipe: recipeData.recipe, scale: newScale)
       }
     }
+  }
+
+  private func adjustMealScale(by delta: Float) {
+    setMealScale(mealScale + delta)
   }
 
   private func formatPortions(_ range: Common_Float32RangeWithOptionalMax) -> String {
@@ -242,6 +302,60 @@ struct MealDetailView: View {
     }
   }
 
+  private var mealWashHandsSection: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      HStack(alignment: .top, spacing: 12) {
+        Button(
+          action: {
+            setMealWashHandsCompleted(!mealWashHandsCompleted)
+          },
+          label: {
+            Image(systemName: mealWashHandsCompleted ? "checkmark.circle.fill" : "circle")
+              .font(.title2)
+              .foregroundColor(mealWashHandsCompleted ? .green : .blue)
+          }
+        )
+        .buttonStyle(.plain)
+
+        VStack(alignment: .leading, spacing: 4) {
+          Text("🧼 Wash your hands")
+            .font(.headline)
+            .foregroundColor(mealWashHandsCompleted ? .secondary : .primary)
+            .italic(mealWashHandsCompleted)
+
+          Text("Complete this once to unlock all component steps.")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+
+        Spacer()
+      }
+    }
+    .padding()
+    .background(mealWashHandsCompleted ? Color(.systemGray6) : Color(.systemBackground))
+    .cornerRadius(12)
+    .overlay(
+      RoundedRectangle(cornerRadius: 12)
+        .stroke(mealWashHandsCompleted ? Color.green.opacity(0.3) : Color.clear, lineWidth: 2)
+    )
+  }
+
+  private var mealFlowModeSection: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("Step View")
+        .font(.subheadline)
+        .fontWeight(.semibold)
+        .foregroundColor(.secondary)
+
+      Picker("Step View", selection: $mealFlowMode) {
+        ForEach(MealFlowMode.allCases) { mode in
+          Text(mode.rawValue).tag(mode)
+        }
+      }
+      .pickerStyle(.segmented)
+    }
+  }
+
   private var aggregatedInstrumentsVesselsSection: some View {
     let aggregatedItems = getAggregatedInstrumentsAndVessels()
 
@@ -254,7 +368,7 @@ struct MealDetailView: View {
         },
         label: {
           HStack {
-            Text("Instruments & Vessels")
+            Text("Equipment")
               .font(.headline)
               .foregroundColor(.primary)
             Spacer()
@@ -310,12 +424,6 @@ struct MealDetailView: View {
                     )
                     .strikethrough(checkedInstrumentsVessels.contains(item.itemID))
 
-                  if let quantityText = item.quantityText {
-                    Text(quantityText)
-                      .font(.subheadline)
-                      .fontWeight(.medium)
-                      .foregroundColor(.secondary)
-                  }
                 }
               }
 
@@ -331,6 +439,135 @@ struct MealDetailView: View {
     }
     .background(Color(.systemGray6))
     .cornerRadius(12)
+  }
+
+  private func unifiedMealStepsSection(meal: Mealplanning_Meal) -> some View {
+    let allSteps = collectUnifiedMealStepsWithMerging(
+      meal: meal,
+      componentViewModels: componentViewModels,
+      loadedRecipes: loadedRecipes,
+      baseComponentScales: baseComponentScales,
+      mealScale: mealScale,
+      formatComponentType: formatComponentType
+    )
+    let upNext = allSteps.filter { $0.category == .upNext }
+    let forLater = allSteps.filter { $0.category == .forLater }
+
+    let focusedGroups = [
+      StepFlowGroup(title: "Up Next", color: .orange, items: upNext),
+      StepFlowGroup(title: "Not Yet", color: .blue, items: forLater),
+    ]
+
+    return StepFlowSection(
+      showCompleted: $showMealCompletedSteps,
+      allSteps: allSteps,
+      focusedGroups: focusedGroups,
+      allStepsTitle: "All Steps",
+      emptyMessage: "Loading component steps...",
+      headerContent: {
+        Text("Cook Flow")
+          .font(.title2)
+          .fontWeight(.bold)
+      },
+      allModeLeadingContent: {
+        EmptyView()
+      },
+      focusModeLeadingContent: {
+        EmptyView()
+      },
+      rowContent: { item in
+        VStack(alignment: .leading, spacing: 6) {
+          let tagStyle = componentTagStyle(for: item.componentIndex)
+          Text(item.componentNamesForTag)
+            .font(.caption2)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(tagStyle.background)
+            .foregroundColor(tagStyle.foreground)
+            .cornerRadius(6)
+
+          StepCardView(
+            step: item.step,
+            index: item.stepIndex,
+            viewModel: item.viewModel,
+            formatStepTitle: { step, _ in
+              formatUnifiedStepTitle(step: step, index: item.stepIndex)
+            },
+            recipeID: item.recipeID,
+            scale: item.isMerged ? 1.0 : item.scale,
+            isCompletedOverride: item.isMerged
+              ? item.sources.allSatisfy {
+                $0.viewModel.isStepCompleted(recipeID: $0.recipeID, stepID: $0.step.id)
+              }
+              : nil,
+            canCheckOverride: item.isMerged
+              ? item.sources.allSatisfy { source in
+                let prereqs = source.viewModel.getPrerequisiteStepKeys(
+                  recipeID: source.recipeID, stepID: source.step.id
+                )
+                return prereqs.allSatisfy { source.viewModel.completedSteps.contains($0) }
+              }
+              : nil,
+            onToggleOverride: item.isMerged
+              ? {
+                for source in item.sources {
+                  source.viewModel.toggleStep(recipeID: source.recipeID, stepID: source.step.id)
+                }
+              }
+              : nil
+          )
+        }
+      }
+    )
+  }
+
+  private func formatUnifiedStepTitle(step: Mealplanning_RecipeStep, index: Int) -> String {
+    if step.hasPreparation, !step.preparation.name.isEmpty {
+      return step.preparation.name
+    }
+    return "Step \(index + 1)"
+  }
+
+  private func componentTagStyle(for componentIndex: Int) -> (background: Color, foreground: Color)
+  {
+    let color = Self.componentTagColors[componentIndex % Self.componentTagColors.count]
+    return (color.opacity(0.16), color)
+  }
+
+  private func ensureComponentDataLoaded(for meal: Mealplanning_Meal) {
+    for component in meal.components {
+      let recipeID = component.recipe.id
+      let baseScale = baseComponentScales[recipeID] ?? component.recipeScale
+
+      if let existingViewModel = componentViewModels[recipeID] {
+        if let recipe = existingViewModel.recipe, loadedRecipes[recipeID] == nil {
+          loadedRecipes[recipeID] = (recipe: recipe, scale: baseScale * mealScale)
+        }
+        continue
+      }
+
+      let recipeViewModel = PerformRecipeViewModel(recipeID: recipeID, authManager: authManager)
+      recipeViewModel.washHandsCompleted = mealWashHandsCompleted
+      componentViewModels[recipeID] = recipeViewModel
+
+      Task { @MainActor in
+        await recipeViewModel.loadRecipe()
+        if let recipe = recipeViewModel.recipe {
+          loadedRecipes[recipeID] = (recipe: recipe, scale: baseScale * mealScale)
+        }
+      }
+    }
+  }
+
+  private func setMealWashHandsCompleted(_ isCompleted: Bool) {
+    mealWashHandsCompleted = isCompleted
+    for viewModel in componentViewModels.values {
+      viewModel.washHandsCompleted = isCompleted
+      if !isCompleted {
+        viewModel.completedSteps.removeAll()
+        viewModel.clearStepCompletionConditionProgress()
+      }
+    }
   }
 
   private var aggregatedIngredientsSection: some View {
@@ -386,19 +623,19 @@ struct MealDetailView: View {
 
               VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                  Text(aggregated.name)
-                    .font(.subheadline)
-                    .foregroundColor(
-                      checkedIngredients.contains(aggregated.ingredientID) ? .secondary : .primary
-                    )
-                    .strikethrough(checkedIngredients.contains(aggregated.ingredientID))
-
                   if let quantityText = aggregated.quantityText {
                     Text(quantityText)
                       .font(.subheadline)
                       .fontWeight(.medium)
                       .foregroundColor(.secondary)
                   }
+
+                  Text(aggregated.name)
+                    .font(.subheadline)
+                    .foregroundColor(
+                      checkedIngredients.contains(aggregated.ingredientID) ? .secondary : .primary
+                    )
+                    .strikethrough(checkedIngredients.contains(aggregated.ingredientID))
                 }
 
                 if !aggregated.quantityNotes.isEmpty {
@@ -449,11 +686,8 @@ extension MealDetailView {
               }
 
               if instrument.hasQuantity, var current = aggregated[itemID] {
-                var scaledQuantity = instrument.quantity
-                scaledQuantity.min = UInt32(Float(scaledQuantity.min) * scale)
-                if scaledQuantity.hasMax {
-                  scaledQuantity.max = UInt32(Float(scaledQuantity.max) * scale)
-                }
+                let scaledQuantity = DiscreteQuantityScaling.scaled(
+                  instrument.quantity, scale: scale)
                 current.addQuantity(scaledQuantity)
                 aggregated[itemID] = current
               }
@@ -475,11 +709,7 @@ extension MealDetailView {
               }
 
               if vessel.hasQuantity, var current = aggregated[itemID] {
-                var scaledQuantity = vessel.quantity
-                scaledQuantity.min = UInt32(Float(scaledQuantity.min) * scale)
-                if scaledQuantity.hasMax {
-                  scaledQuantity.max = UInt32(Float(scaledQuantity.max) * scale)
-                }
+                let scaledQuantity = DiscreteQuantityScaling.scaled(vessel.quantity, scale: scale)
                 current.addQuantity(scaledQuantity)
                 aggregated[itemID] = current
               }
@@ -549,6 +779,15 @@ extension MealDetailView {
             }
           ),
           componentType: component.componentType,
+          sharedViewModel: componentViewModels[component.recipe.id],
+          globalWashHandsCompleted: mealWashHandsCompleted,
+          sharedShowCompletedSteps: $showMealCompletedSteps,
+          onGlobalWashHandsToggle: { isCompleted in
+            setMealWashHandsCompleted(isCompleted)
+          },
+          onViewModelReady: { recipeViewModel in
+            componentViewModels[component.recipe.id] = recipeViewModel
+          },
           onRecipeLoaded: { recipe in
             Task { @MainActor in
               let baseScale = baseComponentScales[component.recipe.id] ?? component.recipeScale
@@ -593,6 +832,11 @@ struct EmbeddedRecipeView: View {
   let recipeID: String
   @Binding var recipeScale: Float
   let componentType: Mealplanning_MealComponentType
+  let sharedViewModel: PerformRecipeViewModel?
+  let globalWashHandsCompleted: Bool
+  let sharedShowCompletedSteps: Binding<Bool>?
+  let onGlobalWashHandsToggle: ((Bool) -> Void)?
+  let onViewModelReady: ((PerformRecipeViewModel) -> Void)?
   let onRecipeLoaded: ((Mealplanning_Recipe) -> Void)?
 
   var body: some View {
@@ -678,7 +922,16 @@ struct EmbeddedRecipeView: View {
                     recipeScale = scale
                   }
                 }
-              )
+              ),
+              showWashHandsStepCard: false,
+              sharedWashHandsCompleted: Binding(
+                get: { globalWashHandsCompleted },
+                set: { newValue in
+                  onGlobalWashHandsToggle?(newValue)
+                }
+              ),
+              sharedCompletedStepsVisibility: sharedShowCompletedSteps,
+              allowCompletedStepsToggle: true
             )
             .onAppear {
               onRecipeLoaded?(recipe)
@@ -695,10 +948,36 @@ struct EmbeddedRecipeView: View {
     .cornerRadius(10)
     .onAppear {
       if viewModel == nil {
-        viewModel = PerformRecipeViewModel(recipeID: recipeID, authManager: authManager)
-        Task {
-          await viewModel?.loadRecipe()
+        if let sharedViewModel {
+          viewModel = sharedViewModel
+          onViewModelReady?(sharedViewModel)
+        } else {
+          let createdViewModel = PerformRecipeViewModel(
+            recipeID: recipeID, authManager: authManager)
+          viewModel = createdViewModel
+          onViewModelReady?(createdViewModel)
         }
+      }
+
+      if let viewModel, viewModel.recipe == nil, !viewModel.isLoading {
+        Task {
+          await viewModel.loadRecipe()
+        }
+      }
+      viewModel?.washHandsCompleted = globalWashHandsCompleted
+      if !globalWashHandsCompleted {
+        viewModel?.completedSteps.removeAll()
+      }
+    }
+    .onChange(of: globalWashHandsCompleted) { _, newValue in
+      viewModel?.washHandsCompleted = newValue
+      if !newValue {
+        viewModel?.completedSteps.removeAll()
+      }
+    }
+    .onChange(of: viewModel?.recipe) { _, newRecipe in
+      if let recipe = newRecipe {
+        onRecipeLoaded?(recipe)
       }
     }
   }

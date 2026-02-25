@@ -266,6 +266,7 @@ func buildProdConfig() *config.APIServiceConfig {
 		},
 		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
 			BundleID: "com.dinnerdonebetter.ios",
+			TeamID:   "A96L6WFB5R",
 		},
 	}
 }

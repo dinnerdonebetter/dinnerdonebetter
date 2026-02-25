@@ -16,9 +16,14 @@ import (
 )
 
 // appleAppSiteAssociation represents the structure of the apple-app-site-association file
-// used by iOS for Universal Links.
+// used by iOS for Universal Links and Password AutoFill (webcredentials).
 type appleAppSiteAssociation struct {
-	AppLinks appLinks `json:"applinks"`
+	AppLinks       appLinks       `json:"applinks"`
+	WebCredentials webCredentials `json:"webcredentials"`
+}
+
+type webCredentials struct {
+	Apps []string `json:"apps"`
 }
 
 type appLinks struct {
@@ -88,6 +93,9 @@ func ProvideAPIRouter(
 								},
 							},
 						},
+					},
+					WebCredentials: webCredentials{
+						Apps: []string{appID},
 					},
 				}
 

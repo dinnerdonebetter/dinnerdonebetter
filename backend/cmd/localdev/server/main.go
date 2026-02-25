@@ -682,12 +682,6 @@ func main() {
 			}
 			logger.Info("Grocery list initializer worker completed successfully")
 
-			if err = repo.MarkMealPlanAsGroceryListInitialized(ctx, currentMealPlanID); err != nil {
-				return fmt.Errorf("failed to mark current meal plan as grocery list: %w", err)
-			}
-
-			// TODO: repo.MarkMealPlanAsGroceryListsGenerated
-
 			// Build task creator worker
 			taskCreatorConfig := &config.MealPlanTaskCreatorConfig{
 				Database:      apiConfig.Database,

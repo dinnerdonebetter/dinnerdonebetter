@@ -12,6 +12,48 @@ import SwiftUI
 
 // MARK: - Helper Types
 
+enum DiscreteQuantityScaling {
+  static func scaled(
+    _ quantity: Common_Uint32RangeWithOptionalMax,
+    scale: Float
+  ) -> Common_Uint32RangeWithOptionalMax {
+    var scaledQuantity = quantity
+    scaledQuantity.min = quantity.min
+    if quantity.hasMax {
+      scaledQuantity.max = scale > 1 ? scaledMax(quantity.max, scale: scale) : quantity.max
+    }
+    return scaledQuantity
+  }
+
+  static func scaled(
+    _ quantity: Common_Uint16RangeWithOptionalMax,
+    scale: Float
+  ) -> Common_Uint16RangeWithOptionalMax {
+    var scaledQuantity = quantity
+    scaledQuantity.min = quantity.min
+    if quantity.hasMax {
+      scaledQuantity.max = scale > 1 ? scaledMax(quantity.max, scale: scale) : quantity.max
+    }
+    return scaledQuantity
+  }
+
+  static func scaledMax(_ value: UInt32, scale: Float) -> UInt32 {
+    let scaled = ceil(Double(value) * Double(scale))
+    if scaled >= Double(UInt32.max) {
+      return UInt32.max
+    }
+    return UInt32(scaled)
+  }
+
+  static func scaledMax(_ value: UInt16, scale: Float) -> UInt16 {
+    let scaled = ceil(Double(value) * Double(scale))
+    if scaled >= Double(UInt16.max) {
+      return UInt16.max
+    }
+    return UInt16(scaled)
+  }
+}
+
 struct StepItem {
   let name: String
   let isProduct: Bool
@@ -92,8 +134,13 @@ struct AggregatedInstrumentVessel: Identifiable {
   func quantityText(scale: Float) -> String? {
     guard hasAnyQuantity else { return nil }
 
-    let scaledMin = UInt32(Float(totalMin) * scale)
-    let scaledMax = totalMax.map { UInt32(Float($0) * scale) }
+    // Instruments/vessels are discrete items. Keep the baseline minimum required quantity
+    // and only expand the possible upper bound when scaling up.
+    let scaledMin = totalMin
+    let scaledMax = totalMax.map { maxQuantity -> UInt32 in
+      guard scale > 1 else { return maxQuantity }
+      return DiscreteQuantityScaling.scaledMax(maxQuantity, scale: scale)
+    }
 
     if let max = scaledMax {
       if scaledMin == max {
@@ -249,6 +296,27 @@ struct VesselOptionGroupAggregate: Identifiable {
 }
 
 // MARK: - Helper Functions
+
+func formatStepIngredientDisplay(_ ingredient: Mealplanning_RecipeStepIngredient, scale: Float)
+  -> String
+{
+  var aggregated = AggregatedIngredient(
+    ingredientID: ingredient.hasIngredient ? ingredient.ingredient.id : ingredient.id,
+    name: ingredient.name,
+    quantityNotes: ingredient.quantityNotes,
+    measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil
+  )
+
+  if ingredient.hasQuantity {
+    aggregated.addQuantity(ingredient.quantity)
+  }
+
+  if let quantityText = aggregated.quantityText(scale: scale) {
+    return "\(quantityText) \(ingredient.name)"
+  }
+
+  return ingredient.name
+}
 
 extension RecipePerformanceContentView {
   // swiftlint:disable:next cyclomatic_complexity function_body_length
@@ -802,53 +870,10 @@ extension RecipePerformanceContentView {
   }
 
   func formatStepTitle(step: Mealplanning_RecipeStep, viewModel: PerformRecipeViewModel) -> String {
-    var parts: [String] = []
-
-    // Add preparation name
     if step.hasPreparation && !step.preparation.name.isEmpty {
-      parts.append(step.preparation.name)
+      return step.preparation.name
     }
-
-    // Add ingredient names (only those with ValidIngredient)
-    let ingredientNames = step.ingredients
-      .filter { $0.hasIngredient }
-      .map { $0.name }
-
-    if !ingredientNames.isEmpty {
-      parts.append(formatList(ingredientNames))
-    }
-
-    // Add instruments (only those with ValidInstrument and displayInSummaryLists)
-    let instrumentNames = step.instruments
-      .filter { $0.hasInstrument && $0.instrument.displayInSummaryLists }
-      .map { $0.name }
-
-    if !instrumentNames.isEmpty {
-      parts.append("with \(formatList(instrumentNames))")
-    }
-
-    // If no parts, fall back to step number
-    if parts.isEmpty {
-      return "Step \(Int(step.index) + 1)"
-    }
-
-    return parts.joined(separator: " ")
-  }
-
-  func formatList(_ items: [String]) -> String {
-    guard !items.isEmpty else { return "" }
-
-    if items.count == 1 {
-      return items[0]
-    } else if items.count == 2 {
-      return "\(items[0]) and \(items[1])"
-    } else {
-      let allButLast = items.dropLast().joined(separator: ", ")
-      if let last = items.last {
-        return "\(allButLast), and \(last)"
-      }
-      return allButLast
-    }
+    return "Step \(Int(step.index) + 1)"
   }
 
   // MARK: - Option Grouping Functions

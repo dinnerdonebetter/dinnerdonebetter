@@ -1112,6 +1112,54 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Cook dried pinto beans",
+		Description:                 "Halve onion, cover beans with water, peel garlic, add aromatics, bring to a boil, simmer until very tender (1-2 hours), season with salt, drain reserving liquid, and discard aromatics. Cooked beans keep up to 5 days refrigerated.",
+		Notes:                       "Reserve the bean-cooking liquid separately; you will need it for the refrying stage.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the drained cooked beans and reserved bean-cooking liquid in separate airtight containers in the refrigerator for up to 5 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](432000), // 5 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 5, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 6, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 7, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 8, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 9, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 10, SatisfiesRecipeStep: true},
+		},
+	}
+
+	prepTask2 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Mince onion",
+		Description:                 "Mince the remaining onion half for the refrying stage. Minced onion keeps 3-5 days in the fridge.",
+		Notes:                       "This is the second half of the onion used in the bean cooking stage.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the minced onion in an airtight container in the refrigerator for up to 3 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 11, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Perfect Frijoles Refritos (Mexican Refried Beans)",
@@ -1128,7 +1176,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18,
 			},
-			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}

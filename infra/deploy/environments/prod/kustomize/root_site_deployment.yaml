@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dinner-done-better-root-site-deployment
+  labels:
+    app: dinner-done-better-root-site
+    app.kubernetes.io/name: dinner-done-better-root-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dinner-done-better-root-site
+      app.kubernetes.io/name: dinner-done-better-root-site
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better-root-site
+        app.kubernetes.io/name: dinner-done-better-root-site
+    spec:
+      containers:
+        - name: dinner-done-better-root-site
+          image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-root-site
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /_ops_/live
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /_ops_/live
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+---

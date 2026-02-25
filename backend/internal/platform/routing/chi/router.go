@@ -95,6 +95,10 @@ func buildChiMux(
 				TraceIDHeader:      "X-Trace-ID",
 				TraceSampledHeader: "X-Trace-Sampled",
 			}),
+			otelchi.WithFilter(func(r *http.Request) bool {
+				// Skip tracing for health checks to avoid noise from load balancers, K8s probes, etc.
+				return !isHealthCheck(r.URL.Path)
+			}),
 		),
 		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), tracer, cfg.SilenceRouteLogging),
 		chimiddleware.RequestID,

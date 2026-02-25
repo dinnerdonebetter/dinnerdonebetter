@@ -47,11 +47,15 @@ class CreateMealPlanViewModel {
 
   private let authManager: AuthenticationManager
 
+  private func autoEndDate(from startDate: Date) -> Date {
+    Calendar.current.date(byAdding: .hour, value: 1, to: startDate) ?? startDate
+  }
+
   init(authManager: AuthenticationManager) {
     self.authManager = authManager
     // Initialize with one blank event - next Monday at 7PM
     let eventStart = nextMondayAt7PM()
-    let eventEnd = Calendar.current.date(byAdding: .hour, value: 2, to: eventStart) ?? eventStart
+    let eventEnd = autoEndDate(from: eventStart)
     // Set voting deadline to the preceding Friday at midnight
     self.votingDeadline = precedingFridayAtMidnight(for: eventStart)
     self.events = [
@@ -147,7 +151,7 @@ class CreateMealPlanViewModel {
     let eventStart =
       Calendar.current.date(bySettingHour: 19, minute: 0, second: 0, of: newEventDate)
       ?? newEventDate
-    let eventEnd = Calendar.current.date(byAdding: .hour, value: 2, to: eventStart) ?? eventStart
+    let eventEnd = autoEndDate(from: eventStart)
 
     let newEvent = MealPlanEvent(mealType: .dinner, startDate: eventStart, endDate: eventEnd)
     events.append(newEvent)
@@ -202,7 +206,7 @@ class CreateMealPlanViewModel {
     // Ensure at least one event remains
     if events.isEmpty {
       let eventStart = nextMondayAt7PM()
-      let eventEnd = Calendar.current.date(byAdding: .hour, value: 2, to: eventStart) ?? eventStart
+      let eventEnd = autoEndDate(from: eventStart)
       events.append(MealPlanEvent(mealType: .dinner, startDate: eventStart, endDate: eventEnd))
     }
     // Update meal plan name when events change
@@ -227,8 +231,8 @@ class CreateMealPlanViewModel {
   func updateEventStartDate(_ eventID: UUID, date: Date) {
     guard let index = events.firstIndex(where: { $0.id == eventID }) else { return }
     events[index].startDate = date
-    // Auto-update end time to be 2 hours after start
-    events[index].endDate = Calendar.current.date(byAdding: .hour, value: 2, to: date) ?? date
+    // Auto-update end time to be 1 hour after start.
+    events[index].endDate = autoEndDate(from: date)
     // Update voting deadline based on earliest event
     updateVotingDeadline()
   }
@@ -370,7 +374,7 @@ class CreateMealPlanViewModel {
     // Check each event's start and end times (must be at least 12 hours from now)
     for event in events {
       let timeUntilStart = event.startDate.timeIntervalSince(now)
-      let timeUntilEnd = event.endDate.timeIntervalSince(now)
+      let timeUntilEnd = autoEndDate(from: event.startDate).timeIntervalSince(now)
       if timeUntilStart < twelveHoursInSeconds || timeUntilEnd < twelveHoursInSeconds {
         errors.eventTimelineErrors[event.id] = true
       }
@@ -453,7 +457,7 @@ class CreateMealPlanViewModel {
       for event in events {
         var eventInput = Mealplanning_MealPlanEventCreationRequestInput()
         eventInput.startsAt = dateToTimestamp(event.startDate)
-        eventInput.endsAt = dateToTimestamp(event.endDate)
+        eventInput.endsAt = dateToTimestamp(autoEndDate(from: event.startDate))
         eventInput.mealName = event.mealType
         eventInput.notes = event.notes
 

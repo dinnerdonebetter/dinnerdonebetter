@@ -8,6 +8,7 @@ import (
 
 func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
 	// Get preparations
+	grindPrep := enums.Preparations["grind"]
 	dryPrep := enums.Preparations["dry"]
 	seasonPrep := enums.Preparations["season"]
 	slicePrep := enums.Preparations["slice"]
@@ -19,7 +20,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	// Get ingredients
 	ribeye := enums.Ingredients["ribeye steak"]
 	salt := enums.Ingredients["salt"]
-	blackPepper := enums.Ingredients["black pepper"]
+	wholePeppercorns := enums.Ingredients["whole black peppercorns"]
 	vegetableOil := enums.Ingredients["vegetable oil"]
 	butter := enums.Ingredients["butter"]
 	thyme := enums.Ingredients["thyme"]
@@ -35,6 +36,8 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 
 	// Get instruments
 	bareHands := enums.Instruments["bare hands"]
+	mortarAndPestle := enums.Instruments["mortar and pestle"]
+	spiceGrinder := enums.Instruments["spice grinder"]
 	knife := enums.Instruments["knife"]
 	tongs := enums.Instruments["tongs"]
 	spoon := enums.Instruments["spoon"]
@@ -52,6 +55,12 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	atTemperatureState := enums.IngredientStates["at temperature"]
 
 	// Get bridge table entries
+	// Grind preparation bridges
+	grindPeppercornsVIP := enums.IngredientPreparations[grindPrep.ID][wholePeppercorns.ID]
+	peppercornsGramVIMU := enums.IngredientMeasurementUnits[wholePeppercorns.ID][gramMeasurement.ID]
+	grindMortarAndPestleVPI := enums.PreparationInstruments[grindPrep.ID][mortarAndPestle.ID]
+	grindSpiceGrinderVPI := enums.PreparationInstruments[grindPrep.ID][spiceGrinder.ID]
+
 	// Dry preparation bridges
 	dryRibeyeVIP := enums.IngredientPreparations[dryPrep.ID][ribeye.ID]
 	ribeyeGramVIMU := enums.IngredientMeasurementUnits[ribeye.ID][gramMeasurement.ID]
@@ -61,9 +70,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 
 	// Season preparation bridges
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
-	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
 	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
-	pepperGramVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][gramMeasurement.ID]
 	seasonSheetPanVPV := enums.PreparationVessels[seasonPrep.ID][sheetPan.ID]
 
 	// Slice preparation bridges
@@ -101,10 +108,58 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	restTongsVPI := enums.PreparationInstruments[restPrep.ID][tongs.ID]
 	restPlateVPV := enums.PreparationVessels[restPrep.ID][servingPlate.ID]
 
-	// Step 0: Pat dry the steak
+	// Step 0: Grind whole black peppercorns
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        dryPrep.ID,
+		PreparationID:        grindPrep.ID,
 		Index:                0,
+		ExplicitInstructions: "Using a mortar and pestle or spice grinder, coarsely grind the whole black peppercorns.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
+				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
+				Name:                             "whole black peppercorns",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
+				Name:                         "mortar and pestle",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
+				Name:                         "spice grinder",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "freshly ground black pepper",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &gramMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 1: Pat dry the steak
+	step1 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        dryPrep.ID,
+		Index:                1,
 		ExplicitInstructions: "Pat the steak dry with paper towels using your bare hands.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -150,14 +205,14 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 1: Season the steak
-	step1 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 2: Season the steak
+	step2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                1,
+		Index:                2,
 		ExplicitInstructions: "Season liberally on all sides, including the edges, with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "dried bone-in ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -177,9 +232,9 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				OptionIndex: 0,
 			},
 			{
-				ValidIngredientPreparationID:     &seasonPepperVIP.ID,
-				ValidIngredientMeasurementUnitID: &pepperGramVIMU.ID,
-				Name:                             "freshly ground black pepper",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "freshly ground black pepper",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0,
 				},
@@ -219,10 +274,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 2: Rest the steak (optional - at room temperature or refrigerated)
-	step2 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 3: Rest the steak (optional - at room temperature or refrigerated)
+	step3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        restPrep.ID,
-		Index:                2,
+		Index:                3,
 		Optional:             true,
 		ExplicitInstructions: "If desired, let the steak rest at room temperature for 45 minutes, or refrigerate it, loosely covered, for up to 3 days.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -231,7 +286,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "seasoned bone-in ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -242,7 +297,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &restSheetPanVPV.ID,
 				Name:                            "sheet pan",
@@ -265,10 +320,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 3: Slice shallots (optional)
-	step3 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 4: Slice shallots (optional)
+	step4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        slicePrep.ID,
-		Index:                3,
+		Index:                4,
 		Optional:             true,
 		ExplicitInstructions: "Finely slice the shallot into thin slices (about 28g, or 1 large shallot).",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -312,10 +367,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 4: Heat oil until smoking
-	step4 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 5: Heat oil until smoking
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        heatPrep.ID,
-		Index:                4,
+		Index:                5,
 		ExplicitInstructions: "In a 12-inch heavy-bottomed cast iron skillet, heat the oil over high heat until it just begins to smoke.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](200), // High heat, approximately 200°C
@@ -377,17 +432,17 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 5: Pan-sear the steak
-	step5 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 6: Pan-sear the steak
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        panSearPrep.ID,
-		Index:                5,
+		Index:                6,
 		ExplicitInstructions: "Carefully add the steak to the hot skillet and cook, flipping frequently, until a pale golden-brown crust starts to develop, about 4 minutes total.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](240), // 4 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "rested seasoned bone-in ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -396,7 +451,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "heated smoking oil",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -419,7 +474,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
 				Name:                            "cast iron skillet",
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -448,10 +503,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 6: Baste the steak
-	step6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 7: Baste the steak
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        bastePrep.ID,
-		Index:                6,
+		Index:                7,
 		ExplicitInstructions: "Add butter, herbs (if using), and shallot (if using) to the skillet and continue cooking, flipping the steak occasionally and basting any light spots with foaming butter. If the butter begins to smoke excessively or the steak begins to burn, reduce the heat to medium. To baste, tilt the pan slightly so the butter collects near the handle. Use a spoon to pick up the butter and pour it over the steak, aiming at light spots. Continue flipping and basting until an instant-read thermometer inserted into the thickest part of the tenderloin side registers 120 to 125°F (49 to 52°C) for medium-rare or 130°F (54°C) for medium, 8 to 10 minutes total.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](480), // 8 minutes
@@ -463,7 +518,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "pan-seared bone-in ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -504,7 +559,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				OptionIndex: 0,
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "finely sliced shallots",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -575,10 +630,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 7: Rest the steak
-	step7 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 8: Rest the steak
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        restPrep.ID,
-		Index:                7,
+		Index:                8,
 		ExplicitInstructions: "Immediately transfer the steak to a large heatproof plate and pour the pan juices on top. Let rest for 5 to 10 minutes. Carve and serve.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
@@ -586,7 +641,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "butter-basted bone-in ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -636,6 +691,29 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		step5,
 		step6,
 		step7,
+		step8,
+	}
+
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Season and dry-brine steak",
+		Description:                 "Grind pepper, pat the steak dry, season liberally, and refrigerate loosely covered on a wire rack for up to 3 days. This dry-brines the steak, improving seasoning penetration and surface dryness for a better sear.",
+		Notes:                       "The longer the steak sits uncovered in the fridge, the drier the surface will be, which promotes better browning.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the seasoned steak on a wire rack set in a rimmed baking sheet in the refrigerator, loosely covered, for up to 3 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: true},
+		},
 	}
 
 	return []*mealplanning.RecipeCreationRequestInput{
@@ -653,7 +731,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps:             steps,
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,
 		},

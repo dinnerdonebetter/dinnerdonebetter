@@ -20,6 +20,15 @@ profiles:
         defaultNamespace: localdev
 
   - name: prod
+    build:
+      tagPolicy:
+        sha256: {}
+      artifacts:
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-root-site
+          docker:
+            dockerfile: Dockerfile
+          context: ../root_site
+
     manifests:
       kustomize:
         paths:
