@@ -521,7 +521,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				},
 			},
 			{
-			ProductOfRecipeStepIndex:         pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-breadcrumbs"),
 				ValidIngredientPreparationID:     &topBreadcrumbsVIP.ID,
