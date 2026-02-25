@@ -2572,6 +2572,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	gramMeasurement = enums.MeasurementUnits["gram"]
+	poundMeasurement := enums.MeasurementUnits["pound"]
 
 	// === GRIND PREPARATION (for grinding whole peppercorns) ===
 	// Ingredient-Preparation links
@@ -2631,6 +2632,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Ingredient-MeasurementUnit links
 	if err = createVIMU(roastChickenWholeChicken, unitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(roastChickenWholeChicken, poundMeasurement); err != nil {
 		return err
 	}
 
@@ -3389,8 +3393,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	mashedPot := enums.Vessels["pot"]
 	mashedColander := enums.Vessels["colander"]
 
-	// Get measurement units for mashed potatoes recipe
-	poundMeasurement := enums.MeasurementUnits["pound"]
+	// Get measurement units for mashed potatoes recipe (poundMeasurement from roast chicken section)
 	mashedCupMeasurement := enums.MeasurementUnits["cup"]
 	mashedTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 
@@ -3735,6 +3738,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIMU(caesarLemon, caesarTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(caesarLemon, caesarUnitMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(caesarBroccoli, caesarPoundMeasurement); err != nil {

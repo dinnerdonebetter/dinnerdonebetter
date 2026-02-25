@@ -19,6 +19,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	roastPrep := enums.Preparations["roast"]
 	topPrep := enums.Preparations["top"]
 	transferPrep := enums.Preparations["transfer"]
+	zestPrep := enums.Preparations["zest"]
 
 	// Get ingredients
 	broccoli := enums.Ingredients["broccoli"]
@@ -41,6 +42,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	mortarAndPestle := enums.Instruments["mortar and pestle"]
 	spiceGrinder := enums.Instruments["spice grinder"]
 	aluminumFoil := enums.Instruments["aluminum foil"]
+	microplane := enums.Instruments["microplane"]
 
 	// Get vessels
 	bakingSheet := enums.Vessels["baking sheet"]
@@ -62,8 +64,10 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	tossBroccoliVIP := enums.IngredientPreparations[tossPrep.ID][broccoli.ID]
 	tossOliveOilVIP := enums.IngredientPreparations[tossPrep.ID][oliveOil.ID]
 	tossSaltVIP := enums.IngredientPreparations[tossPrep.ID][salt.ID]
-	tossLemonVIP := enums.IngredientPreparations[tossPrep.ID][lemon.ID]
 	tossLargeBowlVPV := enums.PreparationVessels[tossPrep.ID][largeBowl.ID]
+
+	zestLemonVIP := enums.IngredientPreparations[zestPrep.ID][lemon.ID]
+	zestMicroplaneVPI := enums.PreparationInstruments[zestPrep.ID][microplane.ID]
 
 	roastBroccoliVIP := enums.IngredientPreparations[roastPrep.ID][broccoli.ID]
 	roastBakingSheetVPV := enums.PreparationVessels[roastPrep.ID][bakingSheet.ID]
@@ -83,7 +87,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	broccoliPoundVIMU := enums.IngredientMeasurementUnits[broccoli.ID][poundMeasurement.ID]
 	oliveOilTablespoonVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][tablespoonMeasurement.ID]
 	parmesanTablespoonVIMU := enums.IngredientMeasurementUnits[parmesan.ID][tablespoonMeasurement.ID]
-	lemonTeaspoonVIMU := enums.IngredientMeasurementUnits[lemon.ID][teaspoonMeasurement.ID]
+	lemonUnitVIMU := enums.IngredientMeasurementUnits[lemon.ID][unitMeasurement.ID]
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
 	breadcrumbsCupVIMU := enums.IngredientMeasurementUnits[breadcrumbs.ID][cupMeasurement.ID]
 
@@ -380,10 +384,47 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		},
 	}
 
-	// Broccoli Step 7: Toss roasted broccoli with lemon zest
+	// Broccoli Step 7: Zest the lemon
 	brStep7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        tossPrep.ID,
+		PreparationID:        zestPrep.ID,
 		Index:                7,
+		ExplicitInstructions: "Using a microplane, zest the lemon.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ValidIngredientPreparationID:     &zestLemonVIP.ID,
+				ValidIngredientMeasurementUnitID: &lemonUnitVIMU.ID,
+				Name:                             "lemon",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &zestMicroplaneVPI.ID,
+				Name:                         "microplane",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "lemon zest",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &teaspoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Broccoli Step 8: Toss roasted broccoli with lemon zest
+	brStep8 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        tossPrep.ID,
+		Index:                8,
 		ExplicitInstructions: "In the now empty bowl, toss the broccoli with 1 teaspoon lemon zest.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -395,9 +436,9 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				},
 			},
 			{
-				ValidIngredientPreparationID:     &tossLemonVIP.ID,
-				ValidIngredientMeasurementUnitID: &lemonTeaspoonVIMU.ID,
-				Name:                             "lemon zest",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "lemon zest",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -425,14 +466,14 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		},
 	}
 
-	// Broccoli Step 8: Transfer broccoli to serving platter
-	brStep8 := &mealplanning.RecipeStepCreationRequestInput{
+	// Broccoli Step 9: Transfer broccoli to serving platter
+	brStep9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
-		Index:                8,
+		Index:                9,
 		ExplicitInstructions: "Transfer the broccoli to a serving platter.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "broccoli with lemon zest",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -462,17 +503,15 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		},
 	}
 
-	// Broccoli Step 9: Sprinkle with breadcrumbs and Parmigiano-Reggiano
+	// Broccoli Step 10: Sprinkle with breadcrumbs and Parmigiano-Reggiano
 	// This step references the Caesar Breadcrumbs recipe as a component
-	// Note: RecipeStepProductRecipeID will need to be set when creating the recipe,
-	// as it references the breadcrumbs recipe that will be created first
-	brStep9 := &mealplanning.RecipeStepCreationRequestInput{
+	brStep10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        topPrep.ID,
-		Index:                9,
+		Index:                10,
 		ExplicitInstructions: "Sprinkle with breadcrumbs and Parmigiano-Reggiano and serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &topBroccoliVIP.ID,
 				ValidIngredientMeasurementUnitID: &broccoliPoundVIMU.ID,
@@ -482,10 +521,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				},
 			},
 			{
-				// RecipeStepProductRecipeID references the "Caesar Breadcrumbs" recipe (slug: "caesar-breadcrumbs")
-				// The product "caesar breadcrumbs" is from step 7 (index 7), product index 0
-				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
-				ProductOfRecipeStepIndex:         pointer.To[uint64](7),
+			ProductOfRecipeStepIndex:         pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-breadcrumbs"),
 				ValidIngredientPreparationID:     &topBreadcrumbsVIP.ID,
@@ -538,7 +574,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		PortionName:       "serving",
 		PluralPortionName: "servings",
 		EligibleForMeals:  true,
-		Steps:             []*mealplanning.RecipeStepCreationRequestInput{brStep0, brStep1, brStep2, brStep3, brStep4, brStep5, brStep6, brStep7, brStep8, brStep9},
+		Steps:             []*mealplanning.RecipeStepCreationRequestInput{brStep0, brStep1, brStep2, brStep3, brStep4, brStep5, brStep6, brStep7, brStep8, brStep9, brStep10},
 		PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
 		Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 		AlsoCreateMeal:    false,

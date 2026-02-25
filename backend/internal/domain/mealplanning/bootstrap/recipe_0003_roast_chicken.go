@@ -28,10 +28,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	vegetableOil := enums.Ingredients["vegetable oil"]
 
 	// Get measurement units
-	unitMeasurement := enums.MeasurementUnits["unit"]
 	gramMeasurement := enums.MeasurementUnits["gram"]
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	milliliterMeasurement := enums.MeasurementUnits["milliliter"]
+	poundMeasurement := enums.MeasurementUnits["pound"]
 
 	// Get instruments
 	butchersTwine := enums.Instruments["butcher's twine"]
@@ -69,7 +69,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Season preparation bridges
 	seasonChickenVIP := enums.IngredientPreparations[seasonPrep.ID][wholeChicken.ID]
-	chickenUnitVIMU := enums.IngredientMeasurementUnits[wholeChicken.ID][unitMeasurement.ID]
+	chickenPoundVIMU := enums.IngredientMeasurementUnits[wholeChicken.ID][poundMeasurement.ID]
 	seasonBareHandsVPI := enums.PreparationInstruments[seasonPrep.ID][bareHands.ID]
 
 	// Truss preparation bridges
@@ -215,10 +215,11 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
-				ValidIngredientMeasurementUnitID: &chickenUnitVIMU.ID,
-				Name:                             "large whole chicken",
+				ValidIngredientMeasurementUnitID: &chickenPoundVIMU.ID,
+				Name:                             "whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 4,
+					Max: pointer.To[float32](5),
 				},
 			},
 			{
@@ -244,9 +245,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Name:              "seasoned whole chicken",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](4),
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
@@ -263,7 +265,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "seasoned whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 4,
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
@@ -281,9 +284,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Name:              "trussed seasoned whole chicken",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](4),
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
@@ -304,7 +308,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "trussed seasoned whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 4,
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
@@ -329,9 +334,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Name:              "dry-brined whole chicken",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](4),
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
@@ -420,7 +426,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "dry-brined whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 4,
+					Max: pointer.To[float32](5),
 				},
 			},
 			{
@@ -446,9 +453,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Name:              "oiled whole chicken",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](4),
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
@@ -469,7 +477,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "oiled whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 4,
+					Max: pointer.To[float32](5),
 				},
 			},
 			{
@@ -506,9 +515,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Name:              "leg-browned whole chicken",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](4),
+					Max: pointer.To[float32](5),
 				},
 			},
 			{
@@ -545,7 +555,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "leg-browned whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 4,
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
@@ -582,9 +593,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Name:              "roasted whole chicken",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](4),
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
@@ -613,7 +625,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "roasted whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 4,
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
@@ -631,9 +644,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Name:              "rested roast chicken",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](4),
+					Max: pointer.To[float32](5),
 				},
 			},
 		},
