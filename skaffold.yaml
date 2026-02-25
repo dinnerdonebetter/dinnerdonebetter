@@ -45,3 +45,14 @@ profiles:
             - "15"
             - api.dinnerdonebetter.com:443
             - list
+      - name: root-site-aasa
+        container:
+          name: root-site-aasa
+          image: curlimages/curl:8.17.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              curl -sf --connect-timeout 15 --max-time 30 https://dinnerdonebetter.com/.well-known/apple-app-site-association || exit 1
+              echo "dinnerdonebetter.com AASA: OK"
+              curl -sf --connect-timeout 15 --max-time 30 https://www.dinnerdonebetter.com/.well-known/apple-app-site-association || exit 1
+              echo "www.dinnerdonebetter.com AASA: OK"
