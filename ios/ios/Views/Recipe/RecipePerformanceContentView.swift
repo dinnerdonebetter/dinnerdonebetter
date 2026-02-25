@@ -1094,12 +1094,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   // MARK: - Steps List
 
   private func shouldShowStep(stepID: String) -> Bool {
-    // If no highlighted steps specified, show all steps
-    guard let highlightedStepIDs = highlightedStepIDs else {
-      return true
-    }
-    // Only show steps that are in the highlighted set
-    return highlightedStepIDs.contains(stepID)
+    return true
   }
 
   // Step info for categorization

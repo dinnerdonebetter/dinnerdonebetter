@@ -31,6 +31,15 @@ struct StepCardView: View {
   var canCheckOverride: Bool?
   var onToggleOverride: (() -> Void)?
 
+  private var isHighlighted: Bool {
+    guard let highlightedStepIDs = highlightedStepIDs else { return true }
+    return highlightedStepIDs.contains(step.id)
+  }
+
+  private var isDimmed: Bool {
+    highlightedStepIDs != nil && !isHighlighted
+  }
+
   var body: some View {
     // Use overrides for merged steps, otherwise use viewModel
     let isCompleted: Bool
@@ -155,12 +164,24 @@ struct StepCardView: View {
     .overlay(
       RoundedRectangle(cornerRadius: 12)
         .stroke(
-          isAssociatedRecipeStep
-            ? Color.purple.opacity(0.2)
-            : (isCompleted ? Color.green.opacity(0.3) : Color.clear),
-          lineWidth: 2
+          stepBorderColor(isCompleted: isCompleted),
+          lineWidth: isHighlighted && highlightedStepIDs != nil ? 2.5 : 2
         )
     )
+    .opacity(isDimmed ? 0.4 : 1.0)
+  }
+
+  private func stepBorderColor(isCompleted: Bool) -> Color {
+    if isHighlighted && highlightedStepIDs != nil {
+      return .blue.opacity(0.6)
+    }
+    if isAssociatedRecipeStep {
+      return Color.purple.opacity(0.2)
+    }
+    if isCompleted {
+      return Color.green.opacity(0.3)
+    }
+    return Color.clear
   }
 
   @ViewBuilder

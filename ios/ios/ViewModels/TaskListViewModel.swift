@@ -159,14 +159,14 @@ class TaskListViewModel {
 
     // Each task becomes a parent with its steps as subtasks
     for task in sortedTasks {
-      // Get the step data for this task
-      let stepData = getStepDataForTask(task)
+      // Get the step data and recipeID for this task
+      let (stepData, recipeID) = getStepDataAndRecipeIDForTask(task)
 
       print("📋 Task \(task.id): Found \(stepData.count) steps")
 
       // Create subtask items from the step data
       let subtasks = stepData.map { stepInfo in
-        createSubtaskFromStep(task: task, stepInfo: stepInfo)
+        createSubtaskFromStep(task: task, stepInfo: stepInfo, recipeID: recipeID)
       }
 
       print("📋 Task \(task.id): Created \(subtasks.count) subtasks")
@@ -178,11 +178,13 @@ class TaskListViewModel {
     return taskGroups
   }
 
-  // Helper to get step data for a task
-  private func getStepDataForTask(_ task: Mealplanning_MealPlanTask) -> [StepInfo] {
+  // Helper to get step data and the resolved recipeID for a task
+  private func getStepDataAndRecipeIDForTask(_ task: Mealplanning_MealPlanTask) -> (
+    [StepInfo], String?
+  ) {
     guard task.hasRecipePrepTask else {
       print("⚠️ Task \(task.id) has no recipePrepTask")
-      return []
+      return ([], nil)
     }
 
     let prepTask = task.recipePrepTask
@@ -211,14 +213,14 @@ class TaskListViewModel {
 
     if recipeID.isEmpty {
       print("⚠️ Task \(task.id): No recipe ID found")
-      return []
+      return ([], nil)
     }
 
     guard let recipe = loadedRecipes[recipeID] else {
       print(
         "⚠️ Task \(task.id): Recipe \(recipeID) not loaded yet. Loaded recipes: \(loadedRecipes.keys.joined(separator: ", "))"
       )
-      return []
+      return ([], recipeID)
     }
 
     print("✅ Task \(task.id): Recipe \(recipeID) loaded, has \(recipe.steps.count) steps")
@@ -230,7 +232,16 @@ class TaskListViewModel {
         let step = recipe.steps[stepIndex]
         let formatted = formatStepTitle(step: step)
         if !formatted.isEmpty {
-          stepData.append(StepInfo(stepID: taskStep.id, description: formatted))
+          let ingredients = step.ingredients.compactMap { ingredient -> String? in
+            ingredient.name.isEmpty ? nil : ingredient.name
+          }
+          stepData.append(
+            StepInfo(
+              stepID: taskStep.id,
+              description: formatted,
+              ingredientNames: ingredients,
+              recipeStepID: taskStep.belongsToRecipeStep
+            ))
           print("✅ Added step: \(formatted)")
         }
       } else {
@@ -239,49 +250,70 @@ class TaskListViewModel {
     }
 
     print("📋 Task \(task.id): Returning \(stepData.count) step data items")
-    return stepData
+    return (stepData, recipeID)
   }
 
-  // Create a fake subtask from a step (for display purposes)
-  private func createSubtaskFromStep(task: Mealplanning_MealPlanTask, stepInfo: StepInfo)
-    -> Mealplanning_MealPlanTask
-  {
-    // Create a minimal task-like object for display
-    // We'll use the step ID as a unique identifier
-    var subtask = Mealplanning_MealPlanTask()
-    subtask.id = "\(task.id)_step_\(stepInfo.stepID)"
-    subtask.creationExplanation = stepInfo.description
-    subtask.status = .unfinished  // Steps are always unfinished initially
-    return subtask
-  }
-
-  // Get all task groups, separated by status
-  func getUnfinishedGroups() -> [TaskGroup] {
-    let allGroups = getGroupedTasks()
-    // Include groups where parent is unfinished OR any subtask is unfinished
-    let unfinished = allGroups.filter { group in
-      if group.parent.status == .unfinished {
-        return true
-      }
-      // Check if any subtask is unfinished
-      return group.subtasks.contains { $0.status == .unfinished }
-    }
-    print(
-      "📋 getUnfinishedGroups: \(unfinished.count) groups (parent statuses: \(allGroups.map { $0.parent.status }))"
+  private func createSubtaskFromStep(
+    task: Mealplanning_MealPlanTask,
+    stepInfo: StepInfo,
+    recipeID: String?
+  ) -> SubtaskDisplayInfo {
+    SubtaskDisplayInfo(
+      id: "\(task.id)_step_\(stepInfo.stepID)",
+      parentTaskID: task.id,
+      stepID: stepInfo.stepID,
+      description: stepInfo.description,
+      ingredientNames: stepInfo.ingredientNames,
+      recipeID: recipeID,
+      recipeStepID: stepInfo.recipeStepID
     )
-    return unfinished
+  }
+
+  // Determines the earliest start date for a task based on its time buffer and event time
+  func canStartAt(task: Mealplanning_MealPlanTask) -> Date? {
+    guard task.hasRecipePrepTask else { return nil }
+    let prepTask = task.recipePrepTask
+    guard prepTask.hasTimeBufferBeforeRecipeInSeconds,
+      prepTask.timeBufferBeforeRecipeInSeconds.hasMax
+    else { return nil }
+
+    guard task.hasMealPlanOption else { return nil }
+    let eventID = task.mealPlanOption.belongsToMealPlanEvent
+    guard !eventID.isEmpty,
+      let event = mealPlan.events.first(where: { $0.id == eventID })
+    else { return nil }
+
+    let eventTime = HomeViewModel.timestampToDate(event.startsAt)
+    let maxBuffer = prepTask.timeBufferBeforeRecipeInSeconds.max
+    return eventTime.addingTimeInterval(-Double(maxBuffer))
+  }
+
+  private func isStartableNow(_ task: Mealplanning_MealPlanTask) -> Bool {
+    guard let startDate = canStartAt(task: task) else { return true }
+    return Date() >= startDate
+  }
+
+  // Get all task groups, separated by status and startability
+  func getReadyNowGroups() -> [TaskGroup] {
+    let allGroups = getGroupedTasks()
+    return allGroups.filter { $0.parent.status == .unfinished && isStartableNow($0.parent) }
+  }
+
+  func getDoLaterGroups() -> [TaskGroup] {
+    let allGroups = getGroupedTasks()
+    return
+      allGroups
+      .filter { $0.parent.status == .unfinished && !isStartableNow($0.parent) }
+      .sorted { group1, group2 in
+        let date1 = canStartAt(task: group1.parent) ?? .distantFuture
+        let date2 = canStartAt(task: group2.parent) ?? .distantFuture
+        return date1 < date2
+      }
   }
 
   func getFinishedGroups() -> [TaskGroup] {
     let allGroups = getGroupedTasks()
-    // Include groups where parent is finished AND all subtasks are finished
-    let finished = allGroups.filter { group in
-      group.parent.status == .finished && group.subtasks.allSatisfy { $0.status == .finished }
-    }
-    print(
-      "📋 getFinishedGroups: \(finished.count) groups (parent statuses: \(allGroups.map { $0.parent.status }))"
-    )
-    return finished
+    return allGroups.filter { $0.parent.status == .finished }
   }
 
   private func loadRecipesForTasks() async {
@@ -410,13 +442,26 @@ class TaskListViewModel {
 // TaskGroup represents a parent task with its subtasks
 struct TaskGroup {
   let parent: Mealplanning_MealPlanTask
-  let subtasks: [Mealplanning_MealPlanTask]
+  let subtasks: [SubtaskDisplayInfo]
 }
 
-// StepInfo represents a recipe step for display
+// SubtaskDisplayInfo carries everything SubtaskRow needs for display and navigation
+struct SubtaskDisplayInfo: Identifiable {
+  let id: String
+  let parentTaskID: String
+  let stepID: String
+  let description: String
+  let ingredientNames: [String]
+  let recipeID: String?
+  let recipeStepID: String?
+}
+
+// StepInfo represents a recipe step for display (internal to view model)
 struct StepInfo {
   let stepID: String
   let description: String
+  let ingredientNames: [String]
+  let recipeStepID: String?
 }
 
 // MARK: - TaskListViewModel Helpers

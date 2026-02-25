@@ -11,6 +11,7 @@ import SwiftUI
 struct GroceryListView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: GroceryListViewModel
+  @State private var showingSwipeReview = false
   @State private var showingQuantityInputForItemID: String?
   @State private var quantityInputText: String = ""
   @State private var showingEditQuantityNeededForItemID: String?
@@ -32,9 +33,33 @@ struct GroceryListView: View {
   }
 
   var body: some View {
+    menuView
+      .navigationTitle(viewModel.mealPlan.notes.isEmpty ? "Grocery List" : viewModel.mealPlan.notes)
+      .navigationBarTitleDisplayMode(.large)
+      .toolbar {
+        ToolbarItem(placement: .primaryAction) {
+          Button {
+            showingSwipeReview = true
+          } label: {
+            Label("Swipe review", systemImage: "hand.draw")
+          }
+          .disabled(viewModel.items.isEmpty)
+        }
+      }
+      .fullScreenCover(isPresented: $showingSwipeReview) {
+        SwipeReviewSheet(
+          viewModel: viewModel,
+          onDismiss: { showingSwipeReview = false }
+        )
+      }
+      .task {
+        await viewModel.loadItems()
+      }
+  }
+
+  private var menuView: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: DSTheme.Spacing.xl) {
-        // Header
         headerSection
 
         if viewModel.isLoading {
@@ -42,7 +67,6 @@ struct GroceryListView: View {
         } else if viewModel.items.isEmpty {
           emptyStateView
         } else {
-          // Items by status
           if !viewModel.needsItems.isEmpty {
             itemsSection(
               title: "Needed",
@@ -84,11 +108,6 @@ struct GroceryListView: View {
         }
       }
       .dsScreenPadding()
-    }
-    .navigationTitle(viewModel.mealPlan.notes.isEmpty ? "Grocery List" : viewModel.mealPlan.notes)
-    .navigationBarTitleDisplayMode(.large)
-    .task {
-      await viewModel.loadItems()
     }
   }
 
@@ -232,6 +251,254 @@ struct GroceryListView: View {
     showingEditQuantityNeededForItemID = nil
     quantityNeededMinText = ""
     quantityNeededMaxText = ""
+  }
+}
+
+// MARK: - Swipe Review Sheet
+
+struct SwipeReviewSheet: View {
+  var viewModel: GroceryListViewModel
+  let onDismiss: () -> Void
+
+  private var reviewItems: [Mealplanning_MealPlanGroceryListItem] {
+    func sortPriority(_ status: Mealplanning_MealPlanGroceryListItemStatus) -> Int {
+      switch status {
+      case .needs: return 0
+      case .unknown: return 1
+      case .unavailable: return 2
+      case .acquired, .alreadyOwned: return 3
+      default: return 1
+      }
+    }
+    return viewModel.items.sorted { item1, item2 in
+      let priority1 = sortPriority(item1.status)
+      let priority2 = sortPriority(item2.status)
+      if priority1 != priority2 { return priority1 < priority2 }
+      return item1.ingredient.name < item2.ingredient.name
+    }
+  }
+
+  var body: some View {
+    NavigationStack {
+      List {
+        Section {
+          HStack {
+            HStack(spacing: 4) {
+              Image(systemName: "chevron.left")
+                .font(.caption2)
+              Text("Have")
+                .font(.caption2)
+            }
+            .foregroundColor(.green)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            HStack(spacing: 4) {
+              Text("Need")
+                .font(.caption2)
+              Image(systemName: "chevron.right")
+                .font(.caption2)
+            }
+            .foregroundColor(.orange)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+          }
+          .listRowBackground(Color.clear)
+          .listRowInsets(EdgeInsets())
+        }
+
+        Section {
+          ForEach(reviewItems, id: \.id) { item in
+            ResistantSwipeReviewRow(
+              item: item,
+              onMarkAsHave: { Task { await viewModel.markAsAlreadyOwned(item) } },
+              onMarkAsNeed: { Task { await viewModel.markAsNeeds(item) } }
+            )
+            .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
+          }
+        }
+      }
+      .listStyle(.insetGrouped)
+      .navigationTitle("Swipe review")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .confirmationAction) {
+          Button("Done") {
+            onDismiss()
+          }
+        }
+      }
+    }
+  }
+}
+
+// MARK: - Resistant Swipe Review Row
+
+private struct ResistantSwipeReviewRow: View {
+  let item: Mealplanning_MealPlanGroceryListItem
+  let onMarkAsHave: () -> Void
+  let onMarkAsNeed: () -> Void
+
+  private let swipeThreshold: CGFloat = 60
+  private let resistanceFactor: CGFloat = 0.25  // Only moves 25% when already in that state
+
+  @State private var dragOffset: CGFloat = 0
+  @State private var hasTriggeredResistanceHaptic = false
+
+  private var isAlreadyHave: Bool {
+    item.status == .acquired || item.status == .alreadyOwned
+  }
+
+  private var isAlreadyNeed: Bool {
+    item.status == .needs
+  }
+
+  private var appliedOffset: CGFloat {
+    let raw = dragOffset
+    if raw > 0 {
+      if isAlreadyNeed {
+        return raw * resistanceFactor
+      }
+      return raw
+    } else {
+      if isAlreadyHave {
+        return raw * resistanceFactor
+      }
+      return raw
+    }
+  }
+
+  var body: some View {
+    GeometryReader { geometry in
+      ZStack(alignment: .leading) {
+        HStack {
+          Color.orange
+            .frame(width: swipeThreshold + 20)
+            .overlay {
+              HStack {
+                Image(systemName: "cart.fill")
+                Text("Need")
+                  .font(.caption)
+                  .fontWeight(.medium)
+              }
+              .foregroundColor(.white)
+            }
+          Spacer()
+          Color.green
+            .frame(width: swipeThreshold + 20)
+            .overlay {
+              HStack {
+                Text("Have")
+                  .font(.caption)
+                  .fontWeight(.medium)
+                Image(systemName: "checkmark.circle.fill")
+              }
+              .foregroundColor(.white)
+            }
+        }
+
+        ZStack {
+          Color(.secondarySystemGroupedBackground)
+          swipeReviewRowContent
+            .padding(.horizontal, 16)
+        }
+        .frame(width: geometry.size.width, height: geometry.size.height)
+        .offset(x: appliedOffset)
+        .gesture(
+          DragGesture()
+            .onChanged { value in
+              let translation = value.translation.width
+              dragOffset = translation
+
+              if translation > 20 && isAlreadyNeed, !hasTriggeredResistanceHaptic {
+                hasTriggeredResistanceHaptic = true
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+              } else if translation < -20 && isAlreadyHave, !hasTriggeredResistanceHaptic {
+                hasTriggeredResistanceHaptic = true
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+              }
+            }
+            .onEnded { value in
+              let translation = value.translation.width
+
+              if translation > swipeThreshold, !isAlreadyNeed {
+                onMarkAsNeed()
+              } else if translation < -swipeThreshold, !isAlreadyHave {
+                onMarkAsHave()
+              }
+
+              withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                dragOffset = 0
+              }
+              hasTriggeredResistanceHaptic = false
+            }
+        )
+      }
+    }
+    .frame(height: 64)
+    .clipped()
+  }
+
+  private var swipeReviewRowContent: some View {
+    HStack {
+      VStack(alignment: .leading, spacing: 2) {
+        Text(item.ingredient.name)
+          .font(.body)
+          .fontWeight(.medium)
+
+        if item.hasQuantityNeeded {
+          Text(formatQuantityNeeded(item.quantityNeeded))
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      }
+
+      Spacer()
+
+      if let label = statusLabel {
+        Text(label)
+          .font(.caption)
+          .fontWeight(.medium)
+          .foregroundColor(statusColor)
+      } else {
+        Text("—")
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+    }
+    .padding(.vertical, 12)
+  }
+
+  private var statusLabel: String? {
+    switch item.status {
+    case .acquired, .alreadyOwned: return "Have"
+    case .needs: return "Need"
+    case .unavailable: return "Unavailable"
+    case .unknown: return nil
+    default: return nil
+    }
+  }
+
+  private var statusColor: Color {
+    switch item.status {
+    case .acquired, .alreadyOwned: return .green
+    case .needs: return .orange
+    case .unavailable: return .red
+    default: return .gray
+    }
+  }
+
+  private func formatQuantityNeeded(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
+    let unit = item.measurementUnit.name.isEmpty ? "" : " \(item.measurementUnit.name)"
+    if quantity.hasMax {
+      if quantity.min == quantity.max {
+        return "\(quantity.min)\(unit)"
+      } else {
+        return "\(quantity.min)–\(quantity.max)\(unit)"
+      }
+    } else {
+      return "\(quantity.min)+\(unit)"
+    }
   }
 }
 

@@ -37,20 +37,22 @@ struct TaskListView: View {
         } else if viewModel.tasks.isEmpty {
           emptyStateView
         } else {
-          // Group tasks hierarchically
-          let unfinishedGroups = viewModel.getUnfinishedGroups()
+          let readyNowGroups = viewModel.getReadyNowGroups()
+          let doLaterGroups = viewModel.getDoLaterGroups()
           let finishedGroups = viewModel.getFinishedGroups()
 
-          // Unfinished tasks
-          if !unfinishedGroups.isEmpty {
+          if !readyNowGroups.isEmpty {
             tasksSection(
-              title: "To Do",
-              groups: unfinishedGroups,
+              title: "Ready Now",
+              groups: readyNowGroups,
               color: DSTheme.Colors.warning
             )
           }
 
-          // Finished tasks
+          if !doLaterGroups.isEmpty {
+            laterTasksSection(groups: doLaterGroups)
+          }
+
           if !finishedGroups.isEmpty {
             tasksSection(
               title: "Completed",
@@ -116,6 +118,80 @@ struct TaskListView: View {
       }
     }
   }
+
+  private func laterTasksSection(groups: [TaskGroup]) -> some View {
+    let buckets = bucketByStartTime(groups)
+
+    return VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+      Text("Later")
+        .font(DSTheme.Typography.label)
+        .foregroundColor(.secondary)
+
+      ForEach(buckets, id: \.label) { bucket in
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+          Text(bucket.label)
+            .font(DSTheme.Typography.caption)
+            .fontWeight(.semibold)
+            .foregroundColor(.orange)
+
+          ForEach(bucket.groups, id: \.parent.id) { group in
+            TaskGroupRow(
+              group: group,
+              viewModel: viewModel,
+              loadedRecipes: viewModel.loadedRecipes,
+              loadedPrepTasks: viewModel.loadedPrepTasks
+            )
+          }
+        }
+      }
+    }
+  }
+
+  private struct TimeBucket {
+    let label: String
+    let groups: [TaskGroup]
+  }
+
+  private func bucketByStartTime(_ groups: [TaskGroup]) -> [TimeBucket] {
+    var bucketMap: [(key: String, groups: [TaskGroup])] = []
+    let now = Date()
+
+    for group in groups {
+      let label: String
+      if let startDate = viewModel.canStartAt(task: group.parent) {
+        label = formatCountdownLabel(from: now, to: startDate)
+      } else {
+        label = "Later"
+      }
+
+      if let index = bucketMap.firstIndex(where: { $0.key == label }) {
+        bucketMap[index].groups.append(group)
+      } else {
+        bucketMap.append((key: label, groups: [group]))
+      }
+    }
+
+    return bucketMap.map { TimeBucket(label: $0.key, groups: $0.groups) }
+  }
+
+  private func formatCountdownLabel(from now: Date, to date: Date) -> String {
+    let seconds = Int(date.timeIntervalSince(now))
+    if seconds <= 0 { return "Now" }
+
+    let hours = seconds / 3600
+    let days = hours / 24
+
+    if hours < 1 {
+      let minutes = seconds / 60
+      return "In \(minutes) min"
+    } else if hours < 24 {
+      return "In \(hours) hr"
+    } else if days == 1 {
+      return "In 1 day"
+    } else {
+      return "In \(days) days"
+    }
+  }
 }
 
 // MARK: - Task Group Row
@@ -151,13 +227,13 @@ struct TaskGroupRow: View {
 
       // Subtasks (shown when expanded)
       if hasSubtasks && isExpanded {
-        ForEach(group.subtasks, id: \.id) { subtask in
+        ForEach(group.subtasks) { subtask in
           SubtaskRow(
             subtask: subtask,
             parentTask: group.parent,
             viewModel: viewModel
           )
-          .padding(.leading, 32)  // Indent subtasks
+          .padding(.leading, 32)
         }
       }
     }
@@ -167,63 +243,71 @@ struct TaskGroupRow: View {
 // MARK: - Subtask Row
 
 struct SubtaskRow: View {
-  let subtask: Mealplanning_MealPlanTask
+  let subtask: SubtaskDisplayInfo
   let parentTask: Mealplanning_MealPlanTask
   let viewModel: TaskListViewModel
 
-  // Extract step ID from subtask ID (format: "taskID_step_stepID")
-  private var stepID: String {
-    let prefix = "\(parentTask.id)_step_"
-    if subtask.id.hasPrefix(prefix) {
-      return String(subtask.id.dropFirst(prefix.count))
-    }
-    return subtask.id
+  private var isCompleted: Bool {
+    viewModel.isSubtaskCompleted(parentTaskID: subtask.parentTaskID, stepID: subtask.stepID)
+      || parentTask.status == .finished
   }
 
   var body: some View {
     HStack(alignment: .top, spacing: 12) {
-      // Spacer for alignment (no disclosure indicator for subtasks)
       Spacer()
         .frame(width: 20)
 
-      // Checkbox for subtask (step) - enabled and functional
+      // Checkbox
       Button {
-        viewModel.toggleSubtaskCompletion(parentTaskID: parentTask.id, stepID: stepID)
+        viewModel.toggleSubtaskCompletion(
+          parentTaskID: subtask.parentTaskID, stepID: subtask.stepID)
       } label: {
-        Image(
-          systemName: viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID)
-            ? "checkmark.circle.fill" : "circle"
-        )
-        .font(.body)
-        .foregroundColor(
-          viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID) ? .green : .blue
-        )
+        Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
+          .font(.body)
+          .foregroundColor(isCompleted ? .green : .blue)
       }
       .buttonStyle(.plain)
       .disabled(viewModel.isUpdating)
 
-      // Subtask content
-      VStack(alignment: .leading, spacing: 4) {
-        Text(subtask.creationExplanation)
-          .font(.body)
-          .foregroundColor(
-            viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID)
-              || parentTask.status == .finished
-              ? .secondary : .primary
+      // Subtask content -- tappable to navigate when a recipe step is available
+      if let recipeID = subtask.recipeID, let recipeStepID = subtask.recipeStepID {
+        NavigationLink(
+          destination: PerformRecipeView(
+            recipeID: recipeID,
+            highlightedStepIDs: [recipeStepID]
           )
-          .strikethrough(
-            viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID)
-              || parentTask.status == .finished)
+        ) {
+          subtaskContent
+        }
+        .buttonStyle(.plain)
+      } else {
+        subtaskContent
       }
 
       Spacer()
+
+      if subtask.recipeID != nil && subtask.recipeStepID != nil {
+        Image(systemName: "chevron.right")
+          .font(.caption2)
+          .foregroundColor(.secondary)
+      }
     }
     .padding()
     .background(Color(.systemGray5))
     .cornerRadius(8)
-    .opacity(
-      viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID)
-        || parentTask.status == .finished ? 0.7 : 1.0)
+    .opacity(isCompleted ? 0.7 : 1.0)
+  }
+
+  private var subtaskContent: some View {
+    let label =
+      subtask.ingredientNames.isEmpty
+      ? subtask.description
+      : "\(subtask.description) \(subtask.ingredientNames.joined(separator: ", "))"
+
+    return Text(label)
+      .font(.body)
+      .foregroundColor(isCompleted ? .secondary : .primary)
+      .strikethrough(isCompleted)
   }
 }
 
@@ -389,13 +473,6 @@ struct TaskRow: View {
       }
 
       Spacer()
-
-      // Show chevron if this task is clickable (has recipe prep task)
-      if hasNavigation {
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
     }
     .padding()
     .background(Color(.systemGray6))
@@ -445,6 +522,11 @@ struct TaskRow: View {
       // Storage info (when task has a recipe prep task with storage data)
       if task.hasRecipePrepTask {
         storageInfoView(prepTask: task.recipePrepTask, isCompleted: isCompleted)
+      }
+
+      // Time window for when this task can/should be started
+      if !isCompleted, task.hasRecipePrepTask {
+        timeWindowView(prepTask: task.recipePrepTask)
       }
 
       // Countdown timer (only show if task is not completed and we have an event time)
@@ -507,6 +589,38 @@ struct TaskRow: View {
       return "above \(Int(range.min.rounded()))°C"
     }
     return ""
+  }
+
+  @ViewBuilder
+  private func timeWindowView(prepTask: Mealplanning_RecipePrepTask) -> some View {
+    if prepTask.hasTimeBufferBeforeRecipeInSeconds,
+      prepTask.timeBufferBeforeRecipeInSeconds.min > 0,
+      let eventTime = eventStartTime
+    {
+      let mustStartBy = eventTime.addingTimeInterval(
+        -Double(prepTask.timeBufferBeforeRecipeInSeconds.min))
+
+      HStack(spacing: 6) {
+        Image(systemName: "calendar")
+          .font(.caption2)
+        Text("Start by \(formatShortDate(mustStartBy))")
+          .font(.caption)
+      }
+      .foregroundColor(.secondary)
+    }
+  }
+
+  private func formatShortDate(_ date: Date) -> String {
+    let formatter = DateFormatter()
+    let calendar = Calendar.current
+    if calendar.isDateInToday(date) {
+      formatter.dateFormat = "'today at' h:mm a"
+    } else if calendar.isDateInTomorrow(date) {
+      formatter.dateFormat = "'tomorrow at' h:mm a"
+    } else {
+      formatter.dateFormat = "EEE h:mm a"
+    }
+    return formatter.string(from: date)
   }
 
   // Helper struct for step data
