@@ -25,32 +25,37 @@ struct HomeView: View {
             content: {
               ScrollView {
                 VStack(spacing: DSTheme.Spacing.xl) {
-                  // Welcome & Create CTA
-                  heroSection(viewModel: viewModel)
+                  // Greeting (first)
+                  greetingSection(viewModel: viewModel)
 
-                  // Quick Access Row
-                  quickAccessRow
-
-                  // Pending Votes Section
-                  if !viewModel.pendingVoteMealPlans.isEmpty {
-                    pendingVotesSection(viewModel: viewModel)
-                  }
-
-                  // Active Meal Plan Section
+                  // Active Meal Plan
                   if let activeMealPlan = viewModel.activeMealPlan {
                     activeMealPlanSection(mealPlan: activeMealPlan)
                   }
 
-                  // Upcoming Meal Plans (non-finalized, after active plan end)
-                  if !viewModel.upcomingMealPlans.isEmpty {
-                    upcomingMealPlansSection(viewModel: viewModel)
+                  // Pending Votes
+                  if !viewModel.pendingVoteMealPlans.isEmpty {
+                    pendingVotesSection(viewModel: viewModel)
                   }
 
-                  // My Tasks & Grocery Lists
+                  // Next Task + Meal Plan Ingredients
                   if !viewModel.mealPlansWithTasks.isEmpty
                     || !viewModel.mealPlansWithGroceryLists.isEmpty
                   {
                     actionButtonsSection(viewModel: viewModel)
+                  }
+
+                  Divider()
+
+                  // Create Meal Plan CTA
+                  createMealPlanSection
+
+                  // Recipes + Meals
+                  quickAccessRow
+
+                  // Upcoming Meal Plans (non-finalized, after active plan end)
+                  if !viewModel.upcomingMealPlans.isEmpty {
+                    upcomingMealPlansSection(viewModel: viewModel)
                   }
 
                   // Empty State
@@ -70,7 +75,8 @@ struct HomeView: View {
           DSInitializingView()
         }
       }
-      .navigationTitle("Home")
+      .navigationTitle("")
+      .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
           NavigationLink(destination: AccountSettingsView()) {
@@ -106,57 +112,56 @@ struct HomeView: View {
     }
   }
 
-  // MARK: - Hero Section
-  private func heroSection(viewModel: HomeViewModel) -> some View {
-    VStack(spacing: DSTheme.Spacing.lg) {
-      // Greeting
-      Text("\(greeting), \(viewModel.currentUserDisplayName)!")
-        .font(DSTheme.Typography.largeTitle)
-        .foregroundColor(DSTheme.Colors.textPrimary)
-        .frame(maxWidth: .infinity, alignment: .leading)
+  // MARK: - Greeting
+  private func greetingSection(viewModel: HomeViewModel) -> some View {
+    Text("\(greeting), \(viewModel.currentUserDisplayName)!")
+      .font(DSTheme.Typography.largeTitle)
+      .foregroundColor(DSTheme.Colors.textPrimary)
+      .frame(maxWidth: .infinity, alignment: .leading)
+  }
 
-      // Create Meal Plan CTA Card
-      NavigationLink(destination: CreateMealPlanView()) {
-        HStack(spacing: DSTheme.Spacing.md) {
-          ZStack {
-            Circle()
-              .fill(DSTheme.Colors.primary.opacity(0.15))
-              .frame(width: 48, height: 48)
+  // MARK: - Create Meal Plan CTA
+  private var createMealPlanSection: some View {
+    NavigationLink(destination: CreateMealPlanView()) {
+      HStack(spacing: DSTheme.Spacing.md) {
+        ZStack {
+          Circle()
+            .fill(DSTheme.Colors.primary.opacity(0.15))
+            .frame(width: 48, height: 48)
 
-            Image(systemName: "plus")
-              .font(.system(size: 20, weight: .semibold))
-              .foregroundColor(DSTheme.Colors.primary)
-          }
-
-          VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
-            Text("Create Meal Plan")
-              .font(DSTheme.Typography.label)
-              .foregroundColor(DSTheme.Colors.textPrimary)
-
-            Text("Plan your meals for the week")
-              .font(DSTheme.Typography.caption)
-              .foregroundColor(DSTheme.Colors.textSecondary)
-          }
-
-          Spacer()
-
-          Image(systemName: "chevron.right")
-            .font(.system(size: 14, weight: .semibold))
-            .foregroundColor(DSTheme.Colors.textTertiary)
+          Image(systemName: "plus")
+            .font(.system(size: 20, weight: .semibold))
+            .foregroundColor(DSTheme.Colors.primary)
         }
-        .padding(DSTheme.Spacing.lg)
-        .background(
-          RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
-            .fill(DSTheme.Colors.cardBackground)
-            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
-        )
-        .overlay(
-          RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
-            .stroke(DSTheme.Colors.primary.opacity(0.2), lineWidth: 1)
-        )
+
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
+          Text("Create Meal Plan")
+            .font(DSTheme.Typography.label)
+            .foregroundColor(DSTheme.Colors.textPrimary)
+
+          Text("Plan your meals for the week")
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+        }
+
+        Spacer()
+
+        Image(systemName: "chevron.right")
+          .font(.system(size: 14, weight: .semibold))
+          .foregroundColor(DSTheme.Colors.textTertiary)
       }
-      .buttonStyle(.plain)
+      .padding(DSTheme.Spacing.lg)
+      .background(
+        RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
+          .fill(DSTheme.Colors.cardBackground)
+          .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
+      )
+      .overlay(
+        RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
+          .stroke(DSTheme.Colors.primary.opacity(0.2), lineWidth: 1)
+      )
     }
+    .buttonStyle(.plain)
   }
 
   private var greeting: String {
