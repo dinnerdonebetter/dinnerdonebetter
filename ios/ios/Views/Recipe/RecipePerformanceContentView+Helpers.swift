@@ -870,53 +870,10 @@ extension RecipePerformanceContentView {
   }
 
   func formatStepTitle(step: Mealplanning_RecipeStep, viewModel: PerformRecipeViewModel) -> String {
-    var parts: [String] = []
-
-    // Add preparation name
     if step.hasPreparation && !step.preparation.name.isEmpty {
-      parts.append(step.preparation.name)
+      return step.preparation.name
     }
-
-    // Add ingredient names (only those with ValidIngredient)
-    let ingredientNames = step.ingredients
-      .filter { $0.hasIngredient }
-      .map { $0.name }
-
-    if !ingredientNames.isEmpty {
-      parts.append(formatList(ingredientNames))
-    }
-
-    // Add instruments (only those with ValidInstrument and displayInSummaryLists)
-    let instrumentNames = step.instruments
-      .filter { $0.hasInstrument && $0.instrument.displayInSummaryLists }
-      .map { $0.name }
-
-    if !instrumentNames.isEmpty {
-      parts.append("with \(formatList(instrumentNames))")
-    }
-
-    // If no parts, fall back to step number
-    if parts.isEmpty {
-      return "Step \(Int(step.index) + 1)"
-    }
-
-    return parts.joined(separator: " ")
-  }
-
-  func formatList(_ items: [String]) -> String {
-    guard !items.isEmpty else { return "" }
-
-    if items.count == 1 {
-      return items[0]
-    } else if items.count == 2 {
-      return "\(items[0]) and \(items[1])"
-    } else {
-      let allButLast = items.dropLast().joined(separator: ", ")
-      if let last = items.last {
-        return "\(allButLast), and \(last)"
-      }
-      return allButLast
-    }
+    return "Step \(Int(step.index) + 1)"
   }
 
   // MARK: - Option Grouping Functions

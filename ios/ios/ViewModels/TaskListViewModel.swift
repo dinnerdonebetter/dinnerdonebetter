@@ -424,49 +424,10 @@ struct StepInfo {
 extension TaskListViewModel {
   // Helper to format step title
   private func formatStepTitle(step: Mealplanning_RecipeStep) -> String {
-    var parts: [String] = []
-
     if step.hasPreparation && !step.preparation.name.isEmpty {
-      parts.append(step.preparation.name)
+      return step.preparation.name
     }
-
-    let ingredientNames = step.ingredients
-      .filter { $0.hasIngredient }
-      .map { $0.name }
-
-    if !ingredientNames.isEmpty {
-      parts.append(formatList(ingredientNames))
-    }
-
-    let instrumentNames = step.instruments
-      .filter { $0.hasInstrument && $0.instrument.displayInSummaryLists }
-      .map { $0.name }
-
-    if !instrumentNames.isEmpty {
-      parts.append("with \(formatList(instrumentNames))")
-    }
-
-    if parts.isEmpty {
-      return "Step \(Int(step.index) + 1)"
-    }
-
-    return parts.joined(separator: " ")
-  }
-
-  private func formatList(_ items: [String]) -> String {
-    guard !items.isEmpty else { return "" }
-
-    if items.count == 1 {
-      return items[0]
-    } else if items.count == 2 {
-      return "\(items[0]) and \(items[1])"
-    } else {
-      let allButLast = items.dropLast().joined(separator: ", ")
-      if let last = items.last {
-        return "\(allButLast), and \(last)"
-      }
-      return allButLast
-    }
+    return "Step \(Int(step.index) + 1)"
   }
 
   private func fetchRecipe(recipeID: String) async throws -> Mealplanning_Recipe {
