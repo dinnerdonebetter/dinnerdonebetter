@@ -22,6 +22,7 @@ import (
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 )
 
 const (
@@ -101,12 +102,22 @@ type (
 		ListMealListItems(ctx context.Context, mealListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealListItem], error)
 	}
 
+	mealPlanTaskCreatorWorker interface {
+		workers.Worker
+	}
+
+	mealPlanGroceryListInitializerWorker interface {
+		workers.Worker
+	}
+
 	mealPlanningManager struct {
-		tracer               tracing.Tracer
-		logger               logging.Logger
-		dataChangesPublisher messagequeue.Publisher
-		mealsSearchIndex     textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
-		db                   types.Repository
+		tracer                 tracing.Tracer
+		logger                 logging.Logger
+		dataChangesPublisher   messagequeue.Publisher
+		mealsSearchIndex       textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
+		db                     types.Repository
+		groceryListInitializer mealPlanGroceryListInitializerWorker
+		taskCreator            mealPlanTaskCreatorWorker
 	}
 )
 
@@ -123,6 +134,8 @@ func NewMealPlanningManager(
 	publisherProvider messagequeue.PublisherProvider,
 	searchConfig *textsearchcfg.Config,
 	metricsProvider metrics.Provider,
+	groceryListInitializer mealPlanGroceryListInitializerWorker,
+	taskCreator mealPlanTaskCreatorWorker,
 ) (MealPlanningManager, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
 	if err != nil {
@@ -135,11 +148,13 @@ func NewMealPlanningManager(
 	}
 
 	m := &mealPlanningManager{
-		db:                   db,
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlannerName)),
-		logger:               logging.EnsureLogger(logger).WithName(mealPlannerName),
-		dataChangesPublisher: dataChangesPublisher,
-		mealsSearchIndex:     mealsSearchIndex,
+		db:                     db,
+		tracer:                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlannerName)),
+		logger:                 logging.EnsureLogger(logger).WithName(mealPlannerName),
+		dataChangesPublisher:   dataChangesPublisher,
+		mealsSearchIndex:       mealsSearchIndex,
+		groceryListInitializer: groceryListInitializer,
+		taskCreator:            taskCreator,
 	}
 
 	return m, nil
@@ -524,6 +539,10 @@ func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, ownerID, creat
 		mealplanningkeys.MealPlanIDKey: created.ID,
 	}))
 
+	if created.Status == string(types.MealPlanStatusFinalized) {
+		m.runPostFinalizationWorkers(ctx, logger, span)
+	}
+
 	return created, nil
 }
 
@@ -620,7 +639,23 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 		mealplanningkeys.MealPlanIDKey: mealPlanID,
 	}))
 
+	if finalized {
+		m.runPostFinalizationWorkers(ctx, logger, span)
+	}
+
 	return finalized, nil
+}
+
+func (m *mealPlanningManager) runPostFinalizationWorkers(ctx context.Context, logger logging.Logger, span tracing.Span) {
+	if m.groceryListInitializer == nil || m.taskCreator == nil {
+		return
+	}
+	if err := m.groceryListInitializer.Work(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, span, "running grocery list initializer after meal plan finalization")
+	}
+	if err := m.taskCreator.Work(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, span, "running task creator after meal plan finalization")
+	}
 }
 
 func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanEvent], error) {

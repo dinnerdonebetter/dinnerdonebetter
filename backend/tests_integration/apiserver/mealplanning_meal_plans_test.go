@@ -62,6 +62,58 @@ func createMealPlanForTest(t *testing.T, clientToUse client.Client, mealPlan *me
 	return actual
 }
 
+func TestMealPlans_AutoFinalizedImmediateGroceryAndTasks(T *testing.T) {
+	T.Parallel()
+
+	T.Run("single-option meal plan is finalized at creation and has grocery items and tasks immediately", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		meal := createMealForTest(t, userClient, nil)
+
+		now := time.Now().Truncate(time.Second).UTC()
+		inTenMinutes := now.Add(10 * time.Minute)
+		inOneWeek := now.Add(7 * 24 * time.Hour)
+
+		mealPlan := &mealplanning.MealPlan{
+			Notes:                  "auto-finalized test",
+			VotingDeadline:         inOneWeek,
+			ElectionMethod:         mealplanning.MealPlanElectionMethodSchulze,
+			Status:                 string(mealplanning.MealPlanStatusFinalized),
+			TasksCreated:           true,
+			GroceryListInitialized: true,
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Notes:    "dinner",
+					StartsAt: inTenMinutes,
+					EndsAt:   inOneWeek,
+					MealName: mealplanning.DinnerMealName,
+					Options: []*mealplanning.MealPlanOption{
+						{
+							Meal: mealplanning.Meal{ID: meal.ID},
+						},
+					},
+				},
+			},
+		}
+
+		created := createMealPlanForTest(t, userClient, mealPlan)
+		mealPlanID := created.ID
+
+		// Immediately fetch grocery list and tasks; post-finalization workers run synchronously at creation.
+		groceryRes, err := userClient.GetMealPlanGroceryListItemsForMealPlan(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemsForMealPlanRequest{MealPlanId: mealPlanID})
+		require.NoError(t, err)
+		require.NotNil(t, groceryRes)
+		assert.Greater(t, len(groceryRes.Results), 0, "expected grocery list items to exist immediately after auto-finalized meal plan creation")
+
+		tasksRes, err := userClient.GetMealPlanTasks(ctx, &mealplanninggrpc.GetMealPlanTasksRequest{MealPlanId: mealPlanID})
+		require.NoError(t, err)
+		require.NotNil(t, tasksRes)
+		assert.Greater(t, len(tasksRes.Results), 0, "expected prep tasks to exist immediately after auto-finalized meal plan creation")
+	})
+}
+
 func TestMealPlans_Listing(T *testing.T) {
 	T.Parallel()
 

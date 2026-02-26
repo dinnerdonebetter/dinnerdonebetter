@@ -8,10 +8,9 @@ package grpcapi
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit/manager"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
@@ -29,11 +28,11 @@ import (
 	manager11 "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/manager"
 	manager5 "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	manager12 "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	grpc16 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
@@ -45,7 +44,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
-	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
@@ -64,9 +63,9 @@ import (
 	grpc5 "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
 	grpc6 "github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc"
 	grpc7 "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
-	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
-	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
-	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 	grpc8 "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	grpc9 "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/payments/adapters"
@@ -194,20 +193,22 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	mealPlanningManager, err := managers2.NewMealPlanningManager(ctx, logger, tracerProvider, mealplanningRepository, queuesConfig, publisherProvider, textsearchcfgConfig, provider)
-	if err != nil {
-		return nil, err
-	}
-	worker, err := mealplanfinalizer.NewMealPlanFinalizer(ctx, logger, tracerProvider, mealplanningRepository, publisherProvider, provider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
-	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, mealplanningRepository, groceryListCreator, queuesConfig)
+	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, mealplanningRepository, groceryListCreator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
+	mealPlanGroceryListInitializerWorker := managers2.BuildMealPlanGroceryListInitializerWorker(worker)
 	mealplantaskcreatorWorker, err := mealplantaskcreator.NewMealPlanTaskCreator(ctx, logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
+	mealPlanTaskCreatorWorker := managers2.BuildMealPlanTaskCreatorWorker(mealplantaskcreatorWorker)
+	mealPlanningManager, err := managers2.NewMealPlanningManager(ctx, logger, tracerProvider, mealplanningRepository, queuesConfig, publisherProvider, textsearchcfgConfig, provider, mealPlanGroceryListInitializerWorker, mealPlanTaskCreatorWorker)
+	if err != nil {
+		return nil, err
+	}
+	mealplanfinalizerWorker, err := mealplanfinalizer.NewMealPlanFinalizer(ctx, logger, tracerProvider, mealplanningRepository, publisherProvider, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -216,7 +217,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	mealPlanningServiceServer := grpc7.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, worker, mealplangrocerylistinitializerWorker, mealplantaskcreatorWorker, commentsDataManager)
+	mealPlanningServiceServer := grpc7.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, mealplanfinalizerWorker, worker, mealplantaskcreatorWorker, commentsDataManager)
 	userNotificationsServiceServer := grpc8.NewService(logger, tracerProvider, notificationsDataManager)
 	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
 	oAuth2Manager, err := manager9.NewOAuth2Manager(ctx, logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)
