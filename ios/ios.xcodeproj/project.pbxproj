@@ -150,6 +150,7 @@
 				002AAC232EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2Posix */,
 				002AAC252EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2TransportServices */,
 				002AAC282EE8AB7900BEA5A7 /* GRPCProtobuf */,
+				002AAC2B2EE8AB7A00BEA5A7 /* Segment */,
 			);
 			productName = ios;
 			productReference = 00D164F42EE78B510033A550 /* ios.app */;
@@ -236,6 +237,7 @@
 			packageReferences = (
 				002AAC202EE8AB5F00BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */,
 				002AAC272EE8AB7900BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */,
+				002AAC2A2EE8AB7A00BEA5A7 /* XCRemoteSwiftPackageReference "analytics-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 00D164F52EE78B510033A550 /* Products */;
@@ -634,6 +636,14 @@
 				minimumVersion = 2.1.1;
 			};
 		};
+		002AAC2A2EE8AB7A00BEA5A7 /* XCRemoteSwiftPackageReference "analytics-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/segmentio/analytics-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.9.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -656,6 +666,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 002AAC272EE8AB7900BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */;
 			productName = GRPCProtobuf;
+		};
+		002AAC2B2EE8AB7A00BEA5A7 /* Segment */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 002AAC2A2EE8AB7A00BEA5A7 /* XCRemoteSwiftPackageReference "analytics-swift" */;
+			productName = Segment;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

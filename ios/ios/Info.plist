@@ -6,6 +6,8 @@
 	<string>$(OAUTH2_CLIENT_ID)</string>
 	<key>OAuth2ClientSecret</key>
 	<string>$(OAUTH2_CLIENT_SECRET)</string>
+	<key>SegmentWriteKey</key>
+	<string>$(SEGMENT_WRITE_KEY)</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>

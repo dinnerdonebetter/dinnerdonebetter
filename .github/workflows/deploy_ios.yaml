@@ -31,6 +31,7 @@ jobs:
           cat > Secrets.xcconfig <<XCEOF
           OAUTH2_CLIENT_ID = ${{ secrets.PROD_IOS_OAUTH2_CLIENT_ID }}
           OAUTH2_CLIENT_SECRET = ${{ secrets.PROD_IOS_OAUTH2_CLIENT_SECRET }}
+          SEGMENT_WRITE_KEY = ${{ secrets.PROD_IOS_SEGMENT_WRITE_KEY }}
           XCEOF
 
       - name: Install Ruby bundler deps

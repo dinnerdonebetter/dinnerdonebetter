@@ -176,6 +176,16 @@ class AuthenticationManager: AuthenticationManaging {
         self.refreshToken = mock.refreshToken
         self.userID = mock.userID
         self.accountID = mock.accountID
+        if result.success {
+          let reporter = AnalyticsConfiguration.provideEventReporter()
+          reporter.identify(
+            userID: mock.userID,
+            properties: [
+              "username": mock.username,
+              "accountID": mock.accountID,
+            ]
+          )
+        }
       }
       return result
     }
@@ -248,6 +258,14 @@ class AuthenticationManager: AuthenticationManaging {
           print("✅ OAuth2 token obtained successfully")
           await MainActor.run {
             self.persistCredentials()
+            let reporter = AnalyticsConfiguration.provideEventReporter()
+            reporter.identify(
+              userID: tokenResponse.userID,
+              properties: [
+                "username": username,
+                "accountID": tokenResponse.accountID,
+              ]
+            )
           }
         }
 
@@ -645,6 +663,7 @@ class AuthenticationManager: AuthenticationManaging {
   }
 
   func logout() {
+    AnalyticsConfiguration.provideEventReporter().reset()
     self.isAuthenticated = false
     self.username = ""
     self.accessToken = ""
