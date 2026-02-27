@@ -58,7 +58,16 @@ struct UnifiedMealStep: Identifiable {
 
   var componentNamesForTag: String {
     if isMerged {
-      return "Combined"
+      let recipeNames = sources.map { source in
+        if source.isAssociatedRecipeStep, let name = source.associatedRecipeName, !name.isEmpty {
+          return name
+        }
+        return source.componentName
+      }
+      var seen: Set<String> = []
+      let uniqueNames = recipeNames.filter { seen.insert($0).inserted }
+      let namesList = uniqueNames.joined(separator: ", ")
+      return "Combined (\(namesList))"
     }
     if isAssociatedRecipeStep, let name = associatedRecipeName, !name.isEmpty {
       return name

@@ -60,8 +60,8 @@
 				"metricsCollectorEndpoint": "otel-collector-svc.prod.svc.cluster.local:4317",
 				"collectionInterval": 30000000000,
 				"insecure": true,
-				"enableRuntimeMetrics": false,
-				"enableHostMetrics": false
+				"enableRuntimeMetrics": true,
+				"enableHostMetrics": true
 			},
 			"serviceName": "async_message_handler",
 			"provider": "otelgrpc"

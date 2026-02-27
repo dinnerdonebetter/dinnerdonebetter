@@ -92,9 +92,11 @@ func buildProdConfig() *config.APIServiceConfig {
 		Metrics: metricscfg.Config{
 			ServiceName: otelServiceName,
 			Otel: &otelgrpc.Config{
-				Insecure:           true,
-				CollectorEndpoint:  prodOtelCollectorEndpoint,
-				CollectionInterval: 30 * time.Second,
+				Insecure:             true,
+				CollectorEndpoint:    prodOtelCollectorEndpoint,
+				CollectionInterval:   30 * time.Second,
+				EnableRuntimeMetrics: true,
+				EnableHostMetrics:    true,
 			},
 			Provider: metricscfg.ProviderOtel,
 		},

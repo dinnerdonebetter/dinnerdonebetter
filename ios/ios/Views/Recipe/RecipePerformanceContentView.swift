@@ -211,14 +211,25 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           .foregroundColor(.secondary)
       }
 
-      // Progress indicator
+      // Progress indicator and time estimate
       let completedCount =
         viewModel.completedSteps.count + ((showWashHandsStepCard && sharedWashHandsValue) ? 1 : 0)
       let totalSteps = recipe.steps.count + (showWashHandsStepCard ? 1 : 0)
-      Text("\(completedCount) of \(totalSteps) steps completed")
-        .font(.caption)
-        .foregroundColor(.secondary)
-        .padding(.top, 4)
+      HStack(spacing: 12) {
+        Text("\(completedCount) of \(totalSteps) steps completed")
+          .font(.caption)
+          .foregroundColor(.secondary)
+        if let estimate = RecipeTimeEstimation.estimate(steps: recipe.steps) {
+          Label(
+            RecipeTimeEstimation.format(
+              minSeconds: estimate.minSeconds, maxSeconds: estimate.maxSeconds),
+            systemImage: "clock"
+          )
+          .font(.caption)
+          .foregroundColor(.secondary)
+        }
+      }
+      .padding(.top, 4)
 
       // Scale control
       if !hideIngredientsAndInstruments {

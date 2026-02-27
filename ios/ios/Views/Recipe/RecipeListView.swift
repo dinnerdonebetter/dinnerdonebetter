@@ -132,6 +132,16 @@ struct RecipeCard: View {
             .foregroundColor(DSTheme.Colors.textSecondary)
           }
 
+          if let estimate = RecipeTimeEstimation.estimate(steps: recipe.steps) {
+            Label(
+              RecipeTimeEstimation.format(
+                minSeconds: estimate.minSeconds, maxSeconds: estimate.maxSeconds),
+              systemImage: "clock"
+            )
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+
           if recipe.hasEstimatedPortions {
             Label("\(formatPortions(recipe.estimatedPortions))", systemImage: "person.2")
               .font(DSTheme.Typography.caption)

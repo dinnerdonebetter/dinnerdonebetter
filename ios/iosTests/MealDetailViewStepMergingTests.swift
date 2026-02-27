@@ -170,7 +170,7 @@ struct MealDetailViewStepMergingTests {
 
     #expect(steps.count == 1)
     #expect(steps[0].isMerged == true)
-    #expect(steps[0].componentNamesForTag == "Combined")
+    #expect(steps[0].componentNamesForTag == "Combined (Recipe A, Recipe B)")
     #expect(steps[0].sources.count == 2)
 
     let mergedStep = steps[0].step
@@ -306,7 +306,7 @@ struct MealDetailViewStepMergingTests {
     #expect(steps[1].isMerged == false)
   }
 
-  @Test("UnifiedMealStep componentNamesForTag returns Combined for merged")
+  @Test("UnifiedMealStep componentNamesForTag includes recipe names for merged")
   @MainActor
   func testComponentNamesForTagMerged() async {
     let recipeA = makeRecipe(
@@ -345,7 +345,7 @@ struct MealDetailViewStepMergingTests {
       formatComponentType: formatComponentType
     )
 
-    #expect(steps[0].componentNamesForTag == "Combined")
+    #expect(steps[0].componentNamesForTag == "Combined (Recipe A, Recipe B)")
   }
 
   @Test("Does not merge when one step is already done (e.g. from prep) and the other is not")

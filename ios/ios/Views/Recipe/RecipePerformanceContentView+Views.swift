@@ -105,6 +105,12 @@ struct StepCardView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
+
+            if let stepTime = RecipeTimeEstimation.formatStepTime(step.estimatedTimeInSeconds) {
+              Label(stepTime, systemImage: "clock")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
           }
 
           if !step.explicitInstructions.isEmpty {
