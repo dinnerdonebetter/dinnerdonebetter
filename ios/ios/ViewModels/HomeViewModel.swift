@@ -83,6 +83,21 @@ class HomeViewModel {
     return 0
   }
 
+  /// Finalized meal plans that are not the active plan (e.g. next week's plan).
+  var futureFinalizedMealPlans: [Mealplanning_MealPlan] {
+    guard let active = activeMealPlan else {
+      return allMealPlans.filter { $0.status == .finalized && !$0.events.isEmpty }
+        .sorted { mealPlanStartDate($0) < mealPlanStartDate($1) }
+    }
+    return allMealPlans.filter { mealPlan in
+      mealPlan.status == .finalized
+        && !mealPlan.events.isEmpty
+        && mealPlan.id != active.id
+        && mealPlanStartDate(mealPlan) >= mealPlanEndDate(active)
+    }
+    .sorted { mealPlanStartDate($0) < mealPlanStartDate($1) }
+  }
+
   /// Meal plans that are not finalized and start after the active meal plan's end date.
   /// Only meaningful when there are such plans; used to conditionally show "Upcoming Meal Plans".
   var upcomingMealPlans: [Mealplanning_MealPlan] {
