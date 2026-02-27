@@ -8,14 +8,15 @@ package dbcleaner
 
 import (
 	"context"
+
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
-	"github.com/dinnerdonebetter/backend/internal/services/oauth/workers/db_cleaner"
+	dbcleaner "github.com/dinnerdonebetter/backend/internal/services/oauth/workers/db_cleaner"
 )
 
 // Injectors from build.go:

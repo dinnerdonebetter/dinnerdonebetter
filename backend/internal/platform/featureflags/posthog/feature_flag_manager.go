@@ -13,30 +13,33 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
+	openfeatureposthog "github.com/dhaus67/openfeature-posthog-go"
+	"github.com/open-feature/go-sdk/openfeature"
 	"github.com/posthog/posthog-go"
 )
 
 const (
-	serviceName = "posthog_feature_flag_manager"
+	serviceName  = "posthog_feature_flag_manager"
+	clientDomain = "posthog_feature_flags"
 )
 
 var (
 	ErrNilConfig          = errors.New("missing config")
-	ErrNilUser            = errors.New("missing user")
 	ErrMissingCredentials = errors.New("missing PostHog credentials")
 )
 
 type (
-	// featureFlagManager implements the feature flag interface.
+	// featureFlagManager implements the feature flag interface using OpenFeature.
 	featureFlagManager struct {
 		logger         logging.Logger
 		tracer         tracing.Tracer
 		posthogClient  posthog.Client
+		ofClient       *openfeature.Client
 		circuitBreaker circuitbreaking.CircuitBreaker
 	}
 )
 
-// NewFeatureFlagManager constructs a new featureFlagManager.
+// NewFeatureFlagManager constructs a new featureFlagManager backed by OpenFeature.
 func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, circuitBreaker circuitbreaking.CircuitBreaker, configModifiers ...func(config *posthog.Config)) (featureflags.FeatureFlagManager, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
@@ -68,8 +71,19 @@ func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tr
 		return nil, fmt.Errorf("failed to create posthog client: %w", err)
 	}
 
+	provider := openfeatureposthog.NewProvider(client)
+	if err = openfeature.SetNamedProviderAndWait(clientDomain, provider); err != nil {
+		if closeErr := client.Close(); closeErr != nil {
+			logger.Error("error closing OpenFeatureFlag client", closeErr)
+		}
+		return nil, fmt.Errorf("failed to set OpenFeature provider: %w", err)
+	}
+
+	ofClient := openfeature.NewClient(clientDomain)
+
 	ffm := &featureFlagManager{
 		posthogClient:  client,
+		ofClient:       ofClient,
 		circuitBreaker: circuitBreaker,
 		logger:         logging.EnsureLogger(logger).WithName(serviceName),
 		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
@@ -89,53 +103,15 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 		return false, internalerrors.ErrCircuitBroken
 	}
 
-	flagEnabled, err := f.posthogClient.IsFeatureEnabled(posthog.FeatureFlagPayload{
-		Key:        feature,
-		DistinctId: userID,
-	})
+	evalCtx := openfeature.NewEvaluationContext(userID, nil)
+	flagEnabled, err := f.ofClient.BooleanValue(ctx, feature, false, evalCtx)
 	if err != nil {
 		f.circuitBreaker.Failed()
 		return false, observability.PrepareAndLogError(err, logger, span, "checking feature flag eligibility")
 	}
 
-	if enabled, ok := flagEnabled.(bool); ok {
-		f.circuitBreaker.Failed()
-		return enabled, nil
-	}
-
-	return false, nil
-}
-
-// Identify identifies a user in PostHog.
-func (f *featureFlagManager) Identify(ctx context.Context, user featureflags.User) error {
-	_, span := f.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if !f.circuitBreaker.CanProceed() {
-		return internalerrors.ErrCircuitBroken
-	}
-
-	if user == nil {
-		return ErrNilUser
-	}
-
-	logger := f.logger.WithValue(keys.UserIDKey, user.GetID())
-
-	err := f.posthogClient.Enqueue(posthog.Identify{
-		DistinctId: user.GetID(),
-		Properties: map[string]any{
-			"username":   user.GetUsername(),
-			"first_name": user.GetFirstName(),
-			"last_name":  user.GetLastName(),
-		},
-	})
-	if err != nil {
-		f.circuitBreaker.Failed()
-		return observability.PrepareAndLogError(err, logger, span, "identifying user")
-	}
-
 	f.circuitBreaker.Succeeded()
-	return nil
+	return flagEnabled, nil
 }
 
 // Close closes the PostHog client.

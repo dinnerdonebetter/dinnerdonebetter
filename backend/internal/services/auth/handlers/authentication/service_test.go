@@ -11,7 +11,6 @@ import (
 	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -60,7 +59,6 @@ func buildTestService(t *testing.T) *service {
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
 		pp,
-		&featureflags.NoopFeatureFlagManager{},
 		analytics.NewNoopEventReporter(),
 		rpm,
 		queueCfg,
@@ -110,7 +108,6 @@ func TestProvideService(T *testing.T) {
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
-			&featureflags.NoopFeatureFlagManager{},
 			analytics.NewNoopEventReporter(),
 			rpm,
 			queueCfg,

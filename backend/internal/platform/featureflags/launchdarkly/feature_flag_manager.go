@@ -15,34 +15,35 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
-	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
 	ld "github.com/launchdarkly/go-server-sdk/v6"
 	"github.com/launchdarkly/go-server-sdk/v6/ldcomponents"
+	ofld "github.com/open-feature/go-sdk-contrib/providers/launchdarkly/pkg"
+	"github.com/open-feature/go-sdk/openfeature"
+)
+
+const (
+	serviceName  = "launchdarkly_feature_flag_manager"
+	clientDomain = "launchdarkly_feature_flags"
 )
 
 var (
-	ErrMissingHTTPClient = errors.New("missing HTTP launchDarklyClient")
+	ErrMissingHTTPClient = errors.New("missing HTTP client")
 	ErrNilConfig         = errors.New("missing config")
 	ErrMissingSDKKey     = errors.New("missing SDK key")
 )
 
 type (
-	launchDarklyClient interface {
-		Close() error
-		Identify(context ldcontext.Context) error
-		BoolVariation(key string, context ldcontext.Context, defaultVal bool) (bool, error)
-	}
-
-	// featureFlagManager implements the feature flag interface.
+	// featureFlagManager implements the feature flag interface using OpenFeature.
 	featureFlagManager struct {
-		launchDarklyClient launchDarklyClient
-		circuitBreaker     circuitbreaking.CircuitBreaker
-		logger             logging.Logger
-		tracer             tracing.Tracer
+		ldClient       *ld.LDClient
+		ofClient       *openfeature.Client
+		circuitBreaker circuitbreaking.CircuitBreaker
+		logger         logging.Logger
+		tracer         tracing.Tracer
 	}
 )
 
-// NewFeatureFlagManager constructs a new featureFlagManager.
+// NewFeatureFlagManager constructs a new featureFlagManager backed by OpenFeature.
 func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, httpClient *http.Client, circuitBreaker circuitbreaking.CircuitBreaker, configModifiers ...func(ld.Config) ld.Config) (featureflags.FeatureFlagManager, error) {
 	if httpClient == nil {
 		return nil, ErrMissingHTTPClient
@@ -76,14 +77,25 @@ func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tr
 		cfg.InitTimeout,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error initializing LaunchDarkly launchDarklyClient: %w", err)
+		return nil, fmt.Errorf("error initializing LaunchDarkly client: %w", err)
 	}
 
+	provider := ofld.NewProvider(client)
+	if err = openfeature.SetNamedProviderAndWait(clientDomain, provider); err != nil {
+		if closeErr := client.Close(); closeErr != nil {
+			logger.Error("error closing OpenFeatureFlag client", closeErr)
+		}
+		return nil, fmt.Errorf("failed to set OpenFeature provider: %w", err)
+	}
+
+	ofClient := openfeature.NewClient(clientDomain)
+
 	ffm := &featureFlagManager{
-		logger:             logging.EnsureLogger(logger),
-		circuitBreaker:     circuitBreaker,
-		tracer:             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("launchdarkly_feature_flag_manager")),
-		launchDarklyClient: client,
+		logger:         logging.EnsureLogger(logger),
+		circuitBreaker: circuitBreaker,
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		ldClient:       client,
+		ofClient:       ofClient,
 	}
 
 	return ffm, nil
@@ -100,7 +112,8 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 		return false, internalerrors.ErrCircuitBroken
 	}
 
-	result, err := f.launchDarklyClient.BoolVariation(feature, ldcontext.New(userID), false)
+	evalCtx := openfeature.NewEvaluationContext(userID, nil)
+	result, err := f.ofClient.BooleanValue(ctx, feature, false, evalCtx)
 	if err != nil {
 		f.circuitBreaker.Failed()
 		return false, observability.PrepareAndLogError(err, logger, span, "checking feature flag variation")
@@ -110,35 +123,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	return result, nil
 }
 
-// Identify identifies a user in LaunchDarkly.
-func (f *featureFlagManager) Identify(ctx context.Context, user featureflags.User) error {
-	_, span := f.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := f.logger.WithValue(keys.UserIDKey, user.GetID())
-
-	if !f.circuitBreaker.CanProceed() {
-		return internalerrors.ErrCircuitBroken
-	}
-
-	err := f.launchDarklyClient.Identify(
-		ldcontext.NewBuilderFromContext(ldcontext.New(user.GetID())).
-			Name(user.GetUsername()).
-			SetString("email", user.GetEmail()).
-			SetString("first_name", user.GetFirstName()).
-			SetString("last_name", user.GetLastName()).
-			Build(),
-	)
-	if err != nil {
-		f.circuitBreaker.Failed()
-		return observability.PrepareAndLogError(err, logger, span, "identifying user")
-	}
-
-	f.circuitBreaker.Succeeded()
-	return nil
-}
-
 // Close closes the LaunchDarkly client.
 func (f *featureFlagManager) Close() error {
-	return f.launchDarklyClient.Close()
+	return f.ldClient.Close()
 }

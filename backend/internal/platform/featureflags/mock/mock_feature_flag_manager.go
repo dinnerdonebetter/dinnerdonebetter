@@ -20,11 +20,6 @@ func (m *FeatureFlagManager) CanUseFeature(ctx context.Context, username, featur
 	return returnValues.Bool(0), returnValues.Error(1)
 }
 
-// Identify satisfies the FeatureFlagManager interface.
-func (m *FeatureFlagManager) Identify(ctx context.Context, user featureflags.User) error {
-	return m.Called(ctx, user).Error(0)
-}
-
 // Close satisfies the FeatureFlagManager interface.
 func (m *FeatureFlagManager) Close() error {
 	return m.Called().Error(0)

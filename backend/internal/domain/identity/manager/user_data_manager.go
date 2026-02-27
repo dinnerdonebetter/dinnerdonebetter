@@ -448,22 +448,6 @@ func (m *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 		identitykeys.UserEmailVerificationTokenKey: emailVerificationToken,
 	}))
 
-	/* TODO: this should be done in a downstream handler
-
-	if err = m.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
-		"username":        user.Username,
-		"default_account": defaultAccountID,
-		"first_name":      user.FirstName,
-		"last_name":       user.LastName,
-	}); err != nil {
-		observability.AcknowledgeError(err, logger, span, "identifying user for analytics")
-	}
-
-	if err = s.featureFlagManager.Identify(ctx, user); err != nil {
-		observability.AcknowledgeError(err, logger, span, "identifying user in feature flag manager")
-	}
-	*/
-
 	// UserCreationResponse is a struct we can use to notify the user of their two factor secret, but ideally just this once and then never again.
 	ucr := &identity.UserCreationResponse{
 		CreatedUserID:   user.ID,

@@ -12,12 +12,10 @@ import (
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
@@ -44,8 +42,6 @@ func Build(
 		encoding.Providers,
 		msgconfig.MessageQueueProviders,
 		analyticscfg.Providers,
-		featureflagscfg.ProvidersFeatureFlags,
-		tracing.ProvidersTracing,
 		tracingcfg.TracingConfigProviders,
 		observability.O11yProviders,
 		databasecfg.DatabaseConfigProviders,

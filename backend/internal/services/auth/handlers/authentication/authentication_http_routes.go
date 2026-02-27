@@ -42,10 +42,6 @@ func (s *service) postLogin(ctx context.Context, user *identity.User, defaultAcc
 		return http.StatusAccepted, observability.PrepareError(err, span, "identifying user for analytics")
 	}
 
-	if err := s.featureFlagManager.Identify(ctx, user); err != nil {
-		return http.StatusAccepted, observability.PrepareError(err, span, "identifying user in feature flag manager")
-	}
-
 	return http.StatusAccepted, nil
 }
 
