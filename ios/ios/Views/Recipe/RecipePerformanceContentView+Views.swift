@@ -902,7 +902,7 @@ struct OptionGroupView: View {
 
   var body: some View {
     // If a selection has been made (selectedOptionIndex is not nil), show only that option without indentation
-    if let selectedIndex = group.selectedOptionIndex,
+    if group.selectedOptionIndex != nil,
       group.options.count == 1,
       let option = group.options.first
     {
@@ -951,7 +951,7 @@ struct InstrumentOptionGroupView: View {
 
   var body: some View {
     // If a selection has been made (selectedOptionIndex is not nil), show only that option without indentation
-    if let selectedIndex = group.selectedOptionIndex,
+    if group.selectedOptionIndex != nil,
       group.options.count == 1,
       let option = group.options.first
     {
@@ -988,7 +988,7 @@ struct VesselOptionGroupView: View {
 
   var body: some View {
     // If a selection has been made (selectedOptionIndex is not nil), show only that option without indentation
-    if let selectedIndex = group.selectedOptionIndex,
+    if group.selectedOptionIndex != nil,
       group.options.count == 1,
       let option = group.options.first
     {

@@ -211,11 +211,15 @@ func collectUnifiedMealStepsWithMerging(
     }
   }
 
-  // Build result in original step order; when we hit a step that's in a multi-group,
-  // output the merged step once and skip the rest of that group
+  // Build result in original step order. When we hit a step that's in a multi-group,
+  // partition by completion status: only merge steps that are all done or all not done.
+  // Mixed completion (e.g. one done from prep, one not) must stay separate.
   var result: [UnifiedMealStep] = []
   var displayIndex = 0
-  var consumedInGroup: Set<String> = []  // "recipeID:stepID" for steps we've output as part of a merge
+  var consumedInGroup: Set<String> = []  // "recipeID:stepID" for steps we've output
+  let sourceToRawIndex: [String: Int] = Dictionary(
+    uniqueKeysWithValues: rawSteps.enumerated().map { ($1.recipeID + ":" + $1.step.id, $0) }
+  )
 
   for source in rawSteps {
     let sourceKey = "\(source.recipeID):\(source.step.id)"
@@ -225,18 +229,43 @@ func collectUnifiedMealStepsWithMerging(
 
     if let key = stepMergeKey(step: source.step), let group = groups[key] {
       if group.count > 1 {
-        let category = categorizeMergedStep(sources: group)
-        let mergedStep = createMergedStep(from: group)
-        result.append(
-          UnifiedMealStep(
-            sources: group,
-            step: mergedStep,
-            stepIndex: displayIndex,
-            category: category
-          )
-        )
-        for sourceStep in group {
-          consumedInGroup.insert("\(sourceStep.recipeID):\(sourceStep.step.id)")
+        let partitions = partitionGroupByCompletionStatus(group)
+        let orderedPartitions = partitions.sorted { partition1, partition2 in
+          let min1 =
+            partition1.compactMap { sourceToRawIndex["\($0.recipeID):\($0.step.id)"] }.min()
+            ?? Int.max
+          let min2 =
+            partition2.compactMap { sourceToRawIndex["\($0.recipeID):\($0.step.id)"] }.min()
+            ?? Int.max
+          return min1 < min2
+        }
+        for partition in orderedPartitions {
+          if partition.count > 1 {
+            let category = categorizeMergedStep(sources: partition)
+            let mergedStep = createMergedStep(from: partition)
+            result.append(
+              UnifiedMealStep(
+                sources: partition,
+                step: mergedStep,
+                stepIndex: displayIndex,
+                category: category
+              )
+            )
+          } else {
+            let category = categorizeSingleStep(source: partition[0])
+            result.append(
+              UnifiedMealStep(
+                sources: partition,
+                step: partition[0].step,
+                stepIndex: displayIndex,
+                category: category
+              )
+            )
+          }
+          for sourceStep in partition {
+            consumedInGroup.insert("\(sourceStep.recipeID):\(sourceStep.step.id)")
+          }
+          displayIndex += 1
         }
       } else {
         let category = categorizeSingleStep(source: source)
@@ -248,6 +277,7 @@ func collectUnifiedMealStepsWithMerging(
             category: category
           )
         )
+        displayIndex += 1
       }
     } else {
       let category = categorizeSingleStep(source: source)
@@ -259,10 +289,33 @@ func collectUnifiedMealStepsWithMerging(
           category: category
         )
       )
+      displayIndex += 1
     }
-    displayIndex += 1
   }
 
+  return result
+}
+
+/// Partitions a merge group by completion status. Steps that are already done (e.g. from prep tasks)
+/// must not be merged with steps that are still pending—they need separate quantities.
+@MainActor
+private func partitionGroupByCompletionStatus(
+  _ group: [UnifiedMealStepSource]
+) -> [[UnifiedMealStepSource]] {
+  var done: [UnifiedMealStepSource] = []
+  var notDone: [UnifiedMealStepSource] = []
+  for source in group {
+    let category = source.viewModel.categorizeStep(
+      recipeID: source.recipeID, stepID: source.step.id)
+    if category == .done {
+      done.append(source)
+    } else {
+      notDone.append(source)
+    }
+  }
+  var result: [[UnifiedMealStepSource]] = []
+  if !done.isEmpty { result.append(done) }
+  if !notDone.isEmpty { result.append(notDone) }
   return result
 }
 

@@ -347,4 +347,55 @@ struct MealDetailViewStepMergingTests {
 
     #expect(steps[0].componentNamesForTag == "Combined")
   }
+
+  @Test("Does not merge when one step is already done (e.g. from prep) and the other is not")
+  @MainActor
+  func testDoesNotMergeWhenCompletionStatusDiffers() async {
+    let recipeA = makeRecipe(
+      id: "recipe-a",
+      name: "Chicken",
+      steps: [makeGrindPeppercornsStep(stepID: "step-a1", quantityGrams: 3)]
+    )
+    let recipeB = makeRecipe(
+      id: "recipe-b",
+      name: "Broccoli",
+      steps: [makeGrindPeppercornsStep(stepID: "step-b1", quantityGrams: 2)]
+    )
+
+    let meal = makeMeal(components: [
+      makeMealComponent(recipe: recipeA),
+      makeMealComponent(recipe: recipeB),
+    ])
+
+    let authManager = AuthenticationManager()
+    authManager.isAuthenticated = true
+
+    let viewModelA = PerformRecipeViewModel(recipeID: "recipe-a", authManager: authManager)
+    viewModelA.recipe = recipeA
+    viewModelA.washHandsCompleted = true
+    // Simulate: user completed chicken's grind step as part of a prep task
+    viewModelA.completedSteps.insert("recipe-a:step-a1")
+
+    let viewModelB = PerformRecipeViewModel(recipeID: "recipe-b", authManager: authManager)
+    viewModelB.recipe = recipeB
+    viewModelB.washHandsCompleted = true
+
+    let steps = collectUnifiedMealStepsWithMerging(
+      meal: meal,
+      componentViewModels: ["recipe-a": viewModelA, "recipe-b": viewModelB],
+      loadedRecipes: ["recipe-a": (recipeA, 1.0), "recipe-b": (recipeB, 1.0)],
+      baseComponentScales: ["recipe-a": 1.0, "recipe-b": 1.0],
+      mealScale: 1.0,
+      formatComponentType: formatComponentType
+    )
+
+    // Should NOT merge: chicken step is done, broccoli step still needs to be done
+    #expect(steps.count == 2)
+    #expect(steps[0].isMerged == false)
+    #expect(steps[0].category == .done)
+    #expect(steps[0].step.ingredients[0].quantity.min == 3)
+    #expect(steps[1].isMerged == false)
+    #expect(steps[1].category == .upNext)
+    #expect(steps[1].step.ingredients[0].quantity.min == 2)
+  }
 }

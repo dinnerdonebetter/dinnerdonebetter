@@ -57,7 +57,7 @@ class MealListViewModel {
       let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
 
       // Create request
-      var request = Mealplanning_GetMealsRequest()
+      let request = Mealplanning_GetMealsRequest()
 
       // Execute request
       let response = try await clientManager.client.mealPlanning.getMeals(

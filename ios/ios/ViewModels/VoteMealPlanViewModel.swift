@@ -363,7 +363,7 @@ class VoteMealPlanViewModel {
       request.input = input
 
       // Submit abstain votes for this event
-      let response = try await clientManager.client.mealPlanning.createMealPlanOptionVote(
+      _ = try await clientManager.client.mealPlanning.createMealPlanOptionVote(
         request,
         metadata: metadata,
         options: clientManager.defaultCallOptions

@@ -63,7 +63,6 @@ class HomeViewModel {
 
   /// The active meal plan: finalized plan whose start/end range is closest to the current date.
   var activeMealPlan: Mealplanning_MealPlan? {
-    let now = Date()
     let candidates = allMealPlans.filter { mealPlan in
       mealPlan.status == .finalized && !mealPlan.events.isEmpty
     }
