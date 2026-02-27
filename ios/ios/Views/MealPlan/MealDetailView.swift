@@ -143,35 +143,34 @@ struct MealDetailView: View {
   // MARK: - Overall Info Section
 
   private func overallInfoSection(meal: Mealplanning_Meal) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
       // Description
       if !meal.description_p.isEmpty {
         Text(meal.description_p)
-          .font(.subheadline)
-          .foregroundColor(.secondary)
+          .font(DSTheme.Typography.body)
+          .foregroundColor(DSTheme.Colors.textSecondary)
       }
 
       // Estimated portions
       if meal.hasEstimatedPortions {
-        HStack(spacing: 8) {
+        HStack(spacing: DSTheme.Spacing.sm) {
           Image(systemName: "person.2")
-            .foregroundColor(.secondary)
+            .foregroundColor(DSTheme.Colors.textSecondary)
           Text("Estimated Portions: \(formatPortions(meal.estimatedPortions))")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
+            .font(DSTheme.Typography.body)
+            .foregroundColor(DSTheme.Colors.textSecondary)
         }
       }
 
       // Meal Scale Control
       Divider()
-        .padding(.vertical, 4)
+        .padding(.vertical, DSTheme.Spacing.xs)
 
-      HStack(spacing: 12) {
+      HStack(spacing: DSTheme.Spacing.md) {
         Text("Meal Scale:")
-          .font(.subheadline)
-          .fontWeight(.medium)
+          .font(DSTheme.Typography.label)
 
-        HStack(spacing: 8) {
+        HStack(spacing: DSTheme.Spacing.sm) {
           TextField("1.0", text: $mealScaleText)
             .keyboardType(.decimalPad)
             .textFieldStyle(.roundedBorder)
@@ -199,8 +198,8 @@ struct MealDetailView: View {
             }
 
           Text("x")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
+            .font(DSTheme.Typography.body)
+            .foregroundColor(DSTheme.Colors.textSecondary)
 
           Button {
             adjustMealScale(by: -0.25)
@@ -227,10 +226,10 @@ struct MealDetailView: View {
         step: 0.25
       )
     }
-    .padding()
+    .padding(DSTheme.Spacing.lg)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .background(Color(.systemGray6))
-    .cornerRadius(12)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.lg)
   }
 
   private func updateMealScaleFromText() {
@@ -293,7 +292,7 @@ struct MealDetailView: View {
   }
 
   private var aggregatedListsSection: some View {
-    VStack(alignment: .leading, spacing: 12) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
       // Instruments & Vessels
       aggregatedInstrumentsVesselsSection
 
@@ -303,8 +302,8 @@ struct MealDetailView: View {
   }
 
   private var mealWashHandsSection: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      HStack(alignment: .top, spacing: 12) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+      HStack(alignment: .top, spacing: DSTheme.Spacing.md) {
         Button(
           action: {
             setMealWashHandsCompleted(!mealWashHandsCompleted)
@@ -312,40 +311,56 @@ struct MealDetailView: View {
           label: {
             Image(systemName: mealWashHandsCompleted ? "checkmark.circle.fill" : "circle")
               .font(.title2)
-              .foregroundColor(mealWashHandsCompleted ? .green : .blue)
+              .foregroundColor(
+                mealWashHandsCompleted
+                  ? DSTheme.Colors.success
+                  : DSTheme.Colors.primary
+              )
           }
         )
         .buttonStyle(.plain)
 
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
           Text("🧼 Wash your hands")
-            .font(.headline)
-            .foregroundColor(mealWashHandsCompleted ? .secondary : .primary)
+            .font(DSTheme.Typography.title3)
+            .foregroundColor(
+              mealWashHandsCompleted
+                ? DSTheme.Colors.textSecondary
+                : DSTheme.Colors.textPrimary
+            )
             .italic(mealWashHandsCompleted)
 
           Text("Complete this once to unlock all component steps.")
-            .font(.caption)
-            .foregroundColor(.secondary)
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
         }
 
         Spacer()
       }
     }
-    .padding()
-    .background(mealWashHandsCompleted ? Color(.systemGray6) : Color(.systemBackground))
-    .cornerRadius(12)
+    .padding(DSTheme.Spacing.lg)
+    .background(
+      mealWashHandsCompleted
+        ? DSTheme.Colors.cardBackground
+        : Color(.systemBackground)
+    )
+    .cornerRadius(DSTheme.Radius.lg)
     .overlay(
-      RoundedRectangle(cornerRadius: 12)
-        .stroke(mealWashHandsCompleted ? Color.green.opacity(0.3) : Color.clear, lineWidth: 2)
+      RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
+        .stroke(
+          mealWashHandsCompleted
+            ? DSTheme.Colors.success.opacity(0.3)
+            : Color.clear,
+          lineWidth: 2
+        )
     )
   }
 
   private var mealFlowModeSection: some View {
-    VStack(alignment: .leading, spacing: 8) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       Text("Step View")
-        .font(.subheadline)
-        .fontWeight(.semibold)
-        .foregroundColor(.secondary)
+        .font(DSTheme.Typography.label)
+        .foregroundColor(DSTheme.Colors.textSecondary)
 
       Picker("Step View", selection: $mealFlowMode) {
         ForEach(MealFlowMode.allCases) { mode in
@@ -369,23 +384,23 @@ struct MealDetailView: View {
         label: {
           HStack {
             Text("Equipment")
-              .font(.headline)
-              .foregroundColor(.primary)
+              .font(DSTheme.Typography.title3)
+              .foregroundColor(DSTheme.Colors.textPrimary)
             Spacer()
             Image(systemName: isInstrumentsVesselsExpanded ? "chevron.down" : "chevron.right")
-              .font(.caption)
-              .foregroundColor(.secondary)
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
           }
-          .padding()
-          .background(Color(.systemGray6))
+          .padding(DSTheme.Spacing.lg)
+          .background(DSTheme.Colors.cardBackground)
         }
       )
       .buttonStyle(.plain)
 
       if isInstrumentsVesselsExpanded && !aggregatedItems.isEmpty {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
           ForEach(aggregatedItems, id: \.itemID) { item in
-            HStack(spacing: 12) {
+            HStack(spacing: DSTheme.Spacing.md) {
               Button(
                 action: {
                   if checkedInstrumentsVessels.contains(item.itemID) {
@@ -401,26 +416,30 @@ struct MealDetailView: View {
                   )
                   .font(.title3)
                   .foregroundColor(
-                    checkedInstrumentsVessels.contains(item.itemID) ? .green : .gray
+                    checkedInstrumentsVessels.contains(item.itemID)
+                      ? DSTheme.Colors.success
+                      : DSTheme.Colors.textTertiary
                   )
                 }
               )
               .buttonStyle(.plain)
 
-              HStack(spacing: 8) {
+              HStack(spacing: DSTheme.Spacing.sm) {
                 Image(
                   systemName: item.type == .instrument
                     ? "wrench.and.screwdriver" : "square.stack.3d.up"
                 )
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(DSTheme.Typography.caption)
+                .foregroundColor(DSTheme.Colors.textSecondary)
                 .frame(width: 20)
 
                 HStack {
                   Text(item.name)
-                    .font(.subheadline)
+                    .font(DSTheme.Typography.body)
                     .foregroundColor(
-                      checkedInstrumentsVessels.contains(item.itemID) ? .secondary : .primary
+                      checkedInstrumentsVessels.contains(item.itemID)
+                        ? DSTheme.Colors.textSecondary
+                        : DSTheme.Colors.textPrimary
                     )
                     .strikethrough(checkedInstrumentsVessels.contains(item.itemID))
 
@@ -429,16 +448,16 @@ struct MealDetailView: View {
 
               Spacer()
             }
-            .padding(.horizontal)
-            .padding(.vertical, 4)
+            .padding(.horizontal, DSTheme.Spacing.lg)
+            .padding(.vertical, DSTheme.Spacing.xs)
           }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, DSTheme.Spacing.sm)
         .background(Color(.systemBackground))
       }
     }
-    .background(Color(.systemGray6))
-    .cornerRadius(12)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.lg)
   }
 
   private func unifiedMealStepsSection(meal: Mealplanning_Meal) -> some View {
@@ -454,8 +473,8 @@ struct MealDetailView: View {
     let forLater = allSteps.filter { $0.category == .forLater }
 
     let focusedGroups = [
-      StepFlowGroup(title: "Up Next", color: .orange, items: upNext),
-      StepFlowGroup(title: "Not Yet", color: .blue, items: forLater),
+      StepFlowGroup(title: "Up Next", color: DSTheme.Colors.warning, items: upNext),
+      StepFlowGroup(title: "Not Yet", color: DSTheme.Colors.primary, items: forLater),
     ]
 
     return StepFlowSection(
@@ -466,8 +485,7 @@ struct MealDetailView: View {
       emptyMessage: "Loading component steps...",
       headerContent: {
         Text("Cook Flow")
-          .font(.title2)
-          .fontWeight(.bold)
+          .font(DSTheme.Typography.title2)
       },
       allModeLeadingContent: {
         EmptyView()
@@ -476,15 +494,15 @@ struct MealDetailView: View {
         EmptyView()
       },
       rowContent: { item in
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
           let tagStyle = componentTagStyle(for: item.componentIndex)
           Text(item.componentNamesForTag)
-            .font(.caption2)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
+            .font(DSTheme.Typography.captionSmall)
+            .padding(.horizontal, DSTheme.Spacing.sm)
+            .padding(.vertical, DSTheme.Spacing.xxs)
             .background(tagStyle.background)
             .foregroundColor(tagStyle.foreground)
-            .cornerRadius(6)
+            .cornerRadius(DSTheme.Radius.sm)
 
           StepCardView(
             step: item.step,
@@ -583,23 +601,23 @@ struct MealDetailView: View {
         label: {
           HStack {
             Text("Ingredients")
-              .font(.headline)
-              .foregroundColor(.primary)
+              .font(DSTheme.Typography.title3)
+              .foregroundColor(DSTheme.Colors.textPrimary)
             Spacer()
             Image(systemName: isIngredientsExpanded ? "chevron.down" : "chevron.right")
-              .font(.caption)
-              .foregroundColor(.secondary)
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
           }
-          .padding()
-          .background(Color(.systemGray6))
+          .padding(DSTheme.Spacing.lg)
+          .background(DSTheme.Colors.cardBackground)
         }
       )
       .buttonStyle(.plain)
 
       if isIngredientsExpanded && !aggregatedIngredients.isEmpty {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
           ForEach(aggregatedIngredients, id: \.ingredientID) { aggregated in
-            HStack(spacing: 12) {
+            HStack(spacing: DSTheme.Spacing.md) {
               Button(
                 action: {
                   if checkedIngredients.contains(aggregated.ingredientID) {
@@ -615,48 +633,51 @@ struct MealDetailView: View {
                   )
                   .font(.title3)
                   .foregroundColor(
-                    checkedIngredients.contains(aggregated.ingredientID) ? .green : .gray
+                    checkedIngredients.contains(aggregated.ingredientID)
+                      ? DSTheme.Colors.success
+                      : DSTheme.Colors.textTertiary
                   )
                 }
               )
               .buttonStyle(.plain)
 
-              VStack(alignment: .leading, spacing: 2) {
+              VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
                 HStack {
                   if let quantityText = aggregated.quantityText {
                     Text(quantityText)
-                      .font(.subheadline)
-                      .fontWeight(.medium)
-                      .foregroundColor(.secondary)
+                      .font(DSTheme.Typography.label)
+                      .foregroundColor(DSTheme.Colors.textSecondary)
                   }
 
                   Text(aggregated.name)
-                    .font(.subheadline)
+                    .font(DSTheme.Typography.body)
                     .foregroundColor(
-                      checkedIngredients.contains(aggregated.ingredientID) ? .secondary : .primary
+                      checkedIngredients.contains(aggregated.ingredientID)
+                        ? DSTheme.Colors.textSecondary
+                        : DSTheme.Colors.textPrimary
                     )
                     .strikethrough(checkedIngredients.contains(aggregated.ingredientID))
                 }
 
                 if !aggregated.quantityNotes.isEmpty {
                   Text(aggregated.quantityNotes)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(DSTheme.Typography.caption)
+                    .foregroundColor(DSTheme.Colors.textSecondary)
                 }
               }
 
               Spacer()
             }
-            .padding(.horizontal)
-            .padding(.vertical, 4)
+            .padding(.horizontal, DSTheme.Spacing.lg)
+            .padding(.vertical, DSTheme.Spacing.xs)
           }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, DSTheme.Spacing.sm)
         .background(Color(.systemBackground))
       }
     }
-    .background(Color(.systemGray6))
-    .cornerRadius(12)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.lg)
   }
 
 }
@@ -761,10 +782,9 @@ extension MealDetailView {
   }
 
   private func componentsSection(meal: Mealplanning_Meal) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
       Text("Components")
-        .font(.title2)
-        .fontWeight(.bold)
+        .font(DSTheme.Typography.title2)
 
       ForEach(meal.components, id: \.recipe.id) { component in
         EmbeddedRecipeView(
@@ -854,36 +874,34 @@ struct EmbeddedRecipeView: View {
               // Component type badge
               if componentType != .unspecified {
                 Text(formatComponentType(componentType))
-                  .font(.caption)
-                  .fontWeight(.semibold)
-                  .padding(.horizontal, 8)
-                  .padding(.vertical, 4)
-                  .background(Color.blue.opacity(0.2))
-                  .foregroundColor(.blue)
-                  .cornerRadius(6)
+                  .font(DSTheme.Typography.labelSmall)
+                  .padding(.horizontal, DSTheme.Spacing.sm)
+                  .padding(.vertical, DSTheme.Spacing.xs)
+                  .background(DSTheme.Colors.primary.opacity(0.2))
+                  .foregroundColor(DSTheme.Colors.primary)
+                  .cornerRadius(DSTheme.Radius.sm)
               }
 
               // Recipe name
               if let recipe = viewModel?.recipe {
                 Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
-                  .font(.subheadline)
-                  .fontWeight(.medium)
-                  .foregroundColor(.primary)
+                  .font(DSTheme.Typography.label)
+                  .foregroundColor(DSTheme.Colors.textPrimary)
               } else {
                 Text("Loading...")
-                  .font(.subheadline)
-                  .foregroundColor(.secondary)
+                  .font(DSTheme.Typography.body)
+                  .foregroundColor(DSTheme.Colors.textSecondary)
               }
 
               Spacer()
 
               // Chevron
               Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(DSTheme.Typography.caption)
+                .foregroundColor(DSTheme.Colors.textSecondary)
             }
-            .padding()
-            .background(Color(.systemGray6))
+            .padding(DSTheme.Spacing.lg)
+            .background(DSTheme.Colors.cardBackground)
           }
         )
         .buttonStyle(.plain)
@@ -895,17 +913,17 @@ struct EmbeddedRecipeView: View {
           if viewModel.isLoading {
             ProgressView("Loading recipe...")
               .frame(maxWidth: .infinity)
-              .padding()
+              .padding(DSTheme.Spacing.lg)
           } else if let errorMessage = viewModel.errorMessage {
-            VStack(spacing: 8) {
+            VStack(spacing: DSTheme.Spacing.sm) {
               Image(systemName: "exclamationmark.triangle")
-                .foregroundColor(.orange)
+                .foregroundColor(DSTheme.Colors.warning)
               Text("Error loading recipe: \(errorMessage)")
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(DSTheme.Typography.caption)
+                .foregroundColor(DSTheme.Colors.textSecondary)
             }
             .frame(maxWidth: .infinity)
-            .padding()
+            .padding(DSTheme.Spacing.lg)
           } else if let recipe = viewModel.recipe {
             RecipePerformanceContentView(
               checkedIngredients: $checkedIngredients,
@@ -940,12 +958,12 @@ struct EmbeddedRecipeView: View {
         } else {
           ProgressView("Initializing...")
             .frame(maxWidth: .infinity)
-            .padding()
+            .padding(DSTheme.Spacing.lg)
         }
       }
     }
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.md)
     .onAppear {
       if viewModel == nil {
         if let sharedViewModel {
