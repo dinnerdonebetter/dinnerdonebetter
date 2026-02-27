@@ -226,6 +226,8 @@ AIR_PORT := 9999
 admin: $(ARTIFACTS_DIR) ensure_air_installed
 	$(SCRIPTS_DIR)/admin.sh $(THIS) $(ARTIFACTS_DIR)
 
+dry_run:
+	DRY_RUN=true go run $(THIS)/cmd/localdev/server
 
 .PHONY: mcp
 mcp: $(ARTIFACTS_DIR) ensure_air_installed

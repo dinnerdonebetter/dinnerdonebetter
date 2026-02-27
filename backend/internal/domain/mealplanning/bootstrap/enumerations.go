@@ -149,6 +149,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "pickle", Description: "Pickled cucumber slices or chips", PluralName: "pickles", StorageInstructions: "Keep refrigerated after opening", Slug: "pickle", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		// Caesar roasted broccoli recipe ingredients
 		{ID: identifiers.New(), Name: "anchovy paste", Description: "Concentrated anchovy paste for seasoning", PluralName: "anchovy paste", StorageInstructions: "Keep refrigerated after opening", Slug: "anchovy-paste", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "aluminum foil", Description: "Aluminum foil for lining pans and wrapping food", PluralName: "aluminum foil", StorageInstructions: "Store in a cool, dry place", Slug: "aluminum-foil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		// Haricots verts amandine recipe ingredients
 		{ID: identifiers.New(), Name: "slivered almonds", Description: "Blanched almonds sliced into thin slivers", PluralName: "slivered almonds", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "slivered-almonds", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: true, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "breadcrumbs", Description: "Plain dry breadcrumbs", PluralName: "breadcrumbs", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "breadcrumbs", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -308,7 +309,6 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"potato ricer", "A kitchen tool that processes potatoes by forcing them through small holes", "potato ricers", "potato-ricer", "potato ricer"},
 		{"rubber spatula", "A flexible rubber spatula for folding and scraping", "rubber spatulas", "rubber-spatula", "rubber spatula"},
 		// Caesar roasted broccoli recipe instruments
-		{"aluminum foil", "Aluminum foil for lining pans and wrapping food", "aluminum foil", "aluminum-foil", "aluminum foil"},
 		{"microplane", "A fine grater for zesting citrus and grating hard cheeses", "microplanes", "microplane", "microplane"},
 		{"cheese grater", "A grater with multiple grating surfaces for grating cheese", "cheese graters", "cheese-grater", "cheese grater"},
 		// Haricots verts amandine recipe instruments
@@ -3563,10 +3563,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	caesarOliveOil := enums.Ingredients["olive oil"]
 	caesarSalt := enums.Ingredients["salt"]
 	caesarParmesan := enums.Ingredients["parmesan cheese"]
+	caesarAluminumFoilIngredient := enums.Ingredients["aluminum foil"]
 
 	// Get instruments for caesar roasted broccoli recipe
 	caesarRubberSpatula := enums.Instruments["rubber spatula"]
-	caesarAluminumFoil := enums.Instruments["aluminum foil"]
 	caesarMicroplane := enums.Instruments["microplane"]
 
 	// Get vessels for caesar roasted broccoli recipe
@@ -3659,7 +3659,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// === LINE PREPARATION for baking sheet ===
-	if err = createVPI(caesarLinePrep, caesarAluminumFoil); err != nil {
+	if err = createVIP(caesarLinePrep, caesarAluminumFoilIngredient); err != nil {
+		return err
+	}
+	if err = createVIMU(caesarAluminumFoilIngredient, caesarUnitMeasurement); err != nil {
 		return err
 	}
 	if err = createVPV(caesarLinePrep, caesarBakingSheet); err != nil {
@@ -6366,7 +6369,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	bcAluminumFoil, err := getInstrument("aluminum foil")
+	bcAluminumFoilIngredient, err := getIngredient("aluminum foil")
 	if err != nil {
 		return err
 	}
@@ -6515,7 +6518,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// === LINE PREPARATION ===
-	if err = createVPI(bcLinePrep, bcAluminumFoil); err != nil {
+	if err = createVIP(bcLinePrep, bcAluminumFoilIngredient); err != nil {
+		return err
+	}
+	if err = createVIMU(bcAluminumFoilIngredient, bcUnitMeasurement); err != nil {
 		return err
 	}
 	if err = createVPV(bcLinePrep, bcBakingSheet); err != nil {

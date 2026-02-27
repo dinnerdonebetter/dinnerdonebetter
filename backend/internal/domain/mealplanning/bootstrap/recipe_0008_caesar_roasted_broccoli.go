@@ -29,6 +29,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	lemon := enums.Ingredients["lemon"]
 	salt := enums.Ingredients["salt"]
 	breadcrumbs := enums.Ingredients["breadcrumbs"]
+	aluminumFoilIngredient := enums.Ingredients["aluminum foil"]
 
 	// Get measurement units
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
@@ -41,7 +42,6 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// Get instruments
 	mortarAndPestle := enums.Instruments["mortar and pestle"]
 	spiceGrinder := enums.Instruments["spice grinder"]
-	aluminumFoil := enums.Instruments["aluminum foil"]
 	microplane := enums.Instruments["microplane"]
 
 	// Get vessels
@@ -55,7 +55,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	transferBakingSheetVPV := enums.PreparationVessels[transferPrep.ID][bakingSheet.ID]
 	transferServingPlatterVPV := enums.PreparationVessels[transferPrep.ID][servingPlatter.ID]
 
-	lineFoilVPI := enums.PreparationInstruments[linePrep.ID][aluminumFoil.ID]
+	lineAluminumFoilVIP := enums.IngredientPreparations[linePrep.ID][aluminumFoilIngredient.ID]
+	lineAluminumFoilVIMU := enums.IngredientMeasurementUnits[aluminumFoilIngredient.ID][unitMeasurement.ID]
 	lineBakingSheetVPV := enums.PreparationVessels[linePrep.ID][bakingSheet.ID]
 
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
@@ -146,11 +147,12 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		PreparationID:        linePrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Line a rimmed baking sheet with aluminum foil.",
-		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidPreparationInstrumentID: &lineFoilVPI.ID,
-				Name:                         "aluminum foil",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				ValidIngredientPreparationID:     &lineAluminumFoilVIP.ID,
+				ValidIngredientMeasurementUnitID: &lineAluminumFoilVIMU.ID,
+				Name:                             "aluminum foil",
+				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
