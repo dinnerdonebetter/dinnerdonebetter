@@ -60,9 +60,12 @@ struct MealDetailView: View {
   @State private var showMealCompletedSteps = false
 
   let mealID: String
+  /// When true, scale editing is hidden because the scale is set by the meal plan.
+  let isFromMealPlan: Bool
 
-  init(mealID: String) {
+  init(mealID: String, isFromMealPlan: Bool = false) {
     self.mealID = mealID
+    self.isFromMealPlan = isFromMealPlan
   }
 
   var body: some View {
@@ -162,69 +165,71 @@ struct MealDetailView: View {
         }
       }
 
-      // Meal Scale Control
-      Divider()
-        .padding(.vertical, DSTheme.Spacing.xs)
+      // Meal Scale Control (hidden when viewing from meal plan – scale is set by the plan)
+      if !isFromMealPlan {
+        Divider()
+          .padding(.vertical, DSTheme.Spacing.xs)
 
-      HStack(spacing: DSTheme.Spacing.md) {
-        Text("Meal Scale:")
-          .font(DSTheme.Typography.label)
+        HStack(spacing: DSTheme.Spacing.md) {
+          Text("Meal Scale:")
+            .font(DSTheme.Typography.label)
 
-        HStack(spacing: DSTheme.Spacing.sm) {
-          TextField("1.0", text: $mealScaleText)
-            .keyboardType(.decimalPad)
-            .textFieldStyle(.roundedBorder)
-            .frame(width: 80)
-            .focused($isMealScaleFocused)
-            .onSubmit {
-              updateMealScaleFromText()
-            }
-            .onChange(of: isMealScaleFocused) { _, isFocused in
-              if !isFocused {
+          HStack(spacing: DSTheme.Spacing.sm) {
+            TextField("1.0", text: $mealScaleText)
+              .keyboardType(.decimalPad)
+              .textFieldStyle(.roundedBorder)
+              .frame(width: 80)
+              .focused($isMealScaleFocused)
+              .onSubmit {
                 updateMealScaleFromText()
               }
-            }
-            .onChange(of: mealScaleText) { _, newValue in
-              // Filter to only allow numbers and a single decimal point
-              var filtered = newValue.filter { $0.isNumber || $0 == "." }
-              // Ensure only one decimal point
-              let parts = filtered.split(separator: ".", omittingEmptySubsequences: false)
-              if parts.count > 2 {
-                filtered = parts[0] + "." + parts.dropFirst().joined()
+              .onChange(of: isMealScaleFocused) { _, isFocused in
+                if !isFocused {
+                  updateMealScaleFromText()
+                }
               }
-              if filtered != newValue {
-                mealScaleText = filtered
+              .onChange(of: mealScaleText) { _, newValue in
+                // Filter to only allow numbers and a single decimal point
+                var filtered = newValue.filter { $0.isNumber || $0 == "." }
+                // Ensure only one decimal point
+                let parts = filtered.split(separator: ".", omittingEmptySubsequences: false)
+                if parts.count > 2 {
+                  filtered = parts[0] + "." + parts.dropFirst().joined()
+                }
+                if filtered != newValue {
+                  mealScaleText = filtered
+                }
               }
+
+            Text("x")
+              .font(DSTheme.Typography.body)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+
+            Button {
+              adjustMealScale(by: -0.25)
+            } label: {
+              Image(systemName: "minus.circle")
             }
+            .buttonStyle(.plain)
 
-          Text("x")
-            .font(DSTheme.Typography.body)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-
-          Button {
-            adjustMealScale(by: -0.25)
-          } label: {
-            Image(systemName: "minus.circle")
+            Button {
+              adjustMealScale(by: 0.25)
+            } label: {
+              Image(systemName: "plus.circle")
+            }
+            .buttonStyle(.plain)
           }
-          .buttonStyle(.plain)
-
-          Button {
-            adjustMealScale(by: 0.25)
-          } label: {
-            Image(systemName: "plus.circle")
-          }
-          .buttonStyle(.plain)
         }
-      }
 
-      Slider(
-        value: Binding(
-          get: { Double(mealScale) },
-          set: { setMealScale(Float($0)) }
-        ),
-        in: 0.25...4.0,
-        step: 0.25
-      )
+        Slider(
+          value: Binding(
+            get: { Double(mealScale) },
+            set: { setMealScale(Float($0)) }
+          ),
+          in: 0.25...4.0,
+          step: 0.25
+        )
+      }
     }
     .padding(DSTheme.Spacing.lg)
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -398,66 +403,81 @@ struct MealDetailView: View {
       .buttonStyle(.plain)
 
       if isInstrumentsVesselsExpanded && !aggregatedItems.isEmpty {
-        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
-          ForEach(aggregatedItems, id: \.itemID) { item in
-            HStack(spacing: DSTheme.Spacing.md) {
-              Button(
-                action: {
-                  if checkedInstrumentsVessels.contains(item.itemID) {
-                    checkedInstrumentsVessels.remove(item.itemID)
-                  } else {
-                    checkedInstrumentsVessels.insert(item.itemID)
-                  }
-                },
-                label: {
-                  Image(
-                    systemName: checkedInstrumentsVessels.contains(item.itemID)
-                      ? "checkmark.circle.fill" : "circle"
-                  )
-                  .font(.title3)
-                  .foregroundColor(
-                    checkedInstrumentsVessels.contains(item.itemID)
-                      ? DSTheme.Colors.success
-                      : DSTheme.Colors.textTertiary
-                  )
-                }
-              )
-              .buttonStyle(.plain)
-
-              HStack(spacing: DSTheme.Spacing.sm) {
-                Image(
-                  systemName: item.type == .instrument
-                    ? "wrench.and.screwdriver" : "square.stack.3d.up"
-                )
-                .font(DSTheme.Typography.caption)
-                .foregroundColor(DSTheme.Colors.textSecondary)
-                .frame(width: 20)
-
-                HStack {
-                  Text(item.name)
-                    .font(DSTheme.Typography.body)
-                    .foregroundColor(
-                      checkedInstrumentsVessels.contains(item.itemID)
-                        ? DSTheme.Colors.textSecondary
-                        : DSTheme.Colors.textPrimary
-                    )
-                    .strikethrough(checkedInstrumentsVessels.contains(item.itemID))
-
-                }
-              }
-
-              Spacer()
-            }
-            .padding(.horizontal, DSTheme.Spacing.lg)
-            .padding(.vertical, DSTheme.Spacing.xs)
-          }
-        }
-        .padding(.vertical, DSTheme.Spacing.sm)
-        .background(Color(.systemBackground))
+        aggregatedInstrumentsVesselsList(aggregatedItems)
       }
     }
     .background(DSTheme.Colors.cardBackground)
     .cornerRadius(DSTheme.Radius.lg)
+  }
+
+  @ViewBuilder
+  private func aggregatedInstrumentsVesselsList(_ items: [AggregatedInstrumentVessel]) -> some View
+  {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+      ForEach(items, id: \.itemID) { item in
+        aggregatedInstrumentVesselRow(item: item)
+      }
+    }
+    .padding(.vertical, DSTheme.Spacing.sm)
+    .background(Color(.systemBackground))
+  }
+
+  private func aggregatedInstrumentVesselRow(item: AggregatedInstrumentVessel) -> some View {
+    HStack(spacing: DSTheme.Spacing.md) {
+      Button(
+        action: {
+          if checkedInstrumentsVessels.contains(item.itemID) {
+            checkedInstrumentsVessels.remove(item.itemID)
+          } else {
+            checkedInstrumentsVessels.insert(item.itemID)
+          }
+        },
+        label: {
+          Image(
+            systemName: checkedInstrumentsVessels.contains(item.itemID)
+              ? "checkmark.circle.fill" : "circle"
+          )
+          .font(.title3)
+          .foregroundColor(
+            checkedInstrumentsVessels.contains(item.itemID)
+              ? DSTheme.Colors.success
+              : DSTheme.Colors.textTertiary
+          )
+        }
+      )
+      .buttonStyle(.plain)
+
+      HStack(spacing: DSTheme.Spacing.sm) {
+        Image(
+          systemName: item.type == .instrument
+            ? "wrench.and.screwdriver" : "square.stack.3d.up"
+        )
+        .font(DSTheme.Typography.caption)
+        .foregroundColor(DSTheme.Colors.textSecondary)
+        .frame(width: 20)
+
+        HStack {
+          Text(item.name)
+            .font(DSTheme.Typography.body)
+            .foregroundColor(
+              checkedInstrumentsVessels.contains(item.itemID)
+                ? DSTheme.Colors.textSecondary
+                : DSTheme.Colors.textPrimary
+            )
+            .strikethrough(checkedInstrumentsVessels.contains(item.itemID))
+
+          if let sourceName = item.sourceRecipeName, !sourceName.isEmpty {
+            Text("(from \(sourceName))")
+              .font(DSTheme.Typography.captionSmall)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+        }
+      }
+
+      Spacer()
+    }
+    .padding(.horizontal, DSTheme.Spacing.lg)
+    .padding(.vertical, DSTheme.Spacing.xs)
   }
 
   private func unifiedMealStepsSection(meal: Mealplanning_Meal) -> some View {
@@ -512,6 +532,8 @@ struct MealDetailView: View {
               formatUnifiedStepTitle(step: step, index: item.stepIndex)
             },
             recipeID: item.recipeID,
+            isAssociatedRecipeStep: item.isAssociatedRecipeStep,
+            associatedRecipeName: item.associatedRecipeName,
             scale: item.isMerged ? 1.0 : item.scale,
             isCompletedOverride: item.isMerged
               ? item.sources.allSatisfy {
@@ -657,6 +679,12 @@ struct MealDetailView: View {
                         : DSTheme.Colors.textPrimary
                     )
                     .strikethrough(checkedIngredients.contains(aggregated.ingredientID))
+
+                  if let sourceName = aggregated.sourceRecipeName, !sourceName.isEmpty {
+                    Text("(from \(sourceName))")
+                      .font(DSTheme.Typography.captionSmall)
+                      .foregroundColor(DSTheme.Colors.textSecondary)
+                  }
                 }
 
                 if !aggregated.quantityNotes.isEmpty {
@@ -692,52 +720,71 @@ extension MealDetailView {
       let recipe = recipeData.recipe
       let scale = recipeData.scale
 
-      for step in recipe.steps {
-        for instrument in step.instruments where instrument.hasInstrument {
-          let validInstrument = instrument.instrument
-          if validInstrument.displayInSummaryLists {
-            let itemID = validInstrument.id
-            if !itemID.isEmpty {
-              if aggregated[itemID] == nil {
-                aggregated[itemID] = AggregatedInstrumentVessel(
-                  itemID: itemID,
-                  name: instrument.name,
-                  type: .instrument
-                )
-              }
+      func processSteps(
+        _ steps: [Mealplanning_RecipeStep], sourceRecipeID: String?, sourceRecipeName: String?
+      ) {
+        for step in steps {
+          for instrument in step.instruments where instrument.hasInstrument {
+            let validInstrument = instrument.instrument
+            if validInstrument.displayInSummaryLists {
+              let itemID = validInstrument.id
+              if !itemID.isEmpty {
+                if aggregated[itemID] == nil {
+                  aggregated[itemID] = AggregatedInstrumentVessel(
+                    itemID: itemID,
+                    name: instrument.name,
+                    type: .instrument,
+                    sourceRecipeID: sourceRecipeID,
+                    sourceRecipeName: sourceRecipeName
+                  )
+                }
 
-              if instrument.hasQuantity, var current = aggregated[itemID] {
-                let scaledQuantity = DiscreteQuantityScaling.scaled(
-                  instrument.quantity, scale: scale)
-                current.addQuantity(scaledQuantity)
-                aggregated[itemID] = current
+                if instrument.hasQuantity, var current = aggregated[itemID] {
+                  let scaledQuantity = DiscreteQuantityScaling.scaled(
+                    instrument.quantity, scale: scale)
+                  current.addQuantity(scaledQuantity)
+                  aggregated[itemID] = current
+                }
               }
             }
           }
-        }
 
-        for vessel in step.vessels where vessel.hasVessel {
-          let validVessel = vessel.vessel
-          if validVessel.displayInSummaryLists {
-            let itemID = validVessel.id
-            if !itemID.isEmpty {
-              if aggregated[itemID] == nil {
-                aggregated[itemID] = AggregatedInstrumentVessel(
-                  itemID: itemID,
-                  name: vessel.name,
-                  type: .vessel
-                )
-              }
+          for vessel in step.vessels where vessel.hasVessel {
+            let validVessel = vessel.vessel
+            if validVessel.displayInSummaryLists {
+              let itemID = validVessel.id
+              if !itemID.isEmpty {
+                if aggregated[itemID] == nil {
+                  aggregated[itemID] = AggregatedInstrumentVessel(
+                    itemID: itemID,
+                    name: vessel.name,
+                    type: .vessel,
+                    sourceRecipeID: sourceRecipeID,
+                    sourceRecipeName: sourceRecipeName
+                  )
+                }
 
-              if vessel.hasQuantity, var current = aggregated[itemID] {
-                let scaledQuantity = DiscreteQuantityScaling.scaled(vessel.quantity, scale: scale)
-                current.addQuantity(scaledQuantity)
-                aggregated[itemID] = current
+                if vessel.hasQuantity, var current = aggregated[itemID] {
+                  let scaledQuantity = DiscreteQuantityScaling.scaled(vessel.quantity, scale: scale)
+                  current.addQuantity(scaledQuantity)
+                  aggregated[itemID] = current
+                }
               }
             }
           }
         }
       }
+
+      // Process associated (prerequisite) recipe steps first
+      for associatedRecipe in recipe.associatedRecipes {
+        processSteps(
+          associatedRecipe.steps,
+          sourceRecipeID: associatedRecipe.id,
+          sourceRecipeName: associatedRecipe.name.isEmpty ? nil : associatedRecipe.name
+        )
+      }
+      // Process main recipe steps
+      processSteps(recipe.steps, sourceRecipeID: nil, sourceRecipeName: nil)
     }
 
     return Array(aggregated.values).sorted { $0.name < $1.name }
@@ -750,32 +797,49 @@ extension MealDetailView {
       let recipe = recipeData.recipe
       let scale = recipeData.scale
 
-      for step in recipe.steps {
-        for ingredient in step.ingredients where ingredient.hasIngredient {
-          let validIngredient = ingredient.ingredient
-          let key = validIngredient.id
-          if !key.isEmpty {
-            if aggregated[key] == nil {
-              aggregated[key] = AggregatedIngredient(
-                ingredientID: key,
-                name: ingredient.name,
-                quantityNotes: ingredient.quantityNotes,
-                measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil
-              )
-            }
-
-            if ingredient.hasQuantity, var current = aggregated[key] {
-              var scaledQuantity = ingredient.quantity
-              scaledQuantity.min *= scale
-              if scaledQuantity.hasMax {
-                scaledQuantity.max *= scale
+      func processSteps(
+        _ steps: [Mealplanning_RecipeStep], sourceRecipeID: String?, sourceRecipeName: String?
+      ) {
+        for step in steps {
+          for ingredient in step.ingredients where ingredient.hasIngredient {
+            let validIngredient = ingredient.ingredient
+            let key = validIngredient.id
+            if !key.isEmpty {
+              if aggregated[key] == nil {
+                aggregated[key] = AggregatedIngredient(
+                  ingredientID: key,
+                  name: ingredient.name,
+                  quantityNotes: ingredient.quantityNotes,
+                  measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil,
+                  sourceRecipeID: sourceRecipeID,
+                  sourceRecipeName: sourceRecipeName
+                )
               }
-              current.addQuantity(scaledQuantity)
-              aggregated[key] = current
+
+              if ingredient.hasQuantity, var current = aggregated[key] {
+                var scaledQuantity = ingredient.quantity
+                scaledQuantity.min *= scale
+                if scaledQuantity.hasMax {
+                  scaledQuantity.max *= scale
+                }
+                current.addQuantity(scaledQuantity)
+                aggregated[key] = current
+              }
             }
           }
         }
       }
+
+      // Process associated (prerequisite) recipe steps first
+      for associatedRecipe in recipe.associatedRecipes {
+        processSteps(
+          associatedRecipe.steps,
+          sourceRecipeID: associatedRecipe.id,
+          sourceRecipeName: associatedRecipe.name.isEmpty ? nil : associatedRecipe.name
+        )
+      }
+      // Process main recipe steps
+      processSteps(recipe.steps, sourceRecipeID: nil, sourceRecipeName: nil)
     }
 
     return Array(aggregated.values).sorted { $0.name < $1.name }

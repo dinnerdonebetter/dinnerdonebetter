@@ -20,6 +20,8 @@ struct UnifiedMealStepSource {
   let recipeID: String
   let scale: Float
   let viewModel: PerformRecipeViewModel
+  let isAssociatedRecipeStep: Bool
+  let associatedRecipeName: String?
 }
 
 // MARK: - Unified Meal Step (single or merged)
@@ -47,6 +49,9 @@ struct UnifiedMealStep: Identifiable {
 
   var isMerged: Bool { sources.count > 1 }
 
+  var isAssociatedRecipeStep: Bool { sources[0].isAssociatedRecipeStep }
+  var associatedRecipeName: String? { sources[0].associatedRecipeName }
+
   var id: String {
     sources.map { "\($0.componentID):\($0.recipeID):\($0.step.id)" }.joined(separator: "|")
   }
@@ -54,6 +59,9 @@ struct UnifiedMealStep: Identifiable {
   var componentNamesForTag: String {
     if isMerged {
       return "Combined"
+    }
+    if isAssociatedRecipeStep, let name = associatedRecipeName, !name.isEmpty {
+      return name
     }
     return componentName
   }
@@ -187,6 +195,26 @@ func collectUnifiedMealStepsWithMerging(
     let componentName =
       recipe.name.isEmpty ? formatComponentType(component.componentType) : recipe.name
 
+    // Include associated (prerequisite) recipe steps first, then main recipe steps
+    for associatedRecipe in recipe.associatedRecipes {
+      for (index, step) in associatedRecipe.steps.enumerated() {
+        rawSteps.append(
+          UnifiedMealStepSource(
+            componentID: componentID,
+            componentIndex: componentIndex,
+            componentName: componentName,
+            step: step,
+            stepIndex: index,
+            recipeID: associatedRecipe.id,
+            scale: scale,
+            viewModel: viewModel,
+            isAssociatedRecipeStep: true,
+            associatedRecipeName: associatedRecipe.name.isEmpty ? nil : associatedRecipe.name
+          )
+        )
+      }
+    }
+
     for (index, step) in recipe.steps.enumerated() {
       rawSteps.append(
         UnifiedMealStepSource(
@@ -197,7 +225,9 @@ func collectUnifiedMealStepsWithMerging(
           stepIndex: index,
           recipeID: recipe.id,
           scale: scale,
-          viewModel: viewModel
+          viewModel: viewModel,
+          isAssociatedRecipeStep: false,
+          associatedRecipeName: nil
         )
       )
     }
