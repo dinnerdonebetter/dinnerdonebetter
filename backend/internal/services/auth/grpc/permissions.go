@@ -14,6 +14,9 @@ var noPerms = []authorization.Permission{}
 func ProvideMethodPermissions() AuthMethodPermissions {
 	return AuthMethodPermissions{
 		// Methods that don't require specific permissions (authenticated user only)
+		authsvc.AuthService_EvaluateBooleanFeatureFlag_FullMethodName:    noPerms,
+		authsvc.AuthService_EvaluateInt64FeatureFlag_FullMethodName:      noPerms,
+		authsvc.AuthService_EvaluateStringFeatureFlag_FullMethodName:     noPerms,
 		authsvc.AuthService_CheckPermissions_FullMethodName:              noPerms,
 		authsvc.AuthService_GetAuthStatus_FullMethodName:                 noPerms,
 		authsvc.AuthService_GetActiveAccount_FullMethodName:              noPerms,

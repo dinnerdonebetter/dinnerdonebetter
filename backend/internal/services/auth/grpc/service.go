@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
 	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -27,6 +28,7 @@ type (
 		identityDataManager   identitymanager.IdentityDataManager
 		authenticationManager authentication2.Manager
 		authManager           managers.AuthManagerInterface
+		featureFlagManager    featureflags.FeatureFlagManager
 	}
 )
 
@@ -36,6 +38,7 @@ func NewAuthService(
 	identityDataManager identitymanager.IdentityDataManager,
 	authManager managers.AuthManagerInterface,
 	authenticationManager authentication2.Manager,
+	featureFlagManager featureflags.FeatureFlagManager,
 ) authsvc.AuthServiceServer {
 	return &serviceImpl{
 		logger:                logging.EnsureLogger(logger).WithName(o11yName),
@@ -43,6 +46,7 @@ func NewAuthService(
 		identityDataManager:   identityDataManager,
 		authManager:           authManager,
 		authenticationManager: authenticationManager,
+		featureFlagManager:    featureFlagManager,
 	}
 }
 

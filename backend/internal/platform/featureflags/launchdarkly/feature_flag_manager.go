@@ -123,6 +123,50 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	return result, nil
 }
 
+// GetStringValue returns the string value of a feature flag for a user.
+func (f *featureFlagManager) GetStringValue(ctx context.Context, userID, feature string) (string, error) {
+	_, span := f.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
+
+	if !f.circuitBreaker.CanProceed() {
+		return "", internalerrors.ErrCircuitBroken
+	}
+
+	evalCtx := openfeature.NewEvaluationContext(userID, nil)
+	result, err := f.ofClient.StringValue(ctx, feature, "", evalCtx)
+	if err != nil {
+		f.circuitBreaker.Failed()
+		return "", observability.PrepareAndLogError(err, logger, span, "checking feature flag string variation")
+	}
+
+	f.circuitBreaker.Succeeded()
+	return result, nil
+}
+
+// GetInt64Value returns the int64 value of a feature flag for a user.
+func (f *featureFlagManager) GetInt64Value(ctx context.Context, userID, feature string) (int64, error) {
+	_, span := f.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
+
+	if !f.circuitBreaker.CanProceed() {
+		return 0, internalerrors.ErrCircuitBroken
+	}
+
+	evalCtx := openfeature.NewEvaluationContext(userID, nil)
+	result, err := f.ofClient.IntValue(ctx, feature, 0, evalCtx)
+	if err != nil {
+		f.circuitBreaker.Failed()
+		return 0, observability.PrepareAndLogError(err, logger, span, "checking feature flag int variation")
+	}
+
+	f.circuitBreaker.Succeeded()
+	return result, nil
+}
+
 // Close closes the LaunchDarkly client.
 func (f *featureFlagManager) Close() error {
 	return f.ldClient.Close()

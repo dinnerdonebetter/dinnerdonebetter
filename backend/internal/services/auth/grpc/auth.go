@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
@@ -16,6 +17,93 @@ import (
 
 	"google.golang.org/grpc/codes"
 )
+
+func (s *serviceImpl) EvaluateBooleanFeatureFlag(ctx context.Context, req *authsvc.EvaluateBooleanFeatureFlagRequest) (*authsvc.EvaluateBooleanFeatureFlagResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	featureFlag := strings.TrimSpace(req.GetFeatureFlag())
+	if featureFlag == "" {
+		return nil, observability.PrepareAndLogGRPCStatus(errors.New("feature_flag is required"), logger, span, codes.InvalidArgument, "feature_flag is required")
+	}
+
+	enabled, err := s.featureFlagManager.CanUseFeature(ctx, sessionContextData.GetUserID(), featureFlag)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to evaluate feature flag")
+	}
+
+	return &authsvc.EvaluateBooleanFeatureFlagResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Enabled: enabled,
+	}, nil
+}
+
+func (s *serviceImpl) EvaluateInt64FeatureFlag(ctx context.Context, req *authsvc.EvaluateInt64FeatureFlagRequest) (*authsvc.EvaluateInt64FeatureFlagResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	featureFlag := strings.TrimSpace(req.GetFeatureFlag())
+	if featureFlag == "" {
+		return nil, observability.PrepareAndLogGRPCStatus(errors.New("feature_flag is required"), logger, span, codes.InvalidArgument, "feature_flag is required")
+	}
+
+	value, err := s.featureFlagManager.GetInt64Value(ctx, sessionContextData.GetUserID(), featureFlag)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to evaluate feature flag")
+	}
+
+	return &authsvc.EvaluateInt64FeatureFlagResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Value: value,
+	}, nil
+}
+
+func (s *serviceImpl) EvaluateStringFeatureFlag(ctx context.Context, req *authsvc.EvaluateStringFeatureFlagRequest) (*authsvc.EvaluateStringFeatureFlagResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	featureFlag := strings.TrimSpace(req.GetFeatureFlag())
+	if featureFlag == "" {
+		return nil, observability.PrepareAndLogGRPCStatus(errors.New("feature_flag is required"), logger, span, codes.InvalidArgument, "feature_flag is required")
+	}
+
+	value, err := s.featureFlagManager.GetStringValue(ctx, sessionContextData.GetUserID(), featureFlag)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to evaluate feature flag")
+	}
+
+	return &authsvc.EvaluateStringFeatureFlagResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Value: value,
+	}, nil
+}
 
 func (s *serviceImpl) GetAuthStatus(ctx context.Context, _ *authsvc.GetAuthStatusRequest) (*authsvc.GetAuthStatusResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)

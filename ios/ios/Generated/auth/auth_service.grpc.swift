@@ -20,6 +20,42 @@ internal enum Auth_AuthService {
     internal static let descriptor = GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService")
     /// Namespace for method metadata.
     internal enum Method {
+        /// Namespace for "EvaluateBooleanFeatureFlag" metadata.
+        internal enum EvaluateBooleanFeatureFlag {
+            /// Request type for "EvaluateBooleanFeatureFlag".
+            internal typealias Input = Auth_EvaluateBooleanFeatureFlagRequest
+            /// Response type for "EvaluateBooleanFeatureFlag".
+            internal typealias Output = Auth_EvaluateBooleanFeatureFlagResponse
+            /// Descriptor for "EvaluateBooleanFeatureFlag".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "EvaluateBooleanFeatureFlag"
+            )
+        }
+        /// Namespace for "EvaluateInt64FeatureFlag" metadata.
+        internal enum EvaluateInt64FeatureFlag {
+            /// Request type for "EvaluateInt64FeatureFlag".
+            internal typealias Input = Auth_EvaluateInt64FeatureFlagRequest
+            /// Response type for "EvaluateInt64FeatureFlag".
+            internal typealias Output = Auth_EvaluateInt64FeatureFlagResponse
+            /// Descriptor for "EvaluateInt64FeatureFlag".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "EvaluateInt64FeatureFlag"
+            )
+        }
+        /// Namespace for "EvaluateStringFeatureFlag" metadata.
+        internal enum EvaluateStringFeatureFlag {
+            /// Request type for "EvaluateStringFeatureFlag".
+            internal typealias Input = Auth_EvaluateStringFeatureFlagRequest
+            /// Response type for "EvaluateStringFeatureFlag".
+            internal typealias Output = Auth_EvaluateStringFeatureFlagResponse
+            /// Descriptor for "EvaluateStringFeatureFlag".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "EvaluateStringFeatureFlag"
+            )
+        }
         /// Namespace for "GetAuthStatus" metadata.
         internal enum GetAuthStatus {
             /// Request type for "GetAuthStatus".
@@ -202,6 +238,9 @@ internal enum Auth_AuthService {
         }
         /// Descriptors for all methods in the "auth.AuthService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
+            EvaluateBooleanFeatureFlag.descriptor,
+            EvaluateInt64FeatureFlag.descriptor,
+            EvaluateStringFeatureFlag.descriptor,
             GetAuthStatus.descriptor,
             ExchangeToken.descriptor,
             AdminLoginForToken.descriptor,
@@ -236,6 +275,63 @@ extension Auth_AuthService {
     /// You don't need to implement this protocol directly, use the generated
     /// implementation, ``Client``.
     internal protocol ClientProtocol: Sendable {
+        /// Call the "EvaluateBooleanFeatureFlag" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_EvaluateBooleanFeatureFlagRequest` message.
+        ///   - serializer: A serializer for `Auth_EvaluateBooleanFeatureFlagRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_EvaluateBooleanFeatureFlagResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func evaluateBooleanFeatureFlag<Result>(
+            request: GRPCCore.ClientRequest<Auth_EvaluateBooleanFeatureFlagRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_EvaluateBooleanFeatureFlagRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_EvaluateBooleanFeatureFlagResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateBooleanFeatureFlagResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "EvaluateInt64FeatureFlag" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_EvaluateInt64FeatureFlagRequest` message.
+        ///   - serializer: A serializer for `Auth_EvaluateInt64FeatureFlagRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_EvaluateInt64FeatureFlagResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func evaluateInt64FeatureFlag<Result>(
+            request: GRPCCore.ClientRequest<Auth_EvaluateInt64FeatureFlagRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_EvaluateInt64FeatureFlagRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_EvaluateInt64FeatureFlagResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateInt64FeatureFlagResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "EvaluateStringFeatureFlag" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_EvaluateStringFeatureFlagRequest` message.
+        ///   - serializer: A serializer for `Auth_EvaluateStringFeatureFlagRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_EvaluateStringFeatureFlagResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func evaluateStringFeatureFlag<Result>(
+            request: GRPCCore.ClientRequest<Auth_EvaluateStringFeatureFlagRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_EvaluateStringFeatureFlagRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_EvaluateStringFeatureFlagResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateStringFeatureFlagResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
         /// Call the "GetAuthStatus" method.
         ///
         /// - Parameters:
@@ -536,6 +632,96 @@ extension Auth_AuthService {
         ///   - client: A `GRPCCore.GRPCClient` providing a communication channel to the service.
         internal init(wrapping client: GRPCCore.GRPCClient<Transport>) {
             self.client = client
+        }
+
+        /// Call the "EvaluateBooleanFeatureFlag" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_EvaluateBooleanFeatureFlagRequest` message.
+        ///   - serializer: A serializer for `Auth_EvaluateBooleanFeatureFlagRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_EvaluateBooleanFeatureFlagResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func evaluateBooleanFeatureFlag<Result>(
+            request: GRPCCore.ClientRequest<Auth_EvaluateBooleanFeatureFlagRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_EvaluateBooleanFeatureFlagRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_EvaluateBooleanFeatureFlagResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateBooleanFeatureFlagResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.EvaluateBooleanFeatureFlag.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "EvaluateInt64FeatureFlag" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_EvaluateInt64FeatureFlagRequest` message.
+        ///   - serializer: A serializer for `Auth_EvaluateInt64FeatureFlagRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_EvaluateInt64FeatureFlagResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func evaluateInt64FeatureFlag<Result>(
+            request: GRPCCore.ClientRequest<Auth_EvaluateInt64FeatureFlagRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_EvaluateInt64FeatureFlagRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_EvaluateInt64FeatureFlagResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateInt64FeatureFlagResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.EvaluateInt64FeatureFlag.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "EvaluateStringFeatureFlag" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_EvaluateStringFeatureFlagRequest` message.
+        ///   - serializer: A serializer for `Auth_EvaluateStringFeatureFlagRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_EvaluateStringFeatureFlagResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func evaluateStringFeatureFlag<Result>(
+            request: GRPCCore.ClientRequest<Auth_EvaluateStringFeatureFlagRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_EvaluateStringFeatureFlagRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_EvaluateStringFeatureFlagResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateStringFeatureFlagResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.EvaluateStringFeatureFlag.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
         }
 
         /// Call the "GetAuthStatus" method.
@@ -993,6 +1179,81 @@ extension Auth_AuthService {
 // Helpers providing default arguments to 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension Auth_AuthService.ClientProtocol {
+    /// Call the "EvaluateBooleanFeatureFlag" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_EvaluateBooleanFeatureFlagRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func evaluateBooleanFeatureFlag<Result>(
+        request: GRPCCore.ClientRequest<Auth_EvaluateBooleanFeatureFlagRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateBooleanFeatureFlagResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.evaluateBooleanFeatureFlag(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_EvaluateBooleanFeatureFlagRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_EvaluateBooleanFeatureFlagResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "EvaluateInt64FeatureFlag" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_EvaluateInt64FeatureFlagRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func evaluateInt64FeatureFlag<Result>(
+        request: GRPCCore.ClientRequest<Auth_EvaluateInt64FeatureFlagRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateInt64FeatureFlagResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.evaluateInt64FeatureFlag(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_EvaluateInt64FeatureFlagRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_EvaluateInt64FeatureFlagResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "EvaluateStringFeatureFlag" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_EvaluateStringFeatureFlagRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func evaluateStringFeatureFlag<Result>(
+        request: GRPCCore.ClientRequest<Auth_EvaluateStringFeatureFlagRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateStringFeatureFlagResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.evaluateStringFeatureFlag(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_EvaluateStringFeatureFlagRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_EvaluateStringFeatureFlagResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "GetAuthStatus" method.
     ///
     /// - Parameters:
@@ -1372,6 +1633,93 @@ extension Auth_AuthService.ClientProtocol {
 // Helpers providing sugared APIs for 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension Auth_AuthService.ClientProtocol {
+    /// Call the "EvaluateBooleanFeatureFlag" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func evaluateBooleanFeatureFlag<Result>(
+        _ message: Auth_EvaluateBooleanFeatureFlagRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateBooleanFeatureFlagResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_EvaluateBooleanFeatureFlagRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.evaluateBooleanFeatureFlag(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "EvaluateInt64FeatureFlag" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func evaluateInt64FeatureFlag<Result>(
+        _ message: Auth_EvaluateInt64FeatureFlagRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateInt64FeatureFlagResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_EvaluateInt64FeatureFlagRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.evaluateInt64FeatureFlag(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "EvaluateStringFeatureFlag" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func evaluateStringFeatureFlag<Result>(
+        _ message: Auth_EvaluateStringFeatureFlagRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_EvaluateStringFeatureFlagResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_EvaluateStringFeatureFlagRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.evaluateStringFeatureFlag(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "GetAuthStatus" method.
     ///
     /// - Parameters:

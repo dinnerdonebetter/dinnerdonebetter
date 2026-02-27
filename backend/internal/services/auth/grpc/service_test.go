@@ -10,13 +10,14 @@ import (
 	authmock "github.com/dinnerdonebetter/backend/internal/domain/auth/mock"
 	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/backend/internal/platform/featureflags/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.IdentityDataManager, *authmock.AuthManager, *authenticationmock.Manager) {
+func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.IdentityDataManager, *authmock.AuthManager, *authenticationmock.Manager, *mock.FeatureFlagManager) {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
@@ -24,6 +25,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.Identity
 	identityDataManager := &identitymanagermock.IdentityDataManager{}
 	authManager := &authmock.AuthManager{}
 	authenticationManager := &authenticationmock.Manager{}
+	featureFlagManager := &mock.FeatureFlagManager{}
 
 	service := &serviceImpl{
 		tracer:                tracer,
@@ -31,9 +33,10 @@ func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.Identity
 		identityDataManager:   identityDataManager,
 		authManager:           authManager,
 		authenticationManager: authenticationManager,
+		featureFlagManager:    featureFlagManager,
 	}
 
-	return service, identityDataManager, authManager, authenticationManager
+	return service, identityDataManager, authManager, authenticationManager, featureFlagManager
 }
 
 func TestNewAuthService(t *testing.T) {
@@ -48,7 +51,8 @@ func TestNewAuthService(t *testing.T) {
 		authManager := &authmock.AuthManager{}
 		authenticationManager := &authenticationmock.Manager{}
 
-		service := NewAuthService(logger, tracerProvider, identityDataManager, authManager, authenticationManager)
+		featureFlagManager := &mock.FeatureFlagManager{}
+		service := NewAuthService(logger, tracerProvider, identityDataManager, authManager, authenticationManager, featureFlagManager)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*authsvc.AuthServiceServer)(nil), service)
@@ -61,6 +65,7 @@ func TestNewAuthService(t *testing.T) {
 		assert.Equal(t, identityDataManager, impl.identityDataManager)
 		assert.Equal(t, authManager, impl.authManager)
 		assert.Equal(t, authenticationManager, impl.authenticationManager)
+		assert.Equal(t, featureFlagManager, impl.featureFlagManager)
 	})
 }
 
@@ -70,7 +75,7 @@ func TestServiceImpl_fetchSessionContext(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 
 		sessionContextData := &sessions.ContextData{
 			Requester: sessions.RequesterInfo{
@@ -99,7 +104,7 @@ func TestServiceImpl_fetchSessionContext(t *testing.T) {
 	t.Run("missing session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context()
 
 		result, err := service.fetchSessionContext(ctx)
@@ -112,7 +117,7 @@ func TestServiceImpl_fetchSessionContext(t *testing.T) {
 	t.Run("wrong type in context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := context.WithValue(t.Context(), sessions.SessionContextDataKey, "wrong-type")
 
 		result, err := service.fetchSessionContext(ctx)
