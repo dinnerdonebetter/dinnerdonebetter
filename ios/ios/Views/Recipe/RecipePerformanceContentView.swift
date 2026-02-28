@@ -39,6 +39,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @State private var scaleText: String = "1.0"
   @FocusState private var isScaleFocused: Bool
   @State private var showCompletedSteps: Bool = true
+  @State private var customUpNextOrder: [String] = []
+  @State private var customForLaterOrder: [String] = []
 
   private var isShowingCompletedSteps: Bool {
     sharedCompletedStepsVisibility?.wrappedValue ?? showCompletedSteps
@@ -140,11 +142,15 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       if allowCompletedStepsToggle && sharedCompletedStepsVisibility == nil {
         showCompletedSteps = false
       }
+      loadStepOrderFromUserDefaults(recipeID: recipe.id)
     }
     .onChange(of: sharedWashHandsValue) { _, newValue in
       if sharedWashHandsCompleted != nil {
         viewModel.washHandsCompleted = newValue
       }
+    }
+    .onChange(of: recipe.id) { _, _ in
+      loadStepOrderFromUserDefaults(recipeID: recipe.id)
     }
   }
 
@@ -1104,6 +1110,38 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
   // MARK: - Steps List
 
+  private static func stepOrderKey(recipeID: String, group: String) -> String {
+    "stepOrder_recipe_\(recipeID)_\(group)"
+  }
+
+  private func loadStepOrderFromUserDefaults(recipeID: String) {
+    let upNext =
+      UserDefaults.standard.stringArray(
+        forKey: Self.stepOrderKey(recipeID: recipeID, group: "upNext")) ?? []
+    let forLater =
+      UserDefaults.standard.stringArray(
+        forKey: Self.stepOrderKey(recipeID: recipeID, group: "forLater")) ?? []
+    customUpNextOrder = upNext
+    customForLaterOrder = forLater
+  }
+
+  private func saveStepOrderToUserDefaults(recipeID: String, upNext: [String], forLater: [String]) {
+    UserDefaults.standard.set(
+      upNext, forKey: Self.stepOrderKey(recipeID: recipeID, group: "upNext"))
+    UserDefaults.standard.set(
+      forLater, forKey: Self.stepOrderKey(recipeID: recipeID, group: "forLater"))
+  }
+
+  private func applyOrder<T: Identifiable>(_ items: [T], order: [String]) -> [T]
+  where T.ID == String {
+    guard !order.isEmpty else { return items }
+    return items.sorted { firstItem, secondItem in
+      let firstIndex = order.firstIndex(of: firstItem.id) ?? Int.max
+      let secondIndex = order.firstIndex(of: secondItem.id) ?? Int.max
+      return firstIndex < secondIndex
+    }
+  }
+
   private func shouldShowStep(stepID: String) -> Bool {
     return true
   }
@@ -1170,9 +1208,12 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       viewModel.categorizeStep(recipeID: stepInfo.recipeID, stepID: stepInfo.step.id) == .forLater
     }
 
+    let orderedUpNext = applyOrder(upNextSteps, order: customUpNextOrder)
+    let orderedForLater = applyOrder(forLaterSteps, order: customForLaterOrder)
+
     let focusedGroups = [
-      StepFlowGroup(title: "Up Next", color: .orange, items: upNextSteps),
-      StepFlowGroup(title: "Not Yet", color: .blue, items: forLaterSteps),
+      StepFlowGroup(title: "Up Next", color: .orange, items: orderedUpNext),
+      StepFlowGroup(title: "Not Yet", color: .blue, items: orderedForLater),
     ]
 
     return StepFlowSection(
@@ -1184,6 +1225,22 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       focusedGroups: focusedGroups,
       allowToggle: allowCompletedStepsToggle,
       allStepsTitle: "All Steps",
+      onReorder: { groupId, source, destination in
+        let items = groupId == "Up Next" ? orderedUpNext : orderedForLater
+        var mutable = items
+        mutable.move(fromOffsets: source, toOffset: destination)
+        let newOrder = mutable.map(\.id)
+        if groupId == "Up Next" {
+          customUpNextOrder = newOrder
+        } else {
+          customForLaterOrder = newOrder
+        }
+        saveStepOrderToUserDefaults(
+          recipeID: recipe.id,
+          upNext: customUpNextOrder,
+          forLater: customForLaterOrder
+        )
+      },
       headerContent: {
         Text("Steps")
           .font(.headline)

@@ -147,16 +147,17 @@ WHERE %s.%s IS NULL
 	%s,
 	%s
 FROM %s
+	LEFT JOIN %s ON %s.%s=%s.%s AND %s.%s IS NULL
 WHERE
 	%s.%s IS NULL
 	%s
 %s;`,
-					strings.Join(applyToEach(mealsColumns, func(i int, s string) string {
-						return fmt.Sprintf("%s.%s", mealsTableName, s)
-					}), ",\n\t"),
+					strings.Join(fullSelectColumns, ",\n\t"),
 					buildFilterCountSelect(mealsTableName, true, true, []string{}),
 					buildTotalCountSelect(mealsTableName, true, []string{}),
 					mealsTableName,
+					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
+					mealComponentsTableName, archivedAtColumn,
 					mealsTableName, archivedAtColumn,
 					buildFilterConditions(
 						mealsTableName,
@@ -198,17 +199,18 @@ ORDER BY %s.%s ASC;`,
 	%s,
 	%s
 FROM %s
+	LEFT JOIN %s ON %s.%s=%s.%s AND %s.%s IS NULL
 WHERE
 	%s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
-					strings.Join(applyToEach(mealsColumns, func(i int, s string) string {
-						return fmt.Sprintf("%s.%s", mealsTableName, s)
-					}), ",\n\t"),
+					strings.Join(fullSelectColumns, ",\n\t"),
 					buildFilterCountSelect(mealsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
 					buildTotalCountSelect(mealsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
 					mealsTableName,
+					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
+					mealComponentsTableName, archivedAtColumn,
 					mealsTableName, archivedAtColumn,
 					mealsTableName, createdByUserColumn, createdByUserColumn,
 					buildFilterConditions(mealsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),

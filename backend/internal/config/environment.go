@@ -57,6 +57,7 @@ func writeFile(p string, content []byte) error {
 }
 
 const (
+	apiConfigObservabilityServiceName   = "api_server"
 	dbcConfigObservabilityServiceName   = "db_cleaner"
 	mpfConfigObservabilityServiceName   = "meal_plan_finalizer"
 	mpgliConfigObservabilityServiceName = "meal_plan_grocery_list_initializer"
@@ -71,6 +72,14 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		return err
 	}
 	errs := &multierror.Error{}
+
+	// Ensure API server config has the correct observability name before writing.
+	s.RootConfig.Observability.Tracing.ServiceName = apiConfigObservabilityServiceName
+	s.RootConfig.Observability.Metrics.ServiceName = apiConfigObservabilityServiceName
+	s.RootConfig.Observability.Logging.ServiceName = apiConfigObservabilityServiceName
+	if s.RootConfig.Routing.Chi != nil {
+		s.RootConfig.Routing.Chi.ServiceName = apiConfigObservabilityServiceName
+	}
 
 	// write files
 	if err := writeFile(
@@ -163,6 +172,9 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	awaConfig.Observability.Tracing.ServiceName = awaConfigObservabilityServiceName
 	awaConfig.Observability.Metrics.ServiceName = awaConfigObservabilityServiceName
 	awaConfig.Observability.Logging.ServiceName = awaConfigObservabilityServiceName
+	if awaConfig.Routing.Chi != nil {
+		awaConfig.Routing.Chi.ServiceName = awaConfigObservabilityServiceName
+	}
 
 	if validate {
 		allConfigs := []validation.ValidatableWithContext{

@@ -58,6 +58,8 @@ struct MealDetailView: View {
   @State private var componentViewModels: [String: PerformRecipeViewModel] = [:]
   @State private var mealFlowMode: MealFlowMode = .unified
   @State private var showMealCompletedSteps = false
+  @State private var customUpNextOrder: [String] = []
+  @State private var customForLaterOrder: [String] = []
 
   let mealID: String
   /// When true, scale editing is hidden because the scale is set by the meal plan.
@@ -132,6 +134,7 @@ struct MealDetailView: View {
           }
           if let meal = viewModel.meal {
             ensureComponentDataLoaded(for: meal)
+            loadStepOrderFromUserDefaults(mealID: meal.id)
           }
         }
       }
@@ -139,6 +142,7 @@ struct MealDetailView: View {
     .onChange(of: viewModel?.meal?.id) { _, _ in
       if let meal = viewModel?.meal {
         ensureComponentDataLoaded(for: meal)
+        loadStepOrderFromUserDefaults(mealID: meal.id)
       }
     }
   }
@@ -159,7 +163,7 @@ struct MealDetailView: View {
         HStack(spacing: DSTheme.Spacing.sm) {
           Image(systemName: "person.2")
             .foregroundColor(DSTheme.Colors.textSecondary)
-          Text("Estimated Portions: \(formatPortions(meal.estimatedPortions))")
+          Text("Estimated Portions: \(PortionsFormatter.format(meal.estimatedPortions))")
             .font(DSTheme.Typography.body)
             .foregroundColor(DSTheme.Colors.textSecondary)
         }
@@ -259,18 +263,6 @@ struct MealDetailView: View {
 
   private func adjustMealScale(by delta: Float) {
     setMealScale(mealScale + delta)
-  }
-
-  private func formatPortions(_ range: Common_Float32RangeWithOptionalMax) -> String {
-    if range.hasMax {
-      if range.min == range.max {
-        return String(format: "%.1f", range.min)
-      } else {
-        return String(format: "%.1f-%.1f", range.min, range.max)
-      }
-    } else {
-      return String(format: "%.1f+", range.min)
-    }
   }
 
   private func formatComponentType(_ type: Mealplanning_MealComponentType) -> String {
@@ -480,6 +472,37 @@ struct MealDetailView: View {
     .padding(.vertical, DSTheme.Spacing.xs)
   }
 
+  private static func stepOrderKey(mealID: String, group: String) -> String {
+    "stepOrder_meal_\(mealID)_\(group)"
+  }
+
+  private func loadStepOrderFromUserDefaults(mealID: String) {
+    let upNext =
+      UserDefaults.standard.stringArray(forKey: Self.stepOrderKey(mealID: mealID, group: "upNext"))
+      ?? []
+    let forLater =
+      UserDefaults.standard.stringArray(
+        forKey: Self.stepOrderKey(mealID: mealID, group: "forLater")) ?? []
+    customUpNextOrder = upNext
+    customForLaterOrder = forLater
+  }
+
+  private func saveStepOrderToUserDefaults(mealID: String, upNext: [String], forLater: [String]) {
+    UserDefaults.standard.set(upNext, forKey: Self.stepOrderKey(mealID: mealID, group: "upNext"))
+    UserDefaults.standard.set(
+      forLater, forKey: Self.stepOrderKey(mealID: mealID, group: "forLater"))
+  }
+
+  private func applyOrder<T: Identifiable>(_ items: [T], order: [String]) -> [T]
+  where T.ID == String {
+    guard !order.isEmpty else { return items }
+    return items.sorted { firstItem, secondItem in
+      let firstIndex = order.firstIndex(of: firstItem.id) ?? Int.max
+      let secondIndex = order.firstIndex(of: secondItem.id) ?? Int.max
+      return firstIndex < secondIndex
+    }
+  }
+
   private func unifiedMealStepsSection(meal: Mealplanning_Meal) -> some View {
     let allSteps = collectUnifiedMealStepsWithMerging(
       meal: meal,
@@ -492,9 +515,12 @@ struct MealDetailView: View {
     let upNext = allSteps.filter { $0.category == .upNext }
     let forLater = allSteps.filter { $0.category == .forLater }
 
+    let orderedUpNext = applyOrder(upNext, order: customUpNextOrder)
+    let orderedForLater = applyOrder(forLater, order: customForLaterOrder)
+
     let focusedGroups = [
-      StepFlowGroup(title: "Up Next", color: DSTheme.Colors.warning, items: upNext),
-      StepFlowGroup(title: "Not Yet", color: DSTheme.Colors.primary, items: forLater),
+      StepFlowGroup(title: "Up Next", color: DSTheme.Colors.warning, items: orderedUpNext),
+      StepFlowGroup(title: "Not Yet", color: DSTheme.Colors.primary, items: orderedForLater),
     ]
 
     return StepFlowSection(
@@ -503,6 +529,22 @@ struct MealDetailView: View {
       focusedGroups: focusedGroups,
       allStepsTitle: "All Steps",
       emptyMessage: "Loading component steps...",
+      onReorder: { groupId, source, destination in
+        let items = groupId == "Up Next" ? orderedUpNext : orderedForLater
+        var mutable = items
+        mutable.move(fromOffsets: source, toOffset: destination)
+        let newOrder = mutable.map(\.id)
+        if groupId == "Up Next" {
+          customUpNextOrder = newOrder
+        } else {
+          customForLaterOrder = newOrder
+        }
+        saveStepOrderToUserDefaults(
+          mealID: meal.id,
+          upNext: customUpNextOrder,
+          forLater: customForLaterOrder
+        )
+      },
       headerContent: {
         Text("Cook Flow")
           .font(DSTheme.Typography.title2)

@@ -190,7 +190,7 @@ struct MealAssignmentStepView: View {
 
           if meal.hasEstimatedPortions {
             let scale = viewModel.mealScale(for: date)
-            let portionText = formatScaledPortions(meal.estimatedPortions, scale: scale)
+            let portionText = PortionsFormatter.formatScaled(meal.estimatedPortions, scale: scale)
             Text("→ ~\(portionText) servings")
               .font(.subheadline)
               .foregroundColor(DSTheme.Colors.textSecondary)
@@ -201,22 +201,6 @@ struct MealAssignmentStepView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       .background(Color(.systemGray6))
       .cornerRadius(10)
-    }
-  }
-
-  private func formatScaledPortions(_ range: Common_Float32RangeWithOptionalMax, scale: Float)
-    -> String
-  {
-    let scaledMin = range.min * scale
-    if range.hasMax {
-      let scaledMax = range.max * scale
-      if scaledMin == scaledMax {
-        return String(format: "%.1f", scaledMin)
-      } else {
-        return String(format: "%.1f-%.1f", scaledMin, scaledMax)
-      }
-    } else {
-      return String(format: "%.1f+", scaledMin)
     }
   }
 

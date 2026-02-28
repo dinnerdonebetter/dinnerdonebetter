@@ -7,6 +7,26 @@
 
 import SwiftUI
 
+private func focusModeSectionHeader(title: String, color: Color) -> some View {
+  HStack(spacing: 12) {
+    Rectangle()
+      .fill(Color.secondary.opacity(0.5))
+      .frame(height: 1)
+      .frame(maxWidth: .infinity)
+    Text(title)
+      .font(.headline)
+      .fontWeight(.semibold)
+      .foregroundColor(color)
+    Rectangle()
+      .fill(Color.secondary.opacity(0.5))
+      .frame(height: 1)
+      .frame(maxWidth: .infinity)
+  }
+  .padding(.vertical, 8)
+  .frame(maxWidth: .infinity)
+  .background(Color(uiColor: .systemBackground))
+}
+
 struct StepFlowGroup<Item: Identifiable>: Identifiable {
   let id: String
   let title: String
@@ -38,6 +58,7 @@ struct StepFlowSection<
   let allModeLeadingContent: () -> AllLead
   let focusModeLeadingContent: () -> FocusLead
   let rowContent: (Item) -> Row
+  let onReorder: ((String, IndexSet, Int) -> Void)?
 
   init(
     showCompleted: Binding<Bool>,
@@ -46,6 +67,7 @@ struct StepFlowSection<
     allowToggle: Bool = true,
     allStepsTitle: String = "All Steps",
     emptyMessage: String? = nil,
+    onReorder: ((String, IndexSet, Int) -> Void)? = nil,
     @ViewBuilder headerContent: @escaping () -> Header,
     @ViewBuilder allModeLeadingContent: @escaping () -> AllLead,
     @ViewBuilder focusModeLeadingContent: @escaping () -> FocusLead,
@@ -61,6 +83,7 @@ struct StepFlowSection<
     self.allModeLeadingContent = allModeLeadingContent
     self.focusModeLeadingContent = focusModeLeadingContent
     self.rowContent = rowContent
+    self.onReorder = onReorder
   }
 
   var body: some View {
@@ -98,17 +121,32 @@ struct StepFlowSection<
       } else {
         focusModeLeadingContent()
 
-        ForEach(focusedGroups) { group in
-          if !group.items.isEmpty {
-            VStack(alignment: .leading, spacing: 8) {
-              Text(group.title)
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundColor(group.color)
-                .padding(.horizontal, 4)
-
-              ForEach(group.items) { item in
-                rowContent(item)
+        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
+          ForEach(focusedGroups) { group in
+            if !group.items.isEmpty {
+              Section {
+                if let onReorder {
+                  List {
+                    ForEach(group.items) { item in
+                      rowContent(item)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
+                    }
+                    .onMove { source, destination in
+                      onReorder(group.id, source, destination)
+                    }
+                  }
+                  .listStyle(.plain)
+                  .environment(\.editMode, .constant(.active))
+                  .scrollDisabled(true)
+                  .frame(minHeight: CGFloat(group.items.count) * 80)
+                } else {
+                  ForEach(group.items) { item in
+                    rowContent(item)
+                  }
+                }
+              } header: {
+                focusModeSectionHeader(title: group.title, color: group.color)
               }
             }
           }
