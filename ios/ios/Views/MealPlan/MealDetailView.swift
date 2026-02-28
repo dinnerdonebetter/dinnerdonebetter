@@ -596,7 +596,8 @@ struct MealDetailView: View {
                   source.viewModel.toggleStep(recipeID: source.recipeID, stepID: source.step.id)
                 }
               }
-              : nil
+              : nil,
+            ingredientBreakdownBySource: item.ingredientBreakdownBySource
           )
         }
       }

@@ -210,6 +210,24 @@ class HomeViewModel {
 
   let authManager: AuthenticationManager
 
+  /// Logs error with diagnostic details (RPC code, HTTP status, NSError userInfo, etc.)
+  private static func logDiagnosticError(_ context: String, error: Error) {
+    print("❌ Error loading \(context): \(error)")
+    if let rpcError = error as? GRPCCore.RPCError {
+      print("   └─ gRPC status: \(rpcError.code), message: \(rpcError.message)")
+    }
+    let nsError = error as NSError
+    print("   └─ NSError domain: \(nsError.domain), code: \(nsError.code)")
+    if !nsError.userInfo.isEmpty {
+      for (key, value) in nsError.userInfo {
+        print("   └─ userInfo[\(key)]: \(value)")
+      }
+    }
+    if let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? Error {
+      print("   └─ underlying error: \(underlying)")
+    }
+  }
+
   init(authManager: AuthenticationManager) {
     self.authManager = authManager
   }
@@ -242,7 +260,7 @@ class HomeViewModel {
       )
     } catch {
       errorMessage = "Failed to load data: \(error.localizedDescription)"
-      print("❌ Error loading home data: \(error)")
+      Self.logDiagnosticError("home data", error: error)
     }
 
     isLoading = false

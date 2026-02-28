@@ -30,6 +30,8 @@ struct StepCardView: View {
   var isCompletedOverride: Bool?
   var canCheckOverride: Bool?
   var onToggleOverride: (() -> Void)?
+  /// For merged meal steps: ingredient key -> "2g from Recipe A, 3g from Recipe B"
+  var ingredientBreakdownBySource: [String: String]?
 
   private var isHighlighted: Bool {
     guard let highlightedStepIDs = highlightedStepIDs else { return true }
@@ -150,7 +152,8 @@ struct StepCardView: View {
           selectedIngredientOptions: selectedIngredientOptions,
           selectedInstrumentOptions: selectedInstrumentOptions,
           selectedVesselOptions: selectedVesselOptions,
-          scale: scale
+          scale: scale,
+          ingredientBreakdownBySource: ingredientBreakdownBySource
         )
       }
 
@@ -297,6 +300,8 @@ struct StepDetailsView: View {
   var selectedInstrumentOptions: [String: UInt32] = [:]
   var selectedVesselOptions: [String: UInt32] = [:]
   var scale: Float = 1.0
+  /// For merged meal steps: ingredient key -> "2g from Recipe A, 3g from Recipe B"
+  var ingredientBreakdownBySource: [String: String]?
 
   private struct InstrumentVesselSectionData {
     let items: [StepItem]
@@ -345,9 +350,15 @@ struct StepDetailsView: View {
         let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
         let prerequisiteCompleted =
           prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
+        let ingredientKey =
+          ingredient.hasIngredient
+          ? "\(ingredient.ingredient.id)|\(ingredient.hasMeasurementUnit ? ingredient.measurementUnit.id : "")"
+          : ""
+        let breakdownSuffix = ingredientBreakdownBySource?[ingredientKey]
 
         return StepItem(
-          name: formatStepIngredientDisplay(ingredient, scale: scale),
+          name: formatStepIngredientDisplay(
+            ingredient, scale: scale, breakdownSuffix: breakdownSuffix),
           isProduct: isProduct,
           prerequisiteStepIndex: prerequisiteStepIndex,
           prerequisiteCompleted: prerequisiteCompleted

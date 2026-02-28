@@ -297,9 +297,11 @@ struct VesselOptionGroupAggregate: Identifiable {
 
 // MARK: - Helper Functions
 
-func formatStepIngredientDisplay(_ ingredient: Mealplanning_RecipeStepIngredient, scale: Float)
-  -> String
-{
+func formatStepIngredientDisplay(
+  _ ingredient: Mealplanning_RecipeStepIngredient,
+  scale: Float,
+  breakdownSuffix: String? = nil
+) -> String {
   var aggregated = AggregatedIngredient(
     ingredientID: ingredient.hasIngredient ? ingredient.ingredient.id : ingredient.id,
     name: ingredient.name,
@@ -311,11 +313,17 @@ func formatStepIngredientDisplay(_ ingredient: Mealplanning_RecipeStepIngredient
     aggregated.addQuantity(ingredient.quantity)
   }
 
+  var result: String
   if let quantityText = aggregated.quantityText(scale: scale) {
-    return "\(quantityText) \(ingredient.name)"
+    result = "\(quantityText) \(ingredient.name)"
+  } else {
+    result = ingredient.name
   }
 
-  return ingredient.name
+  if let suffix = breakdownSuffix, !suffix.isEmpty {
+    result += " (\(suffix))"
+  }
+  return result
 }
 
 extension RecipePerformanceContentView {

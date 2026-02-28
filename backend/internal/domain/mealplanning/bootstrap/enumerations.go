@@ -3592,6 +3592,26 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// === HEAT PREPARATION for small nonstick skillet (breadcrumbs) ===
+	caesarHeatPrep := enums.Preparations["heat"]
+	if err = createVPV(caesarHeatPrep, caesarSmallNonstickSkillet); err != nil {
+		return err
+	}
+
+	// === MINCE PREPARATION for garlic (breadcrumbs) ===
+	caesarMincePrep := enums.Preparations["mince"]
+	caesarKnife := enums.Instruments["knife"]
+	caesarCuttingBoard := enums.Vessels["cutting board"]
+	if err = createVIP(caesarMincePrep, caesarGarlic); err != nil {
+		return err
+	}
+	if err = createVPI(caesarMincePrep, caesarKnife); err != nil {
+		return err
+	}
+	if err = createVPV(caesarMincePrep, caesarCuttingBoard); err != nil {
+		return err
+	}
+
 	// === STIR PREPARATION for anchovy paste and garlic ===
 	if err = createVIP(caesarStirPrep, caesarAnchovyPaste); err != nil {
 		return err
@@ -3617,6 +3637,15 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPV(caesarMixPrep, caesarSmallNonstickSkillet); err != nil {
+		return err
+	}
+
+	// === COOK PREPARATION for breadcrumbs (butter mixture until fragrant) ===
+	caesarCookPrep := enums.Preparations["cook"]
+	if err = createVIP(caesarCookPrep, caesarSaltedButter); err != nil {
+		return err
+	}
+	if err = createVPV(caesarCookPrep, caesarSmallNonstickSkillet); err != nil {
 		return err
 	}
 

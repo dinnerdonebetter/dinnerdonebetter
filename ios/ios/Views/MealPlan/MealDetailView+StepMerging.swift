@@ -74,6 +74,67 @@ struct UnifiedMealStep: Identifiable {
     }
     return componentName
   }
+
+  /// For merged steps with multiple sources contributing to an ingredient, returns a breakdown
+  /// string per ingredient key, e.g. "2g from Recipe A, 3g from Recipe B".
+  var ingredientBreakdownBySource: [String: String]? {
+    guard isMerged else { return nil }
+    var breakdown: [String: [MergedIngredientSourcePart]] = [:]
+
+    for source in sources {
+      let sourceName: String = {
+        if source.isAssociatedRecipeStep, let name = source.associatedRecipeName, !name.isEmpty {
+          return name
+        }
+        return source.componentName
+      }()
+      for ing in source.step.ingredients where ing.hasIngredient {
+        let key = "\(ing.ingredient.id)|\(ing.hasMeasurementUnit ? ing.measurementUnit.id : "")"
+        let unit = ing.hasMeasurementUnit ? ing.measurementUnit : nil
+        if ing.hasQuantity {
+          let min = ing.quantity.min * source.scale
+          let max = ing.quantity.hasMax ? ing.quantity.max * source.scale : nil
+          breakdown[key, default: []].append(
+            MergedIngredientSourcePart(sourceName: sourceName, min: min, max: max, unit: unit)
+          )
+        }
+      }
+    }
+
+    var formatted: [String: String] = [:]
+    for (key, parts) in breakdown where parts.count > 1 {
+      let partsStr = parts.map { part in
+        let qtyStr = formatMergedIngredientQuantity(min: part.min, max: part.max, unit: part.unit)
+        return "\(qtyStr) from \(part.sourceName)"
+      }.joined(separator: ", ")
+      formatted[key] = partsStr
+    }
+    return formatted.isEmpty ? nil : formatted
+  }
+}
+
+private struct MergedIngredientSourcePart {
+  let sourceName: String
+  let min: Float
+  let max: Float?
+  let unit: Mealplanning_ValidMeasurementUnit?
+}
+
+private func formatMergedIngredientQuantity(
+  min: Float, max: Float?, unit: Mealplanning_ValidMeasurementUnit?
+) -> String {
+  let unitName = unit?.name ?? ""
+  let unitSuffix = unitName.isEmpty ? "" : " \(unitName)"
+  let formatMin = min.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f"
+  if let maxVal = max {
+    if min == maxVal {
+      return (String(format: formatMin, min) + unitSuffix).trimmingCharacters(in: .whitespaces)
+    }
+    let formatMax = maxVal.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f"
+    return (String(format: "\(formatMin) - \(formatMax)", min, maxVal) + unitSuffix)
+      .trimmingCharacters(in: .whitespaces)
+  }
+  return (String(format: "\(formatMin)+", min) + unitSuffix).trimmingCharacters(in: .whitespaces)
 }
 
 // MARK: - Step Merge Key
