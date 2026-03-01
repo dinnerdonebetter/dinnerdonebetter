@@ -15,7 +15,7 @@ final class SegmentEventReporter: EventReporter {
 
   init(writeKey: String) {
     let configuration = Configuration(writeKey: writeKey)
-      .trackApplicationLifecycleEvents(true)
+      .setTrackedApplicationLifecycleEvents(.all)
       .flushInterval(10)
     analytics = Analytics(configuration: configuration)
   }

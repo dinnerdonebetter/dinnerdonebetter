@@ -663,7 +663,7 @@ struct MealDetailView: View {
               ? item.sources.allSatisfy {
                 $0.viewModel.isStepCompleted(recipeID: $0.recipeID, stepID: $0.step.id)
               }
-              : nil,
+              : item.viewModel.isStepCompleted(recipeID: item.recipeID, stepID: item.step.id),
             canCheckOverride: item.isMerged
               ? item.sources.allSatisfy { source in
                 let prereqs = source.viewModel.getPrerequisiteStepKeys(
@@ -671,14 +671,16 @@ struct MealDetailView: View {
                 )
                 return prereqs.allSatisfy { source.viewModel.completedSteps.contains($0) }
               }
-              : nil,
+              : item.viewModel.canCheckStep(recipeID: item.recipeID, stepID: item.step.id),
             onToggleOverride: item.isMerged
               ? {
                 for source in item.sources {
                   source.viewModel.toggleStep(recipeID: source.recipeID, stepID: source.step.id)
                 }
               }
-              : nil,
+              : {
+                item.viewModel.toggleStep(recipeID: item.recipeID, stepID: item.step.id)
+              },
             ingredientBreakdownBySource: item.ingredientBreakdownBySource
           )
         }
