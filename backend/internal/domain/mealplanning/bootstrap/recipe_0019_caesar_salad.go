@@ -420,7 +420,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	slStep7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        sprinklePrep.ID,
 		Index:                7,
-		ExplicitInstructions: "Sprinkle with the remaining cheese and croutons. Serve.",
+		ExplicitInstructions: "Sprinkle with the remaining cheese and croutons.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),

@@ -13,6 +13,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	seasonPrep := enums.Preparations["season"]
 	slicePrep := enums.Preparations["slice"]
 	restPrep := enums.Preparations["rest"]
+	carvePrep := enums.Preparations["carve"]
 	heatPrep := enums.Preparations["heat"]
 	panSearPrep := enums.Preparations["pan-sear"]
 	bastePrep := enums.Preparations["baste"]
@@ -39,6 +40,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	mortarAndPestle := enums.Instruments["mortar and pestle"]
 	spiceGrinder := enums.Instruments["spice grinder"]
 	knife := enums.Instruments["knife"]
+	carvingKnife := enums.Instruments["carving knife"]
 	tongs := enums.Instruments["tongs"]
 	spoon := enums.Instruments["spoon"]
 	thermometer := enums.Instruments["instant-read thermometer"]
@@ -47,6 +49,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	// Get vessels
 	sheetPan := enums.Vessels["sheet pan"]
 	cuttingBoard := enums.Vessels["cutting board"]
+	carvingBoard := enums.Vessels["carving board"]
 	castIronSkillet := enums.Vessels["cast iron skillet"]
 	servingPlate := enums.Vessels["serving plate"]
 
@@ -107,6 +110,11 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	// Final rest preparation bridges
 	restTongsVPI := enums.PreparationInstruments[restPrep.ID][tongs.ID]
 	restPlateVPV := enums.PreparationVessels[restPrep.ID][servingPlate.ID]
+
+	// Carve preparation bridges
+	carveRibeyeVIP := enums.IngredientPreparations[carvePrep.ID][ribeye.ID]
+	carveCarvingBoardVPV := enums.PreparationVessels[carvePrep.ID][carvingBoard.ID]
+	carveCarvingKnifeVPI := enums.PreparationInstruments[carvePrep.ID][carvingKnife.ID]
 
 	// Step 0: Grind whole black peppercorns
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
@@ -634,7 +642,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        restPrep.ID,
 		Index:                8,
-		ExplicitInstructions: "Immediately transfer the steak to a large heatproof plate and pour the pan juices on top. Let rest for 5 to 10 minutes. Carve and serve.",
+		ExplicitInstructions: "Immediately transfer the steak to a large heatproof plate and pour the pan juices on top. Let rest for 5 to 10 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
 			Max: pointer.To[uint32](600), // 10 minutes
@@ -682,6 +690,55 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
+	// Step 9: Carve the steak
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        carvePrep.ID,
+		Index:                9,
+		ExplicitInstructions: "Transfer the steak to a carving board and carve into slices against the grain.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:     &carveRibeyeVIP.ID,
+				Name:                            "rested pan-seared butter-basted bone-in ribeye steak",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 700,
+					Max: pointer.To[float32](900),
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &carveCarvingKnifeVPI.ID,
+				Name:                         "carving knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ValidPreparationVesselID: &carveCarvingBoardVPV.ID,
+				Name:                     "carving board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "carved pan-seared butter-basted bone-in ribeye steak",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &gramMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](700),
+					Max: pointer.To[float32](900),
+				},
+			},
+		},
+	}
+
 	steps := []*mealplanning.RecipeStepCreationRequestInput{
 		step0,
 		step1,
@@ -692,6 +749,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		step6,
 		step7,
 		step8,
+		step9,
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{

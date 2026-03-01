@@ -1414,7 +1414,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 	step22 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        slicePrep.ID,
 		Index:                25,
-		ExplicitInstructions: "Slice thinly against the grain and serve immediately, passing extra salsa, lime wedges, avocado, onions, cilantro, and tortillas on the side.",
+		ExplicitInstructions: "Slice thinly against the grain.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](24),

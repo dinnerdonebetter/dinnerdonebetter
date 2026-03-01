@@ -1588,7 +1588,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step21 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
 		Index:                31,
-		ExplicitInstructions: "Ladle the chicken and sauce into a serving bowl and drizzle with additional heavy cream. Serve immediately with rice alongside.",
+		ExplicitInstructions: "Ladle the chicken and sauce into a serving bowl and drizzle with additional heavy cream.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](30),

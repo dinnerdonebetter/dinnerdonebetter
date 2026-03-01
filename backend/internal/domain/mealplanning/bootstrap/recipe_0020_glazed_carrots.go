@@ -939,7 +939,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        sprinklePrep.ID,
 		Index:                14,
-		ExplicitInstructions: "Sprinkle with the chopped herbs. Serve immediately.",
+		ExplicitInstructions: "Sprinkle with the chopped herbs.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](12),

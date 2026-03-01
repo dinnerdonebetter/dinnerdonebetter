@@ -19,6 +19,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	panSearPrep := enums.Preparations["pan-sear"]
 	roastPrep := enums.Preparations["roast"]
 	restPrep := enums.Preparations["rest"]
+	carvePrep := enums.Preparations["carve"]
 
 	// Get ingredients
 	wholeChicken := enums.Ingredients["whole chicken"]
@@ -35,6 +36,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Get instruments
 	butchersTwine := enums.Instruments["butcher's twine"]
+	carvingKnife := enums.Instruments["carving knife"]
 	tongs := enums.Instruments["tongs"]
 	thermometer := enums.Instruments["instant-read thermometer"]
 	bareHands := enums.Instruments["bare hands"]
@@ -100,6 +102,11 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Rest preparation bridges
 	restCarvingBoardVPV := enums.PreparationVessels[restPrep.ID][carvingBoard.ID]
+
+	// Carve preparation bridges
+	carveWholeChickenVIP := enums.IngredientPreparations[carvePrep.ID][wholeChicken.ID]
+	carveCarvingBoardVPV := enums.PreparationVessels[carvePrep.ID][carvingBoard.ID]
+	carveCarvingKnifeVPI := enums.PreparationInstruments[carvePrep.ID][carvingKnife.ID]
 
 	// Step 0: Grind whole black peppercorns
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
@@ -614,7 +621,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        restPrep.ID,
 		Index:                10,
-		ExplicitInstructions: "Remove from the oven and transfer the chicken to a carving board. Let rest for 10 to 20 minutes, then carve and serve.",
+		ExplicitInstructions: "Remove from the oven and transfer the chicken to a carving board. Let rest for 10 to 20 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](600),  // 10 minutes
 			Max: pointer.To[uint32](1200), // 20 minutes
@@ -642,6 +649,55 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 				Name:              "rested roast chicken",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+					Max: pointer.To[float32](5),
+				},
+			},
+		},
+	}
+
+	// Step 11: Carve the chicken
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        carvePrep.ID,
+		Index:                11,
+		ExplicitInstructions: "Carve the chicken.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:     &carveWholeChickenVIP.ID,
+				Name:                            "rested roast chicken",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 4,
+					Max: pointer.To[float32](5),
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &carveCarvingKnifeVPI.ID,
+				Name:                         "carving knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ValidPreparationVesselID: &carveCarvingBoardVPV.ID,
+				Name:                     "carving board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "carved roast chicken",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
@@ -689,7 +745,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			PortionName:       "serving",
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10},
+			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11},
 			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,

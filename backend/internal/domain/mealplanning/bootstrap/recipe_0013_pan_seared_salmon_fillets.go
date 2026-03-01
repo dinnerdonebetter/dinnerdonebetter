@@ -14,6 +14,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	dryPrep := enums.Preparations["dry"]
 	seasonPrep := enums.Preparations["season"]
 	heatPrep := enums.Preparations["heat"]
+	reducePrep := enums.Preparations["reduce"]
 	panSearPrep := enums.Preparations["pan-sear"]
 	pressPrep := enums.Preparations["press"]
 	flipPrep := enums.Preparations["flip"]
@@ -64,6 +65,9 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	// Heat
 	heatOilVIP := enums.IngredientPreparations[heatPrep.ID][vegetableOil.ID]
 	heatSkilletVPV := enums.PreparationVessels[heatPrep.ID][skillet.ID]
+
+	// Reduce
+	reduceSkilletVPV := enums.PreparationVessels[reducePrep.ID][skillet.ID]
 
 	// Pan-sear
 	panSearSalmonVIP := enums.IngredientPreparations[panSearPrep.ID][salmonFillet.ID]
@@ -281,11 +285,39 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 4: Reduce heat to medium-low, then add a salmon fillet, skin side down. Press firmly in place for 10 seconds, using the back of a flexible fish spatula, to prevent the skin from buckling. Add remaining fillets one at a time, pressing each with spatula for 10 seconds, until all fillets are in the pan.
+	// Step 4: Reduce heat to medium-low
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        pressPrep.ID,
+		PreparationID:        reducePrep.ID,
 		Index:                4,
-		ExplicitInstructions: "Reduce the heat to medium-low, then add a salmon fillet, skin side down. Press firmly in place for 10 seconds, using the back of a flexible fish spatula, to prevent the skin from buckling. Add the remaining fillets one at a time, pressing each with the spatula for 10 seconds, until all fillets are in the pan.",
+		ExplicitInstructions: "Reduce the heat to medium-low.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &reduceSkilletVPV.ID,
+				Name:                            "heated skillet with shimmering oil",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "skillet at medium-low heat",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 5: Add salmon fillets, skin side down, and press firmly in place for 10 seconds each
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        pressPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Add a salmon fillet, skin side down. Press firmly in place for 10 seconds, using the back of a flexible fish spatula, to prevent the skin from buckling. Add the remaining fillets one at a time, pressing each with the spatula for 10 seconds, until all fillets are in the pan.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](40), // 4 fillets × 10 seconds
 		},
@@ -311,10 +343,10 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &pressSkilletVPV.ID,
-				Name:                            "heated skillet with shimmering oil",
+				Name:                            "skillet at medium-low heat",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -341,11 +373,11 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 5: Cook, pressing gently on back of fillets occasionally to ensure good contact with skin, until skin releases easily from pan, about 4 minutes. Continue to cook until salmon registers 110°F (43°C) in the very center for rare, 120°F (49°C) for medium-rare, or 130°F (54°C) for medium, 5 to 7 minutes total.
+	// Step 6: Cook, pressing gently on back of fillets occasionally to ensure good contact with skin, until skin releases easily from pan, about 4 minutes. Continue to cook until salmon registers 110°F (43°C) in the very center for rare, 120°F (49°C) for medium-rare, or 130°F (54°C) for medium, 5 to 7 minutes total.
 	atTemperatureState := enums.IngredientStates["at temperature"]
-	step5 := &mealplanning.RecipeStepCreationRequestInput{
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        panSearPrep.ID,
-		Index:                5,
+		Index:                6,
 		ExplicitInstructions: "Cook, pressing gently on the back of the fillets occasionally to ensure good contact with the skin, until the skin releases easily from the pan, about 4 minutes. If the skin shows resistance when you attempt to lift a corner with the spatula, allow it to continue to cook until it lifts easily. Continue to cook until the salmon registers 110°F (43°C) in the very center for rare, 120°F (49°C) for medium-rare, or 130°F (54°C) for medium, 5 to 7 minutes total.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
@@ -353,7 +385,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &panSearSalmonVIP.ID,
 				Name:                            "salmon fillets pressed in skillet",
@@ -380,7 +412,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
 				Name:                            "skillet with pressed salmon",
@@ -418,14 +450,14 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 6: Using spatula and a fork, flip salmon fillets
-	step6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 7: Using spatula and a fork, flip salmon fillets
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        flipPrep.ID,
-		Index:                6,
+		Index:                7,
 		ExplicitInstructions: "Using a spatula and a fork, flip the salmon fillets.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &flipSalmonVIP.ID,
 				Name:                            "cooked salmon fillets (skin side)",
@@ -452,7 +484,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &flipSkilletVPV.ID,
 				Name:                            "skillet with cooked salmon",
@@ -482,17 +514,17 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 7: Cook on second side for 15 seconds
-	step7 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 8: Cook on second side for 15 seconds
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        panSearPrep.ID,
-		Index:                7,
+		Index:                8,
 		ExplicitInstructions: "Cook on the second side for 15 seconds.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](15),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &panSearSalmonVIP.ID,
 				Name:                            "flipped salmon fillets",
@@ -503,7 +535,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
 				Name:                            "skillet with flipped salmon",
@@ -525,14 +557,14 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 8: Transfer to a paper towel–lined plate
-	step8 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 9: Transfer to a paper towel–lined plate
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
-		Index:                8,
+		Index:                9,
 		ExplicitInstructions: "Transfer to a paper towel–lined plate to drain.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &transferSalmonVIP.ID,
 				Name:                            "fully cooked salmon fillets",
@@ -571,14 +603,14 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 9: Drain excess oil
-	step9 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 10: Drain excess oil
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        drainPrep.ID,
-		Index:                9,
+		Index:                10,
 		ExplicitInstructions: "Drain excess oil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &drainSalmonVIP.ID,
 				Name:                            "fully cooked salmon fillets",
@@ -589,7 +621,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &drainPlateVPV.ID,
 				Name:                            "salmon fillets on plate",
@@ -644,7 +676,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			PortionName:       "serving",
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9},
+			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10},
 			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,

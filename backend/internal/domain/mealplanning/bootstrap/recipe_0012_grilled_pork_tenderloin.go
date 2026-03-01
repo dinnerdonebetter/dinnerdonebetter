@@ -672,11 +672,11 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 12: Carve pork tenderloins and serve as desired
+	// Step 12: Carve pork tenderloins
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        carvePrep.ID,
 		Index:                12,
-		ExplicitInstructions: "Carve the pork tenderloins and serve as desired.",
+		ExplicitInstructions: "Carve the pork tenderloins.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
