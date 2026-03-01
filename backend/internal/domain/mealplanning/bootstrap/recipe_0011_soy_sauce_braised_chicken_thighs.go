@@ -142,7 +142,6 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 
 	// Braise
 	braiseSkilletVPV := enums.PreparationVessels[braisePrep.ID][castIronSkillet.ID]
-	braiseOvenVPV := enums.PreparationVessels[braisePrep.ID][oven.ID]
 	braiseThermometerVPI := enums.PreparationInstruments[braisePrep.ID][thermometer.ID]
 
 	// Cut
@@ -1307,15 +1306,6 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &braiseSkilletVPV.ID,
 				Name:                            "skillet with chicken in oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &braiseOvenVPV.ID,
-				Name:                            "preheated oven at 300°F",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

@@ -6469,6 +6469,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPI(caSlicePrep, caCarvingKnife); err != nil {
 		return err
 	}
+	if err = createVPV(caSlicePrep, caCuttingBoard); err != nil {
+		return err
+	}
+	if err = createVPV(caSlicePrep, caSealedContainer); err != nil {
+		return err
+	}
 
 	// === PLUCK PREPARATION for cilantro ===
 	if err = createVIP(caPluckPrep, caCilantro); err != nil {

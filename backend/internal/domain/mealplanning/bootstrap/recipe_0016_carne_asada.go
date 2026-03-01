@@ -172,6 +172,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 	// Slice
 	sliceSkirtSteakVIP := enums.IngredientPreparations[slicePrep.ID][skirtSteak.ID]
 	sliceCarvingKnifeVPI := enums.PreparationInstruments[slicePrep.ID][carvingKnife.ID]
+	sliceCuttingBoardVPV := enums.PreparationVessels[slicePrep.ID][cuttingBoard.ID]
+	sliceSealedContainerVPV := enums.PreparationVessels[slicePrep.ID][sealedContainer.ID]
 
 	// Toast
 	toastCuminSeedsVIP := enums.IngredientPreparations[toastPrep.ID][cuminSeeds.ID]
@@ -309,9 +311,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:  "toasted and ground cumin and coriander seeds",
-				Type:  mealplanning.RecipeStepProductIngredientType,
-				Index: 0,
+				Name:              "toasted and ground cumin and coriander seeds",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1435,6 +1438,26 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:                            "rested steak",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](23),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &sliceCuttingBoardVPV.ID,
+				Name:                            "cutting board with rested steak",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &sliceSealedContainerVPV.ID,
+				Name:                            "marinade container for serving",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
 				},
 			},
 		},
