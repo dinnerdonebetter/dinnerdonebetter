@@ -103,7 +103,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	// Roast
 	roastBrusselsSproutsVIP := enums.IngredientPreparations[roastPrep.ID][brusselsSprouts.ID]
 	roastBakingSheetVPV := enums.PreparationVessels[roastPrep.ID][bakingSheet.ID]
-	roastOvenVPV := enums.PreparationVessels[roastPrep.ID][oven.ID]
 
 	// Stir
 	stirBrusselsSproutsVIP := enums.IngredientPreparations[stirPrep.ID][brusselsSprouts.ID]
@@ -112,7 +111,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 
 	// Rotate
 	rotateBakingSheetVPV := enums.PreparationVessels[rotatePrep.ID][bakingSheet.ID]
-	rotateOvenVPV := enums.PreparationVessels[rotatePrep.ID][oven.ID]
 
 	// Drizzle
 	drizzleBalsamicVinegarVIP := enums.IngredientPreparations[drizzlePrep.ID][balsamicVinegar.ID]
@@ -531,15 +529,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 					Min: 1,
 				},
 			},
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &roastOvenVPV.ID,
-				Name:                            "preheated oven with baking sheets at 500°F",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
@@ -549,6 +538,14 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
+				},
+			},
+			{
+				Name:  "baking sheets with partially roasted Brussels sprouts in oven",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
 				},
 			},
 		},
@@ -700,10 +697,10 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &stirBakingSheetVPV.ID,
-				Name:                            "baking sheet with Brussels sprouts in oven",
+				Name:                            "baking sheets with partially roasted Brussels sprouts in oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -741,15 +738,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &rotateBakingSheetVPV.ID,
 				Name:                            "baking sheets with Brussels sprouts and shallots in oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &rotateOvenVPV.ID,
-				Name:                            "preheated oven at 500°F",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -794,15 +782,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &roastBakingSheetVPV.ID,
 				Name:                            "rotated baking sheets with Brussels sprouts and shallots in oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &roastOvenVPV.ID,
-				Name:                            "preheated oven at 500°F",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

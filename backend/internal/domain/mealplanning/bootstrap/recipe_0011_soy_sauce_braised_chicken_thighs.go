@@ -368,6 +368,8 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		ExplicitInstructions: "Season the chicken generously on all sides with the salt mixture.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
+				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenThighsPoundVIMU.ID,
 				Name:                             "dried chicken on wire rack",
@@ -1183,7 +1185,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		ExplicitInstructions: "Return the chicken to the pan skin-side-up, leaving the skin above the liquid but submerging most of the meat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](13),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &transferChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenThighsPoundVIMU.ID,

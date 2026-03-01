@@ -68,6 +68,10 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	heatSousVideCookerVPI := enums.PreparationInstruments[heatPrep.ID][sousVideCooker.ID]
 	heatWaterBathVPV := enums.PreparationVessels[heatPrep.ID][waterBath.ID]
 
+	// Sous vide preparation bridges (for cooking in water bath)
+	sousVideCookerVPI := enums.PreparationInstruments[sousVidePrep.ID][sousVideCooker.ID]
+	sousVideWaterBathVPV := enums.PreparationVessels[sousVidePrep.ID][waterBath.ID]
+
 	// Season preparation bridges
 	seasonChickenVIP := enums.IngredientPreparations[seasonPrep.ID][chickenBreast.ID]
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
@@ -403,9 +407,8 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				Name:                            "preheated sous vide cooker",
+				ValidPreparationInstrumentID: &sousVideCookerVPI.ID,
+				Name:                         "sous vide cooker",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -413,8 +416,10 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex: pointer.To[uint64](1),
-				Name:                     "preheated water bath",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &sousVideWaterBathVPV.ID,
+				Name:                            "preheated water bath",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

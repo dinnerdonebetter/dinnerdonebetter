@@ -261,9 +261,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:  "toasted cumin and coriander seeds",
-				Type:  mealplanning.RecipeStepProductIngredientType,
-				Index: 0,
+				Name:              "toasted cumin and coriander seeds",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID:  &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -401,9 +402,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:  "cilantro, leaves and tender stems only",
-				Type:  mealplanning.RecipeStepProductIngredientType,
-				Index: 0,
+				Name:              "cilantro, leaves and tender stems only",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID:  &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1059,11 +1061,21 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 	}
 
 	// Step 14: Set cooking grate in place
+	// Consumes charcoal arrangement from pour step (16) to connect light->pour->set chain
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        setPrep.ID,
 		Index:                17,
 		ExplicitInstructions: "Set the cooking grate in place. Alternatively, set half the burners on a gas grill to the highest heat setting.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &setGrillVPV.ID,
+				Name:                            "charcoal arranged on one side of grate",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
 			{
 				ValidPreparationVesselID: &setCookingGrateVPV.ID,
 				Name:                     "cooking grate",

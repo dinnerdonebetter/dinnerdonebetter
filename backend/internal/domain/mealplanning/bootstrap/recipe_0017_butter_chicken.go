@@ -139,7 +139,6 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	addWoodenSpoonVPI := enums.PreparationInstruments[addPrep.ID][woodenSpoon.ID]
 	simmerDutchOvenVPV := enums.PreparationVessels[simmerPrep.ID][dutchOven.ID]
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
-	broilBakingSheetVPV := enums.PreparationVessels[broilPrep.ID][bakingSheet.ID]
 	broilOvenVPV := enums.PreparationVessels[broilPrep.ID][oven.ID]
 	blendStickBlenderVPI := enums.PreparationInstruments[blendPrep.ID][stickBlender.ID]
 	blendDutchOvenVPV := enums.PreparationVessels[blendPrep.ID][dutchOven.ID]
@@ -558,10 +557,17 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "chicken on baking sheet",
+				Name:                "prepared baking sheet",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
 				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+			},
+			{
+				Name:                "marinated chicken",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               1,
+				MeasurementUnitID:   &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2)},
 			},
 		},
 	}
@@ -1355,17 +1361,18 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &broilChickenVIP.ID,
-				Name:                            "chicken on baking sheet",
+				Name:                            "marinated chicken",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 2},
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &broilBakingSheetVPV.ID,
-				Name:                     "baking sheet with chicken",
-				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "prepared baking sheet",
+				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](25),

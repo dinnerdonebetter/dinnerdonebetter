@@ -55,28 +55,29 @@ func cloneTime(t time.Time) time.Time {
 }
 
 // resolveEmptyRecipeIDs resolves empty RecipeStepProductRecipeID values in a recipe input
-// by trying to find matching recipes in the createdRecipes map.
-// It tries all recipes in the map and matches based on step index.
+// by looking up recipes in the createdRecipes map. Prefers RecipeStepProductRecipeSlug when
+// set (ensures correct recipe); otherwise falls back to matching by step index (ambiguous).
 func resolveEmptyRecipeIDs(recipe *mealplanning.RecipeCreationRequestInput, createdRecipes map[string]*mealplanning.Recipe) {
 	for _, step := range recipe.Steps {
 		for _, ingredient := range step.Ingredients {
 			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID == "" {
-				// Try to find a recipe that has a step at the referenced index
+				// Prefer slug lookup when available - ensures we resolve to the correct recipe
+				if ingredient.RecipeStepProductRecipeSlug != nil && *ingredient.RecipeStepProductRecipeSlug != "" {
+					if refRecipe, ok := createdRecipes[*ingredient.RecipeStepProductRecipeSlug]; ok && refRecipe != nil {
+						ingredient.RecipeStepProductRecipeID = &refRecipe.ID
+						continue
+					}
+				}
+				// Fallback: match by step index (ambiguous - many recipes may have a step at that index)
 				stepIndex := ingredient.ProductOfRecipeStepIndex
 				if stepIndex != nil {
-					// Try all recipes in the createdRecipes map
 					for _, refRecipe := range createdRecipes {
 						if refRecipe != nil && int(*stepIndex) < len(refRecipe.Steps) {
-							// Check if this step has the expected product
 							referencedStep := refRecipe.Steps[*stepIndex]
 							if ingredient.ProductOfRecipeStepProductIndex != nil {
 								productIndex := int(*ingredient.ProductOfRecipeStepProductIndex)
 								if productIndex < len(referencedStep.Products) {
-									// This recipe has a step at the right index with enough products
-									// Update the recipe ID (we'll verify the product type later)
 									ingredient.RecipeStepProductRecipeID = &refRecipe.ID
-									// Note: We can't be 100% sure this is the right recipe,
-									// but it's the best we can do without storing the slug
 									break
 								}
 							}

@@ -255,6 +255,14 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 					Min: 1,
 				},
 			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "preheated oven",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
@@ -556,6 +564,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-breadcrumbs"),
+				RecipeStepProductRecipeSlug:      pointer.To("caesar-breadcrumbs"),
 				ValidIngredientPreparationID:     &topBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
 				Name:                             "caesar breadcrumbs",

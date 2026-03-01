@@ -609,7 +609,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationVesselID:        &basteSkilletVPV.ID,
 				Name:                            "cast iron skillet",
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -699,7 +699,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &carveRibeyeVIP.ID,
+				ValidIngredientPreparationID:    &carveRibeyeVIP.ID,
 				Name:                            "rested pan-seared butter-basted bone-in ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 700,

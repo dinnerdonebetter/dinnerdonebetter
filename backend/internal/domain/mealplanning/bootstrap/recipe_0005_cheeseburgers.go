@@ -84,20 +84,16 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	// Smash preparation bridges
 	smashBeefVIP := enums.IngredientPreparations[smashPrep.ID][groundBeef.ID]
 	smashSpatulaVPI := enums.PreparationInstruments[smashPrep.ID][wideSpatula.ID]
-	smashSkilletVPV := enums.PreparationVessels[smashPrep.ID][castIronSkillet.ID]
 
 	// Pan-sear preparation bridges
 	panSearSpatulaVPI := enums.PreparationInstruments[panSearPrep.ID][wideSpatula.ID]
-	panSearSkilletVPV := enums.PreparationVessels[panSearPrep.ID][castIronSkillet.ID]
 
 	// Flip preparation bridges
 	flipSpatulaVPI := enums.PreparationInstruments[flipPrep.ID][wideSpatula.ID]
-	flipSkilletVPV := enums.PreparationVessels[flipPrep.ID][castIronSkillet.ID]
 
 	// Top preparation bridges
 	topCheeseVIP := enums.IngredientPreparations[topPrep.ID][americanCheese.ID]
 	cheeseSliceVIMU := enums.IngredientMeasurementUnits[americanCheese.ID][sliceMeasurement.ID]
-	topSkilletVPV := enums.PreparationVessels[topPrep.ID][castIronSkillet.ID]
 
 	// Assemble preparation bridges
 	assembleBunVIP := enums.IngredientPreparations[assemblePrep.ID][burgerBun.ID]
@@ -370,6 +366,14 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 					Min: pointer.To[float32](4),
 				},
 			},
+			{
+				Name:  "hot skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 	}
 
@@ -401,9 +405,8 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &smashSkilletVPV.ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "hot skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -418,6 +421,14 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
+				},
+			},
+			{
+				Name:  "hot skillet with smashed patties",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
 				},
 			},
 		},
@@ -452,10 +463,9 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
-				Name:                            "hot skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "hot skillet with smashed patties",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -469,6 +479,14 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
+				},
+			},
+			{
+				Name:  "hot skillet with seared patties",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
 				},
 			},
 		},
@@ -508,10 +526,9 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &flipSkilletVPV.ID,
-				Name:                            "hot skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "hot skillet with seared patties",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -525,6 +542,14 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
+				},
+			},
+			{
+				Name:  "hot skillet with flipped patties",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
 				},
 			},
 		},
@@ -557,10 +582,9 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &topSkilletVPV.ID,
-				Name:                            "hot skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "hot skillet with flipped patties",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -574,6 +598,14 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
+				},
+			},
+			{
+				Name:  "hot skillet with cheesed patties",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
 				},
 			},
 		},
@@ -599,10 +631,9 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
-				Name:                            "hot skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "hot skillet with cheesed patties",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
