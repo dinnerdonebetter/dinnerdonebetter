@@ -331,6 +331,34 @@ func TestRecipeManager_RecipeImageUpload(T *testing.T) {
 	})
 }
 
+func TestRecipeManager_MealMermaid(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		exampleMeal := fakes.BuildFakeMeal()
+		expectedResult := "flowchart TD;\n\tStep1[\"Main\"];\n"
+
+		expectations := setupExpectationsForRecipeManagerWithAnalyzer(
+			rm,
+			nil,
+			func(analyzer *recipeanalysis.MockRecipeAnalyzer) {
+				analyzer.On(reflection.GetMethodName(analyzer.RenderMermaidDiagramForMeal), testutils.ContextMatcher, testutils.MatchType[*types.Meal]()).Return(expectedResult, nil)
+			},
+		)
+
+		result, err := rm.MealMermaid(ctx, exampleMeal)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedResult, result)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
 func TestRecipeManager_RecipeMermaid(T *testing.T) {
 	T.Parallel()
 

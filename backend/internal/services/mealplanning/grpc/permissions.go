@@ -156,6 +156,7 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_SearchForRecipes_FullMethodName:             {authorization.ReadRecipesPermission},
 		mealplanningsvc.MealPlanningService_CloneRecipe_FullMethodName:                  {authorization.ReadRecipesPermission},
 		mealplanningsvc.MealPlanningService_SearchForMealEligibleRecipes_FullMethodName: {authorization.ReadRecipesPermission},
+		mealplanningsvc.MealPlanningService_GetMermaidDiagramForMeal_FullMethodName:     {authorization.ReadMealsPermission},
 		mealplanningsvc.MealPlanningService_GetMermaidDiagramForRecipe_FullMethodName:   {authorization.ReadRecipesPermission},
 		mealplanningsvc.MealPlanningService_EstimateRecipePrepTasks_FullMethodName:      {authorization.ReadRecipesPermission},
 

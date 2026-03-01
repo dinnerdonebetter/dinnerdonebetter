@@ -235,6 +235,23 @@ func TestMeals_Reading(T *testing.T) {
 	})
 }
 
+func TestMeals_GetMermaidDiagramForMeal(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns non-empty mermaid diagram", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		createdMeal := createMealForTest(t, userClient, nil)
+
+		res, err := userClient.GetMermaidDiagramForMeal(ctx, &mealplanninggrpc.GetMermaidDiagramForMealRequest{MealId: createdMeal.ID})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		assert.NotEmpty(t, res.Response, "mermaid diagram should not be empty")
+	})
+}
+
 func TestMeals_Archiving(T *testing.T) {
 	T.Parallel()
 

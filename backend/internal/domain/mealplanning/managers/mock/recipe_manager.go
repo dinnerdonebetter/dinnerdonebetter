@@ -70,6 +70,11 @@ func (m *MockRecipeManager) RecipeEstimatedPrepSteps(ctx context.Context, recipe
 	return returnValues.Get(0).([]*mealplanning.MealPlanTaskDatabaseCreationEstimate), returnValues.Error(1)
 }
 
+func (m *MockRecipeManager) MealMermaid(ctx context.Context, meal *mealplanning.Meal) (string, error) {
+	returnArgs := m.Called(ctx, meal)
+	return returnArgs.String(0), returnArgs.Error(1)
+}
+
 func (m *MockRecipeManager) RecipeMermaid(ctx context.Context, recipeID string) (string, error) {
 	returnValues := m.Called(ctx, recipeID)
 

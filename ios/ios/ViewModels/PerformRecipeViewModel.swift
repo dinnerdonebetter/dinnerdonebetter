@@ -19,6 +19,10 @@ class PerformRecipeViewModel {
   var isLoadingPrepTasks = false
   var errorMessage: String?
 
+  var mermaidDiagram: String?
+  var isLoadingMermaid = false
+  var mermaidError: String?
+
   // Track which steps are completed (by step ID: "recipeID:stepID")
   var completedSteps: Set<String> = []
 
@@ -126,6 +130,44 @@ class PerformRecipeViewModel {
     }
 
     isLoadingPrepTasks = false
+  }
+
+  func loadMermaidDiagram() async {
+    guard mermaidDiagram == nil else { return }
+    isLoadingMermaid = true
+    mermaidError = nil
+
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        throw NSError(
+          domain: "PerformRecipeViewModel", code: 1,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
+      }
+
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        throw NSError(
+          domain: "PerformRecipeViewModel", code: 2,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+      }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+      var request = Mealplanning_GetMermaidDiagramForRecipeRequest()
+      request.recipeID = recipeID
+
+      let response = try await clientManager.client.mealPlanning.getMermaidDiagramForRecipe(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      self.mermaidDiagram = response.response
+    } catch {
+      mermaidError = "Failed to load diagram: \(error.localizedDescription)"
+      print("❌ Error loading mermaid diagram: \(error)")
+    }
+
+    isLoadingMermaid = false
   }
 
   // Build a mapping from recipe step product IDs to the step that produces them

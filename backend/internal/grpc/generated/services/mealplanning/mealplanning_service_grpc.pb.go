@@ -115,6 +115,7 @@ const (
 	MealPlanningService_GetMealPlansForAccount_FullMethodName                              = "/mealplanning.MealPlanningService/GetMealPlansForAccount"
 	MealPlanningService_GetMealLists_FullMethodName                                        = "/mealplanning.MealPlanningService/GetMealLists"
 	MealPlanningService_GetMeals_FullMethodName                                            = "/mealplanning.MealPlanningService/GetMeals"
+	MealPlanningService_GetMermaidDiagramForMeal_FullMethodName                            = "/mealplanning.MealPlanningService/GetMermaidDiagramForMeal"
 	MealPlanningService_GetMermaidDiagramForRecipe_FullMethodName                          = "/mealplanning.MealPlanningService/GetMermaidDiagramForRecipe"
 	MealPlanningService_GetRandomValidIngredient_FullMethodName                            = "/mealplanning.MealPlanningService/GetRandomValidIngredient"
 	MealPlanningService_GetRandomValidInstrument_FullMethodName                            = "/mealplanning.MealPlanningService/GetRandomValidInstrument"
@@ -341,6 +342,7 @@ type MealPlanningServiceClient interface {
 	GetMealPlansForAccount(ctx context.Context, in *GetMealPlansForAccountRequest, opts ...grpc.CallOption) (*GetMealPlansForAccountResponse, error)
 	GetMealLists(ctx context.Context, in *GetMealListsRequest, opts ...grpc.CallOption) (*GetMealListsResponse, error)
 	GetMeals(ctx context.Context, in *GetMealsRequest, opts ...grpc.CallOption) (*GetMealsResponse, error)
+	GetMermaidDiagramForMeal(ctx context.Context, in *GetMermaidDiagramForMealRequest, opts ...grpc.CallOption) (*GetMermaidDiagramForMealResponse, error)
 	GetMermaidDiagramForRecipe(ctx context.Context, in *GetMermaidDiagramForRecipeRequest, opts ...grpc.CallOption) (*GetMermaidDiagramForRecipeResponse, error)
 	GetRandomValidIngredient(ctx context.Context, in *GetRandomValidIngredientRequest, opts ...grpc.CallOption) (*GetRandomValidIngredientResponse, error)
 	GetRandomValidInstrument(ctx context.Context, in *GetRandomValidInstrumentRequest, opts ...grpc.CallOption) (*GetRandomValidInstrumentResponse, error)
@@ -1402,6 +1404,16 @@ func (c *mealPlanningServiceClient) GetMeals(ctx context.Context, in *GetMealsRe
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetMealsResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_GetMeals_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) GetMermaidDiagramForMeal(ctx context.Context, in *GetMermaidDiagramForMealRequest, opts ...grpc.CallOption) (*GetMermaidDiagramForMealResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMermaidDiagramForMealResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetMermaidDiagramForMeal_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2775,6 +2787,7 @@ type MealPlanningServiceServer interface {
 	GetMealPlansForAccount(context.Context, *GetMealPlansForAccountRequest) (*GetMealPlansForAccountResponse, error)
 	GetMealLists(context.Context, *GetMealListsRequest) (*GetMealListsResponse, error)
 	GetMeals(context.Context, *GetMealsRequest) (*GetMealsResponse, error)
+	GetMermaidDiagramForMeal(context.Context, *GetMermaidDiagramForMealRequest) (*GetMermaidDiagramForMealResponse, error)
 	GetMermaidDiagramForRecipe(context.Context, *GetMermaidDiagramForRecipeRequest) (*GetMermaidDiagramForRecipeResponse, error)
 	GetRandomValidIngredient(context.Context, *GetRandomValidIngredientRequest) (*GetRandomValidIngredientResponse, error)
 	GetRandomValidInstrument(context.Context, *GetRandomValidInstrumentRequest) (*GetRandomValidInstrumentResponse, error)
@@ -3190,6 +3203,9 @@ func (UnimplementedMealPlanningServiceServer) GetMealLists(context.Context, *Get
 }
 func (UnimplementedMealPlanningServiceServer) GetMeals(context.Context, *GetMealsRequest) (*GetMealsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMeals not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetMermaidDiagramForMeal(context.Context, *GetMermaidDiagramForMealRequest) (*GetMermaidDiagramForMealResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMermaidDiagramForMeal not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) GetMermaidDiagramForRecipe(context.Context, *GetMermaidDiagramForRecipeRequest) (*GetMermaidDiagramForRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMermaidDiagramForRecipe not implemented")
@@ -5263,6 +5279,24 @@ func _MealPlanningService_GetMeals_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).GetMeals(ctx, req.(*GetMealsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_GetMermaidDiagramForMeal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMermaidDiagramForMealRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetMermaidDiagramForMeal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetMermaidDiagramForMeal_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetMermaidDiagramForMeal(ctx, req.(*GetMermaidDiagramForMealRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -7931,6 +7965,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMeals",
 			Handler:    _MealPlanningService_GetMeals_Handler,
+		},
+		{
+			MethodName: "GetMermaidDiagramForMeal",
+			Handler:    _MealPlanningService_GetMermaidDiagramForMeal_Handler,
 		},
 		{
 			MethodName: "GetMermaidDiagramForRecipe",

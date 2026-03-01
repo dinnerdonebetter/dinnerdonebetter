@@ -60,6 +60,7 @@ struct MealDetailView: View {
   @State private var showMealCompletedSteps = false
   @State private var customUpNextOrder: [String] = []
   @State private var customForLaterOrder: [String] = []
+  @State private var isDAGSectionExpanded = false
 
   let mealID: String
   /// When true, scale editing is hidden because the scale is set by the meal plan.
@@ -84,6 +85,11 @@ struct MealDetailView: View {
                 VStack(alignment: .leading, spacing: DSTheme.Spacing.xl) {
                   // Overall Info Section
                   overallInfoSection(meal: meal)
+
+                  // DAG section (meal-level step dependencies)
+                  if !meal.components.isEmpty {
+                    mealDAGSection(viewModel: viewModel)
+                  }
 
                   // Aggregated Ingredients & Instruments/Vessels (consolidated from all recipes)
                   if !meal.components.isEmpty {
@@ -237,6 +243,82 @@ struct MealDetailView: View {
     }
     .padding(DSTheme.Spacing.lg)
     .frame(maxWidth: .infinity, alignment: .leading)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.lg)
+  }
+
+  // MARK: - Meal DAG Section
+
+  private func mealDAGSection(viewModel: MealDetailViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 0) {
+      Button(
+        action: {
+          withAnimation {
+            isDAGSectionExpanded.toggle()
+          }
+        },
+        label: {
+          HStack {
+            Text("DAG")
+              .font(DSTheme.Typography.title3)
+              .foregroundColor(DSTheme.Colors.textPrimary)
+            Spacer()
+            Image(systemName: isDAGSectionExpanded ? "chevron.down" : "chevron.right")
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+          .padding(DSTheme.Spacing.lg)
+          .background(DSTheme.Colors.cardBackground)
+        }
+      )
+      .buttonStyle(.plain)
+
+      if isDAGSectionExpanded {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+          if viewModel.isLoadingMermaid {
+            HStack {
+              ProgressView()
+                .scaleEffect(0.8)
+              Text("Loading diagram...")
+                .font(DSTheme.Typography.body)
+                .foregroundColor(DSTheme.Colors.textSecondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(DSTheme.Spacing.lg)
+          } else if let error = viewModel.mermaidError {
+            VStack(spacing: DSTheme.Spacing.md) {
+              Text(error)
+                .font(DSTheme.Typography.body)
+                .foregroundColor(DSTheme.Colors.textSecondary)
+                .multilineTextAlignment(.center)
+              Button("Retry") {
+                Task {
+                  await viewModel.loadMermaidDiagram()
+                }
+              }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(DSTheme.Spacing.lg)
+          } else if let mermaidSource = viewModel.mermaidDiagram, !mermaidSource.isEmpty {
+            MermaidDiagramView(source: mermaidSource)
+              .padding(DSTheme.Spacing.lg)
+          } else {
+            Text("No diagram available for this meal")
+              .font(DSTheme.Typography.body)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+              .frame(maxWidth: .infinity)
+              .padding(DSTheme.Spacing.lg)
+          }
+        }
+        .padding(.vertical, DSTheme.Spacing.md)
+        .background(Color(.systemBackground))
+        .onAppear {
+          Task {
+            await viewModel.loadMermaidDiagram()
+          }
+        }
+      }
+    }
     .background(DSTheme.Colors.cardBackground)
     .cornerRadius(DSTheme.Radius.lg)
   }

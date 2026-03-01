@@ -16,6 +16,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @Binding var isInstrumentsVesselsExpanded: Bool
   @Binding var isIngredientsExpanded: Bool
   @State private var isPrepTasksExpanded: Bool = false
+  @State private var isDAGSectionExpanded: Bool = false
 
   let recipe: Mealplanning_Recipe
   let viewModel: PerformRecipeViewModel
@@ -115,6 +116,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           associatedRecipesSection(recipe: recipe)
         }
 
+        // DAG section (hidden when embedded in meal view)
+        if !hideIngredientsAndInstruments {
+          recipeDAGSection(recipe: recipe, viewModel: viewModel)
+        }
+
         // Instruments & Vessels section (hidden when embedded in meal view)
         if !hideIngredientsAndInstruments {
           instrumentsVesselsSection(recipe: recipe)
@@ -166,6 +172,84 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         AssociatedRecipeCard(recipe: associatedRecipe)
       }
     }
+  }
+
+  // MARK: - Recipe DAG Section
+
+  private func recipeDAGSection(recipe: Mealplanning_Recipe, viewModel: PerformRecipeViewModel)
+    -> some View
+  {
+    VStack(alignment: .leading, spacing: 0) {
+      Button(
+        action: {
+          withAnimation {
+            isDAGSectionExpanded.toggle()
+          }
+        },
+        label: {
+          HStack {
+            Text("DAG")
+              .font(.headline)
+              .foregroundColor(.primary)
+            Spacer()
+            Image(systemName: isDAGSectionExpanded ? "chevron.down" : "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
+          .padding()
+          .background(Color(.systemGray6))
+        }
+      )
+      .buttonStyle(.plain)
+
+      if isDAGSectionExpanded {
+        VStack(alignment: .leading, spacing: 8) {
+          if viewModel.isLoadingMermaid {
+            HStack {
+              ProgressView()
+                .scaleEffect(0.8)
+              Text("Loading diagram...")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+          } else if let error = viewModel.mermaidError {
+            VStack(spacing: 12) {
+              Text(error)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+              Button("Retry") {
+                Task {
+                  await viewModel.loadMermaidDiagram()
+                }
+              }
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+          } else if let mermaidSource = viewModel.mermaidDiagram, !mermaidSource.isEmpty {
+            MermaidDiagramView(source: mermaidSource)
+              .padding()
+          } else {
+            Text("No diagram available for this recipe")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+              .frame(maxWidth: .infinity)
+              .padding()
+          }
+        }
+        .padding(.vertical, 8)
+        .background(Color(.systemBackground))
+        .onAppear {
+          Task {
+            await viewModel.loadMermaidDiagram()
+          }
+        }
+      }
+    }
+    .background(Color(.systemGray6))
+    .cornerRadius(12)
   }
 
   // MARK: - Recipe Header

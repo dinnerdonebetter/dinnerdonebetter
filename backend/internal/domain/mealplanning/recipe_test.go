@@ -90,6 +90,34 @@ func TestRecipe_FindStepForRecipeStepProductID(T *testing.T) {
 
 		assert.Nil(t, x.FindStepForRecipeStepProductID("whatever"))
 	})
+
+	T.Run("finds step in associated recipe", func(t *testing.T) {
+		t.Parallel()
+
+		productID := "breadcrumb-product-id"
+		assocRecipe := &Recipe{
+			ID:   "breadcrumbs-recipe-id",
+			Name: "Caesar Breadcrumbs",
+			Steps: []*RecipeStep{
+				{
+					ID: "assoc-step-1",
+					Products: []*RecipeStepProduct{
+						{ID: productID, Name: "caesar breadcrumbs"},
+					},
+					Index: 0,
+				},
+			},
+		}
+		x := &Recipe{
+			ID:                "main-recipe-id",
+			Steps:             []*RecipeStep{{ID: "main-step-1", Index: 0}},
+			AssociatedRecipes: []*Recipe{assocRecipe},
+		}
+
+		step := x.FindStepForRecipeStepProductID(productID)
+		assert.NotNil(t, step)
+		assert.Equal(t, "assoc-step-1", step.ID)
+	})
 }
 
 func TestRecipe_GetRelatedRecipeIDs(T *testing.T) {

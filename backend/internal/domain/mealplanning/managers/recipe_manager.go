@@ -40,6 +40,7 @@ type (
 		UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error
 		ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error
 		RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*mealplanning.MealPlanTaskDatabaseCreationEstimate, error)
+		MealMermaid(ctx context.Context, meal *mealplanning.Meal) (string, error)
 		RecipeMermaid(ctx context.Context, recipeID string) (string, error)
 		CloneRecipe(ctx context.Context, recipeID, newOwnerID string) (*mealplanning.Recipe, error)
 		RecipeImageUpload(ctx context.Context) error
@@ -397,6 +398,13 @@ func (m *recipeManager) RecipeImageUpload(ctx context.Context) error {
 	defer span.End()
 
 	return nil
+}
+
+func (m *recipeManager) MealMermaid(ctx context.Context, meal *mealplanning.Meal) (string, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.recipeAnalyzer.RenderMermaidDiagramForMeal(ctx, meal), nil
 }
 
 func (m *recipeManager) RecipeMermaid(ctx context.Context, recipeID string) (string, error) {

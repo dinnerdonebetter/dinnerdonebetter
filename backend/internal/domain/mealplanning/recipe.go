@@ -163,19 +163,55 @@ func (x *Recipe) FindStepByID(id string) *RecipeStep {
 	return nil
 }
 
-// FindStepForRecipeStepProductID finds a step for a given ID.
+// FindStepForRecipeStepProductID finds a step for a given recipe step product ID.
+// It searches the main recipe's steps first, then associated recipes' steps.
 func (x *Recipe) FindStepForRecipeStepProductID(recipeStepProductID string) *RecipeStep {
-	for _, step := range x.Steps {
+	if step := findStepForRecipeStepProductIDInSteps(x.Steps, recipeStepProductID); step != nil {
+		return step
+	}
+	for _, assoc := range x.AssociatedRecipes {
+		if step := findStepForRecipeStepProductIDInSteps(assoc.Steps, recipeStepProductID); step != nil {
+			return step
+		}
+	}
+	return nil
+}
+
+// findStepForRecipeStepProductIDInSteps searches steps for a product ID.
+func findStepForRecipeStepProductIDInSteps(steps []*RecipeStep, recipeStepProductID string) *RecipeStep {
+	for _, step := range steps {
 		for _, product := range step.Products {
 			if product.ID == recipeStepProductID {
 				return step
 			}
 		}
 	}
-
-	// we could return an error here, but that would make my life a little harder
-	// so if you fuck up and submit a wrong value, and it's your fault here.
 	return nil
+}
+
+// FindStepForRecipeStepProductIDWithRecipe finds a step for a given product ID and returns
+// the step and the recipe it belongs to (main or associated). If sourceRecipeID is non-nil
+// and non-empty, that recipe is searched first.
+func (x *Recipe) FindStepForRecipeStepProductIDWithRecipe(recipeStepProductID string, sourceRecipeID *string) (*RecipeStep, *Recipe) {
+	if sourceRecipeID != nil && *sourceRecipeID != "" && *sourceRecipeID != x.ID {
+		for _, assoc := range x.AssociatedRecipes {
+			if assoc.ID == *sourceRecipeID {
+				if step := findStepForRecipeStepProductIDInSteps(assoc.Steps, recipeStepProductID); step != nil {
+					return step, assoc
+				}
+				return nil, nil
+			}
+		}
+	}
+	if step := findStepForRecipeStepProductIDInSteps(x.Steps, recipeStepProductID); step != nil {
+		return step, x
+	}
+	for _, assoc := range x.AssociatedRecipes {
+		if step := findStepForRecipeStepProductIDInSteps(assoc.Steps, recipeStepProductID); step != nil {
+			return step, assoc
+		}
+	}
+	return nil, nil
 }
 
 // GetRelatedRecipeIDs returns all recipe IDs that this recipe references as components.
@@ -202,46 +238,85 @@ func (x *Recipe) GetRelatedRecipeIDs() []string {
 
 // GetUnconsumedProducts returns all recipe step products that are not consumed
 // (referenced as ingredients, instruments, or vessels) in any later step.
+// It considers both main recipe steps and associated recipe steps.
 func (x *Recipe) GetUnconsumedProducts() []*RecipeStepProduct {
-	// Build a map from product ID to the step index where it's produced
-	productToStepIndex := make(map[string]int)
-	for stepIdx, step := range x.Steps {
-		for _, product := range step.Products {
-			productToStepIndex[product.ID] = stepIdx
-		}
-	}
-
-	// Build a set of all product IDs that are consumed in later steps
+	// Build a set of all product IDs that are consumed
 	consumedProductIDs := make(map[string]struct{})
 
-	// Iterate through all steps
+	// Main recipe steps: mark consumed when a later main step uses the product
+	productToMainStepIndex := make(map[string]int)
 	for stepIdx, step := range x.Steps {
-		// For each step, check all ingredients, instruments, and vessels
-		// that reference products from earlier steps (consumption happens in later steps)
+		for _, product := range step.Products {
+			productToMainStepIndex[product.ID] = stepIdx
+		}
+	}
+	for stepIdx, step := range x.Steps {
 		for _, ingredient := range step.Ingredients {
 			if ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "" {
-				productStepIdx, exists := productToStepIndex[*ingredient.RecipeStepProductID]
-				// Only mark as consumed if the product is from an earlier step
+				productStepIdx, exists := productToMainStepIndex[*ingredient.RecipeStepProductID]
 				if exists && productStepIdx < stepIdx {
 					consumedProductIDs[*ingredient.RecipeStepProductID] = struct{}{}
 				}
 			}
 		}
-
 		for _, instrument := range step.Instruments {
 			if instrument.RecipeStepProductID != nil && *instrument.RecipeStepProductID != "" {
-				productStepIdx, exists := productToStepIndex[*instrument.RecipeStepProductID]
+				productStepIdx, exists := productToMainStepIndex[*instrument.RecipeStepProductID]
 				if exists && productStepIdx < stepIdx {
 					consumedProductIDs[*instrument.RecipeStepProductID] = struct{}{}
 				}
 			}
 		}
-
 		for _, vessel := range step.Vessels {
 			if vessel.RecipeStepProductID != nil && *vessel.RecipeStepProductID != "" {
-				productStepIdx, exists := productToStepIndex[*vessel.RecipeStepProductID]
+				productStepIdx, exists := productToMainStepIndex[*vessel.RecipeStepProductID]
 				if exists && productStepIdx < stepIdx {
 					consumedProductIDs[*vessel.RecipeStepProductID] = struct{}{}
+				}
+			}
+		}
+	}
+
+	// Associated recipe steps: mark consumed when a later step in same recipe uses it, or when main uses it
+	for _, assoc := range x.AssociatedRecipes {
+		productToAssocStepIndex := make(map[string]int)
+		for stepIdx, step := range assoc.Steps {
+			for _, product := range step.Products {
+				productToAssocStepIndex[product.ID] = stepIdx
+			}
+		}
+		for stepIdx, step := range assoc.Steps {
+			for _, ingredient := range step.Ingredients {
+				if ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "" {
+					productStepIdx, exists := productToAssocStepIndex[*ingredient.RecipeStepProductID]
+					if exists && productStepIdx < stepIdx {
+						consumedProductIDs[*ingredient.RecipeStepProductID] = struct{}{}
+					}
+				}
+			}
+			for _, instrument := range step.Instruments {
+				if instrument.RecipeStepProductID != nil && *instrument.RecipeStepProductID != "" {
+					productStepIdx, exists := productToAssocStepIndex[*instrument.RecipeStepProductID]
+					if exists && productStepIdx < stepIdx {
+						consumedProductIDs[*instrument.RecipeStepProductID] = struct{}{}
+					}
+				}
+			}
+			for _, vessel := range step.Vessels {
+				if vessel.RecipeStepProductID != nil && *vessel.RecipeStepProductID != "" {
+					productStepIdx, exists := productToAssocStepIndex[*vessel.RecipeStepProductID]
+					if exists && productStepIdx < stepIdx {
+						consumedProductIDs[*vessel.RecipeStepProductID] = struct{}{}
+					}
+				}
+			}
+		}
+		// Products from this associated recipe consumed by main recipe
+		for _, mainStep := range x.Steps {
+			for _, ingredient := range mainStep.Ingredients {
+				if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID == assoc.ID &&
+					ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "" {
+					consumedProductIDs[*ingredient.RecipeStepProductID] = struct{}{}
 				}
 			}
 		}
@@ -253,6 +328,15 @@ func (x *Recipe) GetUnconsumedProducts() []*RecipeStepProduct {
 		for _, product := range step.Products {
 			if _, isConsumed := consumedProductIDs[product.ID]; !isConsumed {
 				unconsumedProducts = append(unconsumedProducts, product)
+			}
+		}
+	}
+	for _, assoc := range x.AssociatedRecipes {
+		for _, step := range assoc.Steps {
+			for _, product := range step.Products {
+				if _, isConsumed := consumedProductIDs[product.ID]; !isConsumed {
+					unconsumedProducts = append(unconsumedProducts, product)
+				}
 			}
 		}
 	}

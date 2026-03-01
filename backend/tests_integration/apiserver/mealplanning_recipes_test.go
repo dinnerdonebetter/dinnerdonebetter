@@ -1780,6 +1780,22 @@ func TestRecipes_Reading(T *testing.T) {
 	})
 }
 
+func TestRecipes_GetMermaidDiagramForRecipe(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns non-empty mermaid diagram", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		res, err := adminClient.GetMermaidDiagramForRecipe(ctx, &mealplanninggrpc.GetMermaidDiagramForRecipeRequest{RecipeId: createdRecipe.ID})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		assert.NotEmpty(t, res.Response, "mermaid diagram should not be empty")
+	})
+}
+
 func TestRecipes_Validation(T *testing.T) {
 	T.Parallel()
 

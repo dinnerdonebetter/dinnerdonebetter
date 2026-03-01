@@ -24,6 +24,13 @@ func (m *MockRecipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *mea
 	return returnArgs.Get(0).(*simple.DirectedGraph), returnArgs.Error(1)
 }
 
+// MakeGraphForMeal implements our interface.
+func (m *MockRecipeAnalyzer) MakeGraphForMeal(ctx context.Context, meal *mealplanning.Meal) (*simple.DirectedGraph, error) {
+	returnArgs := m.Called(ctx, meal)
+
+	return returnArgs.Get(0).(*simple.DirectedGraph), returnArgs.Error(1)
+}
+
 // ValidateRecipeCreationRequestInputIsDAG implements our interface.
 func (m *MockRecipeAnalyzer) ValidateRecipeCreationRequestInputIsDAG(ctx context.Context, input *mealplanning.RecipeCreationRequestInput) error {
 	returnArgs := m.Called(ctx, input)
@@ -57,7 +64,17 @@ func (m *MockRecipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, 
 	return m.Called(ctx, recipe).String(0)
 }
 
+// RenderMermaidDiagramForMeal implements our interface.
+func (m *MockRecipeAnalyzer) RenderMermaidDiagramForMeal(ctx context.Context, meal *mealplanning.Meal) string {
+	return m.Called(ctx, meal).String(0)
+}
+
 // RenderGraphvizDiagramForRecipe implements our interface.
 func (m *MockRecipeAnalyzer) RenderGraphvizDiagramForRecipe(ctx context.Context, recipe *mealplanning.Recipe) string {
 	return m.Called(ctx, recipe).String(0)
+}
+
+// RenderGraphvizDiagramForMeal implements our interface.
+func (m *MockRecipeAnalyzer) RenderGraphvizDiagramForMeal(ctx context.Context, meal *mealplanning.Meal) string {
+	return m.Called(ctx, meal).String(0)
 }

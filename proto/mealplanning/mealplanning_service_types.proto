@@ -1811,6 +1811,15 @@ message CreateRecipeStepVesselResponse {
   RecipeStepVessel created = 2;
 }
 
+message GetMermaidDiagramForMealRequest {
+  string meal_id = 1;
+}
+
+message GetMermaidDiagramForMealResponse {
+  common.ResponseDetails response_details = 1;
+  string response = 2;
+}
+
 message GetMermaidDiagramForRecipeRequest {
   string recipe_id = 1;
 }

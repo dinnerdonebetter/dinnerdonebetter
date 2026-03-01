@@ -770,6 +770,35 @@ func TestServiceImpl_FinalizeMealPlan(T *testing.T) {
 	})
 }
 
+func TestServiceImpl_GetMermaidDiagramForMeal(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleMeal := mealplanningfakes.BuildFakeMeal()
+		exampleMermaidDiagram := "flowchart TD;\n\tStep1[\"Main\"];\n\tStep100001[\"Side\"];\n"
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On(reflection.GetMethodName(mmpm.ReadMeal), testutils.ContextMatcher, exampleMeal.ID).Return(exampleMeal, nil)
+		s.mealPlanningManager = mmpm
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On(reflection.GetMethodName(mrm.MealMermaid), testutils.ContextMatcher, exampleMeal).Return(exampleMermaidDiagram, nil)
+		s.recipeManager = mrm
+
+		result, err := s.GetMermaidDiagramForMeal(ctx, &mealplanninggrpc.GetMermaidDiagramForMealRequest{MealId: exampleMeal.ID})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, exampleMermaidDiagram, result.Response)
+
+		mock.AssertExpectationsForObjects(t, mmpm, mrm)
+	})
+}
+
 func TestServiceImpl_GetMeal(T *testing.T) {
 	T.Parallel()
 
