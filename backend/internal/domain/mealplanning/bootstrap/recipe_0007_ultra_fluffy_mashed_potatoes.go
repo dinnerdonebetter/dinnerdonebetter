@@ -870,7 +870,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:       &addPotVPV.ID,
+				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -902,8 +902,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		ExplicitInstructions: "Set over medium heat and bring the milk to a simmer.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](15),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &simmerMilkVIP.ID,
 				ValidIngredientMeasurementUnitID: &milkCupVIMU.ID,
 				Name:                             "potatoes with milk",

@@ -266,7 +266,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:              "toasted cumin and coriander seeds",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID:  &unitMeasurement.ID,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -408,7 +408,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:              "cilantro, leaves and tender stems only",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID:  &unitMeasurement.ID,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},

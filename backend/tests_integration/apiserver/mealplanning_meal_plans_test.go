@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func checkMealPlanEquality(t *testing.T, expected, actual *mealplanning.MealPlan) {
@@ -123,14 +125,21 @@ func TestMealPlans_Listing(T *testing.T) {
 
 		_, userClient := createUserAndClientForTest(t)
 
+		// Capture timestamp before creating meal plans so we can filter to only our meal plans.
+		// Without this filter, other tests' meal plans can fill the first page when running the full suite.
+		createdAfter := time.Now().UTC().Add(-5 * time.Minute)
+		createdAfterProto := timestamppb.New(createdAfter)
+
 		var expected []*mealplanning.MealPlan
 		for range 5 {
 			createdMealPlan := createMealPlanForTest(t, userClient, nil)
 			expected = append(expected, createdMealPlan)
 		}
 
-		// assert meal plan list equality
-		actual, err := userClient.GetMealPlansForAccount(ctx, &mealplanninggrpc.GetMealPlansForAccountRequest{})
+		// assert meal plan list equality - filter to our meal plans only
+		actual, err := userClient.GetMealPlansForAccount(ctx, &mealplanninggrpc.GetMealPlansForAccountRequest{
+			Filter: &filtering.QueryFilter{CreatedAfter: createdAfterProto},
+		})
 		require.NoError(t, err)
 		assert.True(
 			t,

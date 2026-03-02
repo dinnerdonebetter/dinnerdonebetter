@@ -228,9 +228,9 @@ func (m *validEnumerationManager) SearchValidIngredientGroups(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, !useSearchService)
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, !useSearchService)
 
 	results, err := m.db.SearchForValidIngredientGroups(ctx, query, filter)
 	if err != nil {
@@ -868,9 +868,9 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, !useSearchService)
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, !useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidIngredient]
@@ -1240,9 +1240,9 @@ func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, !useSearchService)
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, !useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidIngredientState]
@@ -1406,9 +1406,9 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, !useSearchService)
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, !useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidMeasurementUnit]
@@ -1592,9 +1592,9 @@ func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, qu
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, !useSearchService)
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, !useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidInstrument]
@@ -2055,9 +2055,9 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, !useSearchService)
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, !useSearchService)
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidPreparation]
@@ -2392,9 +2392,9 @@ func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query 
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, useSearchService)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, !useSearchService)
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, useSearchService)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, !useSearchService)
 
 	var (
 		validVessels *filtering.QueryFilteredResult[types.ValidVessel]

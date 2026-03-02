@@ -669,7 +669,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &carveWholeChickenVIP.ID,
+				ValidIngredientPreparationID:    &carveWholeChickenVIP.ID,
 				Name:                            "rested roast chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,

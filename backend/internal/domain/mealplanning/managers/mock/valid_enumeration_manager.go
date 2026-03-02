@@ -13,8 +13,8 @@ type MockValidEnumerationsManager struct {
 	mock.Mock
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredientGroups(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {
-	returnValues := m.Called(ctx, query, useDatabase, filter)
+func (m *MockValidEnumerationsManager) SearchValidIngredientGroups(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {
+	returnValues := m.Called(ctx, query, useSearchService, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup]), returnValues.Error(1)
 }
@@ -181,8 +181,8 @@ func (m *MockValidEnumerationsManager) SearchValidPrepTaskConfigsByIngredientAnd
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPrepTaskConfig]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredients(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
-	returnValues := m.Called(ctx, query, useDatabase, filter)
+func (m *MockValidEnumerationsManager) SearchValidIngredients(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
+	returnValues := m.Called(ctx, query, useSearchService, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredient]), returnValues.Error(1)
 }
@@ -271,8 +271,8 @@ func (m *MockValidEnumerationsManager) SearchValidIngredientStateIngredientsByIn
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredientStates(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientState], error) {
-	returnValues := m.Called(ctx, query, useDatabase, filter)
+func (m *MockValidEnumerationsManager) SearchValidIngredientStates(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientState], error) {
+	returnValues := m.Called(ctx, query, useSearchService, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientState]), returnValues.Error(1)
 }
@@ -307,8 +307,8 @@ func (m *MockValidEnumerationsManager) ArchiveValidIngredientState(ctx context.C
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidMeasurementUnits(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit], error) {
-	returnValues := m.Called(ctx, query, useDatabase, filter)
+func (m *MockValidEnumerationsManager) SearchValidMeasurementUnits(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit], error) {
+	returnValues := m.Called(ctx, query, useSearchService, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit]), returnValues.Error(1)
 }
@@ -349,8 +349,8 @@ func (m *MockValidEnumerationsManager) ArchiveValidMeasurementUnit(ctx context.C
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidInstruments(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
-	returnValues := m.Called(ctx, query, useDatabase, filter)
+func (m *MockValidEnumerationsManager) SearchValidInstruments(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
+	returnValues := m.Called(ctx, query, useSearchService, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidInstrument]), returnValues.Error(1)
 }
@@ -475,8 +475,8 @@ func (m *MockValidEnumerationsManager) SearchValidPreparationInstrumentsByInstru
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidPreparations(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparation], error) {
-	returnValues := m.Called(ctx, query, useDatabase, filter)
+func (m *MockValidEnumerationsManager) SearchValidPreparations(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparation], error) {
+	returnValues := m.Called(ctx, query, useSearchService, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparation]), returnValues.Error(1)
 }
@@ -559,8 +559,8 @@ func (m *MockValidEnumerationsManager) SearchValidPreparationVesselsByVessel(ctx
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidVessels(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidVessel], error) {
-	returnValues := m.Called(ctx, query, useDatabase, filter)
+func (m *MockValidEnumerationsManager) SearchValidVessels(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidVessel], error) {
+	returnValues := m.Called(ctx, query, useSearchService, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidVessel]), returnValues.Error(1)
 }

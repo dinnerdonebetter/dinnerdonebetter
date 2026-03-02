@@ -1304,7 +1304,7 @@ func TestServiceImpl_SearchForMeals(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On(reflection.GetMethodName(mmpm.SearchMeals), testutils.ContextMatcher, exampleRequest.Query, !exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mmpm.On(reflection.GetMethodName(mmpm.SearchMeals), testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
 		result, err := s.SearchForMeals(ctx, exampleRequest)

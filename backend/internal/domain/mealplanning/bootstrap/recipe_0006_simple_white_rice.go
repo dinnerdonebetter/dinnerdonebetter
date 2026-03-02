@@ -340,7 +340,7 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "rice mixture in covered pot",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2.75,

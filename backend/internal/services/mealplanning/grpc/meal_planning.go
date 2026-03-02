@@ -1301,7 +1301,7 @@ func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplannings
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	meals, err := s.mealPlanningManager.SearchMeals(ctx, request.Query, !request.UseSearchService, filter)
+	meals, err := s.mealPlanningManager.SearchMeals(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for meals")
 	}

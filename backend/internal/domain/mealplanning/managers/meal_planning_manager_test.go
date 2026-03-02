@@ -189,11 +189,36 @@ func TestMealPlanningManager_ReadMeal(T *testing.T) {
 func TestMealPlanningManager_SearchMeals(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("useSearchService false uses database", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
 		mpm := buildMealPlanManagerForTest(t)
+
+		expected := fakes.BuildFakeMealsList()
+		exampleQuery := fakes.BuildFakeID()
+
+		expectations := setupExpectationsForMealPlanningManager(
+			mpm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.SearchForMeals), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.SearchMeals(ctx, exampleQuery, false, nil)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+
+	T.Run("useSearchService true falls back to database when search returns empty", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+		// buildMealPlanManagerForTest uses empty textsearchcfg.Config, which provides NoopIndexManager
+		// that returns empty results - triggering fallback to database
 
 		expected := fakes.BuildFakeMealsList()
 		exampleQuery := fakes.BuildFakeID()

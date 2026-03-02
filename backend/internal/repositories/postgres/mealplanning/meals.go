@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
@@ -168,6 +169,14 @@ func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 		if result.ComponentRecipeID.Valid {
 			recipe, recipeErr := q.getRecipe(ctx, result.ComponentRecipeID.String)
 			if recipeErr != nil {
+				if errors.Is(recipeErr, sql.ErrNoRows) {
+					// Recipe missing or archived (e.g. orphaned reference from another test).
+					// Skip this component so listing succeeds; avoids cross-test pollution.
+					logger.WithValue(mealplanningkeys.MealIDKey, result.ID).
+						WithValue(mealplanningkeys.RecipeIDKey, result.ComponentRecipeID.String).
+						Info("skipping meal component with missing or archived recipe")
+					continue
+				}
 				return nil, observability.PrepareAndLogError(recipeErr, logger, span, "getting recipe for meal component")
 			}
 
@@ -267,6 +276,12 @@ func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 		if result.ComponentRecipeID.Valid {
 			recipe, recipeErr := q.getRecipe(ctx, result.ComponentRecipeID.String)
 			if recipeErr != nil {
+				if errors.Is(recipeErr, sql.ErrNoRows) {
+					logger.WithValue(mealplanningkeys.MealIDKey, result.ID).
+						WithValue(mealplanningkeys.RecipeIDKey, result.ComponentRecipeID.String).
+						Info("skipping meal component with missing or archived recipe")
+					continue
+				}
 				return nil, observability.PrepareAndLogError(recipeErr, logger, span, "getting recipe for meal component")
 			}
 
@@ -433,6 +448,12 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 
 		recipe, recipeErr := q.getRecipe(ctx, result.ComponentRecipeID)
 		if recipeErr != nil {
+			if errors.Is(recipeErr, sql.ErrNoRows) {
+				logger.WithValue(mealplanningkeys.MealIDKey, result.ID).
+					WithValue(mealplanningkeys.RecipeIDKey, result.ComponentRecipeID).
+					Info("skipping meal component with missing or archived recipe")
+				continue
+			}
 			return nil, observability.PrepareAndLogError(recipeErr, logger, span, "getting recipe for meal component")
 		}
 

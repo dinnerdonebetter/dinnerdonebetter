@@ -41,8 +41,8 @@ func (m *MockMealPlanningManager) ReadMeal(ctx context.Context, mealID string) (
 }
 
 // SearchMeals is a mock method.
-func (m *MockMealPlanningManager) SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Meal], error) {
-	returnValues := m.Called(ctx, query, useDatabase, filter)
+func (m *MockMealPlanningManager) SearchMeals(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Meal], error) {
+	returnValues := m.Called(ctx, query, useSearchService, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Meal]), returnValues.Error(1)
 }

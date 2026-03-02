@@ -564,9 +564,9 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "oil in skillet",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
+				Name:  "oil in skillet",
+				Type:  mealplanning.RecipeStepProductIngredientType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 					Max: pointer.To[float32](4),

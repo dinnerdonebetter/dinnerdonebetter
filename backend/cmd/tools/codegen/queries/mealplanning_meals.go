@@ -126,14 +126,17 @@ func buildMealsQueries(database string) []*Query {
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
+		AND %s.%s IS NULL
+		AND EXISTS (SELECT 1 FROM %s WHERE %s.%s = %s.%s AND %s.%s IS NULL)
 WHERE %s.%s IS NULL
-  AND %s.%s IS NULL
   AND %s.%s = sqlc.arg(%s);`,
 					strings.Join(fullSelectColumns, ",\n\t"),
 					mealsTableName,
 					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
-					mealsTableName, archivedAtColumn,
 					mealComponentsTableName, archivedAtColumn,
+					recipesTableName, recipesTableName, idColumn, mealComponentsTableName, recipeIDColumn,
+					recipesTableName, archivedAtColumn,
+					mealsTableName, archivedAtColumn,
 					mealsTableName, idColumn, idColumn,
 				)),
 			},
@@ -148,6 +151,7 @@ WHERE %s.%s IS NULL
 	%s
 FROM %s
 	LEFT JOIN %s ON %s.%s=%s.%s AND %s.%s IS NULL
+		AND EXISTS (SELECT 1 FROM %s WHERE %s.%s = %s.%s AND %s.%s IS NULL)
 WHERE
 	%s.%s IS NULL
 	%s
@@ -158,6 +162,8 @@ WHERE
 					mealsTableName,
 					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
 					mealComponentsTableName, archivedAtColumn,
+					recipesTableName, recipesTableName, idColumn, mealComponentsTableName, recipeIDColumn,
+					recipesTableName, archivedAtColumn,
 					mealsTableName, archivedAtColumn,
 					buildFilterConditions(
 						mealsTableName,
@@ -176,15 +182,18 @@ WHERE
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
+		AND %s.%s IS NULL
+		AND EXISTS (SELECT 1 FROM %s WHERE %s.%s = %s.%s AND %s.%s IS NULL)
 WHERE %s.%s IS NULL
-  AND %s.%s IS NULL
   AND %s.%s = ANY(sqlc.arg(ids)::text[])
 ORDER BY %s.%s ASC;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
 					mealsTableName,
 					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
-					mealsTableName, archivedAtColumn,
 					mealComponentsTableName, archivedAtColumn,
+					recipesTableName, recipesTableName, idColumn, mealComponentsTableName, recipeIDColumn,
+					recipesTableName, archivedAtColumn,
+					mealsTableName, archivedAtColumn,
 					mealsTableName, idColumn,
 					mealsTableName, idColumn,
 				)),
@@ -200,6 +209,7 @@ ORDER BY %s.%s ASC;`,
 	%s
 FROM %s
 	LEFT JOIN %s ON %s.%s=%s.%s AND %s.%s IS NULL
+		AND EXISTS (SELECT 1 FROM %s WHERE %s.%s = %s.%s AND %s.%s IS NULL)
 WHERE
 	%s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
@@ -211,6 +221,8 @@ WHERE
 					mealsTableName,
 					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
 					mealComponentsTableName, archivedAtColumn,
+					recipesTableName, recipesTableName, idColumn, mealComponentsTableName, recipeIDColumn,
+					recipesTableName, archivedAtColumn,
 					mealsTableName, archivedAtColumn,
 					mealsTableName, createdByUserColumn, createdByUserColumn,
 					buildFilterConditions(mealsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
@@ -228,9 +240,10 @@ WHERE
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
+		AND %s.%s IS NULL
+		AND EXISTS (SELECT 1 FROM %s WHERE %s.%s = %s.%s AND %s.%s IS NULL)
 WHERE
 	%s.%s IS NULL
-	AND %s.%s IS NULL
 	AND %s.%s %s
 	%s
 %s;`,
@@ -239,8 +252,10 @@ WHERE
 					buildTotalCountSelect(mealsTableName, true, []string{}),
 					mealsTableName,
 					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
-					mealsTableName, archivedAtColumn,
 					mealComponentsTableName, archivedAtColumn,
+					recipesTableName, recipesTableName, idColumn, mealComponentsTableName, recipeIDColumn,
+					recipesTableName, archivedAtColumn,
+					mealsTableName, archivedAtColumn,
 					mealsTableName, nameColumn, buildILIKEForArgument("query"),
 					buildFilterConditions(
 						mealsTableName,
