@@ -265,7 +265,7 @@ class CreateMealPlanViewModel {
       let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
       var request = Mealplanning_SearchForMealsRequest()
       request.query = queryWhenStarted
-      request.useSearchService = false
+      request.useSearchService = APIConfiguration.useSearchService
 
       let response = try await clientManager.client.mealPlanning.searchForMeals(
         request,

@@ -123,7 +123,7 @@ class RecipeListViewModel {
       // Create search request
       var request = Mealplanning_SearchForRecipesRequest()
       request.query = query
-      request.useSearchService = false  // disabled for local testing
+      request.useSearchService = APIConfiguration.useSearchService
 
       // Execute search
       let response = try await clientManager.client.mealPlanning.searchForRecipes(

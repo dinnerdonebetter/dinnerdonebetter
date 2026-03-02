@@ -110,6 +110,12 @@ struct APIConfiguration {
     }
   }
 
+  /// Whether search requests should use Algolia (production) or database (local).
+  /// Production at api.dinnerdonebetter.com has Algolia indices; local dev does not.
+  static var useSearchService: Bool {
+    currentEnvironment == .production
+  }
+
   // OAuth2 Configuration — values injected via Secrets.xcconfig -> Info.plist at build time
   static var oauth2ClientID: String {
     Bundle.main.infoDictionary?["OAuth2ClientID"] as? String ?? ""
