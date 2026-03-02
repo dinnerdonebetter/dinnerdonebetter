@@ -52,15 +52,10 @@ struct StepCardView: View {
       isCompleted = overrideCompleted
       canCheck = overrideCanCheck
       prerequisites = []
-    } else if isAssociatedRecipeStep {
+    } else {
       isCompleted = viewModel.isStepCompleted(recipeID: recipeID, stepID: step.id)
       canCheck = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
-      _ = viewModel.getPrerequisiteStepKeys(recipeID: recipeID, stepID: step.id)
       prerequisites = []
-    } else {
-      isCompleted = viewModel.isStepCompleted(index)
-      canCheck = viewModel.canCheckStep(index)
-      prerequisites = viewModel.getPrerequisiteStepIndices(index)
     }
 
     let hasPrerequisites = !prerequisites.isEmpty
@@ -74,12 +69,12 @@ struct StepCardView: View {
         // Checkbox (works for both main and associated recipe steps)
         Button(
           action: {
+            let stepName = step.hasPreparation ? step.preparation.name : step.id
+            print("👆 StepCardView TAPPED '\(stepName)' | isCompleted=\(isCompleted) canCheck=\(canCheck) hasOverride=\(onToggleOverride != nil)")
             if let onToggle = onToggleOverride {
               onToggle()
-            } else if isAssociatedRecipeStep {
-              viewModel.toggleStep(recipeID: recipeID, stepID: step.id)
             } else {
-              viewModel.toggleStep(index)
+              viewModel.toggleStep(recipeID: recipeID, stepID: step.id)
             }
           },
           label: {

@@ -663,24 +663,19 @@ struct MealDetailView: View {
               ? item.sources.allSatisfy {
                 $0.viewModel.isStepCompleted(recipeID: $0.recipeID, stepID: $0.step.id)
               }
-              : item.viewModel.isStepCompleted(recipeID: item.recipeID, stepID: item.step.id),
+              : nil,
             canCheckOverride: item.isMerged
               ? item.sources.allSatisfy { source in
-                let prereqs = source.viewModel.getPrerequisiteStepKeys(
-                  recipeID: source.recipeID, stepID: source.step.id
-                )
-                return prereqs.allSatisfy { source.viewModel.completedSteps.contains($0) }
+                source.viewModel.canCheckStep(recipeID: source.recipeID, stepID: source.step.id)
               }
-              : item.viewModel.canCheckStep(recipeID: item.recipeID, stepID: item.step.id),
+              : nil,
             onToggleOverride: item.isMerged
               ? {
                 for source in item.sources {
                   source.viewModel.toggleStep(recipeID: source.recipeID, stepID: source.step.id)
                 }
               }
-              : {
-                item.viewModel.toggleStep(recipeID: item.recipeID, stepID: item.step.id)
-              },
+              : nil,
             ingredientBreakdownBySource: item.ingredientBreakdownBySource
           )
         }
@@ -727,9 +722,11 @@ struct MealDetailView: View {
   }
 
   private func setMealWashHandsCompleted(_ isCompleted: Bool) {
+    print("🧼 setMealWashHandsCompleted(\(isCompleted)) | componentViewModels count=\(componentViewModels.count)")
     mealWashHandsCompleted = isCompleted
-    for viewModel in componentViewModels.values {
+    for (recipeID, viewModel) in componentViewModels {
       viewModel.washHandsCompleted = isCompleted
+      print("🧼   set washHands=\(isCompleted) on viewModel for recipe \(recipeID.suffix(6))")
       if !isCompleted {
         viewModel.completedSteps.removeAll()
         viewModel.clearStepCompletionConditionProgress()
