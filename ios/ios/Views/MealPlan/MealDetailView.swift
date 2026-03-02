@@ -722,7 +722,9 @@ struct MealDetailView: View {
   }
 
   private func setMealWashHandsCompleted(_ isCompleted: Bool) {
-    print("🧼 setMealWashHandsCompleted(\(isCompleted)) | componentViewModels count=\(componentViewModels.count)")
+    print(
+      "🧼 setMealWashHandsCompleted(\(isCompleted)) | componentViewModels count=\(componentViewModels.count)"
+    )
     mealWashHandsCompleted = isCompleted
     for (recipeID, viewModel) in componentViewModels {
       viewModel.washHandsCompleted = isCompleted

@@ -183,7 +183,9 @@ class PerformRecipeViewModel {
       let prepName = step.hasPreparation ? step.preparation.name : "???"
       for product in step.products {
         productIDToStepKey[product.id] = stepKey
-        print("  📦 step[\(stepIdx)](\(prepName)) product '\(product.name)' id=\(product.id) → \(stepKey)")
+        print(
+          "  📦 step[\(stepIdx)](\(prepName)) product '\(product.name)' id=\(product.id) → \(stepKey)"
+        )
       }
     }
 
@@ -195,7 +197,9 @@ class PerformRecipeViewModel {
         let prepName = step.hasPreparation ? step.preparation.name : "???"
         for product in step.products {
           productIDToStepKey[product.id] = stepKey
-          print("    📦 step[\(stepIdx)](\(prepName)) product '\(product.name)' id=\(product.id) → \(stepKey)")
+          print(
+            "    📦 step[\(stepIdx)](\(prepName)) product '\(product.name)' id=\(product.id) → \(stepKey)"
+          )
         }
       }
     }
@@ -273,7 +277,9 @@ class PerformRecipeViewModel {
 
     if completedStepCompletionConditions.contains(key) {
       completedStepCompletionConditions.remove(key)
-      print("✅ [\(recipeName)] UNCHECKED condition '\(conditionIdentifier)' for '\(stepName)' | key=\(key) | conditions now=\(completedStepCompletionConditions)")
+      print(
+        "✅ [\(recipeName)] UNCHECKED condition '\(conditionIdentifier)' for '\(stepName)' | key=\(key) | conditions now=\(completedStepCompletionConditions)"
+      )
 
       let stepKey = stepKey(recipeID: recipeID, stepID: stepID)
       if completedSteps.contains(stepKey) {
@@ -283,7 +289,9 @@ class PerformRecipeViewModel {
     }
 
     completedStepCompletionConditions.insert(key)
-    print("✅ [\(recipeName)] CHECKED condition '\(conditionIdentifier)' for '\(stepName)' | key=\(key) | conditions now=\(completedStepCompletionConditions)")
+    print(
+      "✅ [\(recipeName)] CHECKED condition '\(conditionIdentifier)' for '\(stepName)' | key=\(key) | conditions now=\(completedStepCompletionConditions)"
+    )
   }
 
   func areStepCompletionConditionsCompleted(recipeID: String, stepID: String) -> Bool {
@@ -294,7 +302,9 @@ class PerformRecipeViewModel {
 
     let recipeName = recipe?.name ?? "???"
     let stepName = step.hasPreparation ? step.preparation.name : stepID
-    let nonOptionalConditions = step.completionConditions.enumerated().filter { !$0.element.optional }
+    let nonOptionalConditions = step.completionConditions.enumerated().filter {
+      !$0.element.optional
+    }
 
     if nonOptionalConditions.isEmpty {
       return true
@@ -303,10 +313,13 @@ class PerformRecipeViewModel {
     for (index, condition) in step.completionConditions.enumerated() where !condition.optional {
       let conditionIdentifier = stepCompletionConditionIdentifier(
         condition: condition, index: index)
-      let key = completionConditionKey(recipeID: recipeID, stepID: stepID, conditionIdentifier: conditionIdentifier)
+      let key = completionConditionKey(
+        recipeID: recipeID, stepID: stepID, conditionIdentifier: conditionIdentifier)
       let isCompleted = completedStepCompletionConditions.contains(key)
       if !isCompleted {
-        print("❌ [\(recipeName)] '\(stepName)' condition[\(index)] id='\(conditionIdentifier)' key='\(key)' → NOT completed | allKeys=\(completedStepCompletionConditions.sorted())")
+        print(
+          "❌ [\(recipeName)] '\(stepName)' condition[\(index)] id='\(conditionIdentifier)' key='\(key)' → NOT completed | allKeys=\(completedStepCompletionConditions.sorted())"
+        )
         return false
       }
     }
@@ -343,7 +356,8 @@ class PerformRecipeViewModel {
       }
       return stepID
     }()
-    let logPrefix = "🔍 [\(recipeName)] canCheck '\(stepName)' (\(recipeID.suffix(6)):\(stepID.suffix(6)))"
+    let logPrefix =
+      "🔍 [\(recipeName)] canCheck '\(stepName)' (\(recipeID.suffix(6)):\(stepID.suffix(6)))"
 
     if !washHandsCompleted {
       print("\(logPrefix) → false (wash hands not done)")
@@ -359,11 +373,15 @@ class PerformRecipeViewModel {
       let productID = ingredient.recipeStepProductID
       if let prerequisiteStepKey = productIDToStepKey[productID] {
         if !completedSteps.contains(prerequisiteStepKey) {
-          print("\(logPrefix) → false (ingredient '\(ingredient.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)")
+          print(
+            "\(logPrefix) → false (ingredient '\(ingredient.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)"
+          )
           return false
         }
       } else {
-        print("\(logPrefix) ⚠️ ingredient '\(ingredient.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!")
+        print(
+          "\(logPrefix) ⚠️ ingredient '\(ingredient.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!"
+        )
       }
     }
 
@@ -371,11 +389,15 @@ class PerformRecipeViewModel {
       let productID = instrument.recipeStepProductID
       if let prerequisiteStepKey = productIDToStepKey[productID] {
         if !completedSteps.contains(prerequisiteStepKey) {
-          print("\(logPrefix) → false (instrument '\(instrument.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)")
+          print(
+            "\(logPrefix) → false (instrument '\(instrument.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)"
+          )
           return false
         }
       } else {
-        print("\(logPrefix) ⚠️ instrument '\(instrument.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!")
+        print(
+          "\(logPrefix) ⚠️ instrument '\(instrument.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!"
+        )
       }
     }
 
@@ -383,11 +405,15 @@ class PerformRecipeViewModel {
       let productID = vessel.recipeStepProductID
       if let prerequisiteStepKey = productIDToStepKey[productID] {
         if !completedSteps.contains(prerequisiteStepKey) {
-          print("\(logPrefix) → false (vessel '\(vessel.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)")
+          print(
+            "\(logPrefix) → false (vessel '\(vessel.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)"
+          )
           return false
         }
       } else {
-        print("\(logPrefix) ⚠️ vessel '\(vessel.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!")
+        print(
+          "\(logPrefix) ⚠️ vessel '\(vessel.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!"
+        )
       }
     }
 
@@ -624,12 +650,16 @@ class PerformRecipeViewModel {
 
     if allDependenciesDone {
       if !prerequisiteKeys.isEmpty {
-        print("📊 [\(recipeName)] categorize '\(stepName)' → upNext (all \(prerequisiteKeys.count) prereqs done)")
+        print(
+          "📊 [\(recipeName)] categorize '\(stepName)' → upNext (all \(prerequisiteKeys.count) prereqs done)"
+        )
       }
       return .upNext
     } else {
       let missing = prerequisiteKeys.filter { !completedSteps.contains($0) }
-      print("📊 [\(recipeName)] categorize '\(stepName)' → forLater (missing \(missing.count)/\(prerequisiteKeys.count) prereqs: \(missing.map { $0.suffix(12) }))")
+      print(
+        "📊 [\(recipeName)] categorize '\(stepName)' → forLater (missing \(missing.count)/\(prerequisiteKeys.count) prereqs: \(missing.map { $0.suffix(12) }))"
+      )
       return .forLater
     }
   }

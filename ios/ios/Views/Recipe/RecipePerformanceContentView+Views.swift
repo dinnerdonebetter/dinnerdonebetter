@@ -33,6 +33,8 @@ struct StepCardView: View {
   /// For merged meal steps: ingredient key -> "2g from Recipe A, 3g from Recipe B"
   var ingredientBreakdownBySource: [String: String]?
 
+  @State private var showCompletionConditionsHint = false
+
   private var isHighlighted: Bool {
     guard let highlightedStepIDs = highlightedStepIDs else { return true }
     return highlightedStepIDs.contains(step.id)
@@ -70,11 +72,20 @@ struct StepCardView: View {
         Button(
           action: {
             let stepName = step.hasPreparation ? step.preparation.name : step.id
-            print("👆 StepCardView TAPPED '\(stepName)' | isCompleted=\(isCompleted) canCheck=\(canCheck) hasOverride=\(onToggleOverride != nil)")
-            if let onToggle = onToggleOverride {
+            print(
+              "👆 StepCardView TAPPED '\(stepName)' | isCompleted=\(isCompleted) canCheck=\(canCheck) hasOverride=\(onToggleOverride != nil)"
+            )
+            if canCheck, let onToggle = onToggleOverride {
               onToggle()
-            } else {
+            } else if canCheck {
               viewModel.toggleStep(recipeID: recipeID, stepID: step.id)
+            } else if hasCompletionConditions {
+              UIImpactFeedbackGenerator(style: .light).impactOccurred()
+              showCompletionConditionsHint = true
+              Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 2_500_000_000)
+                showCompletionConditionsHint = false
+              }
             }
           },
           label: {
@@ -87,7 +98,6 @@ struct StepCardView: View {
               )
           }
         )
-        .disabled(!canCheck)
 
         // Step title with preparation and ingredients
         VStack(alignment: .leading, spacing: 4) {
@@ -154,7 +164,8 @@ struct StepCardView: View {
 
       if hasCompletionConditions {
         completionConditionsSection(
-          completionConditions: completionConditions
+          completionConditions: completionConditions,
+          isHighlighted: showCompletionConditionsHint
         )
       }
     }
@@ -190,7 +201,8 @@ struct StepCardView: View {
 
   @ViewBuilder
   private func completionConditionsSection(
-    completionConditions: [Mealplanning_RecipeStepCompletionCondition]
+    completionConditions: [Mealplanning_RecipeStepCompletionCondition],
+    isHighlighted: Bool = false
   ) -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Completion checks")
@@ -245,6 +257,12 @@ struct StepCardView: View {
         .padding(.leading, 44)
       }
     }
+    .padding(12)
+    .overlay(
+      RoundedRectangle(cornerRadius: 8)
+        .stroke(isHighlighted ? Color.orange : Color.clear, lineWidth: isHighlighted ? 2.5 : 0)
+    )
+    .animation(.easeInOut(duration: 0.2), value: isHighlighted)
   }
 
   private func completionConditionLabel(
