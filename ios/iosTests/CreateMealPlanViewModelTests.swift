@@ -62,6 +62,7 @@ struct DateSelectionTests {
   func testToggleDateSelectionAdds() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
 
     let date = viewModel.displayedWeekDays[0]
     viewModel.toggleDateSelection(date)
@@ -74,6 +75,7 @@ struct DateSelectionTests {
   func testToggleDateSelectionRemoves() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
 
     let date = viewModel.displayedWeekDays[0]
     #expect(viewModel.isDateSelected(date) == false)
@@ -90,6 +92,7 @@ struct DateSelectionTests {
   func testSetDateRangeSelection() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
     let days = viewModel.displayedWeekDays
     #expect(days.count >= 3)
 
@@ -107,6 +110,7 @@ struct MealAssignmentTests {
   func testAssignMeal() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
     let days = viewModel.displayedWeekDays
     viewModel.setDateRangeSelection(from: days[0], to: days[0])
 
@@ -123,6 +127,7 @@ struct MealAssignmentTests {
   func testRemoveMeal() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
     let days = viewModel.displayedWeekDays
     viewModel.setDateRangeSelection(from: days[0], to: days[0])
 
@@ -141,6 +146,7 @@ struct MealAssignmentTests {
   func testAllDaysHaveMealsPartial() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
     let days = viewModel.displayedWeekDays
     viewModel.setDateRangeSelection(from: days[0], to: days[1])
 
@@ -156,6 +162,7 @@ struct MealAssignmentTests {
   func testAllDaysHaveMealsComplete() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
     let days = viewModel.displayedWeekDays
     viewModel.setDateRangeSelection(from: days[0], to: days[1])
 
@@ -176,6 +183,7 @@ struct SearchTests {
   func testFilteredSearchResults() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
     let days = viewModel.displayedWeekDays
     viewModel.setDateRangeSelection(from: days[0], to: days[0])
 
@@ -211,6 +219,7 @@ struct SearchTests {
   func testMealForIdFromDayMeals() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
     let days = viewModel.displayedWeekDays
     viewModel.setDateRangeSelection(from: days[0], to: days[0])
     let meal = createMockMeal(id: "meal-1", name: "Pasta")

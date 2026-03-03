@@ -39,7 +39,7 @@ class CreateMealPlanViewModel {
   var currentDayIndex: Int = 0
 
   // Meal plan creation state
-  var mealPlanName: String = ""
+  var mealPlanName: String = "Meal Plan"
   var isCreating: Bool = false
   var creationError: String?
   var createdMealPlanID: String?

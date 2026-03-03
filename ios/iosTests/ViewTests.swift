@@ -58,10 +58,8 @@ struct RegisterViewValidationTests {
   func testRegisterViewRequiresEmail() async {
     let showLogin = Binding<Bool>(get: { false }, set: { _ in })
     let authManager = createMockAuthenticationManager()
-    let view = RegisterView(showLogin: showLogin)
+    _ = RegisterView(showLogin: showLogin)
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("RegisterView form validation requires username")
@@ -69,10 +67,8 @@ struct RegisterViewValidationTests {
   func testRegisterViewRequiresUsername() async {
     let showLogin = Binding<Bool>(get: { false }, set: { _ in })
     let authManager = createMockAuthenticationManager()
-    let view = RegisterView(showLogin: showLogin)
+    _ = RegisterView(showLogin: showLogin)
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("RegisterView form validation requires password")
@@ -80,10 +76,8 @@ struct RegisterViewValidationTests {
   func testRegisterViewRequiresPassword() async {
     let showLogin = Binding<Bool>(get: { false }, set: { _ in })
     let authManager = createMockAuthenticationManager()
-    let view = RegisterView(showLogin: showLogin)
+    _ = RegisterView(showLogin: showLogin)
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("RegisterView form validation requires password match")
@@ -91,10 +85,8 @@ struct RegisterViewValidationTests {
   func testRegisterViewRequiresPasswordMatch() async {
     let showLogin = Binding<Bool>(get: { false }, set: { _ in })
     let authManager = createMockAuthenticationManager()
-    let view = RegisterView(showLogin: showLogin)
+    _ = RegisterView(showLogin: showLogin)
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("RegisterView form validation requires password length")
@@ -102,10 +94,8 @@ struct RegisterViewValidationTests {
   func testRegisterViewRequiresPasswordLength() async {
     let showLogin = Binding<Bool>(get: { false }, set: { _ in })
     let authManager = createMockAuthenticationManager()
-    let view = RegisterView(showLogin: showLogin)
+    _ = RegisterView(showLogin: showLogin)
       .environment(authManager)
-
-    #expect(view != nil)
   }
 }
 
@@ -117,10 +107,8 @@ struct LoginViewTests {
   func testLoginViewInitialization() async {
     let showRegister = Binding<Bool>(get: { false }, set: { _ in })
     let authManager = createMockAuthenticationManager()
-    let view = LoginView(showRegister: showRegister)
+    _ = LoginView(showRegister: showRegister)
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("LoginView requires username for login")
@@ -128,10 +116,8 @@ struct LoginViewTests {
   func testLoginViewRequiresUsername() async {
     let showRegister = Binding<Bool>(get: { false }, set: { _ in })
     let authManager = createMockAuthenticationManager()
-    let view = LoginView(showRegister: showRegister)
+    _ = LoginView(showRegister: showRegister)
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("LoginView requires password for login")
@@ -139,10 +125,8 @@ struct LoginViewTests {
   func testLoginViewRequiresPassword() async {
     let showRegister = Binding<Bool>(get: { false }, set: { _ in })
     let authManager = createMockAuthenticationManager()
-    let view = LoginView(showRegister: showRegister)
+    _ = LoginView(showRegister: showRegister)
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("LoginView handles TOTP requirement")
@@ -150,10 +134,8 @@ struct LoginViewTests {
   func testLoginViewHandlesTOTP() async {
     let showRegister = Binding<Bool>(get: { false }, set: { _ in })
     let authManager = createMockAuthenticationManager()
-    let view = LoginView(showRegister: showRegister)
+    _ = LoginView(showRegister: showRegister)
       .environment(authManager)
-
-    #expect(view != nil)
   }
 }
 
@@ -164,70 +146,56 @@ struct AccountSettingsViewTests {
   @MainActor
   func testAccountSettingsViewInitializesViewModel() async {
     let authManager = createMockAuthenticationManagerForAccount()
-    let view = AccountSettingsView()
+    _ = AccountSettingsView()
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("AccountSettingsView shows loading state")
   @MainActor
   func testAccountSettingsViewShowsLoading() async {
     let authManager = createMockAuthenticationManagerForAccount()
-    let view = AccountSettingsView()
+    _ = AccountSettingsView()
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("AccountSettingsView shows error state")
   @MainActor
   func testAccountSettingsViewShowsError() async {
     let authManager = createMockAuthenticationManagerForAccount()
-    let view = AccountSettingsView()
+    _ = AccountSettingsView()
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("AccountSettingsView shows account information when loaded")
   @MainActor
   func testAccountSettingsViewShowsAccountInfo() async {
     let authManager = createMockAuthenticationManagerForAccount()
-    let view = AccountSettingsView()
+    _ = AccountSettingsView()
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("AccountSettingsView shows members section when members exist")
   @MainActor
   func testAccountSettingsViewShowsMembers() async {
     let authManager = createMockAuthenticationManagerForAccount()
-    let view = AccountSettingsView()
+    _ = AccountSettingsView()
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("AccountSettingsView shows invitations section when invitations exist")
   @MainActor
   func testAccountSettingsViewShowsInvitations() async {
     let authManager = createMockAuthenticationManagerForAccount()
-    let view = AccountSettingsView()
+    _ = AccountSettingsView()
       .environment(authManager)
-
-    #expect(view != nil)
   }
 
   @Test("AccountSettingsView shows send invitation section for admins")
   @MainActor
   func testAccountSettingsViewShowsSendInvitation() async {
     let authManager = createMockAuthenticationManagerForAccount()
-    let view = AccountSettingsView()
+    _ = AccountSettingsView()
       .environment(authManager)
-
-    #expect(view != nil)
   }
 }
 
@@ -245,14 +213,12 @@ struct MemberCardTests {
     user.username = "johndoe"
     member.belongsToUser = user
 
-    let card = MemberCard(
+    _ = MemberCard(
       member: member,
       currentUserID: "user-1",
       isAccountAdmin: true,
       onRoleChange: { _, _ in }
     )
-
-    #expect(card != nil)
   }
 
   @Test("MemberCard displayName uses first name only")
@@ -265,14 +231,12 @@ struct MemberCardTests {
     user.username = "johndoe"
     member.belongsToUser = user
 
-    let card = MemberCard(
+    _ = MemberCard(
       member: member,
       currentUserID: "user-1",
       isAccountAdmin: true,
       onRoleChange: { _, _ in }
     )
-
-    #expect(card != nil)
   }
 
   @Test("MemberCard displayName uses username when no name")
@@ -284,14 +248,12 @@ struct MemberCardTests {
     user.username = "johndoe"
     member.belongsToUser = user
 
-    let card = MemberCard(
+    _ = MemberCard(
       member: member,
       currentUserID: "user-1",
       isAccountAdmin: true,
       onRoleChange: { _, _ in }
     )
-
-    #expect(card != nil)
   }
 
   @Test("MemberCard displayName returns Unknown when no user")
@@ -300,14 +262,12 @@ struct MemberCardTests {
     var member = createMockMembership()
     member.clearBelongsToUser()
 
-    let card = MemberCard(
+    _ = MemberCard(
       member: member,
       currentUserID: "user-1",
       isAccountAdmin: true,
       onRoleChange: { _, _ in }
     )
-
-    #expect(card != nil)
   }
 
   @Test("MemberCard shows current user indicator")
@@ -319,14 +279,12 @@ struct MemberCardTests {
     user.username = "currentuser"
     member.belongsToUser = user
 
-    let card = MemberCard(
+    _ = MemberCard(
       member: member,
       currentUserID: "user-1",
       isAccountAdmin: true,
       onRoleChange: { _, _ in }
     )
-
-    #expect(card != nil)
   }
 
   @Test("MemberCard initializes with correct role")
@@ -337,14 +295,12 @@ struct MemberCardTests {
     user.id = "user-1"
     member.belongsToUser = user
 
-    let card = MemberCard(
+    _ = MemberCard(
       member: member,
       currentUserID: "user-2",
       isAccountAdmin: true,
       onRoleChange: { _, _ in }
     )
-
-    #expect(card != nil)
   }
 }
 
@@ -359,13 +315,11 @@ struct InvitationCardTests {
     invitation.toName = "Test User"
     invitation.status = "pending"
 
-    let card = InvitationCard(
+    _ = InvitationCard(
       invitation: invitation,
       isAccountAdmin: false,
       onCancel: nil
     )
-
-    #expect(card != nil)
   }
 
   @Test("InvitationCard displays name when available")
@@ -376,13 +330,11 @@ struct InvitationCardTests {
     invitation.toName = "Test User"
     invitation.status = "pending"
 
-    let card = InvitationCard(
+    _ = InvitationCard(
       invitation: invitation,
       isAccountAdmin: false,
       onCancel: nil
     )
-
-    #expect(card != nil)
   }
 
   @Test("InvitationCard displays status")
@@ -392,13 +344,11 @@ struct InvitationCardTests {
     invitation.toEmail = "test@example.com"
     invitation.status = "accepted"
 
-    let card = InvitationCard(
+    _ = InvitationCard(
       invitation: invitation,
       isAccountAdmin: false,
       onCancel: nil
     )
-
-    #expect(card != nil)
   }
 
   @Test("InvitationCard handles empty name")
@@ -409,13 +359,11 @@ struct InvitationCardTests {
     invitation.toName = ""
     invitation.status = "pending"
 
-    let card = InvitationCard(
+    _ = InvitationCard(
       invitation: invitation,
       isAccountAdmin: false,
       onCancel: nil
     )
-
-    #expect(card != nil)
   }
 
   @Test("InvitationCard handles different statuses")
@@ -428,12 +376,11 @@ struct InvitationCardTests {
       invitation.toEmail = "test@example.com"
       invitation.status = status
 
-      let card = InvitationCard(
+      _ = InvitationCard(
         invitation: invitation,
         isAccountAdmin: false,
         onCancel: nil
       )
-      #expect(card != nil)
     }
   }
 }

@@ -6,14 +6,14 @@ Based on recipe graph fixes applied to Sous Vide Chicken Breast, Soy Sauce Brais
 
 ## Summary of Issues Fixed
 
-| Issue | Recipe(s) | Root Cause | Fix Applied |
-|-------|-----------|------------|-------------|
-| Unused preheated vessel | Sous Vide Chicken Breast | Step 5 vessel lacked `ProductOfRecipeStepProductIndex` and used wrong `ValidPreparationVesselID` (heat vs sous-vide) | Corrected vessel bridge and product reference |
-| Preparation mismatch | Sous Vide Chicken Breast | Step 5 used `heatSousVideCookerVPI` (heat prep) instead of `sousVideCookerVPI` (sous-vide prep) | Use preparation-specific instrument bridge |
-| Orphan step outputs | Soy Sauce Braised Chicken Thighs | Step 2 (dry) and Step 3 (season) produced outputs not consumed; Step 15 (transfer) produced "seared chicken on plate" not consumed | Added `ProductOfRecipeStepIndex` references so downstream steps consume them |
-| Preheated vessel fan-out | Roasted Brussels Sprouts, Soy Sauce Braised Chicken Thighs | Step 4/6 preheated vessel consumed directly by many steps instead of chaining | Chained vessel: preheat → remove → place → return → roast → stir → rotate → roast |
-| Missing MeasurementUnitID | Carne Asada | Grind product lacked `MeasurementUnitID`; graph resolution may require it for ingredient products | Added `MeasurementUnitID` to grind product |
-| Orphan prep task outputs | Carne Asada | Toast→grind produced spices not linked to blend; unrefrigerate produced marinade container not linked to slice | Added product references and slice+sealed container vessel |
+| Issue                     | Recipe(s)                                                  | Root Cause                                                                                                                         | Fix Applied                                                                       |
+|---------------------------|------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| Unused preheated vessel   | Sous Vide Chicken Breast                                   | Step 5 vessel lacked `ProductOfRecipeStepProductIndex` and used wrong `ValidPreparationVesselID` (heat vs sous-vide)               | Corrected vessel bridge and product reference                                     |
+| Preparation mismatch      | Sous Vide Chicken Breast                                   | Step 5 used `heatSousVideCookerVPI` (heat prep) instead of `sousVideCookerVPI` (sous-vide prep)                                    | Use preparation-specific instrument bridge                                        |
+| Orphan step outputs       | Soy Sauce Braised Chicken Thighs                           | Step 2 (dry) and Step 3 (season) produced outputs not consumed; Step 15 (transfer) produced "seared chicken on plate" not consumed | Added `ProductOfRecipeStepIndex` references so downstream steps consume them      |
+| Preheated vessel fan-out  | Roasted Brussels Sprouts, Soy Sauce Braised Chicken Thighs | Step 4/6 preheated vessel consumed directly by many steps instead of chaining                                                      | Chained vessel: preheat → remove → place → return → roast → stir → rotate → roast |
+| Missing MeasurementUnitID | Carne Asada                                                | Grind product lacked `MeasurementUnitID`; graph resolution may require it for ingredient products                                  | Added `MeasurementUnitID` to grind product                                        |
+| Orphan prep task outputs  | Carne Asada                                                | Toast→grind produced spices not linked to blend; unrefrigerate produced marinade container not linked to slice                     | Added product references and slice+sealed container vessel                        |
 
 ---
 
@@ -36,6 +36,7 @@ The `RecipeValidator` (`internal/domain/mealplanning/recipevalidator/recipe_vali
 **When:** During `ValidateAndPopulate`, for ingredients/instruments/vessels with `ProductOfRecipeStepIndex` set.
 
 **Checks:**
+
 - Referenced step index exists (`< len(input.Steps)`)
 - Referenced step has a product at `ProductOfRecipeStepProductIndex`
 - For vessels: `ValidPreparationVesselID` is set and matches the consuming step's preparation (recipe step product vessels currently skip bridge validation)
@@ -55,6 +56,7 @@ The `RecipeValidator` (`internal/domain/mealplanning/recipevalidator/recipe_vali
 **Rationale:** Orphan products indicate missing `ProductOfRecipeStepIndex` references and lead to disconnected graph nodes.
 
 **Considerations:**
+
 - Final step's output is often intentionally unconsumed (e.g., "sliced carne asada")
 - Optional steps may produce outputs that are conditionally consumed
 - Could be a **warning** rather than an error, or a separate analysis/lint tool
@@ -70,6 +72,7 @@ The `RecipeValidator` (`internal/domain/mealplanning/recipevalidator/recipe_vali
 **Rationale:** Preheated vessels (oven, water bath, baking sheets) should typically flow: preheat → first consumer → second consumer → … rather than preheat → many consumers.
 
 **Considerations:**
+
 - Some recipes may legitimately have one vessel feed many steps (e.g., shared oven)
 - Subjective; better as a **warning** or documentation guideline than a hard error
 
@@ -84,6 +87,7 @@ The `RecipeValidator` (`internal/domain/mealplanning/recipevalidator/recipe_vali
 **Rationale:** Graph resolution (`findCreatedRecipeStepProductsForIngredients`) inherits MeasurementUnitID from the product when the consuming ingredient doesn't have it. Some resolution paths may depend on it.
 
 **Considerations:**
+
 - May not be strictly required for all flows
 - Could be a **warning** to improve robustness
 
@@ -114,14 +118,17 @@ The `RecipeValidator` (`internal/domain/mealplanning/recipevalidator/recipe_vali
 ## Implementation Phases
 
 ### Phase 1: Critical Fixes (Recommended)
+
 - **1. Product Reference Validation** – Validate step index and product index exist
 - **5. Vessel Product ValidPreparationVesselID** – Require VPV when consuming vessel product
 
 ### Phase 2: Robustness
+
 - **6. Preparation Match for Recipe Step Product Instruments** – If/when instrument products are used
 - **4. MeasurementUnitID for Ingredient Products** – As warning or recommendation
 
 ### Phase 3: Analysis / Lint Tool (Optional)
+
 - **2. Orphan Product Detection** – As a separate analysis or lint step
 - **3. Vessel Fan-Out Warning** – As a documentation or lint guideline
 
@@ -129,11 +136,11 @@ The `RecipeValidator` (`internal/domain/mealplanning/recipevalidator/recipe_vali
 
 ## Files to Modify
 
-| File | Changes |
-|------|---------|
-| `internal/domain/mealplanning/recipevalidator/recipe_validator.go` | Add product reference validation, extend vessel validation for recipe step products |
-| `internal/domain/mealplanning/recipe_step_ingredient.go` | Possibly add `RecipeStepProductIngredientCreationRequestInput` if validation needs creation-time types |
-| `internal/domain/mealplanning/recipeanalysis/recipe_analyzer.go` | Optional: add `AnalyzeRecipeForOrphans` or similar for lint tool |
+| File                                                               | Changes                                                                                                |
+|--------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| `internal/domain/mealplanning/recipevalidator/recipe_validator.go` | Add product reference validation, extend vessel validation for recipe step products                    |
+| `internal/domain/mealplanning/recipe_step_ingredient.go`           | Possibly add `RecipeStepProductIngredientCreationRequestInput` if validation needs creation-time types |
+| `internal/domain/mealplanning/recipeanalysis/recipe_analyzer.go`   | Optional: add `AnalyzeRecipeForOrphans` or similar for lint tool                                       |
 
 ---
 

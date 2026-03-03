@@ -17,5 +17,6 @@ ${XCODEBUILD} test \
   -destination "${DESTINATION}" \
   -only-testing:"${TEST_TARGET}" \
   -derivedDataPath "${DERIVED_DATA}" \
+  -parallel-testing-enabled NO \
   -quiet
 
