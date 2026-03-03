@@ -131,6 +131,9 @@
 		}
 	},
 	"database": {
+		"encryption": {
+			"provider": "salsa20"
+		},
 		"oauth2TokenEncryptionKey": "",
 		"userDeviceTokenEncryptionKey": "",
 		"provider": "postgres",

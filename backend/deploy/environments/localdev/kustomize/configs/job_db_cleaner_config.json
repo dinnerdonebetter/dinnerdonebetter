@@ -32,6 +32,9 @@
 		}
 	},
 	"database": {
+		"encryption": {
+			"provider": "salsa20"
+		},
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 		"userDeviceTokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 		"provider": "postgres",

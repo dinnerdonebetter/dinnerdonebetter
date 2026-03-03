@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
@@ -168,6 +169,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		},
 		Database: databasecfg.Config{
 			Provider:                     databasecfg.ProviderPostgres,
+			Encryption:                   encryptioncfg.Config{Provider: encryptioncfg.ProviderSalsa20},
 			OAuth2TokenEncryptionKey:     localOAuth2TokenEncryptionKey,
 			UserDeviceTokenEncryptionKey: localOAuth2TokenEncryptionKey,
 			Debug:                        true,

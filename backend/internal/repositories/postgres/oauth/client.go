@@ -6,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption"
-	"github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/salsa20"
+	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -38,7 +38,7 @@ func ProvideOAuthRepository(
 	cfg *databasecfg.Config,
 	client database.Client,
 ) oauth.Repository {
-	encDec, err := salsa20.NewEncryptorDecryptor(tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))
+	encDec, err := encryptioncfg.ProvideEncryptorDecryptor(&cfg.Encryption, tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))
 	if err != nil {
 		return nil
 	}

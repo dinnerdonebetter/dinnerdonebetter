@@ -10,6 +10,7 @@ import (
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/email/sendgrid"
@@ -152,6 +153,7 @@ func buildProdConfig() *config.APIServiceConfig {
 		},
 		Database: databasecfg.Config{
 			Provider:                     databasecfg.ProviderPostgres,
+			Encryption:                   encryptioncfg.Config{Provider: encryptioncfg.ProviderSalsa20},
 			OAuth2TokenEncryptionKey:     "",
 			UserDeviceTokenEncryptionKey: "",
 			Debug:                        false,
