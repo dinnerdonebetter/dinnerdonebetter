@@ -148,6 +148,9 @@ const (
 	// DatabaseRunMigrationsEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.RunMigrations`.
 	DatabaseRunMigrationsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_RUN_MIGRATIONS"
 
+	// DatabaseUserDeviceTokenEncryptionKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.UserDeviceTokenEncryptionKey`.
+	DatabaseUserDeviceTokenEncryptionKeyEnvVarKey = "DINNER_DONE_BETTER_DATABASE_USER_DEVICE_TOKEN_ENCRYPTION_KEY"
+
 	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `AsyncMessageHandlerConfig.Email.CircuitBreaker.ErrorRate`.
 	EmailCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_ERROR_RATE"
 

@@ -66,7 +66,8 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
 	issuereportsRepository := issue_reports.ProvideIssueReportsRepository(logger, tracerProvider, repository, client)
 	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
-	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
+	config3 := &cfg.Database
+	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, config3, client)
 	queuesConfig := &cfg.Queues
 	msgconfigConfig := &cfg.Events
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)

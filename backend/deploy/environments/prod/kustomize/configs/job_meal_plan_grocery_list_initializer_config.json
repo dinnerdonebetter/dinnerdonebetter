@@ -82,6 +82,7 @@
 	},
 	"database": {
 		"oauth2TokenEncryptionKey": "",
+		"userDeviceTokenEncryptionKey": "",
 		"provider": "postgres",
 		"readConnection": {
 			"username": "api_db_user",

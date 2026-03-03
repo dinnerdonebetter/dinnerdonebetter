@@ -59,7 +59,7 @@ variable "APNS_BUNDLE_ID" {
   default = "com.dinnerdonebetter.ios"
 }
 variable "APNS_PRODUCTION" {
-  default = "true"
+  default     = "true"
   description = "Use APNs production environment (true) or sandbox (false)"
 }
 

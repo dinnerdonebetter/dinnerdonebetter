@@ -81,12 +81,17 @@ func (q *Repository) GetUserDeviceToken(ctx context.Context, userID, tokenID str
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching user device token")
 	}
 
+	decryptedDeviceToken, err := q.userDeviceTokenEncDec.Decrypt(ctx, result.DeviceToken)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting user device token")
+	}
+
 	return &types.UserDeviceToken{
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 		ID:            result.ID,
-		DeviceToken:   result.DeviceToken,
+		DeviceToken:   decryptedDeviceToken,
 		Platform:      result.Platform,
 		BelongsToUser: result.BelongsToUser,
 	}, nil
@@ -133,12 +138,17 @@ func (q *Repository) GetUserDeviceTokens(ctx context.Context, userID string, fil
 		filteredCount, totalCount uint64
 	)
 	for _, result := range results {
+		var decryptedDeviceToken string
+		decryptedDeviceToken, err = q.userDeviceTokenEncDec.Decrypt(ctx, result.DeviceToken)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "decrypting user device token")
+		}
 		token := &types.UserDeviceToken{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:            result.ID,
-			DeviceToken:   result.DeviceToken,
+			DeviceToken:   decryptedDeviceToken,
 			Platform:      result.Platform,
 			BelongsToUser: result.BelongsToUser,
 		}
@@ -178,14 +188,24 @@ func (q *Repository) UpsertUserDeviceToken(ctx context.Context, input *types.Use
 	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, input.ID)
 	logger := q.logger.WithValue(notificationkeys.UserDeviceTokenIDKey, input.ID)
 
+	encryptedDeviceToken, err := q.userDeviceTokenEncDec.Encrypt(ctx, input.DeviceToken)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "encrypting user device token")
+	}
+
 	result, err := q.generatedQuerier.UpsertUserDeviceToken(ctx, q.writeDB, &generated.UpsertUserDeviceTokenParams{
 		ID:            input.ID,
 		BelongsToUser: input.BelongsToUser,
-		DeviceToken:   input.DeviceToken,
+		DeviceToken:   encryptedDeviceToken,
 		Platform:      input.Platform,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing user device token upsert query")
+	}
+
+	decryptedDeviceToken, err := q.userDeviceTokenEncDec.Decrypt(ctx, result.DeviceToken)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting user device token")
 	}
 
 	x := &types.UserDeviceToken{
@@ -193,7 +213,7 @@ func (q *Repository) UpsertUserDeviceToken(ctx context.Context, input *types.Use
 		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 		ID:            result.ID,
-		DeviceToken:   result.DeviceToken,
+		DeviceToken:   decryptedDeviceToken,
 		Platform:      result.Platform,
 		BelongsToUser: result.BelongsToUser,
 	}

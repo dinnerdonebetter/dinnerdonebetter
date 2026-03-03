@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -33,7 +34,7 @@ func buildDatabaseClientForTest(t *testing.T) (c *Repository, auditLogEntryRepo 
 
 	auditLogEntryRepo = auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 
-	c = ProvideNotificationsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
+	c = ProvideNotificationsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, config, pgc)
 
 	return c, auditLogEntryRepo, container
 }
@@ -41,7 +42,10 @@ func buildDatabaseClientForTest(t *testing.T) (c *Repository, auditLogEntryRepo 
 func buildInertClientForTest(t *testing.T) *Repository {
 	t.Helper()
 
-	c := ProvideNotificationsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{})
+	cfg := &databasecfg.Config{
+		UserDeviceTokenEncryptionKey: "blahblahblahblahblahblahblahblah",
+	}
+	c := ProvideNotificationsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, cfg, &database.MockClient{})
 
 	return c
 }

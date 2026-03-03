@@ -207,7 +207,7 @@ func WithWebhooksRepository(fn func(ctx context.Context, repo webhooks.Repositor
 func WithNotificationsRepository(fn func(ctx context.Context, repo notifications.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
 	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
 		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
-		notificationsRepo := notificationsrepo.ProvideNotificationsRepository(logger, tracerProvider, auditLogRepo, dbClient)
+		notificationsRepo := notificationsrepo.ProvideNotificationsRepository(logger, tracerProvider, auditLogRepo, dbCfg, dbClient)
 		return fn(ctx, notificationsRepo, logger, tracerProvider)
 	}
 }

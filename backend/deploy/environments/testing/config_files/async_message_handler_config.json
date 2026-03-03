@@ -106,6 +106,7 @@
 	},
 	"database": {
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"userDeviceTokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 		"provider": "postgres",
 		"readConnection": {
 			"username": "dbuser",
