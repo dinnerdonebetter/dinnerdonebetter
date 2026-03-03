@@ -149,7 +149,8 @@ struct AggregatedInstrumentVessel: Identifiable {
         return "\(scaledMin) - \(max)"
       }
     } else {
-      return "\(scaledMin)+"
+      // No max: treat min as the authoritative single value (not unbounded)
+      return "\(scaledMin)"
     }
   }
 
@@ -210,7 +211,10 @@ struct AggregatedIngredient: Identifiable {
     let scaledMin = totalMin * scale
     let scaledMax = totalMax.map { $0 * scale }
 
-    let unitName = measurementUnit?.name ?? ""
+    let unitName = MeasurementUnitFormatter.displayName(
+      for: scaledMin,
+      unit: measurementUnit
+    )
     let unit = unitName.isEmpty ? "" : " \(unitName)"
 
     // Format numbers - use fewer decimals for whole numbers
@@ -227,7 +231,8 @@ struct AggregatedIngredient: Identifiable {
           .trimmingCharacters(in: .whitespaces)
       }
     } else {
-      return String(format: "\(formatMin)+%@", scaledMin, unit).trimmingCharacters(in: .whitespaces)
+      // No max: treat min as the authoritative single value (not unbounded)
+      return String(format: "\(formatMin)%@", scaledMin, unit).trimmingCharacters(in: .whitespaces)
     }
   }
 

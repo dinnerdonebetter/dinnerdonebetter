@@ -73,6 +73,15 @@ struct MealListView: View {
       }
       .navigationTitle("Meals")
       .navigationBarTitleDisplayMode(.large)
+      .toolbar {
+        ToolbarItem(placement: .primaryAction) {
+          NavigationLink {
+            CreateMealView()
+          } label: {
+            Image(systemName: "plus")
+          }
+        }
+      }
       .searchable(text: $searchQuery, prompt: "Search meals...")
       .onChange(of: searchQuery) { _, newValue in
         if let viewModel = viewModel {

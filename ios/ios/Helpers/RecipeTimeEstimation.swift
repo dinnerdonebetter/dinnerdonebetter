@@ -96,6 +96,23 @@ enum RecipeTimeEstimation {
     return "\(hours) hr \(mins) min"
   }
 
+  /// Formats a prep task's time buffer (how far in advance it can be done) for display.
+  /// Returns nil when the range has no meaningful values.
+  static func formatTimeBufferInAdvance(_ range: Common_Uint32RangeWithOptionalMax) -> String? {
+    guard range.min > 0 || range.hasMax else { return nil }
+    let maxCapSeconds: UInt32 = 24 * 3600
+    if range.min > 0 && range.hasMax {
+      let minStr = formatDuration(seconds: range.min)
+      let maxStr = range.max > maxCapSeconds ? "24+ hr" : formatDuration(seconds: range.max)
+      return "\(minStr) – \(maxStr) in advance"
+    }
+    if range.hasMax {
+      let maxStr = range.max > maxCapSeconds ? "24+ hr" : formatDuration(seconds: range.max)
+      return "Up to \(maxStr) in advance"
+    }
+    return "At least \(formatDuration(seconds: range.min)) in advance"
+  }
+
   /// Formats a step's optional time range for display.
   /// Returns nil when the step has no time estimate (neither min nor max set).
   static func formatStepTime(_ range: Common_OptionalUint32Range) -> String? {

@@ -544,12 +544,31 @@ struct RecipePerformanceStepFormattingTests {
     quantity.max = 2  // same as min → exact quantity, avoids "3+" when no max
     ingredient.quantity = quantity
     var unit = Mealplanning_ValidMeasurementUnit()
-    unit.name = "cups"
+    unit.name = "cup"
+    unit.pluralName = "cups"
     ingredient.measurementUnit = unit
 
     let display = formatStepIngredientDisplay(ingredient, scale: 1.5)
 
     #expect(display == "3 cups Flour")
+  }
+
+  @Test("Step ingredient display uses singular for quantity 1")
+  func testStepIngredientDisplayUsesSingularForOne() {
+    var ingredient = Mealplanning_RecipeStepIngredient()
+    ingredient.name = "Water"
+    var quantity = Common_Float32RangeWithOptionalMax()
+    quantity.min = 1
+    quantity.max = 1
+    ingredient.quantity = quantity
+    var unit = Mealplanning_ValidMeasurementUnit()
+    unit.name = "cup"
+    unit.pluralName = "cups"
+    ingredient.measurementUnit = unit
+
+    let display = formatStepIngredientDisplay(ingredient, scale: 1.0)
+
+    #expect(display == "1 cup Water")
   }
 
   @Test("Step ingredient display falls back to name without quantity")

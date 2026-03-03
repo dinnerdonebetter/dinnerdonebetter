@@ -1112,7 +1112,13 @@ struct StepProductsSectionView: View {
         }
       }
 
-      let unitName = product.hasMeasurementUnit ? product.measurementUnit.name : ""
+      let unitName =
+        product.hasMeasurementUnit
+        ? MeasurementUnitFormatter.displayName(
+          for: product.measurementQuantity.min,
+          unit: product.measurementUnit
+        )
+        : ""
 
       if !itemQtyStr.isEmpty && !measurementQtyStr.isEmpty && !unitName.isEmpty {
         // Format: "4 patties (4 oz each)"
@@ -1136,7 +1142,10 @@ struct StepProductsSectionView: View {
         }
       }
 
-      let unitName = product.hasMeasurementUnit ? product.measurementUnit.name : ""
+      let unitName =
+        product.hasMeasurementUnit
+        ? MeasurementUnitFormatter.displayName(for: min, unit: product.measurementUnit)
+        : ""
       if !unitName.isEmpty {
         return "\(product.name): \(qtyStr) \(unitName)"
       } else {

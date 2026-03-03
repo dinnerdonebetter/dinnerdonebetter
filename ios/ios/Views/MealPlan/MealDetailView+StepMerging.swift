@@ -123,7 +123,7 @@ private struct MergedIngredientSourcePart {
 private func formatMergedIngredientQuantity(
   min: Float, max: Float?, unit: Mealplanning_ValidMeasurementUnit?
 ) -> String {
-  let unitName = unit?.name ?? ""
+  let unitName = MeasurementUnitFormatter.displayName(for: min, unit: unit)
   let unitSuffix = unitName.isEmpty ? "" : " \(unitName)"
   let formatMin = min.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f"
   if let maxVal = max {
@@ -134,7 +134,8 @@ private func formatMergedIngredientQuantity(
     return (String(format: "\(formatMin) - \(formatMax)", min, maxVal) + unitSuffix)
       .trimmingCharacters(in: .whitespaces)
   }
-  return (String(format: "\(formatMin)+", min) + unitSuffix).trimmingCharacters(in: .whitespaces)
+  // No max: treat min as the authoritative single value (not unbounded)
+  return (String(format: formatMin, min) + unitSuffix).trimmingCharacters(in: .whitespaces)
 }
 
 // MARK: - Step Merge Key
