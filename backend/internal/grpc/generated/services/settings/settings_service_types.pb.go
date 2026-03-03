@@ -27,7 +27,7 @@ const (
 
 type CreateServiceSettingRequest struct {
 	state         protoimpl.MessageState              `protogen:"open.v1"`
-	Input         *ServiceSettingCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	Input         *ServiceSettingCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -71,8 +71,8 @@ func (x *CreateServiceSettingRequest) GetInput() *ServiceSettingCreationRequestI
 
 type CreateServiceSettingResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Created         *ServiceSetting        `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Created         *ServiceSetting        `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -123,7 +123,7 @@ func (x *CreateServiceSettingResponse) GetCreated() *ServiceSetting {
 
 type CreateServiceSettingConfigurationRequest struct {
 	state         protoimpl.MessageState                           `protogen:"open.v1"`
-	Input         *ServiceSettingConfigurationCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	Input         *ServiceSettingConfigurationCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -167,8 +167,8 @@ func (x *CreateServiceSettingConfigurationRequest) GetInput() *ServiceSettingCon
 
 type CreateServiceSettingConfigurationResponse struct {
 	state           protoimpl.MessageState       `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails       `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Created         *ServiceSettingConfiguration `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
+	ResponseDetails *types.ResponseDetails       `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Created         *ServiceSettingConfiguration `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -219,7 +219,7 @@ func (x *CreateServiceSettingConfigurationResponse) GetCreated() *ServiceSetting
 
 type ArchiveServiceSettingRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	ServiceSettingId string                 `protobuf:"bytes,1,opt,name=service_setting_id,json=serviceSettingId,proto3" json:"service_setting_id,omitempty"`
+	ServiceSettingId string                 `json:"service_setting_id,omitempty" protobuf:"bytes,1,opt,name=service_setting_id,json=serviceSettingId,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -263,7 +263,7 @@ func (x *ArchiveServiceSettingRequest) GetServiceSettingId() string {
 
 type ArchiveServiceSettingResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -307,7 +307,7 @@ func (x *ArchiveServiceSettingResponse) GetResponseDetails() *types.ResponseDeta
 
 type ArchiveServiceSettingConfigurationRequest struct {
 	state                         protoimpl.MessageState `protogen:"open.v1"`
-	ServiceSettingConfigurationId string                 `protobuf:"bytes,1,opt,name=service_setting_configuration_id,json=serviceSettingConfigurationId,proto3" json:"service_setting_configuration_id,omitempty"`
+	ServiceSettingConfigurationId string                 `json:"service_setting_configuration_id,omitempty" protobuf:"bytes,1,opt,name=service_setting_configuration_id,json=serviceSettingConfigurationId,proto3"`
 	unknownFields                 protoimpl.UnknownFields
 	sizeCache                     protoimpl.SizeCache
 }
@@ -351,7 +351,7 @@ func (x *ArchiveServiceSettingConfigurationRequest) GetServiceSettingConfigurati
 
 type ArchiveServiceSettingConfigurationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -395,7 +395,7 @@ func (x *ArchiveServiceSettingConfigurationResponse) GetResponseDetails() *types
 
 type GetServiceSettingRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	ServiceSettingId string                 `protobuf:"bytes,1,opt,name=service_setting_id,json=serviceSettingId,proto3" json:"service_setting_id,omitempty"`
+	ServiceSettingId string                 `json:"service_setting_id,omitempty" protobuf:"bytes,1,opt,name=service_setting_id,json=serviceSettingId,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -439,8 +439,8 @@ func (x *GetServiceSettingRequest) GetServiceSettingId() string {
 
 type GetServiceSettingResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Result          *ServiceSetting        `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Result          *ServiceSetting        `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -491,8 +491,8 @@ func (x *GetServiceSettingResponse) GetResult() *ServiceSetting {
 
 type GetServiceSettingConfigurationByNameRequest struct {
 	state                           protoimpl.MessageState `protogen:"open.v1"`
-	Filter                          *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	ServiceSettingConfigurationName string                 `protobuf:"bytes,2,opt,name=service_setting_configuration_name,json=serviceSettingConfigurationName,proto3" json:"service_setting_configuration_name,omitempty"`
+	Filter                          *filtering.QueryFilter `json:"filter,omitempty"                             protobuf:"bytes,1,opt,name=filter,proto3"`
+	ServiceSettingConfigurationName string                 `json:"service_setting_configuration_name,omitempty" protobuf:"bytes,2,opt,name=service_setting_configuration_name,json=serviceSettingConfigurationName,proto3"`
 	unknownFields                   protoimpl.UnknownFields
 	sizeCache                       protoimpl.SizeCache
 }
@@ -543,9 +543,9 @@ func (x *GetServiceSettingConfigurationByNameRequest) GetServiceSettingConfigura
 
 type GetServiceSettingConfigurationByNameResponse struct {
 	state           protoimpl.MessageState       `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails       `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination        `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Result          *ServiceSettingConfiguration `protobuf:"bytes,3,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails       `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination        `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Result          *ServiceSettingConfiguration `json:"result,omitempty"           protobuf:"bytes,3,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -603,7 +603,7 @@ func (x *GetServiceSettingConfigurationByNameResponse) GetResult() *ServiceSetti
 
 type GetServiceSettingConfigurationsForAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -647,9 +647,9 @@ func (x *GetServiceSettingConfigurationsForAccountRequest) GetFilter() *filterin
 
 type GetServiceSettingConfigurationsForAccountResponse struct {
 	state           protoimpl.MessageState         `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails         `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination          `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*ServiceSettingConfiguration `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails         `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination          `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*ServiceSettingConfiguration `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -707,7 +707,7 @@ func (x *GetServiceSettingConfigurationsForAccountResponse) GetResults() []*Serv
 
 type GetServiceSettingConfigurationsForUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -751,9 +751,9 @@ func (x *GetServiceSettingConfigurationsForUserRequest) GetFilter() *filtering.Q
 
 type GetServiceSettingConfigurationsForUserResponse struct {
 	state           protoimpl.MessageState         `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails         `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination          `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*ServiceSettingConfiguration `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails         `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination          `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*ServiceSettingConfiguration `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -811,7 +811,7 @@ func (x *GetServiceSettingConfigurationsForUserResponse) GetResults() []*Service
 
 type GetServiceSettingsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -855,9 +855,9 @@ func (x *GetServiceSettingsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetServiceSettingsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*ServiceSetting      `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*ServiceSetting      `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -915,8 +915,8 @@ func (x *GetServiceSettingsResponse) GetResults() []*ServiceSetting {
 
 type SearchForServiceSettingsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	Query         string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Query         string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -967,9 +967,9 @@ func (x *SearchForServiceSettingsRequest) GetQuery() string {
 
 type SearchForServiceSettingsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*ServiceSetting      `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*ServiceSetting      `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1027,8 +1027,8 @@ func (x *SearchForServiceSettingsResponse) GetResults() []*ServiceSetting {
 
 type UpdateServiceSettingConfigurationRequest struct {
 	state                         protoimpl.MessageState                         `protogen:"open.v1"`
-	ServiceSettingConfigurationId string                                         `protobuf:"bytes,1,opt,name=service_setting_configuration_id,json=serviceSettingConfigurationId,proto3" json:"service_setting_configuration_id,omitempty"`
-	Input                         *ServiceSettingConfigurationUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
+	ServiceSettingConfigurationId string                                         `json:"service_setting_configuration_id,omitempty" protobuf:"bytes,1,opt,name=service_setting_configuration_id,json=serviceSettingConfigurationId,proto3"`
+	Input                         *ServiceSettingConfigurationUpdateRequestInput `json:"input,omitempty"                            protobuf:"bytes,2,opt,name=input,proto3"`
 	unknownFields                 protoimpl.UnknownFields
 	sizeCache                     protoimpl.SizeCache
 }
@@ -1079,8 +1079,8 @@ func (x *UpdateServiceSettingConfigurationRequest) GetInput() *ServiceSettingCon
 
 type UpdateServiceSettingConfigurationResponse struct {
 	state           protoimpl.MessageState       `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails       `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Updated         *ServiceSettingConfiguration `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
+	ResponseDetails *types.ResponseDetails       `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Updated         *ServiceSettingConfiguration `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1131,9 +1131,9 @@ func (x *UpdateServiceSettingConfigurationResponse) GetUpdated() *ServiceSetting
 
 type ServiceSettingConfigurationCreationRequestInput struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Value            string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
-	Notes            string                 `protobuf:"bytes,2,opt,name=notes,proto3" json:"notes,omitempty"`
-	ServiceSettingId string                 `protobuf:"bytes,3,opt,name=service_setting_id,json=serviceSettingId,proto3" json:"service_setting_id,omitempty"`
+	Value            string                 `json:"value,omitempty"              protobuf:"bytes,1,opt,name=value,proto3"`
+	Notes            string                 `json:"notes,omitempty"              protobuf:"bytes,2,opt,name=notes,proto3"`
+	ServiceSettingId string                 `json:"service_setting_id,omitempty" protobuf:"bytes,3,opt,name=service_setting_id,json=serviceSettingId,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1191,9 +1191,9 @@ func (x *ServiceSettingConfigurationCreationRequestInput) GetServiceSettingId() 
 
 type ServiceSettingConfigurationUpdateRequestInput struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Value            *string                `protobuf:"bytes,1,opt,name=value,proto3,oneof" json:"value,omitempty"`
-	Notes            *string                `protobuf:"bytes,2,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
-	ServiceSettingId *string                `protobuf:"bytes,3,opt,name=service_setting_id,json=serviceSettingId,proto3,oneof" json:"service_setting_id,omitempty"`
+	Value            *string                `json:"value,omitempty"              protobuf:"bytes,1,opt,name=value,proto3,oneof"`
+	Notes            *string                `json:"notes,omitempty"              protobuf:"bytes,2,opt,name=notes,proto3,oneof"`
+	ServiceSettingId *string                `json:"service_setting_id,omitempty" protobuf:"bytes,3,opt,name=service_setting_id,json=serviceSettingId,proto3,oneof"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1251,14 +1251,14 @@ func (x *ServiceSettingConfigurationUpdateRequestInput) GetServiceSettingId() st
 
 type ServiceSettingCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DefaultValue  *string                `protobuf:"bytes,1,opt,name=default_value,json=defaultValue,proto3,oneof" json:"default_value,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
-	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	Enumeration   []string               `protobuf:"bytes,5,rep,name=enumeration,proto3" json:"enumeration,omitempty"`
+	DefaultValue  *string                `json:"default_value,omitempty" protobuf:"bytes,1,opt,name=default_value,json=defaultValue,proto3,oneof"`
+	Name          string                 `json:"name,omitempty"          protobuf:"bytes,2,opt,name=name,proto3"`
+	Type          string                 `json:"type,omitempty"          protobuf:"bytes,3,opt,name=type,proto3"`
+	Description   string                 `json:"description,omitempty"   protobuf:"bytes,4,opt,name=description,proto3"`
+	Enumeration   []string               `json:"enumeration,omitempty"   protobuf:"bytes,5,rep,name=enumeration,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
-	AdminsOnly    bool `protobuf:"varint,6,opt,name=admins_only,json=adminsOnly,proto3" json:"admins_only,omitempty"`
+	AdminsOnly    bool `json:"admins_only,omitempty" protobuf:"varint,6,opt,name=admins_only,json=adminsOnly,proto3"`
 }
 
 func (x *ServiceSettingCreationRequestInput) Reset() {

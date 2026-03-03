@@ -25,7 +25,7 @@ const (
 
 type ChangeActiveAccountInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	AccountId     string                 `json:"account_id,omitempty" protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -69,13 +69,13 @@ func (x *ChangeActiveAccountInput) GetAccountId() string {
 
 type PasswordResetToken struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	RedeemedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=redeemed_at,json=redeemedAt,proto3" json:"redeemed_at,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	Id            string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
-	Token         string                 `protobuf:"bytes,6,opt,name=token,proto3" json:"token,omitempty"`
-	BelongsToUser string                 `protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"      protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	ExpiresAt     *timestamppb.Timestamp `json:"expires_at,omitempty"      protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3"`
+	RedeemedAt    *timestamppb.Timestamp `json:"redeemed_at,omitempty"     protobuf:"bytes,3,opt,name=redeemed_at,json=redeemedAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"last_updated_at,omitempty" protobuf:"bytes,4,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	Id            string                 `json:"id,omitempty"              protobuf:"bytes,5,opt,name=id,proto3"`
+	Token         string                 `json:"token,omitempty"           protobuf:"bytes,6,opt,name=token,proto3"`
+	BelongsToUser string                 `json:"belongs_to_user,omitempty" protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -161,9 +161,9 @@ func (x *PasswordResetToken) GetBelongsToUser() string {
 
 type PasswordUpdateInput struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	NewPassword     string                 `protobuf:"bytes,1,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
-	CurrentPassword string                 `protobuf:"bytes,2,opt,name=current_password,json=currentPassword,proto3" json:"current_password,omitempty"`
-	TotpToken       string                 `protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
+	NewPassword     string                 `json:"new_password,omitempty"     protobuf:"bytes,1,opt,name=new_password,json=newPassword,proto3"`
+	CurrentPassword string                 `json:"current_password,omitempty" protobuf:"bytes,2,opt,name=current_password,json=currentPassword,proto3"`
+	TotpToken       string                 `json:"totp_token,omitempty"       protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -221,8 +221,8 @@ func (x *PasswordUpdateInput) GetTotpToken() string {
 
 type TOTPSecretRefreshInput struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	CurrentPassword string                 `protobuf:"bytes,1,opt,name=current_password,json=currentPassword,proto3" json:"current_password,omitempty"`
-	TotpToken       string                 `protobuf:"bytes,2,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
+	CurrentPassword string                 `json:"current_password,omitempty" protobuf:"bytes,1,opt,name=current_password,json=currentPassword,proto3"`
+	TotpToken       string                 `json:"totp_token,omitempty"       protobuf:"bytes,2,opt,name=totp_token,json=totpToken,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -273,8 +273,8 @@ func (x *TOTPSecretRefreshInput) GetTotpToken() string {
 
 type TOTPSecretVerificationInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TotpToken     string                 `protobuf:"bytes,1,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	TotpToken     string                 `json:"totp_token,omitempty" protobuf:"bytes,1,opt,name=totp_token,json=totpToken,proto3"`
+	UserId        string                 `json:"user_id,omitempty"    protobuf:"bytes,2,opt,name=user_id,json=userId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -325,10 +325,10 @@ func (x *TOTPSecretVerificationInput) GetUserId() string {
 
 type UserLoginInput struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Username         string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password         string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	TotpToken        string                 `protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
-	DesiredAccountId string                 `protobuf:"bytes,4,opt,name=desired_account_id,json=desiredAccountId,proto3" json:"desired_account_id,omitempty"`
+	Username         string                 `json:"username,omitempty"           protobuf:"bytes,1,opt,name=username,proto3"`
+	Password         string                 `json:"password,omitempty"           protobuf:"bytes,2,opt,name=password,proto3"`
+	TotpToken        string                 `json:"totp_token,omitempty"         protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3"`
+	DesiredAccountId string                 `json:"desired_account_id,omitempty" protobuf:"bytes,4,opt,name=desired_account_id,json=desiredAccountId,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }

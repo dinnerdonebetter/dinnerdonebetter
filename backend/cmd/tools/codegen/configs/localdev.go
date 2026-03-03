@@ -13,6 +13,7 @@ import (
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
+	notificationscfg "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -224,6 +225,9 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
 			TeamID:   "",
 			BundleID: "",
+		},
+		PushNotifications: notificationscfg.Config{
+			Provider: notificationscfg.ProviderNoop,
 		},
 	}
 }

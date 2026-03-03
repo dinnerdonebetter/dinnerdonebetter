@@ -28,14 +28,14 @@ const (
 
 type ProductCreationRequestInput struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	BillingIntervalMonths *int32                 `protobuf:"varint,6,opt,name=billing_interval_months,json=billingIntervalMonths,proto3,oneof" json:"billing_interval_months,omitempty"`
-	Name                  string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description           string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Kind                  string                 `protobuf:"bytes,3,opt,name=kind,proto3" json:"kind,omitempty"`
-	Currency              string                 `protobuf:"bytes,5,opt,name=currency,proto3" json:"currency,omitempty"`
-	ExternalProductId     string                 `protobuf:"bytes,7,opt,name=external_product_id,json=externalProductId,proto3" json:"external_product_id,omitempty"`
+	BillingIntervalMonths *int32                 `json:"billing_interval_months,omitempty" protobuf:"varint,6,opt,name=billing_interval_months,json=billingIntervalMonths,proto3,oneof"`
+	Name                  string                 `json:"name,omitempty"                    protobuf:"bytes,1,opt,name=name,proto3"`
+	Description           string                 `json:"description,omitempty"             protobuf:"bytes,2,opt,name=description,proto3"`
+	Kind                  string                 `json:"kind,omitempty"                    protobuf:"bytes,3,opt,name=kind,proto3"`
+	Currency              string                 `json:"currency,omitempty"                protobuf:"bytes,5,opt,name=currency,proto3"`
+	ExternalProductId     string                 `json:"external_product_id,omitempty"     protobuf:"bytes,7,opt,name=external_product_id,json=externalProductId,proto3"`
 	unknownFields         protoimpl.UnknownFields
-	AmountCents           int32 `protobuf:"varint,4,opt,name=amount_cents,json=amountCents,proto3" json:"amount_cents,omitempty"`
+	AmountCents           int32 `json:"amount_cents,omitempty" protobuf:"varint,4,opt,name=amount_cents,json=amountCents,proto3"`
 	sizeCache             protoimpl.SizeCache
 }
 
@@ -120,13 +120,13 @@ func (x *ProductCreationRequestInput) GetExternalProductId() string {
 
 type ProductUpdateRequestInput struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	Name                  *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
-	Description           *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	Kind                  *string                `protobuf:"bytes,3,opt,name=kind,proto3,oneof" json:"kind,omitempty"`
-	AmountCents           *int32                 `protobuf:"varint,4,opt,name=amount_cents,json=amountCents,proto3,oneof" json:"amount_cents,omitempty"`
-	Currency              *string                `protobuf:"bytes,5,opt,name=currency,proto3,oneof" json:"currency,omitempty"`
-	BillingIntervalMonths *int32                 `protobuf:"varint,6,opt,name=billing_interval_months,json=billingIntervalMonths,proto3,oneof" json:"billing_interval_months,omitempty"`
-	ExternalProductId     *string                `protobuf:"bytes,7,opt,name=external_product_id,json=externalProductId,proto3,oneof" json:"external_product_id,omitempty"`
+	Name                  *string                `json:"name,omitempty"                    protobuf:"bytes,1,opt,name=name,proto3,oneof"`
+	Description           *string                `json:"description,omitempty"             protobuf:"bytes,2,opt,name=description,proto3,oneof"`
+	Kind                  *string                `json:"kind,omitempty"                    protobuf:"bytes,3,opt,name=kind,proto3,oneof"`
+	AmountCents           *int32                 `json:"amount_cents,omitempty"            protobuf:"varint,4,opt,name=amount_cents,json=amountCents,proto3,oneof"`
+	Currency              *string                `json:"currency,omitempty"                protobuf:"bytes,5,opt,name=currency,proto3,oneof"`
+	BillingIntervalMonths *int32                 `json:"billing_interval_months,omitempty" protobuf:"varint,6,opt,name=billing_interval_months,json=billingIntervalMonths,proto3,oneof"`
+	ExternalProductId     *string                `json:"external_product_id,omitempty"     protobuf:"bytes,7,opt,name=external_product_id,json=externalProductId,proto3,oneof"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -212,12 +212,12 @@ func (x *ProductUpdateRequestInput) GetExternalProductId() string {
 
 type SubscriptionCreationRequestInput struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	BelongsToAccount       string                 `protobuf:"bytes,1,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
-	ProductId              string                 `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	ExternalSubscriptionId string                 `protobuf:"bytes,3,opt,name=external_subscription_id,json=externalSubscriptionId,proto3" json:"external_subscription_id,omitempty"`
-	Status                 string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
-	CurrentPeriodStart     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=current_period_start,json=currentPeriodStart,proto3" json:"current_period_start,omitempty"`
-	CurrentPeriodEnd       *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=current_period_end,json=currentPeriodEnd,proto3" json:"current_period_end,omitempty"`
+	BelongsToAccount       string                 `json:"belongs_to_account,omitempty"       protobuf:"bytes,1,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	ProductId              string                 `json:"product_id,omitempty"               protobuf:"bytes,2,opt,name=product_id,json=productId,proto3"`
+	ExternalSubscriptionId string                 `json:"external_subscription_id,omitempty" protobuf:"bytes,3,opt,name=external_subscription_id,json=externalSubscriptionId,proto3"`
+	Status                 string                 `json:"status,omitempty"                   protobuf:"bytes,4,opt,name=status,proto3"`
+	CurrentPeriodStart     *timestamppb.Timestamp `json:"current_period_start,omitempty"     protobuf:"bytes,5,opt,name=current_period_start,json=currentPeriodStart,proto3"`
+	CurrentPeriodEnd       *timestamppb.Timestamp `json:"current_period_end,omitempty"       protobuf:"bytes,6,opt,name=current_period_end,json=currentPeriodEnd,proto3"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -296,9 +296,9 @@ func (x *SubscriptionCreationRequestInput) GetCurrentPeriodEnd() *timestamppb.Ti
 
 type SubscriptionUpdateRequestInput struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Status             *string                `protobuf:"bytes,1,opt,name=status,proto3,oneof" json:"status,omitempty"`
-	CurrentPeriodStart *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=current_period_start,json=currentPeriodStart,proto3,oneof" json:"current_period_start,omitempty"`
-	CurrentPeriodEnd   *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=current_period_end,json=currentPeriodEnd,proto3,oneof" json:"current_period_end,omitempty"`
+	Status             *string                `json:"status,omitempty"               protobuf:"bytes,1,opt,name=status,proto3,oneof"`
+	CurrentPeriodStart *timestamppb.Timestamp `json:"current_period_start,omitempty" protobuf:"bytes,2,opt,name=current_period_start,json=currentPeriodStart,proto3,oneof"`
+	CurrentPeriodEnd   *timestamppb.Timestamp `json:"current_period_end,omitempty"   protobuf:"bytes,3,opt,name=current_period_end,json=currentPeriodEnd,proto3,oneof"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -356,13 +356,13 @@ func (x *SubscriptionUpdateRequestInput) GetCurrentPeriodEnd() *timestamppb.Time
 
 type CheckoutSessionRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	AccountId     string                 `protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	SuccessUrl    string                 `protobuf:"bytes,3,opt,name=success_url,json=successUrl,proto3" json:"success_url,omitempty"`
-	CancelUrl     string                 `protobuf:"bytes,4,opt,name=cancel_url,json=cancelUrl,proto3" json:"cancel_url,omitempty"`
+	ProductId     string                 `json:"product_id,omitempty"  protobuf:"bytes,1,opt,name=product_id,json=productId,proto3"`
+	AccountId     string                 `json:"account_id,omitempty"  protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3"`
+	SuccessUrl    string                 `json:"success_url,omitempty" protobuf:"bytes,3,opt,name=success_url,json=successUrl,proto3"`
+	CancelUrl     string                 `json:"cancel_url,omitempty"  protobuf:"bytes,4,opt,name=cancel_url,json=cancelUrl,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
-	IsRecurring   bool `protobuf:"varint,5,opt,name=is_recurring,json=isRecurring,proto3" json:"is_recurring,omitempty"`
+	IsRecurring   bool `json:"is_recurring,omitempty" protobuf:"varint,5,opt,name=is_recurring,json=isRecurring,proto3"`
 }
 
 func (x *CheckoutSessionRequestInput) Reset() {
@@ -432,7 +432,7 @@ func (x *CheckoutSessionRequestInput) GetIsRecurring() bool {
 
 type CreateProductRequest struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
-	Input         *ProductCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	Input         *ProductCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -476,8 +476,8 @@ func (x *CreateProductRequest) GetInput() *ProductCreationRequestInput {
 
 type CreateProductResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Created         *Product               `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Created         *Product               `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -528,7 +528,7 @@ func (x *CreateProductResponse) GetCreated() *Product {
 
 type GetProductRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	ProductId     string                 `json:"product_id,omitempty" protobuf:"bytes,1,opt,name=product_id,json=productId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -572,8 +572,8 @@ func (x *GetProductRequest) GetProductId() string {
 
 type GetProductResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Result          *Product               `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Result          *Product               `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -624,7 +624,7 @@ func (x *GetProductResponse) GetResult() *Product {
 
 type GetProductsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -668,9 +668,9 @@ func (x *GetProductsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetProductsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*Product             `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*Product             `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -728,8 +728,8 @@ func (x *GetProductsResponse) GetResults() []*Product {
 
 type UpdateProductRequest struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
-	ProductId     string                     `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	Input         *ProductUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
+	ProductId     string                     `json:"product_id,omitempty" protobuf:"bytes,1,opt,name=product_id,json=productId,proto3"`
+	Input         *ProductUpdateRequestInput `json:"input,omitempty"      protobuf:"bytes,2,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -780,7 +780,7 @@ func (x *UpdateProductRequest) GetInput() *ProductUpdateRequestInput {
 
 type UpdateProductResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -824,7 +824,7 @@ func (x *UpdateProductResponse) GetResponseDetails() *types.ResponseDetails {
 
 type ArchiveProductRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	ProductId     string                 `json:"product_id,omitempty" protobuf:"bytes,1,opt,name=product_id,json=productId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -868,7 +868,7 @@ func (x *ArchiveProductRequest) GetProductId() string {
 
 type ArchiveProductResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -912,7 +912,7 @@ func (x *ArchiveProductResponse) GetResponseDetails() *types.ResponseDetails {
 
 type CreateSubscriptionRequest struct {
 	state         protoimpl.MessageState            `protogen:"open.v1"`
-	Input         *SubscriptionCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	Input         *SubscriptionCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -956,8 +956,8 @@ func (x *CreateSubscriptionRequest) GetInput() *SubscriptionCreationRequestInput
 
 type CreateSubscriptionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Created         *Subscription          `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Created         *Subscription          `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1008,7 +1008,7 @@ func (x *CreateSubscriptionResponse) GetCreated() *Subscription {
 
 type GetSubscriptionRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	SubscriptionId string                 `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	SubscriptionId string                 `json:"subscription_id,omitempty" protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1052,8 +1052,8 @@ func (x *GetSubscriptionRequest) GetSubscriptionId() string {
 
 type GetSubscriptionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Result          *Subscription          `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Result          *Subscription          `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1104,8 +1104,8 @@ func (x *GetSubscriptionResponse) GetResult() *Subscription {
 
 type GetSubscriptionsForAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
+	AccountId     string                 `json:"account_id,omitempty" protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty"     protobuf:"bytes,2,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1156,9 +1156,9 @@ func (x *GetSubscriptionsForAccountRequest) GetFilter() *filtering.QueryFilter {
 
 type GetSubscriptionsForAccountResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*Subscription        `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*Subscription        `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1216,8 +1216,8 @@ func (x *GetSubscriptionsForAccountResponse) GetResults() []*Subscription {
 
 type UpdateSubscriptionRequest struct {
 	state          protoimpl.MessageState          `protogen:"open.v1"`
-	SubscriptionId string                          `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
-	Input          *SubscriptionUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
+	SubscriptionId string                          `json:"subscription_id,omitempty" protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3"`
+	Input          *SubscriptionUpdateRequestInput `json:"input,omitempty"           protobuf:"bytes,2,opt,name=input,proto3"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1268,7 +1268,7 @@ func (x *UpdateSubscriptionRequest) GetInput() *SubscriptionUpdateRequestInput {
 
 type UpdateSubscriptionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1312,7 +1312,7 @@ func (x *UpdateSubscriptionResponse) GetResponseDetails() *types.ResponseDetails
 
 type ArchiveSubscriptionRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	SubscriptionId string                 `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	SubscriptionId string                 `json:"subscription_id,omitempty" protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1356,7 +1356,7 @@ func (x *ArchiveSubscriptionRequest) GetSubscriptionId() string {
 
 type ArchiveSubscriptionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1400,7 +1400,7 @@ func (x *ArchiveSubscriptionResponse) GetResponseDetails() *types.ResponseDetail
 
 type CancelSubscriptionRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	SubscriptionId string                 `protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	SubscriptionId string                 `json:"subscription_id,omitempty" protobuf:"bytes,1,opt,name=subscription_id,json=subscriptionId,proto3"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1444,7 +1444,7 @@ func (x *CancelSubscriptionRequest) GetSubscriptionId() string {
 
 type CancelSubscriptionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1488,7 +1488,7 @@ func (x *CancelSubscriptionResponse) GetResponseDetails() *types.ResponseDetails
 
 type CreateCheckoutSessionRequest struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
-	Input         *CheckoutSessionRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	Input         *CheckoutSessionRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1532,9 +1532,9 @@ func (x *CreateCheckoutSessionRequest) GetInput() *CheckoutSessionRequestInput {
 
 type CreateCheckoutSessionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	SessionUrl      string                 `protobuf:"bytes,2,opt,name=session_url,json=sessionUrl,proto3" json:"session_url,omitempty"`
-	SessionId       string                 `protobuf:"bytes,3,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	SessionUrl      string                 `json:"session_url,omitempty"      protobuf:"bytes,2,opt,name=session_url,json=sessionUrl,proto3"`
+	SessionId       string                 `json:"session_id,omitempty"       protobuf:"bytes,3,opt,name=session_id,json=sessionId,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1592,8 +1592,8 @@ func (x *CreateCheckoutSessionResponse) GetSessionId() string {
 
 type GetPurchasesForAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
+	AccountId     string                 `json:"account_id,omitempty" protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty"     protobuf:"bytes,2,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1644,9 +1644,9 @@ func (x *GetPurchasesForAccountRequest) GetFilter() *filtering.QueryFilter {
 
 type GetPurchasesForAccountResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*Purchase            `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*Purchase            `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1704,8 +1704,8 @@ func (x *GetPurchasesForAccountResponse) GetResults() []*Purchase {
 
 type GetPaymentHistoryForAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
+	AccountId     string                 `json:"account_id,omitempty" protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty"     protobuf:"bytes,2,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1756,9 +1756,9 @@ func (x *GetPaymentHistoryForAccountRequest) GetFilter() *filtering.QueryFilter 
 
 type GetPaymentHistoryForAccountResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*PaymentTransaction  `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*PaymentTransaction  `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

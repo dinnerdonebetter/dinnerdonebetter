@@ -152,14 +152,15 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mnsConfig.Observability.Logging.ServiceName = mnsConfigObservabilityServiceName
 
 	amhConfig := &AsyncMessageHandlerConfig{
-		Storage:       s.RootConfig.Services.DataPrivacy.Uploads.Storage,
-		Queues:        s.RootConfig.Queues,
-		Email:         s.RootConfig.Email,
-		Analytics:     s.RootConfig.Analytics,
-		Search:        s.RootConfig.TextSearch,
-		Events:        s.RootConfig.Events,
-		Observability: s.RootConfig.Observability,
-		Database:      s.RootConfig.Database,
+		Storage:           s.RootConfig.Services.DataPrivacy.Uploads.Storage,
+		Queues:            s.RootConfig.Queues,
+		Email:             s.RootConfig.Email,
+		Analytics:         s.RootConfig.Analytics,
+		Search:            s.RootConfig.TextSearch,
+		Events:            s.RootConfig.Events,
+		Observability:     s.RootConfig.Observability,
+		Database:          s.RootConfig.Database,
+		PushNotifications: s.RootConfig.PushNotifications,
 	}
 	amhConfig.Observability.Tracing.ServiceName = amhConfigObservabilityServiceName
 	amhConfig.Observability.Metrics.ServiceName = amhConfigObservabilityServiceName

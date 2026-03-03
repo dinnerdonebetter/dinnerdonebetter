@@ -26,7 +26,7 @@ const (
 
 type TestQueueMessageRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	QueueName     string                 `protobuf:"bytes,1,opt,name=queue_name,json=queueName,proto3" json:"queue_name,omitempty"`
+	QueueName     string                 `json:"queue_name,omitempty" protobuf:"bytes,1,opt,name=queue_name,json=queueName,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -70,12 +70,12 @@ func (x *TestQueueMessageRequest) GetQueueName() string {
 
 type TestQueueMessageResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	TestId          string                 `protobuf:"bytes,3,opt,name=test_id,json=testId,proto3" json:"test_id,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	TestId          string                 `json:"test_id,omitempty"          protobuf:"bytes,3,opt,name=test_id,json=testId,proto3"`
 	unknownFields   protoimpl.UnknownFields
-	RoundTripMs     int64 `protobuf:"varint,4,opt,name=round_trip_ms,json=roundTripMs,proto3" json:"round_trip_ms,omitempty"`
+	RoundTripMs     int64 `json:"round_trip_ms,omitempty" protobuf:"varint,4,opt,name=round_trip_ms,json=roundTripMs,proto3"`
 	sizeCache       protoimpl.SizeCache
-	Success         bool `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Success         bool `json:"success,omitempty" protobuf:"varint,2,opt,name=success,proto3"`
 }
 
 func (x *TestQueueMessageResponse) Reset() {

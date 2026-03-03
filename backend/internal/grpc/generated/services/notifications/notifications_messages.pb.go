@@ -74,7 +74,7 @@ func (UserNotificationStatus) EnumDescriptor() ([]byte, []int) {
 
 type DataCollection struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Notifications []*UserNotification    `protobuf:"bytes,1,rep,name=notifications,proto3" json:"notifications,omitempty"`
+	Notifications []*UserNotification    `json:"notifications,omitempty" protobuf:"bytes,1,rep,name=notifications,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -118,13 +118,13 @@ func (x *DataCollection) GetNotifications() []*UserNotification {
 
 type UserNotification struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	Id            string                 `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
-	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
-	BelongsToUser string                 `protobuf:"bytes,6,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"      protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"last_updated_at,omitempty" protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	Id            string                 `json:"id,omitempty"              protobuf:"bytes,3,opt,name=id,proto3"`
+	Content       string                 `json:"content,omitempty"         protobuf:"bytes,4,opt,name=content,proto3"`
+	BelongsToUser string                 `json:"belongs_to_user,omitempty" protobuf:"bytes,6,opt,name=belongs_to_user,json=belongsToUser,proto3"`
 	unknownFields protoimpl.UnknownFields
-	Status        UserNotificationStatus `protobuf:"varint,5,opt,name=status,proto3,enum=notifications.UserNotificationStatus" json:"status,omitempty"`
+	Status        UserNotificationStatus `json:"status,omitempty" protobuf:"varint,5,opt,name=status,proto3,enum=notifications.UserNotificationStatus"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -202,12 +202,12 @@ func (x *UserNotification) GetBelongsToUser() string {
 
 type UserDeviceToken struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	Id            string                 `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
-	DeviceToken   string                 `protobuf:"bytes,4,opt,name=device_token,json=deviceToken,proto3" json:"device_token,omitempty"`
-	Platform      string                 `protobuf:"bytes,5,opt,name=platform,proto3" json:"platform,omitempty"`
-	BelongsToUser string                 `protobuf:"bytes,6,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"      protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"last_updated_at,omitempty" protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	Id            string                 `json:"id,omitempty"              protobuf:"bytes,3,opt,name=id,proto3"`
+	DeviceToken   string                 `json:"device_token,omitempty"    protobuf:"bytes,4,opt,name=device_token,json=deviceToken,proto3"`
+	Platform      string                 `json:"platform,omitempty"        protobuf:"bytes,5,opt,name=platform,proto3"`
+	BelongsToUser string                 `json:"belongs_to_user,omitempty" protobuf:"bytes,6,opt,name=belongs_to_user,json=belongsToUser,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

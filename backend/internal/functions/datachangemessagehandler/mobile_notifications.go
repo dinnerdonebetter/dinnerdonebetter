@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	domainnotifications "github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -60,8 +61,11 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 	}
 
 	title, body := buildNotificationContent(task)
-	if err = a.pushNotificationSender.SendPush(ctx, deviceTokens, title, body); err != nil {
-		return observability.PrepareAndLogError(err, a.logger, span, "sending push notification")
+	for _, t := range deviceTokens {
+		if err = a.pushNotificationSender.SendPush(ctx, t.Platform, t.DeviceToken, title, body); err != nil {
+			a.logger.WithValue("platform", t.Platform).WithValue("error", err).Error("sending push notification to device", err)
+			// Continue to other tokens; don't fail entire batch
+		}
 	}
 
 	return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, req.MealPlanTaskID)
@@ -93,8 +97,8 @@ func (a *AsyncDataChangeMessageHandler) resolveNotificationRecipients(ctx contex
 	return userIDs, nil
 }
 
-func (a *AsyncDataChangeMessageHandler) collectDeviceTokensForUsers(ctx context.Context, userIDs []string) ([]string, error) {
-	var tokens []string
+func (a *AsyncDataChangeMessageHandler) collectDeviceTokensForUsers(ctx context.Context, userIDs []string) ([]*domainnotifications.UserDeviceToken, error) {
+	var tokens []*domainnotifications.UserDeviceToken
 	filter := filtering.DefaultQueryFilter()
 	for _, userID := range userIDs {
 		result, err := a.notificationsRepo.GetUserDeviceTokens(ctx, userID, filter, nil)
@@ -103,7 +107,7 @@ func (a *AsyncDataChangeMessageHandler) collectDeviceTokensForUsers(ctx context.
 		}
 		for _, t := range result.Data {
 			if t != nil && t.DeviceToken != "" {
-				tokens = append(tokens, t.DeviceToken)
+				tokens = append(tokens, t)
 			}
 		}
 	}

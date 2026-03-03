@@ -141,5 +141,10 @@
 		"debug": true,
 		"logQueries": true,
 		"runMigrations": true
+	},
+	"pushNotifications": {
+		"provider": "noop",
+		"apns": null,
+		"fcm": null
 	}
 }

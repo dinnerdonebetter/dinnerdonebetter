@@ -39,8 +39,25 @@ func NewScheduler(
 	}
 }
 
-// ScheduleNotifications queries for meal plan tasks that need notifications and publishes them to the queue.
+// ScheduleNotifications runs all notification schedulers. Each scheduler queries for items
+// that need notifications and publishes them to the queue. Meal plan tasks are the first
+// use case; additional notification types can be added by registering more handlers.
 func (s *Scheduler) ScheduleNotifications(ctx context.Context) error {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	errs := &multierror.Error{}
+	if err := s.scheduleMealPlanTaskNotifications(ctx); err != nil {
+		errs = multierror.Append(errs, err)
+	}
+	// Future notification types: add more handler calls here.
+
+	return errs.ErrorOrNil()
+}
+
+// scheduleMealPlanTaskNotifications queries for meal plan tasks that need notifications
+// and publishes them to the mobile_notifications queue.
+func (s *Scheduler) scheduleMealPlanTaskNotifications(ctx context.Context) error {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -49,7 +66,11 @@ func (s *Scheduler) ScheduleNotifications(ctx context.Context) error {
 		return observability.PrepareAndLogError(err, s.logger, span, "getting meal plan task IDs that need notification")
 	}
 
-	s.logger.WithValue("count", len(taskIDs)).Info("publishing mobile notification requests")
+	if len(taskIDs) == 0 {
+		return nil
+	}
+
+	s.logger.WithValue("count", len(taskIDs)).WithValue("type", "meal_plan_task").Info("publishing mobile notification requests")
 
 	errs := &multierror.Error{}
 	for _, taskID := range taskIDs {
@@ -57,7 +78,7 @@ func (s *Scheduler) ScheduleNotifications(ctx context.Context) error {
 			MealPlanTaskID: taskID,
 		}
 		if err = s.mobileNotificationsPublisher.Publish(ctx, req); err != nil {
-			errs = multierror.Append(errs, fmt.Errorf("publishing notification for task %s: %w", taskID, err))
+			errs = multierror.Append(errs, fmt.Errorf("publishing meal plan task notification for %s: %w", taskID, err))
 		}
 	}
 

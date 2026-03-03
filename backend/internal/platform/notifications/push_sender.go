@@ -3,10 +3,9 @@ package notifications
 import "context"
 
 // PushNotificationSender sends push notifications to device tokens.
-// APNs/FCM integration is out of scope for the initial implementation;
-// callers may use a noop implementation until a real provider is wired.
+// Implementations route by platform: APNs for ios, FCM for android.
 type PushNotificationSender interface {
-	// SendPush sends a push notification to the given device tokens.
-	// The title and body are the notification content.
-	SendPush(ctx context.Context, deviceTokens []string, title, body string) error
+	// SendPush sends a push notification to a single device token.
+	// platform is "ios" or "android"; implementations filter by platform.
+	SendPush(ctx context.Context, platform, token, title, body string) error
 }

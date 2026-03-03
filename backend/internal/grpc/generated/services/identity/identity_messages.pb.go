@@ -25,10 +25,10 @@ const (
 
 type DataCollection struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	User            *User                  `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
-	ReceivedInvites []*AccountInvitation   `protobuf:"bytes,6,rep,name=received_invites,json=receivedInvites,proto3" json:"received_invites,omitempty"`
-	SentInvites     []*AccountInvitation   `protobuf:"bytes,7,rep,name=sent_invites,json=sentInvites,proto3" json:"sent_invites,omitempty"`
-	Accounts        []*Account             `protobuf:"bytes,10,rep,name=accounts,proto3" json:"accounts,omitempty"`
+	User            *User                  `json:"user,omitempty"             protobuf:"bytes,2,opt,name=user,proto3"`
+	ReceivedInvites []*AccountInvitation   `json:"received_invites,omitempty" protobuf:"bytes,6,rep,name=received_invites,json=receivedInvites,proto3"`
+	SentInvites     []*AccountInvitation   `json:"sent_invites,omitempty"     protobuf:"bytes,7,rep,name=sent_invites,json=sentInvites,proto3"`
+	Accounts        []*Account             `json:"accounts,omitempty"         protobuf:"bytes,10,rep,name=accounts,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -93,8 +93,8 @@ func (x *DataCollection) GetAccounts() []*Account {
 
 type ModifyUserPermissionsInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Reason        string                 `protobuf:"bytes,1,opt,name=reason,proto3" json:"reason,omitempty"`
-	NewRole       string                 `protobuf:"bytes,2,opt,name=new_role,json=newRole,proto3" json:"new_role,omitempty"`
+	Reason        string                 `json:"reason,omitempty"   protobuf:"bytes,1,opt,name=reason,proto3"`
+	NewRole       string                 `json:"new_role,omitempty" protobuf:"bytes,2,opt,name=new_role,json=newRole,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -145,26 +145,26 @@ func (x *ModifyUserPermissionsInput) GetNewRole() string {
 
 type Account struct {
 	state                      protoimpl.MessageState           `protogen:"open.v1"`
-	CreatedAt                  *timestamppb.Timestamp           `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	SubscriptionPlanId         *string                          `protobuf:"bytes,2,opt,name=subscription_plan_id,json=subscriptionPlanId,proto3,oneof" json:"subscription_plan_id,omitempty"`
-	LastUpdatedAt              *timestamppb.Timestamp           `protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	ArchivedAt                 *timestamppb.Timestamp           `protobuf:"bytes,4,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	Longitude                  *float32                         `protobuf:"fixed32,5,opt,name=longitude,proto3,oneof" json:"longitude,omitempty"`
-	Latitude                   *float32                         `protobuf:"fixed32,6,opt,name=latitude,proto3,oneof" json:"latitude,omitempty"`
-	State                      string                           `protobuf:"bytes,7,opt,name=state,proto3" json:"state,omitempty"`
-	ContactPhone               string                           `protobuf:"bytes,8,opt,name=contact_phone,json=contactPhone,proto3" json:"contact_phone,omitempty"`
-	City                       string                           `protobuf:"bytes,9,opt,name=city,proto3" json:"city,omitempty"`
-	AddressLine1               string                           `protobuf:"bytes,10,opt,name=address_line1,json=addressLine1,proto3" json:"address_line1,omitempty"`
-	ZipCode                    string                           `protobuf:"bytes,11,opt,name=zip_code,json=zipCode,proto3" json:"zip_code,omitempty"`
-	Country                    string                           `protobuf:"bytes,12,opt,name=country,proto3" json:"country,omitempty"`
-	BillingStatus              string                           `protobuf:"bytes,13,opt,name=billing_status,json=billingStatus,proto3" json:"billing_status,omitempty"`
-	AddressLine2               string                           `protobuf:"bytes,14,opt,name=address_line2,json=addressLine2,proto3" json:"address_line2,omitempty"`
-	PaymentProcessorCustomerId string                           `protobuf:"bytes,15,opt,name=payment_processor_customer_id,json=paymentProcessorCustomerId,proto3" json:"payment_processor_customer_id,omitempty"`
-	BelongsToUser              string                           `protobuf:"bytes,16,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
-	Id                         string                           `protobuf:"bytes,17,opt,name=id,proto3" json:"id,omitempty"`
-	Name                       string                           `protobuf:"bytes,18,opt,name=name,proto3" json:"name,omitempty"`
-	WebhookEncryptionKey       string                           `protobuf:"bytes,19,opt,name=webhook_encryption_key,json=webhookEncryptionKey,proto3" json:"webhook_encryption_key,omitempty"`
-	Members                    []*AccountUserMembershipWithUser `protobuf:"bytes,20,rep,name=members,proto3" json:"members,omitempty"`
+	CreatedAt                  *timestamppb.Timestamp           `json:"created_at,omitempty"                    protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	SubscriptionPlanId         *string                          `json:"subscription_plan_id,omitempty"          protobuf:"bytes,2,opt,name=subscription_plan_id,json=subscriptionPlanId,proto3,oneof"`
+	LastUpdatedAt              *timestamppb.Timestamp           `json:"last_updated_at,omitempty"               protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	ArchivedAt                 *timestamppb.Timestamp           `json:"archived_at,omitempty"                   protobuf:"bytes,4,opt,name=archived_at,json=archivedAt,proto3"`
+	Longitude                  *float32                         `json:"longitude,omitempty"                     protobuf:"fixed32,5,opt,name=longitude,proto3,oneof"`
+	Latitude                   *float32                         `json:"latitude,omitempty"                      protobuf:"fixed32,6,opt,name=latitude,proto3,oneof"`
+	State                      string                           `json:"state,omitempty"                         protobuf:"bytes,7,opt,name=state,proto3"`
+	ContactPhone               string                           `json:"contact_phone,omitempty"                 protobuf:"bytes,8,opt,name=contact_phone,json=contactPhone,proto3"`
+	City                       string                           `json:"city,omitempty"                          protobuf:"bytes,9,opt,name=city,proto3"`
+	AddressLine1               string                           `json:"address_line1,omitempty"                 protobuf:"bytes,10,opt,name=address_line1,json=addressLine1,proto3"`
+	ZipCode                    string                           `json:"zip_code,omitempty"                      protobuf:"bytes,11,opt,name=zip_code,json=zipCode,proto3"`
+	Country                    string                           `json:"country,omitempty"                       protobuf:"bytes,12,opt,name=country,proto3"`
+	BillingStatus              string                           `json:"billing_status,omitempty"                protobuf:"bytes,13,opt,name=billing_status,json=billingStatus,proto3"`
+	AddressLine2               string                           `json:"address_line2,omitempty"                 protobuf:"bytes,14,opt,name=address_line2,json=addressLine2,proto3"`
+	PaymentProcessorCustomerId string                           `json:"payment_processor_customer_id,omitempty" protobuf:"bytes,15,opt,name=payment_processor_customer_id,json=paymentProcessorCustomerId,proto3"`
+	BelongsToUser              string                           `json:"belongs_to_user,omitempty"               protobuf:"bytes,16,opt,name=belongs_to_user,json=belongsToUser,proto3"`
+	Id                         string                           `json:"id,omitempty"                            protobuf:"bytes,17,opt,name=id,proto3"`
+	Name                       string                           `json:"name,omitempty"                          protobuf:"bytes,18,opt,name=name,proto3"`
+	WebhookEncryptionKey       string                           `json:"webhook_encryption_key,omitempty"        protobuf:"bytes,19,opt,name=webhook_encryption_key,json=webhookEncryptionKey,proto3"`
+	Members                    []*AccountUserMembershipWithUser `json:"members,omitempty"                       protobuf:"bytes,20,rep,name=members,proto3"`
 	unknownFields              protoimpl.UnknownFields
 	sizeCache                  protoimpl.SizeCache
 }
@@ -341,20 +341,20 @@ func (x *Account) GetMembers() []*AccountUserMembershipWithUser {
 
 type AccountInvitation struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	ArchivedAt         *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	ToUser             *string                `protobuf:"bytes,4,opt,name=to_user,json=toUser,proto3,oneof" json:"to_user,omitempty"`
-	Status             string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
-	ToEmail            string                 `protobuf:"bytes,6,opt,name=to_email,json=toEmail,proto3" json:"to_email,omitempty"`
-	StatusNote         string                 `protobuf:"bytes,7,opt,name=status_note,json=statusNote,proto3" json:"status_note,omitempty"`
-	Token              string                 `protobuf:"bytes,8,opt,name=token,proto3" json:"token,omitempty"`
-	Id                 string                 `protobuf:"bytes,9,opt,name=id,proto3" json:"id,omitempty"`
-	Note               string                 `protobuf:"bytes,10,opt,name=note,proto3" json:"note,omitempty"`
-	ToName             string                 `protobuf:"bytes,11,opt,name=to_name,json=toName,proto3" json:"to_name,omitempty"`
-	ExpiresAt          *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	DestinationAccount *Account               `protobuf:"bytes,13,opt,name=destination_account,json=destinationAccount,proto3" json:"destination_account,omitempty"`
-	FromUser           *User                  `protobuf:"bytes,14,opt,name=from_user,json=fromUser,proto3" json:"from_user,omitempty"`
+	CreatedAt          *timestamppb.Timestamp `json:"created_at,omitempty"          protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt      *timestamppb.Timestamp `json:"last_updated_at,omitempty"     protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	ArchivedAt         *timestamppb.Timestamp `json:"archived_at,omitempty"         protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
+	ToUser             *string                `json:"to_user,omitempty"             protobuf:"bytes,4,opt,name=to_user,json=toUser,proto3,oneof"`
+	Status             string                 `json:"status,omitempty"              protobuf:"bytes,5,opt,name=status,proto3"`
+	ToEmail            string                 `json:"to_email,omitempty"            protobuf:"bytes,6,opt,name=to_email,json=toEmail,proto3"`
+	StatusNote         string                 `json:"status_note,omitempty"         protobuf:"bytes,7,opt,name=status_note,json=statusNote,proto3"`
+	Token              string                 `json:"token,omitempty"               protobuf:"bytes,8,opt,name=token,proto3"`
+	Id                 string                 `json:"id,omitempty"                  protobuf:"bytes,9,opt,name=id,proto3"`
+	Note               string                 `json:"note,omitempty"                protobuf:"bytes,10,opt,name=note,proto3"`
+	ToName             string                 `json:"to_name,omitempty"             protobuf:"bytes,11,opt,name=to_name,json=toName,proto3"`
+	ExpiresAt          *timestamppb.Timestamp `json:"expires_at,omitempty"          protobuf:"bytes,12,opt,name=expires_at,json=expiresAt,proto3"`
+	DestinationAccount *Account               `json:"destination_account,omitempty" protobuf:"bytes,13,opt,name=destination_account,json=destinationAccount,proto3"`
+	FromUser           *User                  `json:"from_user,omitempty"           protobuf:"bytes,14,opt,name=from_user,json=fromUser,proto3"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -489,9 +489,9 @@ func (x *AccountInvitation) GetFromUser() *User {
 
 type AccountOwnershipTransferInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Reason        string                 `protobuf:"bytes,1,opt,name=reason,proto3" json:"reason,omitempty"`
-	CurrentOwner  string                 `protobuf:"bytes,2,opt,name=current_owner,json=currentOwner,proto3" json:"current_owner,omitempty"`
-	NewOwner      string                 `protobuf:"bytes,3,opt,name=new_owner,json=newOwner,proto3" json:"new_owner,omitempty"`
+	Reason        string                 `json:"reason,omitempty"        protobuf:"bytes,1,opt,name=reason,proto3"`
+	CurrentOwner  string                 `json:"current_owner,omitempty" protobuf:"bytes,2,opt,name=current_owner,json=currentOwner,proto3"`
+	NewOwner      string                 `json:"new_owner,omitempty"     protobuf:"bytes,3,opt,name=new_owner,json=newOwner,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -549,16 +549,16 @@ func (x *AccountOwnershipTransferInput) GetNewOwner() string {
 
 type AccountUserMembership struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	Id               string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
-	BelongsToUser    string                 `protobuf:"bytes,5,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
-	BelongsToAccount string                 `protobuf:"bytes,6,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
-	AccountRole      string                 `protobuf:"bytes,7,opt,name=account_role,json=accountRole,proto3" json:"account_role,omitempty"`
+	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt    *timestamppb.Timestamp `json:"last_updated_at,omitempty"    protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	ArchivedAt       *timestamppb.Timestamp `json:"archived_at,omitempty"        protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
+	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,4,opt,name=id,proto3"`
+	BelongsToUser    string                 `json:"belongs_to_user,omitempty"    protobuf:"bytes,5,opt,name=belongs_to_user,json=belongsToUser,proto3"`
+	BelongsToAccount string                 `json:"belongs_to_account,omitempty" protobuf:"bytes,6,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	AccountRole      string                 `json:"account_role,omitempty"       protobuf:"bytes,7,opt,name=account_role,json=accountRole,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	DefaultAccount   bool `protobuf:"varint,8,opt,name=default_account,json=defaultAccount,proto3" json:"default_account,omitempty"`
+	DefaultAccount   bool `json:"default_account,omitempty" protobuf:"varint,8,opt,name=default_account,json=defaultAccount,proto3"`
 }
 
 func (x *AccountUserMembership) Reset() {
@@ -649,16 +649,16 @@ func (x *AccountUserMembership) GetDefaultAccount() bool {
 
 type AccountUserMembershipWithUser struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	BelongsToUser    *User                  `protobuf:"bytes,3,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
-	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	Id               string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
-	BelongsToAccount string                 `protobuf:"bytes,6,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
-	AccountRole      string                 `protobuf:"bytes,7,opt,name=account_role,json=accountRole,proto3" json:"account_role,omitempty"`
+	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt    *timestamppb.Timestamp `json:"last_updated_at,omitempty"    protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	BelongsToUser    *User                  `json:"belongs_to_user,omitempty"    protobuf:"bytes,3,opt,name=belongs_to_user,json=belongsToUser,proto3"`
+	ArchivedAt       *timestamppb.Timestamp `json:"archived_at,omitempty"        protobuf:"bytes,4,opt,name=archived_at,json=archivedAt,proto3"`
+	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,5,opt,name=id,proto3"`
+	BelongsToAccount string                 `json:"belongs_to_account,omitempty" protobuf:"bytes,6,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	AccountRole      string                 `json:"account_role,omitempty"       protobuf:"bytes,7,opt,name=account_role,json=accountRole,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	DefaultAccount   bool `protobuf:"varint,8,opt,name=default_account,json=defaultAccount,proto3" json:"default_account,omitempty"`
+	DefaultAccount   bool `json:"default_account,omitempty" protobuf:"varint,8,opt,name=default_account,json=defaultAccount,proto3"`
 }
 
 func (x *AccountUserMembershipWithUser) Reset() {
@@ -749,29 +749,29 @@ func (x *AccountUserMembershipWithUser) GetDefaultAccount() bool {
 
 type User struct {
 	state                      protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt                  *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	PasswordLastChangedAt      *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=password_last_changed_at,json=passwordLastChangedAt,proto3" json:"password_last_changed_at,omitempty"`
-	LastUpdatedAt              *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	LastAcceptedTermsOfService *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=last_accepted_terms_of_service,json=lastAcceptedTermsOfService,proto3" json:"last_accepted_terms_of_service,omitempty"`
-	LastAcceptedPrivacyPolicy  *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=last_accepted_privacy_policy,json=lastAcceptedPrivacyPolicy,proto3" json:"last_accepted_privacy_policy,omitempty"`
-	TwoFactorSecretVerifiedAt  *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=two_factor_secret_verified_at,json=twoFactorSecretVerifiedAt,proto3" json:"two_factor_secret_verified_at,omitempty"`
-	AvatarSrc                  *string                `protobuf:"bytes,7,opt,name=avatar_src,json=avatarSrc,proto3,oneof" json:"avatar_src,omitempty"`
-	Birthday                   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=birthday,proto3" json:"birthday,omitempty"`
-	ArchivedAt                 *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	EmailAddressVerifiedAt     *timestamppb.Timestamp `protobuf:"bytes,19,opt,name=email_address_verified_at,json=emailAddressVerifiedAt,proto3" json:"email_address_verified_at,omitempty"`
-	HashedPassword             string                 `protobuf:"bytes,12,opt,name=hashed_password,json=hashedPassword,proto3" json:"hashed_password,omitempty"`
-	TwoFactorSecret            string                 `protobuf:"bytes,11,opt,name=two_factor_secret,json=twoFactorSecret,proto3" json:"two_factor_secret,omitempty"`
-	Id                         string                 `protobuf:"bytes,13,opt,name=id,proto3" json:"id,omitempty"`
-	AccountStatus              string                 `protobuf:"bytes,14,opt,name=account_status,json=accountStatus,proto3" json:"account_status,omitempty"`
-	Username                   string                 `protobuf:"bytes,15,opt,name=username,proto3" json:"username,omitempty"`
-	FirstName                  string                 `protobuf:"bytes,16,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName                   string                 `protobuf:"bytes,17,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	EmailAddress               string                 `protobuf:"bytes,18,opt,name=email_address,json=emailAddress,proto3" json:"email_address,omitempty"`
-	AccountStatusExplanation   string                 `protobuf:"bytes,10,opt,name=account_status_explanation,json=accountStatusExplanation,proto3" json:"account_status_explanation,omitempty"`
-	ServiceRole                string                 `protobuf:"bytes,20,opt,name=service_role,json=serviceRole,proto3" json:"service_role,omitempty"`
+	CreatedAt                  *timestamppb.Timestamp `json:"created_at,omitempty"                     protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	PasswordLastChangedAt      *timestamppb.Timestamp `json:"password_last_changed_at,omitempty"       protobuf:"bytes,2,opt,name=password_last_changed_at,json=passwordLastChangedAt,proto3"`
+	LastUpdatedAt              *timestamppb.Timestamp `json:"last_updated_at,omitempty"                protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	LastAcceptedTermsOfService *timestamppb.Timestamp `json:"last_accepted_terms_of_service,omitempty" protobuf:"bytes,4,opt,name=last_accepted_terms_of_service,json=lastAcceptedTermsOfService,proto3"`
+	LastAcceptedPrivacyPolicy  *timestamppb.Timestamp `json:"last_accepted_privacy_policy,omitempty"   protobuf:"bytes,5,opt,name=last_accepted_privacy_policy,json=lastAcceptedPrivacyPolicy,proto3"`
+	TwoFactorSecretVerifiedAt  *timestamppb.Timestamp `json:"two_factor_secret_verified_at,omitempty"  protobuf:"bytes,6,opt,name=two_factor_secret_verified_at,json=twoFactorSecretVerifiedAt,proto3"`
+	AvatarSrc                  *string                `json:"avatar_src,omitempty"                     protobuf:"bytes,7,opt,name=avatar_src,json=avatarSrc,proto3,oneof"`
+	Birthday                   *timestamppb.Timestamp `json:"birthday,omitempty"                       protobuf:"bytes,8,opt,name=birthday,proto3"`
+	ArchivedAt                 *timestamppb.Timestamp `json:"archived_at,omitempty"                    protobuf:"bytes,9,opt,name=archived_at,json=archivedAt,proto3"`
+	EmailAddressVerifiedAt     *timestamppb.Timestamp `json:"email_address_verified_at,omitempty"      protobuf:"bytes,19,opt,name=email_address_verified_at,json=emailAddressVerifiedAt,proto3"`
+	HashedPassword             string                 `json:"hashed_password,omitempty"                protobuf:"bytes,12,opt,name=hashed_password,json=hashedPassword,proto3"`
+	TwoFactorSecret            string                 `json:"two_factor_secret,omitempty"              protobuf:"bytes,11,opt,name=two_factor_secret,json=twoFactorSecret,proto3"`
+	Id                         string                 `json:"id,omitempty"                             protobuf:"bytes,13,opt,name=id,proto3"`
+	AccountStatus              string                 `json:"account_status,omitempty"                 protobuf:"bytes,14,opt,name=account_status,json=accountStatus,proto3"`
+	Username                   string                 `json:"username,omitempty"                       protobuf:"bytes,15,opt,name=username,proto3"`
+	FirstName                  string                 `json:"first_name,omitempty"                     protobuf:"bytes,16,opt,name=first_name,json=firstName,proto3"`
+	LastName                   string                 `json:"last_name,omitempty"                      protobuf:"bytes,17,opt,name=last_name,json=lastName,proto3"`
+	EmailAddress               string                 `json:"email_address,omitempty"                  protobuf:"bytes,18,opt,name=email_address,json=emailAddress,proto3"`
+	AccountStatusExplanation   string                 `json:"account_status_explanation,omitempty"     protobuf:"bytes,10,opt,name=account_status_explanation,json=accountStatusExplanation,proto3"`
+	ServiceRole                string                 `json:"service_role,omitempty"                   protobuf:"bytes,20,opt,name=service_role,json=serviceRole,proto3"`
 	unknownFields              protoimpl.UnknownFields
 	sizeCache                  protoimpl.SizeCache
-	RequiresPasswordChange     bool `protobuf:"varint,21,opt,name=requires_password_change,json=requiresPasswordChange,proto3" json:"requires_password_change,omitempty"`
+	RequiresPasswordChange     bool `json:"requires_password_change,omitempty" protobuf:"varint,21,opt,name=requires_password_change,json=requiresPasswordChange,proto3"`
 }
 
 func (x *User) Reset() {
@@ -953,9 +953,9 @@ func (x *User) GetRequiresPasswordChange() bool {
 
 type UserAccountStatusUpdateInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	NewStatus     string                 `protobuf:"bytes,1,opt,name=new_status,json=newStatus,proto3" json:"new_status,omitempty"`
-	Reason        string                 `protobuf:"bytes,2,opt,name=reason,proto3" json:"reason,omitempty"`
-	TargetUserId  string                 `protobuf:"bytes,3,opt,name=target_user_id,json=targetUserId,proto3" json:"target_user_id,omitempty"`
+	NewStatus     string                 `json:"new_status,omitempty"     protobuf:"bytes,1,opt,name=new_status,json=newStatus,proto3"`
+	Reason        string                 `json:"reason,omitempty"         protobuf:"bytes,2,opt,name=reason,proto3"`
+	TargetUserId  string                 `json:"target_user_id,omitempty" protobuf:"bytes,3,opt,name=target_user_id,json=targetUserId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1013,19 +1013,19 @@ func (x *UserAccountStatusUpdateInput) GetTargetUserId() string {
 
 type UserRegistrationInput struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	Birthday              *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=birthday,proto3" json:"birthday,omitempty"`
-	Username              string                 `protobuf:"bytes,6,opt,name=username,proto3" json:"username,omitempty"`
-	EmailAddress          string                 `protobuf:"bytes,3,opt,name=email_address,json=emailAddress,proto3" json:"email_address,omitempty"`
-	InvitationToken       string                 `protobuf:"bytes,4,opt,name=invitation_token,json=invitationToken,proto3" json:"invitation_token,omitempty"`
-	InvitationId          string                 `protobuf:"bytes,5,opt,name=invitation_id,json=invitationId,proto3" json:"invitation_id,omitempty"`
-	Password              string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	FirstName             string                 `protobuf:"bytes,7,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName              string                 `protobuf:"bytes,8,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	AccountName           string                 `protobuf:"bytes,9,opt,name=account_name,json=accountName,proto3" json:"account_name,omitempty"`
+	Birthday              *timestamppb.Timestamp `json:"birthday,omitempty"         protobuf:"bytes,1,opt,name=birthday,proto3"`
+	Username              string                 `json:"username,omitempty"         protobuf:"bytes,6,opt,name=username,proto3"`
+	EmailAddress          string                 `json:"email_address,omitempty"    protobuf:"bytes,3,opt,name=email_address,json=emailAddress,proto3"`
+	InvitationToken       string                 `json:"invitation_token,omitempty" protobuf:"bytes,4,opt,name=invitation_token,json=invitationToken,proto3"`
+	InvitationId          string                 `json:"invitation_id,omitempty"    protobuf:"bytes,5,opt,name=invitation_id,json=invitationId,proto3"`
+	Password              string                 `json:"password,omitempty"         protobuf:"bytes,2,opt,name=password,proto3"`
+	FirstName             string                 `json:"first_name,omitempty"       protobuf:"bytes,7,opt,name=first_name,json=firstName,proto3"`
+	LastName              string                 `json:"last_name,omitempty"        protobuf:"bytes,8,opt,name=last_name,json=lastName,proto3"`
+	AccountName           string                 `json:"account_name,omitempty"     protobuf:"bytes,9,opt,name=account_name,json=accountName,proto3"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
-	AcceptedTos           bool `protobuf:"varint,10,opt,name=accepted_tos,json=acceptedTos,proto3" json:"accepted_tos,omitempty"`
-	AcceptedPrivacyPolicy bool `protobuf:"varint,11,opt,name=accepted_privacy_policy,json=acceptedPrivacyPolicy,proto3" json:"accepted_privacy_policy,omitempty"`
+	AcceptedTos           bool `json:"accepted_tos,omitempty"            protobuf:"varint,10,opt,name=accepted_tos,json=acceptedTos,proto3"`
+	AcceptedPrivacyPolicy bool `json:"accepted_privacy_policy,omitempty" protobuf:"varint,11,opt,name=accepted_privacy_policy,json=acceptedPrivacyPolicy,proto3"`
 }
 
 func (x *UserRegistrationInput) Reset() {

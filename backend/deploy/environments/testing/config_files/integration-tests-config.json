@@ -224,5 +224,10 @@
 		"oauth2Clients": {
 			"creationEnabled": false
 		}
+	},
+	"pushNotifications": {
+		"provider": "noop",
+		"apns": null,
+		"fcm": null
 	}
 }

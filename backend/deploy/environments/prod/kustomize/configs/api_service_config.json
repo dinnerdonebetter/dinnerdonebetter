@@ -266,5 +266,10 @@
 		"oauth2Clients": {
 			"creationEnabled": true
 		}
+	},
+	"pushNotifications": {
+		"provider": "noop",
+		"apns": null,
+		"fcm": null
 	}
 }

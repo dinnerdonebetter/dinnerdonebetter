@@ -18,6 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags/posthog"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/pubsub"
+	notificationscfg "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -270,6 +271,10 @@ func buildProdConfig() *config.APIServiceConfig {
 		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
 			BundleID: "com.dinnerdonebetter.ios",
 			TeamID:   "A96L6WFB5R",
+		},
+		// PushNotifications: set provider to "apns_fcm" and configure APNs/FCM via env (PUSH_NOTIFICATIONS_*) for real push.
+		PushNotifications: notificationscfg.Config{
+			Provider: notificationscfg.ProviderNoop,
 		},
 	}
 }
