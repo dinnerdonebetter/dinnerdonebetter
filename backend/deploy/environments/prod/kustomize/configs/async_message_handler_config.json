@@ -1,10 +1,16 @@
 {
-	"storage": {
-		"gcpConfig": {
-			"bucketName": "dinner-done-better-prod-userdata"
+	"pushNotifications": {
+		"apns": {
+			"authKeyPath": "/mnt/apns/apns-auth-key.p8",
+			"keyID": "",
+			"teamID": "K8R2Q5UWQS",
+			"bundleID": "com.dinnerdonebetter.ios",
+			"production": true
 		},
-		"bucketName": "dinner-done-better-prod-userdata",
-		"provider": "gcp"
+		"fcm": {
+			"credentialsPath": ""
+		},
+		"provider": "apns_fcm"
 	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
@@ -13,6 +19,13 @@
 		"mobileNotificationsTopicName": "mobile_notifications",
 		"userDataAggregationTopicName": "user_data_aggregation_requests",
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
+	"storage": {
+		"gcpConfig": {
+			"bucketName": "dinner-done-better-prod-userdata"
+		},
+		"bucketName": "dinner-done-better-prod-userdata",
+		"provider": "gcp"
 	},
 	"encoding": {
 		"contentType": ""
@@ -141,10 +154,5 @@
 		"debug": false,
 		"logQueries": false,
 		"runMigrations": true
-	},
-	"pushNotifications": {
-		"provider": "noop",
-		"apns": null,
-		"fcm": null
 	}
 }

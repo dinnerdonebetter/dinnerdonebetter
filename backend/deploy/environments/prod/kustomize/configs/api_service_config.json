@@ -1,4 +1,17 @@
 {
+	"pushNotifications": {
+		"apns": {
+			"authKeyPath": "/mnt/apns/apns-auth-key.p8",
+			"keyID": "",
+			"teamID": "K8R2Q5UWQS",
+			"bundleID": "com.dinnerdonebetter.ios",
+			"production": true
+		},
+		"fcm": {
+			"credentialsPath": ""
+		},
+		"provider": "apns_fcm"
+	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -8,7 +21,7 @@
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
 	"appleAppSiteAssociation": {
-		"teamID": "A96L6WFB5R",
+		"teamID": "K8R2Q5UWQS",
 		"bundleID": "com.dinnerdonebetter.ios"
 	},
 	"routing": {
@@ -88,19 +101,6 @@
 		"runMode": "production",
 		"debug": false
 	},
-	"email": {
-		"sendgrid": {
-			"apiToken": "placeholder"
-		},
-		"mailgun": null,
-		"mailjet": null,
-		"provider": "sendgrid",
-		"circuitBreakerConfig": {
-			"name": "prod_emailer",
-			"circuitBreakerErrorPercentage": 0.5,
-			"circuitBreakerMinimumOccurrenceThreshold": 100
-		}
-	},
 	"analytics": {
 		"segment": {
 			"apiToken": "placeholder"
@@ -110,6 +110,19 @@
 		"provider": "segment",
 		"circuitBreaker": {
 			"name": "prod_analytics",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
+	},
+	"email": {
+		"sendgrid": {
+			"apiToken": "placeholder"
+		},
+		"mailgun": null,
+		"mailjet": null,
+		"provider": "sendgrid",
+		"circuitBreakerConfig": {
+			"name": "prod_emailer",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
@@ -266,10 +279,5 @@
 		"oauth2Clients": {
 			"creationEnabled": true
 		}
-	},
-	"pushNotifications": {
-		"provider": "noop",
-		"apns": null,
-		"fcm": null
 	}
 }

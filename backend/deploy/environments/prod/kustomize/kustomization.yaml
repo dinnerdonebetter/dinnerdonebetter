@@ -107,6 +107,16 @@ patches:
       version: v1
       kind: Deployment
       name: dinner-done-better-async-message-handler-deployment
+  - path: patches/deployment-push-notifications-env.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-async-message-handler-deployment
+  - path: patches/deployment-apns-volume.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-async-message-handler-deployment
   - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"

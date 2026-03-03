@@ -42,6 +42,11 @@ variable "GRAFANA_CLOUD_LOKI_PASSWORD" {}
 variable "GRAFANA_CLOUD_TEMPO_USERNAME" {}
 variable "GRAFANA_CLOUD_TEMPO_PASSWORD" {}
 
+variable "APNS_KEY_ID" {}
+variable "APNS_AUTH_KEY_P8" {
+  sensitive = true
+}
+
 # Admin webapp config (cookie name and domain - required for admin webapp)
 variable "ADMIN_WEBAPP_COOKIE_NAME" {
   default = "admin_webapp"

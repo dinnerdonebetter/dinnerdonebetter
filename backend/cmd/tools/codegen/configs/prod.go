@@ -51,6 +51,8 @@ const (
 	prodOtelCollectorEndpoint = "otel-collector-svc.prod.svc.cluster.local:4317"
 	prodOAuth2Domain          = "https://dinnerdonebetter.com"
 	prodTokensAudience        = "https://http-api.dinnerdonebetter.com" //nolint:gosec // G101: audience URL, not a credential
+	iosTeamID                 = "K8R2Q5UWQS"
+	iosBundleID               = "com.dinnerdonebetter.ios"
 )
 
 func buildProdConfig() *config.APIServiceConfig {
@@ -269,12 +271,20 @@ func buildProdConfig() *config.APIServiceConfig {
 			},
 		},
 		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
-			BundleID: "com.dinnerdonebetter.ios",
-			TeamID:   "A96L6WFB5R",
+			BundleID: iosBundleID,
+			TeamID:   iosTeamID,
 		},
-		// PushNotifications: set provider to "apns_fcm" and configure APNs/FCM via env (PUSH_NOTIFICATIONS_*) for real push.
 		PushNotifications: notificationscfg.Config{
-			Provider: notificationscfg.ProviderNoop,
+			Provider: notificationscfg.ProviderAPNsFCM,
+			APNs: &notificationscfg.APNsConfig{
+				AuthKeyPath: "/mnt/apns/apns-auth-key.p8", // mounted from K8s secret apns-credentials
+				TeamID:      iosTeamID,
+				BundleID:    iosBundleID,
+				Production:  true,
+			},
+			FCM: &notificationscfg.FCMConfig{
+				// CredentialsPath empty: uses Application Default Credentials (GCP workload identity)
+			},
 		},
 	}
 }

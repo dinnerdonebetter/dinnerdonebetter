@@ -1,10 +1,8 @@
 {
-	"storage": {
-		"filesystem": {
-			"rootDirectory": "/tmp"
-		},
-		"bucketName": "userdata",
-		"provider": "filesystem"
+	"pushNotifications": {
+		"apns": null,
+		"fcm": null,
+		"provider": "noop"
 	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
@@ -13,6 +11,13 @@
 		"mobileNotificationsTopicName": "mobile_notifications",
 		"userDataAggregationTopicName": "user_data_aggregation_requests",
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
+	"storage": {
+		"filesystem": {
+			"rootDirectory": "/tmp"
+		},
+		"bucketName": "userdata",
+		"provider": "filesystem"
 	},
 	"encoding": {
 		"contentType": ""
@@ -141,10 +146,5 @@
 		"debug": true,
 		"logQueries": true,
 		"runMigrations": true
-	},
-	"pushNotifications": {
-		"provider": "noop",
-		"apns": null,
-		"fcm": null
 	}
 }

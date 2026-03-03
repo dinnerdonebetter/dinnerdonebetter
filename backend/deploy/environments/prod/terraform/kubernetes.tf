@@ -25,6 +25,29 @@ resource "kubernetes_namespace" "prod" {
 
 # Kubernetes secrets
 
+# APNs .p8 key mounted as file for push notifications (async message handler)
+resource "kubernetes_secret" "apns_credentials" {
+  metadata {
+    name      = "apns-credentials"
+    namespace = local.k8s_namespace
+
+    annotations = {
+      (local.managed_by_label) = "terraform"
+    }
+
+    labels = {
+      (local.managed_by_label) = "terraform"
+    }
+  }
+
+  depends_on = [kubernetes_namespace.prod]
+
+  data = {
+    # Key becomes filename when mounted; value is p8 content (Terraform base64-encodes automatically)
+    "apns-auth-key.p8" = var.APNS_AUTH_KEY_P8
+  }
+}
+
 resource "kubernetes_secret" "cloudflare_api_key" {
   metadata {
     name      = "cloudflare-api-key"
@@ -102,6 +125,7 @@ resource "kubernetes_secret" "api_service_config" {
     ALGOLIA_API_KEY                 = var.ALGOLIA_API_KEY
     GOOGLE_SSO_OAUTH2_CLIENT_ID     = var.GOOGLE_SSO_OAUTH2_CLIENT_ID
     GOOGLE_SSO_OAUTH2_CLIENT_SECRET = var.GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+    PUSH_NOTIFICATIONS_APNS_KEY_ID  = var.APNS_KEY_ID
   }
 }
 
