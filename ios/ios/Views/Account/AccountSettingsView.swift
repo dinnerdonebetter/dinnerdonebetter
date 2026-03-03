@@ -230,7 +230,9 @@ struct AccountSettingsView: View {
   // MARK: - Sign Out Button
   private var signOutButton: some View {
     DSButton("Sign Out", style: .ghost, fullWidth: true) {
-      authManager.logout()
+      Task {
+        await authManager.logout()
+      }
     }
     .padding(.top, DSTheme.Spacing.xl)
   }

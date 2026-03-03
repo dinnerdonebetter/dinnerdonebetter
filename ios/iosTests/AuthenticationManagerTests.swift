@@ -52,7 +52,7 @@ struct AuthenticationManagerTests {
         #expect(!manager.accessToken.isEmpty)
         
         // Logout
-        manager.logout()
+        await manager.logout()
         
         // Verify all state is cleared
         #expect(manager.isAuthenticated == false)
@@ -77,9 +77,9 @@ struct AuthenticationManagerTests {
         }
         
         // Logout multiple times
-        manager.logout()
-        manager.logout()
-        manager.logout()
+        await manager.logout()
+        await manager.logout()
+        await manager.logout()
         
         // Verify state remains cleared
         #expect(manager.isAuthenticated == false)
@@ -342,7 +342,7 @@ struct AuthenticationManagerTests {
         }
         
         // Logout
-        manager.logout()
+        await manager.logout()
         let stateAfterFirst = manager.isAuthenticated
         
         // Set state again
@@ -352,8 +352,8 @@ struct AuthenticationManagerTests {
         }
         
         // Logout multiple times
-        manager.logout()
-        manager.logout()
+        await manager.logout()
+        await manager.logout()
         let stateAfterMultiple = manager.isAuthenticated
         
         #expect(stateAfterFirst == false)

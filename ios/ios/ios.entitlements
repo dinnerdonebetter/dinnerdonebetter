@@ -2,17 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>aps-environment</key>
+	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<!-- Development environment - Universal Links -->
 		<string>applinks:www.dinnerdonebetter.dev</string>
-		<!-- Development environment - Password AutoFill / 1Password -->
 		<string>webcredentials:www.dinnerdonebetter.dev</string>
-		<!-- Production environment - Universal Links -->
 		<string>applinks:www.dinnerdonebetter.com</string>
-		<!-- Production environment - Password AutoFill / 1Password -->
 		<string>webcredentials:www.dinnerdonebetter.com</string>
-		<!-- Production root domain (matches 1Password entries saved as dinnerdonebetter.com) -->
 		<string>webcredentials:dinnerdonebetter.com</string>
 	</array>
 </dict>

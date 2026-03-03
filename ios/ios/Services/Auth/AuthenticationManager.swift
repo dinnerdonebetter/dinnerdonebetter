@@ -4,6 +4,7 @@ import GRPCNIOTransportHTTP2
 import GRPCNIOTransportHTTP2TransportServices
 import SwiftProtobuf
 import SwiftUI
+import UIKit
 
 /// URLSessionDelegate that prevents automatic redirect following
 private class NoRedirectDelegate: NSObject, URLSessionTaskDelegate {
@@ -133,7 +134,7 @@ class AuthenticationManager: AuthenticationManaging {
     )
     clientManager = nil
     clientEnvironment = nil
-    logout()
+    Task { await logout() }
   }
 
   /// Get or create the client manager, following the grpc-swift issue #2211 pattern.
@@ -266,6 +267,10 @@ class AuthenticationManager: AuthenticationManaging {
                 "accountID": tokenResponse.accountID,
               ]
             )
+            DeviceTokenRegistrationService.shared.tryReportStoredToken()
+          }
+          await MainActor.run {
+            UIApplication.shared.registerForRemoteNotifications()
           }
         }
 
@@ -662,7 +667,8 @@ class AuthenticationManager: AuthenticationManaging {
     }
   }
 
-  func logout() {
+  func logout() async {
+    await DeviceTokenRegistrationService.shared.archiveCurrentDeviceToken(authManager: self)
     AnalyticsConfiguration.provideEventReporter().reset()
     self.isAuthenticated = false
     self.username = ""

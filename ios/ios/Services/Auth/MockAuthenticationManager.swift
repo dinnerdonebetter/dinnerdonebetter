@@ -170,7 +170,7 @@ class MockAuthenticationManager: AuthenticationManaging {
     return RegistrationResult(success: true, error: nil)
   }
 
-  func logout() {
+  func logout() async {
     self.isAuthenticated = false
     self.username = ""
     self.accessToken = ""

@@ -157,7 +157,7 @@ struct RecipeTimeEstimationTests {
 
   @Test("FormatStepTime returns nil when step has no time")
   func formatStepTimeReturnsNilWhenEmpty() {
-    var range = Common_OptionalUint32Range()
+    let range = Common_OptionalUint32Range()
     #expect(RecipeTimeEstimation.formatStepTime(range) == nil)
   }
 
