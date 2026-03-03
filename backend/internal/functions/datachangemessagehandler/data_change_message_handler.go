@@ -10,12 +10,15 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	notificationsmanager "github.com/dinnerdonebetter/backend/internal/domain/notifications/manager"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	platformnotifications "github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
@@ -55,6 +58,9 @@ type AsyncDataChangeMessageHandler struct {
 	searchIndexRequestsExecutionTimeHistogram metrics.Float64Histogram
 	userDataIndexer                           *identityindexing.UserDataIndexer
 	mealPlanningDataIndexer                   *mealplanningindexing.MealPlanningDataIndexer
+	mealPlanRepo                              mealplanning.Repository
+	notificationsRepo                         notificationsmanager.NotificationsDataManager
+	pushNotificationSender                    platformnotifications.PushNotificationSender
 	queuesConfig                              msgconfig.QueuesConfig
 	nonWebhookEventTypes                      []string
 	nonWebhookEventTypesHat                   sync.RWMutex
@@ -84,6 +90,9 @@ func NewAsyncDataChangeMessageHandler(
 	decoder encoding.ServerEncoderDecoder,
 	coreDataIndexer *identityindexing.UserDataIndexer,
 	eatingDataIndexer *mealplanningindexing.MealPlanningDataIndexer,
+	mealPlanRepo mealplanning.Repository,
+	notificationsRepo notificationsmanager.NotificationsDataManager,
+	pushNotificationSender platformnotifications.PushNotificationSender,
 ) (*AsyncDataChangeMessageHandler, error) {
 	dataChangesExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("data_changes_execution_time")
 	if err != nil {
@@ -149,6 +158,9 @@ func NewAsyncDataChangeMessageHandler(
 		decoder:                                   decoder,
 		userDataIndexer:                           coreDataIndexer,
 		mealPlanningDataIndexer:                   eatingDataIndexer,
+		mealPlanRepo:                              mealPlanRepo,
+		notificationsRepo:                         notificationsRepo,
+		pushNotificationSender:                    pushNotificationSender,
 	}, nil
 }
 
@@ -207,11 +219,21 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring user data aggregation requests consumer")
 	}
 
+	mobileNotificationsConsumer, err := a.consumerProvider.ProvideConsumer(
+		ctx,
+		a.queuesConfig.MobileNotificationsTopicName,
+		a.MobileNotificationsEventHandler,
+	)
+	if err != nil {
+		return observability.PrepareAndLogError(err, a.logger, span, "configuring mobile notifications consumer")
+	}
+
 	go dataChangesConsumer.Consume(stopChan, errorsChan)
 	go outboundEmailsConsumer.Consume(stopChan, errorsChan)
 	go searchIndexRequestsConsumer.Consume(stopChan, errorsChan)
 	go webhookExecutionRequestsConsumer.Consume(stopChan, errorsChan)
 	go userDataAggregationConsumer.Consume(stopChan, errorsChan)
+	go mobileNotificationsConsumer.Consume(stopChan, errorsChan)
 
 	go func() {
 		for e := range errorsChan {

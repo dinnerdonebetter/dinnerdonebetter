@@ -8,3 +8,4 @@ resources:
   - meal_plan_grocery_list_initializer_cronjob.yaml
   - meal_plan_task_creator_cronjob.yaml
   - search_data_index_scheduler_cronjob.yaml
+  - mobile_notification_scheduler_cronjob.yaml

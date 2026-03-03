@@ -59,6 +59,7 @@ type (
 			MealPlanGroceryListInitializerConfig |
 			MealPlanTaskCreatorConfig |
 			SearchDataIndexSchedulerConfig |
+			MobileNotificationSchedulerConfig |
 			AsyncMessageHandlerConfig |
 			AdminWebappConfig |
 			MCPServiceConfig
@@ -129,6 +130,16 @@ type (
 
 	// SearchDataIndexSchedulerConfig configures an instance of the search data index scheduler job.
 	SearchDataIndexSchedulerConfig struct {
+		_ struct{} `json:"-"`
+
+		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+	}
+
+	// MobileNotificationSchedulerConfig configures an instance of the mobile notification scheduler job.
+	MobileNotificationSchedulerConfig struct {
 		_ struct{} `json:"-"`
 
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
@@ -364,6 +375,27 @@ var _ validation.ValidatableWithContext = (*SearchDataIndexSchedulerConfig)(nil)
 
 // ValidateWithContext validates a SearchDataIndexSchedulerConfig struct.
 func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Context) error {
+	result := &multierror.Error{}
+
+	validators := map[string]func(context.Context) error{
+		"Observability": cfg.Observability.ValidateWithContext,
+		"Database":      cfg.Database.ValidateWithContext,
+		"Queues":        cfg.Queues.ValidateWithContext,
+	}
+
+	for name, validator := range validators {
+		if err := validator(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
+		}
+	}
+
+	return result.ErrorOrNil()
+}
+
+var _ validation.ValidatableWithContext = (*MobileNotificationSchedulerConfig)(nil)
+
+// ValidateWithContext validates a MobileNotificationSchedulerConfig struct.
+func (cfg *MobileNotificationSchedulerConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
 
 	validators := map[string]func(context.Context) error{

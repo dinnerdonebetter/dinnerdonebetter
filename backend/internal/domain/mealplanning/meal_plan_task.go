@@ -42,6 +42,7 @@ type (
 		CreatedAt           time.Time      `json:"createdAt"`
 		LastUpdatedAt       *time.Time     `json:"lastUpdatedAt"`
 		CompletedAt         *time.Time     `json:"completedAt"`
+		NotificationSentAt  *time.Time     `json:"notificationSentAt"`
 		AssignedToUser      *string        `json:"assignedToUser"`
 		ID                  string         `json:"id"`
 		Status              string         `json:"status"`
@@ -100,6 +101,10 @@ type (
 		CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*MealPlanTaskDatabaseCreationInput) ([]*MealPlanTask, error)
 		ChangeMealPlanTaskStatus(ctx context.Context, input *MealPlanTaskStatusChangeRequestInput) error
 		MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error
+		MealPlanTaskNotificationHasBeenSent(ctx context.Context, mealPlanTaskID string) (bool, error)
+		MarkMealPlanTaskNotificationSent(ctx context.Context, mealPlanTaskID string) error
+		GetMealPlanTaskIDsThatNeedNotification(ctx context.Context) ([]string, error)
+		GetMealPlanTaskAccountID(ctx context.Context, mealPlanTaskID string) (string, error)
 	}
 
 	// MealPlanTaskDataService describes a structure capable of serving traffic related to meal plan tasks.

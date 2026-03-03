@@ -37,6 +37,10 @@ images:
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-search-data-index-scheduler
     newTag: latest
 
+  - name: dinner-done-better-job-mobile-notification-scheduler
+    newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-mobile-notification-scheduler
+    newTag: latest
+
   - name: dinner-done-better-async-message-handler
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-async-message-handler
     newTag: latest
@@ -167,6 +171,16 @@ patches:
     target:
       kind: CronJob
       name: dinner-done-better-job-search-data-index-scheduler
+
+  ### Mobile Notification Scheduler CronJob - needs database, pubsub
+  - path: patches/cronjob-database-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-mobile-notification-scheduler
+  - path: patches/cronjob-pubsub-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-mobile-notification-scheduler
 
   ### Admin Webapp - needs cookie and API service config
   - patch: |-
@@ -327,6 +341,11 @@ configMapGenerator:
     namespace: prod
     files:
       - config.json=./configs/job_search_data_index_scheduler_config.json
+
+  - name: dinner-done-better-job-mobile-notification-scheduler-config
+    namespace: prod
+    files:
+      - config.json=./configs/job_mobile_notification_scheduler_config.json
 
   - name: dinner-done-better-admin-webapp-config
     namespace: prod

@@ -88,6 +88,16 @@ patches:
       kind: CronJob
       name: dinner-done-better-job-search-data-index-scheduler
 
+  # Mobile Notification Scheduler CronJob
+  - path: patches/cronjob-k8s-hostnames.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-mobile-notification-scheduler
+  - path: patches/cronjob-local-image-pull.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-mobile-notification-scheduler
+
 labels:
   - pairs:
       app.kubernetes.io/name: dinner-done-better-backend
@@ -125,6 +135,11 @@ configMapGenerator:
     namespace: localdev
     files:
       - config.json=configs/job_search_data_index_scheduler_config.json
+
+  - name: dinner-done-better-job-mobile-notification-scheduler-config
+    namespace: localdev
+    files:
+      - config.json=configs/job_mobile_notification_scheduler_config.json
 
   - name: dinner-done-better-admin-webapp-config
     namespace: localdev

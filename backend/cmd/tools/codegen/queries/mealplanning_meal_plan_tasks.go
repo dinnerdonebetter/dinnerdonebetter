@@ -10,10 +10,11 @@ import (
 const (
 	mealPlanTasksTableName = "meal_plan_tasks"
 
-	mealPlanTaskIDColumn                = "meal_plan_task_id"
-	mealPlanTaskCompletedAtColumn       = "completed_at"
-	mealPlanTaskStatusExplanationColumn = "status_explanation"
-	mealPlanTaskStatusColumn            = "status"
+	mealPlanTaskIDColumn                 = "meal_plan_task_id"
+	mealPlanTaskCompletedAtColumn        = "completed_at"
+	mealPlanTaskNotificationSentAtColumn = "notification_sent_at"
+	mealPlanTaskStatusExplanationColumn  = "status_explanation"
+	mealPlanTaskStatusColumn             = "status"
 )
 
 func init() {
@@ -28,6 +29,7 @@ var mealPlanTasksColumns = []string{
 	"belongs_to_meal_plan_option",
 	"belongs_to_recipe_prep_task",
 	mealPlanTaskCompletedAtColumn,
+	mealPlanTaskNotificationSentAtColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	"assigned_to_user",
@@ -37,7 +39,7 @@ func buildMealPlanTasksQueries(database string) []*Query {
 	switch database {
 	case postgres:
 
-		insertColumns := filterForInsert(mealPlanTasksColumns, mealPlanTaskCompletedAtColumn)
+		insertColumns := filterForInsert(mealPlanTasksColumns, mealPlanTaskCompletedAtColumn, mealPlanTaskNotificationSentAtColumn)
 
 		fullSelectColumns := mergeColumns(
 			applyToEach(mealPlanTasksColumns, func(i int, s string) string {
@@ -247,6 +249,77 @@ AND %s.%s IS NULL;`,
 					validPreparationsTableName, recipeStepsTableName, preparationIDColumn, validPreparationsTableName, idColumn,
 					mealPlanTasksTableName, belongsToMealPlanOptionColumn, belongsToMealPlanOptionColumn,
 					mealPlanTasksTableName, mealPlanTaskCompletedAtColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "MealPlanTaskNotificationHasBeenSent",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s IS NOT NULL
+FROM %s
+WHERE %s.%s = sqlc.arg(%s);`,
+					mealPlanTasksTableName, mealPlanTaskNotificationSentAtColumn,
+					mealPlanTasksTableName,
+					mealPlanTasksTableName, idColumn, mealPlanTaskIDColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "MarkMealPlanTaskNotificationSent",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s
+WHERE %s = sqlc.arg(%s);`,
+					mealPlanTasksTableName,
+					mealPlanTaskNotificationSentAtColumn, currentTimeExpression,
+					idColumn, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetMealPlanTaskIDsThatNeedNotification",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL;`,
+					mealPlanTasksTableName, idColumn,
+					mealPlanTasksTableName,
+					mealPlanOptionsTableName, mealPlanTasksTableName, belongsToMealPlanOptionColumn, mealPlanOptionsTableName, idColumn,
+					mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn,
+					mealPlansTableName, mealPlanEventsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
+					mealPlanTasksTableName, mealPlanTaskCompletedAtColumn,
+					mealPlanTasksTableName, mealPlanTaskNotificationSentAtColumn,
+					mealPlanOptionsTableName, archivedAtColumn,
+					mealPlanEventsTableName, archivedAtColumn,
+					mealPlansTableName, archivedAtColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetMealPlanTaskAccountID",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s = sqlc.arg(%s);`,
+					mealPlansTableName, belongsToAccountColumn,
+					mealPlanTasksTableName,
+					mealPlanOptionsTableName, mealPlanTasksTableName, belongsToMealPlanOptionColumn, mealPlanOptionsTableName, idColumn,
+					mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn,
+					mealPlansTableName, mealPlanEventsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
+					mealPlanTasksTableName, idColumn, mealPlanTaskIDColumn,
 				)),
 			},
 		}

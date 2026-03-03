@@ -22,6 +22,7 @@ type EnvironmentConfigSet struct {
 	MealPlanGroceryListInitializerConfigPath string
 	MealPlanTaskCreatorConfigPath            string
 	SearchDataIndexSchedulerConfigPath       string
+	MobileNotificationSchedulerConfigPath    string
 	AsyncMessageHandlerConfigPath            string
 	AdminWebappConfigPath                    string
 }
@@ -63,6 +64,7 @@ const (
 	mpgliConfigObservabilityServiceName = "meal_plan_grocery_list_initializer"
 	mptcConfigObservabilityServiceName  = "meal_plan_task_creator"
 	sdisConfigObservabilityServiceName  = "search_data_index_scheduler"
+	mnsConfigObservabilityServiceName   = "mobile_notification_scheduler"
 	amhConfigObservabilityServiceName   = "async_message_handler"
 	awaConfigObservabilityServiceName   = "admin_webapp"
 )
@@ -139,6 +141,16 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	sdisConfig.Observability.Metrics.ServiceName = sdisConfigObservabilityServiceName
 	sdisConfig.Observability.Logging.ServiceName = sdisConfigObservabilityServiceName
 
+	mnsConfig := &MobileNotificationSchedulerConfig{
+		Observability: s.RootConfig.Observability,
+		Events:        s.RootConfig.Events,
+		Database:      s.RootConfig.Database,
+		Queues:        s.RootConfig.Queues,
+	}
+	mnsConfig.Observability.Tracing.ServiceName = mnsConfigObservabilityServiceName
+	mnsConfig.Observability.Metrics.ServiceName = mnsConfigObservabilityServiceName
+	mnsConfig.Observability.Logging.ServiceName = mnsConfigObservabilityServiceName
+
 	amhConfig := &AsyncMessageHandlerConfig{
 		Storage:       s.RootConfig.Services.DataPrivacy.Uploads.Storage,
 		Queues:        s.RootConfig.Queues,
@@ -184,6 +196,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 			mpgliConfig,
 			mptcConfig,
 			sdisConfig,
+			mnsConfig,
 			amhConfig,
 			awaConfig,
 		}
@@ -205,6 +218,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		path.Join(outputDir, stringOrDefault(s.MealPlanGroceryListInitializerConfigPath, "job_meal_plan_grocery_list_initializer_config.json")): renderJSON(mpgliConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.MealPlanTaskCreatorConfigPath, "job_meal_plan_task_creator_config.json")):                        renderJSON(mptcConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "job_search_data_index_scheduler_config.json")):              renderJSON(sdisConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.MobileNotificationSchedulerConfigPath, "job_mobile_notification_scheduler_config.json")):         renderJSON(mnsConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                             renderJSON(amhConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.AdminWebappConfigPath, "admin_webapp_config.json")):                                              renderJSON(awaConfig, pretty),
 	}

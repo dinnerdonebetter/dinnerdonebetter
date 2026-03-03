@@ -184,6 +184,7 @@ func TestEnvironmentConfigSet_Render(T *testing.T) {
 			"job_meal_plan_grocery_list_initializer_config.json",
 			"job_meal_plan_task_creator_config.json",
 			"job_search_data_index_scheduler_config.json",
+			"job_mobile_notification_scheduler_config.json",
 			"async_message_handler_config.json",
 			"admin_webapp_config.json",
 		}

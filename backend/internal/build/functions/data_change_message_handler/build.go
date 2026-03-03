@@ -16,6 +16,7 @@ import (
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
@@ -70,6 +71,8 @@ func Build(
 		eatingindexing.Providers,
 		ConfigProviders,
 		SearcherProviders,
+		wire.Bind(new(notifications.PushNotificationSender), new(*notifications.NoopPushNotificationSender)),
+		wire.Struct(new(notifications.NoopPushNotificationSender)),
 	)
 
 	return nil, nil

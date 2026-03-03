@@ -110,6 +110,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			DataChangesTopicName:              dataChangesTopicName,
 			OutboundEmailsTopicName:           outboundEmailsTopicName,
 			SearchIndexRequestsTopicName:      searchIndexRequestsTopicName,
+			MobileNotificationsTopicName:      mobileNotificationsTopicName,
 			UserDataAggregationTopicName:      userDataAggregationTopicName,
 			WebhookExecutionRequestsTopicName: webhookExecutionRequestsTopicName,
 		},
