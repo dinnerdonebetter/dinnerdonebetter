@@ -46,6 +46,16 @@ variable "APNS_KEY_ID" {}
 variable "APNS_AUTH_KEY_P8" {
   sensitive = true
 }
+variable "APNS_TEAM_ID" {
+  default = "K8R2Q5UWQS"
+}
+variable "APNS_BUNDLE_ID" {
+  default = "com.dinnerdonebetter.ios"
+}
+variable "APNS_PRODUCTION" {
+  default = "true"
+  description = "Use APNs production environment (true) or sandbox (false)"
+}
 
 # Admin webapp config (cookie name and domain - required for admin webapp)
 variable "ADMIN_WEBAPP_COOKIE_NAME" {
