@@ -127,3 +127,82 @@ func TestNotificationsManager_UpdateUserNotification(t *testing.T) {
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
+
+func TestNotificationsManager_CreateUserDeviceToken(t *testing.T) {
+	t.Parallel()
+
+	t.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		nm := buildNotificationsManagerForTest(t)
+
+		expected := fakes.BuildFakeUserDeviceToken()
+		input := converters.ConvertUserDeviceTokenToUserDeviceTokenDatabaseCreationInput(expected)
+
+		expectations := setupExpectationsForNotificationsManager(
+			nm,
+			func(repo *notificationsmock.Repository) {
+				repo.On(reflection.GetMethodName(repo.CreateUserDeviceToken), testutils.ContextMatcher, testutils.MatchType[*notifications.UserDeviceTokenDatabaseCreationInput]()).Return(expected, nil)
+			},
+			map[string][]string{
+				notifications.UserDeviceTokenCreatedServiceEventType: {notificationkeys.UserDeviceTokenIDKey},
+			},
+		)
+
+		actual, err := nm.CreateUserDeviceToken(ctx, input)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestNotificationsManager_ArchiveUserDeviceToken(t *testing.T) {
+	t.Parallel()
+
+	t.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		nm := buildNotificationsManagerForTest(t)
+
+		userID := fakes.BuildFakeID()
+		tokenID := fakes.BuildFakeID()
+
+		expectations := setupExpectationsForNotificationsManager(
+			nm,
+			func(repo *notificationsmock.Repository) {
+				repo.On(reflection.GetMethodName(repo.ArchiveUserDeviceToken), testutils.ContextMatcher, userID, tokenID).Return(nil)
+			},
+			map[string][]string{
+				notifications.UserDeviceTokenArchivedServiceEventType: {notificationkeys.UserDeviceTokenIDKey},
+			},
+		)
+
+		err := nm.ArchiveUserDeviceToken(ctx, userID, tokenID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+
+	t.Run("with empty user ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		nm := buildNotificationsManagerForTest(t)
+
+		err := nm.ArchiveUserDeviceToken(ctx, "", fakes.BuildFakeID())
+		assert.Error(t, err)
+	})
+
+	t.Run("with empty token ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		nm := buildNotificationsManagerForTest(t)
+
+		err := nm.ArchiveUserDeviceToken(ctx, fakes.BuildFakeID(), "")
+		assert.Error(t, err)
+	})
+}

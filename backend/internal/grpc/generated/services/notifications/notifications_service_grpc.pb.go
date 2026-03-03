@@ -23,6 +23,10 @@ const (
 	UserNotificationsService_GetUserNotification_FullMethodName    = "/notifications.UserNotificationsService/GetUserNotification"
 	UserNotificationsService_GetUserNotifications_FullMethodName   = "/notifications.UserNotificationsService/GetUserNotifications"
 	UserNotificationsService_UpdateUserNotification_FullMethodName = "/notifications.UserNotificationsService/UpdateUserNotification"
+	UserNotificationsService_RegisterDeviceToken_FullMethodName    = "/notifications.UserNotificationsService/RegisterDeviceToken"
+	UserNotificationsService_GetUserDeviceToken_FullMethodName     = "/notifications.UserNotificationsService/GetUserDeviceToken"
+	UserNotificationsService_GetUserDeviceTokens_FullMethodName    = "/notifications.UserNotificationsService/GetUserDeviceTokens"
+	UserNotificationsService_ArchiveUserDeviceToken_FullMethodName = "/notifications.UserNotificationsService/ArchiveUserDeviceToken"
 )
 
 // UserNotificationsServiceClient is the client API for UserNotificationsService service.
@@ -32,6 +36,10 @@ type UserNotificationsServiceClient interface {
 	GetUserNotification(ctx context.Context, in *GetUserNotificationRequest, opts ...grpc.CallOption) (*GetUserNotificationResponse, error)
 	GetUserNotifications(ctx context.Context, in *GetUserNotificationsRequest, opts ...grpc.CallOption) (*GetUserNotificationsResponse, error)
 	UpdateUserNotification(ctx context.Context, in *UpdateUserNotificationRequest, opts ...grpc.CallOption) (*UpdateUserNotificationResponse, error)
+	RegisterDeviceToken(ctx context.Context, in *RegisterDeviceTokenRequest, opts ...grpc.CallOption) (*RegisterDeviceTokenResponse, error)
+	GetUserDeviceToken(ctx context.Context, in *GetUserDeviceTokenRequest, opts ...grpc.CallOption) (*GetUserDeviceTokenResponse, error)
+	GetUserDeviceTokens(ctx context.Context, in *GetUserDeviceTokensRequest, opts ...grpc.CallOption) (*GetUserDeviceTokensResponse, error)
+	ArchiveUserDeviceToken(ctx context.Context, in *ArchiveUserDeviceTokenRequest, opts ...grpc.CallOption) (*ArchiveUserDeviceTokenResponse, error)
 }
 
 type userNotificationsServiceClient struct {
@@ -72,6 +80,46 @@ func (c *userNotificationsServiceClient) UpdateUserNotification(ctx context.Cont
 	return out, nil
 }
 
+func (c *userNotificationsServiceClient) RegisterDeviceToken(ctx context.Context, in *RegisterDeviceTokenRequest, opts ...grpc.CallOption) (*RegisterDeviceTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterDeviceTokenResponse)
+	err := c.cc.Invoke(ctx, UserNotificationsService_RegisterDeviceToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userNotificationsServiceClient) GetUserDeviceToken(ctx context.Context, in *GetUserDeviceTokenRequest, opts ...grpc.CallOption) (*GetUserDeviceTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserDeviceTokenResponse)
+	err := c.cc.Invoke(ctx, UserNotificationsService_GetUserDeviceToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userNotificationsServiceClient) GetUserDeviceTokens(ctx context.Context, in *GetUserDeviceTokensRequest, opts ...grpc.CallOption) (*GetUserDeviceTokensResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserDeviceTokensResponse)
+	err := c.cc.Invoke(ctx, UserNotificationsService_GetUserDeviceTokens_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userNotificationsServiceClient) ArchiveUserDeviceToken(ctx context.Context, in *ArchiveUserDeviceTokenRequest, opts ...grpc.CallOption) (*ArchiveUserDeviceTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchiveUserDeviceTokenResponse)
+	err := c.cc.Invoke(ctx, UserNotificationsService_ArchiveUserDeviceToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserNotificationsServiceServer is the server API for UserNotificationsService service.
 // All implementations must embed UnimplementedUserNotificationsServiceServer
 // for forward compatibility.
@@ -79,6 +127,10 @@ type UserNotificationsServiceServer interface {
 	GetUserNotification(context.Context, *GetUserNotificationRequest) (*GetUserNotificationResponse, error)
 	GetUserNotifications(context.Context, *GetUserNotificationsRequest) (*GetUserNotificationsResponse, error)
 	UpdateUserNotification(context.Context, *UpdateUserNotificationRequest) (*UpdateUserNotificationResponse, error)
+	RegisterDeviceToken(context.Context, *RegisterDeviceTokenRequest) (*RegisterDeviceTokenResponse, error)
+	GetUserDeviceToken(context.Context, *GetUserDeviceTokenRequest) (*GetUserDeviceTokenResponse, error)
+	GetUserDeviceTokens(context.Context, *GetUserDeviceTokensRequest) (*GetUserDeviceTokensResponse, error)
+	ArchiveUserDeviceToken(context.Context, *ArchiveUserDeviceTokenRequest) (*ArchiveUserDeviceTokenResponse, error)
 	mustEmbedUnimplementedUserNotificationsServiceServer()
 }
 
@@ -97,6 +149,18 @@ func (UnimplementedUserNotificationsServiceServer) GetUserNotifications(context.
 }
 func (UnimplementedUserNotificationsServiceServer) UpdateUserNotification(context.Context, *UpdateUserNotificationRequest) (*UpdateUserNotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserNotification not implemented")
+}
+func (UnimplementedUserNotificationsServiceServer) RegisterDeviceToken(context.Context, *RegisterDeviceTokenRequest) (*RegisterDeviceTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterDeviceToken not implemented")
+}
+func (UnimplementedUserNotificationsServiceServer) GetUserDeviceToken(context.Context, *GetUserDeviceTokenRequest) (*GetUserDeviceTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserDeviceToken not implemented")
+}
+func (UnimplementedUserNotificationsServiceServer) GetUserDeviceTokens(context.Context, *GetUserDeviceTokensRequest) (*GetUserDeviceTokensResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserDeviceTokens not implemented")
+}
+func (UnimplementedUserNotificationsServiceServer) ArchiveUserDeviceToken(context.Context, *ArchiveUserDeviceTokenRequest) (*ArchiveUserDeviceTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchiveUserDeviceToken not implemented")
 }
 func (UnimplementedUserNotificationsServiceServer) mustEmbedUnimplementedUserNotificationsServiceServer() {
 }
@@ -174,6 +238,78 @@ func _UserNotificationsService_UpdateUserNotification_Handler(srv interface{}, c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserNotificationsService_RegisterDeviceToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterDeviceTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserNotificationsServiceServer).RegisterDeviceToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserNotificationsService_RegisterDeviceToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserNotificationsServiceServer).RegisterDeviceToken(ctx, req.(*RegisterDeviceTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserNotificationsService_GetUserDeviceToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserDeviceTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserNotificationsServiceServer).GetUserDeviceToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserNotificationsService_GetUserDeviceToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserNotificationsServiceServer).GetUserDeviceToken(ctx, req.(*GetUserDeviceTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserNotificationsService_GetUserDeviceTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserDeviceTokensRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserNotificationsServiceServer).GetUserDeviceTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserNotificationsService_GetUserDeviceTokens_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserNotificationsServiceServer).GetUserDeviceTokens(ctx, req.(*GetUserDeviceTokensRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserNotificationsService_ArchiveUserDeviceToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchiveUserDeviceTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserNotificationsServiceServer).ArchiveUserDeviceToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserNotificationsService_ArchiveUserDeviceToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserNotificationsServiceServer).ArchiveUserDeviceToken(ctx, req.(*ArchiveUserDeviceTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserNotificationsService_ServiceDesc is the grpc.ServiceDesc for UserNotificationsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -192,6 +328,22 @@ var UserNotificationsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUserNotification",
 			Handler:    _UserNotificationsService_UpdateUserNotification_Handler,
+		},
+		{
+			MethodName: "RegisterDeviceToken",
+			Handler:    _UserNotificationsService_RegisterDeviceToken_Handler,
+		},
+		{
+			MethodName: "GetUserDeviceToken",
+			Handler:    _UserNotificationsService_GetUserDeviceToken_Handler,
+		},
+		{
+			MethodName: "GetUserDeviceTokens",
+			Handler:    _UserNotificationsService_GetUserDeviceTokens_Handler,
+		},
+		{
+			MethodName: "ArchiveUserDeviceToken",
+			Handler:    _UserNotificationsService_ArchiveUserDeviceToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

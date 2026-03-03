@@ -44,3 +44,48 @@ func (m *Repository) UpdateUserNotification(ctx context.Context, updated *notifi
 	args := m.Called(ctx, updated)
 	return args.Error(0)
 }
+
+// UserDeviceTokenExists is a mock function.
+func (m *Repository) UserDeviceTokenExists(ctx context.Context, userID, tokenID string) (bool, error) {
+	args := m.Called(ctx, userID, tokenID)
+	return args.Bool(0), args.Error(1)
+}
+
+// GetUserDeviceToken is a mock function.
+func (m *Repository) GetUserDeviceToken(ctx context.Context, userID, tokenID string) (*notifications.UserDeviceToken, error) {
+	args := m.Called(ctx, userID, tokenID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*notifications.UserDeviceToken), args.Error(1)
+}
+
+// GetUserDeviceTokens is a mock function.
+func (m *Repository) GetUserDeviceTokens(ctx context.Context, userID string, filter *filtering.QueryFilter, platformFilter *string) (*filtering.QueryFilteredResult[notifications.UserDeviceToken], error) {
+	args := m.Called(ctx, userID, filter, platformFilter)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*filtering.QueryFilteredResult[notifications.UserDeviceToken]), args.Error(1)
+}
+
+// CreateUserDeviceToken is a mock function.
+func (m *Repository) CreateUserDeviceToken(ctx context.Context, input *notifications.UserDeviceTokenDatabaseCreationInput) (*notifications.UserDeviceToken, error) {
+	args := m.Called(ctx, input)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*notifications.UserDeviceToken), args.Error(1)
+}
+
+// UpdateUserDeviceToken is a mock function.
+func (m *Repository) UpdateUserDeviceToken(ctx context.Context, updated *notifications.UserDeviceToken) error {
+	args := m.Called(ctx, updated)
+	return args.Error(0)
+}
+
+// ArchiveUserDeviceToken is a mock function.
+func (m *Repository) ArchiveUserDeviceToken(ctx context.Context, userID, tokenID string) error {
+	args := m.Called(ctx, userID, tokenID)
+	return args.Error(0)
+}

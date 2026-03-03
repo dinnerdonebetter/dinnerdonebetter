@@ -20,5 +20,17 @@ func ProvideMethodPermissions() NotificationsMethodPermissions {
 		notificationssvc.UserNotificationsService_UpdateUserNotification_FullMethodName: {
 			authorization.UpdateUserNotificationsPermission,
 		},
+		notificationssvc.UserNotificationsService_RegisterDeviceToken_FullMethodName: {
+			authorization.CreateUserDeviceTokensPermission,
+		},
+		notificationssvc.UserNotificationsService_GetUserDeviceToken_FullMethodName: {
+			authorization.ReadUserDeviceTokensPermission,
+		},
+		notificationssvc.UserNotificationsService_GetUserDeviceTokens_FullMethodName: {
+			authorization.ReadUserDeviceTokensPermission,
+		},
+		notificationssvc.UserNotificationsService_ArchiveUserDeviceToken_FullMethodName: {
+			authorization.ArchiveUserDeviceTokensPermission,
+		},
 	}
 }
