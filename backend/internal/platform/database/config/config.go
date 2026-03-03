@@ -62,8 +62,13 @@ var (
 )
 
 // GetConnectionString implements database.ClientConfig.
-func (cfg *Config) GetConnectionString() string {
+func (cfg *Config) GetReadConnectionString() string {
 	return cfg.ReadConnection.String()
+}
+
+// GetWriteConnectionString implements database.ClientConfig.
+func (cfg *Config) GetWriteConnectionString() string {
+	return cfg.WriteConnection.String()
 }
 
 // GetMaxPingAttempts implements database.ClientConfig.
@@ -188,7 +193,7 @@ func ProvideDatabase(
 
 	// Run migrations if enabled and migrator is provided
 	if cfg.RunMigrations && migrator != nil {
-		if err = migrator.Migrate(ctx, client.DB()); err != nil {
+		if err = migrator.Migrate(ctx, client.WriteDB()); err != nil {
 			return nil, fmt.Errorf("running migrations: %w", err)
 		}
 	}

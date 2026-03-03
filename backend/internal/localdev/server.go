@@ -70,7 +70,7 @@ func CreatePremadeAdminUser(
 	}
 
 	// one-off query because I really don't want to make this functionality concrete
-	if _, err = dbClient.DB().Exec(fmt.Sprintf("UPDATE users SET service_role='service_admin' WHERE id='%s'", user.ID)); err != nil {
+	if _, err = dbClient.WriteDB().Exec(fmt.Sprintf("UPDATE users SET service_role='service_admin' WHERE id='%s'", user.ID)); err != nil {
 		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
 

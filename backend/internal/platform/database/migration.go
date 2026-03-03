@@ -16,7 +16,8 @@ type Migrator interface {
 // This interface allows the config package to provide configuration
 // without creating an import cycle.
 type ClientConfig interface {
-	GetConnectionString() string
+	GetReadConnectionString() string
+	GetWriteConnectionString() string
 	GetMaxPingAttempts() uint64
 	GetPingWaitPeriod() time.Duration
 }

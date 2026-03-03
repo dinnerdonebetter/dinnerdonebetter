@@ -25,7 +25,11 @@ type testClientConfig struct {
 
 var _ database.ClientConfig = (*testClientConfig)(nil)
 
-func (c *testClientConfig) GetConnectionString() string {
+func (c *testClientConfig) GetReadConnectionString() string {
+	return c.connectionString
+}
+
+func (c *testClientConfig) GetWriteConnectionString() string {
 	return c.connectionString
 }
 
