@@ -4,6 +4,12 @@ resource "random_string" "oauth2_token_encryption_key" {
   special = false
 }
 
+# API server user device token encryption key
+resource "random_string" "user_device_token_encryption_key" {
+  length  = 32
+  special = false
+}
+
 # JWT Signing key
 resource "random_string" "jwt_signing_key" {
   length  = 32
