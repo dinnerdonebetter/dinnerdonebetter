@@ -3,12 +3,12 @@
     "apps": [],
     "details": [
       {
-        "appID": "A96L6WFB5R.com.dinnerdonebetter.ios",
+        "appID": "K8R2Q5UWQS.com.dinnerdonebetter.ios",
         "paths": ["/accept_invitation", "/accept_invitation/*"]
       }
     ]
   },
   "webcredentials": {
-    "apps": ["A96L6WFB5R.com.dinnerdonebetter.ios"]
+    "apps": ["K8R2Q5UWQS.com.dinnerdonebetter.ios"]
   }
 }
