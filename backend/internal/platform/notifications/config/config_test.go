@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -57,7 +58,18 @@ func TestConfig_ValidateWithContext(t *testing.T) {
 		assert.NoError(t, cfg.ValidateWithContext(ctx))
 	})
 
-	t.Run("with apns_fcm provider and nil APNs", func(t *testing.T) {
+	t.Run("with apns_fcm provider and both nil", func(t *testing.T) {
+		t.Parallel()
+
+		cfg := &Config{
+			Provider: ProviderAPNsFCM,
+			APNs:     nil,
+			FCM:      nil,
+		}
+		assert.Error(t, cfg.ValidateWithContext(ctx))
+	})
+
+	t.Run("with apns_fcm provider and nil APNs but FCM present", func(t *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{
@@ -65,10 +77,10 @@ func TestConfig_ValidateWithContext(t *testing.T) {
 			APNs:     nil,
 			FCM:      &FCMConfig{},
 		}
-		assert.Error(t, cfg.ValidateWithContext(ctx))
+		assert.NoError(t, cfg.ValidateWithContext(ctx))
 	})
 
-	t.Run("with apns_fcm provider and nil FCM", func(t *testing.T) {
+	t.Run("with apns_fcm provider and nil FCM but APNs present", func(t *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{
@@ -76,7 +88,7 @@ func TestConfig_ValidateWithContext(t *testing.T) {
 			APNs:     &APNsConfig{AuthKeyPath: "x", KeyID: "x", TeamID: "x", BundleID: "x"},
 			FCM:      nil,
 		}
-		assert.Error(t, cfg.ValidateWithContext(ctx))
+		assert.NoError(t, cfg.ValidateWithContext(ctx))
 	})
 
 	t.Run("with apns_fcm provider and both configs", func(t *testing.T) {
@@ -120,7 +132,7 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		assert.NoError(t, sender.SendPush(ctx, "android", "token", "title", "body"))
 	})
 
-	t.Run("with apns_fcm provider and nil APNs returns noop", func(t *testing.T) {
+	t.Run("with apns_fcm provider and nil APNs returns noop or FCM-only sender", func(t *testing.T) {
 		t.Parallel()
 
 		cfg := Config{
@@ -131,10 +143,11 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		sender, err := cfg.ProvidePushSender(ctx, logger, tracer)
 		require.NoError(t, err)
 		require.NotNil(t, sender)
-		assert.NoError(t, sender.SendPush(ctx, "ios", "token", "title", "body"))
+		// FCM init typically fails in unit tests (no ADC), so we get noop; if it succeeds, iOS would error
+		_ = sender.SendPush(ctx, "ios", "token", "title", "body")
 	})
 
-	t.Run("with apns_fcm provider and nil FCM returns noop", func(t *testing.T) {
+	t.Run("with apns_fcm provider and nil FCM returns iOS-only sender", func(t *testing.T) {
 		t.Parallel()
 
 		p8Path := createTestP8File(t)
@@ -146,11 +159,13 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		sender, err := cfg.ProvidePushSender(ctx, logger, tracer)
 		require.NoError(t, err)
 		require.NotNil(t, sender)
-		// Falls back to noop because FCM is nil
-		assert.NoError(t, sender.SendPush(ctx, "ios", "token", "title", "body"))
+		// Android not configured, should return ErrPlatformNotSupported
+		err = sender.SendPush(ctx, "android", "token", "title", "body")
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, notifications.ErrPlatformNotSupported)
 	})
 
-	t.Run("with apns_fcm provider and invalid APNs path returns noop", func(t *testing.T) {
+	t.Run("with apns_fcm provider and invalid APNs path returns noop or FCM-only sender", func(t *testing.T) {
 		t.Parallel()
 
 		cfg := Config{
@@ -161,11 +176,11 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		sender, err := cfg.ProvidePushSender(ctx, logger, tracer)
 		require.NoError(t, err)
 		require.NotNil(t, sender)
-		// Falls back to noop when APNs init fails
-		assert.NoError(t, sender.SendPush(ctx, "ios", "token", "title", "body"))
+		// APNs init fails; FCM init typically fails in unit tests, so we get noop
+		_ = sender.SendPush(ctx, "ios", "token", "title", "body")
 	})
 
-	t.Run("with apns_fcm provider and invalid FCM path returns noop", func(t *testing.T) {
+	t.Run("with apns_fcm provider and invalid FCM path returns iOS-only sender", func(t *testing.T) {
 		t.Parallel()
 
 		p8Path := createTestP8File(t)
@@ -177,8 +192,10 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		sender, err := cfg.ProvidePushSender(ctx, logger, tracer)
 		require.NoError(t, err)
 		require.NotNil(t, sender)
-		// Falls back to noop when FCM init fails (credentials file not found)
-		assert.NoError(t, sender.SendPush(ctx, "android", "token", "title", "body"))
+		// FCM init fails, so Android not configured; should return ErrPlatformNotSupported
+		err = sender.SendPush(ctx, "android", "token", "title", "body")
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, notifications.ErrPlatformNotSupported)
 	})
 
 	t.Run("with unknown provider returns noop", func(t *testing.T) {

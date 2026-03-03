@@ -49,22 +49,24 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 
 // ValidateWithContext validates the Config.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
+	provider := strings.ToLower(strings.TrimSpace(cfg.Provider))
 	return validation.ValidateStructWithContext(
 		ctx,
 		cfg,
 		validation.Field(&cfg.APNs, validation.When(
-			strings.ToLower(strings.TrimSpace(cfg.Provider)) == ProviderAPNsFCM,
+			provider == ProviderAPNsFCM && cfg.FCM == nil,
 			validation.Required,
 		)),
 		validation.Field(&cfg.FCM, validation.When(
-			strings.ToLower(strings.TrimSpace(cfg.Provider)) == ProviderAPNsFCM,
+			provider == ProviderAPNsFCM && cfg.APNs == nil,
 			validation.Required,
 		)),
 	)
 }
 
 // ProvidePushSender returns a PushNotificationSender based on config.
-// When provider is "apns_fcm" and config is valid, returns MultiPlatformPushSender.
+// When provider is "apns_fcm" and at least one platform config is valid, returns MultiPlatformPushSender.
+// Each platform is initialized independently; a failed init for one does not disable the other.
 func (cfg *Config) ProvidePushSender(
 	ctx context.Context,
 	logger logging.Logger,
@@ -72,32 +74,38 @@ func (cfg *Config) ProvidePushSender(
 ) (notifications.PushNotificationSender, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderAPNsFCM:
-		if cfg.APNs == nil || cfg.FCM == nil {
-			logger.Debug("push notifications: apns_fcm requested but config incomplete, using noop")
+		var apnsSender *apns.Sender
+		if cfg.APNs != nil {
+			apnsCfg := &apns.Config{
+				AuthKeyPath: cfg.APNs.AuthKeyPath,
+				KeyID:       cfg.APNs.KeyID,
+				TeamID:      cfg.APNs.TeamID,
+				BundleID:    cfg.APNs.BundleID,
+				Production:  cfg.APNs.Production,
+			}
+			s, err := apns.NewSender(apnsCfg, tracerProvider, logger)
+			if err != nil {
+				logger.WithValue("error", err).Debug("push notifications: APNs sender init failed, iOS push disabled")
+			} else {
+				apnsSender = s
+			}
+		}
+
+		var fcmSender *fcm.Sender
+		if cfg.FCM != nil {
+			fcmCfg := &fcm.Config{CredentialsPath: cfg.FCM.CredentialsPath}
+			s, err := fcm.NewSender(ctx, fcmCfg, tracerProvider, logger)
+			if err != nil {
+				logger.WithValue("error", err).Debug("push notifications: FCM sender init failed, Android push disabled")
+			} else {
+				fcmSender = s
+			}
+		}
+
+		if apnsSender == nil && fcmSender == nil {
+			logger.Debug("push notifications: no platform senders available, using noop")
 			return &notifications.NoopPushNotificationSender{}, nil
 		}
-
-		apnsCfg := &apns.Config{
-			AuthKeyPath: cfg.APNs.AuthKeyPath,
-			KeyID:       cfg.APNs.KeyID,
-			TeamID:      cfg.APNs.TeamID,
-			BundleID:    cfg.APNs.BundleID,
-			Production:  cfg.APNs.Production,
-		}
-
-		apnsSender, err := apns.NewSender(apnsCfg, tracerProvider, logger)
-		if err != nil {
-			logger.WithValue("error", err).Error("push notifications: failed to create APNs sender, using noop", err)
-			return &notifications.NoopPushNotificationSender{}, nil
-		}
-		fcmCfg := &fcm.Config{CredentialsPath: cfg.FCM.CredentialsPath}
-
-		fcmSender, err := fcm.NewSender(ctx, fcmCfg, tracerProvider, logger)
-		if err != nil {
-			logger.WithValue("error", err).Error("push notifications: failed to create FCM sender, using noop", err)
-			return &notifications.NoopPushNotificationSender{}, nil
-		}
-
 		return notifications.NewMultiPlatformPushSender(apnsSender, fcmSender, logger, tracerProvider), nil
 	default:
 		logger.Debug("push notifications: using noop sender")

@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications/fcm"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
 	"github.com/spf13/pflag"
 )
 
@@ -22,22 +23,15 @@ const (
 )
 
 var (
-	// Platform and device
-	platform    = pflag.String("platform", "ios", "Target platform: ios or android (required)")
-	deviceToken = pflag.String("device-token", "", "Device token to send to (required)")
-
-	// Message
-	title = pflag.String("title", defaultTitle, "Notification title")
-	body  = pflag.String("body", defaultBody, "Notification body")
-
-	// APNs (iOS)
-	authKeyPath = pflag.String("auth-key-path", "", "Path to APNs .p8 auth key file (required for ios)")
-	keyID       = pflag.String("key-id", "", "APNs key ID (required for ios)")
-	teamID      = pflag.String("team-id", "", "APNs team ID (required for ios)")
-	bundleID    = pflag.String("bundle-id", "", "App bundle ID (required for ios)")
-	production  = pflag.Bool("production", false, "Use APNs production environment (default: sandbox)")
-
-	// FCM (Android)
+	platform        = pflag.String("platform", "ios", "Target platform: ios or android (required)")
+	deviceToken     = pflag.String("device-token", "", "Device token to send to (required)")
+	title           = pflag.String("title", defaultTitle, "Notification title")
+	body            = pflag.String("body", defaultBody, "Notification body")
+	authKeyPath     = pflag.String("auth-key-path", "", "Path to APNs .p8 auth key file (required for ios)")
+	keyID           = pflag.String("key-id", "", "APNs key ID (required for ios)")
+	teamID          = pflag.String("team-id", "", "APNs team ID (required for ios)")
+	bundleID        = pflag.String("bundle-id", "", "App bundle ID (required for ios)")
+	production      = pflag.Bool("production", false, "Use APNs production environment (default: sandbox)")
 	credentialsPath = pflag.String("credentials-path", "", "Path to Firebase service account JSON (required for android, or use ADC)")
 )
 

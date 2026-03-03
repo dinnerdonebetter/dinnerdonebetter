@@ -17,19 +17,30 @@ func TestMultiPlatformPushSender_SendPush(t *testing.T) {
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewNoopTracerProvider()
 
-	t.Run("noop when both senders nil", func(t *testing.T) {
+	t.Run("ios returns ErrPlatformNotSupported when apnsSender nil", func(t *testing.T) {
 		t.Parallel()
 
 		sender := NewMultiPlatformPushSender(nil, nil, logger, tracer)
 		err := sender.SendPush(ctx, "ios", "token", "title", "body")
-		assert.NoError(t, err)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, ErrPlatformNotSupported)
 	})
 
-	t.Run("unknown platform returns nil", func(t *testing.T) {
+	t.Run("android returns ErrPlatformNotSupported when fcmSender nil", func(t *testing.T) {
+		t.Parallel()
+
+		sender := NewMultiPlatformPushSender(nil, nil, logger, tracer)
+		err := sender.SendPush(ctx, "android", "token", "title", "body")
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, ErrPlatformNotSupported)
+	})
+
+	t.Run("unknown platform returns error", func(t *testing.T) {
 		t.Parallel()
 
 		sender := NewMultiPlatformPushSender(nil, nil, logger, tracer)
 		err := sender.SendPush(ctx, "unknown", "token", "title", "body")
-		assert.NoError(t, err)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "unknown platform")
 	})
 }

@@ -2,13 +2,20 @@ package notifications
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications/apns"
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications/fcm"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
+
+// ErrPlatformNotSupported is returned when attempting to send to a platform
+// that has no configured sender (e.g., iOS token but APNs not configured).
+var ErrPlatformNotSupported = errors.New("push notifications not configured for this platform")
 
 const (
 	platformIOS     = "ios"
@@ -51,18 +58,15 @@ func (s *MultiPlatformPushSender) SendPush(ctx context.Context, platform, token,
 	switch platform {
 	case platformIOS:
 		if s.apnsSender == nil {
-			logger.Debug("push: ios token but APNs sender not configured, skipping")
-			return nil
+			return observability.PrepareAndLogError(ErrPlatformNotSupported, logger, span, "sending apns notification")
 		}
 		return s.apnsSender.Send(ctx, token, title, body)
 	case platformAndroid:
 		if s.fcmSender == nil {
-			logger.Debug("push: android token but FCM sender not configured, skipping")
-			return nil
+			return observability.PrepareAndLogError(ErrPlatformNotSupported, logger, span, "sending apns notification")
 		}
 		return s.fcmSender.Send(ctx, token, title, body)
 	default:
-		s.logger.WithValue("platform", platform).Debug("push: unknown platform, skipping")
-		return nil
+		return observability.PrepareAndLogError(fmt.Errorf("unknown platform %q", platform), logger, span, "sending apns notification")
 	}
 }
