@@ -31,13 +31,13 @@ const (
 	// AasaTeamIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.AppleAppSiteAssociation.TeamID`.
 	AasaTeamIDEnvVarKey = "DINNER_DONE_BETTER_AASA_TEAM_ID"
 
-	// AnalyticsCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `MealPlanGroceryListInitializerConfig.Analytics.CircuitBreaker.ErrorRate`.
+	// AnalyticsCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.CircuitBreaker.ErrorRate`.
 	AnalyticsCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_ERROR_RATE"
 
-	// AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `MealPlanGroceryListInitializerConfig.Analytics.CircuitBreaker.MinimumSampleThreshold`.
+	// AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.CircuitBreaker.MinimumSampleThreshold`.
 	AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
 
-	// AnalyticsCircuitBreakerNameEnvVarKey is the environment variable name to set to override `MealPlanGroceryListInitializerConfig.Analytics.CircuitBreaker.Name`.
+	// AnalyticsCircuitBreakerNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.CircuitBreaker.Name`.
 	AnalyticsCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_NAME"
 
 	// AnalyticsPosthogAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.Posthog.APIKey`.
@@ -148,13 +148,13 @@ const (
 	// DatabaseRunMigrationsEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.RunMigrations`.
 	DatabaseRunMigrationsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_RUN_MIGRATIONS"
 
-	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.CircuitBreaker.ErrorRate`.
+	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `AsyncMessageHandlerConfig.Email.CircuitBreaker.ErrorRate`.
 	EmailCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_ERROR_RATE"
 
-	// EmailCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.CircuitBreaker.MinimumSampleThreshold`.
+	// EmailCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `AsyncMessageHandlerConfig.Email.CircuitBreaker.MinimumSampleThreshold`.
 	EmailCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
 
-	// EmailCircuitBreakingNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.CircuitBreaker.Name`.
+	// EmailCircuitBreakingNameEnvVarKey is the environment variable name to set to override `AsyncMessageHandlerConfig.Email.CircuitBreaker.Name`.
 	EmailCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_NAME"
 
 	// EmailMailgunDomainEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Mailgun.Domain`.
@@ -298,8 +298,32 @@ const (
 	// ObservabilityTracingTracingSpanCollectionProbabilityEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Tracing.SpanCollectionProbability`.
 	ObservabilityTracingTracingSpanCollectionProbabilityEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SPAN_COLLECTION_PROBABILITY"
 
+	// PushNotificationsApnsAuthKeyPathEnvVarKey is the environment variable name to set to override `APIServiceConfig.PushNotifications.APNs.AuthKeyPath`.
+	PushNotificationsApnsAuthKeyPathEnvVarKey = "DINNER_DONE_BETTER_PUSH_NOTIFICATIONS_APNS_AUTH_KEY_PATH"
+
+	// PushNotificationsApnsBundleIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.PushNotifications.APNs.BundleID`.
+	PushNotificationsApnsBundleIDEnvVarKey = "DINNER_DONE_BETTER_PUSH_NOTIFICATIONS_APNS_BUNDLE_ID"
+
+	// PushNotificationsApnsKeyIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.PushNotifications.APNs.KeyID`.
+	PushNotificationsApnsKeyIDEnvVarKey = "DINNER_DONE_BETTER_PUSH_NOTIFICATIONS_APNS_KEY_ID"
+
+	// PushNotificationsApnsProductionEnvVarKey is the environment variable name to set to override `APIServiceConfig.PushNotifications.APNs.Production`.
+	PushNotificationsApnsProductionEnvVarKey = "DINNER_DONE_BETTER_PUSH_NOTIFICATIONS_APNS_PRODUCTION"
+
+	// PushNotificationsApnsTeamIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.PushNotifications.APNs.TeamID`.
+	PushNotificationsApnsTeamIDEnvVarKey = "DINNER_DONE_BETTER_PUSH_NOTIFICATIONS_APNS_TEAM_ID"
+
+	// PushNotificationsFcmCredentialsPathEnvVarKey is the environment variable name to set to override `APIServiceConfig.PushNotifications.FCM.CredentialsPath`.
+	PushNotificationsFcmCredentialsPathEnvVarKey = "DINNER_DONE_BETTER_PUSH_NOTIFICATIONS_FCM_CREDENTIALS_PATH"
+
+	// PushNotificationsProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.PushNotifications.Provider`.
+	PushNotificationsProviderEnvVarKey = "DINNER_DONE_BETTER_PUSH_NOTIFICATIONS_PROVIDER"
+
 	// QueuesDataChangesTopicNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Queues.DataChangesTopicName`.
 	QueuesDataChangesTopicNameEnvVarKey = "DINNER_DONE_BETTER_QUEUES_DATA_CHANGES_TOPIC_NAME"
+
+	// QueuesMobileNotificationsTopicNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Queues.MobileNotificationsTopicName`.
+	QueuesMobileNotificationsTopicNameEnvVarKey = "DINNER_DONE_BETTER_QUEUES_MOBILE_NOTIFICATIONS_TOPIC_NAME"
 
 	// QueuesOutboundEmailsTopicNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Queues.OutboundEmailsTopicName`.
 	QueuesOutboundEmailsTopicNameEnvVarKey = "DINNER_DONE_BETTER_QUEUES_OUTBOUND_EMAILS_TOPIC_NAME"
