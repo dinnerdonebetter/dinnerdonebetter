@@ -57,7 +57,7 @@ class MealListViewModel {
       let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
 
       // Create request
-      var request = Mealplanning_GetMealsRequest()
+      let request = Mealplanning_GetMealsRequest()
 
       // Execute request
       let response = try await clientManager.client.mealPlanning.getMeals(
@@ -122,7 +122,7 @@ class MealListViewModel {
       // Create search request
       var request = Mealplanning_SearchForMealsRequest()
       request.query = query
-      request.useSearchService = false  // disabled for local testing
+      request.useSearchService = APIConfiguration.useSearchService
 
       // Execute search
       let response = try await clientManager.client.mealPlanning.searchForMeals(

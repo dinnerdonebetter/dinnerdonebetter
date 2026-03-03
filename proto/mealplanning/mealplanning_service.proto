@@ -101,6 +101,7 @@ service MealPlanningService {
   rpc GetMealPlansForAccount(GetMealPlansForAccountRequest) returns (GetMealPlansForAccountResponse);
   rpc GetMealLists(GetMealListsRequest) returns (GetMealListsResponse);
   rpc GetMeals(GetMealsRequest) returns (GetMealsResponse);
+  rpc GetMermaidDiagramForMeal(GetMermaidDiagramForMealRequest) returns (GetMermaidDiagramForMealResponse);
   rpc GetMermaidDiagramForRecipe(GetMermaidDiagramForRecipeRequest) returns (GetMermaidDiagramForRecipeResponse);
   rpc GetRandomValidIngredient(GetRandomValidIngredientRequest) returns (GetRandomValidIngredientResponse);
   rpc GetRandomValidInstrument(GetRandomValidInstrumentRequest) returns (GetRandomValidInstrumentResponse);

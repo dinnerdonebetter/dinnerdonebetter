@@ -276,6 +276,200 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 
 		assert.Equal(t, expected, actual)
 	})
+
+	T.Run("with associated recipe", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		g := newAnalyzerForTest(t)
+
+		dice := fakes.BuildFakeValidPreparation()
+		dice.Name = "dice"
+		top := fakes.BuildFakeValidPreparation()
+		top.Name = "top"
+
+		breadcrumbProductID := fakes.BuildFakeID()
+		assocStepID := fakes.BuildFakeID()
+		assocRecipe := &mealplanning.Recipe{
+			ID:   "breadcrumbs-recipe-id",
+			Name: "Caesar Breadcrumbs",
+			Steps: []*mealplanning.RecipeStep{
+				{
+					ID:          assocStepID,
+					Preparation: *dice,
+					Products: []*mealplanning.RecipeStepProduct{
+						{ID: breadcrumbProductID, Name: "caesar breadcrumbs", Type: mealplanning.RecipeStepProductIngredientType},
+					},
+					Index: 0,
+				},
+			},
+		}
+
+		mainStepID := fakes.BuildFakeID()
+		recipe := &mealplanning.Recipe{
+			Name: "Caesar Roasted Broccoli",
+			Steps: []*mealplanning.RecipeStep{
+				{
+					ID:          mainStepID,
+					Preparation: *top,
+					Ingredients: []*mealplanning.RecipeStepIngredient{
+						{
+							Name:                      "caesar breadcrumbs",
+							RecipeStepProductID:       &breadcrumbProductID,
+							RecipeStepProductRecipeID: func() *string { s := assocRecipe.ID; return &s }(),
+						},
+					},
+					Index: 0,
+				},
+			},
+			AssociatedRecipes: []*mealplanning.Recipe{assocRecipe},
+		}
+
+		actual := g.RenderMermaidDiagramForRecipe(ctx, recipe)
+
+		assert.Contains(t, actual, "Caesar Breadcrumbs")
+		assert.Contains(t, actual, "Step1")
+		assert.Contains(t, actual, "Step11001") // first associated recipe's first step
+		assert.Contains(t, actual, "ingredient")
+	})
+}
+
+func TestRecipeAnalyzer_MakeGraphForRecipe_WithAssociatedRecipe(T *testing.T) {
+	T.Parallel()
+
+	T.Run("builds graph with associated recipe steps", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		breadcrumbProductID := fakes.BuildFakeID()
+		assocRecipe := &mealplanning.Recipe{
+			ID:   "breadcrumbs-recipe-id",
+			Name: "Caesar Breadcrumbs",
+			Steps: []*mealplanning.RecipeStep{
+				{
+					ID:    fakes.BuildFakeID(),
+					Index: 0,
+					Products: []*mealplanning.RecipeStepProduct{
+						{ID: breadcrumbProductID, Type: mealplanning.RecipeStepProductIngredientType},
+					},
+				},
+			},
+		}
+
+		recipe := &mealplanning.Recipe{
+			Steps: []*mealplanning.RecipeStep{
+				{ID: fakes.BuildFakeID(), Index: 0},
+				{
+					ID:    fakes.BuildFakeID(),
+					Index: 1,
+					Ingredients: []*mealplanning.RecipeStepIngredient{
+						{
+							RecipeStepProductID:       &breadcrumbProductID,
+							RecipeStepProductRecipeID: func() *string { s := assocRecipe.ID; return &s }(),
+						},
+					},
+				},
+			},
+			AssociatedRecipes: []*mealplanning.Recipe{assocRecipe},
+		}
+
+		graph, err := g.MakeGraphForRecipe(ctx, recipe)
+		assert.NoError(t, err)
+		assert.NotNil(t, graph)
+
+		// Should have 3 nodes: 1 from assoc + 2 from main
+		assert.Equal(t, 3, graph.Nodes().Len())
+	})
+}
+
+func TestRecipeAnalyzer_MakeGraphForMeal(T *testing.T) {
+	T.Parallel()
+
+	T.Run("combines two recipe graphs", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		dice := fakes.BuildFakeValidPreparation()
+		dice.Name = "dice"
+		mainRecipe := &mealplanning.Recipe{
+			ID:   "main-id",
+			Name: "Roasted Chicken",
+			Steps: []*mealplanning.RecipeStep{
+				{ID: fakes.BuildFakeID(), Preparation: *dice, Index: 0},
+				{ID: fakes.BuildFakeID(), Preparation: *dice, Index: 1},
+			},
+		}
+		sideRecipe := &mealplanning.Recipe{
+			ID:   "side-id",
+			Name: "Caesar Broccoli",
+			Steps: []*mealplanning.RecipeStep{
+				{ID: fakes.BuildFakeID(), Preparation: *dice, Index: 0},
+			},
+		}
+
+		meal := &mealplanning.Meal{
+			Name: "Chicken Dinner",
+			Components: []*mealplanning.MealComponent{
+				{ComponentType: mealplanning.MealComponentTypesMain, Recipe: *mainRecipe},
+				{ComponentType: mealplanning.MealComponentTypesSide, Recipe: *sideRecipe},
+			},
+		}
+
+		graph, err := g.MakeGraphForMeal(ctx, meal)
+		assert.NoError(t, err)
+		assert.NotNil(t, graph)
+		// 2 steps from main + 1 from side = 3 nodes
+		assert.Equal(t, 3, graph.Nodes().Len())
+	})
+}
+
+func TestRecipeAnalyzer_RenderMermaidDiagramForMeal(T *testing.T) {
+	T.Parallel()
+
+	T.Run("renders meal with multiple components", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		dice := fakes.BuildFakeValidPreparation()
+		dice.Name = "dice"
+		mainRecipe := &mealplanning.Recipe{
+			ID:   "main-id",
+			Name: "Roasted Chicken",
+			Steps: []*mealplanning.RecipeStep{
+				{ID: fakes.BuildFakeID(), Preparation: *dice, Index: 0},
+			},
+		}
+		sideRecipe := &mealplanning.Recipe{
+			ID:   "side-id",
+			Name: "Caesar Broccoli",
+			Steps: []*mealplanning.RecipeStep{
+				{ID: fakes.BuildFakeID(), Preparation: *dice, Index: 0},
+			},
+		}
+
+		meal := &mealplanning.Meal{
+			Name: "Chicken Dinner",
+			Components: []*mealplanning.MealComponent{
+				{ComponentType: mealplanning.MealComponentTypesMain, Recipe: *mainRecipe},
+				{ComponentType: mealplanning.MealComponentTypesSide, Recipe: *sideRecipe},
+			},
+		}
+
+		actual := g.RenderMermaidDiagramForMeal(ctx, meal)
+
+		assert.Contains(t, actual, "Roasted Chicken")
+		assert.Contains(t, actual, "Caesar Broccoli")
+		assert.Contains(t, actual, "main:")
+		assert.Contains(t, actual, "side:")
+		assert.Contains(t, actual, "Step1")
+		assert.Contains(t, actual, "Step100001") // second component's first step
+	})
 }
 
 func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {

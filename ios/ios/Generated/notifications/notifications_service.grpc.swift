@@ -56,11 +56,63 @@ internal enum Notifications_UserNotificationsService {
                 method: "UpdateUserNotification"
             )
         }
+        /// Namespace for "RegisterDeviceToken" metadata.
+        internal enum RegisterDeviceToken {
+            /// Request type for "RegisterDeviceToken".
+            internal typealias Input = Notifications_RegisterDeviceTokenRequest
+            /// Response type for "RegisterDeviceToken".
+            internal typealias Output = Notifications_RegisterDeviceTokenResponse
+            /// Descriptor for "RegisterDeviceToken".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "notifications.UserNotificationsService"),
+                method: "RegisterDeviceToken"
+            )
+        }
+        /// Namespace for "GetUserDeviceToken" metadata.
+        internal enum GetUserDeviceToken {
+            /// Request type for "GetUserDeviceToken".
+            internal typealias Input = Notifications_GetUserDeviceTokenRequest
+            /// Response type for "GetUserDeviceToken".
+            internal typealias Output = Notifications_GetUserDeviceTokenResponse
+            /// Descriptor for "GetUserDeviceToken".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "notifications.UserNotificationsService"),
+                method: "GetUserDeviceToken"
+            )
+        }
+        /// Namespace for "GetUserDeviceTokens" metadata.
+        internal enum GetUserDeviceTokens {
+            /// Request type for "GetUserDeviceTokens".
+            internal typealias Input = Notifications_GetUserDeviceTokensRequest
+            /// Response type for "GetUserDeviceTokens".
+            internal typealias Output = Notifications_GetUserDeviceTokensResponse
+            /// Descriptor for "GetUserDeviceTokens".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "notifications.UserNotificationsService"),
+                method: "GetUserDeviceTokens"
+            )
+        }
+        /// Namespace for "ArchiveUserDeviceToken" metadata.
+        internal enum ArchiveUserDeviceToken {
+            /// Request type for "ArchiveUserDeviceToken".
+            internal typealias Input = Notifications_ArchiveUserDeviceTokenRequest
+            /// Response type for "ArchiveUserDeviceToken".
+            internal typealias Output = Notifications_ArchiveUserDeviceTokenResponse
+            /// Descriptor for "ArchiveUserDeviceToken".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "notifications.UserNotificationsService"),
+                method: "ArchiveUserDeviceToken"
+            )
+        }
         /// Descriptors for all methods in the "notifications.UserNotificationsService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
             GetUserNotification.descriptor,
             GetUserNotifications.descriptor,
-            UpdateUserNotification.descriptor
+            UpdateUserNotification.descriptor,
+            RegisterDeviceToken.descriptor,
+            GetUserDeviceToken.descriptor,
+            GetUserDeviceTokens.descriptor,
+            ArchiveUserDeviceToken.descriptor
         ]
     }
 }
@@ -135,6 +187,82 @@ extension Notifications_UserNotificationsService {
             deserializer: some GRPCCore.MessageDeserializer<Notifications_UpdateUserNotificationResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_UpdateUserNotificationResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "RegisterDeviceToken" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Notifications_RegisterDeviceTokenRequest` message.
+        ///   - serializer: A serializer for `Notifications_RegisterDeviceTokenRequest` messages.
+        ///   - deserializer: A deserializer for `Notifications_RegisterDeviceTokenResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func registerDeviceToken<Result>(
+            request: GRPCCore.ClientRequest<Notifications_RegisterDeviceTokenRequest>,
+            serializer: some GRPCCore.MessageSerializer<Notifications_RegisterDeviceTokenRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Notifications_RegisterDeviceTokenResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_RegisterDeviceTokenResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetUserDeviceToken" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Notifications_GetUserDeviceTokenRequest` message.
+        ///   - serializer: A serializer for `Notifications_GetUserDeviceTokenRequest` messages.
+        ///   - deserializer: A deserializer for `Notifications_GetUserDeviceTokenResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getUserDeviceToken<Result>(
+            request: GRPCCore.ClientRequest<Notifications_GetUserDeviceTokenRequest>,
+            serializer: some GRPCCore.MessageSerializer<Notifications_GetUserDeviceTokenRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Notifications_GetUserDeviceTokenResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_GetUserDeviceTokenResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetUserDeviceTokens" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Notifications_GetUserDeviceTokensRequest` message.
+        ///   - serializer: A serializer for `Notifications_GetUserDeviceTokensRequest` messages.
+        ///   - deserializer: A deserializer for `Notifications_GetUserDeviceTokensResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getUserDeviceTokens<Result>(
+            request: GRPCCore.ClientRequest<Notifications_GetUserDeviceTokensRequest>,
+            serializer: some GRPCCore.MessageSerializer<Notifications_GetUserDeviceTokensRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Notifications_GetUserDeviceTokensResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_GetUserDeviceTokensResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "ArchiveUserDeviceToken" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Notifications_ArchiveUserDeviceTokenRequest` message.
+        ///   - serializer: A serializer for `Notifications_ArchiveUserDeviceTokenRequest` messages.
+        ///   - deserializer: A deserializer for `Notifications_ArchiveUserDeviceTokenResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func archiveUserDeviceToken<Result>(
+            request: GRPCCore.ClientRequest<Notifications_ArchiveUserDeviceTokenRequest>,
+            serializer: some GRPCCore.MessageSerializer<Notifications_ArchiveUserDeviceTokenRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Notifications_ArchiveUserDeviceTokenResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_ArchiveUserDeviceTokenResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
     }
 
@@ -243,6 +371,126 @@ extension Notifications_UserNotificationsService {
                 onResponse: handleResponse
             )
         }
+
+        /// Call the "RegisterDeviceToken" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Notifications_RegisterDeviceTokenRequest` message.
+        ///   - serializer: A serializer for `Notifications_RegisterDeviceTokenRequest` messages.
+        ///   - deserializer: A deserializer for `Notifications_RegisterDeviceTokenResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func registerDeviceToken<Result>(
+            request: GRPCCore.ClientRequest<Notifications_RegisterDeviceTokenRequest>,
+            serializer: some GRPCCore.MessageSerializer<Notifications_RegisterDeviceTokenRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Notifications_RegisterDeviceTokenResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_RegisterDeviceTokenResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Notifications_UserNotificationsService.Method.RegisterDeviceToken.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetUserDeviceToken" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Notifications_GetUserDeviceTokenRequest` message.
+        ///   - serializer: A serializer for `Notifications_GetUserDeviceTokenRequest` messages.
+        ///   - deserializer: A deserializer for `Notifications_GetUserDeviceTokenResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getUserDeviceToken<Result>(
+            request: GRPCCore.ClientRequest<Notifications_GetUserDeviceTokenRequest>,
+            serializer: some GRPCCore.MessageSerializer<Notifications_GetUserDeviceTokenRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Notifications_GetUserDeviceTokenResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_GetUserDeviceTokenResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Notifications_UserNotificationsService.Method.GetUserDeviceToken.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetUserDeviceTokens" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Notifications_GetUserDeviceTokensRequest` message.
+        ///   - serializer: A serializer for `Notifications_GetUserDeviceTokensRequest` messages.
+        ///   - deserializer: A deserializer for `Notifications_GetUserDeviceTokensResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getUserDeviceTokens<Result>(
+            request: GRPCCore.ClientRequest<Notifications_GetUserDeviceTokensRequest>,
+            serializer: some GRPCCore.MessageSerializer<Notifications_GetUserDeviceTokensRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Notifications_GetUserDeviceTokensResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_GetUserDeviceTokensResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Notifications_UserNotificationsService.Method.GetUserDeviceTokens.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "ArchiveUserDeviceToken" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Notifications_ArchiveUserDeviceTokenRequest` message.
+        ///   - serializer: A serializer for `Notifications_ArchiveUserDeviceTokenRequest` messages.
+        ///   - deserializer: A deserializer for `Notifications_ArchiveUserDeviceTokenResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func archiveUserDeviceToken<Result>(
+            request: GRPCCore.ClientRequest<Notifications_ArchiveUserDeviceTokenRequest>,
+            serializer: some GRPCCore.MessageSerializer<Notifications_ArchiveUserDeviceTokenRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Notifications_ArchiveUserDeviceTokenResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_ArchiveUserDeviceTokenResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Notifications_UserNotificationsService.Method.ArchiveUserDeviceToken.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
     }
 }
 
@@ -319,6 +567,106 @@ extension Notifications_UserNotificationsService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Notifications_UpdateUserNotificationRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Notifications_UpdateUserNotificationResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "RegisterDeviceToken" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Notifications_RegisterDeviceTokenRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func registerDeviceToken<Result>(
+        request: GRPCCore.ClientRequest<Notifications_RegisterDeviceTokenRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_RegisterDeviceTokenResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.registerDeviceToken(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Notifications_RegisterDeviceTokenRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Notifications_RegisterDeviceTokenResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetUserDeviceToken" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Notifications_GetUserDeviceTokenRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getUserDeviceToken<Result>(
+        request: GRPCCore.ClientRequest<Notifications_GetUserDeviceTokenRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_GetUserDeviceTokenResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getUserDeviceToken(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Notifications_GetUserDeviceTokenRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Notifications_GetUserDeviceTokenResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetUserDeviceTokens" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Notifications_GetUserDeviceTokensRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getUserDeviceTokens<Result>(
+        request: GRPCCore.ClientRequest<Notifications_GetUserDeviceTokensRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_GetUserDeviceTokensResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getUserDeviceTokens(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Notifications_GetUserDeviceTokensRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Notifications_GetUserDeviceTokensResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ArchiveUserDeviceToken" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Notifications_ArchiveUserDeviceTokenRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func archiveUserDeviceToken<Result>(
+        request: GRPCCore.ClientRequest<Notifications_ArchiveUserDeviceTokenRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_ArchiveUserDeviceTokenResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.archiveUserDeviceToken(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Notifications_ArchiveUserDeviceTokenRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Notifications_ArchiveUserDeviceTokenResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -409,6 +757,122 @@ extension Notifications_UserNotificationsService.ClientProtocol {
             metadata: metadata
         )
         return try await self.updateUserNotification(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "RegisterDeviceToken" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func registerDeviceToken<Result>(
+        _ message: Notifications_RegisterDeviceTokenRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_RegisterDeviceTokenResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Notifications_RegisterDeviceTokenRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.registerDeviceToken(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetUserDeviceToken" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getUserDeviceToken<Result>(
+        _ message: Notifications_GetUserDeviceTokenRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_GetUserDeviceTokenResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Notifications_GetUserDeviceTokenRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getUserDeviceToken(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetUserDeviceTokens" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getUserDeviceTokens<Result>(
+        _ message: Notifications_GetUserDeviceTokensRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_GetUserDeviceTokensResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Notifications_GetUserDeviceTokensRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getUserDeviceTokens(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ArchiveUserDeviceToken" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func archiveUserDeviceToken<Result>(
+        _ message: Notifications_ArchiveUserDeviceTokenRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Notifications_ArchiveUserDeviceTokenResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Notifications_ArchiveUserDeviceTokenRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.archiveUserDeviceToken(
             request: request,
             options: options,
             onResponse: handleResponse

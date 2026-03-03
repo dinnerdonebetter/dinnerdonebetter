@@ -63,7 +63,6 @@ class HomeViewModel {
 
   /// The active meal plan: finalized plan whose start/end range is closest to the current date.
   var activeMealPlan: Mealplanning_MealPlan? {
-    let now = Date()
     let candidates = allMealPlans.filter { mealPlan in
       mealPlan.status == .finalized && !mealPlan.events.isEmpty
     }
@@ -81,6 +80,21 @@ class HomeViewModel {
     if now < start { return start.timeIntervalSince(now) }
     if now > end { return now.timeIntervalSince(end) }
     return 0
+  }
+
+  /// Finalized meal plans that are not the active plan (e.g. next week's plan).
+  var futureFinalizedMealPlans: [Mealplanning_MealPlan] {
+    guard let active = activeMealPlan else {
+      return allMealPlans.filter { $0.status == .finalized && !$0.events.isEmpty }
+        .sorted { mealPlanStartDate($0) < mealPlanStartDate($1) }
+    }
+    return allMealPlans.filter { mealPlan in
+      mealPlan.status == .finalized
+        && !mealPlan.events.isEmpty
+        && mealPlan.id != active.id
+        && mealPlanStartDate(mealPlan) >= mealPlanEndDate(active)
+    }
+    .sorted { mealPlanStartDate($0) < mealPlanStartDate($1) }
   }
 
   /// Meal plans that are not finalized and start after the active meal plan's end date.
@@ -196,6 +210,24 @@ class HomeViewModel {
 
   let authManager: AuthenticationManager
 
+  /// Logs error with diagnostic details (RPC code, HTTP status, NSError userInfo, etc.)
+  private static func logDiagnosticError(_ context: String, error: Error) {
+    print("❌ Error loading \(context): \(error)")
+    if let rpcError = error as? GRPCCore.RPCError {
+      print("   └─ gRPC status: \(rpcError.code), message: \(rpcError.message)")
+    }
+    let nsError = error as NSError
+    print("   └─ NSError domain: \(nsError.domain), code: \(nsError.code)")
+    if !nsError.userInfo.isEmpty {
+      for (key, value) in nsError.userInfo {
+        print("   └─ userInfo[\(key)]: \(value)")
+      }
+    }
+    if let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? Error {
+      print("   └─ underlying error: \(underlying)")
+    }
+  }
+
   init(authManager: AuthenticationManager) {
     self.authManager = authManager
   }
@@ -228,7 +260,7 @@ class HomeViewModel {
       )
     } catch {
       errorMessage = "Failed to load data: \(error.localizedDescription)"
-      print("❌ Error loading home data: \(error)")
+      Self.logDiagnosticError("home data", error: error)
     }
 
     isLoading = false

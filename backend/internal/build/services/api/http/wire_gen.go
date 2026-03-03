@@ -16,11 +16,9 @@ import (
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
@@ -89,12 +87,6 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
-	featureflagscfgConfig := &cfg.FeatureFlags
-	httpClient := tracing.BuildTracedHTTPClient()
-	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, provider, httpClient)
-	if err != nil {
-		return nil, err
-	}
 	analyticscfgConfig := &cfg.Analytics
 	eventReporter, err := analyticscfg.ProvideEventReporter(analyticscfgConfig, logger, tracerProvider, provider)
 	if err != nil {
@@ -105,7 +97,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	authDataService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, oauthRepository, identityDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, queuesConfig)
+	authDataService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, oauthRepository, identityDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, eventReporter, routeParamManager, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

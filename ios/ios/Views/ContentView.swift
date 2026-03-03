@@ -78,6 +78,7 @@ struct ContentView: View {
 
 #Preview {
   ContentView()
+    .environment(EventReporterService())
     .environment(AuthenticationManager())
     .environment(DeepLinkHandler())
 }

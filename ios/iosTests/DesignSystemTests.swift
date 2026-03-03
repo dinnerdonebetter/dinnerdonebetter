@@ -222,8 +222,7 @@ struct ComponentInstantiationTests {
   @Test("DSButton can be instantiated with default parameters")
   @MainActor
   func testDSButtonInstantiation() {
-    let button = DSButton("Test") {}
-    #expect(button != nil)
+    _ = DSButton("Test") {}
   }
 
   @Test("DSButton can be instantiated with all style variants")
@@ -231,8 +230,7 @@ struct ComponentInstantiationTests {
   func testDSButtonStyles() {
     let styles: [DSButtonStyle] = [.primary, .secondary, .tertiary, .destructive, .ghost, .outline]
     for style in styles {
-      let button = DSButton("Test", style: style) {}
-      #expect(button != nil)
+      _ = DSButton("Test", style: style) {}
     }
   }
 
@@ -241,10 +239,9 @@ struct ComponentInstantiationTests {
   func testDSCardStyles() {
     let styles: [DSCardStyle] = [.standard, .elevated, .outlined, .selected, .interactive]
     for style in styles {
-      let card = DSCard(style: style) {
+      _ = DSCard(style: style) {
         Text("Content")
       }
-      #expect(card != nil)
     }
   }
 
@@ -254,8 +251,7 @@ struct ComponentInstantiationTests {
     let binding = Binding<String>(get: { "" }, set: { _ in })
     let types: [DSTextFieldType] = [.text, .username, .email, .password, .phone, .number, .multiline]
     for type in types {
-      let field = DSTextField("Label", text: binding, type: type)
-      #expect(field != nil)
+      _ = DSTextField("Label", text: binding, type: type)
     }
   }
 
@@ -264,8 +260,7 @@ struct ComponentInstantiationTests {
   func testDSStatusBadgeTypes() {
     let types: [DSStatusType] = [.pending, .success, .error, .warning, .info, .cancelled]
     for type in types {
-      let badge = DSStatusBadge(type)
-      #expect(badge != nil)
+      _ = DSStatusBadge(type)
     }
   }
 
@@ -274,51 +269,45 @@ struct ComponentInstantiationTests {
   func testDSEmptyStateSizes() {
     let sizes: [DSEmptyStateSize] = [.compact, .standard, .large]
     for size in sizes {
-      let emptyState = DSEmptyState(
+      _ = DSEmptyState(
         icon: "star",
         title: "Title",
         message: "Message",
         size: size
       )
-      #expect(emptyState != nil)
     }
   }
 
   @Test("DSAvatarView can be instantiated with name")
   @MainActor
   func testDSAvatarViewWithName() {
-    let avatar = DSAvatarView(name: "John Doe", size: .md)
-    #expect(avatar != nil)
+    _ = DSAvatarView(name: "John Doe", size: .md)
   }
 
   @Test("DSSection can be instantiated with title and content")
   @MainActor
   func testDSSectionInstantiation() {
-    let section = DSSection("Title") {
+    _ = DSSection("Title") {
       Text("Content")
     }
-    #expect(section != nil)
   }
 
   @Test("DSLoadingView can be instantiated")
   @MainActor
   func testDSLoadingViewInstantiation() {
-    let loadingView = DSLoadingView("Loading...")
-    #expect(loadingView != nil)
+    _ = DSLoadingView("Loading...")
   }
 
   @Test("DSInitializingView can be instantiated")
   @MainActor
   func testDSInitializingViewInstantiation() {
-    let initView = DSInitializingView()
-    #expect(initView != nil)
+    _ = DSInitializingView()
   }
 
   @Test("DSIconButton can be instantiated")
   @MainActor
   func testDSIconButtonInstantiation() {
-    let iconButton = DSIconButton("star.fill") {}
-    #expect(iconButton != nil)
+    _ = DSIconButton("star.fill") {}
   }
 
   @Test("DSStatusDot can be instantiated with all status types")
@@ -326,15 +315,13 @@ struct ComponentInstantiationTests {
   func testDSStatusDotTypes() {
     let types: [DSStatusType] = [.pending, .success, .error, .warning, .info, .cancelled]
     for type in types {
-      let dot = DSStatusDot(type)
-      #expect(dot != nil)
+      _ = DSStatusDot(type)
     }
   }
 
   @Test("DSListRow can be instantiated")
   @MainActor
   func testDSListRowInstantiation() {
-    let row = DSListRow(title: "Title")
-    #expect(row != nil)
+    _ = DSListRow(title: "Title")
   }
 }

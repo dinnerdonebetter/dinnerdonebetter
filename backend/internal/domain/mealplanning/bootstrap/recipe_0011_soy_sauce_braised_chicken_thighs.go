@@ -14,11 +14,14 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	dryPrep := enums.Preparations["dry"]
 	seasonPrep := enums.Preparations["season"]
 	transferPrep := enums.Preparations["transfer"]
+	adjustPrep := enums.Preparations["adjust"]
 	preheatPrep := enums.Preparations["preheat"]
+	reducePrep := enums.Preparations["reduce"]
+	addPrep := enums.Preparations["add"]
+	cookPrep := enums.Preparations["cook"]
 	heatPrep := enums.Preparations["heat"]
 	panSearPrep := enums.Preparations["pan-sear"]
 	flipPrep := enums.Preparations["flip"]
-	sautPrep := enums.Preparations["sauté"]
 	simmerPrep := enums.Preparations["simmer"]
 	braisePrep := enums.Preparations["braise"]
 	cutPrep := enums.Preparations["chop"]
@@ -92,9 +95,29 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	transferBakingSheetVPV := enums.PreparationVessels[transferPrep.ID][bakingSheet.ID]
 	transferLargePlateVPV := enums.PreparationVessels[transferPrep.ID][largePlate.ID]
 	transferSkilletVPV := enums.PreparationVessels[transferPrep.ID][castIronSkillet.ID]
+	transferOvenVPV := enums.PreparationVessels[transferPrep.ID][oven.ID]
+
+	// Adjust
+	adjustOvenVPV := enums.PreparationVessels[adjustPrep.ID][oven.ID]
 
 	// Preheat
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
+
+	// Reduce
+	reduceSkilletVPV := enums.PreparationVessels[reducePrep.ID][castIronSkillet.ID]
+
+	// Add
+	addScallionsVIP := enums.IngredientPreparations[addPrep.ID][scallions.ID]
+	addGingerVIP := enums.IngredientPreparations[addPrep.ID][ginger.ID]
+	addGarlicVIP := enums.IngredientPreparations[addPrep.ID][garlic.ID]
+	addFiveSpiceVIP := enums.IngredientPreparations[addPrep.ID][fiveSpice.ID]
+	addDarkBrownSugarVIP := enums.IngredientPreparations[addPrep.ID][darkBrownSugar.ID]
+	addSkilletVPV := enums.PreparationVessels[addPrep.ID][castIronSkillet.ID]
+
+	// Cook
+	cookScallionsVIP := enums.IngredientPreparations[cookPrep.ID][scallions.ID]
+	cookSkilletVPV := enums.PreparationVessels[cookPrep.ID][castIronSkillet.ID]
+	cookWoodenSpoonVPI := enums.PreparationInstruments[cookPrep.ID][woodenSpoon.ID]
 
 	// Heat
 	heatOilVIP := enums.IngredientPreparations[heatPrep.ID][vegetableOil.ID]
@@ -109,12 +132,6 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	flipSkilletVPV := enums.PreparationVessels[flipPrep.ID][castIronSkillet.ID]
 	flipTongsVPI := enums.PreparationInstruments[flipPrep.ID][tongs.ID]
 
-	// Sauté
-	sautFiveSpiceVIP := enums.IngredientPreparations[sautPrep.ID][fiveSpice.ID]
-	sautDarkBrownSugarVIP := enums.IngredientPreparations[sautPrep.ID][darkBrownSugar.ID]
-	sautSkilletVPV := enums.PreparationVessels[sautPrep.ID][castIronSkillet.ID]
-	sautWoodenSpoonVPI := enums.PreparationInstruments[sautPrep.ID][woodenSpoon.ID]
-
 	// Simmer
 	simmerStarAniseVIP := enums.IngredientPreparations[simmerPrep.ID][starAnise.ID]
 	simmerCinnamonStickVIP := enums.IngredientPreparations[simmerPrep.ID][cinnamonStick.ID]
@@ -125,7 +142,6 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 
 	// Braise
 	braiseSkilletVPV := enums.PreparationVessels[braisePrep.ID][castIronSkillet.ID]
-	braiseOvenVPV := enums.PreparationVessels[braisePrep.ID][oven.ID]
 	braiseThermometerVPI := enums.PreparationInstruments[braisePrep.ID][thermometer.ID]
 
 	// Cut
@@ -351,6 +367,8 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		ExplicitInstructions: "Season the chicken generously on all sides with the salt mixture.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
+				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenThighsPoundVIMU.ID,
 				Name:                             "dried chicken on wire rack",
@@ -388,18 +406,46 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 4: When ready to cook, adjust oven rack to middle position and preheat to 300°F (150°C)
+	// Step 4: Adjust oven rack to middle position
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
+		PreparationID:        adjustPrep.ID,
 		Index:                4,
-		ExplicitInstructions: "When ready to cook, adjust the oven rack to the middle position and preheat to 300°F (150°C).",
+		ExplicitInstructions: "Adjust the oven rack to the middle position.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ValidPreparationVesselID: &adjustOvenVPV.ID,
+				Name:                     "oven",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "oven with rack in middle position",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 5: Preheat oven to 300°F (150°C)
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        preheatPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Preheat the oven to 300°F (150°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](150), // 300°F
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &preheatOvenVPV.ID,
-				Name:                     "oven",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &preheatOvenVPV.ID,
+				Name:                            "oven with rack in middle position",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -417,10 +463,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 5: Cut scallions into 2-inch segments
-	step5 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 6: Cut scallions into 2-inch segments
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        cutPrep.ID,
-		Index:                5,
+		Index:                6,
 		ExplicitInstructions: "Cut the scallions, green and white parts, into 2-inch segments.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -464,10 +510,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 6: Peel ginger
-	step6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 7: Peel ginger
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        peelPrep.ID,
-		Index:                6,
+		Index:                7,
 		ExplicitInstructions: "Peel the ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -511,14 +557,14 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 7: Slice ginger thinly
-	step7 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 8: Slice ginger thinly
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        slicePrep.ID,
-		Index:                7,
+		Index:                8,
 		ExplicitInstructions: "Thinly slice the peeled ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "peeled ginger",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -557,10 +603,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 8: Peel garlic cloves
-	step8 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 9: Peel garlic cloves
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        peelPrep.ID,
-		Index:                8,
+		Index:                9,
 		ExplicitInstructions: "Peel 5 medium cloves of garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -604,11 +650,11 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 9: In a large cast iron or carbon steel skillet set over medium heat, heat vegetable oil until shimmering
+	// Step 10: In a large cast iron or carbon steel skillet set over medium heat, heat vegetable oil until shimmering
 	shimmeringState := enums.IngredientStates["shimmering"]
-	step9 := &mealplanning.RecipeStepCreationRequestInput{
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        heatPrep.ID,
-		Index:                9,
+		Index:                10,
 		ExplicitInstructions: "In a large cast iron or carbon steel skillet set over medium heat, heat the vegetable oil until shimmering.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -649,10 +695,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 10: Working in batches if necessary, add chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes
-	step10 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 11: Working in batches if necessary, add chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        panSearPrep.ID,
-		Index:                10,
+		Index:                11,
 		ExplicitInstructions: "Working in batches if necessary, add the chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](240), // 4 minutes
@@ -681,7 +727,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
 				Name:                            "heated skillet with oil",
@@ -711,17 +757,14 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 11: Flip chicken and cook lightly on second side, about 2 minutes
-	step11 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 12: Flip chicken
+	step12 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        flipPrep.ID,
-		Index:                11,
-		ExplicitInstructions: "Flip the chicken and cook lightly on the second side, about 2 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](120), // 2 minutes
-		},
+		Index:                12,
+		ExplicitInstructions: "Flip the chicken.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "seared chicken thighs (skin-side)",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -740,10 +783,70 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &flipSkilletVPV.ID,
 				Name:                            "skillet with seared chicken",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "flipped chicken thighs",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+			{
+				Name:  "skillet with flipped chicken",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 13: Cook lightly on second side, about 2 minutes
+	step13 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        panSearPrep.ID,
+		Index:                13,
+		ExplicitInstructions: "Cook lightly on the second side, about 2 minutes.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](120), // 2 minutes
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &panSearChickenVIP.ID,
+				Name:                            "flipped chicken thighs",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
+				Name:                         "tongs",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
+				Name:                            "skillet with flipped chicken",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -770,14 +873,14 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 12: Transfer chicken to a large plate and set aside
-	step12 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 14: Transfer chicken to a large plate and set aside
+	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
-		Index:                12,
+		Index:                14,
 		ExplicitInstructions: "Transfer the chicken to a large plate and set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "seared chicken thighs (both sides)",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -815,42 +918,69 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 13: Reduce heat to medium-low. Add scallions, ginger, garlic, 1 teaspoon five spice powder, and 3 tablespoons dark brown sugar and cook, stirring, until vegetables are softened and starting to brown, 3 to 5 minutes
-	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        sautPrep.ID,
-		Index:                13,
-		ExplicitInstructions: "Reduce the heat to medium-low. Add the scallions, ginger, garlic, 1 teaspoon five spice powder, and 3 tablespoons dark brown sugar and cook, stirring, until the vegetables are softened and starting to brown, 3 to 5 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](180), // 3 minutes
-			Max: pointer.To[uint32](300), // 5 minutes
+	// Step 15: Reduce heat to medium-low
+	step15 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        reducePrep.ID,
+		Index:                15,
+		ExplicitInstructions: "Reduce the heat to medium-low.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &reduceSkilletVPV.ID,
+				Name:                            "skillet with seared chicken",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
 		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "skillet at medium-low heat",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 16: Add scallions, ginger, garlic, five spice powder, and dark brown sugar
+	step16 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        addPrep.ID,
+		Index:                16,
+		ExplicitInstructions: "Add the scallions, ginger, garlic, 1 teaspoon five spice powder, and 3 tablespoons dark brown sugar.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &addScallionsVIP.ID,
 				Name:                            "cut scallions",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 8,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &addGingerVIP.ID,
 				Name:                            "sliced ginger",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &addGarlicVIP.ID,
 				Name:                            "peeled garlic cloves",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 5,
 				},
 			},
 			{
-				ValidIngredientPreparationID:     &sautFiveSpiceVIP.ID,
+				ValidIngredientPreparationID:     &addFiveSpiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &fiveSpiceTeaspoonVIMU.ID,
 				Name:                             "five spice powder",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -858,7 +988,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				},
 			},
 			{
-				ValidIngredientPreparationID:     &sautDarkBrownSugarVIP.ID,
+				ValidIngredientPreparationID:     &addDarkBrownSugarVIP.ID,
 				ValidIngredientMeasurementUnitID: &darkBrownSugarTablespoonVIMU.ID,
 				Name:                             "dark brown sugar",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -866,9 +996,61 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				},
 			},
 		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &addSkilletVPV.ID,
+				Name:                            "skillet at medium-low heat",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "aromatics in skillet",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "skillet with aromatics",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 17: Cook, stirring, until vegetables are softened and starting to brown, 3 to 5 minutes
+	step17 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        cookPrep.ID,
+		Index:                17,
+		ExplicitInstructions: "Cook, stirring, until the vegetables are softened and starting to brown, 3 to 5 minutes.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](180), // 3 minutes
+			Max: pointer.To[uint32](300), // 5 minutes
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &cookScallionsVIP.ID,
+				Name:                            "aromatics in skillet",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ValidPreparationInstrumentID: &sautWoodenSpoonVPI.ID,
+				ValidPreparationInstrumentID: &cookWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
@@ -877,10 +1059,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &sautSkilletVPV.ID,
-				Name:                            "skillet with seared chicken",
+				ValidPreparationVesselID:        &cookSkilletVPV.ID,
+				Name:                            "skillet with aromatics",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -907,14 +1089,14 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 14: Add star anise, cinnamon stick, soy sauce, Shaoxing wine, and water, and bring to a simmer over medium heat
-	step14 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 18: Add star anise, cinnamon stick, soy sauce, Shaoxing wine, and water, and bring to a simmer over medium heat
+	step18 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        simmerPrep.ID,
-		Index:                14,
+		Index:                18,
 		ExplicitInstructions: "Add star anise, cinnamon stick, soy sauce, Shaoxing wine, and water, and bring to a simmer over medium heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "cooked aromatics",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -965,7 +1147,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &simmerSkilletVPV.ID,
 				Name:                            "skillet with aromatics",
@@ -995,14 +1177,14 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 15: Return chicken to pan skin-side-up, leaving the skin above the liquid but submerging most of the meat
-	step15 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 19: Return chicken to pan skin-side-up, leaving the skin above the liquid but submerging most of the meat
+	step19 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
-		Index:                15,
+		Index:                19,
 		ExplicitInstructions: "Return the chicken to the pan skin-side-up, leaving the skin above the liquid but submerging most of the meat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](12),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &transferChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenThighsPoundVIMU.ID,
@@ -1023,7 +1205,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &transferSkilletVPV.ID,
 				Name:                            "skillet with braising liquid",
@@ -1053,18 +1235,55 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
-	// Step 16: Transfer skillet to oven and cook uncovered until chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes
+	// Step 20: Transfer skillet to oven
+	step20 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        transferPrep.ID,
+		Index:                20,
+		ExplicitInstructions: "Transfer the skillet to the oven.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](19),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &transferSkilletVPV.ID,
+				Name:                            "skillet with chicken in braising liquid",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &transferOvenVPV.ID,
+				Name:                            "preheated oven at 300°F",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "skillet with chicken in oven",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 21: Cook uncovered until chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes
 	atTemperatureState := enums.IngredientStates["at temperature"]
-	step16 := &mealplanning.RecipeStepCreationRequestInput{
+	step21 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        braisePrep.ID,
-		Index:                16,
-		ExplicitInstructions: "Transfer the skillet to the oven and cook uncovered until the chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes.",
+		Index:                21,
+		ExplicitInstructions: "Cook uncovered until the chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](1800), // 30 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](19),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "chicken in braising liquid",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -1083,19 +1302,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &braiseSkilletVPV.ID,
-				Name:                            "skillet with chicken in braising liquid",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](20),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &braiseOvenVPV.ID,
-				Name:                            "preheated oven at 300°F",
+				ValidPreparationVesselID:        &braiseSkilletVPV.ID,
+				Name:                            "skillet with chicken in oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -1124,20 +1334,20 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				IngredientStateID: atTemperatureState.ID,
 				Notes:             "Chicken should register at least 175°F (79°C) on an instant-read thermometer",
-				Ingredients:       []uint64{0}, // Index of chicken ingredient in the step
+				Ingredients:       []uint64{0},
 				Optional:          false,
 			},
 		},
 	}
 
-	// Step 17: Remove pan from oven
-	step17 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 22: Remove pan from oven
+	step22 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
-		Index:                17,
+		Index:                22,
 		ExplicitInstructions: "Remove the pan from the oven.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](21),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "braised chicken thighs",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -1147,7 +1357,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](21),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &transferSkilletVPV.ID,
 				Name:                            "skillet with braised chicken",
@@ -1207,7 +1417,6 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			Max: pointer.To[uint32](259200), // 3 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
-			{BelongsToRecipeStepIndex: 5, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 6, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 7, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 8, SatisfiesRecipeStep: true},
@@ -1227,7 +1436,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			PortionName:       "serving",
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17},
+			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18, step19, step20, step21, step22},
 			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,

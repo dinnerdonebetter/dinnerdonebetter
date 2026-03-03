@@ -868,7 +868,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
 		Index:                14,
-		ExplicitInstructions: "Season to taste with salt and more hot sauce. Serve immediately.",
+		ExplicitInstructions: "Season to taste with salt and more hot sauce.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),

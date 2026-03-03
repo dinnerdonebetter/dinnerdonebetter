@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>OAuth2ClientID</key>
-	<string>$(OAUTH2_CLIENT_ID)</string>
-	<key>OAuth2ClientSecret</key>
-	<string>$(OAUTH2_CLIENT_SECRET)</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -33,5 +29,15 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>OAuth2ClientID</key>
+	<string>$(OAUTH2_CLIENT_ID)</string>
+	<key>OAuth2ClientSecret</key>
+	<string>$(OAUTH2_CLIENT_SECRET)</string>
+	<key>SegmentWriteKey</key>
+	<string>$(SEGMENT_WRITE_KEY)</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

@@ -232,6 +232,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
+				RecipeStepProductRecipeSlug:      pointer.To("caesar-dressing"),
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
 				Name:                             "Caesar dressing",
 				QuantityNotes:                    "add more if desired",
@@ -347,6 +348,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
+				RecipeStepProductRecipeSlug:      pointer.To("garlic-parmesan-croutons"),
 				ValidIngredientPreparationID:     &tossBreadVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadCupVIMU.ID,
 				Name:                             "garlic parmesan croutons",
@@ -420,7 +422,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	slStep7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        sprinklePrep.ID,
 		Index:                7,
-		ExplicitInstructions: "Sprinkle with the remaining cheese and croutons. Serve.",
+		ExplicitInstructions: "Sprinkle with the remaining cheese and croutons.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
@@ -447,6 +449,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
+				RecipeStepProductRecipeSlug:      pointer.To("garlic-parmesan-croutons"),
 				ValidIngredientPreparationID:     &sprinkleBreadVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadCupVIMU.ID,
 				Name:                             "garlic parmesan croutons",

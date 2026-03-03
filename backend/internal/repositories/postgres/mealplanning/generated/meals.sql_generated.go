@@ -112,8 +112,9 @@ SELECT
 	meal_components.archived_at as component_archived_at
 FROM meals
 	JOIN meal_components ON meal_components.meal_id=meals.id
+		AND meal_components.archived_at IS NULL
+		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE meals.archived_at IS NULL
-  AND meal_components.archived_at IS NULL
   AND meals.id = $1
 `
 
@@ -195,6 +196,14 @@ SELECT
 	meals.last_updated_at,
 	meals.archived_at,
 	meals.created_by_user,
+	meal_components.id as component_id,
+	meal_components.meal_id as component_meal_id,
+	meal_components.recipe_id as component_recipe_id,
+	meal_components.meal_component_type as component_meal_component_type,
+	meal_components.recipe_scale as component_recipe_scale,
+	meal_components.created_at as component_created_at,
+	meal_components.last_updated_at as component_last_updated_at,
+	meal_components.archived_at as component_archived_at,
 	(
 		SELECT COUNT(meals.id)
 		FROM meals
@@ -218,6 +227,8 @@ SELECT
 		WHERE meals.archived_at IS NULL
 	) AS total_count
 FROM meals
+	LEFT JOIN meal_components ON meal_components.meal_id=meals.id AND meal_components.archived_at IS NULL
+		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE
 	meals.archived_at IS NULL
 	AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
@@ -247,19 +258,27 @@ type GetMealsParams struct {
 }
 
 type GetMealsRow struct {
-	CreatedAt            time.Time
-	ArchivedAt           sql.NullTime
-	LastIndexedAt        sql.NullTime
-	LastUpdatedAt        sql.NullTime
-	Description          string
-	MinEstimatedPortions string
-	Name                 string
-	ID                   string
-	CreatedByUser        string
-	MaxEstimatedPortions sql.NullString
-	FilteredCount        int64
-	TotalCount           int64
-	EligibleForMealPlans bool
+	CreatedAt                  time.Time
+	ComponentArchivedAt        sql.NullTime
+	ComponentLastUpdatedAt     sql.NullTime
+	LastIndexedAt              sql.NullTime
+	LastUpdatedAt              sql.NullTime
+	ArchivedAt                 sql.NullTime
+	ComponentCreatedAt         sql.NullTime
+	ID                         string
+	Name                       string
+	Description                string
+	MinEstimatedPortions       string
+	CreatedByUser              string
+	ComponentRecipeScale       sql.NullString
+	ComponentRecipeID          sql.NullString
+	ComponentMealComponentType NullComponentType
+	ComponentMealID            sql.NullString
+	ComponentID                sql.NullString
+	MaxEstimatedPortions       sql.NullString
+	FilteredCount              int64
+	TotalCount                 int64
+	EligibleForMealPlans       bool
 }
 
 func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error) {
@@ -291,6 +310,14 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
 			&i.CreatedByUser,
+			&i.ComponentID,
+			&i.ComponentMealID,
+			&i.ComponentRecipeID,
+			&i.ComponentMealComponentType,
+			&i.ComponentRecipeScale,
+			&i.ComponentCreatedAt,
+			&i.ComponentLastUpdatedAt,
+			&i.ComponentArchivedAt,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {
@@ -320,6 +347,14 @@ SELECT
 	meals.last_updated_at,
 	meals.archived_at,
 	meals.created_by_user,
+	meal_components.id as component_id,
+	meal_components.meal_id as component_meal_id,
+	meal_components.recipe_id as component_recipe_id,
+	meal_components.meal_component_type as component_meal_component_type,
+	meal_components.recipe_scale as component_recipe_scale,
+	meal_components.created_at as component_created_at,
+	meal_components.last_updated_at as component_last_updated_at,
+	meal_components.archived_at as component_archived_at,
 	(
 		SELECT COUNT(meals.id)
 		FROM meals
@@ -345,6 +380,8 @@ SELECT
 			AND meals.created_by_user = $6
 	) AS total_count
 FROM meals
+	LEFT JOIN meal_components ON meal_components.meal_id=meals.id AND meal_components.archived_at IS NULL
+		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE
 	meals.archived_at IS NULL
 	AND meals.created_by_user = $6
@@ -377,19 +414,27 @@ type GetMealsCreatedByUserParams struct {
 }
 
 type GetMealsCreatedByUserRow struct {
-	CreatedAt            time.Time
-	ArchivedAt           sql.NullTime
-	LastIndexedAt        sql.NullTime
-	LastUpdatedAt        sql.NullTime
-	Description          string
-	MinEstimatedPortions string
-	Name                 string
-	ID                   string
-	CreatedByUser        string
-	MaxEstimatedPortions sql.NullString
-	FilteredCount        int64
-	TotalCount           int64
-	EligibleForMealPlans bool
+	CreatedAt                  time.Time
+	ComponentArchivedAt        sql.NullTime
+	ComponentLastUpdatedAt     sql.NullTime
+	LastIndexedAt              sql.NullTime
+	LastUpdatedAt              sql.NullTime
+	ArchivedAt                 sql.NullTime
+	ComponentCreatedAt         sql.NullTime
+	ID                         string
+	Name                       string
+	Description                string
+	MinEstimatedPortions       string
+	CreatedByUser              string
+	ComponentRecipeScale       sql.NullString
+	ComponentRecipeID          sql.NullString
+	ComponentMealComponentType NullComponentType
+	ComponentMealID            sql.NullString
+	ComponentID                sql.NullString
+	MaxEstimatedPortions       sql.NullString
+	FilteredCount              int64
+	TotalCount                 int64
+	EligibleForMealPlans       bool
 }
 
 func (q *Queries) GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error) {
@@ -422,6 +467,14 @@ func (q *Queries) GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMe
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
 			&i.CreatedByUser,
+			&i.ComponentID,
+			&i.ComponentMealID,
+			&i.ComponentRecipeID,
+			&i.ComponentMealComponentType,
+			&i.ComponentRecipeScale,
+			&i.ComponentCreatedAt,
+			&i.ComponentLastUpdatedAt,
+			&i.ComponentArchivedAt,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {
@@ -494,8 +547,9 @@ SELECT
 	meal_components.archived_at as component_archived_at
 FROM meals
 	JOIN meal_components ON meal_components.meal_id=meals.id
+		AND meal_components.archived_at IS NULL
+		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE meals.archived_at IS NULL
-  AND meal_components.archived_at IS NULL
   AND meals.id = ANY($1::text[])
 ORDER BY meals.id ASC
 `
@@ -610,9 +664,10 @@ SELECT
 	) AS total_count
 FROM meals
 	JOIN meal_components ON meal_components.meal_id=meals.id
+		AND meal_components.archived_at IS NULL
+		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE
 	meals.archived_at IS NULL
-	AND meal_components.archived_at IS NULL
 	AND meals.name ILIKE '%' || $6::text || '%'
 	AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND meals.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))

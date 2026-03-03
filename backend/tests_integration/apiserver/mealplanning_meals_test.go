@@ -3,16 +3,19 @@ package integration
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
@@ -113,15 +116,23 @@ func TestMeals_Listing(T *testing.T) {
 
 		_, userClient := createUserAndClientForTest(t)
 
+		// Capture timestamp before creating meals so we can filter to only our meals.
+		// GetMeals returns all meals globally; without this filter, other tests' meals
+		// can fill the first page and ours may be excluded when running the full suite.
+		// Use 5 minutes to tolerate clock skew between test runner and API/DB.
+		createdAfter := time.Now().UTC().Add(-5 * time.Minute)
+		createdAfterProto := timestamppb.New(createdAfter)
+
 		var expected []*types.Meal
 		for range 5 {
 			createdMeal := createMealForTest(t, userClient, nil)
-
 			expected = append(expected, createdMeal)
 		}
 
-		// assert meal list equality
-		actual, err := userClient.GetMeals(ctx, &mealplanninggrpc.GetMealsRequest{})
+		// assert meal list equality - filter to our meals only
+		actual, err := userClient.GetMeals(ctx, &mealplanninggrpc.GetMealsRequest{
+			Filter: &filtering.QueryFilter{CreatedAfter: createdAfterProto},
+		})
 		require.NoError(t, err)
 		assert.True(
 			t,
@@ -232,6 +243,23 @@ func TestMeals_Reading(T *testing.T) {
 		meal, err := userClient.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealId: nonexistentID})
 		assert.Error(t, err)
 		assert.Nil(t, meal)
+	})
+}
+
+func TestMeals_GetMermaidDiagramForMeal(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns non-empty mermaid diagram", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		createdMeal := createMealForTest(t, userClient, nil)
+
+		res, err := userClient.GetMermaidDiagramForMeal(ctx, &mealplanninggrpc.GetMermaidDiagramForMealRequest{MealId: createdMeal.ID})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		assert.NotEmpty(t, res.Response, "mermaid diagram should not be empty")
 	})
 }
 

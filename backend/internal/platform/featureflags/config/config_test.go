@@ -25,4 +25,15 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))
 	})
+
+	T.Run("with empty provider for noop", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &Config{
+			Provider: "",
+		}
+
+		assert.NoError(t, cfg.ValidateWithContext(ctx))
+	})
 }

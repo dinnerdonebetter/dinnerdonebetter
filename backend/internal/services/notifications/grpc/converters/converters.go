@@ -79,3 +79,31 @@ func ConvertUserDataCollectionToGRPCDataCollection(input *notifications.UserData
 
 	return result
 }
+
+func ConvertUserDeviceTokenToGRPCUserDeviceToken(token *notifications.UserDeviceToken) *notificationssvc.UserDeviceToken {
+	if token == nil {
+		return nil
+	}
+	return &notificationssvc.UserDeviceToken{
+		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(token.CreatedAt),
+		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(token.LastUpdatedAt),
+		Id:            token.ID,
+		DeviceToken:   token.DeviceToken,
+		Platform:      token.Platform,
+		BelongsToUser: token.BelongsToUser,
+	}
+}
+
+func ConvertGRPCUserDeviceTokenToUserDeviceToken(token *notificationssvc.UserDeviceToken) *notifications.UserDeviceToken {
+	if token == nil {
+		return nil
+	}
+	return &notifications.UserDeviceToken{
+		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(token.CreatedAt),
+		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(token.LastUpdatedAt),
+		ID:            token.Id,
+		DeviceToken:   token.DeviceToken,
+		Platform:      token.Platform,
+		BelongsToUser: token.BelongsToUser,
+	}
+}

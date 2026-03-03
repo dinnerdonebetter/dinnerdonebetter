@@ -20,6 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	AuthService_EvaluateBooleanFeatureFlag_FullMethodName    = "/auth.AuthService/EvaluateBooleanFeatureFlag"
+	AuthService_EvaluateInt64FeatureFlag_FullMethodName      = "/auth.AuthService/EvaluateInt64FeatureFlag"
+	AuthService_EvaluateStringFeatureFlag_FullMethodName     = "/auth.AuthService/EvaluateStringFeatureFlag"
 	AuthService_GetAuthStatus_FullMethodName                 = "/auth.AuthService/GetAuthStatus"
 	AuthService_ExchangeToken_FullMethodName                 = "/auth.AuthService/ExchangeToken"
 	AuthService_AdminLoginForToken_FullMethodName            = "/auth.AuthService/AdminLoginForToken"
@@ -41,6 +44,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
+	EvaluateBooleanFeatureFlag(ctx context.Context, in *EvaluateBooleanFeatureFlagRequest, opts ...grpc.CallOption) (*EvaluateBooleanFeatureFlagResponse, error)
+	EvaluateInt64FeatureFlag(ctx context.Context, in *EvaluateInt64FeatureFlagRequest, opts ...grpc.CallOption) (*EvaluateInt64FeatureFlagResponse, error)
+	EvaluateStringFeatureFlag(ctx context.Context, in *EvaluateStringFeatureFlagRequest, opts ...grpc.CallOption) (*EvaluateStringFeatureFlagResponse, error)
 	GetAuthStatus(ctx context.Context, in *GetAuthStatusRequest, opts ...grpc.CallOption) (*GetAuthStatusResponse, error)
 	ExchangeToken(ctx context.Context, in *ExchangeTokenRequest, opts ...grpc.CallOption) (*ExchangeTokenResponse, error)
 	AdminLoginForToken(ctx context.Context, in *AdminLoginForTokenRequest, opts ...grpc.CallOption) (*LoginForTokenResponse, error)
@@ -64,6 +70,36 @@ type authServiceClient struct {
 
 func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
+}
+
+func (c *authServiceClient) EvaluateBooleanFeatureFlag(ctx context.Context, in *EvaluateBooleanFeatureFlagRequest, opts ...grpc.CallOption) (*EvaluateBooleanFeatureFlagResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EvaluateBooleanFeatureFlagResponse)
+	err := c.cc.Invoke(ctx, AuthService_EvaluateBooleanFeatureFlag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) EvaluateInt64FeatureFlag(ctx context.Context, in *EvaluateInt64FeatureFlagRequest, opts ...grpc.CallOption) (*EvaluateInt64FeatureFlagResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EvaluateInt64FeatureFlagResponse)
+	err := c.cc.Invoke(ctx, AuthService_EvaluateInt64FeatureFlag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) EvaluateStringFeatureFlag(ctx context.Context, in *EvaluateStringFeatureFlagRequest, opts ...grpc.CallOption) (*EvaluateStringFeatureFlagResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EvaluateStringFeatureFlagResponse)
+	err := c.cc.Invoke(ctx, AuthService_EvaluateStringFeatureFlag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *authServiceClient) GetAuthStatus(ctx context.Context, in *GetAuthStatusRequest, opts ...grpc.CallOption) (*GetAuthStatusResponse, error) {
@@ -220,6 +256,9 @@ func (c *authServiceClient) UpdatePassword(ctx context.Context, in *UpdatePasswo
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
 type AuthServiceServer interface {
+	EvaluateBooleanFeatureFlag(context.Context, *EvaluateBooleanFeatureFlagRequest) (*EvaluateBooleanFeatureFlagResponse, error)
+	EvaluateInt64FeatureFlag(context.Context, *EvaluateInt64FeatureFlagRequest) (*EvaluateInt64FeatureFlagResponse, error)
+	EvaluateStringFeatureFlag(context.Context, *EvaluateStringFeatureFlagRequest) (*EvaluateStringFeatureFlagResponse, error)
 	GetAuthStatus(context.Context, *GetAuthStatusRequest) (*GetAuthStatusResponse, error)
 	ExchangeToken(context.Context, *ExchangeTokenRequest) (*ExchangeTokenResponse, error)
 	AdminLoginForToken(context.Context, *AdminLoginForTokenRequest) (*LoginForTokenResponse, error)
@@ -245,6 +284,15 @@ type AuthServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServiceServer struct{}
 
+func (UnimplementedAuthServiceServer) EvaluateBooleanFeatureFlag(context.Context, *EvaluateBooleanFeatureFlagRequest) (*EvaluateBooleanFeatureFlagResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EvaluateBooleanFeatureFlag not implemented")
+}
+func (UnimplementedAuthServiceServer) EvaluateInt64FeatureFlag(context.Context, *EvaluateInt64FeatureFlagRequest) (*EvaluateInt64FeatureFlagResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EvaluateInt64FeatureFlag not implemented")
+}
+func (UnimplementedAuthServiceServer) EvaluateStringFeatureFlag(context.Context, *EvaluateStringFeatureFlagRequest) (*EvaluateStringFeatureFlagResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EvaluateStringFeatureFlag not implemented")
+}
 func (UnimplementedAuthServiceServer) GetAuthStatus(context.Context, *GetAuthStatusRequest) (*GetAuthStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAuthStatus not implemented")
 }
@@ -309,6 +357,60 @@ func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&AuthService_ServiceDesc, srv)
+}
+
+func _AuthService_EvaluateBooleanFeatureFlag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EvaluateBooleanFeatureFlagRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).EvaluateBooleanFeatureFlag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_EvaluateBooleanFeatureFlag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).EvaluateBooleanFeatureFlag(ctx, req.(*EvaluateBooleanFeatureFlagRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_EvaluateInt64FeatureFlag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EvaluateInt64FeatureFlagRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).EvaluateInt64FeatureFlag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_EvaluateInt64FeatureFlag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).EvaluateInt64FeatureFlag(ctx, req.(*EvaluateInt64FeatureFlagRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_EvaluateStringFeatureFlag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EvaluateStringFeatureFlagRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).EvaluateStringFeatureFlag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_EvaluateStringFeatureFlag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).EvaluateStringFeatureFlag(ctx, req.(*EvaluateStringFeatureFlagRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _AuthService_GetAuthStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -588,6 +690,18 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "auth.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "EvaluateBooleanFeatureFlag",
+			Handler:    _AuthService_EvaluateBooleanFeatureFlag_Handler,
+		},
+		{
+			MethodName: "EvaluateInt64FeatureFlag",
+			Handler:    _AuthService_EvaluateInt64FeatureFlag_Handler,
+		},
+		{
+			MethodName: "EvaluateStringFeatureFlag",
+			Handler:    _AuthService_EvaluateStringFeatureFlag_Handler,
+		},
 		{
 			MethodName: "GetAuthStatus",
 			Handler:    _AuthService_GetAuthStatus_Handler,

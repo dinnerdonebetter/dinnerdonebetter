@@ -12,7 +12,7 @@
 	},
 	"routing": {
 		"chiConfig": {
-			"serviceName": "dinner_done_better",
+			"serviceName": "api_server",
 			"enableCORSForLocalhost": false
 		},
 		"provider": "chi"
@@ -50,7 +50,7 @@
 	},
 	"observability": {
 		"logging": {
-			"serviceName": "dinner_done_better",
+			"serviceName": "api_server",
 			"level": "info",
 			"otelslog": {
 				"endpointURL": "otel-collector-svc.prod.svc.cluster.local:4317",
@@ -64,10 +64,10 @@
 				"metricsCollectorEndpoint": "otel-collector-svc.prod.svc.cluster.local:4317",
 				"collectionInterval": 30000000000,
 				"insecure": true,
-				"enableRuntimeMetrics": false,
-				"enableHostMetrics": false
+				"enableRuntimeMetrics": true,
+				"enableHostMetrics": true
 			},
-			"serviceName": "dinner_done_better",
+			"serviceName": "api_server",
 			"provider": "otelgrpc"
 		},
 		"tracing": {
@@ -75,7 +75,7 @@
 				"collector_endpoint": "otel-collector-svc.prod.svc.cluster.local:4317",
 				"insecure": true
 			},
-			"service_name": "dinner_done_better",
+			"service_name": "api_server",
 			"provider": "otelgrpc",
 			"spanCollectionProbability": 0.1
 		}

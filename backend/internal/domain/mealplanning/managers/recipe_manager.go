@@ -34,12 +34,13 @@ type (
 		ListRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		CreateRecipe(ctx context.Context, creatorID string, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error)
 		ReadRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error)
-		SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
+		SearchRecipes(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error
 		UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error
 		ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error
 		RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*mealplanning.MealPlanTaskDatabaseCreationEstimate, error)
+		MealMermaid(ctx context.Context, meal *mealplanning.Meal) (string, error)
 		RecipeMermaid(ctx context.Context, recipeID string) (string, error)
 		CloneRecipe(ctx context.Context, recipeID, newOwnerID string) (*mealplanning.Recipe, error)
 		RecipeImageUpload(ctx context.Context) error
@@ -248,31 +249,44 @@ func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useSear
 	logger = filter.AttachToLogger(logger)
 
 	var (
-		recipes = &filtering.QueryFilteredResult[mealplanning.Recipe]{}
+		recipes *filtering.QueryFilteredResult[mealplanning.Recipe]
 		err     error
 	)
 
-	if !useSearchService {
-		recipes, err = m.db.SearchForRecipes(ctx, query, filter)
-	} else {
-		var recipeSubsets []*eatingindexing.RecipeSearchSubset
-		recipeSubsets, err = m.recipeSearchIndex.Search(ctx, query)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "failed to search external service for recipes")
-		}
-
-		ids := []string{}
-		for _, recipeSubset := range recipeSubsets {
-			ids = append(ids, recipeSubset.ID)
-		}
-
-		recipes.Data, err = m.db.GetRecipesWithIDs(ctx, ids)
+	if useSearchService {
+		recipes, err = m.searchRecipesViaIndex(ctx, query, filter)
 	}
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "failed to search for recipes")
+
+	if err != nil || recipes == nil {
+		recipes, err = m.db.SearchForRecipes(ctx, query, filter)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "failed to search for recipes")
+		}
 	}
 
 	return recipes, nil
+}
+
+// searchRecipesViaIndex searches recipes via the external search index. Returns (nil, err) on search failure, empty results, or GetRecipesWithIDs failure.
+func (m *recipeManager) searchRecipesViaIndex(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	recipeSubsets, err := m.recipeSearchIndex.Search(ctx, query)
+	if err != nil || len(recipeSubsets) == 0 {
+		return nil, err
+	}
+
+	ids := make([]string, 0, len(recipeSubsets))
+	for _, recipeSubset := range recipeSubsets {
+		ids = append(ids, recipeSubset.ID)
+	}
+
+	data, err := m.db.GetRecipesWithIDs(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return filtering.NewQueryFilteredResult(data, uint64(len(data)), uint64(len(data)), func(r *mealplanning.Recipe) string {
+		return r.ID
+	}, filter), nil
 }
 
 func (m *recipeManager) SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
@@ -397,6 +411,13 @@ func (m *recipeManager) RecipeImageUpload(ctx context.Context) error {
 	defer span.End()
 
 	return nil
+}
+
+func (m *recipeManager) MealMermaid(ctx context.Context, meal *mealplanning.Meal) (string, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.recipeAnalyzer.RenderMermaidDiagramForMeal(ctx, meal), nil
 }
 
 func (m *recipeManager) RecipeMermaid(ctx context.Context, recipeID string) (string, error) {

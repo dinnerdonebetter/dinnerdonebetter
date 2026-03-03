@@ -243,9 +243,6 @@ linters:
           - gosec
         path: cmd/tools/codegen/configs/main.go
       - linters:
-          - gocritic
-        path: internal/platform/featureflags/launchdarkly/mock_client.go
-      - linters:
           - paralleltest
         path: internal/config/env_vars_test.go
       - linters:

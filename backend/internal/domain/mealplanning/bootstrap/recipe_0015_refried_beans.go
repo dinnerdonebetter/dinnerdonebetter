@@ -123,6 +123,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Sauté
 	sautWhiteOnionVIP := enums.IngredientPreparations[sautPrep.ID][whiteOnion.ID]
+	sautPintoBeansVIP := enums.IngredientPreparations[sautPrep.ID][pintoBeans.ID]
 	sautLargeSkilletVPV := enums.PreparationVessels[sautPrep.ID][largeSkillet.ID]
 
 	// Stir
@@ -848,14 +849,11 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		},
 	}
 
-	// Step 14: Stir in beans and cook for 2 minutes
+	// Step 14: Stir in beans
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        stirPrep.ID,
 		Index:                14,
-		ExplicitInstructions: "Stir in the beans and cook for 2 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](120), // 2 minutes
-		},
+		ExplicitInstructions: "Stir in the beans.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
@@ -901,13 +899,72 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 					Min: pointer.To[float32](3),
 				},
 			},
+			{
+				Name:  "skillet with beans and onion",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 	}
 
-	// Step 15: Add 1/4 cup of reserved bean-cooking liquid
+	// Step 15: Cook for 2 minutes
 	step15 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
+		PreparationID:        sautPrep.ID,
 		Index:                15,
+		ExplicitInstructions: "Cook for 2 minutes, stirring occasionally.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](120), // 2 minutes
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &sautPintoBeansVIP.ID,
+				Name:                            "beans and onion in skillet",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 3,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &sautLargeSkilletVPV.ID,
+				Name:                            "heated fat in skillet",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "beans and onion in skillet",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](3),
+				},
+			},
+			{
+				Name:  "skillet with beans and onion",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 16: Add 1/4 cup of reserved bean-cooking liquid
+	step16 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        addPrep.ID,
+		Index:                16,
 		ExplicitInstructions: "Add 1/4 cup of the reserved bean-cooking liquid.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -924,8 +981,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "skillet with beans and onion",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -943,18 +1000,26 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 					Min: pointer.To[float32](3),
 				},
 			},
+			{
+				Name:  "skillet with beans and liquid",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 	}
 
-	// Step 16: Using bean masher, potato masher, or back of a wooden spoon, smash the beans to form a chunky purée; alternatively, use a stick blender to make a smoother purée
-	step16 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 17: Using bean masher, potato masher, or back of a wooden spoon, smash the beans to form a chunky purée; alternatively, use a stick blender to make a smoother purée
+	step17 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        smashPrep.ID,
-		Index:                16,
+		Index:                17,
 		ExplicitInstructions: "Using a bean masher, potato masher, or the back of a wooden spoon, smash the beans to form a chunky purée; alternatively, use a stick blender to make a smoother purée.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &smashPintoBeansVIP.ID,
 				Name:                            "beans with liquid in skillet",
@@ -976,10 +1041,10 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &smashLargeSkilletVPV.ID,
-				Name:                            "skillet with beans and onion",
+				Name:                            "skillet with beans and liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -996,18 +1061,26 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 					Min: pointer.To[float32](3),
 				},
 			},
+			{
+				Name:  "skillet with mashed beans",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 	}
 
-	// Step 17: Thin with more bean cooking water until desired consistency is reached. If refried beans become too wet, simmer, stirring, until thickened; if they become too dry, add more bean-cooking liquid, 1 tablespoon at a time, as needed.
+	// Step 18: Thin with more bean cooking water until desired consistency is reached
 	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
-	step17 := &mealplanning.RecipeStepCreationRequestInput{
+	step18 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        dilutePrep.ID,
-		Index:                17,
-		ExplicitInstructions: "Thin with more bean cooking water until the desired consistency is reached. If the refried beans become too wet, simmer, stirring, until thickened; if they become too dry, add more bean-cooking liquid, 1 tablespoon at a time, as needed.",
+		Index:                18,
+		ExplicitInstructions: "Thin with more bean cooking water until the desired consistency is reached. Add bean-cooking liquid, 1 tablespoon at a time, as needed if the beans become too dry.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &dilutePintoBeansVIP.ID,
 				Name:                            "mashed beans",
@@ -1029,10 +1102,10 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &diluteLargeSkilletVPV.ID,
-				Name:                            "skillet with beans and onion",
+				Name:                            "skillet with mashed beans",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -1049,6 +1122,14 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 					Min: pointer.To[float32](4),
 				},
 			},
+			{
+				Name:  "skillet with refried beans",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
@@ -1060,15 +1141,15 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		},
 	}
 
-	// Step 18: Season with salt and serve
-	step18 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 19: Season with salt
+	step19 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                18,
-		ExplicitInstructions: "Season with salt and serve.",
+		Index:                19,
+		ExplicitInstructions: "Season with salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &seasonPintoBeansVIP.ID,
 				Name:                            "refried beans at desired consistency",
@@ -1089,10 +1170,10 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &seasonLargeSkilletVPV.ID,
-				Name:                            "skillet with beans and onion",
+				Name:                            "skillet with refried beans at desired consistency",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -1174,7 +1255,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			PluralPortionName: "cups",
 			EligibleForMeals:  true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
-				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18,
+				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18, step19,
 			},
 			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},

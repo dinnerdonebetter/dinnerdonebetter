@@ -9,11 +9,18 @@ import (
 )
 
 type Querier interface {
+	ArchiveUserDeviceToken(ctx context.Context, db DBTX, arg *ArchiveUserDeviceTokenParams) (int64, error)
+	CheckUserDeviceTokenExistence(ctx context.Context, db DBTX, arg *CheckUserDeviceTokenExistenceParams) (bool, error)
 	CheckUserNotificationExistence(ctx context.Context, db DBTX, arg *CheckUserNotificationExistenceParams) (bool, error)
+	CreateUserDeviceToken(ctx context.Context, db DBTX, arg *CreateUserDeviceTokenParams) error
 	CreateUserNotification(ctx context.Context, db DBTX, arg *CreateUserNotificationParams) error
+	GetUserDeviceToken(ctx context.Context, db DBTX, arg *GetUserDeviceTokenParams) (*UserDeviceTokens, error)
+	GetUserDeviceTokensForUser(ctx context.Context, db DBTX, arg *GetUserDeviceTokensForUserParams) ([]*GetUserDeviceTokensForUserRow, error)
 	GetUserNotification(ctx context.Context, db DBTX, arg *GetUserNotificationParams) (*UserNotifications, error)
 	GetUserNotificationsForUser(ctx context.Context, db DBTX, arg *GetUserNotificationsForUserParams) ([]*GetUserNotificationsForUserRow, error)
+	UpdateUserDeviceToken(ctx context.Context, db DBTX, arg *UpdateUserDeviceTokenParams) (int64, error)
 	UpdateUserNotification(ctx context.Context, db DBTX, arg *UpdateUserNotificationParams) (int64, error)
+	UpsertUserDeviceToken(ctx context.Context, db DBTX, arg *UpsertUserDeviceTokenParams) (*UserDeviceTokens, error)
 }
 
 var _ Querier = (*Queries)(nil)

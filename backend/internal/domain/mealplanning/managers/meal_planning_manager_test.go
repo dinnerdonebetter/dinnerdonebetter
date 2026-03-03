@@ -16,6 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	mealplanningworkers "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -41,6 +42,37 @@ func buildMealPlanManagerForTest(t *testing.T) *mealPlanningManager {
 		mpp,
 		&textsearchcfg.Config{},
 		metrics.NewNoopMetricsProvider(),
+		nil, // groceryListInitializer - not needed for most tests
+		nil, // taskCreator - not needed for most tests
+	)
+	require.NoError(t, err)
+
+	mock.AssertExpectationsForObjects(t, mpp)
+
+	return m.(*mealPlanningManager)
+}
+
+func buildMealPlanManagerForTestWithWorkers(t *testing.T, groceryWorker, taskWorker *mealplanningworkers.MockWorker) *mealPlanningManager {
+	t.Helper()
+
+	queueCfg := &msgconfig.QueuesConfig{
+		DataChangesTopicName: t.Name(),
+	}
+
+	mpp := &mockpublishers.PublisherProvider{}
+	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+
+	m, err := NewMealPlanningManager(
+		t.Context(),
+		logging.NewNoopLogger(),
+		tracing.NewNoopTracerProvider(),
+		&mealplanningmock.Repository{},
+		queueCfg,
+		mpp,
+		&textsearchcfg.Config{},
+		metrics.NewNoopMetricsProvider(),
+		groceryWorker,
+		taskWorker,
 	)
 	require.NoError(t, err)
 
@@ -157,11 +189,36 @@ func TestMealPlanningManager_ReadMeal(T *testing.T) {
 func TestMealPlanningManager_SearchMeals(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("useSearchService false uses database", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
 		mpm := buildMealPlanManagerForTest(t)
+
+		expected := fakes.BuildFakeMealsList()
+		exampleQuery := fakes.BuildFakeID()
+
+		expectations := setupExpectationsForMealPlanningManager(
+			mpm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.SearchForMeals), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.SearchMeals(ctx, exampleQuery, false, nil)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+
+	T.Run("useSearchService true falls back to database when search returns empty", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+		// buildMealPlanManagerForTest uses empty textsearchcfg.Config, which provides NoopIndexManager
+		// that returns empty results - triggering fallback to database
 
 		expected := fakes.BuildFakeMealsList()
 		exampleQuery := fakes.BuildFakeID()
@@ -511,6 +568,40 @@ func TestMealPlanningManager_CreateMealPlan(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
+
+	T.Run("invokes workers when meal plan is created finalized", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		groceryWorker := &mealplanningworkers.MockWorker{}
+		taskWorker := &mealplanningworkers.MockWorker{}
+		groceryWorker.On("Work", testutils.ContextMatcher).Return(nil)
+		taskWorker.On("Work", testutils.ContextMatcher).Return(nil)
+
+		mpm := buildMealPlanManagerForTestWithWorkers(t, groceryWorker, taskWorker)
+
+		ownerID := fakes.BuildFakeID()
+		creatorID := fakes.BuildFakeID()
+		expected := fakes.BuildFakeMealPlan()
+		expected.Status = string(mealplanning.MealPlanStatusFinalized)
+		fakeInput := fakes.BuildFakeMealPlanCreationRequestInput()
+
+		expectations := setupExpectationsForMealPlanningManager(
+			mpm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.CreateMealPlan), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlanDatabaseCreationInput]()).Return(expected, nil)
+			},
+			map[string][]string{
+				mealplanning.MealPlanCreatedServiceEventType: {mealplanningkeys.MealPlanIDKey},
+			},
+		)
+
+		actual, err := mpm.CreateMealPlan(ctx, ownerID, creatorID, fakeInput)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, append(expectations, groceryWorker, taskWorker)...)
+	})
 }
 
 func TestMealPlanningManager_ReadMealPlan(T *testing.T) {
@@ -624,6 +715,36 @@ func TestMealPlanningManager_FinalizeMealPlan(T *testing.T) {
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+
+	T.Run("invokes workers when finalized", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		groceryWorker := &mealplanningworkers.MockWorker{}
+		taskWorker := &mealplanningworkers.MockWorker{}
+		groceryWorker.On("Work", testutils.ContextMatcher).Return(nil)
+		taskWorker.On("Work", testutils.ContextMatcher).Return(nil)
+
+		mpm := buildMealPlanManagerForTestWithWorkers(t, groceryWorker, taskWorker)
+
+		expected := fakes.BuildFakeMealPlan()
+
+		expectations := setupExpectationsForMealPlanningManager(
+			mpm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.AttemptToFinalizeMealPlan), testutils.ContextMatcher, expected.ID, expected.CreatedByUser).Return(true, nil)
+			},
+			map[string][]string{
+				mealplanning.MealPlanFinalizedServiceEventType: {mealplanningkeys.MealPlanIDKey},
+			},
+		)
+
+		finalized, err := mpm.FinalizeMealPlan(ctx, expected.ID, expected.CreatedByUser)
+		assert.True(t, finalized)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, append(expectations, groceryWorker, taskWorker)...)
 	})
 }
 

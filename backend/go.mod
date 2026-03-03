@@ -20,6 +20,7 @@ require (
 	github.com/ccoveille/go-safecast v1.5.0
 	github.com/codemodus/kace v0.5.1
 	github.com/cristalhq/builq v0.15.0
+	github.com/dhaus67/openfeature-posthog-go v0.1.2
 	github.com/dustin/go-humanize v1.0.1
 	github.com/elastic/go-elasticsearch/v8 v8.17.1
 	github.com/go-chi/chi/v5 v5.2.1
@@ -39,7 +40,6 @@ require (
 	github.com/jackc/pgx/v5 v5.7.2
 	github.com/keith-turner/ecoji/v2 v2.0.1
 	github.com/klauspost/compress v1.18.0
-	github.com/launchdarkly/go-sdk-common/v3 v3.2.0
 	github.com/launchdarkly/go-server-sdk/v6 v6.2.1
 	github.com/lib/pq v1.10.9
 	github.com/luna-duclos/instrumentedsql v1.1.3
@@ -53,6 +53,8 @@ require (
 	github.com/mssola/useragent v1.0.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/o1egl/paseto/v2 v2.1.1
+	github.com/open-feature/go-sdk v1.17.1
+	github.com/open-feature/go-sdk-contrib/providers/launchdarkly v0.1.6
 	github.com/pinecone-io/go-pinecone/v2 v2.2.0
 	github.com/posthog/posthog-go v1.3.1
 	github.com/pquerna/otp v1.4.0
@@ -78,6 +80,7 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/redis v0.34.0
 	github.com/wagslane/go-password-validator v0.3.0
 	go.opentelemetry.io/contrib/bridges/otelslog v0.9.0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0
 	go.opentelemetry.io/contrib/instrumentation/host v0.59.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.63.0
 	go.opentelemetry.io/contrib/instrumentation/runtime v0.59.0
@@ -218,8 +221,9 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/launchdarkly/ccache v1.1.0 // indirect
-	github.com/launchdarkly/eventsource v1.8.0 // indirect
+	github.com/launchdarkly/eventsource v1.9.1 // indirect
 	github.com/launchdarkly/go-jsonstream/v3 v3.1.0 // indirect
+	github.com/launchdarkly/go-sdk-common/v3 v3.2.0 // indirect
 	github.com/launchdarkly/go-sdk-events/v2 v2.0.2 // indirect
 	github.com/launchdarkly/go-semver v1.0.3 // indirect
 	github.com/launchdarkly/go-server-sdk-evaluation/v2 v2.0.2 // indirect
@@ -282,12 +286,12 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.38.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.33.0 // indirect
 	go.opentelemetry.io/otel/sdk/log/logtest v0.15.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.7.0 // indirect
+	go.uber.org/mock v0.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
+	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/mod v0.29.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect

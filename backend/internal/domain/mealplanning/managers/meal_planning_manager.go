@@ -22,6 +22,7 @@ import (
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 )
 
 const (
@@ -33,7 +34,7 @@ type (
 		ListMeals(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error)
 		CreateMeal(ctx context.Context, creatorID string, input *types.MealCreationRequestInput) (*types.Meal, error)
 		ReadMeal(ctx context.Context, mealID string) (*types.Meal, error)
-		SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error)
+		SearchMeals(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error)
 		ArchiveMeal(ctx context.Context, mealID, ownerID string) error
 
 		ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error)
@@ -101,12 +102,22 @@ type (
 		ListMealListItems(ctx context.Context, mealListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealListItem], error)
 	}
 
+	mealPlanTaskCreatorWorker interface {
+		workers.Worker
+	}
+
+	mealPlanGroceryListInitializerWorker interface {
+		workers.Worker
+	}
+
 	mealPlanningManager struct {
-		tracer               tracing.Tracer
-		logger               logging.Logger
-		dataChangesPublisher messagequeue.Publisher
-		mealsSearchIndex     textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
-		db                   types.Repository
+		tracer                 tracing.Tracer
+		logger                 logging.Logger
+		dataChangesPublisher   messagequeue.Publisher
+		mealsSearchIndex       textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
+		db                     types.Repository
+		groceryListInitializer mealPlanGroceryListInitializerWorker
+		taskCreator            mealPlanTaskCreatorWorker
 	}
 )
 
@@ -123,6 +134,8 @@ func NewMealPlanningManager(
 	publisherProvider messagequeue.PublisherProvider,
 	searchConfig *textsearchcfg.Config,
 	metricsProvider metrics.Provider,
+	groceryListInitializer mealPlanGroceryListInitializerWorker,
+	taskCreator mealPlanTaskCreatorWorker,
 ) (MealPlanningManager, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
 	if err != nil {
@@ -135,11 +148,13 @@ func NewMealPlanningManager(
 	}
 
 	m := &mealPlanningManager{
-		db:                   db,
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlannerName)),
-		logger:               logging.EnsureLogger(logger).WithName(mealPlannerName),
-		dataChangesPublisher: dataChangesPublisher,
-		mealsSearchIndex:     mealsSearchIndex,
+		db:                     db,
+		tracer:                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlannerName)),
+		logger:                 logging.EnsureLogger(logger).WithName(mealPlannerName),
+		dataChangesPublisher:   dataChangesPublisher,
+		mealsSearchIndex:       mealsSearchIndex,
+		groceryListInitializer: groceryListInitializer,
+		taskCreator:            taskCreator,
 	}
 
 	return m, nil
@@ -201,7 +216,7 @@ func (m *mealPlanningManager) ReadMeal(ctx context.Context, mealID string) (*typ
 	return meal, nil
 }
 
-func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error) {
+func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -209,39 +224,49 @@ func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, use
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query)
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query).WithValue(platformkeys.UseDatabaseKey, !useSearchService)
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.UseDatabaseKey, !useSearchService)
 
-	var results *filtering.QueryFilteredResult[types.Meal]
-	if useDatabase {
-		allResults, err := m.db.SearchForMeals(ctx, query, filter)
+	var (
+		results *filtering.QueryFilteredResult[types.Meal]
+		err     error
+	)
+
+	if useSearchService {
+		results, err = m.searchMealsViaIndex(ctx, query, filter)
+	}
+
+	if err != nil || results == nil {
+		results, err = m.db.SearchForMeals(ctx, query, filter)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching for meals")
 		}
-
-		results = allResults
-	} else {
-		mealSubsets, err := m.mealsSearchIndex.Search(ctx, query)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "searching external provider for meals")
-		}
-
-		ids := []string{}
-		for _, mealSubset := range mealSubsets {
-			ids = append(ids, mealSubset.ID)
-		}
-
-		idResults, err := m.db.GetMealsWithIDs(ctx, ids)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "fetching meals from database")
-		}
-
-		results = filtering.NewQueryFilteredResult(idResults, uint64(len(idResults)), uint64(len(idResults)), func(m *types.Meal) string {
-			return m.ID
-		}, filter)
 	}
 
 	return results, nil
+}
+
+// searchMealsViaIndex searches meals via the external search index. Returns (nil, err) on search failure, empty results, or GetMealsWithIDs failure.
+func (m *mealPlanningManager) searchMealsViaIndex(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error) {
+	mealSubsets, err := m.mealsSearchIndex.Search(ctx, query)
+	if err != nil || len(mealSubsets) == 0 {
+		return nil, err
+	}
+
+	ids := make([]string, 0, len(mealSubsets))
+	for _, mealSubset := range mealSubsets {
+		ids = append(ids, mealSubset.ID)
+	}
+
+	idResults, err := m.db.GetMealsWithIDs(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return filtering.NewQueryFilteredResult(idResults, uint64(len(idResults)), uint64(len(idResults)), func(meal *types.Meal) string {
+		return meal.ID
+	}, filter), nil
 }
 
 func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID string) error {
@@ -524,6 +549,10 @@ func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, ownerID, creat
 		mealplanningkeys.MealPlanIDKey: created.ID,
 	}))
 
+	if created.Status == string(types.MealPlanStatusFinalized) {
+		m.runPostFinalizationWorkers(ctx, logger, span)
+	}
+
 	return created, nil
 }
 
@@ -620,7 +649,23 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 		mealplanningkeys.MealPlanIDKey: mealPlanID,
 	}))
 
+	if finalized {
+		m.runPostFinalizationWorkers(ctx, logger, span)
+	}
+
 	return finalized, nil
+}
+
+func (m *mealPlanningManager) runPostFinalizationWorkers(ctx context.Context, logger logging.Logger, span tracing.Span) {
+	if m.groceryListInitializer == nil || m.taskCreator == nil {
+		return
+	}
+	if err := m.groceryListInitializer.Work(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, span, "running grocery list initializer after meal plan finalization")
+	}
+	if err := m.taskCreator.Work(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, span, "running task creator after meal plan finalization")
+	}
 }
 
 func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanEvent], error) {

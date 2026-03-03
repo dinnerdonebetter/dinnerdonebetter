@@ -1081,12 +1081,10 @@ func (q *repository) findCreatedRecipeStepProductsForIngredients(ctx context.Con
 				}
 
 				product := referencedStep.Products[productIndex]
-				if product.Type == mealplanning.RecipeStepProductIngredientType {
-					ingredient.RecipeStepProductID = &product.ID
-					// Inherit measurement unit from the product if not already set
-					if ingredient.MeasurementUnitID == "" && product.MeasurementUnit != nil {
-						ingredient.MeasurementUnitID = product.MeasurementUnit.ID
-					}
+				ingredient.RecipeStepProductID = &product.ID
+				// Inherit measurement unit from the product if not already set (for ingredient-type products)
+				if product.Type == mealplanning.RecipeStepProductIngredientType && ingredient.MeasurementUnitID == "" && product.MeasurementUnit != nil {
+					ingredient.MeasurementUnitID = product.MeasurementUnit.ID
 				}
 				continue
 			}
@@ -1102,14 +1100,11 @@ func (q *repository) findCreatedRecipeStepProductsForIngredients(ctx context.Con
 				continue
 			}
 
-			relevantProductIsIngredient := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex].Type == mealplanning.RecipeStepProductIngredientType
-			if relevantProductIsIngredient {
-				product := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex]
-				ingredient.RecipeStepProductID = &product.ID
-				// Inherit measurement unit from the product if not already set
-				if ingredient.MeasurementUnitID == "" && product.MeasurementUnitID != nil {
-					ingredient.MeasurementUnitID = *product.MeasurementUnitID
-				}
+			product := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex]
+			ingredient.RecipeStepProductID = &product.ID
+			// Inherit measurement unit from the product if not already set (for ingredient-type products)
+			if product.Type == mealplanning.RecipeStepProductIngredientType && ingredient.MeasurementUnitID == "" && product.MeasurementUnitID != nil {
+				ingredient.MeasurementUnitID = *product.MeasurementUnitID
 			}
 		}
 	}

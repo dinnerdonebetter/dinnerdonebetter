@@ -4,6 +4,7 @@ import GRPCNIOTransportHTTP2
 import GRPCNIOTransportHTTP2TransportServices
 import SwiftProtobuf
 import SwiftUI
+import UIKit
 
 /// URLSessionDelegate that prevents automatic redirect following
 private class NoRedirectDelegate: NSObject, URLSessionTaskDelegate {
@@ -133,7 +134,7 @@ class AuthenticationManager: AuthenticationManaging {
     )
     clientManager = nil
     clientEnvironment = nil
-    logout()
+    Task { await logout() }
   }
 
   /// Get or create the client manager, following the grpc-swift issue #2211 pattern.
@@ -176,6 +177,16 @@ class AuthenticationManager: AuthenticationManaging {
         self.refreshToken = mock.refreshToken
         self.userID = mock.userID
         self.accountID = mock.accountID
+        if result.success {
+          let reporter = AnalyticsConfiguration.provideEventReporter()
+          reporter.identify(
+            userID: mock.userID,
+            properties: [
+              "username": mock.username,
+              "accountID": mock.accountID,
+            ]
+          )
+        }
       }
       return result
     }
@@ -248,6 +259,18 @@ class AuthenticationManager: AuthenticationManaging {
           print("✅ OAuth2 token obtained successfully")
           await MainActor.run {
             self.persistCredentials()
+            let reporter = AnalyticsConfiguration.provideEventReporter()
+            reporter.identify(
+              userID: tokenResponse.userID,
+              properties: [
+                "username": username,
+                "accountID": tokenResponse.accountID,
+              ]
+            )
+            DeviceTokenRegistrationService.shared.tryReportStoredToken()
+          }
+          await MainActor.run {
+            UIApplication.shared.registerForRemoteNotifications()
           }
         }
 
@@ -644,7 +667,9 @@ class AuthenticationManager: AuthenticationManaging {
     }
   }
 
-  func logout() {
+  func logout() async {
+    await DeviceTokenRegistrationService.shared.archiveCurrentDeviceToken(authManager: self)
+    AnalyticsConfiguration.provideEventReporter().reset()
     self.isAuthenticated = false
     self.username = ""
     self.accessToken = ""

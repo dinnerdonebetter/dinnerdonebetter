@@ -19,6 +19,10 @@ class PerformRecipeViewModel {
   var isLoadingPrepTasks = false
   var errorMessage: String?
 
+  var mermaidDiagram: String?
+  var isLoadingMermaid = false
+  var mermaidError: String?
+
   // Track which steps are completed (by step ID: "recipeID:stepID")
   var completedSteps: Set<String> = []
 
@@ -128,27 +132,79 @@ class PerformRecipeViewModel {
     isLoadingPrepTasks = false
   }
 
+  func loadMermaidDiagram() async {
+    guard mermaidDiagram == nil else { return }
+    isLoadingMermaid = true
+    mermaidError = nil
+
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        throw NSError(
+          domain: "PerformRecipeViewModel", code: 1,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
+      }
+
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        throw NSError(
+          domain: "PerformRecipeViewModel", code: 2,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+      }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+      var request = Mealplanning_GetMermaidDiagramForRecipeRequest()
+      request.recipeID = recipeID
+
+      let response = try await clientManager.client.mealPlanning.getMermaidDiagramForRecipe(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      self.mermaidDiagram = response.response
+    } catch {
+      mermaidError = "Failed to load diagram: \(error.localizedDescription)"
+      print("❌ Error loading mermaid diagram: \(error)")
+    }
+
+    isLoadingMermaid = false
+  }
+
   // Build a mapping from recipe step product IDs to the step that produces them
   private func buildProductIDToStepIndexMapping() {
     guard let recipe = recipe else { return }
 
+    let recipeName = recipe.name
+    print("📋 [\(recipeName)] Building product→step mapping")
+
     // Map products from main recipe
-    for step in recipe.steps {
+    for (stepIdx, step) in recipe.steps.enumerated() {
       let stepKey = "\(recipe.id):\(step.id)"
+      let prepName = step.hasPreparation ? step.preparation.name : "???"
       for product in step.products {
         productIDToStepKey[product.id] = stepKey
+        print(
+          "  📦 step[\(stepIdx)](\(prepName)) product '\(product.name)' id=\(product.id) → \(stepKey)"
+        )
       }
     }
 
     // Map products from associated recipes
     for associatedRecipe in recipe.associatedRecipes {
-      for step in associatedRecipe.steps {
+      print("  🔗 Associated recipe: \(associatedRecipe.name) (\(associatedRecipe.id))")
+      for (stepIdx, step) in associatedRecipe.steps.enumerated() {
         let stepKey = "\(associatedRecipe.id):\(step.id)"
+        let prepName = step.hasPreparation ? step.preparation.name : "???"
         for product in step.products {
           productIDToStepKey[product.id] = stepKey
+          print(
+            "    📦 step[\(stepIdx)](\(prepName)) product '\(product.name)' id=\(product.id) → \(stepKey)"
+          )
         }
       }
     }
+
+    print("📋 [\(recipeName)] Total product mappings: \(productIDToStepKey.count)")
   }
 
   // Helper to create a step key from recipeID and stepID
@@ -209,10 +265,22 @@ class PerformRecipeViewModel {
       conditionIdentifier: conditionIdentifier
     )
 
+    let recipeName = recipe?.name ?? "???"
+    let stepName: String = {
+      if let step = stepFor(recipeID: recipeID, stepID: stepID),
+        step.hasPreparation
+      {
+        return step.preparation.name
+      }
+      return stepID
+    }()
+
     if completedStepCompletionConditions.contains(key) {
       completedStepCompletionConditions.remove(key)
+      print(
+        "✅ [\(recipeName)] UNCHECKED condition '\(conditionIdentifier)' for '\(stepName)' | key=\(key) | conditions now=\(completedStepCompletionConditions)"
+      )
 
-      // If a required condition becomes unchecked, the step should also become unchecked.
       let stepKey = stepKey(recipeID: recipeID, stepID: stepID)
       if completedSteps.contains(stepKey) {
         uncheckStepAndDependents(stepKey: stepKey)
@@ -221,21 +289,37 @@ class PerformRecipeViewModel {
     }
 
     completedStepCompletionConditions.insert(key)
+    print(
+      "✅ [\(recipeName)] CHECKED condition '\(conditionIdentifier)' for '\(stepName)' | key=\(key) | conditions now=\(completedStepCompletionConditions)"
+    )
   }
 
   func areStepCompletionConditionsCompleted(recipeID: String, stepID: String) -> Bool {
     guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
+      print("⚠️ areStepCompletionConditionsCompleted: step not found for \(recipeID):\(stepID)")
       return false
+    }
+
+    let recipeName = recipe?.name ?? "???"
+    let stepName = step.hasPreparation ? step.preparation.name : stepID
+    let nonOptionalConditions = step.completionConditions.enumerated().filter {
+      !$0.element.optional
+    }
+
+    if nonOptionalConditions.isEmpty {
+      return true
     }
 
     for (index, condition) in step.completionConditions.enumerated() where !condition.optional {
       let conditionIdentifier = stepCompletionConditionIdentifier(
         condition: condition, index: index)
-      if !isStepCompletionConditionCompleted(
-        recipeID: recipeID,
-        stepID: stepID,
-        conditionIdentifier: conditionIdentifier
-      ) {
+      let key = completionConditionKey(
+        recipeID: recipeID, stepID: stepID, conditionIdentifier: conditionIdentifier)
+      let isCompleted = completedStepCompletionConditions.contains(key)
+      if !isCompleted {
+        print(
+          "❌ [\(recipeName)] '\(stepName)' condition[\(index)] id='\(conditionIdentifier)' key='\(key)' → NOT completed | allKeys=\(completedStepCompletionConditions.sorted())"
+        )
         return false
       }
     }
@@ -263,46 +347,81 @@ class PerformRecipeViewModel {
   }
 
   func canCheckStep(recipeID: String, stepID: String) -> Bool {
-    // All steps require wash hands to be completed first
+    let recipeName = recipe?.name ?? "???"
+    let stepName: String = {
+      if let step = stepFor(recipeID: recipeID, stepID: stepID),
+        step.hasPreparation
+      {
+        return step.preparation.name
+      }
+      return stepID
+    }()
+    let logPrefix =
+      "🔍 [\(recipeName)] canCheck '\(stepName)' (\(recipeID.suffix(6)):\(stepID.suffix(6)))"
+
     if !washHandsCompleted {
+      print("\(logPrefix) → false (wash hands not done)")
       return false
     }
 
     guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
+      print("\(logPrefix) → false (step not found)")
       return false
     }
 
-    // Check all ingredients
     for ingredient in step.ingredients where ingredient.hasRecipeStepProductID {
       let productID = ingredient.recipeStepProductID
       if let prerequisiteStepKey = productIDToStepKey[productID] {
         if !completedSteps.contains(prerequisiteStepKey) {
+          print(
+            "\(logPrefix) → false (ingredient '\(ingredient.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)"
+          )
           return false
         }
+      } else {
+        print(
+          "\(logPrefix) ⚠️ ingredient '\(ingredient.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!"
+        )
       }
     }
 
-    // Check all instruments
     for instrument in step.instruments where instrument.hasRecipeStepProductID {
       let productID = instrument.recipeStepProductID
       if let prerequisiteStepKey = productIDToStepKey[productID] {
         if !completedSteps.contains(prerequisiteStepKey) {
+          print(
+            "\(logPrefix) → false (instrument '\(instrument.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)"
+          )
           return false
         }
+      } else {
+        print(
+          "\(logPrefix) ⚠️ instrument '\(instrument.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!"
+        )
       }
     }
 
-    // Check all vessels
     for vessel in step.vessels where vessel.hasRecipeStepProductID {
       let productID = vessel.recipeStepProductID
       if let prerequisiteStepKey = productIDToStepKey[productID] {
         if !completedSteps.contains(prerequisiteStepKey) {
+          print(
+            "\(logPrefix) → false (vessel '\(vessel.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)"
+          )
           return false
         }
+      } else {
+        print(
+          "\(logPrefix) ⚠️ vessel '\(vessel.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!"
+        )
       }
     }
 
-    return areStepCompletionConditionsCompleted(recipeID: recipeID, stepID: stepID)
+    let conditionsOk = areStepCompletionConditionsCompleted(recipeID: recipeID, stepID: stepID)
+    if !conditionsOk {
+      print("\(logPrefix) → false (completion conditions not met)")
+    }
+    return conditionsOk
   }
 
   // Toggle step completion
@@ -328,17 +447,36 @@ class PerformRecipeViewModel {
 
   func toggleStep(recipeID: String, stepID: String) {
     let currentStepKey = stepKey(recipeID: recipeID, stepID: stepID)
+    let recipeName = recipe?.name ?? "???"
+    let stepName: String = {
+      if let step = stepFor(recipeID: recipeID, stepID: stepID),
+        step.hasPreparation
+      {
+        return step.preparation.name
+      }
+      return stepID
+    }()
+
+    print(
+      "🔘 [\(recipeName)] toggleStep '\(stepName)' key=\(currentStepKey.suffix(12)) | completedSteps=\(completedSteps.count) | washHands=\(washHandsCompleted)"
+    )
 
     guard canCheckStep(recipeID: recipeID, stepID: stepID) else {
+      print("🔘 [\(recipeName)] toggleStep '\(stepName)' → BLOCKED by canCheckStep")
       return
     }
 
     if completedSteps.contains(currentStepKey) {
-      // When unchecking, also uncheck all dependent steps
+      print("🔘 [\(recipeName)] toggleStep '\(stepName)' → UNCHECKING (and dependents)")
       uncheckStepAndDependents(stepKey: currentStepKey)
     } else {
       completedSteps.insert(currentStepKey)
+      print(
+        "🔘 [\(recipeName)] toggleStep '\(stepName)' → CHECKED ✅ | completedSteps now=\(completedSteps.count)"
+      )
     }
+
+    print("🔘 [\(recipeName)] completedSteps after toggle: \(completedSteps.sorted())")
   }
 
   // Recursively uncheck a step and all steps that depend on it
@@ -492,20 +630,36 @@ class PerformRecipeViewModel {
 
   // Categorize a step based on its completion status and dependencies
   func categorizeStep(recipeID: String, stepID: String) -> StepCategory {
-    let stepKey = self.stepKey(recipeID: recipeID, stepID: stepID)
+    let currentStepKey = self.stepKey(recipeID: recipeID, stepID: stepID)
+    let recipeName = recipe?.name ?? "???"
+    let stepName: String = {
+      if let step = stepFor(recipeID: recipeID, stepID: stepID),
+        step.hasPreparation
+      {
+        return step.preparation.name
+      }
+      return stepID
+    }()
 
-    // If step is completed, it's done
-    if completedSteps.contains(stepKey) {
+    if completedSteps.contains(currentStepKey) {
       return .done
     }
 
-    // Check if all dependencies are satisfied
     let prerequisiteKeys = getPrerequisiteStepKeys(recipeID: recipeID, stepID: stepID)
     let allDependenciesDone = prerequisiteKeys.allSatisfy { completedSteps.contains($0) }
 
     if allDependenciesDone {
+      if !prerequisiteKeys.isEmpty {
+        print(
+          "📊 [\(recipeName)] categorize '\(stepName)' → upNext (all \(prerequisiteKeys.count) prereqs done)"
+        )
+      }
       return .upNext
     } else {
+      let missing = prerequisiteKeys.filter { !completedSteps.contains($0) }
+      print(
+        "📊 [\(recipeName)] categorize '\(stepName)' → forLater (missing \(missing.count)/\(prerequisiteKeys.count) prereqs: \(missing.map { $0.suffix(12) }))"
+      )
       return .forLater
     }
   }

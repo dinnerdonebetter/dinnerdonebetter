@@ -9,7 +9,7 @@
 	"appleAppSiteAssociation": {},
 	"routing": {
 		"chiConfig": {
-			"serviceName": "dinner_done_better",
+			"serviceName": "api_server",
 			"enableCORSForLocalhost": true
 		},
 		"provider": "chi"
@@ -51,18 +51,18 @@
 	},
 	"observability": {
 		"logging": {
-			"serviceName": "dinner_done_better",
+			"serviceName": "api_server",
 			"level": "info",
 			"provider": "slog"
 		},
 		"metrics": {
-			"serviceName": ""
+			"serviceName": "api_server"
 		},
 		"tracing": {
 			"otelgrpc": {
 				"collector_endpoint": "http://tracing-server:14268/api/traces"
 			},
-			"service_name": "dinner_done_better",
+			"service_name": "api_server",
 			"provider": "otelgrpc",
 			"spanCollectionProbability": 1
 		}

@@ -16,6 +16,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @Binding var isInstrumentsVesselsExpanded: Bool
   @Binding var isIngredientsExpanded: Bool
   @State private var isPrepTasksExpanded: Bool = false
+  @State private var isDAGSectionExpanded: Bool = false
 
   let recipe: Mealplanning_Recipe
   let viewModel: PerformRecipeViewModel
@@ -39,6 +40,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @State private var scaleText: String = "1.0"
   @FocusState private var isScaleFocused: Bool
   @State private var showCompletedSteps: Bool = true
+  @State private var customUpNextOrder: [String] = []
+  @State private var customForLaterOrder: [String] = []
 
   private var isShowingCompletedSteps: Bool {
     sharedCompletedStepsVisibility?.wrappedValue ?? showCompletedSteps
@@ -113,6 +116,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           associatedRecipesSection(recipe: recipe)
         }
 
+        // DAG section (hidden when embedded in meal view)
+        if !hideIngredientsAndInstruments {
+          recipeDAGSection(recipe: recipe, viewModel: viewModel)
+        }
+
         // Instruments & Vessels section (hidden when embedded in meal view)
         if !hideIngredientsAndInstruments {
           instrumentsVesselsSection(recipe: recipe)
@@ -140,11 +148,15 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       if allowCompletedStepsToggle && sharedCompletedStepsVisibility == nil {
         showCompletedSteps = false
       }
+      loadStepOrderFromUserDefaults(recipeID: recipe.id)
     }
     .onChange(of: sharedWashHandsValue) { _, newValue in
       if sharedWashHandsCompleted != nil {
         viewModel.washHandsCompleted = newValue
       }
+    }
+    .onChange(of: recipe.id) { _, _ in
+      loadStepOrderFromUserDefaults(recipeID: recipe.id)
     }
   }
 
@@ -160,6 +172,84 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         AssociatedRecipeCard(recipe: associatedRecipe)
       }
     }
+  }
+
+  // MARK: - Recipe DAG Section
+
+  private func recipeDAGSection(recipe: Mealplanning_Recipe, viewModel: PerformRecipeViewModel)
+    -> some View
+  {
+    VStack(alignment: .leading, spacing: 0) {
+      Button(
+        action: {
+          withAnimation {
+            isDAGSectionExpanded.toggle()
+          }
+        },
+        label: {
+          HStack {
+            Text("DAG")
+              .font(.headline)
+              .foregroundColor(.primary)
+            Spacer()
+            Image(systemName: isDAGSectionExpanded ? "chevron.down" : "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
+          .padding()
+          .background(Color(.systemGray6))
+        }
+      )
+      .buttonStyle(.plain)
+
+      if isDAGSectionExpanded {
+        VStack(alignment: .leading, spacing: 8) {
+          if viewModel.isLoadingMermaid {
+            HStack {
+              ProgressView()
+                .scaleEffect(0.8)
+              Text("Loading diagram...")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+          } else if let error = viewModel.mermaidError {
+            VStack(spacing: 12) {
+              Text(error)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+              Button("Retry") {
+                Task {
+                  await viewModel.loadMermaidDiagram()
+                }
+              }
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+          } else if let mermaidSource = viewModel.mermaidDiagram, !mermaidSource.isEmpty {
+            MermaidDiagramView(source: mermaidSource)
+              .padding()
+          } else {
+            Text("No diagram available for this recipe")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+              .frame(maxWidth: .infinity)
+              .padding()
+          }
+        }
+        .padding(.vertical, 8)
+        .background(Color(.systemBackground))
+        .onAppear {
+          Task {
+            await viewModel.loadMermaidDiagram()
+          }
+        }
+      }
+    }
+    .background(Color(.systemGray6))
+    .cornerRadius(12)
   }
 
   // MARK: - Recipe Header
@@ -211,14 +301,25 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           .foregroundColor(.secondary)
       }
 
-      // Progress indicator
+      // Progress indicator and time estimate
       let completedCount =
         viewModel.completedSteps.count + ((showWashHandsStepCard && sharedWashHandsValue) ? 1 : 0)
       let totalSteps = recipe.steps.count + (showWashHandsStepCard ? 1 : 0)
-      Text("\(completedCount) of \(totalSteps) steps completed")
-        .font(.caption)
-        .foregroundColor(.secondary)
-        .padding(.top, 4)
+      HStack(spacing: 12) {
+        Text("\(completedCount) of \(totalSteps) steps completed")
+          .font(.caption)
+          .foregroundColor(.secondary)
+        if let estimate = RecipeTimeEstimation.estimate(steps: recipe.steps) {
+          Label(
+            RecipeTimeEstimation.format(
+              minSeconds: estimate.minSeconds, maxSeconds: estimate.maxSeconds),
+            systemImage: "clock"
+          )
+          .font(.caption)
+          .foregroundColor(.secondary)
+        }
+      }
+      .padding(.top, 4)
 
       // Scale control
       if !hideIngredientsAndInstruments {
@@ -1093,6 +1194,38 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
   // MARK: - Steps List
 
+  private static func stepOrderKey(recipeID: String, group: String) -> String {
+    "stepOrder_recipe_\(recipeID)_\(group)"
+  }
+
+  private func loadStepOrderFromUserDefaults(recipeID: String) {
+    let upNext =
+      UserDefaults.standard.stringArray(
+        forKey: Self.stepOrderKey(recipeID: recipeID, group: "upNext")) ?? []
+    let forLater =
+      UserDefaults.standard.stringArray(
+        forKey: Self.stepOrderKey(recipeID: recipeID, group: "forLater")) ?? []
+    customUpNextOrder = upNext
+    customForLaterOrder = forLater
+  }
+
+  private func saveStepOrderToUserDefaults(recipeID: String, upNext: [String], forLater: [String]) {
+    UserDefaults.standard.set(
+      upNext, forKey: Self.stepOrderKey(recipeID: recipeID, group: "upNext"))
+    UserDefaults.standard.set(
+      forLater, forKey: Self.stepOrderKey(recipeID: recipeID, group: "forLater"))
+  }
+
+  private func applyOrder<T: Identifiable>(_ items: [T], order: [String]) -> [T]
+  where T.ID == String {
+    guard !order.isEmpty else { return items }
+    return items.sorted { firstItem, secondItem in
+      let firstIndex = order.firstIndex(of: firstItem.id) ?? Int.max
+      let secondIndex = order.firstIndex(of: secondItem.id) ?? Int.max
+      return firstIndex < secondIndex
+    }
+  }
+
   private func shouldShowStep(stepID: String) -> Bool {
     return true
   }
@@ -1159,9 +1292,12 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       viewModel.categorizeStep(recipeID: stepInfo.recipeID, stepID: stepInfo.step.id) == .forLater
     }
 
+    let orderedUpNext = applyOrder(upNextSteps, order: customUpNextOrder)
+    let orderedForLater = applyOrder(forLaterSteps, order: customForLaterOrder)
+
     let focusedGroups = [
-      StepFlowGroup(title: "Up Next", color: .orange, items: upNextSteps),
-      StepFlowGroup(title: "Not Yet", color: .blue, items: forLaterSteps),
+      StepFlowGroup(title: "Up Next", color: .orange, items: orderedUpNext),
+      StepFlowGroup(title: "Not Yet", color: .blue, items: orderedForLater),
     ]
 
     return StepFlowSection(
@@ -1173,6 +1309,22 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       focusedGroups: focusedGroups,
       allowToggle: allowCompletedStepsToggle,
       allStepsTitle: "All Steps",
+      onReorder: { groupId, source, destination in
+        let items = groupId == "Up Next" ? orderedUpNext : orderedForLater
+        var mutable = items
+        mutable.move(fromOffsets: source, toOffset: destination)
+        let newOrder = mutable.map(\.id)
+        if groupId == "Up Next" {
+          customUpNextOrder = newOrder
+        } else {
+          customForLaterOrder = newOrder
+        }
+        saveStepOrderToUserDefaults(
+          recipeID: recipe.id,
+          upNext: customUpNextOrder,
+          forLater: customForLaterOrder
+        )
+      },
       headerContent: {
         Text("Steps")
           .font(.headline)

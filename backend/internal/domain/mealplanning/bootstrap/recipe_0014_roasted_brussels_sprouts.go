@@ -16,6 +16,7 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	slicePrep := enums.Preparations["slice"]
 	tossPrep := enums.Preparations["toss"]
 	preheatPrep := enums.Preparations["preheat"]
+	removePrep := enums.Preparations["remove"]
 	placePrep := enums.Preparations["place"]
 	returnPrep := enums.Preparations["return"]
 	roastPrep := enums.Preparations["roast"]
@@ -85,6 +86,10 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
 	preheatBakingSheetVPV := enums.PreparationVessels[preheatPrep.ID][bakingSheet.ID]
 
+	// Remove
+	removeBakingSheetVPV := enums.PreparationVessels[removePrep.ID][bakingSheet.ID]
+	removeOvenMittVPI := enums.PreparationInstruments[removePrep.ID][ovenMitt.ID]
+
 	// Place
 	placeBrusselsSproutsVIP := enums.IngredientPreparations[placePrep.ID][brusselsSprouts.ID]
 	placeBakingSheetVPV := enums.PreparationVessels[placePrep.ID][bakingSheet.ID]
@@ -92,12 +97,12 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	placeOvenMittVPI := enums.PreparationInstruments[placePrep.ID][ovenMitt.ID]
 
 	// Return
+	returnBakingSheetVPV := enums.PreparationVessels[returnPrep.ID][bakingSheet.ID]
 	returnOvenVPV := enums.PreparationVessels[returnPrep.ID][oven.ID]
 
 	// Roast
 	roastBrusselsSproutsVIP := enums.IngredientPreparations[roastPrep.ID][brusselsSprouts.ID]
 	roastBakingSheetVPV := enums.PreparationVessels[roastPrep.ID][bakingSheet.ID]
-	roastOvenVPV := enums.PreparationVessels[roastPrep.ID][oven.ID]
 
 	// Stir
 	stirBrusselsSproutsVIP := enums.IngredientPreparations[stirPrep.ID][brusselsSprouts.ID]
@@ -174,11 +179,11 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 1: Trim bottoms, remove outer leaves, and cut Brussels sprouts in half (optional prep step)
+	// Step 1: Trim bottoms and remove outer leaves (optional prep step)
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        trimPrep.ID,
 		Index:                1,
-		ExplicitInstructions: "Trim the bottoms, remove the outer leaves, and cut the Brussels sprouts in half. This step is optional and can be done up to 2 days ahead.",
+		ExplicitInstructions: "Trim the bottoms and remove the outer leaves. This step is optional and can be done up to 2 days ahead.",
 		Optional:             true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -357,11 +362,48 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 5: Remove the preheated baking sheets from the oven. Place Brussels sprouts on the sheets in a single even layer. Return the sheets to the oven.
+	// Step 5: Remove the preheated baking sheets from the oven
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        placePrep.ID,
+		PreparationID:        removePrep.ID,
 		Index:                5,
-		ExplicitInstructions: "Remove the preheated baking sheets from the oven. Place the Brussels sprouts on the sheets in a single even layer, shaking the sheets to distribute evenly. Return the sheets to the oven.",
+		ExplicitInstructions: "Remove the preheated baking sheets from the oven.",
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &removeOvenMittVPI.ID,
+				Name:                         "oven mitt",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &removeBakingSheetVPV.ID,
+				Name:                            "preheated baking sheets at 500°F",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "baking sheets removed from oven",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
+	// Step 6: Place Brussels sprouts on the sheets in a single even layer
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        placePrep.ID,
+		Index:                6,
+		ExplicitInstructions: "Place the Brussels sprouts on the sheets in a single even layer, shaking the sheets to distribute evenly.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
@@ -391,21 +433,12 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &placeBakingSheetVPV.ID,
-				Name:                            "preheated baking sheets at 500°F",
+				Name:                            "baking sheets removed from oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 2,
-				},
-			},
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &returnOvenVPV.ID,
-				Name:                            "preheated oven at 500°F",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
 				},
 			},
 		},
@@ -420,7 +453,7 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				},
 			},
 			{
-				Name:  "baking sheets with Brussels sprouts in oven",
+				Name:  "baking sheets with Brussels sprouts",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
@@ -430,17 +463,54 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 6: Roast for 10 minutes
-	step6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 7: Return the sheets to the oven
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        returnPrep.ID,
+		Index:                7,
+		ExplicitInstructions: "Return the sheets to the oven.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &returnBakingSheetVPV.ID,
+				Name:                            "baking sheets with Brussels sprouts",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &returnOvenVPV.ID,
+				Name:                            "preheated oven at 500°F",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "baking sheets with Brussels sprouts in oven",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 8: Roast for 10 minutes
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        roastPrep.ID,
-		Index:                6,
+		Index:                8,
 		ExplicitInstructions: "Roast for 10 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](600), // 10 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &roastBrusselsSproutsVIP.ID,
 				Name:                            "Brussels sprouts on baking sheets",
@@ -451,19 +521,10 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &roastBakingSheetVPV.ID,
 				Name:                            "baking sheet with Brussels sprouts in oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &roastOvenVPV.ID,
-				Name:                            "preheated oven with baking sheets at 500°F",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -479,13 +540,21 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 					Min: pointer.To[float32](3),
 				},
 			},
+			{
+				Name:  "baking sheets with partially roasted Brussels sprouts in oven",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 	}
 
-	// Step 7: Slice shallots thinly
-	step7 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 9: Slice shallots thinly
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        slicePrep.ID,
-		Index:                7,
+		Index:                9,
 		ExplicitInstructions: "Slice 8 medium shallots thinly.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -529,14 +598,14 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 8: While Brussels sprouts roast, in the now-empty bowl, toss shallots, remaining 1 tablespoon olive oil, and salt and pepper to taste to combine
-	step8 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 10: While Brussels sprouts roast, in the now-empty bowl, toss shallots, remaining 1 tablespoon olive oil, and salt and pepper to taste to combine
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        tossPrep.ID,
-		Index:                8,
+		Index:                10,
 		ExplicitInstructions: "While the Brussels sprouts roast, in the now-empty bowl, toss the shallots, remaining 1 tablespoon olive oil, and salt and pepper to taste to combine.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &tossShallotsVIP.ID,
 				Name:                            "sliced shallots",
@@ -601,14 +670,14 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 9: Working quickly and carefully, add the shallot mixture to the sheets and stir with the Brussels sprouts to combine.
-	step9 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 11: Working quickly and carefully, add the shallot mixture to the sheets and stir with the Brussels sprouts to combine.
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        stirPrep.ID,
-		Index:                9,
+		Index:                11,
 		ExplicitInstructions: "Working quickly and carefully, add the shallot mixture to the sheets and stir with the Brussels sprouts to combine.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &stirShallotsVIP.ID,
 				Name:                            "tossed shallots",
@@ -617,7 +686,7 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &stirBrusselsSproutsVIP.ID,
 				Name:                            "partially roasted Brussels sprouts",
@@ -628,10 +697,10 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &stirBakingSheetVPV.ID,
-				Name:                            "baking sheet with Brussels sprouts in oven",
+				Name:                            "baking sheets with partially roasted Brussels sprouts in oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -647,22 +716,58 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 					Min: pointer.To[float32](3),
 				},
 			},
+			{
+				Name:  "baking sheets with Brussels sprouts and shallots in oven",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 	}
 
-	// Step 10: Rotate and swap pans top to bottom in oven. Continue to bake until Brussels sprouts are deeply charred and fully tender and shallots begin to brown, 10 to 15 minutes more.
+	// Step 12: Rotate and swap pans top to bottom in oven
+	step12 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        rotatePrep.ID,
+		Index:                12,
+		ExplicitInstructions: "Rotate and swap the pans top to bottom in the oven.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &rotateBakingSheetVPV.ID,
+				Name:                            "baking sheets with Brussels sprouts and shallots in oven",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "rotated baking sheets with Brussels sprouts and shallots in oven",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 13: Continue to bake until Brussels sprouts are deeply charred and fully tender and shallots begin to brown, 10 to 15 minutes more
 	brownedState := enums.IngredientStates["browned"]
-	step10 := &mealplanning.RecipeStepCreationRequestInput{
+	step13 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        roastPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Rotate and swap the pans top to bottom in the oven. Continue to bake until the Brussels sprouts are deeply charred and fully tender and the shallots begin to brown, 10 to 15 minutes more.",
+		Index:                13,
+		ExplicitInstructions: "Continue to bake until the Brussels sprouts are deeply charred and fully tender and the shallots begin to brown, 10 to 15 minutes more.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](600), // 10 minutes
 			Max: pointer.To[uint32](900), // 15 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &roastBrusselsSproutsVIP.ID,
 				Name:                            "Brussels sprouts and shallots combined",
@@ -673,19 +778,10 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &rotateBakingSheetVPV.ID,
-				Name:                            "baking sheet with Brussels sprouts in oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &roastOvenVPV.ID,
-				Name:                            "preheated oven with baking sheets at 500°F",
+				ValidPreparationVesselID:        &roastBakingSheetVPV.ID,
+				Name:                            "rotated baking sheets with Brussels sprouts and shallots in oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -701,25 +797,33 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 					Min: pointer.To[float32](3),
 				},
 			},
+			{
+				Name:  "baking sheet with roasted Brussels sprouts and shallots",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
 				IngredientStateID: brownedState.ID,
 				Notes:             "Brussels sprouts should be deeply charred and fully tender, and shallots should begin to brown",
-				Ingredients:       []uint64{0}, // Index of combined ingredient in the step
+				Ingredients:       []uint64{0},
 				Optional:          false,
 			},
 		},
 	}
 
-	// Step 11: Immediately after removing sheets from oven, drizzle sprouts with balsamic vinegar and shake to coat
-	step11 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 14: Immediately after removing sheets from oven, drizzle sprouts with balsamic vinegar and shake to coat
+	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        drizzlePrep.ID,
-		Index:                11,
+		Index:                14,
 		ExplicitInstructions: "Immediately after removing the sheets from the oven, drizzle the sprouts with balsamic vinegar and shake to coat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &drizzleBrusselsSproutsVIP.ID,
 				Name:                            "roasted Brussels sprouts and shallots",
@@ -747,8 +851,8 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &drizzleBakingSheetVPV.ID,
 				Name:                            "baking sheet with roasted Brussels sprouts and shallots",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -769,15 +873,15 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		},
 	}
 
-	// Step 12: Season to taste with more salt and pepper if desired and serve
-	step12 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 15: Season to taste with more salt and pepper if desired
+	step15 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                12,
-		ExplicitInstructions: "Season to taste with more salt and pepper if desired and serve.",
+		Index:                15,
+		ExplicitInstructions: "Season to taste with more salt and pepper if desired.",
 		Optional:             true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &seasonBrusselsSproutsVIP.ID,
 				Name:                            "balsamic-glazed Brussels sprouts and shallots",
@@ -859,7 +963,7 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			PortionName:       "serving",
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12},
+			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15},
 			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,

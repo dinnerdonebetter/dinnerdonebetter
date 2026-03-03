@@ -633,6 +633,34 @@ func (s *serviceImpl) FinalizeMealPlan(ctx context.Context, request *mealplannin
 	return x, nil
 }
 
+func (s *serviceImpl) GetMermaidDiagramForMeal(ctx context.Context, request *mealplanningsvc.GetMermaidDiagramForMealRequest) (*mealplanningsvc.GetMermaidDiagramForMealResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		mealplanningkeys.MealIDKey: request.MealId,
+	}, span, s.logger)
+
+	meal, err := s.mealPlanningManager.ReadMeal(ctx, request.MealId)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal")
+	}
+
+	mermaidDiagram, err := s.recipeManager.MealMermaid(ctx, meal)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to generate mermaid diagram")
+	}
+
+	x := &mealplanningsvc.GetMermaidDiagramForMealResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Response: mermaidDiagram,
+	}
+
+	return x, nil
+}
+
 func (s *serviceImpl) GetMeal(ctx context.Context, request *mealplanningsvc.GetMealRequest) (*mealplanningsvc.GetMealResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1273,7 +1301,7 @@ func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplannings
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	meals, err := s.mealPlanningManager.SearchMeals(ctx, request.Query, !request.UseSearchService, filter)
+	meals, err := s.mealPlanningManager.SearchMeals(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for meals")
 	}

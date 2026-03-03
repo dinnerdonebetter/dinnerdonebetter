@@ -205,7 +205,7 @@ func TestRecipeManager_ReadRecipe(T *testing.T) {
 func TestRecipeManager_SearchRecipes(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("useSearchService false uses database", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -222,6 +222,31 @@ func TestRecipeManager_SearchRecipes(T *testing.T) {
 		)
 
 		actual, err := rm.SearchRecipes(ctx, exampleQuery, false, nil)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+
+	T.Run("useSearchService true falls back to database when search returns empty", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+		// buildRecipeManagerForTest uses empty textsearchcfg.Config, which provides NoopIndexManager
+		// that returns empty results - triggering fallback to database
+
+		expected := fakes.BuildFakeRecipesList()
+		exampleQuery := fakes.BuildFakeID()
+
+		expectations := setupExpectationsForRecipeManager(
+			rm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.SearchForRecipes), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, err := rm.SearchRecipes(ctx, exampleQuery, true, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -328,6 +353,34 @@ func TestRecipeManager_RecipeImageUpload(T *testing.T) {
 		t.Parallel()
 
 		t.SkipNow()
+	})
+}
+
+func TestRecipeManager_MealMermaid(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		exampleMeal := fakes.BuildFakeMeal()
+		expectedResult := "flowchart TD;\n\tStep1[\"Main\"];\n"
+
+		expectations := setupExpectationsForRecipeManagerWithAnalyzer(
+			rm,
+			nil,
+			func(analyzer *recipeanalysis.MockRecipeAnalyzer) {
+				analyzer.On(reflection.GetMethodName(analyzer.RenderMermaidDiagramForMeal), testutils.ContextMatcher, testutils.MatchType[*types.Meal]()).Return(expectedResult, nil)
+			},
+		)
+
+		result, err := rm.MealMermaid(ctx, exampleMeal)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedResult, result)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 

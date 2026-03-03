@@ -53,6 +53,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	garlic := enums.Ingredients["garlic"]
 	heavyCream := enums.Ingredients["heavy cream"]
 	butter := enums.Ingredients["butter"]
+	aluminumFoilIngredient := enums.Ingredients["aluminum foil"]
 
 	// Get measurement units
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
@@ -68,7 +69,6 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	woodenSpoon := enums.Instruments["wooden spoon"]
 	stickBlender := enums.Instruments["immersion blender"]
 	bareHands := enums.Instruments["bare hands"]
-	aluminumFoil := enums.Instruments["aluminum foil"]
 	knife := enums.Instruments["knife"]
 	microplane := enums.Instruments["microplane"]
 	vegetablePeeler := enums.Instruments["vegetable peeler"]
@@ -127,7 +127,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	coatBareHandsVPI := enums.PreparationInstruments[coatPrep.ID][bareHands.ID]
 	coatMediumBowlVPV := enums.PreparationVessels[coatPrep.ID][mediumBowl.ID]
 	transferBakingSheetVPV := enums.PreparationVessels[transferPrep.ID][bakingSheet.ID]
-	lineAluminumFoilVPI := enums.PreparationInstruments[linePrep.ID][aluminumFoil.ID]
+	lineAluminumFoilVIP := enums.IngredientPreparations[linePrep.ID][aluminumFoilIngredient.ID]
+	lineAluminumFoilVIMU := enums.IngredientMeasurementUnits[aluminumFoilIngredient.ID][unitMeasurement.ID]
 	lineBakingSheetVPV := enums.PreparationVessels[linePrep.ID][bakingSheet.ID]
 	soakMicrowaveBowlVPV := enums.PreparationVessels[soakPrep.ID][microwaveSafeBowl.ID]
 	microwaveMicrowaveBowlVPV := enums.PreparationVessels[microwavePrep.ID][microwaveSafeBowl.ID]
@@ -138,7 +139,6 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	addWoodenSpoonVPI := enums.PreparationInstruments[addPrep.ID][woodenSpoon.ID]
 	simmerDutchOvenVPV := enums.PreparationVessels[simmerPrep.ID][dutchOven.ID]
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
-	broilBakingSheetVPV := enums.PreparationVessels[broilPrep.ID][bakingSheet.ID]
 	broilOvenVPV := enums.PreparationVessels[broilPrep.ID][oven.ID]
 	blendStickBlenderVPI := enums.PreparationInstruments[blendPrep.ID][stickBlender.ID]
 	blendDutchOvenVPV := enums.PreparationVessels[blendPrep.ID][dutchOven.ID]
@@ -272,11 +272,12 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		PreparationID:        linePrep.ID,
 		Index:                2,
 		ExplicitInstructions: "In the center of a rimmed baking sheet, create a roughly 9- by 13-inch aluminum-foil boat with 1-inch sides, and set aside.",
-		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidPreparationInstrumentID: &lineAluminumFoilVPI.ID,
-				Name:                         "aluminum foil",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				ValidIngredientPreparationID:     &lineAluminumFoilVIP.ID,
+				ValidIngredientMeasurementUnitID: &lineAluminumFoilVIMU.ID,
+				Name:                             "aluminum foil",
+				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
@@ -556,10 +557,17 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "chicken on baking sheet",
+				Name:                "prepared baking sheet",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
 				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+			},
+			{
+				Name:                "marinated chicken",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               1,
+				MeasurementUnitID:   &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2)},
 			},
 		},
 	}
@@ -1353,17 +1361,18 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &broilChickenVIP.ID,
-				Name:                            "chicken on baking sheet",
+				Name:                            "marinated chicken",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 2},
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &broilBakingSheetVPV.ID,
-				Name:                     "baking sheet with chicken",
-				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "prepared baking sheet",
+				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](25),
@@ -1586,7 +1595,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step21 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
 		Index:                31,
-		ExplicitInstructions: "Ladle the chicken and sauce into a serving bowl and drizzle with additional heavy cream. Serve immediately with rice alongside.",
+		ExplicitInstructions: "Ladle the chicken and sauce into a serving bowl and drizzle with additional heavy cream.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](30),

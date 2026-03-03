@@ -56,6 +56,13 @@ spec:
               value: "true"
             - name: "GCE_METADATA_HOST"
               value: "169.254.169.254"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
       volumes:
         # this volume contains the configuration file for the OTel collector.
         - name: opentelemetry-config

@@ -271,6 +271,78 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 	})
 }
 
+func TestAuth_EvaluateFeatureFlags(T *testing.T) {
+	T.Parallel()
+
+	// Integration tests use NoopFeatureFlagManager (no actual FF backend), so all values are zero.
+	// Purpose: validate client methods exist and server responds correctly.
+	T.Run("EvaluateBooleanFeatureFlag returns false with noop provider", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		res, err := testClient.EvaluateBooleanFeatureFlag(ctx, &authsvc.EvaluateBooleanFeatureFlagRequest{
+			FeatureFlag: "some-flag",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		assert.False(t, res.Enabled)
+	})
+
+	T.Run("EvaluateStringFeatureFlag returns empty with noop provider", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		res, err := testClient.EvaluateStringFeatureFlag(ctx, &authsvc.EvaluateStringFeatureFlagRequest{
+			FeatureFlag: "some-flag",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		assert.Empty(t, res.Value)
+	})
+
+	T.Run("EvaluateInt64FeatureFlag returns zero with noop provider", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		res, err := testClient.EvaluateInt64FeatureFlag(ctx, &authsvc.EvaluateInt64FeatureFlagRequest{
+			FeatureFlag: "some-flag",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		assert.Equal(t, int64(0), res.Value)
+	})
+
+	T.Run("feature flag methods require authentication", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := unauthedClient.EvaluateBooleanFeatureFlag(ctx, &authsvc.EvaluateBooleanFeatureFlagRequest{
+			FeatureFlag: "some-flag",
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("empty feature_flag returns InvalidArgument", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		_, err := testClient.EvaluateBooleanFeatureFlag(ctx, &authsvc.EvaluateBooleanFeatureFlagRequest{
+			FeatureFlag: "",
+		})
+		assert.Error(t, err)
+	})
+}
+
 func TestAuth_GetAuthStatus(T *testing.T) {
 	T.Parallel()
 

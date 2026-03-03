@@ -512,7 +512,9 @@ private struct ResistantSwipeReviewRow: View {
   }
 
   private func formatQuantityNeeded(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
-    let unit = item.measurementUnit.name.isEmpty ? "" : " \(item.measurementUnit.name)"
+    let unitName = MeasurementUnitFormatter.displayName(
+      for: quantity.min, unit: item.measurementUnit)
+    let unit = unitName.isEmpty ? "" : " \(unitName)"
     if quantity.hasMax && quantity.min != quantity.max {
       return "\(formatNumber(quantity.min))–\(formatNumber(quantity.max))\(unit)"
     } else {
@@ -578,9 +580,11 @@ struct EnhancedGroceryItemRow: View {
           // Show quantity purchased if item is marked as have
           if (item.status == .acquired || item.status == .alreadyOwned) && item.hasQuantityPurchased
           {
-            Text("Have: \(formatQuantity(item.quantityPurchased, unit: item.measurementUnit.name))")
-              .font(.caption)
-              .foregroundColor(.green)
+            Text(
+              "Have: \(formatQuantity(item.quantityPurchased, unit: MeasurementUnitFormatter.displayName(for: item.quantityPurchased, unit: item.measurementUnit)))"
+            )
+            .font(.caption)
+            .foregroundColor(.green)
           }
         }
 
@@ -814,7 +818,9 @@ struct EnhancedGroceryItemRow: View {
   }
 
   private func formatQuantityNeeded(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
-    let unit = item.measurementUnit.name.isEmpty ? "" : " \(item.measurementUnit.name)"
+    let unitName = MeasurementUnitFormatter.displayName(
+      for: quantity.min, unit: item.measurementUnit)
+    let unit = unitName.isEmpty ? "" : " \(unitName)"
     if quantity.hasMax && quantity.min != quantity.max {
       return "\(formatNumber(quantity.min)) - \(formatNumber(quantity.max))\(unit) needed"
     } else {

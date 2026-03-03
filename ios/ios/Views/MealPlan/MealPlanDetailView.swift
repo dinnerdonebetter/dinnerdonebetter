@@ -347,7 +347,7 @@ struct EventCard: View {
 
           ForEach(event.options.filter { $0.chosen }, id: \.id) { option in
             NavigationLink(
-              destination: MealDetailView(mealID: option.meal.id)
+              destination: MealDetailView(mealID: option.meal.id, isFromMealPlan: true)
             ) {
               MealOptionCard(option: option, isChosen: true)
             }

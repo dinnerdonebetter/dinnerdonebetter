@@ -109,7 +109,7 @@ struct PerformRecipeView: View {
         parts.append("for \(recipeName)")
       }
 
-      if let eventName = context.eventName, let eventTime = context.eventTime {
+      if context.eventName != nil, let eventTime = context.eventTime {
         let formatter = DateFormatter()
         formatter.dateStyle = .none
         formatter.timeStyle = .short

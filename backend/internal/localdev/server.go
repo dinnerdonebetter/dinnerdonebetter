@@ -353,7 +353,13 @@ func FetchLoginTokenForUser(ctx context.Context, grpcServerAddr string, loginInp
 		return "", fmt.Errorf("initializing client: %w", err)
 	}
 
-	tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
+	return FetchLoginTokenForUserWithClient(ctx, unauthedClient, loginInput)
+}
+
+// FetchLoginTokenForUserWithClient calls LoginForToken using the given client.
+// Use this when the client must use TLS (e.g. for api.dinnerdonebetter.com).
+func FetchLoginTokenForUserWithClient(ctx context.Context, c client.Client, loginInput *authsvc.UserLoginInput) (string, error) {
+	tokenRes, err := c.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
 		Input: loginInput,
 	})
 	if err != nil {

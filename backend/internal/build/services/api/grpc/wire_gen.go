@@ -30,9 +30,11 @@ import (
 	manager5 "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	manager12 "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
@@ -144,7 +146,13 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	authServiceServer := grpc2.NewAuthService(logger, tracerProvider, identityDataManager, authManagerInterface, authenticationManager)
+	featureflagscfgConfig := &cfg.FeatureFlags
+	httpClient := tracing.BuildTracedHTTPClient()
+	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, provider, httpClient)
+	if err != nil {
+		return nil, err
+	}
+	authServiceServer := grpc2.NewAuthService(logger, tracerProvider, identityDataManager, authManagerInterface, authenticationManager, featureFlagManager)
 	v := sessions.ProvideContextDataFetcherFromContext()
 	issuereportsRepository := issue_reports.ProvideIssueReportsRepository(logger, tracerProvider, repository, client)
 	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
@@ -194,20 +202,22 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	mealPlanningManager, err := managers2.NewMealPlanningManager(ctx, logger, tracerProvider, mealplanningRepository, queuesConfig, publisherProvider, textsearchcfgConfig, provider)
-	if err != nil {
-		return nil, err
-	}
-	worker, err := mealplanfinalizer.NewMealPlanFinalizer(ctx, logger, tracerProvider, mealplanningRepository, publisherProvider, provider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
-	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, mealplanningRepository, groceryListCreator, queuesConfig)
+	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, mealplanningRepository, groceryListCreator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
+	mealPlanGroceryListInitializerWorker := managers2.BuildMealPlanGroceryListInitializerWorker(worker)
 	mealplantaskcreatorWorker, err := mealplantaskcreator.NewMealPlanTaskCreator(ctx, logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
+	mealPlanTaskCreatorWorker := managers2.BuildMealPlanTaskCreatorWorker(mealplantaskcreatorWorker)
+	mealPlanningManager, err := managers2.NewMealPlanningManager(ctx, logger, tracerProvider, mealplanningRepository, queuesConfig, publisherProvider, textsearchcfgConfig, provider, mealPlanGroceryListInitializerWorker, mealPlanTaskCreatorWorker)
+	if err != nil {
+		return nil, err
+	}
+	mealplanfinalizerWorker, err := mealplanfinalizer.NewMealPlanFinalizer(ctx, logger, tracerProvider, mealplanningRepository, publisherProvider, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -216,7 +226,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	mealPlanningServiceServer := grpc7.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, worker, mealplangrocerylistinitializerWorker, mealplantaskcreatorWorker, commentsDataManager)
+	mealPlanningServiceServer := grpc7.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, mealplanfinalizerWorker, worker, mealplantaskcreatorWorker, commentsDataManager)
 	userNotificationsServiceServer := grpc8.NewService(logger, tracerProvider, notificationsDataManager)
 	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
 	oAuth2Manager, err := manager9.NewOAuth2Manager(ctx, logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)

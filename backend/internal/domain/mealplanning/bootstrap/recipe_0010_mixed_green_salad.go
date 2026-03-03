@@ -14,6 +14,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 	rinsePrep := enums.Preparations["rinse"]
 	dryPrep := enums.Preparations["dry"]
 	slicePrep := enums.Preparations["slice"]
+	pluckPrep := enums.Preparations["pluck"]
 	mixPrep := enums.Preparations["mix"]
 	tossPrep := enums.Preparations["toss"]
 	seasonPrep := enums.Preparations["season"]
@@ -76,6 +77,15 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 	sliceEndiveVIP := enums.IngredientPreparations[slicePrep.ID][endive.ID]
 	sliceCuttingBoardVPV := enums.PreparationVessels[slicePrep.ID][cuttingBoard.ID]
 	sliceKnifeVPI := enums.PreparationInstruments[slicePrep.ID][knife.ID]
+
+	// Pluck
+	pluckFennelFrondsVIP := enums.IngredientPreparations[pluckPrep.ID][fennelFronds.ID]
+	pluckParsleyVIP := enums.IngredientPreparations[pluckPrep.ID][parsley.ID]
+	pluckTarragonVIP := enums.IngredientPreparations[pluckPrep.ID][tarragon.ID]
+	pluckChervilVIP := enums.IngredientPreparations[pluckPrep.ID][chervil.ID]
+	pluckBasilVIP := enums.IngredientPreparations[pluckPrep.ID][basil.ID]
+	pluckMintVIP := enums.IngredientPreparations[pluckPrep.ID][mint.ID]
+	pluckBareHandsVPI := enums.PreparationInstruments[pluckPrep.ID][bareHands.ID]
 
 	// Rinse
 	rinseLettuceVIP := enums.IngredientPreparations[rinsePrep.ID][lettuce.ID]
@@ -912,11 +922,11 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 	}
 
-	// Step 3: Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive
+	// Step 3: Cut lettuce leaves free of their cores
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        slicePrep.ID,
 		Index:                3,
-		ExplicitInstructions: "Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive.",
+		ExplicitInstructions: "Cut lettuce leaves free of their cores.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
@@ -927,6 +937,172 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 					Min: 2,
 				},
 			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "sliced lettuce",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
+	// Step 4: Pick tender herbs from stems
+	step4 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        pluckPrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Pick tender herbs from stems.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](7),
+				ValidIngredientPreparationID:    &pluckFennelFrondsVIP.ID,
+				Name:                            "dried fennel fronds",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.25,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](8),
+				ValidIngredientPreparationID:    &pluckParsleyVIP.ID,
+				Name:                            "dried parsley",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.25,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](9),
+				ValidIngredientPreparationID:    &pluckTarragonVIP.ID,
+				Name:                            "dried tarragon",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.25,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](10),
+				ValidIngredientPreparationID:    &pluckChervilVIP.ID,
+				Name:                            "dried chervil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.25,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](11),
+				ValidIngredientPreparationID:    &pluckBasilVIP.ID,
+				Name:                            "dried basil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.25,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](12),
+				ValidIngredientPreparationID:    &pluckMintVIP.ID,
+				Name:                            "dried mint",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.25,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &pluckBareHandsVPI.ID,
+				Name:                         "bare hands",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "plucked fennel fronds",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](0.25),
+				},
+			},
+			{
+				Name:              "plucked parsley",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             1,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](0.25),
+				},
+			},
+			{
+				Name:              "plucked tarragon",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             2,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](0.25),
+				},
+			},
+			{
+				Name:              "plucked chervil",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             3,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](0.25),
+				},
+			},
+			{
+				Name:              "plucked basil",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             4,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](0.25),
+				},
+			},
+			{
+				Name:              "plucked mint",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             5,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](0.25),
+				},
+			},
+		},
+	}
+
+	// Step 5: Quarter, core, and slice tight leafy heads like radicchio and endive
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        slicePrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Quarter, core, and slice tight leafy heads like radicchio and endive.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
@@ -966,27 +1142,18 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "prepared lettuce",
+				Name:              "sliced radicchio",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
-				},
-			},
-			{
-				Name:              "prepared radicchio",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             1,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				Name:              "prepared endive",
+				Name:              "sliced endive",
 				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             2,
+				Index:             1,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
@@ -995,35 +1162,35 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 	}
 
-	// Step 4: Combine all the dried greens into a mixed greens mixture
-	step4 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 6: Combine all the dried greens into a mixed greens mixture
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        mixPrep.ID,
-		Index:                4,
+		Index:                6,
 		ExplicitInstructions: "Combine all the dried greens and herbs together in a large bowl.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &mixLettuceVIP.ID,
-				Name:                            "prepared lettuce",
+				Name:                            "sliced lettuce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &mixRadicchioVIP.ID,
-				Name:                            "prepared radicchio",
+				Name:                            "sliced radicchio",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &mixEndiveVIP.ID,
-				Name:                            "prepared endive",
+				Name:                            "sliced endive",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -1065,55 +1232,55 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &mixFennelFrondsVIP.ID,
-				Name:                            "dried fennel fronds",
+				Name:                            "plucked fennel fronds",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &mixParsleyVIP.ID,
-				Name:                            "dried parsley",
+				Name:                            "plucked parsley",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
 				ValidIngredientPreparationID:    &mixTarragonVIP.ID,
-				Name:                            "dried tarragon",
+				Name:                            "plucked tarragon",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](3),
 				ValidIngredientPreparationID:    &mixChervilVIP.ID,
-				Name:                            "dried chervil",
+				Name:                            "plucked chervil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](4),
 				ValidIngredientPreparationID:    &mixBasilVIP.ID,
-				Name:                            "dried basil",
+				Name:                            "plucked basil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](12),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](5),
 				ValidIngredientPreparationID:    &mixMintVIP.ID,
-				Name:                            "dried mint",
+				Name:                            "plucked mint",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
@@ -1150,15 +1317,15 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 	}
 
-	// Step 5: In a large serving bowl, gently toss salad with just enough olive oil to gently coat leaves
+	// Step 7: In a large serving bowl, gently toss salad with just enough olive oil to gently coat leaves
 	coatedState := enums.IngredientStates["coated"]
-	step5 := &mealplanning.RecipeStepCreationRequestInput{
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        tossPrep.ID,
-		Index:                5,
+		Index:                7,
 		ExplicitInstructions: "In a large serving bowl, gently toss the salad with just enough olive oil to gently coat the leaves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "mixed greens",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -1223,14 +1390,14 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 	}
 
-	// Step 6: Add splash of lemon juice and salt to taste, tossing to combine. Serve.
-	step6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 8: Add splash of lemon juice and salt to taste, tossing to combine
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                6,
-		ExplicitInstructions: "Add a splash of lemon juice and salt to taste, tossing to combine. Serve immediately.",
+		Index:                8,
+		ExplicitInstructions: "Add a splash of lemon juice and salt to taste, tossing to combine.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "dressed greens",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -1261,7 +1428,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &seasonServingBowlVPV.ID,
 				Name:                            "serving bowl with salad",
@@ -1310,7 +1477,9 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: false},
-			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: true},
+			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 5, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 6, SatisfiesRecipeStep: true},
 		},
 	}
 
@@ -1327,7 +1496,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 			PortionName:       "serving",
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6},
+			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8},
 			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,

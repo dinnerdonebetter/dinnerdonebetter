@@ -72,6 +72,7 @@ type (
 		ProductOfRecipeStepIndex         *uint64                           `json:"productOfRecipeStepIndex"`
 		ValidIngredientPreparationID     *string                           `json:"validIngredientPreparationID"`
 		RecipeStepProductRecipeID        *string                           `json:"productOfRecipeID"`
+		RecipeStepProductRecipeSlug      *string                           `json:"-"` // Used by resolveEmptyRecipeIDs when ID is empty; not persisted
 		ProductOfRecipeStepProductIndex  *uint64                           `json:"productOfRecipeStepProductIndex"`
 		Name                             string                            `json:"name"`
 		QuantityNotes                    string                            `json:"quantityNotes"`

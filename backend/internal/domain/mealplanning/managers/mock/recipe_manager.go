@@ -34,8 +34,8 @@ func (m *MockRecipeManager) ReadRecipe(ctx context.Context, recipeID string) (*m
 	return returnValues.Get(0).(*mealplanning.Recipe), returnValues.Error(1)
 }
 
-func (m *MockRecipeManager) SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
-	returnValues := m.Called(ctx, query, useDatabase, filter)
+func (m *MockRecipeManager) SearchRecipes(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, query, useSearchService, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
@@ -68,6 +68,11 @@ func (m *MockRecipeManager) RecipeEstimatedPrepSteps(ctx context.Context, recipe
 	returnValues := m.Called(ctx, recipeID)
 
 	return returnValues.Get(0).([]*mealplanning.MealPlanTaskDatabaseCreationEstimate), returnValues.Error(1)
+}
+
+func (m *MockRecipeManager) MealMermaid(ctx context.Context, meal *mealplanning.Meal) (string, error) {
+	returnArgs := m.Called(ctx, meal)
+	return returnArgs.String(0), returnArgs.Error(1)
 }
 
 func (m *MockRecipeManager) RecipeMermaid(ctx context.Context, recipeID string) (string, error) {

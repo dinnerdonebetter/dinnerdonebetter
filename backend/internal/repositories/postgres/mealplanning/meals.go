@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
@@ -140,25 +141,67 @@ func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
 	}
 
+	var meal *mealplanning.Meal
 	for _, result := range results {
-		data = append(data, &mealplanning.Meal{
-			CreatedAt:     result.CreatedAt,
-			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-			ID:            result.ID,
-			Description:   result.Description,
-			CreatedByUser: result.CreatedByUser,
-			Name:          result.Name,
-			Components:    nil,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
-				Min: database.Float32FromString(result.MinEstimatedPortions),
-				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-			},
-			EligibleForMealPlans: result.EligibleForMealPlans,
-		})
+		if meal != nil && meal.ID != result.ID {
+			data = append(data, meal)
+			meal = nil
+		}
+
+		if meal == nil {
+			meal = &mealplanning.Meal{
+				CreatedAt:     result.CreatedAt,
+				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:            result.ID,
+				Description:   result.Description,
+				CreatedByUser: result.CreatedByUser,
+				Name:          result.Name,
+				Components:    []*mealplanning.MealComponent{},
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Min: database.Float32FromString(result.MinEstimatedPortions),
+					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+				},
+				EligibleForMealPlans: result.EligibleForMealPlans,
+			}
+		}
+
+		if result.ComponentRecipeID.Valid {
+			recipe, recipeErr := q.getRecipe(ctx, result.ComponentRecipeID.String)
+			if recipeErr != nil {
+				if errors.Is(recipeErr, sql.ErrNoRows) {
+					// Recipe missing or archived (e.g. orphaned reference from another test).
+					// Skip this component so listing succeeds; avoids cross-test pollution.
+					logger.WithValue(mealplanningkeys.MealIDKey, result.ID).
+						WithValue(mealplanningkeys.RecipeIDKey, result.ComponentRecipeID.String).
+						Info("skipping meal component with missing or archived recipe")
+					continue
+				}
+				return nil, observability.PrepareAndLogError(recipeErr, logger, span, "getting recipe for meal component")
+			}
+
+			componentType := ""
+			if result.ComponentMealComponentType.Valid {
+				componentType = string(result.ComponentMealComponentType.ComponentType)
+			}
+			recipeScale := float32(0)
+			if result.ComponentRecipeScale.Valid {
+				recipeScale = database.Float32FromString(result.ComponentRecipeScale.String)
+			}
+
+			meal.Components = append(meal.Components, &mealplanning.MealComponent{
+				ComponentType: componentType,
+				Recipe:        *recipe,
+				RecipeScale:   recipeScale,
+			})
+		}
 
 		filteredCount = uint64(result.FilteredCount)
 		totalCount = uint64(result.TotalCount)
+	}
+
+	if meal != nil {
+		data = append(data, meal)
 	}
 
 	x = filtering.NewQueryFilteredResult(
@@ -205,25 +248,65 @@ func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
 	}
 
+	var meal *mealplanning.Meal
 	for _, result := range results {
-		data = append(data, &mealplanning.Meal{
-			CreatedAt:     result.CreatedAt,
-			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-			ID:            result.ID,
-			Description:   result.Description,
-			CreatedByUser: result.CreatedByUser,
-			Name:          result.Name,
-			Components:    nil,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
-				Min: database.Float32FromString(result.MinEstimatedPortions),
-				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-			},
-			EligibleForMealPlans: result.EligibleForMealPlans,
-		})
+		if meal != nil && meal.ID != result.ID {
+			data = append(data, meal)
+			meal = nil
+		}
+
+		if meal == nil {
+			meal = &mealplanning.Meal{
+				CreatedAt:     result.CreatedAt,
+				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:            result.ID,
+				Description:   result.Description,
+				CreatedByUser: result.CreatedByUser,
+				Name:          result.Name,
+				Components:    []*mealplanning.MealComponent{},
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Min: database.Float32FromString(result.MinEstimatedPortions),
+					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+				},
+				EligibleForMealPlans: result.EligibleForMealPlans,
+			}
+		}
+
+		if result.ComponentRecipeID.Valid {
+			recipe, recipeErr := q.getRecipe(ctx, result.ComponentRecipeID.String)
+			if recipeErr != nil {
+				if errors.Is(recipeErr, sql.ErrNoRows) {
+					logger.WithValue(mealplanningkeys.MealIDKey, result.ID).
+						WithValue(mealplanningkeys.RecipeIDKey, result.ComponentRecipeID.String).
+						Info("skipping meal component with missing or archived recipe")
+					continue
+				}
+				return nil, observability.PrepareAndLogError(recipeErr, logger, span, "getting recipe for meal component")
+			}
+
+			componentType := ""
+			if result.ComponentMealComponentType.Valid {
+				componentType = string(result.ComponentMealComponentType.ComponentType)
+			}
+			recipeScale := float32(0)
+			if result.ComponentRecipeScale.Valid {
+				recipeScale = database.Float32FromString(result.ComponentRecipeScale.String)
+			}
+
+			meal.Components = append(meal.Components, &mealplanning.MealComponent{
+				ComponentType: componentType,
+				Recipe:        *recipe,
+				RecipeScale:   recipeScale,
+			})
+		}
 
 		filteredCount = uint64(result.FilteredCount)
 		totalCount = uint64(result.TotalCount)
+	}
+
+	if meal != nil {
+		data = append(data, meal)
 	}
 
 	x = filtering.NewQueryFilteredResult(
@@ -365,6 +448,12 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 
 		recipe, recipeErr := q.getRecipe(ctx, result.ComponentRecipeID)
 		if recipeErr != nil {
+			if errors.Is(recipeErr, sql.ErrNoRows) {
+				logger.WithValue(mealplanningkeys.MealIDKey, result.ID).
+					WithValue(mealplanningkeys.RecipeIDKey, result.ComponentRecipeID).
+					Info("skipping meal component with missing or archived recipe")
+				continue
+			}
 			return nil, observability.PrepareAndLogError(recipeErr, logger, span, "getting recipe for meal component")
 		}
 

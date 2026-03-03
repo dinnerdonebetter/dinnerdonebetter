@@ -6,15 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mocks"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 
 	"github.com/posthog/posthog-go"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -134,44 +131,5 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 		actual, err := ffm.CanUseFeature(ctx, exampleUsername, t.Name())
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-}
-
-func TestFeatureFlagManager_Identify(T *testing.T) {
-	T.Run("standard", func(t *testing.T) {
-		ctx := t.Context()
-
-		user := mockauthn.NewMockUser()
-		user.On(reflection.GetMethodName(user.GetID)).Return("ID").Twice()
-		user.On(reflection.GetMethodName(user.GetUsername)).Return("Username")
-		user.On(reflection.GetMethodName(user.GetFirstName)).Return("FirstName")
-		user.On(reflection.GetMethodName(user.GetLastName)).Return("LastName")
-
-		cfg := &Config{ProjectAPIKey: t.Name(), PersonalAPIKey: t.Name()}
-
-		ts := httptest.NewTLSServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			res.WriteHeader(http.StatusOK)
-		}))
-
-		ffm, err := NewFeatureFlagManager(cfg, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), circuitbreaking.NewNoopCircuitBreaker(), func(config *posthog.Config) {
-			config.Transport = ts.Client().Transport
-			config.Endpoint = ts.URL
-		})
-		require.NoError(t, err)
-
-		assert.NoError(t, ffm.Identify(ctx, user))
-
-		mock.AssertExpectationsForObjects(t, user)
-	})
-
-	T.Run("with nil user", func(t *testing.T) {
-		ctx := t.Context()
-
-		cfg := &Config{ProjectAPIKey: t.Name(), PersonalAPIKey: t.Name()}
-
-		ffm, err := NewFeatureFlagManager(cfg, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), circuitbreaking.NewNoopCircuitBreaker())
-		require.NoError(t, err)
-
-		assert.Error(t, ffm.Identify(ctx, nil))
 	})
 }

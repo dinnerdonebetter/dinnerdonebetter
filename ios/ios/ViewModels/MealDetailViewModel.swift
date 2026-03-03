@@ -17,6 +17,10 @@ class MealDetailViewModel {
   var isLoading = false
   var errorMessage: String?
 
+  var mermaidDiagram: String?
+  var isLoadingMermaid = false
+  var mermaidError: String?
+
   private let mealID: String
   private let authManager: AuthenticationManager
 
@@ -60,5 +64,43 @@ class MealDetailViewModel {
     }
 
     isLoading = false
+  }
+
+  func loadMermaidDiagram() async {
+    guard mermaidDiagram == nil else { return }
+    isLoadingMermaid = true
+    mermaidError = nil
+
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        throw NSError(
+          domain: "MealDetailViewModel", code: 1,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
+      }
+
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        throw NSError(
+          domain: "MealDetailViewModel", code: 2,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+      }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+      var request = Mealplanning_GetMermaidDiagramForMealRequest()
+      request.mealID = mealID
+
+      let response = try await clientManager.client.mealPlanning.getMermaidDiagramForMeal(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      self.mermaidDiagram = response.response
+    } catch {
+      mermaidError = "Failed to load diagram: \(error.localizedDescription)"
+      print("❌ Error loading mermaid diagram: \(error)")
+    }
+
+    isLoadingMermaid = false
   }
 }

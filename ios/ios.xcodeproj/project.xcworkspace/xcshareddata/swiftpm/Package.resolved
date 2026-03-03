@@ -1,6 +1,33 @@
 {
-  "originHash" : "4462cf0f77927d3e6adaca76d66d297fc66a1b04f94c1b02ada5ee723d47d5da",
+  "originHash" : "50e318351ab0fe6aae4235ebf9613584051062038b962f505035a0f07f3b0748",
   "pins" : [
+    {
+      "identity" : "analytics-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segmentio/analytics-swift.git",
+      "state" : {
+        "revision" : "f604cef21bb7269f76136c68bd664c6c993f8e28",
+        "version" : "1.9.1"
+      }
+    },
+    {
+      "identity" : "beautiful-mermaid-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lukilabs/beautiful-mermaid-swift.git",
+      "state" : {
+        "revision" : "c6a63655285c5e479d6641c774acb0a8739f8ad7",
+        "version" : "0.1.1"
+      }
+    },
+    {
+      "identity" : "dagre-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lukilabs/dagre-swift",
+      "state" : {
+        "revision" : "92efb78b73a8b665ee74bacfb0f1f5b17bbe1b38",
+        "version" : "0.1.0"
+      }
+    },
     {
       "identity" : "grpc-swift-2",
       "kind" : "remoteSourceControl",
@@ -26,6 +53,24 @@
       "state" : {
         "revision" : "c008d356d9e9c2255602711888bf25b542a30919",
         "version" : "2.1.1"
+      }
+    },
+    {
+      "identity" : "jsonsafeencoding-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segmentio/jsonsafeencoding-swift.git",
+      "state" : {
+        "revision" : "af6a8b360984085e36c6341b21ecb35c12f47ebd",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "sovran-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segmentio/sovran-swift.git",
+      "state" : {
+        "revision" : "24867f3e4ac62027db9827112135e6531b6f4051",
+        "version" : "1.1.2"
       }
     },
     {

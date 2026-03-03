@@ -23,52 +23,68 @@ struct HomeView: View {
             error: viewModel.errorMessage,
             onRetry: { await viewModel.loadData() },
             content: {
-              ScrollView {
-                VStack(spacing: DSTheme.Spacing.xl) {
-                  // Greeting (first)
-                  greetingSection(viewModel: viewModel)
+              VStack(spacing: 0) {
+                // Sticky header: Greeting
+                greetingSection(viewModel: viewModel)
+                  .dsScreenPadding()
+                  .padding(.bottom, DSTheme.Spacing.md)
 
-                  // Active Meal Plan
-                  if let activeMealPlan = viewModel.activeMealPlan {
-                    activeMealPlanSection(mealPlan: activeMealPlan)
+                // Sticky: Active Meal Plan
+                if let activeMealPlan = viewModel.activeMealPlan {
+                  activeMealPlanSection(viewModel: viewModel, mealPlan: activeMealPlan)
+                    .dsScreenPadding()
+                    .padding(.bottom, DSTheme.Spacing.lg)
+                }
+
+                // Sticky: Pending Votes
+                if !viewModel.pendingVoteMealPlans.isEmpty {
+                  pendingVotesSection(viewModel: viewModel)
+                    .dsScreenPadding()
+                    .padding(.bottom, DSTheme.Spacing.lg)
+                }
+
+                // Sticky: Upcoming Meal Plans (non-finalized)
+                if !viewModel.upcomingMealPlans.isEmpty {
+                  upcomingMealPlansSection(viewModel: viewModel)
+                    .dsScreenPadding()
+                    .padding(.bottom, DSTheme.Spacing.lg)
+                }
+
+                // Scrollable: Future Meal Plans only (or fill space)
+                if !viewModel.futureFinalizedMealPlans.isEmpty {
+                  softSeparator
+
+                  ScrollView {
+                    futureMealPlansSection(viewModel: viewModel)
+                      .dsScreenPadding()
+                      .padding(.bottom, DSTheme.Spacing.xl)
                   }
+                  .frame(maxHeight: .infinity)
+                } else if viewModel.pendingVoteMealPlans.isEmpty
+                  && viewModel.activeMealPlan == nil
+                  && viewModel.upcomingMealPlans.isEmpty
+                  && viewModel.futureFinalizedMealPlans.isEmpty
+                {
+                  // Empty State
+                  emptyStateView
+                    .dsScreenPadding()
+                    .frame(maxHeight: .infinity)
+                } else {
+                  // Active/pending/upcoming but no future - fill space so footer stays bottom
+                  Spacer()
+                    .frame(maxHeight: .infinity)
+                }
 
-                  // Pending Votes
-                  if !viewModel.pendingVoteMealPlans.isEmpty {
-                    pendingVotesSection(viewModel: viewModel)
-                  }
-
-                  // Next Task + Meal Plan Ingredients
-                  if !viewModel.mealPlansWithTasks.isEmpty
-                    || !viewModel.mealPlansWithGroceryLists.isEmpty
-                  {
-                    actionButtonsSection(viewModel: viewModel)
-                  }
-
+                // Sticky footer: Create Meal Plan + Recipes/Meals
+                VStack(spacing: DSTheme.Spacing.lg) {
                   Divider()
 
-                  // Create Meal Plan CTA
                   createMealPlanSection
 
-                  // Recipes + Meals
                   quickAccessRow
-
-                  // Upcoming Meal Plans (non-finalized, after active plan end)
-                  if !viewModel.upcomingMealPlans.isEmpty {
-                    upcomingMealPlansSection(viewModel: viewModel)
-                  }
-
-                  // Empty State
-                  if viewModel.pendingVoteMealPlans.isEmpty
-                    && viewModel.activeMealPlan == nil
-                    && viewModel.upcomingMealPlans.isEmpty
-                    && viewModel.mealPlansWithTasks.isEmpty
-                    && viewModel.mealPlansWithGroceryLists.isEmpty
-                  {
-                    emptyStateView
-                  }
                 }
                 .dsScreenPadding()
+                .background(Color(.systemBackground))
               }
             })
         } else {
@@ -122,7 +138,7 @@ struct HomeView: View {
 
   // MARK: - Create Meal Plan CTA
   private var createMealPlanSection: some View {
-    NavigationLink(destination: CreateMealPlanView()) {
+    NavigationLink(destination: CreateMealPlanWizardView()) {
       HStack(spacing: DSTheme.Spacing.md) {
         ZStack {
           Circle()
@@ -229,7 +245,9 @@ struct HomeView: View {
   }
 
   // MARK: - Active Meal Plan Section
-  private func activeMealPlanSection(mealPlan: Mealplanning_MealPlan) -> some View {
+  private func activeMealPlanSection(viewModel: HomeViewModel, mealPlan: Mealplanning_MealPlan)
+    -> some View
+  {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
       Label("Active Meal Plan", systemImage: "star.circle.fill")
         .font(DSTheme.Typography.title2)
@@ -244,6 +262,149 @@ struct HomeView: View {
         UpcomingMealCardContent(mealPlan: mealPlan)
       }
       .buttonStyle(.plain)
+
+      // Task and grocery for active plan only
+      activePlanTaskAndGrocery(viewModel: viewModel, mealPlan: mealPlan)
+    }
+  }
+
+  private func activePlanTaskAndGrocery(
+    viewModel: HomeViewModel, mealPlan: Mealplanning_MealPlan
+  ) -> some View {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+      if let taskEntry = viewModel.mealPlansWithTasks.first(where: { $0.mealPlanID == mealPlan.id })
+      {
+        let summary = taskSummary(
+          tasks: taskEntry.tasks, mealPlan: mealPlan, includeDateForFuture: false)
+        NavigationLink(
+          destination: TaskListView(
+            mealPlan: mealPlan,
+            tasks: [],
+            authManager: viewModel.authManager
+          )
+        ) {
+          InfoButton(icon: "checklist", text: summary.text, color: summary.color)
+        }
+        .buttonStyle(.plain)
+      }
+
+      if let groceryEntry = viewModel.mealPlansWithGroceryLists.first(where: {
+        $0.mealPlanID == mealPlan.id
+      }) {
+        let neededCount = groceryEntry.items.filter { $0.status == .needs || $0.status == .unknown }
+          .count
+        NavigationLink(
+          destination: GroceryListView(
+            mealPlan: mealPlan,
+            items: [],
+            authManager: viewModel.authManager
+          )
+        ) {
+          InfoButton(
+            icon: "cart.fill",
+            text: neededCount > 0
+              ? "\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed"
+              : "All ingredients acquired",
+            color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
+          )
+        }
+        .buttonStyle(.plain)
+      }
+    }
+  }
+
+  private var softSeparator: some View {
+    VStack(spacing: 0) {
+      Spacer()
+        .frame(height: DSTheme.Spacing.lg)
+      Rectangle()
+        .fill(DSTheme.Colors.border.opacity(0.5))
+        .frame(height: 1)
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, DSTheme.Spacing.xl * 2)
+      Spacer()
+        .frame(height: DSTheme.Spacing.lg)
+    }
+  }
+
+  private func futureMealPlansSection(viewModel: HomeViewModel) -> some View {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+      HStack {
+        Label("Future Meal Plans", systemImage: "calendar.badge.clock")
+          .font(DSTheme.Typography.title2)
+          .foregroundColor(DSTheme.Colors.textPrimary)
+
+        Spacer()
+
+        Text(
+          "\(viewModel.futureFinalizedMealPlans.count) plan\(viewModel.futureFinalizedMealPlans.count == 1 ? "" : "s")"
+        )
+        .font(DSTheme.Typography.caption)
+        .foregroundColor(DSTheme.Colors.textSecondary)
+      }
+
+      ForEach(viewModel.futureFinalizedMealPlans, id: \.id) { mealPlan in
+        futureMealPlanBlock(viewModel: viewModel, mealPlan: mealPlan)
+      }
+    }
+  }
+
+  private func futureMealPlanBlock(
+    viewModel: HomeViewModel, mealPlan: Mealplanning_MealPlan
+  ) -> some View {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+      NavigationLink(
+        destination: MealPlanDetailView(
+          mealPlan: mealPlan,
+          groceryListItems: nil
+        )
+      ) {
+        UpcomingMealCardContent(mealPlan: mealPlan)
+      }
+      .buttonStyle(.plain)
+
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+        if let taskEntry = viewModel.mealPlansWithTasks.first(where: {
+          $0.mealPlanID == mealPlan.id
+        }) {
+          let summary = taskSummary(
+            tasks: taskEntry.tasks, mealPlan: mealPlan, includeDateForFuture: true)
+          NavigationLink(
+            destination: TaskListView(
+              mealPlan: mealPlan,
+              tasks: [],
+              authManager: viewModel.authManager
+            )
+          ) {
+            InfoButton(icon: "checklist", text: summary.text, color: summary.color)
+          }
+          .buttonStyle(.plain)
+        }
+
+        if let groceryEntry = viewModel.mealPlansWithGroceryLists.first(where: {
+          $0.mealPlanID == mealPlan.id
+        }) {
+          let neededCount = groceryEntry.items.filter {
+            $0.status == .needs || $0.status == .unknown
+          }.count
+          NavigationLink(
+            destination: GroceryListView(
+              mealPlan: mealPlan,
+              items: [],
+              authManager: viewModel.authManager
+            )
+          ) {
+            InfoButton(
+              icon: "cart.fill",
+              text: neededCount > 0
+                ? "\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed"
+                : "All ingredients acquired",
+              color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
+            )
+          }
+          .buttonStyle(.plain)
+        }
+      }
     }
   }
 
@@ -278,57 +439,9 @@ struct HomeView: View {
     }
   }
 
-  // MARK: - Action Buttons Section
-  private func actionButtonsSection(viewModel: HomeViewModel) -> some View {
-    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
-      ForEach(viewModel.mealPlansWithTasks, id: \.mealPlanID) { entry in
-        if let mealPlan = viewModel.allMealPlans.first(where: { $0.id == entry.mealPlanID }) {
-          let summary = taskSummary(tasks: entry.tasks, mealPlan: mealPlan)
-          NavigationLink(
-            destination: TaskListView(
-              mealPlan: mealPlan,
-              tasks: [],
-              authManager: viewModel.authManager
-            )
-          ) {
-            InfoButton(
-              icon: "checklist",
-              text: summary.text,
-              color: summary.color
-            )
-          }
-          .buttonStyle(.plain)
-        }
-      }
-
-      ForEach(viewModel.mealPlansWithGroceryLists, id: \.mealPlanID) { entry in
-        if let mealPlan = viewModel.allMealPlans.first(where: { $0.id == entry.mealPlanID }) {
-          let neededCount = entry.items.filter {
-            $0.status == .needs || $0.status == .unknown
-          }.count
-          NavigationLink(
-            destination: GroceryListView(
-              mealPlan: mealPlan,
-              items: [],
-              authManager: viewModel.authManager
-            )
-          ) {
-            InfoButton(
-              icon: "cart.fill",
-              text: neededCount > 0
-                ? "\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed"
-                : "All ingredients acquired",
-              color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
-            )
-          }
-          .buttonStyle(.plain)
-        }
-      }
-    }
-  }
-
   private func taskSummary(
-    tasks: [Mealplanning_MealPlanTask], mealPlan: Mealplanning_MealPlan
+    tasks: [Mealplanning_MealPlanTask], mealPlan: Mealplanning_MealPlan,
+    includeDateForFuture: Bool = false
   ) -> (text: String, color: Color) {
     let now = Date()
     let unfinished = tasks.filter { $0.status == .unfinished }
@@ -360,13 +473,22 @@ struct HomeView: View {
     }
 
     if let earliest = earliestStart {
-      let formatter = DateFormatter()
-      formatter.dateStyle = .none
-      formatter.timeStyle = .short
-      return (
-        "Next task at \(formatter.string(from: earliest))",
-        DSTheme.Colors.textSecondary
-      )
+      let timeFormatter = DateFormatter()
+      timeFormatter.dateStyle = .none
+      timeFormatter.timeStyle = .short
+      if includeDateForFuture {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "M/d/yy"
+        return (
+          "Next task on \(dateFormatter.string(from: earliest)) at \(timeFormatter.string(from: earliest))",
+          DSTheme.Colors.textSecondary
+        )
+      } else {
+        return (
+          "Next task at \(timeFormatter.string(from: earliest))",
+          DSTheme.Colors.textSecondary
+        )
+      }
     }
 
     return ("No tasks ready yet", DSTheme.Colors.textSecondary)

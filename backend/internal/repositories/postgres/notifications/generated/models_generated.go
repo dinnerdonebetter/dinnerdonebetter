@@ -72,6 +72,16 @@ func AllUserNotificationStatusValues() []UserNotificationStatus {
 	}
 }
 
+type UserDeviceTokens struct {
+	ID            string
+	BelongsToUser string
+	DeviceToken   string
+	Platform      string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+}
+
 type UserNotifications struct {
 	ID            string
 	Content       string

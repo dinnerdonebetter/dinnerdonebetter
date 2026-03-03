@@ -37,7 +37,7 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates the config.
 func (c *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, c,
-		validation.Field(&c.Provider, validation.In(ProviderLaunchDarkly, ProviderPostHog)),
+		validation.Field(&c.Provider, validation.In(ProviderLaunchDarkly, ProviderPostHog, "")),
 		validation.Field(&c.LaunchDarkly, validation.When(c.Provider == ProviderLaunchDarkly, validation.Required)),
 		validation.Field(&c.PostHog, validation.When(c.Provider == ProviderPostHog, validation.Required)),
 	)

@@ -20,6 +20,8 @@ struct UnifiedMealStepSource {
   let recipeID: String
   let scale: Float
   let viewModel: PerformRecipeViewModel
+  let isAssociatedRecipeStep: Bool
+  let associatedRecipeName: String?
 }
 
 // MARK: - Unified Meal Step (single or merged)
@@ -47,16 +49,93 @@ struct UnifiedMealStep: Identifiable {
 
   var isMerged: Bool { sources.count > 1 }
 
+  var isAssociatedRecipeStep: Bool { sources[0].isAssociatedRecipeStep }
+  var associatedRecipeName: String? { sources[0].associatedRecipeName }
+
   var id: String {
     sources.map { "\($0.componentID):\($0.recipeID):\($0.step.id)" }.joined(separator: "|")
   }
 
   var componentNamesForTag: String {
     if isMerged {
-      return "Combined"
+      let recipeNames = sources.map { source in
+        if source.isAssociatedRecipeStep, let name = source.associatedRecipeName, !name.isEmpty {
+          return name
+        }
+        return source.componentName
+      }
+      var seen: Set<String> = []
+      let uniqueNames = recipeNames.filter { seen.insert($0).inserted }
+      let namesList = uniqueNames.joined(separator: ", ")
+      return "Combined (\(namesList))"
+    }
+    if isAssociatedRecipeStep, let name = associatedRecipeName, !name.isEmpty {
+      return name
     }
     return componentName
   }
+
+  /// For merged steps with multiple sources contributing to an ingredient, returns a breakdown
+  /// string per ingredient key, e.g. "2g from Recipe A, 3g from Recipe B".
+  var ingredientBreakdownBySource: [String: String]? {
+    guard isMerged else { return nil }
+    var breakdown: [String: [MergedIngredientSourcePart]] = [:]
+
+    for source in sources {
+      let sourceName: String = {
+        if source.isAssociatedRecipeStep, let name = source.associatedRecipeName, !name.isEmpty {
+          return name
+        }
+        return source.componentName
+      }()
+      for ing in source.step.ingredients where ing.hasIngredient {
+        let key = "\(ing.ingredient.id)|\(ing.hasMeasurementUnit ? ing.measurementUnit.id : "")"
+        let unit = ing.hasMeasurementUnit ? ing.measurementUnit : nil
+        if ing.hasQuantity {
+          let min = ing.quantity.min * source.scale
+          let max = ing.quantity.hasMax ? ing.quantity.max * source.scale : nil
+          breakdown[key, default: []].append(
+            MergedIngredientSourcePart(sourceName: sourceName, min: min, max: max, unit: unit)
+          )
+        }
+      }
+    }
+
+    var formatted: [String: String] = [:]
+    for (key, parts) in breakdown where parts.count > 1 {
+      let partsStr = parts.map { part in
+        let qtyStr = formatMergedIngredientQuantity(min: part.min, max: part.max, unit: part.unit)
+        return "\(qtyStr) from \(part.sourceName)"
+      }.joined(separator: ", ")
+      formatted[key] = partsStr
+    }
+    return formatted.isEmpty ? nil : formatted
+  }
+}
+
+private struct MergedIngredientSourcePart {
+  let sourceName: String
+  let min: Float
+  let max: Float?
+  let unit: Mealplanning_ValidMeasurementUnit?
+}
+
+private func formatMergedIngredientQuantity(
+  min: Float, max: Float?, unit: Mealplanning_ValidMeasurementUnit?
+) -> String {
+  let unitName = MeasurementUnitFormatter.displayName(for: min, unit: unit)
+  let unitSuffix = unitName.isEmpty ? "" : " \(unitName)"
+  let formatMin = min.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f"
+  if let maxVal = max {
+    if min == maxVal {
+      return (String(format: formatMin, min) + unitSuffix).trimmingCharacters(in: .whitespaces)
+    }
+    let formatMax = maxVal.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f"
+    return (String(format: "\(formatMin) - \(formatMax)", min, maxVal) + unitSuffix)
+      .trimmingCharacters(in: .whitespaces)
+  }
+  // No max: treat min as the authoritative single value (not unbounded)
+  return (String(format: formatMin, min) + unitSuffix).trimmingCharacters(in: .whitespaces)
 }
 
 // MARK: - Step Merge Key
@@ -187,6 +266,26 @@ func collectUnifiedMealStepsWithMerging(
     let componentName =
       recipe.name.isEmpty ? formatComponentType(component.componentType) : recipe.name
 
+    // Include associated (prerequisite) recipe steps first, then main recipe steps
+    for associatedRecipe in recipe.associatedRecipes {
+      for (index, step) in associatedRecipe.steps.enumerated() {
+        rawSteps.append(
+          UnifiedMealStepSource(
+            componentID: componentID,
+            componentIndex: componentIndex,
+            componentName: componentName,
+            step: step,
+            stepIndex: index,
+            recipeID: associatedRecipe.id,
+            scale: scale,
+            viewModel: viewModel,
+            isAssociatedRecipeStep: true,
+            associatedRecipeName: associatedRecipe.name.isEmpty ? nil : associatedRecipe.name
+          )
+        )
+      }
+    }
+
     for (index, step) in recipe.steps.enumerated() {
       rawSteps.append(
         UnifiedMealStepSource(
@@ -197,7 +296,9 @@ func collectUnifiedMealStepsWithMerging(
           stepIndex: index,
           recipeID: recipe.id,
           scale: scale,
-          viewModel: viewModel
+          viewModel: viewModel,
+          isAssociatedRecipeStep: false,
+          associatedRecipeName: nil
         )
       )
     }
@@ -211,11 +312,15 @@ func collectUnifiedMealStepsWithMerging(
     }
   }
 
-  // Build result in original step order; when we hit a step that's in a multi-group,
-  // output the merged step once and skip the rest of that group
+  // Build result in original step order. When we hit a step that's in a multi-group,
+  // partition by completion status: only merge steps that are all done or all not done.
+  // Mixed completion (e.g. one done from prep, one not) must stay separate.
   var result: [UnifiedMealStep] = []
   var displayIndex = 0
-  var consumedInGroup: Set<String> = []  // "recipeID:stepID" for steps we've output as part of a merge
+  var consumedInGroup: Set<String> = []  // "recipeID:stepID" for steps we've output
+  let sourceToRawIndex: [String: Int] = Dictionary(
+    uniqueKeysWithValues: rawSteps.enumerated().map { ($1.recipeID + ":" + $1.step.id, $0) }
+  )
 
   for source in rawSteps {
     let sourceKey = "\(source.recipeID):\(source.step.id)"
@@ -225,18 +330,43 @@ func collectUnifiedMealStepsWithMerging(
 
     if let key = stepMergeKey(step: source.step), let group = groups[key] {
       if group.count > 1 {
-        let category = categorizeMergedStep(sources: group)
-        let mergedStep = createMergedStep(from: group)
-        result.append(
-          UnifiedMealStep(
-            sources: group,
-            step: mergedStep,
-            stepIndex: displayIndex,
-            category: category
-          )
-        )
-        for sourceStep in group {
-          consumedInGroup.insert("\(sourceStep.recipeID):\(sourceStep.step.id)")
+        let partitions = partitionGroupByCompletionStatus(group)
+        let orderedPartitions = partitions.sorted { partition1, partition2 in
+          let min1 =
+            partition1.compactMap { sourceToRawIndex["\($0.recipeID):\($0.step.id)"] }.min()
+            ?? Int.max
+          let min2 =
+            partition2.compactMap { sourceToRawIndex["\($0.recipeID):\($0.step.id)"] }.min()
+            ?? Int.max
+          return min1 < min2
+        }
+        for partition in orderedPartitions {
+          if partition.count > 1 {
+            let category = categorizeMergedStep(sources: partition)
+            let mergedStep = createMergedStep(from: partition)
+            result.append(
+              UnifiedMealStep(
+                sources: partition,
+                step: mergedStep,
+                stepIndex: displayIndex,
+                category: category
+              )
+            )
+          } else {
+            let category = categorizeSingleStep(source: partition[0])
+            result.append(
+              UnifiedMealStep(
+                sources: partition,
+                step: partition[0].step,
+                stepIndex: displayIndex,
+                category: category
+              )
+            )
+          }
+          for sourceStep in partition {
+            consumedInGroup.insert("\(sourceStep.recipeID):\(sourceStep.step.id)")
+          }
+          displayIndex += 1
         }
       } else {
         let category = categorizeSingleStep(source: source)
@@ -248,6 +378,7 @@ func collectUnifiedMealStepsWithMerging(
             category: category
           )
         )
+        displayIndex += 1
       }
     } else {
       let category = categorizeSingleStep(source: source)
@@ -259,10 +390,33 @@ func collectUnifiedMealStepsWithMerging(
           category: category
         )
       )
+      displayIndex += 1
     }
-    displayIndex += 1
   }
 
+  return result
+}
+
+/// Partitions a merge group by completion status. Steps that are already done (e.g. from prep tasks)
+/// must not be merged with steps that are still pending—they need separate quantities.
+@MainActor
+private func partitionGroupByCompletionStatus(
+  _ group: [UnifiedMealStepSource]
+) -> [[UnifiedMealStepSource]] {
+  var done: [UnifiedMealStepSource] = []
+  var notDone: [UnifiedMealStepSource] = []
+  for source in group {
+    let category = source.viewModel.categorizeStep(
+      recipeID: source.recipeID, stepID: source.step.id)
+    if category == .done {
+      done.append(source)
+    } else {
+      notDone.append(source)
+    }
+  }
+  var result: [[UnifiedMealStepSource]] = []
+  if !done.isEmpty { result.append(done) }
+  if !notDone.isEmpty { result.append(notDone) }
   return result
 }
 

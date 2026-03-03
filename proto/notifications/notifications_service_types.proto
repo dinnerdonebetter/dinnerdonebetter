@@ -46,3 +46,45 @@ message UserNotificationCreationRequestInput {
 message UserNotificationUpdateRequestInput {
   optional UserNotificationStatus status = 1;
 }
+
+message RegisterDeviceTokenRequest {
+  UserDeviceTokenCreationRequestInput input = 1;
+}
+
+message RegisterDeviceTokenResponse {
+  common.ResponseDetails response_details = 1;
+  UserDeviceToken created = 2;
+}
+
+message GetUserDeviceTokenRequest {
+  string user_device_token_id = 1;
+}
+
+message GetUserDeviceTokenResponse {
+  common.ResponseDetails response_details = 1;
+  UserDeviceToken result = 2;
+}
+
+message GetUserDeviceTokensRequest {
+  filtering.QueryFilter filter = 1;
+  optional string platform_filter = 2;
+}
+
+message GetUserDeviceTokensResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated UserDeviceToken results = 3;
+}
+
+message ArchiveUserDeviceTokenRequest {
+  string user_device_token_id = 1;
+}
+
+message ArchiveUserDeviceTokenResponse {
+  common.ResponseDetails response_details = 1;
+}
+
+message UserDeviceTokenCreationRequestInput {
+  string device_token = 1;
+  string platform = 2;
+}

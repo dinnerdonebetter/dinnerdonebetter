@@ -236,6 +236,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
+				RecipeStepProductRecipeSlug:      pointer.To("caesar-dressing"),
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
 				Name:                             "garlic-infused olive oil",
 				Quantity: types.Float32RangeWithOptionalMax{

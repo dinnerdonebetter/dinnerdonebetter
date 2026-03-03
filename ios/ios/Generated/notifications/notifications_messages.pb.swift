@@ -109,6 +109,45 @@ public struct Notifications_UserNotification: Sendable {
   fileprivate var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
+public struct Notifications_UserDeviceToken: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_createdAt = newValue}
+  }
+  /// Returns true if `createdAt` has been explicitly set.
+  public var hasCreatedAt: Bool {return self._createdAt != nil}
+  /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
+  public mutating func clearCreatedAt() {self._createdAt = nil}
+
+  public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_lastUpdatedAt = newValue}
+  }
+  /// Returns true if `lastUpdatedAt` has been explicitly set.
+  public var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
+  /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
+  public mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
+
+  public var id: String = String()
+
+  public var deviceToken: String = String()
+
+  public var platform: String = String()
+
+  public var belongsToUser: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+  fileprivate var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "notifications"
@@ -200,6 +239,65 @@ extension Notifications_UserNotification: SwiftProtobuf.Message, SwiftProtobuf._
     if lhs.id != rhs.id {return false}
     if lhs.content != rhs.content {return false}
     if lhs.status != rhs.status {return false}
+    if lhs.belongsToUser != rhs.belongsToUser {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Notifications_UserDeviceToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UserDeviceToken"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{1}id\0\u{3}device_token\0\u{1}platform\0\u{3}belongs_to_user\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._createdAt) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._lastUpdatedAt) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.id) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.deviceToken) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.platform) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.belongsToUser) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._createdAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._lastUpdatedAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    if !self.id.isEmpty {
+      try visitor.visitSingularStringField(value: self.id, fieldNumber: 3)
+    }
+    if !self.deviceToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.deviceToken, fieldNumber: 4)
+    }
+    if !self.platform.isEmpty {
+      try visitor.visitSingularStringField(value: self.platform, fieldNumber: 5)
+    }
+    if !self.belongsToUser.isEmpty {
+      try visitor.visitSingularStringField(value: self.belongsToUser, fieldNumber: 6)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Notifications_UserDeviceToken, rhs: Notifications_UserDeviceToken) -> Bool {
+    if lhs._createdAt != rhs._createdAt {return false}
+    if lhs._lastUpdatedAt != rhs._lastUpdatedAt {return false}
+    if lhs.id != rhs.id {return false}
+    if lhs.deviceToken != rhs.deviceToken {return false}
+    if lhs.platform != rhs.platform {return false}
     if lhs.belongsToUser != rhs.belongsToUser {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

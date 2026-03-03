@@ -49,7 +49,7 @@ func TestServiceImpl_GetAuthStatus(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		request := &authsvc.GetAuthStatusRequest{}
@@ -68,7 +68,7 @@ func TestServiceImpl_GetAuthStatus(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.GetAuthStatusRequest{}
@@ -84,13 +84,108 @@ func TestServiceImpl_GetAuthStatus(t *testing.T) {
 	})
 }
 
+func TestServiceImpl_EvaluateBooleanFeatureFlag(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, featureFlagManager := buildTestService(t)
+		ctx := buildContextWithSessionData(t)
+
+		featureFlagManager.On("CanUseFeature", mock.Anything, mock.Anything, "test-flag").Return(true, nil)
+
+		response, err := service.EvaluateBooleanFeatureFlag(ctx, &authsvc.EvaluateBooleanFeatureFlagRequest{
+			FeatureFlag: "test-flag",
+		})
+
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.True(t, response.Enabled)
+	})
+
+	t.Run("error unauthenticated", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, _ := buildTestService(t)
+		ctx := t.Context()
+
+		response, err := service.EvaluateBooleanFeatureFlag(ctx, &authsvc.EvaluateBooleanFeatureFlagRequest{
+			FeatureFlag: "test-flag",
+		})
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+		grpcErr, _ := status.FromError(err)
+		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
+	})
+
+	t.Run("error feature_flag required", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, _ := buildTestService(t)
+		ctx := buildContextWithSessionData(t)
+
+		response, err := service.EvaluateBooleanFeatureFlag(ctx, &authsvc.EvaluateBooleanFeatureFlagRequest{
+			FeatureFlag: "",
+		})
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+		grpcErr, _ := status.FromError(err)
+		assert.Equal(t, codes.InvalidArgument, grpcErr.Code())
+	})
+}
+
+func TestServiceImpl_EvaluateStringFeatureFlag(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, featureFlagManager := buildTestService(t)
+		ctx := buildContextWithSessionData(t)
+
+		featureFlagManager.On("GetStringValue", mock.Anything, mock.Anything, "test-flag").Return("variant-a", nil)
+
+		response, err := service.EvaluateStringFeatureFlag(ctx, &authsvc.EvaluateStringFeatureFlagRequest{
+			FeatureFlag: "test-flag",
+		})
+
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.Equal(t, "variant-a", response.Value)
+	})
+}
+
+func TestServiceImpl_EvaluateInt64FeatureFlag(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, featureFlagManager := buildTestService(t)
+		ctx := buildContextWithSessionData(t)
+
+		featureFlagManager.On("GetInt64Value", mock.Anything, mock.Anything, "test-flag").Return(int64(42), nil)
+
+		response, err := service.EvaluateInt64FeatureFlag(ctx, &authsvc.EvaluateInt64FeatureFlagRequest{
+			FeatureFlag: "test-flag",
+		})
+
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.Equal(t, int64(42), response.Value)
+	})
+}
+
 func TestServiceImpl_ExchangeToken(t *testing.T) {
 	t.Parallel()
 
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, authenticationManager := buildTestService(t)
+		service, _, _, authenticationManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		fakeTokenResponse := &auth.TokenResponse{
@@ -124,7 +219,7 @@ func TestServiceImpl_ExchangeToken(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.ExchangeTokenRequest{
@@ -144,7 +239,7 @@ func TestServiceImpl_ExchangeToken(t *testing.T) {
 	t.Run("error exchanging token", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, authenticationManager := buildTestService(t)
+		service, _, _, authenticationManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authenticationManager.On(reflection.GetMethodName(authenticationManager.ExchangeTokenForUser), mock.Anything, "refresh-token", mock.Anything).Return((*auth.TokenResponse)(nil), errors.New("exchange failed"))
@@ -172,7 +267,7 @@ func TestServiceImpl_LoginForToken(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, authenticationManager := buildTestService(t)
+		service, _, _, authenticationManager, _ := buildTestService(t)
 		ctx := t.Context()
 
 		fakeTokenResponse := &auth.TokenResponse{
@@ -209,7 +304,7 @@ func TestServiceImpl_LoginForToken(t *testing.T) {
 	t.Run("error processing login", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, authenticationManager := buildTestService(t)
+		service, _, _, authenticationManager, _ := buildTestService(t)
 		ctx := t.Context()
 
 		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, false, mock.AnythingOfType("*auth.UserLoginInput")).Return((*auth.TokenResponse)(nil), errors.New("login failed"))
@@ -241,7 +336,7 @@ func TestServiceImpl_AdminLoginForToken(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, authenticationManager := buildTestService(t)
+		service, _, _, authenticationManager, _ := buildTestService(t)
 		ctx := t.Context()
 
 		fakeTokenResponse := &auth.TokenResponse{
@@ -278,7 +373,7 @@ func TestServiceImpl_AdminLoginForToken(t *testing.T) {
 	t.Run("error processing admin login", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, authenticationManager := buildTestService(t)
+		service, _, _, authenticationManager, _ := buildTestService(t)
 		ctx := t.Context()
 
 		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, true, mock.AnythingOfType("*auth.UserLoginInput")).Return((*auth.TokenResponse)(nil), errors.New("admin login failed"))
@@ -310,7 +405,7 @@ func TestServiceImpl_CheckPermissions(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		fakePermissionsResponse := &auth.UserPermissionsResponse{
@@ -340,7 +435,7 @@ func TestServiceImpl_CheckPermissions(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.UserPermissionsRequestInput{
@@ -360,7 +455,7 @@ func TestServiceImpl_CheckPermissions(t *testing.T) {
 	t.Run("error checking permissions", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.CheckUserPermissions), mock.Anything, mock.AnythingOfType("*auth.UserPermissionsRequestInput")).Return((*auth.UserPermissionsResponse)(nil), errors.New("permission check failed"))
@@ -388,7 +483,7 @@ func TestServiceImpl_GetActiveAccount(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, identityRepo, _, _ := buildTestService(t)
+		service, identityRepo, _, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		fakeAccount := identityfakes.BuildFakeAccount()
@@ -413,7 +508,7 @@ func TestServiceImpl_GetActiveAccount(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.GetActiveAccountRequest{}
@@ -431,7 +526,7 @@ func TestServiceImpl_GetActiveAccount(t *testing.T) {
 	t.Run("account not found", func(t *testing.T) {
 		t.Parallel()
 
-		service, identityRepo, _, _ := buildTestService(t)
+		service, identityRepo, _, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
@@ -454,7 +549,7 @@ func TestServiceImpl_GetActiveAccount(t *testing.T) {
 	t.Run("database error", func(t *testing.T) {
 		t.Parallel()
 
-		service, identityRepo, _, _ := buildTestService(t)
+		service, identityRepo, _, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
@@ -481,7 +576,7 @@ func TestServiceImpl_GetSelf(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, identityRepo, _, _ := buildTestService(t)
+		service, identityRepo, _, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		fakeUser := identityfakes.BuildFakeUser()
@@ -506,7 +601,7 @@ func TestServiceImpl_GetSelf(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.GetSelfRequest{}
@@ -524,7 +619,7 @@ func TestServiceImpl_GetSelf(t *testing.T) {
 	t.Run("user not found", func(t *testing.T) {
 		t.Parallel()
 
-		service, identityRepo, _, _ := buildTestService(t)
+		service, identityRepo, _, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
@@ -547,7 +642,7 @@ func TestServiceImpl_GetSelf(t *testing.T) {
 	t.Run("database error", func(t *testing.T) {
 		t.Parallel()
 
-		service, identityRepo, _, _ := buildTestService(t)
+		service, identityRepo, _, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
@@ -574,7 +669,7 @@ func TestServiceImpl_RedeemPasswordResetToken(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.PasswordResetTokenRedemption), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenRedemptionRequestInput")).Return(nil)
@@ -597,7 +692,7 @@ func TestServiceImpl_RedeemPasswordResetToken(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.RedeemPasswordResetTokenRequest{
@@ -618,7 +713,7 @@ func TestServiceImpl_RedeemPasswordResetToken(t *testing.T) {
 	t.Run("error redeeming token", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.PasswordResetTokenRedemption), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenRedemptionRequestInput")).Return(errors.New("redemption failed"))
@@ -646,7 +741,7 @@ func TestServiceImpl_RefreshTOTPSecret(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		fakeTOTPResponse := &auth.TOTPSecretRefreshResponse{
@@ -677,7 +772,7 @@ func TestServiceImpl_RefreshTOTPSecret(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.RefreshTOTPSecretRequest{
@@ -698,7 +793,7 @@ func TestServiceImpl_RefreshTOTPSecret(t *testing.T) {
 	t.Run("error refreshing TOTP secret", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.NewTOTPSecret), mock.Anything, mock.AnythingOfType("*auth.TOTPSecretRefreshInput")).Return((*auth.TOTPSecretRefreshResponse)(nil), errors.New("refresh failed"))
@@ -727,7 +822,7 @@ func TestServiceImpl_RequestEmailVerificationEmail(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.RequestEmailVerificationEmail), mock.Anything).Return(nil)
@@ -747,7 +842,7 @@ func TestServiceImpl_RequestEmailVerificationEmail(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.RequestEmailVerificationEmailRequest{}
@@ -765,7 +860,7 @@ func TestServiceImpl_RequestEmailVerificationEmail(t *testing.T) {
 	t.Run("error requesting email verification", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.RequestEmailVerificationEmail), mock.Anything).Return(errors.New("email request failed"))
@@ -791,7 +886,7 @@ func TestServiceImpl_RequestPasswordResetToken(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.CreatePasswordResetToken), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenCreationRequestInput")).Return(nil)
@@ -813,7 +908,7 @@ func TestServiceImpl_RequestPasswordResetToken(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.RequestPasswordResetTokenRequest{
@@ -833,7 +928,7 @@ func TestServiceImpl_RequestPasswordResetToken(t *testing.T) {
 	t.Run("error creating password reset token", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.CreatePasswordResetToken), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenCreationRequestInput")).Return(errors.New("token creation failed"))
@@ -861,7 +956,7 @@ func TestServiceImpl_RequestUsernameReminder(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.RequestUsernameReminder), mock.Anything, mock.AnythingOfType("*auth.UsernameReminderRequestInput")).Return(nil)
@@ -883,7 +978,7 @@ func TestServiceImpl_RequestUsernameReminder(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.RequestUsernameReminderRequest{
@@ -903,7 +998,7 @@ func TestServiceImpl_RequestUsernameReminder(t *testing.T) {
 	t.Run("error requesting username reminder", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.RequestUsernameReminder), mock.Anything, mock.AnythingOfType("*auth.UsernameReminderRequestInput")).Return(errors.New("reminder request failed"))
@@ -931,7 +1026,7 @@ func TestServiceImpl_VerifyEmailAddress(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.VerifyUserEmailAddress), mock.Anything, mock.AnythingOfType("*auth.EmailAddressVerificationRequestInput")).Return(nil)
@@ -954,7 +1049,7 @@ func TestServiceImpl_VerifyEmailAddress(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.VerifyEmailAddressRequest{
@@ -974,7 +1069,7 @@ func TestServiceImpl_VerifyEmailAddress(t *testing.T) {
 	t.Run("error verifying email address", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.VerifyUserEmailAddress), mock.Anything, mock.AnythingOfType("*auth.EmailAddressVerificationRequestInput")).Return(errors.New("verification failed"))
@@ -1002,7 +1097,7 @@ func TestServiceImpl_VerifyTOTPSecret(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := t.Context()
 
 		authManager.On(reflection.GetMethodName(authManager.TOTPSecretVerification), mock.Anything, mock.AnythingOfType("*auth.TOTPSecretVerificationInput")).Return(nil)
@@ -1026,7 +1121,7 @@ func TestServiceImpl_VerifyTOTPSecret(t *testing.T) {
 	t.Run("error verifying TOTP secret", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := t.Context()
 
 		authManager.On(reflection.GetMethodName(authManager.TOTPSecretVerification), mock.Anything, mock.AnythingOfType("*auth.TOTPSecretVerificationInput")).Return(errors.New("verification failed"))
@@ -1055,7 +1150,7 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.UpdatePassword), mock.Anything, mock.AnythingOfType("*auth.PasswordUpdateInput")).Return(nil)
@@ -1079,7 +1174,7 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 	t.Run("error fetching session context", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _ := buildTestService(t)
+		service, _, _, _, _ := buildTestService(t)
 		ctx := t.Context() // No session context data
 
 		request := &authsvc.UpdatePasswordRequest{
@@ -1101,7 +1196,7 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 	t.Run("error updating password", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, authManager, _ := buildTestService(t)
+		service, _, authManager, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
 		authManager.On(reflection.GetMethodName(authManager.UpdatePassword), mock.Anything, mock.AnythingOfType("*auth.PasswordUpdateInput")).Return(errors.New("password update failed"))

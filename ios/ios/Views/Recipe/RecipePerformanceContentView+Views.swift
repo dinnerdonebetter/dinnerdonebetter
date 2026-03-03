@@ -30,6 +30,10 @@ struct StepCardView: View {
   var isCompletedOverride: Bool?
   var canCheckOverride: Bool?
   var onToggleOverride: (() -> Void)?
+  /// For merged meal steps: ingredient key -> "2g from Recipe A, 3g from Recipe B"
+  var ingredientBreakdownBySource: [String: String]?
+
+  @State private var showCompletionConditionsHint = false
 
   private var isHighlighted: Bool {
     guard let highlightedStepIDs = highlightedStepIDs else { return true }
@@ -50,15 +54,10 @@ struct StepCardView: View {
       isCompleted = overrideCompleted
       canCheck = overrideCanCheck
       prerequisites = []
-    } else if isAssociatedRecipeStep {
+    } else {
       isCompleted = viewModel.isStepCompleted(recipeID: recipeID, stepID: step.id)
       canCheck = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
-      _ = viewModel.getPrerequisiteStepKeys(recipeID: recipeID, stepID: step.id)
       prerequisites = []
-    } else {
-      isCompleted = viewModel.isStepCompleted(index)
-      canCheck = viewModel.canCheckStep(index)
-      prerequisites = viewModel.getPrerequisiteStepIndices(index)
     }
 
     let hasPrerequisites = !prerequisites.isEmpty
@@ -72,12 +71,21 @@ struct StepCardView: View {
         // Checkbox (works for both main and associated recipe steps)
         Button(
           action: {
-            if let onToggle = onToggleOverride {
+            let stepName = step.hasPreparation ? step.preparation.name : step.id
+            print(
+              "👆 StepCardView TAPPED '\(stepName)' | isCompleted=\(isCompleted) canCheck=\(canCheck) hasOverride=\(onToggleOverride != nil)"
+            )
+            if canCheck, let onToggle = onToggleOverride {
               onToggle()
-            } else if isAssociatedRecipeStep {
+            } else if canCheck {
               viewModel.toggleStep(recipeID: recipeID, stepID: step.id)
-            } else {
-              viewModel.toggleStep(index)
+            } else if hasCompletionConditions {
+              UIImpactFeedbackGenerator(style: .light).impactOccurred()
+              showCompletionConditionsHint = true
+              Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 2_500_000_000)
+                showCompletionConditionsHint = false
+              }
             }
           },
           label: {
@@ -90,7 +98,6 @@ struct StepCardView: View {
               )
           }
         )
-        .disabled(!canCheck)
 
         // Step title with preparation and ingredients
         VStack(alignment: .leading, spacing: 4) {
@@ -102,6 +109,12 @@ struct StepCardView: View {
 
             if step.optional {
               Text("(Optional)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+
+            if let stepTime = RecipeTimeEstimation.formatStepTime(step.estimatedTimeInSeconds) {
+              Label(stepTime, systemImage: "clock")
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
@@ -144,13 +157,15 @@ struct StepCardView: View {
           selectedIngredientOptions: selectedIngredientOptions,
           selectedInstrumentOptions: selectedInstrumentOptions,
           selectedVesselOptions: selectedVesselOptions,
-          scale: scale
+          scale: scale,
+          ingredientBreakdownBySource: ingredientBreakdownBySource
         )
       }
 
       if hasCompletionConditions {
         completionConditionsSection(
-          completionConditions: completionConditions
+          completionConditions: completionConditions,
+          isHighlighted: showCompletionConditionsHint
         )
       }
     }
@@ -186,7 +201,8 @@ struct StepCardView: View {
 
   @ViewBuilder
   private func completionConditionsSection(
-    completionConditions: [Mealplanning_RecipeStepCompletionCondition]
+    completionConditions: [Mealplanning_RecipeStepCompletionCondition],
+    isHighlighted: Bool = false
   ) -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Completion checks")
@@ -241,6 +257,12 @@ struct StepCardView: View {
         .padding(.leading, 44)
       }
     }
+    .padding(12)
+    .overlay(
+      RoundedRectangle(cornerRadius: 8)
+        .stroke(isHighlighted ? Color.orange : Color.clear, lineWidth: isHighlighted ? 2.5 : 0)
+    )
+    .animation(.easeInOut(duration: 0.2), value: isHighlighted)
   }
 
   private func completionConditionLabel(
@@ -291,6 +313,8 @@ struct StepDetailsView: View {
   var selectedInstrumentOptions: [String: UInt32] = [:]
   var selectedVesselOptions: [String: UInt32] = [:]
   var scale: Float = 1.0
+  /// For merged meal steps: ingredient key -> "2g from Recipe A, 3g from Recipe B"
+  var ingredientBreakdownBySource: [String: String]?
 
   private struct InstrumentVesselSectionData {
     let items: [StepItem]
@@ -339,9 +363,15 @@ struct StepDetailsView: View {
         let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
         let prerequisiteCompleted =
           prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
+        let ingredientKey =
+          ingredient.hasIngredient
+          ? "\(ingredient.ingredient.id)|\(ingredient.hasMeasurementUnit ? ingredient.measurementUnit.id : "")"
+          : ""
+        let breakdownSuffix = ingredientBreakdownBySource?[ingredientKey]
 
         return StepItem(
-          name: formatStepIngredientDisplay(ingredient, scale: scale),
+          name: formatStepIngredientDisplay(
+            ingredient, scale: scale, breakdownSuffix: breakdownSuffix),
           isProduct: isProduct,
           prerequisiteStepIndex: prerequisiteStepIndex,
           prerequisiteCompleted: prerequisiteCompleted
@@ -902,7 +932,7 @@ struct OptionGroupView: View {
 
   var body: some View {
     // If a selection has been made (selectedOptionIndex is not nil), show only that option without indentation
-    if let selectedIndex = group.selectedOptionIndex,
+    if group.selectedOptionIndex != nil,
       group.options.count == 1,
       let option = group.options.first
     {
@@ -951,7 +981,7 @@ struct InstrumentOptionGroupView: View {
 
   var body: some View {
     // If a selection has been made (selectedOptionIndex is not nil), show only that option without indentation
-    if let selectedIndex = group.selectedOptionIndex,
+    if group.selectedOptionIndex != nil,
       group.options.count == 1,
       let option = group.options.first
     {
@@ -988,7 +1018,7 @@ struct VesselOptionGroupView: View {
 
   var body: some View {
     // If a selection has been made (selectedOptionIndex is not nil), show only that option without indentation
-    if let selectedIndex = group.selectedOptionIndex,
+    if group.selectedOptionIndex != nil,
       group.options.count == 1,
       let option = group.options.first
     {
@@ -1082,7 +1112,13 @@ struct StepProductsSectionView: View {
         }
       }
 
-      let unitName = product.hasMeasurementUnit ? product.measurementUnit.name : ""
+      let unitName =
+        product.hasMeasurementUnit
+        ? MeasurementUnitFormatter.displayName(
+          for: product.measurementQuantity.min,
+          unit: product.measurementUnit
+        )
+        : ""
 
       if !itemQtyStr.isEmpty && !measurementQtyStr.isEmpty && !unitName.isEmpty {
         // Format: "4 patties (4 oz each)"
@@ -1106,7 +1142,10 @@ struct StepProductsSectionView: View {
         }
       }
 
-      let unitName = product.hasMeasurementUnit ? product.measurementUnit.name : ""
+      let unitName =
+        product.hasMeasurementUnit
+        ? MeasurementUnitFormatter.displayName(for: min, unit: product.measurementUnit)
+        : ""
       if !unitName.isEmpty {
         return "\(product.name): \(qtyStr) \(unitName)"
       } else {

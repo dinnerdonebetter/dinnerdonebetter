@@ -126,3 +126,92 @@ func (m *notificationsManager) UpdateUserNotification(ctx context.Context, updat
 
 	return nil
 }
+
+func (m *notificationsManager) UserDeviceTokenExists(ctx context.Context, userID, tokenID string) (bool, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.repo.UserDeviceTokenExists(ctx, userID, tokenID)
+}
+
+func (m *notificationsManager) GetUserDeviceToken(ctx context.Context, userID, tokenID string) (*notifications.UserDeviceToken, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.repo.GetUserDeviceToken(ctx, userID, tokenID)
+}
+
+func (m *notificationsManager) GetUserDeviceTokens(ctx context.Context, userID string, filter *filtering.QueryFilter, platformFilter *string) (*filtering.QueryFilteredResult[notifications.UserDeviceToken], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.repo.GetUserDeviceTokens(ctx, userID, filter, platformFilter)
+}
+
+func (m *notificationsManager) CreateUserDeviceToken(ctx context.Context, input *notifications.UserDeviceTokenDatabaseCreationInput) (*notifications.UserDeviceToken, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
+	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserDeviceTokenIDKey, input.ID)
+	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, input.ID)
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating user device token creation input")
+	}
+
+	created, err := m.repo.CreateUserDeviceToken(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, notifications.UserDeviceTokenCreatedServiceEventType, map[string]any{
+		notificationkeys.UserDeviceTokenIDKey: created.ID,
+	}))
+
+	return created, nil
+}
+
+func (m *notificationsManager) UpdateUserDeviceToken(ctx context.Context, updated *notifications.UserDeviceToken) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if updated == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserDeviceTokenIDKey, updated.ID)
+	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, updated.ID)
+
+	if err := m.repo.UpdateUserDeviceToken(ctx, updated); err != nil {
+		return err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, notifications.UserDeviceTokenUpdatedServiceEventType, map[string]any{
+		notificationkeys.UserDeviceTokenIDKey: updated.ID,
+	}))
+
+	return nil
+}
+
+func (m *notificationsManager) ArchiveUserDeviceToken(ctx context.Context, userID, tokenID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" || tokenID == "" {
+		return internalerrors.ErrEmptyInputParameter
+	}
+	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserDeviceTokenIDKey, tokenID)
+	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, tokenID)
+
+	if err := m.repo.ArchiveUserDeviceToken(ctx, userID, tokenID); err != nil {
+		return err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, notifications.UserDeviceTokenArchivedServiceEventType, map[string]any{
+		notificationkeys.UserDeviceTokenIDKey: tokenID,
+	}))
+
+	return nil
+}

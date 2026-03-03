@@ -256,16 +256,21 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	}
 
 	// Step 9: Place cauliflower on cooler side of grill
+	// Consumes preheated grill from step 7; produces grill for step 10 (vessel chain)
 	gc9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: placePrep.ID, Index: 9, ExplicitInstructions: "Place both cauliflower heads, stem side down onto the cooler side of the grill, approximately 2 inches from the edge of hot coals or the primary burner.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](8), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(placeCauliflowerVIP), Name: "drained brined cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
-			{ProductOfRecipeStepIndex: pointer.To[uint64](7), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidPreparationVesselID: vpvID(placeGrillingGrateVPV), Name: "grill grate (cool side)", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+			{ProductOfRecipeStepIndex: pointer.To[uint64](7), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidPreparationVesselID: vpvID(placeGrillingGrateVPV), Name: "preheated grill", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
 		},
-		Products: []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "cauliflower on grill", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{Name: "cauliflower on grill", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}},
+			{Name: "charcoal grill", Type: mealplanning.RecipeStepProductVesselType, Index: 1},
+		},
 	}
 
 	// Step 10: Cover and cook for 20 minutes
+	// Consumes grill from step 9 (vessel chain: preheat → place → grill)
 	gc10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:          grillPrep.ID,
 		Index:                  10,
@@ -277,7 +282,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{ValidPreparationInstrumentID: vpiID(grillTongsVPI), Name: "tongs", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](7), ProductOfRecipeStepProductIndex: pointer.To[uint64](1), Name: "charcoal grill", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](9), ProductOfRecipeStepProductIndex: pointer.To[uint64](1), Name: "charcoal grill", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{Name: "partially cooked cauliflower", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}},
 			{Name: "charcoal grill", Type: mealplanning.RecipeStepProductVesselType, Index: 1},
@@ -304,6 +309,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "teriyaki-sauce"),
+				RecipeStepProductRecipeSlug:     pointer.To("teriyaki-sauce"),
 				Name:                            "teriyaki sauce",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.33},
 			},
@@ -358,6 +364,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "teriyaki-sauce"),
+				RecipeStepProductRecipeSlug:     pointer.To("teriyaki-sauce"),
 				Name:                            "teriyaki sauce",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.33},
 			},
@@ -406,6 +413,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "teriyaki-sauce"),
+				RecipeStepProductRecipeSlug:     pointer.To("teriyaki-sauce"),
 				Name:                            "teriyaki sauce",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.33},
 			},

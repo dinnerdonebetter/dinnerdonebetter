@@ -13,7 +13,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
@@ -42,7 +41,6 @@ type (
 		logger               logging.Logger
 		authenticator        authentication.Authenticator
 		analyticsReporter    analytics.EventReporter
-		featureFlagManager   featureflags.FeatureFlagManager
 		identityDataManager  identitymanager.IdentityDataManager
 		encoderDecoder       encoding.ServerEncoderDecoder
 		authProviderFetcher  func(*http.Request) string
@@ -65,7 +63,6 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
-	featureFlagManager featureflags.FeatureFlagManager,
 	analyticsReporter analytics.EventReporter,
 	routeParamManager routing.RouteParamManager,
 	queuesConfig *msgconfig.QueuesConfig,
@@ -94,7 +91,6 @@ func ProvideService(
 		authenticator:        authenticator,
 		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		dataChangesPublisher: dataChangesPublisher,
-		featureFlagManager:   featureFlagManager,
 		analyticsReporter:    analyticsReporter,
 		tokenIssuer:          signer,
 		authProviderFetcher:  routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),

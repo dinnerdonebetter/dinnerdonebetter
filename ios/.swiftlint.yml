@@ -16,6 +16,8 @@ excluded:
   - ios.xcodeproj      # Xcode project files
   - Pods               # CocoaPods (if used)
   - .build             # Swift Package Manager build artifacts
+  # SegmentEventReporter.swift is the ONLY file allowed to import Segment
+  - ios/Services/Analytics/SegmentEventReporter.swift
 
 # Rules configuration
 # Disable all formatting-related rules - swift-format handles formatting
@@ -41,6 +43,15 @@ disabled_rules:
   # Length rules - disabled to allow longer files/types
   - file_length
   - type_body_length
+
+# Custom: Forbid import Segment except in SegmentEventReporter.swift.
+# SegmentEventReporter.swift is excluded from this rule via path pattern.
+custom_rules:
+  forbid_segment_import:
+    name: "forbid_segment_import"
+    regex: "import Segment"
+    message: "Only SegmentEventReporter.swift may import Segment. Use EventReporter protocol instead."
+    severity: error
 
 opt_in_rules:
   - empty_count

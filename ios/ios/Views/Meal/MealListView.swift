@@ -73,6 +73,15 @@ struct MealListView: View {
       }
       .navigationTitle("Meals")
       .navigationBarTitleDisplayMode(.large)
+      .toolbar {
+        ToolbarItem(placement: .primaryAction) {
+          NavigationLink {
+            CreateMealView()
+          } label: {
+            Image(systemName: "plus")
+          }
+        }
+      }
       .searchable(text: $searchQuery, prompt: "Search meals...")
       .onChange(of: searchQuery) { _, newValue in
         if let viewModel = viewModel {
@@ -121,27 +130,52 @@ struct MealCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        // Meal metadata
+        // Meal metadata - time, components, servings
         HStack(spacing: DSTheme.Spacing.md) {
+          if !meal.components.isEmpty, let totalTime = totalEstimatedTime(for: meal.components) {
+            Label(
+              RecipeTimeEstimation.format(
+                minSeconds: totalTime.minSeconds, maxSeconds: totalTime.maxSeconds),
+              systemImage: "clock"
+            )
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+
           if !meal.components.isEmpty {
-            let recipeNames = meal.components.compactMap { component -> String? in
-              component.recipe.name.isEmpty ? nil : component.recipe.name
-            }
-            if !recipeNames.isEmpty {
-              Label(
-                recipeNames.count == 1 ? recipeNames[0] : "\(recipeNames.count) recipes",
-                systemImage: "book.closed"
-              )
-              .font(DSTheme.Typography.caption)
-              .foregroundColor(DSTheme.Colors.textSecondary)
-              .lineLimit(1)
-            }
+            Label(
+              "\(meal.components.count) component\(meal.components.count == 1 ? "" : "s")",
+              systemImage: "square.stack.3d.up"
+            )
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
           }
 
           if meal.hasEstimatedPortions {
-            Label("\(formatPortions(meal.estimatedPortions))", systemImage: "person.2")
-              .font(DSTheme.Typography.caption)
-              .foregroundColor(DSTheme.Colors.textSecondary)
+            Label(
+              "\(PortionsFormatter.format(meal.estimatedPortions)) servings",
+              systemImage: "person.2"
+            )
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+        }
+
+        // Component type breakdown (when available)
+        if !meal.components.isEmpty {
+          let componentTypeSummary = formatComponentTypeSummary(meal.components)
+          if !componentTypeSummary.isEmpty {
+            HStack(spacing: DSTheme.Spacing.xs) {
+              ForEach(componentTypeLabels(from: meal.components), id: \.self) { label in
+                Text(label)
+                  .font(DSTheme.Typography.caption)
+                  .foregroundColor(DSTheme.Colors.textSecondary)
+                  .padding(.horizontal, DSTheme.Spacing.xs)
+                  .padding(.vertical, 2)
+                  .background(DSTheme.Colors.borderSubtle.opacity(0.5))
+                  .clipShape(RoundedRectangle(cornerRadius: 4))
+              }
+            }
           }
         }
       }
@@ -149,16 +183,53 @@ struct MealCard: View {
     }
   }
 
-  private func formatPortions(_ range: Common_Float32RangeWithOptionalMax) -> String {
-    if range.hasMax {
-      if range.min == range.max {
-        return String(format: "%.1f", range.min)
-      } else {
-        return String(format: "%.1f-%.1f", range.min, range.max)
+  /// Returns labels for component types: sides count (assume one main, don't show), beverage only if present.
+  private func componentTypeLabels(from components: [Mealplanning_MealComponent]) -> [String] {
+    var labels: [String] = []
+    var sideCount = 0
+    var hasBeverage = false
+
+    for component in components {
+      switch component.componentType {
+      case .main:
+        break  // Assume one main, don't indicate
+      case .side:
+        sideCount += 1
+      case .beverage:
+        hasBeverage = true
+      default:
+        break  // Omit other types for now
       }
-    } else {
-      return String(format: "%.1f+", range.min)
     }
+
+    if sideCount > 0 {
+      labels.append(sideCount == 1 ? "1 side" : "\(sideCount) sides")
+    }
+    if hasBeverage {
+      labels.append("Beverage")
+    }
+    return labels
+  }
+
+  private func formatComponentTypeSummary(_ components: [Mealplanning_MealComponent]) -> String {
+    componentTypeLabels(from: components).joined(separator: ", ")
+  }
+
+  private func totalEstimatedTime(for components: [Mealplanning_MealComponent])
+    -> RecipeTimeEstimate?
+  {
+    var totalMin: UInt32 = 0
+    var totalMax: UInt32 = 0
+    var hasAny = false
+    for component in components {
+      guard let estimate = RecipeTimeEstimation.estimate(steps: component.recipe.steps) else {
+        continue
+      }
+      totalMin = totalMin &+ estimate.minSeconds
+      totalMax = totalMax &+ estimate.maxSeconds
+      hasAny = true
+    }
+    return hasAny ? RecipeTimeEstimate(minSeconds: totalMin, maxSeconds: totalMax) : nil
   }
 }
 

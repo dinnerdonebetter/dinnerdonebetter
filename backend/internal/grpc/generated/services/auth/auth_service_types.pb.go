@@ -1902,6 +1902,294 @@ func (x *UsernameReminderRequestInput) GetEmailAddress() string {
 	return ""
 }
 
+type EvaluateBooleanFeatureFlagRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeatureFlag   string                 `protobuf:"bytes,1,opt,name=feature_flag,json=featureFlag,proto3" json:"feature_flag,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EvaluateBooleanFeatureFlagRequest) Reset() {
+	*x = EvaluateBooleanFeatureFlagRequest{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluateBooleanFeatureFlagRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluateBooleanFeatureFlagRequest) ProtoMessage() {}
+
+func (x *EvaluateBooleanFeatureFlagRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluateBooleanFeatureFlagRequest.ProtoReflect.Descriptor instead.
+func (*EvaluateBooleanFeatureFlagRequest) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *EvaluateBooleanFeatureFlagRequest) GetFeatureFlag() string {
+	if x != nil {
+		return x.FeatureFlag
+	}
+	return ""
+}
+
+type EvaluateBooleanFeatureFlagResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+	Enabled         bool `protobuf:"varint,2,opt,name=enabled,proto3" json:"enabled,omitempty"`
+}
+
+func (x *EvaluateBooleanFeatureFlagResponse) Reset() {
+	*x = EvaluateBooleanFeatureFlagResponse{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluateBooleanFeatureFlagResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluateBooleanFeatureFlagResponse) ProtoMessage() {}
+
+func (x *EvaluateBooleanFeatureFlagResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluateBooleanFeatureFlagResponse.ProtoReflect.Descriptor instead.
+func (*EvaluateBooleanFeatureFlagResponse) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *EvaluateBooleanFeatureFlagResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *EvaluateBooleanFeatureFlagResponse) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+type EvaluateInt64FeatureFlagRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeatureFlag   string                 `protobuf:"bytes,1,opt,name=feature_flag,json=featureFlag,proto3" json:"feature_flag,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EvaluateInt64FeatureFlagRequest) Reset() {
+	*x = EvaluateInt64FeatureFlagRequest{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluateInt64FeatureFlagRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluateInt64FeatureFlagRequest) ProtoMessage() {}
+
+func (x *EvaluateInt64FeatureFlagRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluateInt64FeatureFlagRequest.ProtoReflect.Descriptor instead.
+func (*EvaluateInt64FeatureFlagRequest) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *EvaluateInt64FeatureFlagRequest) GetFeatureFlag() string {
+	if x != nil {
+		return x.FeatureFlag
+	}
+	return ""
+}
+
+type EvaluateInt64FeatureFlagResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	Value           int64 `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *EvaluateInt64FeatureFlagResponse) Reset() {
+	*x = EvaluateInt64FeatureFlagResponse{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluateInt64FeatureFlagResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluateInt64FeatureFlagResponse) ProtoMessage() {}
+
+func (x *EvaluateInt64FeatureFlagResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluateInt64FeatureFlagResponse.ProtoReflect.Descriptor instead.
+func (*EvaluateInt64FeatureFlagResponse) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *EvaluateInt64FeatureFlagResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *EvaluateInt64FeatureFlagResponse) GetValue() int64 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+type EvaluateStringFeatureFlagRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeatureFlag   string                 `protobuf:"bytes,1,opt,name=feature_flag,json=featureFlag,proto3" json:"feature_flag,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EvaluateStringFeatureFlagRequest) Reset() {
+	*x = EvaluateStringFeatureFlagRequest{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluateStringFeatureFlagRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluateStringFeatureFlagRequest) ProtoMessage() {}
+
+func (x *EvaluateStringFeatureFlagRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluateStringFeatureFlagRequest.ProtoReflect.Descriptor instead.
+func (*EvaluateStringFeatureFlagRequest) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *EvaluateStringFeatureFlagRequest) GetFeatureFlag() string {
+	if x != nil {
+		return x.FeatureFlag
+	}
+	return ""
+}
+
+type EvaluateStringFeatureFlagResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Value           string                 `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *EvaluateStringFeatureFlagResponse) Reset() {
+	*x = EvaluateStringFeatureFlagResponse{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluateStringFeatureFlagResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluateStringFeatureFlagResponse) ProtoMessage() {}
+
+func (x *EvaluateStringFeatureFlagResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluateStringFeatureFlagResponse.ProtoReflect.Descriptor instead.
+func (*EvaluateStringFeatureFlagResponse) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *EvaluateStringFeatureFlagResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *EvaluateStringFeatureFlagResponse) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
 type GetSelfRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1910,7 +2198,7 @@ type GetSelfRequest struct {
 
 func (x *GetSelfRequest) Reset() {
 	*x = GetSelfRequest{}
-	mi := &file_auth_auth_service_types_proto_msgTypes[37]
+	mi := &file_auth_auth_service_types_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1922,7 +2210,7 @@ func (x *GetSelfRequest) String() string {
 func (*GetSelfRequest) ProtoMessage() {}
 
 func (x *GetSelfRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_auth_service_types_proto_msgTypes[37]
+	mi := &file_auth_auth_service_types_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1935,7 +2223,7 @@ func (x *GetSelfRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSelfRequest.ProtoReflect.Descriptor instead.
 func (*GetSelfRequest) Descriptor() ([]byte, []int) {
-	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{37}
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{43}
 }
 
 type GetSelfResponse struct {
@@ -1948,7 +2236,7 @@ type GetSelfResponse struct {
 
 func (x *GetSelfResponse) Reset() {
 	*x = GetSelfResponse{}
-	mi := &file_auth_auth_service_types_proto_msgTypes[38]
+	mi := &file_auth_auth_service_types_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1960,7 +2248,7 @@ func (x *GetSelfResponse) String() string {
 func (*GetSelfResponse) ProtoMessage() {}
 
 func (x *GetSelfResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_auth_service_types_proto_msgTypes[38]
+	mi := &file_auth_auth_service_types_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1973,7 +2261,7 @@ func (x *GetSelfResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSelfResponse.ProtoReflect.Descriptor instead.
 func (*GetSelfResponse) Descriptor() ([]byte, []int) {
-	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{38}
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *GetSelfResponse) GetResponseDetails() *types.ResponseDetails {
@@ -2268,21 +2556,58 @@ var file_auth_auth_service_types_proto_rawDesc = string([]byte{
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x23, 0x0a, 0x0d,
 	0x65, 0x6d, 0x61, 0x69, 0x6c, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x0c, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x22, 0x10, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x53, 0x65, 0x6c, 0x66, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x22, 0x7d, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x53, 0x65, 0x6c, 0x66, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x26, 0x0a, 0x06, 0x72, 0x65,
-	0x73, 0x75, 0x6c, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x69, 0x64, 0x65,
-	0x6e, 0x74, 0x69, 0x74, 0x79, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x52, 0x06, 0x72, 0x65, 0x73, 0x75,
-	0x6c, 0x74, 0x42, 0x4b, 0x5a, 0x49, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
-	0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65,
-	0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e,
-	0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65,
-	0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x22, 0x46, 0x0a, 0x21, 0x45, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x65, 0x42, 0x6f, 0x6f,
+	0x6c, 0x65, 0x61, 0x6e, 0x46, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x46, 0x6c, 0x61, 0x67, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72,
+	0x65, 0x5f, 0x66, 0x6c, 0x61, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x66, 0x65,
+	0x61, 0x74, 0x75, 0x72, 0x65, 0x46, 0x6c, 0x61, 0x67, 0x22, 0x82, 0x01, 0x0a, 0x22, 0x45, 0x76,
+	0x61, 0x6c, 0x75, 0x61, 0x74, 0x65, 0x42, 0x6f, 0x6f, 0x6c, 0x65, 0x61, 0x6e, 0x46, 0x65, 0x61,
+	0x74, 0x75, 0x72, 0x65, 0x46, 0x6c, 0x61, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d,
+	0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x22, 0x44,
+	0x0a, 0x1f, 0x45, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x74, 0x36, 0x34, 0x46,
+	0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x46, 0x6c, 0x61, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x21, 0x0a, 0x0c, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x5f, 0x66, 0x6c, 0x61,
+	0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65,
+	0x46, 0x6c, 0x61, 0x67, 0x22, 0x7c, 0x0a, 0x20, 0x45, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x65,
+	0x49, 0x6e, 0x74, 0x36, 0x34, 0x46, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x46, 0x6c, 0x61, 0x67,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x14, 0x0a, 0x05,
+	0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c,
+	0x75, 0x65, 0x22, 0x45, 0x0a, 0x20, 0x45, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x65, 0x53, 0x74,
+	0x72, 0x69, 0x6e, 0x67, 0x46, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x46, 0x6c, 0x61, 0x67, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72,
+	0x65, 0x5f, 0x66, 0x6c, 0x61, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x66, 0x65,
+	0x61, 0x74, 0x75, 0x72, 0x65, 0x46, 0x6c, 0x61, 0x67, 0x22, 0x7d, 0x0a, 0x21, 0x45, 0x76, 0x61,
+	0x6c, 0x75, 0x61, 0x74, 0x65, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x46, 0x65, 0x61, 0x74, 0x75,
+	0x72, 0x65, 0x46, 0x6c, 0x61, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42,
+	0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
+	0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x10, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x53,
+	0x65, 0x6c, 0x66, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x7d, 0x0a, 0x0f, 0x47, 0x65,
+	0x74, 0x53, 0x65, 0x6c, 0x66, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a,
+	0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c,
+	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
+	0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
+	0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
+	0x73, 0x12, 0x26, 0x0a, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x0e, 0x2e, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x2e, 0x55, 0x73, 0x65,
+	0x72, 0x52, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x42, 0x4b, 0x5a, 0x49, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f,
+	0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64,
+	0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67,
+	0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x73, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -2297,7 +2622,7 @@ func file_auth_auth_service_types_proto_rawDescGZIP() []byte {
 	return file_auth_auth_service_types_proto_rawDescData
 }
 
-var file_auth_auth_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
+var file_auth_auth_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
 var file_auth_auth_service_types_proto_goTypes = []any{
 	(*LoginForTokenRequest)(nil),                     // 0: auth.LoginForTokenRequest
 	(*LoginForTokenResponse)(nil),                    // 1: auth.LoginForTokenResponse
@@ -2336,49 +2661,58 @@ var file_auth_auth_service_types_proto_goTypes = []any{
 	(*UserPermissionsRequestInput)(nil),              // 34: auth.UserPermissionsRequestInput
 	(*UserPermissionsResponse)(nil),                  // 35: auth.UserPermissionsResponse
 	(*UsernameReminderRequestInput)(nil),             // 36: auth.UsernameReminderRequestInput
-	(*GetSelfRequest)(nil),                           // 37: auth.GetSelfRequest
-	(*GetSelfResponse)(nil),                          // 38: auth.GetSelfResponse
-	nil,                                              // 39: auth.UserPermissionsResponse.PermissionsEntry
-	(*UserLoginInput)(nil),                           // 40: auth.UserLoginInput
-	(*types.ResponseDetails)(nil),                    // 41: common.ResponseDetails
-	(*timestamppb.Timestamp)(nil),                    // 42: google.protobuf.Timestamp
-	(*identity.Account)(nil),                         // 43: identity.Account
-	(*identity.User)(nil),                            // 44: identity.User
+	(*EvaluateBooleanFeatureFlagRequest)(nil),        // 37: auth.EvaluateBooleanFeatureFlagRequest
+	(*EvaluateBooleanFeatureFlagResponse)(nil),       // 38: auth.EvaluateBooleanFeatureFlagResponse
+	(*EvaluateInt64FeatureFlagRequest)(nil),          // 39: auth.EvaluateInt64FeatureFlagRequest
+	(*EvaluateInt64FeatureFlagResponse)(nil),         // 40: auth.EvaluateInt64FeatureFlagResponse
+	(*EvaluateStringFeatureFlagRequest)(nil),         // 41: auth.EvaluateStringFeatureFlagRequest
+	(*EvaluateStringFeatureFlagResponse)(nil),        // 42: auth.EvaluateStringFeatureFlagResponse
+	(*GetSelfRequest)(nil),                           // 43: auth.GetSelfRequest
+	(*GetSelfResponse)(nil),                          // 44: auth.GetSelfResponse
+	nil,                                              // 45: auth.UserPermissionsResponse.PermissionsEntry
+	(*UserLoginInput)(nil),                           // 46: auth.UserLoginInput
+	(*types.ResponseDetails)(nil),                    // 47: common.ResponseDetails
+	(*timestamppb.Timestamp)(nil),                    // 48: google.protobuf.Timestamp
+	(*identity.Account)(nil),                         // 49: identity.Account
+	(*identity.User)(nil),                            // 50: identity.User
 }
 var file_auth_auth_service_types_proto_depIdxs = []int32{
-	40, // 0: auth.LoginForTokenRequest.input:type_name -> auth.UserLoginInput
-	41, // 1: auth.LoginForTokenResponse.response_details:type_name -> common.ResponseDetails
+	46, // 0: auth.LoginForTokenRequest.input:type_name -> auth.UserLoginInput
+	47, // 1: auth.LoginForTokenResponse.response_details:type_name -> common.ResponseDetails
 	33, // 2: auth.LoginForTokenResponse.result:type_name -> auth.TokenResponse
-	40, // 3: auth.AdminLoginForTokenRequest.input:type_name -> auth.UserLoginInput
-	41, // 4: auth.AdminLoginForTokenResponse.response_details:type_name -> common.ResponseDetails
+	46, // 3: auth.AdminLoginForTokenRequest.input:type_name -> auth.UserLoginInput
+	47, // 4: auth.AdminLoginForTokenResponse.response_details:type_name -> common.ResponseDetails
 	33, // 5: auth.AdminLoginForTokenResponse.result:type_name -> auth.TokenResponse
-	41, // 6: auth.ExchangeTokenResponse.response_details:type_name -> common.ResponseDetails
-	42, // 7: auth.ExchangeTokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
-	41, // 8: auth.GetActiveAccountResponse.response_details:type_name -> common.ResponseDetails
-	43, // 9: auth.GetActiveAccountResponse.result:type_name -> identity.Account
-	41, // 10: auth.GetAuthStatusResponse.response_details:type_name -> common.ResponseDetails
-	41, // 11: auth.RedeemPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
-	41, // 12: auth.RefreshTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
+	47, // 6: auth.ExchangeTokenResponse.response_details:type_name -> common.ResponseDetails
+	48, // 7: auth.ExchangeTokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
+	47, // 8: auth.GetActiveAccountResponse.response_details:type_name -> common.ResponseDetails
+	49, // 9: auth.GetActiveAccountResponse.result:type_name -> identity.Account
+	47, // 10: auth.GetAuthStatusResponse.response_details:type_name -> common.ResponseDetails
+	47, // 11: auth.RedeemPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
+	47, // 12: auth.RefreshTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
 	31, // 13: auth.RefreshTOTPSecretResponse.result:type_name -> auth.TOTPSecretRefreshResponse
-	41, // 14: auth.RequestEmailVerificationEmailResponse.response_details:type_name -> common.ResponseDetails
-	41, // 15: auth.RequestPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
-	41, // 16: auth.RequestUsernameReminderResponse.response_details:type_name -> common.ResponseDetails
-	41, // 17: auth.UpdatePasswordResponse.response_details:type_name -> common.ResponseDetails
-	41, // 18: auth.VerifyEmailAddressResponse.response_details:type_name -> common.ResponseDetails
-	41, // 19: auth.VerifyTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
-	41, // 20: auth.EmailAddressVerificationResponse.response_details:type_name -> common.ResponseDetails
-	41, // 21: auth.PasswordResetResponse.response_details:type_name -> common.ResponseDetails
-	41, // 22: auth.TOTPSecretVerificationResponse.response_details:type_name -> common.ResponseDetails
-	42, // 23: auth.TokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
-	41, // 24: auth.UserPermissionsResponse.response_details:type_name -> common.ResponseDetails
-	39, // 25: auth.UserPermissionsResponse.permissions:type_name -> auth.UserPermissionsResponse.PermissionsEntry
-	41, // 26: auth.GetSelfResponse.response_details:type_name -> common.ResponseDetails
-	44, // 27: auth.GetSelfResponse.result:type_name -> identity.User
-	28, // [28:28] is the sub-list for method output_type
-	28, // [28:28] is the sub-list for method input_type
-	28, // [28:28] is the sub-list for extension type_name
-	28, // [28:28] is the sub-list for extension extendee
-	0,  // [0:28] is the sub-list for field type_name
+	47, // 14: auth.RequestEmailVerificationEmailResponse.response_details:type_name -> common.ResponseDetails
+	47, // 15: auth.RequestPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
+	47, // 16: auth.RequestUsernameReminderResponse.response_details:type_name -> common.ResponseDetails
+	47, // 17: auth.UpdatePasswordResponse.response_details:type_name -> common.ResponseDetails
+	47, // 18: auth.VerifyEmailAddressResponse.response_details:type_name -> common.ResponseDetails
+	47, // 19: auth.VerifyTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
+	47, // 20: auth.EmailAddressVerificationResponse.response_details:type_name -> common.ResponseDetails
+	47, // 21: auth.PasswordResetResponse.response_details:type_name -> common.ResponseDetails
+	47, // 22: auth.TOTPSecretVerificationResponse.response_details:type_name -> common.ResponseDetails
+	48, // 23: auth.TokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
+	47, // 24: auth.UserPermissionsResponse.response_details:type_name -> common.ResponseDetails
+	45, // 25: auth.UserPermissionsResponse.permissions:type_name -> auth.UserPermissionsResponse.PermissionsEntry
+	47, // 26: auth.EvaluateBooleanFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
+	47, // 27: auth.EvaluateInt64FeatureFlagResponse.response_details:type_name -> common.ResponseDetails
+	47, // 28: auth.EvaluateStringFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
+	47, // 29: auth.GetSelfResponse.response_details:type_name -> common.ResponseDetails
+	50, // 30: auth.GetSelfResponse.result:type_name -> identity.User
+	31, // [31:31] is the sub-list for method output_type
+	31, // [31:31] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_auth_auth_service_types_proto_init() }
@@ -2393,7 +2727,7 @@ func file_auth_auth_service_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_auth_service_types_proto_rawDesc), len(file_auth_auth_service_types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   40,
+			NumMessages:   46,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

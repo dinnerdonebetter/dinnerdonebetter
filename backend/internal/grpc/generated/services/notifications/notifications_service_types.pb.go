@@ -433,6 +433,450 @@ func (x *UserNotificationUpdateRequestInput) GetStatus() UserNotificationStatus 
 	return UserNotificationStatus_USER_NOTIFICATION_STATUS_UNREAD
 }
 
+type RegisterDeviceTokenRequest struct {
+	state         protoimpl.MessageState               `protogen:"open.v1"`
+	Input         *UserDeviceTokenCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterDeviceTokenRequest) Reset() {
+	*x = RegisterDeviceTokenRequest{}
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterDeviceTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterDeviceTokenRequest) ProtoMessage() {}
+
+func (x *RegisterDeviceTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterDeviceTokenRequest.ProtoReflect.Descriptor instead.
+func (*RegisterDeviceTokenRequest) Descriptor() ([]byte, []int) {
+	return file_notifications_notifications_service_types_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *RegisterDeviceTokenRequest) GetInput() *UserDeviceTokenCreationRequestInput {
+	if x != nil {
+		return x.Input
+	}
+	return nil
+}
+
+type RegisterDeviceTokenResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *UserDeviceToken       `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *RegisterDeviceTokenResponse) Reset() {
+	*x = RegisterDeviceTokenResponse{}
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterDeviceTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterDeviceTokenResponse) ProtoMessage() {}
+
+func (x *RegisterDeviceTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterDeviceTokenResponse.ProtoReflect.Descriptor instead.
+func (*RegisterDeviceTokenResponse) Descriptor() ([]byte, []int) {
+	return file_notifications_notifications_service_types_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *RegisterDeviceTokenResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *RegisterDeviceTokenResponse) GetCreated() *UserDeviceToken {
+	if x != nil {
+		return x.Created
+	}
+	return nil
+}
+
+type GetUserDeviceTokenRequest struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	UserDeviceTokenId string                 `protobuf:"bytes,1,opt,name=user_device_token_id,json=userDeviceTokenId,proto3" json:"user_device_token_id,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *GetUserDeviceTokenRequest) Reset() {
+	*x = GetUserDeviceTokenRequest{}
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserDeviceTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserDeviceTokenRequest) ProtoMessage() {}
+
+func (x *GetUserDeviceTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserDeviceTokenRequest.ProtoReflect.Descriptor instead.
+func (*GetUserDeviceTokenRequest) Descriptor() ([]byte, []int) {
+	return file_notifications_notifications_service_types_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetUserDeviceTokenRequest) GetUserDeviceTokenId() string {
+	if x != nil {
+		return x.UserDeviceTokenId
+	}
+	return ""
+}
+
+type GetUserDeviceTokenResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *UserDeviceToken       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetUserDeviceTokenResponse) Reset() {
+	*x = GetUserDeviceTokenResponse{}
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserDeviceTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserDeviceTokenResponse) ProtoMessage() {}
+
+func (x *GetUserDeviceTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserDeviceTokenResponse.ProtoReflect.Descriptor instead.
+func (*GetUserDeviceTokenResponse) Descriptor() ([]byte, []int) {
+	return file_notifications_notifications_service_types_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GetUserDeviceTokenResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *GetUserDeviceTokenResponse) GetResult() *UserDeviceToken {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+
+type GetUserDeviceTokensRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Filter         *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	PlatformFilter *string                `protobuf:"bytes,2,opt,name=platform_filter,json=platformFilter,proto3,oneof" json:"platform_filter,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *GetUserDeviceTokensRequest) Reset() {
+	*x = GetUserDeviceTokensRequest{}
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserDeviceTokensRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserDeviceTokensRequest) ProtoMessage() {}
+
+func (x *GetUserDeviceTokensRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserDeviceTokensRequest.ProtoReflect.Descriptor instead.
+func (*GetUserDeviceTokensRequest) Descriptor() ([]byte, []int) {
+	return file_notifications_notifications_service_types_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GetUserDeviceTokensRequest) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *GetUserDeviceTokensRequest) GetPlatformFilter() string {
+	if x != nil && x.PlatformFilter != nil {
+		return *x.PlatformFilter
+	}
+	return ""
+}
+
+type GetUserDeviceTokensResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*UserDeviceToken     `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetUserDeviceTokensResponse) Reset() {
+	*x = GetUserDeviceTokensResponse{}
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserDeviceTokensResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserDeviceTokensResponse) ProtoMessage() {}
+
+func (x *GetUserDeviceTokensResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserDeviceTokensResponse.ProtoReflect.Descriptor instead.
+func (*GetUserDeviceTokensResponse) Descriptor() ([]byte, []int) {
+	return file_notifications_notifications_service_types_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *GetUserDeviceTokensResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *GetUserDeviceTokensResponse) GetPagination() *filtering.Pagination {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+func (x *GetUserDeviceTokensResponse) GetResults() []*UserDeviceToken {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+type ArchiveUserDeviceTokenRequest struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	UserDeviceTokenId string                 `protobuf:"bytes,1,opt,name=user_device_token_id,json=userDeviceTokenId,proto3" json:"user_device_token_id,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ArchiveUserDeviceTokenRequest) Reset() {
+	*x = ArchiveUserDeviceTokenRequest{}
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveUserDeviceTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveUserDeviceTokenRequest) ProtoMessage() {}
+
+func (x *ArchiveUserDeviceTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveUserDeviceTokenRequest.ProtoReflect.Descriptor instead.
+func (*ArchiveUserDeviceTokenRequest) Descriptor() ([]byte, []int) {
+	return file_notifications_notifications_service_types_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ArchiveUserDeviceTokenRequest) GetUserDeviceTokenId() string {
+	if x != nil {
+		return x.UserDeviceTokenId
+	}
+	return ""
+}
+
+type ArchiveUserDeviceTokenResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ArchiveUserDeviceTokenResponse) Reset() {
+	*x = ArchiveUserDeviceTokenResponse{}
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveUserDeviceTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveUserDeviceTokenResponse) ProtoMessage() {}
+
+func (x *ArchiveUserDeviceTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveUserDeviceTokenResponse.ProtoReflect.Descriptor instead.
+func (*ArchiveUserDeviceTokenResponse) Descriptor() ([]byte, []int) {
+	return file_notifications_notifications_service_types_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *ArchiveUserDeviceTokenResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+type UserDeviceTokenCreationRequestInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DeviceToken   string                 `protobuf:"bytes,1,opt,name=device_token,json=deviceToken,proto3" json:"device_token,omitempty"`
+	Platform      string                 `protobuf:"bytes,2,opt,name=platform,proto3" json:"platform,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserDeviceTokenCreationRequestInput) Reset() {
+	*x = UserDeviceTokenCreationRequestInput{}
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserDeviceTokenCreationRequestInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserDeviceTokenCreationRequestInput) ProtoMessage() {}
+
+func (x *UserDeviceTokenCreationRequestInput) ProtoReflect() protoreflect.Message {
+	mi := &file_notifications_notifications_service_types_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserDeviceTokenCreationRequestInput.ProtoReflect.Descriptor instead.
+func (*UserDeviceTokenCreationRequestInput) Descriptor() ([]byte, []int) {
+	return file_notifications_notifications_service_types_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *UserDeviceTokenCreationRequestInput) GetDeviceToken() string {
+	if x != nil {
+		return x.DeviceToken
+	}
+	return ""
+}
+
+func (x *UserDeviceTokenCreationRequestInput) GetPlatform() string {
+	if x != nil {
+		return x.Platform
+	}
+	return ""
+}
+
 var File_notifications_notifications_service_types_proto protoreflect.FileDescriptor
 
 var file_notifications_notifications_service_types_proto_rawDesc = string([]byte{
@@ -515,13 +959,84 @@ var file_notifications_notifications_service_types_proto_rawDesc = string([]byte
 	0x6e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x55, 0x73,
 	0x65, 0x72, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74,
 	0x61, 0x74, 0x75, 0x73, 0x48, 0x00, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x88, 0x01,
-	0x01, 0x42, 0x09, 0x0a, 0x07, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x54, 0x5a, 0x52,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65,
-	0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b,
-	0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70,
-	0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76,
-	0x69, 0x63, 0x65, 0x73, 0x2f, 0x6e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x01, 0x42, 0x09, 0x0a, 0x07, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x66, 0x0a, 0x1a,
+	0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f,
+	0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x48, 0x0a, 0x05, 0x69, 0x6e,
+	0x70, 0x75, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x32, 0x2e, 0x6e, 0x6f, 0x74, 0x69,
+	0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x44, 0x65,
+	0x76, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x52, 0x05, 0x69,
+	0x6e, 0x70, 0x75, 0x74, 0x22, 0x9b, 0x01, 0x0a, 0x1b, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65,
+	0x72, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17,
+	0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x38, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x6e, 0x6f, 0x74, 0x69,
+	0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x44, 0x65,
+	0x76, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x64, 0x22, 0x4c, 0x0a, 0x19, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x44, 0x65, 0x76,
+	0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x2f, 0x0a, 0x14, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x74,
+	0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x75,
+	0x73, 0x65, 0x72, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x64,
+	0x22, 0x98, 0x01, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x44, 0x65, 0x76, 0x69,
+	0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d,
+	0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x73, 0x12, 0x36, 0x0a, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x6e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x73, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f,
+	0x6b, 0x65, 0x6e, 0x52, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x8e, 0x01, 0x0a, 0x1a,
+	0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b,
+	0x65, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2e, 0x0a, 0x06, 0x66, 0x69,
+	0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x66, 0x69, 0x6c,
+	0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x2c, 0x0a, 0x0f, 0x70, 0x6c,
+	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x0e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x46,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x88, 0x01, 0x01, 0x42, 0x12, 0x0a, 0x10, 0x5f, 0x70, 0x6c, 0x61,
+	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0xd2, 0x01, 0x0a,
+	0x1b, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f,
+	0x6b, 0x65, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10,
+	0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52,
+	0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
+	0x12, 0x35, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67,
+	0x2e, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x70, 0x61, 0x67,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x38, 0x0a, 0x07, 0x72, 0x65, 0x73, 0x75, 0x6c,
+	0x74, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x6e, 0x6f, 0x74, 0x69, 0x66,
+	0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x44, 0x65, 0x76,
+	0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x07, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74,
+	0x73, 0x22, 0x50, 0x0a, 0x1d, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x55, 0x73, 0x65, 0x72,
+	0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x2f, 0x0a, 0x14, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x64, 0x65, 0x76, 0x69, 0x63,
+	0x65, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x11, 0x75, 0x73, 0x65, 0x72, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65,
+	0x6e, 0x49, 0x64, 0x22, 0x64, 0x0a, 0x1e, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x55, 0x73,
+	0x65, 0x72, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x22, 0x64, 0x0a, 0x23, 0x55, 0x73, 0x65,
+	0x72, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74,
+	0x12, 0x21, 0x0a, 0x0c, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x54, 0x6f,
+	0x6b, 0x65, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x42,
+	0x54, 0x5a, 0x52, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69,
+	0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62,
+	0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f,
+	0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x6e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -536,7 +1051,7 @@ func file_notifications_notifications_service_types_proto_rawDescGZIP() []byte {
 	return file_notifications_notifications_service_types_proto_rawDescData
 }
 
-var file_notifications_notifications_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_notifications_notifications_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_notifications_notifications_service_types_proto_goTypes = []any{
 	(*GetUserNotificationRequest)(nil),           // 0: notifications.GetUserNotificationRequest
 	(*GetUserNotificationResponse)(nil),          // 1: notifications.GetUserNotificationResponse
@@ -546,29 +1061,49 @@ var file_notifications_notifications_service_types_proto_goTypes = []any{
 	(*UpdateUserNotificationResponse)(nil),       // 5: notifications.UpdateUserNotificationResponse
 	(*UserNotificationCreationRequestInput)(nil), // 6: notifications.UserNotificationCreationRequestInput
 	(*UserNotificationUpdateRequestInput)(nil),   // 7: notifications.UserNotificationUpdateRequestInput
-	(*types.ResponseDetails)(nil),                // 8: common.ResponseDetails
-	(*UserNotification)(nil),                     // 9: notifications.UserNotification
-	(*filtering.QueryFilter)(nil),                // 10: filtering.QueryFilter
-	(*filtering.Pagination)(nil),                 // 11: filtering.Pagination
-	(UserNotificationStatus)(0),                  // 12: notifications.UserNotificationStatus
+	(*RegisterDeviceTokenRequest)(nil),           // 8: notifications.RegisterDeviceTokenRequest
+	(*RegisterDeviceTokenResponse)(nil),          // 9: notifications.RegisterDeviceTokenResponse
+	(*GetUserDeviceTokenRequest)(nil),            // 10: notifications.GetUserDeviceTokenRequest
+	(*GetUserDeviceTokenResponse)(nil),           // 11: notifications.GetUserDeviceTokenResponse
+	(*GetUserDeviceTokensRequest)(nil),           // 12: notifications.GetUserDeviceTokensRequest
+	(*GetUserDeviceTokensResponse)(nil),          // 13: notifications.GetUserDeviceTokensResponse
+	(*ArchiveUserDeviceTokenRequest)(nil),        // 14: notifications.ArchiveUserDeviceTokenRequest
+	(*ArchiveUserDeviceTokenResponse)(nil),       // 15: notifications.ArchiveUserDeviceTokenResponse
+	(*UserDeviceTokenCreationRequestInput)(nil),  // 16: notifications.UserDeviceTokenCreationRequestInput
+	(*types.ResponseDetails)(nil),                // 17: common.ResponseDetails
+	(*UserNotification)(nil),                     // 18: notifications.UserNotification
+	(*filtering.QueryFilter)(nil),                // 19: filtering.QueryFilter
+	(*filtering.Pagination)(nil),                 // 20: filtering.Pagination
+	(UserNotificationStatus)(0),                  // 21: notifications.UserNotificationStatus
+	(*UserDeviceToken)(nil),                      // 22: notifications.UserDeviceToken
 }
 var file_notifications_notifications_service_types_proto_depIdxs = []int32{
-	8,  // 0: notifications.GetUserNotificationResponse.response_details:type_name -> common.ResponseDetails
-	9,  // 1: notifications.GetUserNotificationResponse.result:type_name -> notifications.UserNotification
-	10, // 2: notifications.GetUserNotificationsRequest.filter:type_name -> filtering.QueryFilter
-	8,  // 3: notifications.GetUserNotificationsResponse.response_details:type_name -> common.ResponseDetails
-	11, // 4: notifications.GetUserNotificationsResponse.pagination:type_name -> filtering.Pagination
-	9,  // 5: notifications.GetUserNotificationsResponse.results:type_name -> notifications.UserNotification
+	17, // 0: notifications.GetUserNotificationResponse.response_details:type_name -> common.ResponseDetails
+	18, // 1: notifications.GetUserNotificationResponse.result:type_name -> notifications.UserNotification
+	19, // 2: notifications.GetUserNotificationsRequest.filter:type_name -> filtering.QueryFilter
+	17, // 3: notifications.GetUserNotificationsResponse.response_details:type_name -> common.ResponseDetails
+	20, // 4: notifications.GetUserNotificationsResponse.pagination:type_name -> filtering.Pagination
+	18, // 5: notifications.GetUserNotificationsResponse.results:type_name -> notifications.UserNotification
 	7,  // 6: notifications.UpdateUserNotificationRequest.input:type_name -> notifications.UserNotificationUpdateRequestInput
-	8,  // 7: notifications.UpdateUserNotificationResponse.response_details:type_name -> common.ResponseDetails
-	9,  // 8: notifications.UpdateUserNotificationResponse.updated:type_name -> notifications.UserNotification
-	12, // 9: notifications.UserNotificationCreationRequestInput.status:type_name -> notifications.UserNotificationStatus
-	12, // 10: notifications.UserNotificationUpdateRequestInput.status:type_name -> notifications.UserNotificationStatus
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	17, // 7: notifications.UpdateUserNotificationResponse.response_details:type_name -> common.ResponseDetails
+	18, // 8: notifications.UpdateUserNotificationResponse.updated:type_name -> notifications.UserNotification
+	21, // 9: notifications.UserNotificationCreationRequestInput.status:type_name -> notifications.UserNotificationStatus
+	21, // 10: notifications.UserNotificationUpdateRequestInput.status:type_name -> notifications.UserNotificationStatus
+	16, // 11: notifications.RegisterDeviceTokenRequest.input:type_name -> notifications.UserDeviceTokenCreationRequestInput
+	17, // 12: notifications.RegisterDeviceTokenResponse.response_details:type_name -> common.ResponseDetails
+	22, // 13: notifications.RegisterDeviceTokenResponse.created:type_name -> notifications.UserDeviceToken
+	17, // 14: notifications.GetUserDeviceTokenResponse.response_details:type_name -> common.ResponseDetails
+	22, // 15: notifications.GetUserDeviceTokenResponse.result:type_name -> notifications.UserDeviceToken
+	19, // 16: notifications.GetUserDeviceTokensRequest.filter:type_name -> filtering.QueryFilter
+	17, // 17: notifications.GetUserDeviceTokensResponse.response_details:type_name -> common.ResponseDetails
+	20, // 18: notifications.GetUserDeviceTokensResponse.pagination:type_name -> filtering.Pagination
+	22, // 19: notifications.GetUserDeviceTokensResponse.results:type_name -> notifications.UserDeviceToken
+	17, // 20: notifications.ArchiveUserDeviceTokenResponse.response_details:type_name -> common.ResponseDetails
+	21, // [21:21] is the sub-list for method output_type
+	21, // [21:21] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_notifications_notifications_service_types_proto_init() }
@@ -578,13 +1113,14 @@ func file_notifications_notifications_service_types_proto_init() {
 	}
 	file_notifications_notifications_messages_proto_init()
 	file_notifications_notifications_service_types_proto_msgTypes[7].OneofWrappers = []any{}
+	file_notifications_notifications_service_types_proto_msgTypes[12].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_notifications_notifications_service_types_proto_rawDesc), len(file_notifications_notifications_service_types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

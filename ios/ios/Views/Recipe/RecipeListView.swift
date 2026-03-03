@@ -121,7 +121,7 @@ struct RecipeCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        // Recipe metadata
+        // Recipe metadata - primary row
         HStack(spacing: DSTheme.Spacing.md) {
           if !recipe.steps.isEmpty {
             Label(
@@ -132,10 +132,52 @@ struct RecipeCard: View {
             .foregroundColor(DSTheme.Colors.textSecondary)
           }
 
+          if let estimate = RecipeTimeEstimation.estimate(steps: recipe.steps) {
+            Label(
+              RecipeTimeEstimation.format(
+                minSeconds: estimate.minSeconds, maxSeconds: estimate.maxSeconds),
+              systemImage: "clock"
+            )
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+
           if recipe.hasEstimatedPortions {
-            Label("\(formatPortions(recipe.estimatedPortions))", systemImage: "person.2")
+            Label("\(PortionsFormatter.format(recipe.estimatedPortions))", systemImage: "person.2")
               .font(DSTheme.Typography.caption)
               .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+        }
+
+        // Recipe metadata - secondary row (source, yields type, prep tasks, eligible)
+        HStack(spacing: DSTheme.Spacing.md) {
+          if !recipe.source.isEmpty {
+            Label(recipe.source, systemImage: "link")
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+              .lineLimit(1)
+          }
+
+          if recipe.yieldsComponentType != .unspecified {
+            let yieldsLabel = MealComponentTypeFormatter.format(recipe.yieldsComponentType)
+            if !yieldsLabel.isEmpty {
+              Text(yieldsLabel)
+                .font(DSTheme.Typography.caption)
+                .foregroundColor(DSTheme.Colors.textSecondary)
+                .padding(.horizontal, DSTheme.Spacing.xs)
+                .padding(.vertical, 2)
+                .background(DSTheme.Colors.borderSubtle.opacity(0.5))
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+            }
+          }
+
+          if !recipe.prepTasks.isEmpty {
+            Label(
+              "\(recipe.prepTasks.count) prep task\(recipe.prepTasks.count == 1 ? "" : "s")",
+              systemImage: "checklist"
+            )
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
           }
         }
       }
@@ -143,17 +185,6 @@ struct RecipeCard: View {
     }
   }
 
-  private func formatPortions(_ range: Common_Float32RangeWithOptionalMax) -> String {
-    if range.hasMax {
-      if range.min == range.max {
-        return String(format: "%.1f", range.min)
-      } else {
-        return String(format: "%.1f-%.1f", range.min, range.max)
-      }
-    } else {
-      return String(format: "%.1f+", range.min)
-    }
-  }
 }
 
 // MARK: - Preview

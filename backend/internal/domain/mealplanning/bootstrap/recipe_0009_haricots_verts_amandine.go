@@ -17,8 +17,11 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	drainPrep := enums.Preparations["drain"]
 	dryPrep := enums.Preparations["dry"]
 	heatPrep := enums.Preparations["heat"]
+	toastPrep := enums.Preparations["toast"]
 	cookPrep := enums.Preparations["cook"]
 	stirPrep := enums.Preparations["stir"]
+	adjustPrep := enums.Preparations["adjust"]
+	removeFromHeatPrep := enums.Preparations["remove from heat"]
 	emulsifyPrep := enums.Preparations["emulsify"]
 	seasonPrep := enums.Preparations["season"]
 	tossPrep := enums.Preparations["toss"]
@@ -102,6 +105,17 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	heatAlmondsVIP := enums.IngredientPreparations[heatPrep.ID][sliveredAlmonds.ID]
 	heatMediumSkilletVPV := enums.PreparationVessels[heatPrep.ID][mediumSkillet.ID]
 	heatSpatulaVPI := enums.PreparationInstruments[heatPrep.ID][rubberSpatula.ID]
+
+	// Toast (for almonds)
+	toastAlmondsVIP := enums.IngredientPreparations[toastPrep.ID][sliveredAlmonds.ID]
+	toastMediumSkilletVPV := enums.PreparationVessels[toastPrep.ID][mediumSkillet.ID]
+	toastSpatulaVPI := enums.PreparationInstruments[toastPrep.ID][rubberSpatula.ID]
+
+	// Adjust (for heat)
+	adjustMediumSkilletVPV := enums.PreparationVessels[adjustPrep.ID][mediumSkillet.ID]
+
+	// Remove from heat
+	removeFromHeatMediumSkilletVPV := enums.PreparationVessels[removeFromHeatPrep.ID][mediumSkillet.ID]
 
 	// Cook
 	cookGarlicVIP := enums.IngredientPreparations[cookPrep.ID][garlic.ID]
@@ -541,15 +555,12 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 8: Heat butter and almonds in skillet, toast until deeply browned (combined step)
+	// Step 8: Heat butter and almonds in skillet
 	brownedState := enums.IngredientStates["browned"]
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        heatPrep.ID,
 		Index:                8,
-		ExplicitInstructions: "In a medium skillet, heat the butter and almonds over medium-low heat and cook, stirring frequently, until the almonds are deeply browned and nutty, about 5 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](300), // 5 minutes
-		},
+		ExplicitInstructions: "In a medium skillet, heat the butter and almonds over medium-low heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &heatButterVIP.ID,
@@ -588,6 +599,67 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
+				Name:              "butter and almonds in skillet",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "heated skillet with butter and almonds",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 9: Toast almonds until deeply browned
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        toastPrep.ID,
+		Index:                9,
+		ExplicitInstructions: "Cook, stirring frequently, until the almonds are deeply browned and nutty, about 5 minutes.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](300), // 5 minutes
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				ValidIngredientPreparationID:     &toastAlmondsVIP.ID,
+				ValidIngredientMeasurementUnitID: &almondsOunceVIMU.ID,
+				Name:                             "butter and almonds in skillet",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &toastSpatulaVPI.ID,
+				Name:                         "rubber spatula",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &toastMediumSkilletVPV.ID,
+				Name:                            "heated skillet with butter and almonds",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
 				Name:              "toasted almonds in brown butter",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
@@ -609,29 +681,29 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				IngredientStateID: brownedState.ID,
 				Notes:             "Butter should be browned and nutty",
-				Ingredients:       []uint64{0}, // Index of butter ingredient in the step
+				Ingredients:       []uint64{0},
 				Optional:          false,
 			},
 			{
 				IngredientStateID: toastedState.ID,
 				Notes:             "Almonds should be deeply browned and nutty",
-				Ingredients:       []uint64{1}, // Index of almonds ingredient in the step
+				Ingredients:       []uint64{0},
 				Optional:          false,
 			},
 		},
 	}
 
-	// Step 9: Add garlic and shallot and cook
-	step9 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 10: Add garlic and shallot and cook
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        cookPrep.ID,
-		Index:                9,
+		Index:                10,
 		ExplicitInstructions: "Add the garlic and shallot and cook, stirring, until lightly browned, about 2 minutes longer.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120), // 2 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "toasted almonds in brown butter",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -668,7 +740,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &cookSkilletVPV.ID,
 				Name:                            "heated skillet with brown butter",
@@ -698,14 +770,14 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 10: Add lemon juice and water
-	step10 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 11: Add lemon juice and water
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        stirPrep.ID,
-		Index:                10,
+		Index:                11,
 		ExplicitInstructions: "Add lemon juice, along with a tablespoon or two of water.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "almond mixture with garlic and shallot",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -733,7 +805,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &stirSkilletVPV.ID,
 				Name:                            "skillet with aromatics",
@@ -763,18 +835,46 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 11: Emulsify the sauce
+	// Step 12: Increase heat to high
+	step12 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        adjustPrep.ID,
+		Index:                12,
+		ExplicitInstructions: "Increase the heat to high.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &adjustMediumSkilletVPV.ID,
+				Name:                            "skillet with sauce",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "skillet with sauce over high heat",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 13: Emulsify the sauce
 	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
-	step11 := &mealplanning.RecipeStepCreationRequestInput{
+	step13 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        emulsifyPrep.ID,
-		Index:                11,
-		ExplicitInstructions: "Increase the heat to high and stir and shake the pan rapidly to emulsify, about 30 seconds. The sauce should have a glossy sheen and not appear watery or greasy. If it's still watery, continue to simmer and shake. If it looks greasy, add another tablespoon of water to re-emulsify.",
+		Index:                13,
+		ExplicitInstructions: "Stir and shake the pan rapidly to emulsify, about 30 seconds. The sauce should have a glossy sheen and not appear watery or greasy. If it's still watery, continue to simmer and shake. If it looks greasy, add another tablespoon of water to re-emulsify.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](30), // 30 seconds
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "sauce mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -784,10 +884,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &emulsifySkilletVPV.ID,
-				Name:                            "skillet with sauce",
+				Name:                            "skillet with sauce over high heat",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -822,14 +922,42 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 12: Season the sauce
-	step12 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 14: Remove from heat
+	step14 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        removeFromHeatPrep.ID,
+		Index:                14,
+		ExplicitInstructions: "Remove from heat.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &removeFromHeatMediumSkilletVPV.ID,
+				Name:                            "skillet with emulsified sauce",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "skillet with emulsified sauce, off heat",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 15: Season the sauce
+	step15 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                12,
-		ExplicitInstructions: "When the sauce is ready, remove from heat and season to taste with salt and pepper.",
+		Index:                15,
+		ExplicitInstructions: "Season to taste with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "emulsified brown butter sauce",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -857,10 +985,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &seasonSkilletVPV.ID,
-				Name:                            "skillet with emulsified sauce",
+				Name:                            "skillet with emulsified sauce, off heat",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -887,14 +1015,14 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 13: Add beans and toss
-	step13 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 16: Add beans and toss
+	step16 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        tossPrep.ID,
-		Index:                13,
+		Index:                16,
 		ExplicitInstructions: "Add the beans to the pan with the sauce and toss to coat and combine.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "seasoned brown butter sauce with almonds",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -914,7 +1042,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &tossSkilletVPV.ID,
 				Name:                            "skillet with seasoned sauce",
@@ -944,17 +1072,17 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 14: Cook until heated through
-	step14 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 17: Cook until heated through
+	step17 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        cookPrep.ID,
-		Index:                14,
-		ExplicitInstructions: "Return to medium heat and cook, tossing, until heated through, about 1 minute.",
+		Index:                17,
+		ExplicitInstructions: "Cook over medium heat, tossing, until heated through, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60), // 1 minute
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "green beans tossed in sauce",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -964,7 +1092,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &cookSkilletVPV.ID,
 				Name:                            "skillet with green beans",
@@ -986,14 +1114,14 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 15: Transfer to serving platter
-	step15 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 18: Transfer to serving platter
+	step18 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
-		Index:                15,
-		ExplicitInstructions: "Serve immediately.",
+		Index:                18,
+		ExplicitInstructions: "Transfer to serving platter.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](14),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &transferGreenBeansVIP.ID,
 				ValidIngredientMeasurementUnitID: &greenBeansPoundVIMU.ID,
@@ -1069,7 +1197,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{BelongsToRecipeStepIndex: 9, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 10, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 11, SatisfiesRecipeStep: false},
-			{BelongsToRecipeStepIndex: 12, SatisfiesRecipeStep: true},
+			{BelongsToRecipeStepIndex: 12, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 13, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 14, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 15, SatisfiesRecipeStep: true},
 		},
 	}
 
@@ -1087,7 +1218,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			PortionName:       "serving",
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15},
+			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18},
 			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2},
 			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 			AlsoCreateMeal:    false,

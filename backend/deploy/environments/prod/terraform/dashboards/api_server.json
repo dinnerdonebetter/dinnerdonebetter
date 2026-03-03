@@ -7,98 +7,425 @@
     "from": "now-1h",
     "to": "now"
   },
+  "templating": {
+    "list": [
+      {
+        "name": "job",
+        "type": "query",
+        "datasource": { "type": "prometheus" },
+        "query": "label_values(process_runtime_go_goroutines, job)",
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": false,
+        "current": { "value": "api_server", "text": "api_server" },
+        "refresh": 1,
+        "sort": 1
+      }
+    ]
+  },
   "panels": [
     {
-      "title": "Request Rate",
+      "title": "HTTP Request Rate",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
-      "datasource": {
-        "type": "prometheus"
-      },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "unit": "reqps",
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "fillOpacity": 10,
-            "pointSize": 5,
-            "showPoints": "never"
-          }
-        },
-        "overrides": []
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(request_duration_millis_milliseconds_count{job=\"dinner_done_better\"}[30m]))",
-          "legendFormat": "Requests/s"
+          "expr": "sum(rate(http_server_request_duration_seconds_count{job=~\"$job\"}[5m]))",
+          "legendFormat": "HTTP req/s"
         }
       ]
     },
     {
-      "title": "Error Rate (5xx)",
+      "title": "gRPC Request Rate",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
-      "datasource": {
-        "type": "prometheus"
-      },
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "unit": "reqps",
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "fillOpacity": 10,
-            "pointSize": 5,
-            "showPoints": "never"
-          }
-        },
-        "overrides": []
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(http_server_request_body_size_bytes_count{job=\"dinner_done_better\", http_response_status_code=~\"5..\"}[30m]))",
+          "expr": "sum(rate(rpc_server_duration_milliseconds_count{job=~\"$job\"}[5m]))",
+          "legendFormat": "gRPC req/s"
+        }
+      ]
+    },
+    {
+      "title": "DB Query Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(db_sql_latency_milliseconds_count{job=~\"$job\"}[5m]))",
+          "legendFormat": "Queries/s"
+        }
+      ]
+    },
+    {
+      "title": "HTTP 5xx Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_server_request_duration_seconds_count{job=~\"$job\", http_response_status_code=~\"5..\"}[5m]))",
           "legendFormat": "5xx/s"
         }
       ]
     },
     {
-      "title": "Latency Percentiles",
+      "title": "HTTP Latency",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
-      "datasource": {
-        "type": "prometheus"
-      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
-          "unit": "ms",
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "fillOpacity": 10,
-            "pointSize": 5,
-            "showPoints": "never"
-          }
-        },
-        "overrides": []
+          "unit": "s",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "histogram_quantile(0.50, sum(rate(request_duration_millis_milliseconds_bucket{job=\"dinner_done_better\"}[30m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{job=~\"$job\"}[5m])) by (le))",
           "legendFormat": "p50"
         },
         {
           "refId": "B",
-          "expr": "histogram_quantile(0.95, sum(rate(request_duration_millis_milliseconds_bucket{job=\"dinner_done_better\"}[30m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job=~\"$job\"}[5m])) by (le))",
           "legendFormat": "p95"
         },
         {
           "refId": "C",
-          "expr": "histogram_quantile(0.99, sum(rate(request_duration_millis_milliseconds_bucket{job=\"dinner_done_better\"}[30m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{job=~\"$job\"}[5m])) by (le))",
           "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "title": "gRPC Latency",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.50, sum(rate(rpc_server_duration_milliseconds_bucket{job=~\"$job\"}[5m])) by (le))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum(rate(rpc_server_duration_milliseconds_bucket{job=~\"$job\"}[5m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum(rate(rpc_server_duration_milliseconds_bucket{job=~\"$job\"}[5m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "title": "gRPC by Method",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(rpc_server_duration_milliseconds_count{job=~\"$job\"}[5m])) by (rpc_service, rpc_method)",
+          "legendFormat": "{{rpc_service}}/{{rpc_method}}"
+        }
+      ]
+    },
+    {
+      "title": "gRPC Errors",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(rpc_server_duration_milliseconds_count{job=~\"$job\", grpc_rpc_status_code!=\"OK\"}[5m])) by (grpc_rpc_status_code, rpc_service, rpc_method)",
+          "legendFormat": "{{grpc_rpc_status_code}} {{rpc_service}}/{{rpc_method}}"
+        }
+      ]
+    },
+    {
+      "title": "Search Index Requests - Execution Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.50, sum(rate(async_message_handler_search_index_requests_execution_time_bucket[5m])) by (le))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum(rate(async_message_handler_search_index_requests_execution_time_bucket[5m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum(rate(async_message_handler_search_index_requests_execution_time_bucket[5m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "title": "Search Index Requests - Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(async_message_handler_search_index_requests_execution_time_count[5m]))",
+          "legendFormat": "Search index req/s"
+        }
+      ]
+    },
+    {
+      "title": "DB Latency",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 30 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.50, sum(rate(db_sql_latency_milliseconds_bucket{job=~\"$job\"}[5m])) by (le))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum(rate(db_sql_latency_milliseconds_bucket{job=~\"$job\"}[5m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum(rate(db_sql_latency_milliseconds_bucket{job=~\"$job\"}[5m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "title": "DB Latency by Database",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 30 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum(rate(db_sql_latency_milliseconds_bucket{job=~\"$job\"}[5m])) by (le, database))",
+          "legendFormat": "p95 {{database}}"
+        }
+      ]
+    },
+    {
+      "title": "Deployment Replicas",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 38 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "kube_deployment_status_replicas_available{namespace=\"prod\"}",
+          "legendFormat": "{{deployment}} available"
+        },
+        {
+          "refId": "B",
+          "expr": "kube_deployment_spec_replicas{namespace=\"prod\"}",
+          "legendFormat": "{{deployment}} desired"
+        }
+      ]
+    },
+    {
+      "title": "Go Goroutines",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 46 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "process_runtime_go_goroutines{job=~\"$job\"}",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
+    },
+    {
+      "title": "Go GC Pause (p99)",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 46 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ns",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.99, sum(rate(process_runtime_go_gc_pause_ns_bucket{job=~\"$job\"}[5m])) by (le, job, instance))",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
+    },
+    {
+      "title": "Go Heap Allocated",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 46 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "process_runtime_go_mem_heap_alloc_bytes{job=~\"$job\"}",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
+    },
+    {
+      "title": "Host CPU",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 52 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(system_cpu_time_seconds_total{job=~\"$job\"}[5m]) * 100",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
+    },
+    {
+      "title": "Host Memory",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 52 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "system_memory_usage_bytes{job=~\"$job\"}",
+          "legendFormat": "{{job}} {{instance}}"
         }
       ]
     }

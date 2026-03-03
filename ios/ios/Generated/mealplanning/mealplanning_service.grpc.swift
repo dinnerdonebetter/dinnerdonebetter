@@ -1136,6 +1136,18 @@ internal enum Mealplanning_MealPlanningService {
                 method: "GetMeals"
             )
         }
+        /// Namespace for "GetMermaidDiagramForMeal" metadata.
+        internal enum GetMermaidDiagramForMeal {
+            /// Request type for "GetMermaidDiagramForMeal".
+            internal typealias Input = Mealplanning_GetMermaidDiagramForMealRequest
+            /// Response type for "GetMermaidDiagramForMeal".
+            internal typealias Output = Mealplanning_GetMermaidDiagramForMealResponse
+            /// Descriptor for "GetMermaidDiagramForMeal".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "GetMermaidDiagramForMeal"
+            )
+        }
         /// Namespace for "GetMermaidDiagramForRecipe" metadata.
         internal enum GetMermaidDiagramForRecipe {
             /// Request type for "GetMermaidDiagramForRecipe".
@@ -2755,6 +2767,7 @@ internal enum Mealplanning_MealPlanningService {
             GetMealPlansForAccount.descriptor,
             GetMealLists.descriptor,
             GetMeals.descriptor,
+            GetMermaidDiagramForMeal.descriptor,
             GetMermaidDiagramForRecipe.descriptor,
             GetRandomValidIngredient.descriptor,
             GetRandomValidInstrument.descriptor,
@@ -4666,6 +4679,25 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetMealsResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetMealsResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetMermaidDiagramForMeal" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetMermaidDiagramForMealRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetMermaidDiagramForMealRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetMermaidDiagramForMealResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getMermaidDiagramForMeal<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetMermaidDiagramForMealRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetMermaidDiagramForMealRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetMermaidDiagramForMealResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetMermaidDiagramForMealResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "GetMermaidDiagramForRecipe" method.
@@ -9881,6 +9913,36 @@ extension Mealplanning_MealPlanningService {
             try await self.client.unary(
                 request: request,
                 descriptor: Mealplanning_MealPlanningService.Method.GetMeals.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetMermaidDiagramForMeal" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetMermaidDiagramForMealRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetMermaidDiagramForMealRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetMermaidDiagramForMealResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getMermaidDiagramForMeal<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetMermaidDiagramForMealRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetMermaidDiagramForMealRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetMermaidDiagramForMealResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetMermaidDiagramForMealResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.GetMermaidDiagramForMeal.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -16028,6 +16090,31 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
         )
     }
 
+    /// Call the "GetMermaidDiagramForMeal" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_GetMermaidDiagramForMealRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getMermaidDiagramForMeal<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_GetMermaidDiagramForMealRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetMermaidDiagramForMealResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getMermaidDiagramForMeal(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetMermaidDiagramForMealRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetMermaidDiagramForMealResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "GetMermaidDiagramForRecipe" method.
     ///
     /// - Parameters:
@@ -21898,6 +21985,35 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             metadata: metadata
         )
         return try await self.getMeals(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetMermaidDiagramForMeal" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getMermaidDiagramForMeal<Result>(
+        _ message: Mealplanning_GetMermaidDiagramForMealRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetMermaidDiagramForMealResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_GetMermaidDiagramForMealRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getMermaidDiagramForMeal(
             request: request,
             options: options,
             onResponse: handleResponse
