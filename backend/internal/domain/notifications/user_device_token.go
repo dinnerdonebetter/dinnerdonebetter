@@ -3,12 +3,16 @@ package notifications
 import (
 	"context"
 	"encoding/gob"
+	"regexp"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
+
+// iOS APNs device tokens are 32 bytes, represented as 64 hex characters.
+var iosDeviceTokenHexPattern = regexp.MustCompile(`^[0-9a-fA-F]{64}$`)
 
 const (
 	// UserDeviceTokenPlatformIOS represents the iOS platform.
@@ -87,10 +91,29 @@ func (x *UserDeviceTokenDatabaseCreationInput) ValidateWithContext(ctx context.C
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.DeviceToken, validation.Required),
+		validation.Field(&x.DeviceToken, validation.Required, validation.By(validateDeviceTokenFormat(x.Platform))),
 		validation.Field(&x.Platform, validation.Required, validation.In(UserDeviceTokenPlatformIOS, UserDeviceTokenPlatformAndroid)),
 		validation.Field(&x.BelongsToUser, validation.Required),
 	)
+}
+
+func validateDeviceTokenFormat(platform string) validation.RuleFunc {
+	return func(value interface{}) error {
+		if s, ok := value.(string); ok {
+			switch platform {
+			case UserDeviceTokenPlatformIOS:
+				if !iosDeviceTokenHexPattern.MatchString(s) {
+					return validation.NewError("validation_device_token_format", "iOS device token must be 64 hexadecimal characters")
+				}
+			case UserDeviceTokenPlatformAndroid:
+				// FCM tokens are typically 152+ chars; minimal sanity check
+				if len(s) < 50 {
+					return validation.NewError("validation_device_token_format", "Android device token appears too short")
+				}
+			}
+		}
+		return nil
+	}
 }
 
 var _ validation.ValidatableWithContext = (*UserDeviceTokenUpdateRequestInput)(nil)

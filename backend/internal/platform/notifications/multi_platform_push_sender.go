@@ -51,9 +51,8 @@ func (s *MultiPlatformPushSender) SendPush(ctx context.Context, platform, token,
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue("platform", platform)
-
 	platform = strings.ToLower(strings.TrimSpace(platform))
+	logger := s.logger.WithValue("platform", platform)
 
 	switch platform {
 	case platformIOS:

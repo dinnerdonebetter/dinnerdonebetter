@@ -3,6 +3,7 @@ package apns
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -12,6 +13,9 @@ import (
 	"github.com/sideshow/apns2/payload"
 	"github.com/sideshow/apns2/token"
 )
+
+// apnsDeviceTokenHexPattern validates a 64-character hex string (32-byte token).
+var apnsDeviceTokenHexPattern = regexp.MustCompile(`^[0-9a-fA-F]{64}$`)
 
 const (
 	o11yName = "ios_notif_sender"
@@ -70,9 +74,14 @@ func NewSender(cfg *Config, tracerProvider tracing.TracerProvider, logger loggin
 }
 
 // Send sends a push notification to a single device token.
+// The device token must be a 64-character hex string (APNs format).
 func (s *Sender) Send(ctx context.Context, deviceToken, title, body string) error {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !apnsDeviceTokenHexPattern.MatchString(deviceToken) {
+		return fmt.Errorf("apns: invalid device token format (expected 64 hex chars, got len %d)", len(deviceToken))
+	}
 
 	logger := s.logger.WithValue("title", title)
 

@@ -5,7 +5,7 @@ metadata:
   name: dinner-done-better-job-mobile-notification-scheduler
 spec:
   concurrencyPolicy: Replace
-  schedule: "*/10 * * * *" # every 10 minutes
+  schedule: "*/2 * * * *" # every 2 minutes
   jobTemplate:
     spec:
       template:

@@ -5,8 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	domainnotifications "github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
@@ -18,6 +20,8 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 	ctx, span := a.tracer.StartSpan(ctx)
 	defer span.End()
 
+	// TODO: genericize this
+
 	var req notifications.MealPlanTaskNotificationRequest
 	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&req); err != nil {
 		return fmt.Errorf("decoding meal plan task notification request: %w", err)
@@ -26,9 +30,11 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 		return fmt.Errorf("meal plan task ID is required")
 	}
 
+	logger := a.logger.WithValue(keys.MealPlanTaskIDKey, req.MealPlanTaskID)
+
 	sent, err := a.mealPlanRepo.MealPlanTaskNotificationHasBeenSent(ctx, req.MealPlanTaskID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, a.logger, span, "checking if notification already sent")
+		return observability.PrepareAndLogError(err, logger, span, "checking if notification already sent")
 	}
 	if sent {
 		return nil // idempotent skip
@@ -36,7 +42,7 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 
 	task, err := a.mealPlanRepo.GetMealPlanTask(ctx, req.MealPlanTaskID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, a.logger, span, "fetching meal plan task")
+		return observability.PrepareAndLogError(err, logger, span, "fetching meal plan task")
 	}
 	if task == nil {
 		return fmt.Errorf("meal plan task %s not found", req.MealPlanTaskID)
@@ -44,26 +50,33 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 
 	recipientUserIDs, err := a.resolveNotificationRecipients(ctx, task)
 	if err != nil {
-		return observability.PrepareAndLogError(err, a.logger, span, "resolving notification recipients")
+		return observability.PrepareAndLogError(err, logger, span, "resolving notification recipients")
 	}
 	if len(recipientUserIDs) == 0 {
-		a.logger.WithValue("mealPlanTaskID", req.MealPlanTaskID).Info("no recipients for meal plan task notification, marking as sent")
+		logger.WithValue("mealPlanTaskID", req.MealPlanTaskID).Info("no recipients for meal plan task notification, marking as sent")
 		return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, req.MealPlanTaskID)
 	}
 
 	deviceTokens, err := a.collectDeviceTokensForUsers(ctx, recipientUserIDs)
 	if err != nil {
-		return observability.PrepareAndLogError(err, a.logger, span, "collecting device tokens")
+		return observability.PrepareAndLogError(err, logger, span, "collecting device tokens")
 	}
 	if len(deviceTokens) == 0 {
-		a.logger.WithValue("mealPlanTaskID", req.MealPlanTaskID).Info("no device tokens for recipients, marking as sent")
+		logger.Info("no device tokens for recipients, marking as sent")
 		return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, req.MealPlanTaskID)
 	}
 
 	title, body := buildNotificationContent(task)
 	for _, t := range deviceTokens {
 		if err = a.pushNotificationSender.SendPush(ctx, t.Platform, t.DeviceToken, title, body); err != nil {
-			a.logger.WithValue("platform", t.Platform).WithValue("error", err).Error("sending push notification to device", err)
+			logger.WithValue("user_device_token_id", t.ID).WithValue("error", err).Error("sending push notification to device", err)
+			if strings.Contains(err.Error(), "BadDeviceToken") {
+				if archiveErr := a.notificationsRepo.ArchiveUserDeviceToken(ctx, t.BelongsToUser, t.ID); archiveErr != nil {
+					logger.WithValue("user_device_token_id", t.ID).Error("archiving invalid device token", archiveErr)
+				} else {
+					logger.WithValue("user_device_token_id", t.ID).Info("archived invalid device token (BadDeviceToken from APNs)")
+				}
+			}
 			// Continue to other tokens; don't fail entire batch
 		}
 	}

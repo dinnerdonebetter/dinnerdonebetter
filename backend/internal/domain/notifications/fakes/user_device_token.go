@@ -6,11 +6,12 @@ import (
 )
 
 // BuildFakeUserDeviceToken builds a faked user device token.
+// iOS APNs tokens must be 64 hex chars; this uses a valid placeholder.
 func BuildFakeUserDeviceToken() *types.UserDeviceToken {
 	return &types.UserDeviceToken{
 		CreatedAt:     BuildFakeTime(),
 		ID:            BuildFakeID(),
-		DeviceToken:   buildUniqueString() + "_token",
+		DeviceToken:   "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456",
 		Platform:      types.UserDeviceTokenPlatformIOS,
 		BelongsToUser: BuildFakeID(),
 	}

@@ -59,8 +59,8 @@ variable "APNS_BUNDLE_ID" {
   default = "com.dinnerdonebetter.ios"
 }
 variable "APNS_PRODUCTION" {
-  default     = "true"
-  description = "Use APNs production environment (true) or sandbox (false)"
+  default     = "false"
+  description = "Use APNs production environment (true) or sandbox (false). Sandbox for debug/TestFlight builds; production for App Store."
 }
 
 # Admin webapp config (cookie name and domain - required for admin webapp)
