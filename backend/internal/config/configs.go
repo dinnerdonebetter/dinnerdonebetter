@@ -18,6 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	notificationscfg "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -59,6 +60,7 @@ type (
 			MealPlanGroceryListInitializerConfig |
 			MealPlanTaskCreatorConfig |
 			SearchDataIndexSchedulerConfig |
+			MobileNotificationSchedulerConfig |
 			AsyncMessageHandlerConfig |
 			AdminWebappConfig |
 			MCPServiceConfig
@@ -66,24 +68,24 @@ type (
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_ struct{} `json:"-"`
-
-		Queues                  msgconfig.QueuesConfig        `envPrefix:"QUEUES_"        json:"queues"`
-		AppleAppSiteAssociation AppleAppSiteAssociationConfig `envPrefix:"AASA_"          json:"appleAppSiteAssociation"`
-		Routing                 routingcfg.Config             `envPrefix:"ROUTING_"       json:"routing"`
-		Encoding                encoding.Config               `envPrefix:"ENCODING_"      json:"encoding"`
-		Events                  msgconfig.Config              `envPrefix:"EVENTS_"        json:"events"`
-		Observability           observability.Config          `envPrefix:"OBSERVABILITY_" json:"observability"`
-		GRPCServer              grpc.Config                   `envPrefix:"GRPC_"          json:"grpc"`
-		Meta                    MetaSettings                  `envPrefix:"META_"          json:"meta"`
-		Email                   emailcfg.Config               `envPrefix:"EMAIL_"         json:"email"`
-		Analytics               analyticscfg.Config           `envPrefix:"ANALYTICS_"     json:"analytics"`
-		TextSearch              textsearchcfg.Config          `envPrefix:"SEARCH_"        json:"search"`
-		FeatureFlags            featureflagscfg.Config        `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
-		HTTPServer              http.Config                   `envPrefix:"HTTP_"          json:"http"`
-		Auth                    authcfg.Config                `envPrefix:"AUTH_"          json:"auth"`
-		Database                databasecfg.Config            `envPrefix:"DATABASE_"      json:"database"`
-		Services                ServicesConfig                `envPrefix:"SERVICE_"       json:"services"`
+		_                       struct{}                      `json:"-"`
+		PushNotifications       notificationscfg.Config       `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
+		Queues                  msgconfig.QueuesConfig        `envPrefix:"QUEUES_"             json:"queues"`
+		AppleAppSiteAssociation AppleAppSiteAssociationConfig `envPrefix:"AASA_"               json:"appleAppSiteAssociation"`
+		Routing                 routingcfg.Config             `envPrefix:"ROUTING_"            json:"routing"`
+		Encoding                encoding.Config               `envPrefix:"ENCODING_"           json:"encoding"`
+		Events                  msgconfig.Config              `envPrefix:"EVENTS_"             json:"events"`
+		Observability           observability.Config          `envPrefix:"OBSERVABILITY_"      json:"observability"`
+		GRPCServer              grpc.Config                   `envPrefix:"GRPC_"               json:"grpc"`
+		Meta                    MetaSettings                  `envPrefix:"META_"               json:"meta"`
+		Analytics               analyticscfg.Config           `envPrefix:"ANALYTICS_"          json:"analytics"`
+		Email                   emailcfg.Config               `envPrefix:"EMAIL_"              json:"email"`
+		TextSearch              textsearchcfg.Config          `envPrefix:"SEARCH_"             json:"search"`
+		FeatureFlags            featureflagscfg.Config        `envPrefix:"FEATURE_FLAGS_"      json:"featureFlags"`
+		HTTPServer              http.Config                   `envPrefix:"HTTP_"               json:"http"`
+		Auth                    authcfg.Config                `envPrefix:"AUTH_"               json:"auth"`
+		Database                databasecfg.Config            `envPrefix:"DATABASE_"           json:"database"`
+		Services                ServicesConfig                `envPrefix:"SERVICE_"            json:"services"`
 		validateServices        bool
 	}
 
@@ -137,18 +139,29 @@ type (
 		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
 
-	// AsyncMessageHandlerConfig configures an instance of the search data index scheduler job.
-	AsyncMessageHandlerConfig struct {
-		_             struct{}               `json:"-"`
-		Storage       objectstorage.Config   `envPrefix:"STORAGE_"       json:"storage"`
+	// MobileNotificationSchedulerConfig configures an instance of the mobile notification scheduler job.
+	MobileNotificationSchedulerConfig struct {
+		_ struct{} `json:"-"`
+
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
-		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
 		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
 		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
-		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Search        textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
 		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+	}
+
+	// AsyncMessageHandlerConfig configures an instance of the search data index scheduler job.
+	AsyncMessageHandlerConfig struct {
+		_                 struct{}                `json:"-"`
+		PushNotifications notificationscfg.Config `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
+		Queues            msgconfig.QueuesConfig  `envPrefix:"QUEUES_"             json:"queues"`
+		Storage           objectstorage.Config    `envPrefix:"STORAGE_"            json:"storage"`
+		Encoding          encoding.Config         `envPrefix:"ENCODING_"           json:"encoding"`
+		Events            msgconfig.Config        `envPrefix:"EVENTS_"             json:"events"`
+		Observability     observability.Config    `envPrefix:"OBSERVABILITY_"      json:"observability"`
+		Email             emailcfg.Config         `envPrefix:"EMAIL_"              json:"email"`
+		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
+		Search            textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
+		Database          databasecfg.Config      `envPrefix:"DATABASE_"           json:"database"`
 	}
 
 	APIServiceOAuth2ConnectionConfig struct {
@@ -364,6 +377,27 @@ var _ validation.ValidatableWithContext = (*SearchDataIndexSchedulerConfig)(nil)
 
 // ValidateWithContext validates a SearchDataIndexSchedulerConfig struct.
 func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Context) error {
+	result := &multierror.Error{}
+
+	validators := map[string]func(context.Context) error{
+		"Observability": cfg.Observability.ValidateWithContext,
+		"Database":      cfg.Database.ValidateWithContext,
+		"Queues":        cfg.Queues.ValidateWithContext,
+	}
+
+	for name, validator := range validators {
+		if err := validator(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
+		}
+	}
+
+	return result.ErrorOrNil()
+}
+
+var _ validation.ValidatableWithContext = (*MobileNotificationSchedulerConfig)(nil)
+
+// ValidateWithContext validates a MobileNotificationSchedulerConfig struct.
+func (cfg *MobileNotificationSchedulerConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
 
 	validators := map[string]func(context.Context) error{

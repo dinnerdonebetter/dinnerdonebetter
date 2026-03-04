@@ -20,6 +20,7 @@ var (
 			"Observability",
 			"Database",
 			"Encoding",
+			"PushNotifications",
 		),
 	)
 )

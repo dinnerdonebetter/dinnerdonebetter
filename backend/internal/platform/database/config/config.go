@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -30,15 +31,17 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		OAuth2TokenEncryptionKey string            `env:"OAUTH2_TOKEN_ENCRYPTION_KEY" json:"oauth2TokenEncryptionKey"`
-		Provider                 string            `env:"PROVIDER"                    json:"provider"`
-		ReadConnection           ConnectionDetails `envPrefix:"READ_CONNECTION_"      json:"readConnection"`
-		WriteConnection          ConnectionDetails `envPrefix:"WRITE_CONNECTION_"     json:"writeConnection"`
-		MaxPingAttempts          uint64            `env:"MAX_PING_ATTEMPTS"           json:"maxPingAttempts"`
-		PingWaitPeriod           time.Duration     `env:"PING_WAIT_PERIOD"            json:"pingWaitPeriod"`
-		Debug                    bool              `env:"DEBUG"                       json:"debug"`
-		LogQueries               bool              `env:"LOG_QUERIES"                 json:"logQueries"`
-		RunMigrations            bool              `env:"RUN_MIGRATIONS"              json:"runMigrations"`
+		Encryption                   encryptioncfg.Config `env:"init"                             envPrefix:"ENCRYPTION_"             json:"encryption"`
+		OAuth2TokenEncryptionKey     string               `env:"OAUTH2_TOKEN_ENCRYPTION_KEY"      json:"oauth2TokenEncryptionKey"`
+		UserDeviceTokenEncryptionKey string               `env:"USER_DEVICE_TOKEN_ENCRYPTION_KEY" json:"userDeviceTokenEncryptionKey"`
+		Provider                     string               `env:"PROVIDER"                         json:"provider"`
+		ReadConnection               ConnectionDetails    `envPrefix:"READ_CONNECTION_"           json:"readConnection"`
+		WriteConnection              ConnectionDetails    `envPrefix:"WRITE_CONNECTION_"          json:"writeConnection"`
+		MaxPingAttempts              uint64               `env:"MAX_PING_ATTEMPTS"                json:"maxPingAttempts"`
+		PingWaitPeriod               time.Duration        `env:"PING_WAIT_PERIOD"                 json:"pingWaitPeriod"`
+		Debug                        bool                 `env:"DEBUG"                            json:"debug"`
+		LogQueries                   bool                 `env:"LOG_QUERIES"                      json:"logQueries"`
+		RunMigrations                bool                 `env:"RUN_MIGRATIONS"                   json:"runMigrations"`
 	}
 
 	ConnectionDetails struct {
@@ -59,8 +62,13 @@ var (
 )
 
 // GetConnectionString implements database.ClientConfig.
-func (cfg *Config) GetConnectionString() string {
+func (cfg *Config) GetReadConnectionString() string {
 	return cfg.ReadConnection.String()
+}
+
+// GetWriteConnectionString implements database.ClientConfig.
+func (cfg *Config) GetWriteConnectionString() string {
+	return cfg.WriteConnection.String()
 }
 
 // GetMaxPingAttempts implements database.ClientConfig.
@@ -185,7 +193,7 @@ func ProvideDatabase(
 
 	// Run migrations if enabled and migrator is provided
 	if cfg.RunMigrations && migrator != nil {
-		if err = migrator.Migrate(ctx, client.DB()); err != nil {
+		if err = migrator.Migrate(ctx, client.WriteDB()); err != nil {
 			return nil, fmt.Errorf("running migrations: %w", err)
 		}
 	}

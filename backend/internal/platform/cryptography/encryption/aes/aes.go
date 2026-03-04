@@ -18,8 +18,12 @@ func NewEncryptorDecryptor(tracerProvider tracing.TracerProvider, logger logging
 		return nil, encryption.ErrIncorrectKeyLength
 	}
 
+	var key32 [32]byte
+	copy(key32[:], key)
+
 	return &aesImpl{
 		logger: logging.EnsureLogger(logger).WithName("encryptor"),
 		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("encryptor")),
+		key:    key32,
 	}, nil
 }

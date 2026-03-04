@@ -10,6 +10,7 @@ import (
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/email/sendgrid"
@@ -18,6 +19,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags/posthog"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/pubsub"
+	notificationscfg "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -50,6 +52,8 @@ const (
 	prodOtelCollectorEndpoint = "otel-collector-svc.prod.svc.cluster.local:4317"
 	prodOAuth2Domain          = "https://dinnerdonebetter.com"
 	prodTokensAudience        = "https://http-api.dinnerdonebetter.com" //nolint:gosec // G101: audience URL, not a credential
+	iosTeamID                 = "K8R2Q5UWQS"
+	iosBundleID               = "com.dinnerdonebetter.ios"
 )
 
 func buildProdConfig() *config.APIServiceConfig {
@@ -124,6 +128,7 @@ func buildProdConfig() *config.APIServiceConfig {
 			DataChangesTopicName:              dataChangesTopicName,
 			OutboundEmailsTopicName:           outboundEmailsTopicName,
 			SearchIndexRequestsTopicName:      searchIndexRequestsTopicName,
+			MobileNotificationsTopicName:      mobileNotificationsTopicName,
 			UserDataAggregationTopicName:      userDataAggregationTopicName,
 			WebhookExecutionRequestsTopicName: webhookExecutionRequestsTopicName,
 		},
@@ -147,13 +152,15 @@ func buildProdConfig() *config.APIServiceConfig {
 			StartupDeadline: 60 * time.Second,
 		},
 		Database: databasecfg.Config{
-			Provider:                 databasecfg.ProviderPostgres,
-			OAuth2TokenEncryptionKey: "",
-			Debug:                    false,
-			RunMigrations:            true,
-			LogQueries:               false,
-			MaxPingAttempts:          maxAttempts,
-			PingWaitPeriod:           time.Second,
+			Provider:                     databasecfg.ProviderPostgres,
+			Encryption:                   encryptioncfg.Config{Provider: encryptioncfg.ProviderSalsa20},
+			OAuth2TokenEncryptionKey:     "",
+			UserDeviceTokenEncryptionKey: "",
+			Debug:                        false,
+			RunMigrations:                true,
+			LogQueries:                   false,
+			MaxPingAttempts:              maxAttempts,
+			PingWaitPeriod:               time.Second,
 			ReadConnection: databasecfg.ConnectionDetails{
 				Username:   "api_db_user",
 				Database:   "dinner-done-better",
@@ -267,8 +274,20 @@ func buildProdConfig() *config.APIServiceConfig {
 			},
 		},
 		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
-			BundleID: "com.dinnerdonebetter.ios",
-			TeamID:   "A96L6WFB5R",
+			BundleID: iosBundleID,
+			TeamID:   iosTeamID,
+		},
+		PushNotifications: notificationscfg.Config{
+			Provider: notificationscfg.ProviderAPNsFCM,
+			APNs: &notificationscfg.APNsConfig{
+				AuthKeyPath: "/mnt/apns/apns-auth-key.p8", // mounted from K8s secret apns-credentials
+				TeamID:      iosTeamID,
+				BundleID:    iosBundleID,
+				Production:  true,
+			},
+			FCM: &notificationscfg.FCMConfig{
+				// CredentialsPath empty: uses Application Default Credentials (GCP workload identity)
+			},
 		},
 	}
 }

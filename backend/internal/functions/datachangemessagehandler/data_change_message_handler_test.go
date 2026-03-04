@@ -7,12 +7,15 @@ import (
 	dataprivacymock "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/mock"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	internalopsmock "github.com/dinnerdonebetter/backend/internal/domain/internalops/mock"
+	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	notificationsmock "github.com/dinnerdonebetter/backend/internal/domain/notifications/mock"
 	webhooksmock "github.com/dinnerdonebetter/backend/internal/domain/webhooks/mock"
 	analyticsmock "github.com/dinnerdonebetter/backend/internal/platform/analytics/mock"
 	emailmock "github.com/dinnerdonebetter/backend/internal/platform/email/mock"
 	encodingmock "github.com/dinnerdonebetter/backend/internal/platform/encoding/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	msgqueuemock "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	mockmetrics "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/mock"
@@ -58,6 +61,9 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 	metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), mock.AnythingOfType("string"), mock.Anything).Return(noop, nil).Maybe()
 
 	internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
+	mealPlanRepo := &mealplanningmock.Repository{}
+	notificationsRepo := &notificationsmock.Repository{}
+	pushNotificationSender := &notifications.NoopPushNotificationSender{}
 
 	handler := &AsyncDataChangeMessageHandler{
 		identityRepo:                         identityRepo,
@@ -83,7 +89,11 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 		searchDataIndexPublisher:         mockPublisher,
 		outboundEmailsPublisher:          mockPublisher,
 		webhookExecutionRequestPublisher: mockPublisher,
+		mobileNotificationsPublisher:     mockPublisher,
 		dataPrivacyRepo:                  dataPrivacyRepo,
+		mealPlanRepo:                     mealPlanRepo,
+		notificationsRepo:                notificationsRepo,
+		pushNotificationSender:           pushNotificationSender,
 	}
 
 	return handler, identityRepo, webhookRepo, consumerProvider, publisherProvider, analyticsEventReporter, emailer, uploadManager, metricsProvider, decoder, dataPrivacyRepo
@@ -103,6 +113,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 				OutboundEmailsTopicName:           "outbound-emails",
 				SearchIndexRequestsTopicName:      "search-index-requests",
 				WebhookExecutionRequestsTopicName: "webhook-execution-requests",
+				MobileNotificationsTopicName:      "mobile-notifications",
 			},
 		}
 		identityRepo := &identitymock.RepositoryMock{}
@@ -132,8 +143,12 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "outbound-emails").Return(mockPublisher, nil)
 		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "search-index-requests").Return(mockPublisher, nil)
 		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "webhook-execution-requests").Return(mockPublisher, nil)
+		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "mobile-notifications").Return(mockPublisher, nil)
 
 		internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
+		mealPlanRepo := &mealplanningmock.Repository{}
+		notificationsRepo := &notificationsmock.Repository{}
+		pushNotificationSender := &notifications.NoopPushNotificationSender{}
 
 		handler, err := NewAsyncDataChangeMessageHandler(
 			ctx,
@@ -153,6 +168,9 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 			decoder,
 			coreDataIndexer,
 			eatingDataIndexer,
+			mealPlanRepo,
+			notificationsRepo,
+			pushNotificationSender,
 		)
 
 		assert.NoError(t, err)

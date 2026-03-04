@@ -37,6 +37,10 @@ images:
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-search-data-index-scheduler
     newTag: latest
 
+  - name: dinner-done-better-job-mobile-notification-scheduler
+    newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-mobile-notification-scheduler
+    newTag: latest
+
   - name: dinner-done-better-async-message-handler
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-async-message-handler
     newTag: latest
@@ -103,6 +107,16 @@ patches:
       version: v1
       kind: Deployment
       name: dinner-done-better-async-message-handler-deployment
+  - path: patches/deployment-push-notifications-env.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-async-message-handler-deployment
+  - path: patches/deployment-apns-volume.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-async-message-handler-deployment
   - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -113,6 +127,11 @@ patches:
       version: v1
       kind: Deployment
       name: dinner-done-better-async-message-handler-deployment
+
+  ### CronJobs - workload identity (api-service-account) for GCP Pub/Sub, Secret Manager
+  - path: patches/cronjob-secrets-csi-volume.yaml
+    target:
+      kind: CronJob
 
   ### DB Cleaner CronJob - needs database only
   - path: patches/cronjob-database-env.yaml
@@ -167,6 +186,16 @@ patches:
     target:
       kind: CronJob
       name: dinner-done-better-job-search-data-index-scheduler
+
+  ### Mobile Notification Scheduler CronJob - needs database, pubsub
+  - path: patches/cronjob-database-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-mobile-notification-scheduler
+  - path: patches/cronjob-pubsub-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-mobile-notification-scheduler
 
   ### Admin Webapp - needs cookie and API service config
   - patch: |-
@@ -327,6 +356,11 @@ configMapGenerator:
     namespace: prod
     files:
       - config.json=./configs/job_search_data_index_scheduler_config.json
+
+  - name: dinner-done-better-job-mobile-notification-scheduler-config
+    namespace: prod
+    files:
+      - config.json=./configs/job_mobile_notification_scheduler_config.json
 
   - name: dinner-done-better-admin-webapp-config
     namespace: prod

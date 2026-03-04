@@ -156,7 +156,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	v := sessions.ProvideContextDataFetcherFromContext()
 	issuereportsRepository := issue_reports.ProvideIssueReportsRepository(logger, tracerProvider, repository, client)
 	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
-	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
+	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, databasecfgConfig, client)
 	notificationsDataManager, err := manager3.NewNotificationsDataManager(ctx, tracerProvider, logger, notificationsRepository, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err

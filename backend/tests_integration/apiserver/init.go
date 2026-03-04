@@ -102,7 +102,7 @@ func init() {
 	// create premade admin user
 	auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, databaseClient)
 	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, databaseClient)
-	notifsRepo = notificationsrepo.ProvideNotificationsRepository(nil, nil, auditLogRepo, databaseClient)
+	notifsRepo = notificationsrepo.ProvideNotificationsRepository(nil, nil, auditLogRepo, dbCfg, databaseClient)
 	adminUser, err := localdev.CreatePremadeAdminUser(ctx, logger, tracerProvider, identityRepo, databaseClient, premadeAdminUser)
 	if err != nil {
 		log.Fatal(err)

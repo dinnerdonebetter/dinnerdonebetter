@@ -157,6 +157,9 @@ type Querier interface {
 	GetMealPlanRecipeOptionSelectionsForMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanRecipeOptionSelectionsForMealPlanParams) ([]*GetMealPlanRecipeOptionSelectionsForMealPlanRow, error)
 	GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanRecipeOptionSelectionsForMealPlanOptionParams) ([]*GetMealPlanRecipeOptionSelectionsForMealPlanOptionRow, error)
 	GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskRow, error)
+	GetMealPlanTaskAccountID(ctx context.Context, db DBTX, mealPlanTaskID string) (string, error)
+	GetMealPlanTaskIDsThatNeedNotification(ctx context.Context, db DBTX) ([]string, error)
+	GetMealPlanTaskNotificationContext(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskNotificationContextRow, error)
 	GetMealPlansForAccount(ctx context.Context, db DBTX, arg *GetMealPlansForAccountParams) ([]*GetMealPlansForAccountRow, error)
 	GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error)
 	GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error)
@@ -266,7 +269,9 @@ type Querier interface {
 	ListIncompleteMealPlanTasksByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTasksByMealPlanOptionRow, error)
 	MarkMealPlanAsGroceryListInitialized(ctx context.Context, db DBTX, id string) error
 	MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error
+	MarkMealPlanTaskNotificationSent(ctx context.Context, db DBTX, id string) error
 	MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX, arg *MealPlanEventIsEligibleForVotingParams) (bool, error)
+	MealPlanTaskNotificationHasBeenSent(ctx context.Context, db DBTX, mealPlanTaskID string) (interface{}, error)
 	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)
 	SearchForMealEligibleRecipes(ctx context.Context, db DBTX, arg *SearchForMealEligibleRecipesParams) ([]*SearchForMealEligibleRecipesRow, error)
 	SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error)

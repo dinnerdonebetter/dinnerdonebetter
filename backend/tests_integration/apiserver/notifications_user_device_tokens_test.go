@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
@@ -13,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createUserDeviceTokenForTest(t *testing.T, forUser string) *notifications.UserDeviceToken {
+func createUserDeviceTokenForTest(t *testing.T, forUser string, deviceTokenOverride ...string) *notifications.UserDeviceToken {
 	t.Helper()
 
 	ctx := t.Context()
@@ -21,6 +22,9 @@ func createUserDeviceTokenForTest(t *testing.T, forUser string) *notifications.U
 	creationInput := fakes.BuildFakeUserDeviceToken()
 	input := converters.ConvertUserDeviceTokenToUserDeviceTokenDatabaseCreationInput(creationInput)
 	input.BelongsToUser = forUser
+	if len(deviceTokenOverride) > 0 {
+		input.DeviceToken = deviceTokenOverride[0]
+	}
 
 	created, err := notifsRepo.CreateUserDeviceToken(ctx, input)
 	require.NoError(t, err)
@@ -95,8 +99,11 @@ func TestUserDeviceTokens_Listing(T *testing.T) {
 
 	u, testClient := createUserAndClientForTest(T)
 	createdTokens := []*notifications.UserDeviceToken{}
-	for range exampleQuantity {
-		created := createUserDeviceTokenForTest(T, u.ID)
+	for i := range exampleQuantity {
+		// Use unique device token per creation; CreateUserDeviceToken upserts on (user, token), so
+		// duplicate tokens would result in a single DB row.
+		uniqueToken := fmt.Sprintf("a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef%06x", i)
+		created := createUserDeviceTokenForTest(T, u.ID, uniqueToken)
 		createdTokens = append(createdTokens, created)
 	}
 

@@ -47,7 +47,6 @@ type (
 	}
 
 	Client interface {
-		DB() *sql.DB
 		WriteDB() *sql.DB
 		ReadDB() *sql.DB
 		Close() error

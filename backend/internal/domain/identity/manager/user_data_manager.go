@@ -116,12 +116,20 @@ func (m *manager) AcceptAccountInvitation(ctx context.Context, accountID, accoun
 		identitykeys.AccountInvitationIDKey: accountInvitationID,
 	}, span, m.logger)
 
-	if err := m.identityRepo.AcceptAccountInvitation(ctx, accountID, accountInvitationID, input.Token, input.Note); err != nil {
+	invitation, err := m.identityRepo.GetAccountInvitationByTokenAndID(ctx, input.Token, accountInvitationID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return observability.PrepareError(err, span, "account invitation not found")
+	} else if err != nil {
+		return observability.PrepareError(err, span, "retrieving invitation")
+	}
+
+	if err = m.identityRepo.AcceptAccountInvitation(ctx, accountID, accountInvitationID, input.Token, input.Note); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCanceledServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationAcceptedServiceEventType, map[string]any{
 		identitykeys.AccountInvitationIDKey: accountInvitationID,
+		"destination_account":               invitation.DestinationAccount.ID,
 	}))
 
 	return nil

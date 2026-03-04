@@ -82,6 +82,17 @@ profiles:
             main: ./cmd/workers/search_data_index_scheduler
             fromImage: golang:1.26-trixie
 
+        - image: dinner-done-better-job-mobile-notification-scheduler
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/workers/mobile_notification_scheduler
+            fromImage: golang:1.26-trixie
+
         - image: dinner-done-better-admin-webapp
           ko:
             dir: .
@@ -194,6 +205,17 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/search_data_index_scheduler
+            fromImage: golang:1.26-trixie
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-mobile-notification-scheduler
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/workers/mobile_notification_scheduler
             fromImage: golang:1.26-trixie
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-async-message-handler

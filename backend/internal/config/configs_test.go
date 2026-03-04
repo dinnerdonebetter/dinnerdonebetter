@@ -206,6 +206,7 @@ func TestAPIServiceConfig_ValidateWithContext(T *testing.T) {
 				SearchIndexRequestsTopicName:      "search-index-requests",
 				UserDataAggregationTopicName:      "user-data-aggregation",
 				WebhookExecutionRequestsTopicName: "webhook-execution-requests",
+				MobileNotificationsTopicName:      "mobile-notifications",
 			},
 			Database: databasecfg.Config{
 				Debug: true,

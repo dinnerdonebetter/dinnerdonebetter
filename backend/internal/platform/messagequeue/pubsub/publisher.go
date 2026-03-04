@@ -14,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"cloud.google.com/go/pubsub/v2"
-	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 )
 
 type (
@@ -99,12 +98,9 @@ func (p *publisherProvider) ProvidePublisher(ctx context.Context, topicName stri
 		return cachedPub, nil
 	}
 
-	topic, err := p.pubsubClient.TopicAdminClient.GetTopic(ctx, &pubsubpb.GetTopicRequest{Topic: qualifiedName})
-	if err != nil {
-		return nil, fmt.Errorf("error getting topic admin client: %w", err)
-	}
-
-	publisher := p.pubsubClient.Publisher(topic.GetName())
+	// Use Publisher directly with the qualified topic name. This avoids needing
+	// pubsub.topics.get (TopicAdminClient.GetTopic); pubsub.topics.publish is sufficient.
+	publisher := p.pubsubClient.Publisher(qualifiedName)
 
 	pub := buildPubSubPublisher(logger, publisher, p.tracerProvider, qualifiedName)
 	p.publisherCache[qualifiedName] = pub

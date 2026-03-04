@@ -118,8 +118,9 @@ func BuildDatabaseContainer(ctx context.Context, dbName string) (*postgres.Postg
 	}
 
 	dbConfig := &databasecfg.Config{
-		RunMigrations:            false,
-		OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
+		RunMigrations:                false,
+		OAuth2TokenEncryptionKey:     "blahblahblahblahblahblahblahblah",
+		UserDeviceTokenEncryptionKey: "blahblahblahblahblahblahblahblah",
 	}
 	if err = dbConfig.LoadConnectionDetailsFromURL(connStr); err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to connect to postgres container: %w", err)

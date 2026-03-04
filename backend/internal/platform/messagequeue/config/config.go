@@ -59,6 +59,7 @@ type (
 		DataChangesTopicName              string `env:"DATA_CHANGES_TOPIC_NAME"               json:"dataChangesTopicName"`
 		OutboundEmailsTopicName           string `env:"OUTBOUND_EMAILS_TOPIC_NAME"            json:"outboundEmailsTopicName"`
 		SearchIndexRequestsTopicName      string `env:"SEARCH_INDEX_REQUESTS_TOPIC_NAME"      json:"searchIndexRequestsTopicName"`
+		MobileNotificationsTopicName      string `env:"MOBILE_NOTIFICATIONS_TOPIC_NAME"       json:"mobileNotificationsTopicName"`
 		UserDataAggregationTopicName      string `env:"USER_DATA_AGGREGATION_TOPIC_NAME"      json:"userDataAggregationTopicName"`
 		WebhookExecutionRequestsTopicName string `env:"WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME" json:"webhookExecutionRequestsTopicName"`
 	}
@@ -72,6 +73,7 @@ func (c *QueuesConfig) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&c.DataChangesTopicName, validation.Required),
 		validation.Field(&c.OutboundEmailsTopicName, validation.Required),
 		validation.Field(&c.SearchIndexRequestsTopicName, validation.Required),
+		validation.Field(&c.MobileNotificationsTopicName, validation.Required),
 		validation.Field(&c.UserDataAggregationTopicName, validation.Required),
 		validation.Field(&c.WebhookExecutionRequestsTopicName, validation.Required),
 	)

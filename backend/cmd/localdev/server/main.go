@@ -187,7 +187,7 @@ func main() {
 					isMember, memberErr := repo.UserIsMemberOfAccount(ctx, existingUser.ID, adminAccountID)
 					if memberErr == nil && !isMember {
 						membershipID := identifiers.New()
-						if err = generatedQuerier.AddUserToAccount(ctx, dbClient.DB(), &identitygenerated.AddUserToAccountParams{
+						if err = generatedQuerier.AddUserToAccount(ctx, dbClient.WriteDB(), &identitygenerated.AddUserToAccountParams{
 							ID:               membershipID,
 							BelongsToUser:    existingUser.ID,
 							BelongsToAccount: adminAccountID,
@@ -230,7 +230,7 @@ func main() {
 
 				// Add user to admin account as a member
 				membershipID := identifiers.New()
-				if err = generatedQuerier.AddUserToAccount(ctx, dbClient.DB(), &identitygenerated.AddUserToAccountParams{
+				if err = generatedQuerier.AddUserToAccount(ctx, dbClient.WriteDB(), &identitygenerated.AddUserToAccountParams{
 					ID:               membershipID,
 					BelongsToUser:    user.ID,
 					BelongsToAccount: adminAccountID,
@@ -239,7 +239,7 @@ func main() {
 					return fmt.Errorf("failed to add user %s to account: %w", memberUser.username, err)
 				}
 
-				if err = generatedQuerier.MarkAccountUserMembershipAsUserDefault(ctx, dbClient.DB(), &identitygenerated.MarkAccountUserMembershipAsUserDefaultParams{
+				if err = generatedQuerier.MarkAccountUserMembershipAsUserDefault(ctx, dbClient.WriteDB(), &identitygenerated.MarkAccountUserMembershipAsUserDefaultParams{
 					BelongsToUser:    user.ID,
 					BelongsToAccount: adminAccountID,
 				}); err != nil {

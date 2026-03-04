@@ -490,7 +490,7 @@ func TestAuth_RequestingPasswordReset(T *testing.T) {
 
 		// boo, hiss, we're talking directly to the database in an _integration test?_ for shame, for shame.
 		var token string
-		queryErr := databaseClient.DB().QueryRow(`SELECT token FROM password_reset_tokens WHERE belongs_to_user = $1`, user.ID).Scan(&token)
+		queryErr := databaseClient.ReadDB().QueryRow(`SELECT token FROM password_reset_tokens WHERE belongs_to_user = $1`, user.ID).Scan(&token)
 		require.NoError(t, queryErr)
 
 		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), databaseClient)

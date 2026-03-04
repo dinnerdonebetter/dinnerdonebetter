@@ -25,13 +25,13 @@ const (
 
 type Waitlist struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	Id            string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
-	Name          string                 `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
-	ValidUntil    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=valid_until,json=validUntil,proto3" json:"valid_until,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"      protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"last_updated_at,omitempty" protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	ArchivedAt    *timestamppb.Timestamp `json:"archived_at,omitempty"     protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
+	Id            string                 `json:"id,omitempty"              protobuf:"bytes,4,opt,name=id,proto3"`
+	Name          string                 `json:"name,omitempty"            protobuf:"bytes,5,opt,name=name,proto3"`
+	Description   string                 `json:"description,omitempty"     protobuf:"bytes,6,opt,name=description,proto3"`
+	ValidUntil    *timestamppb.Timestamp `json:"valid_until,omitempty"     protobuf:"bytes,7,opt,name=valid_until,json=validUntil,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -117,14 +117,14 @@ func (x *Waitlist) GetValidUntil() *timestamppb.Timestamp {
 
 type WaitlistSignup struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	ArchivedAt        *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	Id                string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
-	Notes             string                 `protobuf:"bytes,5,opt,name=notes,proto3" json:"notes,omitempty"`
-	BelongsToWaitlist string                 `protobuf:"bytes,6,opt,name=belongs_to_waitlist,json=belongsToWaitlist,proto3" json:"belongs_to_waitlist,omitempty"`
-	BelongsToUser     string                 `protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
-	BelongsToAccount  string                 `protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
+	CreatedAt         *timestamppb.Timestamp `json:"created_at,omitempty"          protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt     *timestamppb.Timestamp `json:"last_updated_at,omitempty"     protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	ArchivedAt        *timestamppb.Timestamp `json:"archived_at,omitempty"         protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
+	Id                string                 `json:"id,omitempty"                  protobuf:"bytes,4,opt,name=id,proto3"`
+	Notes             string                 `json:"notes,omitempty"               protobuf:"bytes,5,opt,name=notes,proto3"`
+	BelongsToWaitlist string                 `json:"belongs_to_waitlist,omitempty" protobuf:"bytes,6,opt,name=belongs_to_waitlist,json=belongsToWaitlist,proto3"`
+	BelongsToUser     string                 `json:"belongs_to_user,omitempty"     protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3"`
+	BelongsToAccount  string                 `json:"belongs_to_account,omitempty"  protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }

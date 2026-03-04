@@ -1051,6 +1051,38 @@ func (m *Repository) ChangeMealPlanTaskStatus(ctx context.Context, input *mealpl
 	return m.Called(ctx, input).Error(0)
 }
 
+// MealPlanTaskNotificationHasBeenSent is a mock function.
+func (m *Repository) MealPlanTaskNotificationHasBeenSent(ctx context.Context, mealPlanTaskID string) (bool, error) {
+	returnValues := m.Called(ctx, mealPlanTaskID)
+	return returnValues.Bool(0), returnValues.Error(1)
+}
+
+// MarkMealPlanTaskNotificationSent is a mock function.
+func (m *Repository) MarkMealPlanTaskNotificationSent(ctx context.Context, mealPlanTaskID string) error {
+	return m.Called(ctx, mealPlanTaskID).Error(0)
+}
+
+// GetMealPlanTaskIDsThatNeedNotification is a mock function.
+func (m *Repository) GetMealPlanTaskIDsThatNeedNotification(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}
+
+// GetMealPlanTaskAccountID is a mock function.
+func (m *Repository) GetMealPlanTaskAccountID(ctx context.Context, mealPlanTaskID string) (string, error) {
+	returnValues := m.Called(ctx, mealPlanTaskID)
+	return returnValues.String(0), returnValues.Error(1)
+}
+
+// GetMealPlanTaskNotificationContext is a mock function.
+func (m *Repository) GetMealPlanTaskNotificationContext(ctx context.Context, mealPlanTaskID string) (*mealplanning.MealPlanTaskNotificationContext, error) {
+	returnValues := m.Called(ctx, mealPlanTaskID)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*mealplanning.MealPlanTaskNotificationContext), returnValues.Error(1)
+}
+
 // RecipePrepTaskExists implements the requisite interface.
 func (m *Repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error) {
 	returnValues := m.Called(ctx, recipeID, recipePrepTaskID)

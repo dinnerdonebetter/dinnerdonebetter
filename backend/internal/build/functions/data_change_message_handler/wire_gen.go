@@ -20,6 +20,7 @@ import (
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	config2 "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -65,7 +66,8 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
 	issuereportsRepository := issue_reports.ProvideIssueReportsRepository(logger, tracerProvider, repository, client)
 	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
-	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
+	config3 := &cfg.Database
+	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, config3, client)
 	queuesConfig := &cfg.Queues
 	msgconfigConfig := &cfg.Events
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
@@ -158,7 +160,12 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	mealPlanningDataIndexer := indexing2.NewMealPlanningDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
-	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(ctx, logger, tracerProvider, cfg, identityRepository, dataprivacyRepository, webhooksRepository, internalOpsDataManager, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer)
+	configConfig := cfg.PushNotifications
+	pushNotificationSender, err := config2.ProvidePushSender(ctx, configConfig, logger, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(ctx, logger, tracerProvider, cfg, identityRepository, dataprivacyRepository, webhooksRepository, internalOpsDataManager, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer, mealplanningRepository, notificationsDataManager, pushNotificationSender)
 	if err != nil {
 		return nil, err
 	}

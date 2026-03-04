@@ -37,7 +37,7 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 	_, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	db, err := otelsql.Open("pgx", cfg.GetConnectionString(), otelsql.WithAttributes(
+	db, err := otelsql.Open("pgx", cfg.GetReadConnectionString(), otelsql.WithAttributes(
 		attribute.KeyValue{
 			Key:   semconv.ServiceNameKey,
 			Value: attribute.StringValue("database"),
@@ -60,11 +60,6 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 	}
 
 	return c, nil
-}
-
-// DB provides the database object.
-func (q *Client) DB() *sql.DB {
-	return q.db
 }
 
 // ReadDB provides the database object.
@@ -92,7 +87,7 @@ func (q *Client) IsReady(ctx context.Context) bool {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("connection_url", q.config.GetConnectionString())
+	logger := q.logger.WithValue("connection_url", q.config.GetReadConnectionString())
 
 	attemptCount := 0
 	for {

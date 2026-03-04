@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
@@ -69,10 +70,14 @@ func (q *repository) GetMealPlanTask(ctx context.Context, mealPlanTaskID string)
 	}
 
 	mealPlanTask := &types.MealPlanTask{
-		RecipePrepTask:      types.RecipePrepTask{},
+		RecipePrepTask: types.RecipePrepTask{
+			ID:   result.PrepTaskID,
+			Name: result.PrepTaskName,
+		},
 		CreatedAt:           result.CreatedAt,
 		LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 		CompletedAt:         database.TimePointerFromNullTime(result.CompletedAt),
+		NotificationSentAt:  database.TimePointerFromNullTime(result.NotificationSentAt),
 		AssignedToUser:      database.StringPointerFromNullString(result.AssignedToUser),
 		ID:                  result.ID,
 		Status:              string(result.Status),
@@ -210,6 +215,7 @@ func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID
 				CreatedAt:           result.CreatedAt,
 				LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 				CompletedAt:         database.TimePointerFromNullTime(result.CompletedAt),
+				NotificationSentAt:  database.TimePointerFromNullTime(result.NotificationSentAt),
 				AssignedToUser:      database.StringPointerFromNullString(result.AssignedToUser),
 				ID:                  result.ID,
 				Status:              string(result.Status),
@@ -409,4 +415,93 @@ func (q *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.
 	logger.Info("meal plan task status changed")
 
 	return nil
+}
+
+// MealPlanTaskNotificationHasBeenSent checks if a push notification has already been sent for a meal plan task.
+func (q *repository) MealPlanTaskNotificationHasBeenSent(ctx context.Context, mealPlanTaskID string) (bool, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanTaskID == "" {
+		return false, database.ErrInvalidIDProvided
+	}
+
+	result, err := q.generatedQuerier.MealPlanTaskNotificationHasBeenSent(ctx, q.readDB, mealPlanTaskID)
+	if err != nil {
+		return false, observability.PrepareAndLogError(err, q.logger.Clone(), span, "checking meal plan task notification status")
+	}
+
+	sent, ok := result.(bool)
+	if !ok {
+		return false, fmt.Errorf("unexpected type from MealPlanTaskNotificationHasBeenSent: %T", result)
+	}
+	return sent, nil
+}
+
+// MarkMealPlanTaskNotificationSent records that a push notification was sent for a meal plan task.
+func (q *repository) MarkMealPlanTaskNotificationSent(ctx context.Context, mealPlanTaskID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanTaskID == "" {
+		return database.ErrInvalidIDProvided
+	}
+
+	if err := q.generatedQuerier.MarkMealPlanTaskNotificationSent(ctx, q.writeDB, mealPlanTaskID); err != nil {
+		return observability.PrepareAndLogError(err, q.logger.Clone(), span, "marking meal plan task notification sent")
+	}
+
+	return nil
+}
+
+// GetMealPlanTaskIDsThatNeedNotification returns meal plan task IDs that need a push notification sent.
+func (q *repository) GetMealPlanTaskIDsThatNeedNotification(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	results, err := q.generatedQuerier.GetMealPlanTaskIDsThatNeedNotification(ctx, q.readDB)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, q.logger.Clone(), span, "getting meal plan task IDs that need notification")
+	}
+
+	return results, nil
+}
+
+// GetMealPlanTaskAccountID returns the account ID (household) for a meal plan task.
+func (q *repository) GetMealPlanTaskAccountID(ctx context.Context, mealPlanTaskID string) (string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanTaskID == "" {
+		return "", database.ErrInvalidIDProvided
+	}
+
+	accountID, err := q.generatedQuerier.GetMealPlanTaskAccountID(ctx, q.readDB, mealPlanTaskID)
+	if err != nil {
+		return "", observability.PrepareAndLogError(err, q.logger.Clone(), span, "getting meal plan task account ID")
+	}
+
+	return accountID, nil
+}
+
+// GetMealPlanTaskNotificationContext returns context for building a meal plan task notification.
+func (q *repository) GetMealPlanTaskNotificationContext(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTaskNotificationContext, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanTaskID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
+
+	row, err := q.generatedQuerier.GetMealPlanTaskNotificationContext(ctx, q.readDB, mealPlanTaskID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, q.logger.Clone(), span, "getting meal plan task notification context")
+	}
+
+	return &types.MealPlanTaskNotificationContext{
+		PrepTaskName:        row.PrepTaskName,
+		CreationExplanation: row.CreationExplanation,
+		MealName:            string(row.MealName),
+		StartsAt:            row.StartsAt,
+	}, nil
 }

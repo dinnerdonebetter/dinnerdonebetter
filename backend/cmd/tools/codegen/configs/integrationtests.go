@@ -8,11 +8,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
+	notificationscfg "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -59,6 +61,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			DataChangesTopicName:              dataChangesTopicName,
 			OutboundEmailsTopicName:           outboundEmailsTopicName,
 			SearchIndexRequestsTopicName:      searchIndexRequestsTopicName,
+			MobileNotificationsTopicName:      mobileNotificationsTopicName,
 			UserDataAggregationTopicName:      userDataAggregationTopicName,
 			WebhookExecutionRequestsTopicName: webhookExecutionRequestsTopicName,
 		},
@@ -88,15 +91,17 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			Port: defaultGRPCPort,
 		},
 		Database: databasecfg.Config{
-			Provider:                 databasecfg.ProviderPostgres,
-			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
-			Debug:                    true,
-			RunMigrations:            true,
-			LogQueries:               true,
-			MaxPingAttempts:          maxAttempts,
-			PingWaitPeriod:           1500 * time.Millisecond,
-			ReadConnection:           localdevPostgresDBConnectionDetails,
-			WriteConnection:          localdevPostgresDBConnectionDetails,
+			Provider:                     databasecfg.ProviderPostgres,
+			Encryption:                   encryptioncfg.Config{Provider: encryptioncfg.ProviderSalsa20},
+			OAuth2TokenEncryptionKey:     localOAuth2TokenEncryptionKey,
+			UserDeviceTokenEncryptionKey: localOAuth2TokenEncryptionKey,
+			Debug:                        true,
+			RunMigrations:                true,
+			LogQueries:                   true,
+			MaxPingAttempts:              maxAttempts,
+			PingWaitPeriod:               1500 * time.Millisecond,
+			ReadConnection:               localdevPostgresDBConnectionDetails,
+			WriteConnection:              localdevPostgresDBConnectionDetails,
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{
@@ -177,6 +182,9 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
 			TeamID:   "",
 			BundleID: "",
+		},
+		PushNotifications: notificationscfg.Config{
+			Provider: notificationscfg.ProviderNoop,
 		},
 	}
 }

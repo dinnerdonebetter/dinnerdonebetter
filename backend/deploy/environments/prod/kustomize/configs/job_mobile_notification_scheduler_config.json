@@ -1,0 +1,99 @@
+{
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"mobileNotificationsTopicName": "mobile_notifications",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
+	"events": {
+		"consumers": {
+			"provider": "pubsub",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": "dinner-done-better-prod"
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": null
+			}
+		},
+		"publishers": {
+			"provider": "pubsub",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": "dinner-done-better-prod"
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": null
+			}
+		}
+	},
+	"observability": {
+		"logging": {
+			"serviceName": "mobile_notification_scheduler",
+			"level": "info",
+			"otelslog": {
+				"endpointURL": "otel-collector-svc.prod.svc.cluster.local:4317",
+				"insecure": true,
+				"timeout": 2000000000
+			},
+			"provider": "otelslog"
+		},
+		"metrics": {
+			"otelgrpc": {
+				"metricsCollectorEndpoint": "otel-collector-svc.prod.svc.cluster.local:4317",
+				"collectionInterval": 30000000000,
+				"insecure": true,
+				"enableRuntimeMetrics": true,
+				"enableHostMetrics": true
+			},
+			"serviceName": "mobile_notification_scheduler",
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "otel-collector-svc.prod.svc.cluster.local:4317",
+				"insecure": true
+			},
+			"service_name": "mobile_notification_scheduler",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 0.1
+		}
+	},
+	"database": {
+		"encryption": {
+			"provider": "salsa20"
+		},
+		"oauth2TokenEncryptionKey": "",
+		"userDeviceTokenEncryptionKey": "",
+		"provider": "postgres",
+		"readConnection": {
+			"username": "api_db_user",
+			"password": "",
+			"database": "dinner-done-better",
+			"hostname": "",
+			"port": 5432,
+			"disableSSL": false
+		},
+		"writeConnection": {
+			"username": "api_db_user",
+			"password": "",
+			"database": "dinner-done-better",
+			"hostname": "",
+			"port": 5432,
+			"disableSSL": false
+		},
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000,
+		"debug": false,
+		"logQueries": false,
+		"runMigrations": true
+	}
+}

@@ -25,6 +25,29 @@ resource "kubernetes_namespace" "prod" {
 
 # Kubernetes secrets
 
+# APNs .p8 key mounted as file for push notifications (async message handler)
+resource "kubernetes_secret" "apns_credentials" {
+  metadata {
+    name      = "apns-credentials"
+    namespace = local.k8s_namespace
+
+    annotations = {
+      (local.managed_by_label) = "terraform"
+    }
+
+    labels = {
+      (local.managed_by_label) = "terraform"
+    }
+  }
+
+  depends_on = [kubernetes_namespace.prod]
+
+  data = {
+    # Key becomes filename when mounted; value is p8 content (Terraform base64-encodes automatically)
+    "apns-auth-key.p8" = var.APNS_AUTH_KEY_P8
+  }
+}
+
 resource "kubernetes_secret" "cloudflare_api_key" {
   metadata {
     name      = "cloudflare-api-key"
@@ -66,6 +89,7 @@ resource "kubernetes_config_map_v1" "pubsub_topics" {
     data_changes               = google_pubsub_topic.data_changes_topic.id
     outbound_emails            = google_pubsub_topic.outbound_emails_topic.id
     search_index_requests      = google_pubsub_topic.search_index_requests_topic.id
+    mobile_notifications       = google_pubsub_topic.mobile_notifications_topic.id
     user_data_aggregator       = google_pubsub_topic.user_data_aggregator_topic.id
     webhook_execution_requests = google_pubsub_topic.webhook_execution_requests_topic.id
   }
@@ -88,19 +112,25 @@ resource "kubernetes_secret" "api_service_config" {
   depends_on = [kubernetes_namespace.prod]
 
   data = {
-    OAUTH2_TOKEN_ENCRYPTION_KEY     = random_string.oauth2_token_encryption_key.result
-    JWT_SIGNING_KEY                 = base64encode(random_string.jwt_signing_key.result)
-    DATABASE_HOST                   = google_sql_database_instance.prod.private_ip_address
-    DATABASE_USERNAME               = local.api_database_username
-    DATABASE_PASSWORD               = random_password.api_user_database_password.result
-    SENDGRID_API_TOKEN              = var.SENDGRID_API_KEY
-    SEGMENT_API_TOKEN               = var.SEGMENT_API_TOKEN
-    POSTHOG_API_KEY                 = var.POSTHOG_API_KEY
-    POSTHOG_PERSONAL_API_KEY        = var.POSTHOG_PERSONAL_API_KEY
-    ALGOLIA_APPLICATION_ID          = var.ALGOLIA_APPLICATION_ID
-    ALGOLIA_API_KEY                 = var.ALGOLIA_API_KEY
-    GOOGLE_SSO_OAUTH2_CLIENT_ID     = var.GOOGLE_SSO_OAUTH2_CLIENT_ID
-    GOOGLE_SSO_OAUTH2_CLIENT_SECRET = var.GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+    OAUTH2_TOKEN_ENCRYPTION_KEY        = random_string.oauth2_token_encryption_key.result
+    USER_DEVICE_TOKEN_ENCRYPTION_KEY   = random_string.user_device_token_encryption_key.result
+    JWT_SIGNING_KEY                    = base64encode(random_string.jwt_signing_key.result)
+    DATABASE_HOST                      = google_sql_database_instance.prod.private_ip_address
+    DATABASE_USERNAME                  = local.api_database_username
+    DATABASE_PASSWORD                  = random_password.api_user_database_password.result
+    SENDGRID_API_TOKEN                 = var.SENDGRID_API_KEY
+    SEGMENT_API_TOKEN                  = var.SEGMENT_API_TOKEN
+    POSTHOG_API_KEY                    = var.POSTHOG_API_KEY
+    POSTHOG_PERSONAL_API_KEY           = var.POSTHOG_PERSONAL_API_KEY
+    ALGOLIA_APPLICATION_ID             = var.ALGOLIA_APPLICATION_ID
+    ALGOLIA_API_KEY                    = var.ALGOLIA_API_KEY
+    GOOGLE_SSO_OAUTH2_CLIENT_ID        = var.GOOGLE_SSO_OAUTH2_CLIENT_ID
+    GOOGLE_SSO_OAUTH2_CLIENT_SECRET    = var.GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+    PUSH_NOTIFICATIONS_PROVIDER        = "apns_fcm"
+    PUSH_NOTIFICATIONS_APNS_KEY_ID     = var.APNS_KEY_ID
+    PUSH_NOTIFICATIONS_APNS_TEAM_ID    = var.APNS_TEAM_ID
+    PUSH_NOTIFICATIONS_APNS_BUNDLE_ID  = var.APNS_BUNDLE_ID
+    PUSH_NOTIFICATIONS_APNS_PRODUCTION = var.APNS_PRODUCTION
   }
 }
 

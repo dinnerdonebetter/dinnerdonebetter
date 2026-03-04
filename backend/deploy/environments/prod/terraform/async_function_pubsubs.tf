@@ -79,6 +79,33 @@ resource "google_pubsub_subscription" "search_index_requests_topic" {
   enable_exactly_once_delivery = true
 }
 
+resource "google_pubsub_topic" "mobile_notifications_topic" {
+  name = "mobile_notifications"
+}
+
+resource "google_pubsub_topic" "mobile_notifications_deadletter_topic" {
+  name = "mobile_notifications_deadletter"
+}
+
+resource "google_pubsub_subscription" "mobile_notifications_topic" {
+  name  = google_pubsub_topic.mobile_notifications_topic.name
+  topic = google_pubsub_topic.mobile_notifications_topic.id
+
+  message_retention_duration = "604800s" # 7 days
+  retain_acked_messages      = false
+  dead_letter_policy {
+    dead_letter_topic     = google_pubsub_topic.mobile_notifications_deadletter_topic.id
+    max_delivery_attempts = 5
+  }
+
+  retry_policy {
+    minimum_backoff = "10s"
+    maximum_backoff = "600s"
+  }
+
+  enable_exactly_once_delivery = true
+}
+
 resource "google_pubsub_topic" "user_data_aggregator_topic" {
   name = "user_data_aggregation_requests"
 }

@@ -4,6 +4,12 @@ resource "random_string" "oauth2_token_encryption_key" {
   special = false
 }
 
+# API server user device token encryption key
+resource "random_string" "user_device_token_encryption_key" {
+  length  = 32
+  special = false
+}
+
 # JWT Signing key
 resource "random_string" "jwt_signing_key" {
   length  = 32
@@ -41,6 +47,21 @@ variable "GRAFANA_CLOUD_LOKI_USERNAME" {}
 variable "GRAFANA_CLOUD_LOKI_PASSWORD" {}
 variable "GRAFANA_CLOUD_TEMPO_USERNAME" {}
 variable "GRAFANA_CLOUD_TEMPO_PASSWORD" {}
+
+variable "APNS_KEY_ID" {}
+variable "APNS_AUTH_KEY_P8" {
+  sensitive = true
+}
+variable "APNS_TEAM_ID" {
+  default = "K8R2Q5UWQS"
+}
+variable "APNS_BUNDLE_ID" {
+  default = "com.dinnerdonebetter.ios"
+}
+variable "APNS_PRODUCTION" {
+  default     = "false"
+  description = "Use APNs production environment (true) or sandbox (false). Sandbox for debug/TestFlight builds; production for App Store."
+}
 
 # Admin webapp config (cookie name and domain - required for admin webapp)
 variable "ADMIN_WEBAPP_COOKIE_NAME" {

@@ -134,10 +134,6 @@ type MockClient struct {
 	mock.Mock
 }
 
-func (m *MockClient) DB() *sql.DB {
-	return nil
-}
-
 func (m *MockClient) ReadDB() *sql.DB {
 	return nil
 }

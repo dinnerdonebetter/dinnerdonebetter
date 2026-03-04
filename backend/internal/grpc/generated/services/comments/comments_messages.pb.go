@@ -25,14 +25,14 @@ const (
 
 type Comment struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Content         string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
-	TargetType      string                 `protobuf:"bytes,3,opt,name=target_type,json=targetType,proto3" json:"target_type,omitempty"`
-	ReferencedId    string                 `protobuf:"bytes,4,opt,name=referenced_id,json=referencedId,proto3" json:"referenced_id,omitempty"`
-	ParentCommentId *string                `protobuf:"bytes,5,opt,name=parent_comment_id,json=parentCommentId,proto3,oneof" json:"parent_comment_id,omitempty"`
-	BelongsToUser   string                 `protobuf:"bytes,6,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
-	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=last_updated_at,json=lastUpdatedAt,proto3,oneof" json:"last_updated_at,omitempty"`
+	Id              string                 `json:"id,omitempty"                protobuf:"bytes,1,opt,name=id,proto3"`
+	Content         string                 `json:"content,omitempty"           protobuf:"bytes,2,opt,name=content,proto3"`
+	TargetType      string                 `json:"target_type,omitempty"       protobuf:"bytes,3,opt,name=target_type,json=targetType,proto3"`
+	ReferencedId    string                 `json:"referenced_id,omitempty"     protobuf:"bytes,4,opt,name=referenced_id,json=referencedId,proto3"`
+	ParentCommentId *string                `json:"parent_comment_id,omitempty" protobuf:"bytes,5,opt,name=parent_comment_id,json=parentCommentId,proto3,oneof"`
+	BelongsToUser   string                 `json:"belongs_to_user,omitempty"   protobuf:"bytes,6,opt,name=belongs_to_user,json=belongsToUser,proto3"`
+	CreatedAt       *timestamppb.Timestamp `json:"created_at,omitempty"        protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt   *timestamppb.Timestamp `json:"last_updated_at,omitempty"   protobuf:"bytes,8,opt,name=last_updated_at,json=lastUpdatedAt,proto3,oneof"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -125,10 +125,10 @@ func (x *Comment) GetLastUpdatedAt() *timestamppb.Timestamp {
 
 type CommentCreationRequestInput struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Content         string                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
-	ParentCommentId *string                `protobuf:"bytes,2,opt,name=parent_comment_id,json=parentCommentId,proto3,oneof" json:"parent_comment_id,omitempty"`
-	TargetType      string                 `protobuf:"bytes,3,opt,name=target_type,json=targetType,proto3" json:"target_type,omitempty"`       // Required for CreateComment; ignored for AddCommentTo*
-	ReferencedId    string                 `protobuf:"bytes,4,opt,name=referenced_id,json=referencedId,proto3" json:"referenced_id,omitempty"` // Required for CreateComment; ignored for AddCommentTo*
+	Content         string                 `json:"content,omitempty"           protobuf:"bytes,1,opt,name=content,proto3"`
+	ParentCommentId *string                `json:"parent_comment_id,omitempty" protobuf:"bytes,2,opt,name=parent_comment_id,json=parentCommentId,proto3,oneof"`
+	TargetType      string                 `json:"target_type,omitempty"       protobuf:"bytes,3,opt,name=target_type,json=targetType,proto3"`     // Required for CreateComment; ignored for AddCommentTo*
+	ReferencedId    string                 `json:"referenced_id,omitempty"     protobuf:"bytes,4,opt,name=referenced_id,json=referencedId,proto3"` // Required for CreateComment; ignored for AddCommentTo*
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -193,7 +193,7 @@ func (x *CommentCreationRequestInput) GetReferencedId() string {
 
 type CommentUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Content       string                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
+	Content       string                 `json:"content,omitempty" protobuf:"bytes,1,opt,name=content,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

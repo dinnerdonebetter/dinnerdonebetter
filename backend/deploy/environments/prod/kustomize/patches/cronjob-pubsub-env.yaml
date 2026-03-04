@@ -40,3 +40,11 @@
       configMapKeyRef:
         name: pubsub-topic-names
         key: webhook_execution_requests
+- op: add
+  path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
+  value:
+    name: DINNER_DONE_BETTER_QUEUES_MOBILE_NOTIFICATIONS_TOPIC_NAME
+    valueFrom:
+      configMapKeyRef:
+        name: pubsub-topic-names
+        key: mobile_notifications

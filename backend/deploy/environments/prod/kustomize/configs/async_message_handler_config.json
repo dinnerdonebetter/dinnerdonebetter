@@ -1,17 +1,31 @@
 {
+	"pushNotifications": {
+		"apns": {
+			"authKeyPath": "/mnt/apns/apns-auth-key.p8",
+			"keyID": "",
+			"teamID": "K8R2Q5UWQS",
+			"bundleID": "com.dinnerdonebetter.ios",
+			"production": true
+		},
+		"fcm": {
+			"credentialsPath": ""
+		},
+		"provider": "apns_fcm"
+	},
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"mobileNotificationsTopicName": "mobile_notifications",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
 	"storage": {
 		"gcpConfig": {
 			"bucketName": "dinner-done-better-prod-userdata"
 		},
 		"bucketName": "dinner-done-better-prod-userdata",
 		"provider": "gcp"
-	},
-	"queues": {
-		"dataChangesTopicName": "data_changes",
-		"outboundEmailsTopicName": "outbound_emails",
-		"searchIndexRequestsTopicName": "search_index_requests",
-		"userDataAggregationTopicName": "user_data_aggregation_requests",
-		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
 	"encoding": {
 		"contentType": ""
@@ -117,7 +131,11 @@
 		}
 	},
 	"database": {
+		"encryption": {
+			"provider": "salsa20"
+		},
 		"oauth2TokenEncryptionKey": "",
+		"userDeviceTokenEncryptionKey": "",
 		"provider": "postgres",
 		"readConnection": {
 			"username": "api_db_user",
