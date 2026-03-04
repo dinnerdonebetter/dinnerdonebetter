@@ -47,7 +47,7 @@ func Test_buildRawQuery(T *testing.T) {
 
 		builder := whatever.Addf("SELECT * FROM things")
 
-		expected := "SELECT * FROM things\n"
+		expected := "SELECT * FROM things"
 		actual := buildRawQuery(builder)
 
 		assert.Equal(t, expected, actual)
@@ -108,13 +108,15 @@ func Test_mergeColumns(T *testing.T) {
 			"webhooks.url",
 			"webhooks.method",
 			"webhook_trigger_events.id",
-			"webhook_trigger_events.trigger_event",
-			"webhook_trigger_events.belongs_to_webhook",
+			"webhook_trigger_events.name",
+			"webhook_trigger_events.description",
 			"webhook_trigger_events.created_at",
+			"webhook_trigger_events.last_updated_at",
 			"webhook_trigger_events.archived_at",
 			"webhooks.created_at",
 			"webhooks.last_updated_at",
 			"webhooks.archived_at",
+			"webhooks.created_by_user",
 			"webhooks.belongs_to_account",
 		}
 
@@ -138,8 +140,10 @@ func Test_buildFilterConditions(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		expected := `AND things.created_at > COALESCE(sqlc.narg(created_before), (SELECT  NOW() - '999 years'::INTERVAL))
-	AND things.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + '999 years'::INTERVAL))`
+		expected := `AND things.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND things.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND things.id > COALESCE(sqlc.narg(cursor), '')`
+
 		actual := buildFilterConditions("things", false, false)
 
 		assert.Equal(t, expected, actual)
@@ -156,8 +160,10 @@ func Test_buildFilterCountSelect(T *testing.T) {
 		SELECT COUNT(things.id)
 		FROM things
 		WHERE things.archived_at IS NULL
-			AND things.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND 
+			things.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND things.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR things.archived_at = NULL)
 	) AS filtered_count`
 		actual := buildFilterCountSelect("things", false, true, []string{})
 

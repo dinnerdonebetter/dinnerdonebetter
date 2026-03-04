@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/branding"
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
@@ -24,6 +25,6 @@ func TestBuildMealPlanCreatedEmail(T *testing.T) {
 		actual, err := BuildMealPlanCreatedEmail(user, mealPlan, &email.EnvironmentConfig{})
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
-		assert.Contains(t, actual.HTMLContent, logoURL)
+		assert.Contains(t, actual.HTMLContent, branding.LogoURL)
 	})
 }

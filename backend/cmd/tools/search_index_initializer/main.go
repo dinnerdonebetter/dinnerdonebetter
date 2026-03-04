@@ -131,7 +131,11 @@ func runInit(databaseURL, searchProvider, algoliaAppID, algoliaAPIKey, indicesSt
 	if err != nil {
 		return fmt.Errorf("initializing database client: %w", err)
 	}
-	defer client.Close()
+	defer func() {
+		if closeErr := client.Close(); closeErr != nil {
+			logger.Error("closing database client", closeErr)
+		}
+	}()
 
 	auditRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
 	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditRepo, client)
@@ -155,7 +159,7 @@ func runInit(databaseURL, searchProvider, algoliaAppID, algoliaAPIKey, indicesSt
 	}
 
 	for _, indexType := range indices {
-		if err := runIndex(ctx, logger, indexType, mealPlanningRepo, identityRepo, mealPlanningIndexer, userIndexer, searchCfg, wipe, batchSize); err != nil {
+		if err = runIndex(ctx, logger, indexType, mealPlanningRepo, identityRepo, mealPlanningIndexer, userIndexer, searchCfg, wipe, batchSize); err != nil {
 			return fmt.Errorf("indexing %s: %w", indexType, err)
 		}
 	}
@@ -240,7 +244,7 @@ func runIndex(
 
 	if wipe && im != nil {
 		log.Printf("Wiping index: %s", indexType)
-		if err := im.Wipe(ctx); err != nil {
+		if err = im.Wipe(ctx); err != nil {
 			return fmt.Errorf("wiping index: %w", err)
 		}
 		log.Printf("Wiped index: %s", indexType)
@@ -264,9 +268,9 @@ func runIndex(
 		var ids []string
 		switch indexType {
 		case mealplanningindexing.IndexTypeRecipes:
-			result, err := mealPlanningRepo.GetRecipes(ctx, mealplanning.RecipeStatusApproved, filter)
-			if err != nil {
-				return fmt.Errorf("getting recipes: %w", err)
+			result, fetchErr := mealPlanningRepo.GetRecipes(ctx, mealplanning.RecipeStatusApproved, filter)
+			if fetchErr != nil {
+				return fmt.Errorf("getting recipes: %w", fetchErr)
 			}
 			for _, r := range result.Data {
 				ids = append(ids, r.ID)
@@ -277,9 +281,9 @@ func runIndex(
 				cursor = nil
 			}
 		case mealplanningindexing.IndexTypeMeals:
-			result, err := mealPlanningRepo.GetMeals(ctx, filter)
-			if err != nil {
-				return fmt.Errorf("getting meals: %w", err)
+			result, fetchErr := mealPlanningRepo.GetMeals(ctx, filter)
+			if fetchErr != nil {
+				return fmt.Errorf("getting meals: %w", fetchErr)
 			}
 			for _, m := range result.Data {
 				ids = append(ids, m.ID)
@@ -290,9 +294,9 @@ func runIndex(
 				cursor = nil
 			}
 		case mealplanningindexing.IndexTypeValidIngredients:
-			result, err := mealPlanningRepo.GetValidIngredients(ctx, filter)
-			if err != nil {
-				return fmt.Errorf("getting valid ingredients: %w", err)
+			result, fetchErr := mealPlanningRepo.GetValidIngredients(ctx, filter)
+			if fetchErr != nil {
+				return fmt.Errorf("getting valid ingredients: %w", fetchErr)
 			}
 			for _, v := range result.Data {
 				ids = append(ids, v.ID)
@@ -303,9 +307,9 @@ func runIndex(
 				cursor = nil
 			}
 		case mealplanningindexing.IndexTypeValidInstruments:
-			result, err := mealPlanningRepo.GetValidInstruments(ctx, filter)
-			if err != nil {
-				return fmt.Errorf("getting valid instruments: %w", err)
+			result, fetchErr := mealPlanningRepo.GetValidInstruments(ctx, filter)
+			if fetchErr != nil {
+				return fmt.Errorf("getting valid instruments: %w", fetchErr)
 			}
 			for _, v := range result.Data {
 				ids = append(ids, v.ID)
@@ -316,9 +320,9 @@ func runIndex(
 				cursor = nil
 			}
 		case mealplanningindexing.IndexTypeValidMeasurementUnits:
-			result, err := mealPlanningRepo.GetValidMeasurementUnits(ctx, filter)
-			if err != nil {
-				return fmt.Errorf("getting valid measurement units: %w", err)
+			result, fetchErr := mealPlanningRepo.GetValidMeasurementUnits(ctx, filter)
+			if fetchErr != nil {
+				return fmt.Errorf("getting valid measurement units: %w", fetchErr)
 			}
 			for _, v := range result.Data {
 				ids = append(ids, v.ID)
@@ -329,9 +333,9 @@ func runIndex(
 				cursor = nil
 			}
 		case mealplanningindexing.IndexTypeValidPreparations:
-			result, err := mealPlanningRepo.GetValidPreparations(ctx, filter)
-			if err != nil {
-				return fmt.Errorf("getting valid preparations: %w", err)
+			result, fetchErr := mealPlanningRepo.GetValidPreparations(ctx, filter)
+			if fetchErr != nil {
+				return fmt.Errorf("getting valid preparations: %w", fetchErr)
 			}
 			for _, v := range result.Data {
 				ids = append(ids, v.ID)
@@ -342,9 +346,9 @@ func runIndex(
 				cursor = nil
 			}
 		case mealplanningindexing.IndexTypeValidIngredientStates:
-			result, err := mealPlanningRepo.GetValidIngredientStates(ctx, filter)
-			if err != nil {
-				return fmt.Errorf("getting valid ingredient states: %w", err)
+			result, fetchErr := mealPlanningRepo.GetValidIngredientStates(ctx, filter)
+			if fetchErr != nil {
+				return fmt.Errorf("getting valid ingredient states: %w", fetchErr)
 			}
 			for _, v := range result.Data {
 				ids = append(ids, v.ID)
@@ -355,9 +359,9 @@ func runIndex(
 				cursor = nil
 			}
 		case mealplanningindexing.IndexTypeValidVessels:
-			result, err := mealPlanningRepo.GetValidVessels(ctx, filter)
-			if err != nil {
-				return fmt.Errorf("getting valid vessels: %w", err)
+			result, fetchErr := mealPlanningRepo.GetValidVessels(ctx, filter)
+			if fetchErr != nil {
+				return fmt.Errorf("getting valid vessels: %w", fetchErr)
 			}
 			for _, v := range result.Data {
 				ids = append(ids, v.ID)
@@ -368,9 +372,9 @@ func runIndex(
 				cursor = nil
 			}
 		case identityindexing.IndexTypeUsers:
-			result, err := identityRepo.GetUsers(ctx, filter)
-			if err != nil {
-				return fmt.Errorf("getting users: %w", err)
+			result, fetchErr := identityRepo.GetUsers(ctx, filter)
+			if fetchErr != nil {
+				return fmt.Errorf("getting users: %w", fetchErr)
 			}
 			for _, u := range result.Data {
 				ids = append(ids, u.ID)
@@ -399,11 +403,11 @@ func runIndex(
 				mealplanningindexing.IndexTypeValidPreparations,
 				mealplanningindexing.IndexTypeValidIngredientStates,
 				mealplanningindexing.IndexTypeValidVessels:
-				if err := mpIndexer.HandleIndexRequest(ctx, req); err != nil {
+				if err = mpIndexer.HandleIndexRequest(ctx, req); err != nil {
 					return fmt.Errorf("indexing %s %s: %w", indexType, id, err)
 				}
 			case identityindexing.IndexTypeUsers:
-				if err := userIndexer.HandleIndexRequest(ctx, req); err != nil {
+				if err = userIndexer.HandleIndexRequest(ctx, req); err != nil {
 					return fmt.Errorf("indexing %s %s: %w", indexType, id, err)
 				}
 			}
