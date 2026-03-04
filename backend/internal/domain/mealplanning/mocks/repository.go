@@ -1074,6 +1074,15 @@ func (m *Repository) GetMealPlanTaskAccountID(ctx context.Context, mealPlanTaskI
 	return returnValues.String(0), returnValues.Error(1)
 }
 
+// GetMealPlanTaskNotificationContext is a mock function.
+func (m *Repository) GetMealPlanTaskNotificationContext(ctx context.Context, mealPlanTaskID string) (*mealplanning.MealPlanTaskNotificationContext, error) {
+	returnValues := m.Called(ctx, mealPlanTaskID)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*mealplanning.MealPlanTaskNotificationContext), returnValues.Error(1)
+}
+
 // RecipePrepTaskExists implements the requisite interface.
 func (m *Repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error) {
 	returnValues := m.Called(ctx, recipeID, recipePrepTaskID)

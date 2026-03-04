@@ -159,6 +159,7 @@ type Querier interface {
 	GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskRow, error)
 	GetMealPlanTaskAccountID(ctx context.Context, db DBTX, mealPlanTaskID string) (string, error)
 	GetMealPlanTaskIDsThatNeedNotification(ctx context.Context, db DBTX) ([]string, error)
+	GetMealPlanTaskNotificationContext(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskNotificationContextRow, error)
 	GetMealPlansForAccount(ctx context.Context, db DBTX, arg *GetMealPlansForAccountParams) ([]*GetMealPlansForAccountRow, error)
 	GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error)
 	GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error)

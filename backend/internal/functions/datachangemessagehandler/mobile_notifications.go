@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	domainnotifications "github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -15,24 +14,48 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-// MobileNotificationsEventHandler handles meal plan task notification requests from the mobile_notifications queue.
+// MobileNotificationsEventHandler handles mobile notification requests from the mobile_notifications queue.
+// It decodes the request, validates it, and routes to the appropriate type-specific handler.
 func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx context.Context, rawMsg []byte) error {
 	ctx, span := a.tracer.StartSpan(ctx)
 	defer span.End()
 
-	// TODO: genericize this
-
-	var req notifications.MealPlanTaskNotificationRequest
+	var req notifications.MobileNotificationRequest
 	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&req); err != nil {
-		return fmt.Errorf("decoding meal plan task notification request: %w", err)
+		return fmt.Errorf("decoding mobile notification request: %w", err)
 	}
-	if req.MealPlanTaskID == "" {
-		return fmt.Errorf("meal plan task ID is required")
+	if req.Title == "" || req.Body == "" {
+		return fmt.Errorf("title and body are required")
+	}
+	if req.RequestType == "" {
+		return fmt.Errorf("request type is required")
 	}
 
-	logger := a.logger.WithValue(keys.MealPlanTaskIDKey, req.MealPlanTaskID)
+	switch req.RequestType {
+	case notifications.MobileNotificationRequestTypeMealPlanTask:
+		return a.handleMealPlanTaskNotification(ctx, &req)
+	default:
+		return fmt.Errorf("unknown request type: %q", req.RequestType)
+	}
+}
 
-	sent, err := a.mealPlanRepo.MealPlanTaskNotificationHasBeenSent(ctx, req.MealPlanTaskID)
+// handleMealPlanTaskNotification processes a meal plan task reminder notification.
+// It performs idempotency checks, sends push notifications to recipients, and marks the task as notified.
+func (a *AsyncDataChangeMessageHandler) handleMealPlanTaskNotification(ctx context.Context, req *notifications.MobileNotificationRequest) error {
+	ctx, span := a.tracer.StartSpan(ctx)
+	defer span.End()
+
+	mealPlanTaskID := ""
+	if req.Context != nil {
+		mealPlanTaskID = req.Context[notifications.MealPlanTaskIDContextKey]
+	}
+	if mealPlanTaskID == "" {
+		return fmt.Errorf("meal plan task notification requires mealPlanTaskID in context")
+	}
+
+	logger := a.logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
+
+	sent, err := a.mealPlanRepo.MealPlanTaskNotificationHasBeenSent(ctx, mealPlanTaskID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "checking if notification already sent")
 	}
@@ -40,37 +63,23 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 		return nil // idempotent skip
 	}
 
-	task, err := a.mealPlanRepo.GetMealPlanTask(ctx, req.MealPlanTaskID)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "fetching meal plan task")
-	}
-	if task == nil {
-		return fmt.Errorf("meal plan task %s not found", req.MealPlanTaskID)
+	if len(req.RecipientUserIDs) == 0 {
+		return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, mealPlanTaskID)
 	}
 
-	recipientUserIDs, err := a.resolveNotificationRecipients(ctx, task)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "resolving notification recipients")
-	}
-	if len(recipientUserIDs) == 0 {
-		logger.WithValue("mealPlanTaskID", req.MealPlanTaskID).Info("no recipients for meal plan task notification, marking as sent")
-		return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, req.MealPlanTaskID)
-	}
-
-	deviceTokens, err := a.collectDeviceTokensForUsers(ctx, recipientUserIDs)
+	deviceTokens, err := a.collectDeviceTokensForUsers(ctx, req.RecipientUserIDs)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "collecting device tokens")
 	}
 	if len(deviceTokens) == 0 {
-		logger.Info("no device tokens for recipients, marking as sent")
-		return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, req.MealPlanTaskID)
+		return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, mealPlanTaskID)
 	}
 
-	title, body := buildNotificationContent(task)
+	atLeastOneSent := false
 	for _, t := range deviceTokens {
-		if err = a.pushNotificationSender.SendPush(ctx, t.Platform, t.DeviceToken, title, body); err != nil {
-			logger.WithValue("user_device_token_id", t.ID).WithValue("error", err).Error("sending push notification to device", err)
-			if strings.Contains(err.Error(), "BadDeviceToken") {
+		if sendErr := a.pushNotificationSender.SendPush(ctx, t.Platform, t.DeviceToken, req.Title, req.Body); sendErr != nil {
+			logger.WithValue("user_device_token_id", t.ID).WithValue("error", sendErr).Error("sending push notification to device", sendErr)
+			if strings.Contains(sendErr.Error(), "BadDeviceToken") {
 				if archiveErr := a.notificationsRepo.ArchiveUserDeviceToken(ctx, t.BelongsToUser, t.ID); archiveErr != nil {
 					logger.WithValue("user_device_token_id", t.ID).Error("archiving invalid device token", archiveErr)
 				} else {
@@ -78,36 +87,15 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 				}
 			}
 			// Continue to other tokens; don't fail entire batch
+		} else {
+			atLeastOneSent = true
 		}
 	}
 
-	return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, req.MealPlanTaskID)
-}
-
-func (a *AsyncDataChangeMessageHandler) resolveNotificationRecipients(ctx context.Context, task *mealplanning.MealPlanTask) ([]string, error) {
-	if task.AssignedToUser != nil && *task.AssignedToUser != "" {
-		return []string{*task.AssignedToUser}, nil
+	if !atLeastOneSent {
+		return nil // Don't mark as notified if every attempt failed; scheduler will retry
 	}
-
-	accountID, err := a.mealPlanRepo.GetMealPlanTaskAccountID(ctx, task.ID)
-	if err != nil {
-		return nil, fmt.Errorf("getting account ID for task: %w", err)
-	}
-	if accountID == "" {
-		return nil, fmt.Errorf("task has no account")
-	}
-
-	usersResult, err := a.identityRepo.GetUsersForAccount(ctx, accountID, filtering.DefaultQueryFilter())
-	if err != nil {
-		return nil, fmt.Errorf("getting users for account: %w", err)
-	}
-	userIDs := make([]string, 0, len(usersResult.Data))
-	for _, u := range usersResult.Data {
-		if u != nil && u.ID != "" {
-			userIDs = append(userIDs, u.ID)
-		}
-	}
-	return userIDs, nil
+	return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, mealPlanTaskID)
 }
 
 func (a *AsyncDataChangeMessageHandler) collectDeviceTokensForUsers(ctx context.Context, userIDs []string) ([]*domainnotifications.UserDeviceToken, error) {
@@ -125,12 +113,4 @@ func (a *AsyncDataChangeMessageHandler) collectDeviceTokensForUsers(ctx context.
 		}
 	}
 	return tokens, nil
-}
-
-func buildNotificationContent(task *mealplanning.MealPlanTask) (title, body string) {
-	recipeName := task.RecipePrepTask.Name
-	if recipeName == "" {
-		recipeName = "A task"
-	}
-	return "Meal plan task", fmt.Sprintf("%s needs your attention", recipeName)
 }

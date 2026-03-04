@@ -70,7 +70,10 @@ func (q *repository) GetMealPlanTask(ctx context.Context, mealPlanTaskID string)
 	}
 
 	mealPlanTask := &types.MealPlanTask{
-		RecipePrepTask:      types.RecipePrepTask{},
+		RecipePrepTask: types.RecipePrepTask{
+			ID:   result.PrepTaskID,
+			Name: result.PrepTaskName,
+		},
 		CreatedAt:           result.CreatedAt,
 		LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 		CompletedAt:         database.TimePointerFromNullTime(result.CompletedAt),
@@ -479,4 +482,26 @@ func (q *repository) GetMealPlanTaskAccountID(ctx context.Context, mealPlanTaskI
 	}
 
 	return accountID, nil
+}
+
+// GetMealPlanTaskNotificationContext returns context for building a meal plan task notification.
+func (q *repository) GetMealPlanTaskNotificationContext(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTaskNotificationContext, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanTaskID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
+
+	row, err := q.generatedQuerier.GetMealPlanTaskNotificationContext(ctx, q.readDB, mealPlanTaskID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, q.logger.Clone(), span, "getting meal plan task notification context")
+	}
+
+	return &types.MealPlanTaskNotificationContext{
+		PrepTaskName:        row.PrepTaskName,
+		CreationExplanation: row.CreationExplanation,
+		MealName:            string(row.MealName),
+		StartsAt:            row.StartsAt,
+	}, nil
 }

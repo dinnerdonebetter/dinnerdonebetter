@@ -105,6 +105,15 @@ type (
 		MarkMealPlanTaskNotificationSent(ctx context.Context, mealPlanTaskID string) error
 		GetMealPlanTaskIDsThatNeedNotification(ctx context.Context) ([]string, error)
 		GetMealPlanTaskAccountID(ctx context.Context, mealPlanTaskID string) (string, error)
+		GetMealPlanTaskNotificationContext(ctx context.Context, mealPlanTaskID string) (*MealPlanTaskNotificationContext, error)
+	}
+
+	// MealPlanTaskNotificationContext holds data needed to build a meal plan task notification.
+	MealPlanTaskNotificationContext struct {
+		StartsAt            time.Time
+		PrepTaskName        string
+		CreationExplanation string
+		MealName            string
 	}
 
 	// MealPlanTaskDataService describes a structure capable of serving traffic related to meal plan tasks.

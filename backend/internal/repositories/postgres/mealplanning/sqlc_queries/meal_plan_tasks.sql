@@ -247,7 +247,8 @@ WHERE meal_plan_tasks.completed_at IS NULL
 	AND meal_plan_tasks.notification_sent_at IS NULL
 	AND meal_plan_options.archived_at IS NULL
 	AND meal_plan_events.archived_at IS NULL
-	AND meal_plans.archived_at IS NULL;
+	AND meal_plans.archived_at IS NULL
+	AND meal_plan_events.starts_at > NOW();
 
 -- name: GetMealPlanTaskAccountID :one
 SELECT meal_plans.belongs_to_account

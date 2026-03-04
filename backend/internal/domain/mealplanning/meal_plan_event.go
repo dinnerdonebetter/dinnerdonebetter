@@ -201,3 +201,23 @@ func (x *MealPlanEventUpdateRequestInput) ValidateWithContext(ctx context.Contex
 		)),
 	)
 }
+
+// FormatMealNameForDisplay converts a meal name enum value to a user-friendly display string.
+func FormatMealNameForDisplay(mealName string) string {
+	switch mealName {
+	case BreakfastMealName:
+		return "Breakfast"
+	case SecondBreakfastMealName:
+		return "Second Breakfast"
+	case BrunchMealName:
+		return "Brunch"
+	case LunchMealName:
+		return "Lunch"
+	case SupperMealName:
+		return "Supper"
+	case DinnerMealName:
+		return "Dinner"
+	default:
+		return "Meal"
+	}
+}

@@ -290,7 +290,8 @@ WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s IS NULL
-	AND %s.%s IS NULL;`,
+	AND %s.%s IS NULL
+	AND %s.%s > %s;`,
 					mealPlanTasksTableName, idColumn,
 					mealPlanTasksTableName,
 					mealPlanOptionsTableName, mealPlanTasksTableName, belongsToMealPlanOptionColumn, mealPlanOptionsTableName, idColumn,
@@ -301,6 +302,8 @@ WHERE %s.%s IS NULL
 					mealPlanOptionsTableName, archivedAtColumn,
 					mealPlanEventsTableName, archivedAtColumn,
 					mealPlansTableName, archivedAtColumn,
+					mealPlanEventsTableName, "starts_at",
+					currentTimeExpression,
 				)),
 			},
 			{

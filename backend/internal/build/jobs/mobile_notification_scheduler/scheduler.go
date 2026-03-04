@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -21,6 +23,7 @@ type Scheduler struct {
 	logger                       logging.Logger
 	tracer                       tracing.Tracer
 	mealPlanningRepo             mealplanning.Repository
+	identityRepo                 identity.Repository
 	mobileNotificationsPublisher messagequeue.Publisher
 }
 
@@ -29,12 +32,14 @@ func NewScheduler(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	mealPlanningRepo mealplanning.Repository,
+	identityRepo identity.Repository,
 	mobileNotificationsPublisher messagequeue.Publisher,
 ) *Scheduler {
 	return &Scheduler{
 		logger:                       logging.EnsureLogger(logger).WithName(schedulerTracerName),
 		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(schedulerTracerName)),
 		mealPlanningRepo:             mealPlanningRepo,
+		identityRepo:                 identityRepo,
 		mobileNotificationsPublisher: mobileNotificationsPublisher,
 	}
 }
@@ -55,8 +60,8 @@ func (s *Scheduler) ScheduleNotifications(ctx context.Context) error {
 	return errs.ErrorOrNil()
 }
 
-// scheduleMealPlanTaskNotifications queries for meal plan tasks that need notifications
-// and publishes them to the mobile_notifications queue.
+// scheduleMealPlanTaskNotifications queries for meal plan tasks that need notifications,
+// formats the message, resolves recipients, and publishes MobileNotificationRequest.
 func (s *Scheduler) scheduleMealPlanTaskNotifications(ctx context.Context) error {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -74,8 +79,11 @@ func (s *Scheduler) scheduleMealPlanTaskNotifications(ctx context.Context) error
 
 	errs := &multierror.Error{}
 	for _, taskID := range taskIDs {
-		req := &notifications.MealPlanTaskNotificationRequest{
-			MealPlanTaskID: taskID,
+		var req *notifications.MobileNotificationRequest
+		req, err = s.buildMealPlanTaskNotificationRequest(ctx, taskID)
+		if err != nil {
+			errs = multierror.Append(errs, fmt.Errorf("building meal plan task notification for %s: %w", taskID, err))
+			continue
 		}
 		if err = s.mobileNotificationsPublisher.Publish(ctx, req); err != nil {
 			errs = multierror.Append(errs, fmt.Errorf("publishing meal plan task notification for %s: %w", taskID, err))
@@ -83,4 +91,78 @@ func (s *Scheduler) scheduleMealPlanTaskNotifications(ctx context.Context) error
 	}
 
 	return errs.ErrorOrNil()
+}
+
+func (s *Scheduler) buildMealPlanTaskNotificationRequest(ctx context.Context, taskID string) (*notifications.MobileNotificationRequest, error) {
+	task, err := s.mealPlanningRepo.GetMealPlanTask(ctx, taskID)
+	if err != nil {
+		return nil, fmt.Errorf("fetching meal plan task: %w", err)
+	}
+	if task == nil {
+		return nil, fmt.Errorf("meal plan task %s not found", taskID)
+	}
+
+	notificationCtx, err := s.mealPlanningRepo.GetMealPlanTaskNotificationContext(ctx, taskID)
+	if err != nil {
+		return nil, fmt.Errorf("fetching meal plan task notification context: %w", err)
+	}
+	if notificationCtx == nil {
+		return nil, fmt.Errorf("meal plan task notification context %s not found", taskID)
+	}
+
+	recipientUserIDs, err := s.resolveNotificationRecipients(ctx, task)
+	if err != nil {
+		return nil, fmt.Errorf("resolving recipients: %w", err)
+	}
+
+	title, body := buildMealPlanTaskNotificationContent(notificationCtx)
+
+	return &notifications.MobileNotificationRequest{
+		RequestType:      notifications.MobileNotificationRequestTypeMealPlanTask,
+		RecipientUserIDs: recipientUserIDs,
+		Title:            title,
+		Body:             body,
+		Context: map[string]string{
+			notifications.MealPlanTaskIDContextKey: taskID,
+		},
+	}, nil
+}
+
+func (s *Scheduler) resolveNotificationRecipients(ctx context.Context, task *mealplanning.MealPlanTask) ([]string, error) {
+	if task.AssignedToUser != nil && *task.AssignedToUser != "" {
+		return []string{*task.AssignedToUser}, nil
+	}
+
+	accountID, err := s.mealPlanningRepo.GetMealPlanTaskAccountID(ctx, task.ID)
+	if err != nil {
+		return nil, fmt.Errorf("getting account ID for task: %w", err)
+	}
+	if accountID == "" {
+		return nil, fmt.Errorf("task has no account")
+	}
+
+	usersResult, err := s.identityRepo.GetUsersForAccount(ctx, accountID, filtering.DefaultQueryFilter())
+	if err != nil {
+		return nil, fmt.Errorf("getting users for account: %w", err)
+	}
+	userIDs := make([]string, 0, len(usersResult.Data))
+	for _, u := range usersResult.Data {
+		if u != nil && u.ID != "" {
+			userIDs = append(userIDs, u.ID)
+		}
+	}
+	return userIDs, nil
+}
+
+func buildMealPlanTaskNotificationContent(ctx *mealplanning.MealPlanTaskNotificationContext) (title, body string) {
+	taskName := ctx.PrepTaskName
+	if taskName == "" {
+		taskName = ctx.CreationExplanation
+	}
+	if taskName == "" {
+		taskName = "A task"
+	}
+	mealName := mealplanning.FormatMealNameForDisplay(ctx.MealName)
+	dayName := ctx.StartsAt.Format("Monday")
+	return "Meal plan task", fmt.Sprintf("%s for %s on %s", taskName, mealName, dayName)
 }

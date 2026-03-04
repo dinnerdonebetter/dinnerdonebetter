@@ -54,6 +54,6 @@ func Build(ctx context.Context, cfg *config.MobileNotificationSchedulerConfig) (
 	if err != nil {
 		return nil, err
 	}
-	scheduler := NewScheduler(logger, tracerProvider, mealplanningRepository, publisher)
+	scheduler := NewScheduler(logger, tracerProvider, mealplanningRepository, identityRepository, publisher)
 	return scheduler, nil
 }
