@@ -7,6 +7,6 @@ import "context"
 type NoopPushNotificationSender struct{}
 
 // SendPush is a no-op; it does not send any notifications.
-func (n *NoopPushNotificationSender) SendPush(_ context.Context, _, _, _, _ string) error {
+func (n *NoopPushNotificationSender) SendPush(_ context.Context, _, _ string, _ PushMessage) error {
 	return nil
 }
