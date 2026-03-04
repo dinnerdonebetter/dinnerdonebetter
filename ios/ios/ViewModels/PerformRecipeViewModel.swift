@@ -86,6 +86,7 @@ class PerformRecipeViewModel {
       // Load prep tasks after recipe is loaded
       await loadPrepTasks()
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to load recipe: \(error.localizedDescription)"
       print("❌ Error loading recipe: \(error)")
     }
@@ -125,6 +126,7 @@ class PerformRecipeViewModel {
 
       self.prepTasks = response.results
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       print("⚠️ Error loading prep tasks: \(error)")
       // Don't set error message for prep tasks - it's not critical
     }
@@ -163,6 +165,7 @@ class PerformRecipeViewModel {
 
       self.mermaidDiagram = response.response
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       mermaidError = "Failed to load diagram: \(error.localizedDescription)"
       print("❌ Error loading mermaid diagram: \(error)")
     }

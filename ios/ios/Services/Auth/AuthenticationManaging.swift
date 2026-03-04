@@ -53,5 +53,6 @@ protocol AuthenticationManaging: AnyObject {
   func getClientManager() throws -> ClientManager<HTTP2ClientTransport.TransportServices>
   func getOAuth2AccessToken() async -> String?
   func refreshOAuth2Token() async -> Bool
+  func invalidateCredentialsIfSessionError(_ error: Error) async
   func logout() async
 }

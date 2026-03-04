@@ -170,6 +170,10 @@ class MockAuthenticationManager: AuthenticationManaging {
     return RegistrationResult(success: true, error: nil)
   }
 
+  func invalidateCredentialsIfSessionError(_ error: Error) async {
+    // No-op for mock; UI tests don't need credential invalidation
+  }
+
   func logout() async {
     self.isAuthenticated = false
     self.username = ""

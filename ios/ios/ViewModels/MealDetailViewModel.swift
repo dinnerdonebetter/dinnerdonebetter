@@ -59,6 +59,7 @@ class MealDetailViewModel {
 
       self.meal = response.result
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to load meal: \(error.localizedDescription)"
       print("❌ Error loading meal: \(error)")
     }
@@ -97,6 +98,7 @@ class MealDetailViewModel {
 
       self.mermaidDiagram = response.response
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       mermaidError = "Failed to load diagram: \(error.localizedDescription)"
       print("❌ Error loading mermaid diagram: \(error)")
     }

@@ -667,6 +667,25 @@ class AuthenticationManager: AuthenticationManaging {
     }
   }
 
+  /// If the error indicates session/auth failure (e.g. invalid context, unauthenticated),
+  /// clear credentials so the user can re-authenticate.
+  func invalidateCredentialsIfSessionError(_ error: Error) async {
+    guard let rpcError = error as? GRPCCore.RPCError else { return }
+    let shouldInvalidate: Bool
+    switch rpcError.code {
+    case .unauthenticated:
+      shouldInvalidate = true
+    case .internalError:
+      shouldInvalidate = rpcError.message.contains("building session context data for user")
+    default:
+      shouldInvalidate = false
+    }
+    if shouldInvalidate {
+      print("🔐 Session error detected, invalidating credentials: \(rpcError.message)")
+      await logout()
+    }
+  }
+
   func logout() async {
     await DeviceTokenRegistrationService.shared.archiveCurrentDeviceToken(authManager: self)
     AnalyticsConfiguration.provideEventReporter().reset()

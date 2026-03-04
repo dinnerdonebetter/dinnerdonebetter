@@ -87,6 +87,7 @@ class AccountSettingsViewModel {
       self.invitations = result.invitations
       initializeFormFields(from: result.account)
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to load data: \(error.localizedDescription)"
       print("❌ Error loading account settings: \(error)")
     }
@@ -379,6 +380,7 @@ class AccountSettingsViewModel {
       isLoading = false
       return true
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       self.errorMessage = errorMessage(error)
       print("❌ Error: \(error)")
       isLoading = false
