@@ -412,10 +412,27 @@ struct InvitationCard: View {
 
         Spacer()
 
-        if isAccountAdmin && invitation.status.lowercased() == "pending" {
-          DSButton("Cancel", style: .ghost, size: .small) {
-            Task {
-              await onCancel?()
+        if invitation.status.lowercased() == "pending" {
+          HStack(spacing: DSTheme.Spacing.sm) {
+            DSButton("Copy Link", style: .ghost, size: .small) {
+              guard
+                var components = URLComponents(
+                  string: "\(APIConfiguration.webURL)/accept_invitation")
+              else { return }
+              components.queryItems = [
+                URLQueryItem(name: "i", value: invitation.id),
+                URLQueryItem(name: "t", value: invitation.token),
+              ]
+              if let url = components.url?.absoluteString {
+                UIPasteboard.general.string = url
+              }
+            }
+            if isAccountAdmin {
+              DSButton("Cancel", style: .ghost, size: .small) {
+                Task {
+                  await onCancel?()
+                }
+              }
             }
           }
         }
