@@ -1,0 +1,54 @@
+{
+	"cookies": {
+		"domain": "",
+		"cookieName": "consumer_webapp",
+		"base64EncodedHashKey": " ",
+		"base64EncodedBlockKey": " ",
+		"lifetime": 0,
+		"secureOnly": false
+	},
+	"apiServiceConfig": {
+		"httpAPIServerURL": "",
+		"grpcAPIServerURL": "",
+		"oauth2APIClientID": "",
+		"oauth2APIClientSecret": ""
+	},
+	"appleAppSiteAssociation": {},
+	"routing": {
+		"chiConfig": {
+			"serviceName": "consumer_webapp",
+			"enableCORSForLocalhost": true
+		},
+		"provider": "chi"
+	},
+	"encoding": {
+		"contentType": "application/json"
+	},
+	"observability": {
+		"logging": {
+			"serviceName": "consumer_webapp",
+			"level": "info",
+			"provider": "slog"
+		},
+		"metrics": {
+			"serviceName": "consumer_webapp"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces"
+			},
+			"service_name": "consumer_webapp",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
+	"meta": {
+		"runMode": "testing",
+		"debug": false
+	},
+	"server": {
+		"startupDeadline": 60000000000,
+		"port": 8000,
+		"debug": false
+	}
+}

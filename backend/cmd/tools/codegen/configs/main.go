@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 )
@@ -30,8 +32,18 @@ const (
 )
 
 var (
-	contentTypeJSON = encoding.ContentTypeToString(encoding.ContentTypeJSON)
+	contentTypeJSON         = encoding.ContentTypeToString(encoding.ContentTypeJSON)
+	localdevConsumerCookies = buildLocaldevConsumerCookies()
 )
+
+func buildLocaldevConsumerCookies() *cookies.Config {
+	key := base64.StdEncoding.EncodeToString([]byte(debugCookieHashKey))
+	return &cookies.Config{
+		CookieName:            "consumer_session",
+		Base64EncodedHashKey:  key,
+		Base64EncodedBlockKey: key,
+	}
+}
 
 func main() {
 	// localdev config is generated to two locations:
@@ -41,10 +53,14 @@ func main() {
 
 	envConfigs := map[string]*config.EnvironmentConfigSet{
 		"deploy/environments/localdev/config_files": {
-			RootConfig: localdevConfig,
+			RootConfig:                    localdevConfig,
+			ConsumerWebappCookiesOverride: localdevConsumerCookies,
+			ConsumerWebappPortOverride:    8889, // matches consumer.sh proxy.app_port
 		},
 		"deploy/environments/localdev/kustomize/configs": {
-			RootConfig: localdevConfig,
+			RootConfig:                    localdevConfig,
+			ConsumerWebappCookiesOverride: localdevConsumerCookies,
+			ConsumerWebappPortOverride:    8889, // matches consumer.sh proxy.app_port
 		},
 		"deploy/environments/testing/config_files": {
 			APIServiceConfigPath: "integration-tests-config.json",

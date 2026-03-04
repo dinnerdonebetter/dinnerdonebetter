@@ -26,6 +26,16 @@ resource "random_string" "admin_webapp_cookie_block_key" {
   special = false
 }
 
+# Consumer webapp cookie encryption keys (base64-encoded for COOKIE_HASH_KEY / COOKIE_BLOCK_KEY)
+resource "random_string" "consumer_webapp_cookie_hash_key" {
+  length  = 32
+  special = false
+}
+resource "random_string" "consumer_webapp_cookie_block_key" {
+  length  = 32
+  special = false
+}
+
 ### External API services ###
 
 # Sendgrid token
@@ -69,4 +79,12 @@ variable "ADMIN_WEBAPP_COOKIE_NAME" {
 }
 variable "ADMIN_WEBAPP_COOKIE_DOMAIN" {
   default = "admin.dinnerdonebetter.com"
+}
+
+# Consumer webapp config (cookie name and domain - required for consumer webapp / root site)
+variable "CONSUMER_WEBAPP_COOKIE_NAME" {
+  default = "consumer_session"
+}
+variable "CONSUMER_WEBAPP_COOKIE_DOMAIN" {
+  default = "dinnerdonebetter.com"
 }

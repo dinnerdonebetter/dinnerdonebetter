@@ -175,8 +175,17 @@ const (
 	// EmailMailjetSecretKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Mailjet.SecretKey`.
 	EmailMailjetSecretKeyEnvVarKey = "DINNER_DONE_BETTER_EMAIL_MAILJET_SECRET_KEY"
 
+	// EmailPostmarkBaseURLEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Postmark.BaseURL`.
+	EmailPostmarkBaseURLEnvVarKey = "DINNER_DONE_BETTER_EMAIL_POSTMARK_BASE_URL"
+
+	// EmailPostmarkServerTokenEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Postmark.ServerToken`.
+	EmailPostmarkServerTokenEnvVarKey = "DINNER_DONE_BETTER_EMAIL_POSTMARK_SERVER_TOKEN"
+
 	// EmailProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Provider`.
 	EmailProviderEnvVarKey = "DINNER_DONE_BETTER_EMAIL_PROVIDER"
+
+	// EmailResendAPITokenEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Resend.APIToken`.
+	EmailResendAPITokenEnvVarKey = "DINNER_DONE_BETTER_EMAIL_RESEND_API_TOKEN"
 
 	// EmailSendgridAPITokenEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Sendgrid.APIToken`.
 	EmailSendgridAPITokenEnvVarKey = "DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN"

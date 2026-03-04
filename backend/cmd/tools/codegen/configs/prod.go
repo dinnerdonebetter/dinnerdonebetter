@@ -273,10 +273,6 @@ func buildProdConfig() *config.APIServiceConfig {
 				OAuth2ClientCreationDisabled: true,
 			},
 		},
-		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
-			BundleID: iosBundleID,
-			TeamID:   iosTeamID,
-		},
 		PushNotifications: notificationscfg.Config{
 			Provider: notificationscfg.ProviderAPNsFCM,
 			APNs: &notificationscfg.APNsConfig{

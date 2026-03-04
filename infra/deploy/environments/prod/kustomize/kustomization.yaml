@@ -83,11 +83,91 @@ patches:
       kind: Deployment
       name: opentelemetry-collector
 
+  # Consumer webapp (root site) - cookie and API service config from terraform-managed secret
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_COOKIE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: COOKIE_NAME
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_HASH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: COOKIE_HASH_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_BLOCK_KEY
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: COOKIE_BLOCK_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: COOKIE_DOMAIN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_LIFETIME
+          value: "168h"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_SECURE_ONLY
+          value: "true"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL
+          value: "https://http-api.dinnerdonebetter.com"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL
+          value: "api.dinnerdonebetter.com:443"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: OAUTH2_CLIENT_SECRET
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-root-site-deployment
+
 configMapGenerator:
   - name: opentelemetry-collector-config
     namespace: prod
     files:
       - config.yaml=./configs/otel_collector_config.yaml
+
+  - name: dinner-done-better-consumer-webapp-config
+    namespace: prod
+    files:
+      - config.json=./configs/consumer_webapp_config.json
 
 namespace: prod
 ---

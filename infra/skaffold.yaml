@@ -26,8 +26,8 @@ profiles:
       artifacts:
         - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-root-site
           docker:
-            dockerfile: Dockerfile
-          context: ../root_site
+            dockerfile: deploy/dockerfiles/consumer_webapp.Dockerfile
+          context: ../backend
 
     manifests:
       kustomize:

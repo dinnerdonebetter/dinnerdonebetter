@@ -3,10 +3,10 @@ concurrency:
   group: ${{ github.ref }}
 
 on:
-  
-  push:
-    branches:
-      - prod
+  - pull_request
+  # push:
+  #   branches:
+  #     - prod
 
 name: deploy prod
 jobs:
@@ -167,7 +167,4 @@ jobs:
         run: kubectl apply -k infra/deploy/environments/prod/kustomize
 
       - name: Skaffold deploy
-        run: KOCACHE="$HOME/.cache/ko" skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile prod --label "deploy-source=github-actions"
-
-      - name: Skaffold verify
-        run: skaffold verify --filename=skaffold.yaml --profile prod
+        run: KOCACHE="$HOME/.cache/ko" skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile prod

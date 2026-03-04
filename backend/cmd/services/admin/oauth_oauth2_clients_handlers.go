@@ -152,19 +152,19 @@ func (s *AdminFrontendServer) OAuth2ClientsList(_ http.ResponseWriter, req *http
 			TableID: "oauth2-clients-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"ID",
-				"Name",
-				"Description",
-				"ClientID",
-				"CreatedAt",
-				"ArchivedAt",
+				"id",
+				"name",
+				"description",
+				"client_id",
+				"created_at",
+				"archived_at",
 			},
 			FieldReplacements: map[string]string{
-				"ClientID": "Client ID",
+				"client_id": "Client ID",
 			},
 			FieldRenderers: map[string]components.FieldRenderer{
-				"CreatedAt":  renderTimestamp,
-				"ArchivedAt": renderTimestamp,
+				"created_at":  renderTimestamp,
+				"archived_at": renderTimestamp,
 			},
 		},
 		RowLinkGenerator: func(data *oauthsvc.OAuth2Client) string {
@@ -250,19 +250,19 @@ func (s *AdminFrontendServer) OAuth2ClientsSearch(_ http.ResponseWriter, req *ht
 		TableID: "oauth2-clients-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
-			"Name",
-			"Description",
-			"ClientID",
-			"CreatedAt",
-			"ArchivedAt",
+			"id",
+			"name",
+			"description",
+			"client_id",
+			"created_at",
+			"archived_at",
 		},
 		FieldReplacements: map[string]string{
-			"ClientID": "Client ID",
+			"client_id": "Client ID",
 		},
 		FieldRenderers: map[string]components.FieldRenderer{
-			"CreatedAt":  renderTimestamp,
-			"ArchivedAt": renderTimestamp,
+			"created_at":  renderTimestamp,
+			"archived_at": renderTimestamp,
 		},
 		RowLinkGenerator: func(data *oauthsvc.OAuth2Client) string {
 			return fmt.Sprintf("/oauth2_clients/%s", data.Id)

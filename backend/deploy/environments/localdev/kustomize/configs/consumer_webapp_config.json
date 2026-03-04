@@ -1,0 +1,68 @@
+{
+	"cookies": {
+		"domain": "",
+		"cookieName": "consumer_session",
+		"base64EncodedHashKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+		"base64EncodedBlockKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+		"lifetime": 0,
+		"secureOnly": false
+	},
+	"apiServiceConfig": {
+		"httpAPIServerURL": "",
+		"grpcAPIServerURL": "",
+		"oauth2APIClientID": "",
+		"oauth2APIClientSecret": ""
+	},
+	"appleAppSiteAssociation": {},
+	"routing": {
+		"chiConfig": {
+			"serviceName": "consumer_webapp",
+			"enableCORSForLocalhost": true
+		},
+		"provider": "chi"
+	},
+	"encoding": {
+		"contentType": "application/json"
+	},
+	"observability": {
+		"logging": {
+			"serviceName": "consumer_webapp",
+			"level": "debug",
+			"otelslog": {
+				"endpointURL": "otel_collector:4317",
+				"insecure": true,
+				"timeout": 3000000000
+			},
+			"provider": "otelslog"
+		},
+		"metrics": {
+			"otelgrpc": {
+				"metricsCollectorEndpoint": "otel_collector:4317",
+				"collectionInterval": 1000000000,
+				"insecure": true,
+				"enableRuntimeMetrics": false,
+				"enableHostMetrics": false
+			},
+			"serviceName": "consumer_webapp",
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "otel_collector:4317",
+				"insecure": true
+			},
+			"service_name": "consumer_webapp",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
+	"meta": {
+		"runMode": "development",
+		"debug": true
+	},
+	"server": {
+		"startupDeadline": 60000000000,
+		"port": 8889,
+		"debug": true
+	}
+}

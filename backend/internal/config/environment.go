@@ -16,15 +16,18 @@ import (
 // EnvironmentConfigSet contains a way of rendering a set of every config for a given environment to a given folder.
 type EnvironmentConfigSet struct {
 	RootConfig                               *APIServiceConfig
-	APIServiceConfigPath                     string
-	DBCleanerConfigPath                      string
+	ConsumerWebappCookiesOverride            *cookies.Config
+	SearchDataIndexSchedulerConfigPath       string
 	MealPlanFinalizerConfigPath              string
 	MealPlanGroceryListInitializerConfigPath string
 	MealPlanTaskCreatorConfigPath            string
-	SearchDataIndexSchedulerConfigPath       string
+	DBCleanerConfigPath                      string
 	MobileNotificationSchedulerConfigPath    string
 	AsyncMessageHandlerConfigPath            string
 	AdminWebappConfigPath                    string
+	ConsumerWebappConfigPath                 string
+	APIServiceConfigPath                     string
+	ConsumerWebappPortOverride               uint16
 }
 
 func stringOrDefault(s, defaultStr string) string {
@@ -67,6 +70,7 @@ const (
 	mnsConfigObservabilityServiceName   = "mobile_notification_scheduler"
 	amhConfigObservabilityServiceName   = "async_message_handler"
 	awaConfigObservabilityServiceName   = "admin_webapp"
+	cwaConfigObservabilityServiceName   = "consumer_webapp"
 )
 
 func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) error {
@@ -167,12 +171,8 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	amhConfig.Observability.Logging.ServiceName = amhConfigObservabilityServiceName
 
 	awaConfig := &AdminWebappConfig{
-		// No equivalent for the following configs, I'll just have to rely on env vars to set them for now:
-		//	- Cookies
-		//	- APIServiceConnection
-		//	- APIClientCache
 		Cookies: cookies.Config{
-			CookieName:            " ",
+			CookieName:            "admin_webapp",
 			Base64EncodedHashKey:  " ",
 			Base64EncodedBlockKey: " ",
 		},
@@ -189,6 +189,33 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		awaConfig.Routing.Chi.ServiceName = awaConfigObservabilityServiceName
 	}
 
+	cwaHTTPServer := s.RootConfig.HTTPServer
+	if s.ConsumerWebappPortOverride != 0 {
+		cwaHTTPServer.Port = s.ConsumerWebappPortOverride
+	}
+	cwaCookies := cookies.Config{
+		CookieName:            "consumer_webapp",
+		Base64EncodedHashKey:  " ",
+		Base64EncodedBlockKey: " ",
+	}
+	if s.ConsumerWebappCookiesOverride != nil {
+		cwaCookies = *s.ConsumerWebappCookiesOverride
+	}
+	cwaConfig := &ConsumerWebappConfig{
+		Cookies:       cwaCookies,
+		Encoding:      s.RootConfig.Encoding,
+		Observability: s.RootConfig.Observability,
+		Meta:          s.RootConfig.Meta,
+		Routing:       s.RootConfig.Routing,
+		HTTPServer:    cwaHTTPServer,
+	}
+	cwaConfig.Observability.Tracing.ServiceName = cwaConfigObservabilityServiceName
+	cwaConfig.Observability.Metrics.ServiceName = cwaConfigObservabilityServiceName
+	cwaConfig.Observability.Logging.ServiceName = cwaConfigObservabilityServiceName
+	if cwaConfig.Routing.Chi != nil {
+		cwaConfig.Routing.Chi.ServiceName = cwaConfigObservabilityServiceName
+	}
+
 	if validate {
 		allConfigs := []validation.ValidatableWithContext{
 			s.RootConfig,
@@ -200,6 +227,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 			mnsConfig,
 			amhConfig,
 			awaConfig,
+			cwaConfig,
 		}
 		for i, cfg := range allConfigs {
 			if err := cfg.ValidateWithContext(context.Background()); err != nil {
@@ -222,6 +250,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		path.Join(outputDir, stringOrDefault(s.MobileNotificationSchedulerConfigPath, "job_mobile_notification_scheduler_config.json")):         renderJSON(mnsConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                             renderJSON(amhConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.AdminWebappConfigPath, "admin_webapp_config.json")):                                              renderJSON(awaConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.ConsumerWebappConfigPath, "consumer_webapp_config.json")):                                        renderJSON(cwaConfig, pretty),
 	}
 
 	for p, b := range pathToConfigMap {

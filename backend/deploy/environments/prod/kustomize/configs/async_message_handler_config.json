@@ -96,6 +96,8 @@
 		},
 		"mailgun": null,
 		"mailjet": null,
+		"resend": null,
+		"postmark": null,
 		"provider": "sendgrid",
 		"circuitBreakerConfig": {
 			"name": "prod_emailer",

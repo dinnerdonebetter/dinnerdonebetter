@@ -67,6 +67,7 @@ func Build(
 		ProvideUserTextSearcher,
 		ConfigProviders,
 		ProvideAPIRouter,
+		wire.Value("api_server"), // HTTP server logger service name
 	)
 
 	return nil, nil

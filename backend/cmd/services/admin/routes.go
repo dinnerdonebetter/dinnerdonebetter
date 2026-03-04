@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
+	phttp "github.com/dinnerdonebetter/backend/internal/platform/server/http"
+	"github.com/dinnerdonebetter/backend/internal/platform/version"
 
 	ghttp "maragu.dev/gomponents/http"
 )
@@ -29,6 +28,10 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
 			// TODO: check readiness here lol
 			res.WriteHeader(http.StatusOK)
+		})
+
+		metaRouter.Get("/commit", func(res http.ResponseWriter, req *http.Request) {
+			s.encoder.EncodeResponseWithStatus(req.Context(), res, version.Get(), http.StatusOK)
 		})
 	})
 
@@ -202,41 +205,5 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))
 
 	// static files - NOTE: this must be registered last
-	fileServer := http.FileServer(http.Dir(assetsDir))
-
-	router.Get("/*", func(w http.ResponseWriter, r *http.Request) {
-		// Only serve root-level files (no subdirectories)
-		if strings.Contains(r.URL.Path[1:], "/") {
-			http.NotFound(w, r)
-			return
-		}
-
-		// Check if the file exists in the assets directory (guard against path traversal)
-		filePath := filepath.Clean(filepath.Join(assetsDir, r.URL.Path))
-		absAssets, err := filepath.Abs(assetsDir)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		absFilePath, err := filepath.Abs(filePath)
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-		rel, err := filepath.Rel(absAssets, absFilePath)
-		if err != nil || strings.HasPrefix(rel, "..") {
-			http.NotFound(w, r)
-			return
-		}
-		info, statErr := os.Stat(filePath) //nolint:gosec // G703: path validated above to be within assetsDir
-		if statErr == nil && !info.IsDir() {
-			// File exists, serve it
-			fileServer.ServeHTTP(w, r)
-			return
-		}
-
-		// File doesn't exist
-		http.NotFound(w, r)
-	})
+	router.Get("/*", phttp.RootLevelAssetsHandler(assetsDir))
 }

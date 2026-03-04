@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/webappauth"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	g "maragu.dev/gomponents"
@@ -76,14 +77,14 @@ func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http
 		}), nil
 	}
 
-	encodedCookie, err := s.cookieManager.Encode(ctx, s.config.Cookies.CookieName, &authPayload{AccessToken: tokenRes.Result.AccessToken})
+	encodedCookie, err := s.cookieManager.Encode(ctx, s.config.Cookies.CookieName, &webappauth.AuthPayload{AccessToken: tokenRes.Result.AccessToken})
 	if err != nil {
 		return s.componentRenderer.LoginForm(&components.LoginFormProps{
 			GeneralError: err.Error(),
 		}), nil
 	}
 
-	http.SetCookie(res, s.buildCookie(ctx, encodedCookie))
+	http.SetCookie(res, webappauth.BuildCookie(&s.config.Cookies, encodedCookie))
 
 	// Redirect to home page after successful login using HTMX redirect
 	// This causes HTMX to do a full page redirect instead of swapping content
