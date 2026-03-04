@@ -60,6 +60,7 @@ require (
 	github.com/posthog/posthog-go v1.3.1
 	github.com/pquerna/otp v1.4.0
 	github.com/qdrant/go-client v1.13.0
+	github.com/resend/resend-go/v3 v3.1.1
 	github.com/riandyrn/otelchi v0.12.1
 	github.com/rs/xid v1.6.0
 	github.com/rs/zerolog v1.33.0
@@ -226,6 +227,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
+	github.com/keighl/postmark v0.0.0-20190821160221-28358b1a94e3 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/launchdarkly/ccache v1.1.0 // indirect
 	github.com/launchdarkly/eventsource v1.9.1 // indirect

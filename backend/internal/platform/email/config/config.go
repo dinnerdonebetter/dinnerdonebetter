@@ -9,6 +9,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
 	"github.com/dinnerdonebetter/backend/internal/platform/email/mailgun"
 	"github.com/dinnerdonebetter/backend/internal/platform/email/mailjet"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/postmark"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/resend"
 	"github.com/dinnerdonebetter/backend/internal/platform/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -23,6 +25,10 @@ const (
 	ProviderMailgun = "mailgun"
 	// ProviderMailjet represents Mailjet.
 	ProviderMailjet = "mailjet"
+	// ProviderResend represents Resend.
+	ProviderResend = "resend"
+	// ProviderPostmark represents Postmark.
+	ProviderPostmark = "postmark"
 )
 
 type (
@@ -31,6 +37,8 @@ type (
 		Sendgrid       *sendgrid.Config       `env:"init"     envPrefix:"SENDGRID_"         json:"sendgrid"`
 		Mailgun        *mailgun.Config        `env:"init"     envPrefix:"MAILGUN_"          json:"mailgun"`
 		Mailjet        *mailjet.Config        `env:"init"     envPrefix:"MAILJET_"          json:"mailjet"`
+		Resend         *resend.Config         `env:"init"     envPrefix:"RESEND_"           json:"resend"`
+		Postmark       *postmark.Config       `env:"init"     envPrefix:"POSTMARK_"         json:"postmark"`
 		Provider       string                 `env:"PROVIDER" json:"provider"`
 		CircuitBreaker circuitbreaking.Config `env:"init"     envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakerConfig"`
 	}
@@ -46,6 +54,8 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&cfg.Sendgrid, validation.When(cfg.Provider == ProviderSendgrid, validation.Required)),
 		validation.Field(&cfg.Mailgun, validation.When(cfg.Provider == ProviderMailgun, validation.Required)),
 		validation.Field(&cfg.Mailjet, validation.When(cfg.Provider == ProviderMailjet, validation.Required)),
+		validation.Field(&cfg.Resend, validation.When(cfg.Provider == ProviderResend, validation.Required)),
+		validation.Field(&cfg.Postmark, validation.When(cfg.Provider == ProviderPostmark, validation.Required)),
 	)
 }
 
@@ -58,6 +68,10 @@ func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.
 		return mailgun.NewMailgunEmailer(cfg.Mailgun, logger, tracerProvider, client, circuitBreaker)
 	case ProviderMailjet:
 		return mailjet.NewMailjetEmailer(cfg.Mailjet, logger, tracerProvider, client, circuitBreaker)
+	case ProviderResend:
+		return resend.NewResendEmailer(cfg.Resend, logger, tracerProvider, client, circuitBreaker)
+	case ProviderPostmark:
+		return postmark.NewPostmarkEmailer(cfg.Postmark, logger, tracerProvider, client, circuitBreaker)
 	default:
 		logger.Debug("providing noop outbound_emailer")
 		return email.NewNoopEmailer()

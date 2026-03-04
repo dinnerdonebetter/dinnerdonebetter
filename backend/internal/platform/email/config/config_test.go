@@ -8,6 +8,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/email/mailgun"
 	"github.com/dinnerdonebetter/backend/internal/platform/email/mailjet"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/postmark"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/resend"
 	"github.com/dinnerdonebetter/backend/internal/platform/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -49,6 +51,8 @@ func TestConfig_ProvideEmailer(T *testing.T) {
 		ProviderSendgrid,
 		ProviderMailgun,
 		ProviderMailjet,
+		ProviderResend,
+		ProviderPostmark,
 	}
 
 	for _, provider := range providers {
@@ -61,6 +65,8 @@ func TestConfig_ProvideEmailer(T *testing.T) {
 				Sendgrid: &sendgrid.Config{APIToken: t.Name()},
 				Mailgun:  &mailgun.Config{PrivateAPIKey: t.Name(), Domain: t.Name()},
 				Mailjet:  &mailjet.Config{APIKey: t.Name(), SecretKey: t.Name()},
+				Resend:   &resend.Config{APIToken: t.Name()},
+				Postmark: &postmark.Config{ServerToken: t.Name()},
 			}
 
 			actual, err := cfg.ProvideEmailer(logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
