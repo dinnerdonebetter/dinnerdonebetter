@@ -111,10 +111,14 @@ func TestIdentityDataManager_AcceptAccountInvitation(T *testing.T) {
 		accountID := fakes.BuildFakeID()
 		accountInvitationID := fakes.BuildFakeID()
 		input := fakes.BuildFakeAccountInvitationUpdateRequestInput()
+		invitation := fakes.BuildFakeAccountInvitation()
+		invitation.ID = accountInvitationID
+		invitation.Token = input.Token
 
 		expectations := setupExpectationsForIdentityDataManager(
 			m,
 			func(db *identitymock.RepositoryMock) {
+				db.On(reflection.GetMethodName(m.identityRepo.GetAccountInvitationByTokenAndID), testutils.ContextMatcher, input.Token, accountInvitationID).Return(invitation, nil)
 				db.On(reflection.GetMethodName(m.identityRepo.AcceptAccountInvitation), testutils.ContextMatcher, accountID, accountInvitationID, input.Token, input.Note).Return(nil)
 			},
 			nil,
@@ -122,7 +126,7 @@ func TestIdentityDataManager_AcceptAccountInvitation(T *testing.T) {
 			nil,
 			nil,
 			map[string][]string{
-				identity.AccountInvitationCanceledServiceEventType: {identitykeys.AccountInvitationIDKey},
+				identity.AccountInvitationAcceptedServiceEventType: {identitykeys.AccountInvitationIDKey, "destination_account"},
 			},
 		)
 

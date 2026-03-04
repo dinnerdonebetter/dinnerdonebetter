@@ -89,6 +89,7 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 		searchDataIndexPublisher:         mockPublisher,
 		outboundEmailsPublisher:          mockPublisher,
 		webhookExecutionRequestPublisher: mockPublisher,
+		mobileNotificationsPublisher:     mockPublisher,
 		dataPrivacyRepo:                  dataPrivacyRepo,
 		mealPlanRepo:                     mealPlanRepo,
 		notificationsRepo:                notificationsRepo,
@@ -112,6 +113,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 				OutboundEmailsTopicName:           "outbound-emails",
 				SearchIndexRequestsTopicName:      "search-index-requests",
 				WebhookExecutionRequestsTopicName: "webhook-execution-requests",
+				MobileNotificationsTopicName:      "mobile-notifications",
 			},
 		}
 		identityRepo := &identitymock.RepositoryMock{}
@@ -141,6 +143,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "outbound-emails").Return(mockPublisher, nil)
 		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "search-index-requests").Return(mockPublisher, nil)
 		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "webhook-execution-requests").Return(mockPublisher, nil)
+		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "mobile-notifications").Return(mockPublisher, nil)
 
 		internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
 		mealPlanRepo := &mealplanningmock.Repository{}

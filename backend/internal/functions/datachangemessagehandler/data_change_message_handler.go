@@ -51,6 +51,7 @@ type AsyncDataChangeMessageHandler struct {
 	analyticsEventReporter                    analytics.EventReporter
 	dataChangesExecutionTimeHistogram         metrics.Float64Histogram
 	webhookExecutionRequestPublisher          messagequeue.Publisher
+	mobileNotificationsPublisher              messagequeue.Publisher
 	emailer                                   email.Emailer
 	uploadManager                             uploads.UploadManager
 	tracer                                    tracing.Tracer
@@ -134,6 +135,11 @@ func NewAsyncDataChangeMessageHandler(
 		return nil, fmt.Errorf("configuring webhook execution requests publisher: %w", err)
 	}
 
+	mobileNotificationsPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.Queues.MobileNotificationsTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("configuring mobile notifications publisher: %w", err)
+	}
+
 	return &AsyncDataChangeMessageHandler{
 		tracer:                               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		logger:                               logging.EnsureLogger(logger).WithName(o11yName),
@@ -148,6 +154,7 @@ func NewAsyncDataChangeMessageHandler(
 		searchDataIndexPublisher:             searchDataIndexPublisher,
 		queuesConfig:                         cfg.Queues,
 		webhookExecutionRequestPublisher:     webhookExecutionRequestPublisher,
+		mobileNotificationsPublisher:         mobileNotificationsPublisher,
 		emailer:                              emailer,
 		uploadManager:                        uploadManager,
 		dataChangesExecutionTimeHistogram:    dataChangesExecutionTimeHistogram,

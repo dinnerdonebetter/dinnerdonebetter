@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 )
 
 // MobileNotificationsEventHandler handles mobile notification requests from the mobile_notifications queue.
@@ -34,6 +35,8 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 	switch req.RequestType {
 	case notifications.MobileNotificationRequestTypeMealPlanTask:
 		return a.handleMealPlanTaskNotification(ctx, &req)
+	case notifications.MobileNotificationRequestTypeHouseholdInvitationAccepted:
+		return a.handleHouseholdInvitationAcceptedNotification(ctx, &req)
 	default:
 		return fmt.Errorf("unknown request type: %q", req.RequestType)
 	}
@@ -77,17 +80,7 @@ func (a *AsyncDataChangeMessageHandler) handleMealPlanTaskNotification(ctx conte
 
 	atLeastOneSent := false
 	for _, t := range deviceTokens {
-		if sendErr := a.pushNotificationSender.SendPush(ctx, t.Platform, t.DeviceToken, req.Title, req.Body); sendErr != nil {
-			logger.WithValue("user_device_token_id", t.ID).WithValue("error", sendErr).Error("sending push notification to device", sendErr)
-			if strings.Contains(sendErr.Error(), "BadDeviceToken") {
-				if archiveErr := a.notificationsRepo.ArchiveUserDeviceToken(ctx, t.BelongsToUser, t.ID); archiveErr != nil {
-					logger.WithValue("user_device_token_id", t.ID).Error("archiving invalid device token", archiveErr)
-				} else {
-					logger.WithValue("user_device_token_id", t.ID).Info("archived invalid device token (BadDeviceToken from APNs)")
-				}
-			}
-			// Continue to other tokens; don't fail entire batch
-		} else {
+		if a.sendPushToDevice(ctx, logger, t, req.Title, req.Body) {
 			atLeastOneSent = true
 		}
 	}
@@ -96,6 +89,48 @@ func (a *AsyncDataChangeMessageHandler) handleMealPlanTaskNotification(ctx conte
 		return nil // Don't mark as notified if every attempt failed; scheduler will retry
 	}
 	return a.mealPlanRepo.MarkMealPlanTaskNotificationSent(ctx, mealPlanTaskID)
+}
+
+// handleHouseholdInvitationAcceptedNotification sends push notifications to household members when someone joins.
+// RecipientUserIDs excludes the newly accepted user; ExcludedUserIDContextKey in context is for validation.
+func (a *AsyncDataChangeMessageHandler) handleHouseholdInvitationAcceptedNotification(ctx context.Context, req *notifications.MobileNotificationRequest) error {
+	ctx, span := a.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if len(req.RecipientUserIDs) == 0 {
+		return nil
+	}
+
+	deviceTokens, err := a.collectDeviceTokensForUsers(ctx, req.RecipientUserIDs)
+	if err != nil {
+		return observability.PrepareAndLogError(err, a.logger, span, "collecting device tokens")
+	}
+	if len(deviceTokens) == 0 {
+		return nil
+	}
+
+	logger := a.logger.WithValue("recipient_count", len(req.RecipientUserIDs)).WithValue("device_count", len(deviceTokens))
+	for _, t := range deviceTokens {
+		a.sendPushToDevice(ctx, logger, t, req.Title, req.Body)
+	}
+	return nil
+}
+
+// sendPushToDevice sends a push notification to a device and handles BadDeviceToken by archiving.
+// Returns true if the send succeeded.
+func (a *AsyncDataChangeMessageHandler) sendPushToDevice(ctx context.Context, logger logging.Logger, t *domainnotifications.UserDeviceToken, title, body string) bool {
+	if sendErr := a.pushNotificationSender.SendPush(ctx, t.Platform, t.DeviceToken, title, body); sendErr != nil {
+		logger.WithValue("user_device_token_id", t.ID).WithValue("error", sendErr).Error("sending push notification to device", sendErr)
+		if strings.Contains(sendErr.Error(), "BadDeviceToken") {
+			if archiveErr := a.notificationsRepo.ArchiveUserDeviceToken(ctx, t.BelongsToUser, t.ID); archiveErr != nil {
+				logger.WithValue("user_device_token_id", t.ID).Error("archiving invalid device token", archiveErr)
+			} else {
+				logger.WithValue("user_device_token_id", t.ID).Info("archived invalid device token (BadDeviceToken from APNs)")
+			}
+		}
+		return false
+	}
+	return true
 }
 
 func (a *AsyncDataChangeMessageHandler) collectDeviceTokensForUsers(ctx context.Context, userIDs []string) ([]*domainnotifications.UserDeviceToken, error) {

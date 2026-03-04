@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strings"
 	"sync"
 	"time"
 
@@ -18,8 +19,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	coreemails "github.com/dinnerdonebetter/backend/internal/services/identity/emails"
@@ -507,6 +510,52 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 		}
 
 		outboundEmailMessages = append(outboundEmailMessages, msg)
+
+	case identity.AccountInvitationAcceptedServiceEventType:
+		destinationAccountID, ok := changeMessage.Context["destination_account"].(string)
+		if !ok || destinationAccountID == "" {
+			logger.Debug("account invitation accepted: missing destination_account in context, skipping mobile notification")
+			return nil
+		}
+		acceptedUserID := changeMessage.UserID
+
+		var usersResult *filtering.QueryFilteredResult[identity.User]
+		usersResult, err = a.identityRepo.GetUsersForAccount(ctx, destinationAccountID, filtering.DefaultQueryFilter())
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "getting users for account")
+		}
+
+		var recipientUserIDs []string
+		for _, u := range usersResult.Data {
+			if u != nil && u.ID != "" && u.ID != acceptedUserID {
+				recipientUserIDs = append(recipientUserIDs, u.ID)
+			}
+		}
+		if len(recipientUserIDs) == 0 {
+			return nil
+		}
+
+		displayName := "Someone"
+		if user != nil {
+			if user.FirstName != "" || user.LastName != "" {
+				displayName = strings.TrimSpace(user.FirstName + " " + user.LastName)
+			} else if user.Username != "" {
+				displayName = user.Username
+			}
+		}
+
+		mobileReq := &notifications.MobileNotificationRequest{
+			RequestType:      notifications.MobileNotificationRequestTypeHouseholdInvitationAccepted,
+			RecipientUserIDs: recipientUserIDs,
+			Title:            "Someone joined your household",
+			Body:             fmt.Sprintf("%s joined your household", displayName),
+			Context: map[string]string{
+				notifications.ExcludedUserIDContextKey: acceptedUserID,
+			},
+		}
+		if err = a.mobileNotificationsPublisher.Publish(ctx, mobileReq); err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "publishing household invitation accepted mobile notification")
+		}
 	}
 
 	if len(outboundEmailMessages) == 0 {

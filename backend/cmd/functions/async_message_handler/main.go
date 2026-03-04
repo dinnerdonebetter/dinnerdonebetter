@@ -34,6 +34,7 @@ var (
 		identity.UserChangedActiveAccountServiceEventType,
 		identity.UserEmailAddressVerifiedEventType,
 		identity.UserEmailAddressVerificationEmailRequestedEventType,
+		identity.AccountInvitationAcceptedServiceEventType,
 		identity.AccountMemberRemovedServiceEventType,
 		identity.AccountMembershipPermissionsUpdatedServiceEventType,
 		identity.AccountOwnershipTransferredServiceEventType,
