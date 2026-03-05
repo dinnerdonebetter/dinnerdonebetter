@@ -5,6 +5,7 @@
 //  Created by Jeffrey Dorrycott on 12/8/25.
 //
 
+import RevenueCat
 import SwiftUI
 
 @main
@@ -13,6 +14,12 @@ struct IOSApp: App {
   @State private var eventReporterService = EventReporterService()
   @State private var authManager = AuthenticationManager()
   @State private var deepLinkHandler = DeepLinkHandler()
+
+  init() {
+    if RevenueCatConfiguration.isConfigured {
+      Purchases.configure(withAPIKey: RevenueCatConfiguration.revenueCatAPIKey)
+    }
+  }
 
   var body: some Scene {
     WindowGroup {
