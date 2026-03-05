@@ -1,9 +1,4 @@
 {
-	"pushNotifications": {
-		"apns": null,
-		"fcm": null,
-		"provider": "noop"
-	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -11,6 +6,11 @@
 		"mobileNotificationsTopicName": "mobile_notifications",
 		"userDataAggregationTopicName": "user_data_aggregation_requests",
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
+	"pushNotifications": {
+		"apns": null,
+		"fcm": null,
+		"provider": "noop"
 	},
 	"routing": {
 		"chiConfig": {
@@ -93,17 +93,6 @@
 		"runMode": "development",
 		"debug": true
 	},
-	"analytics": {
-		"segment": null,
-		"posthog": null,
-		"rudderstack": null,
-		"provider": "",
-		"circuitBreaker": {
-			"name": "feature_flagger",
-			"circuitBreakerErrorPercentage": 0.5,
-			"circuitBreakerMinimumOccurrenceThreshold": 100
-		}
-	},
 	"email": {
 		"sendgrid": null,
 		"mailgun": null,
@@ -115,6 +104,17 @@
 			"name": "",
 			"circuitBreakerErrorPercentage": 0,
 			"circuitBreakerMinimumOccurrenceThreshold": 0
+		}
+	},
+	"analytics": {
+		"segment": null,
+		"posthog": null,
+		"rudderstack": null,
+		"provider": "",
+		"circuitBreaker": {
+			"name": "feature_flagger",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
 	},
 	"search": {
@@ -188,6 +188,10 @@
 		"runMigrations": true
 	},
 	"services": {
+		"payments": {
+			"stripe": null,
+			"revenueCat": null
+		},
 		"users": {
 			"publicMediaURLPrefix": "",
 			"uploads": {
@@ -262,10 +266,6 @@
 		},
 		"oauth2Clients": {
 			"creationEnabled": false
-		},
-		"payments": {
-			"stripe": null,
-			"revenueCat": null
 		}
 	}
 }
