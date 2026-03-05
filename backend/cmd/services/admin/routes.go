@@ -51,6 +51,8 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get(fmt.Sprintf("/api/accounts/{%s}/audit-log", accountIDURLParamKey), ghttp.Adapt(s.AccountAuditLogList))
 	r.Get(fmt.Sprintf("/api/accounts/{%s}/subscriptions", accountIDURLParamKey), ghttp.Adapt(s.AccountSubscriptionsList))
 
+	r.Get("/oauth2_clients/new", ghttp.Adapt(s.OAuth2ClientNewPage))
+	r.Post("/api/oauth2_clients", ghttp.Adapt(s.OAuth2ClientCreate))
 	r.Get(fmt.Sprintf("/oauth2_clients/{%s}", oauth2ClientIDURLParamKey), ghttp.Adapt(s.OAuth2ClientPage))
 	r.Get("/oauth2_clients", ghttp.Adapt(s.OAuth2ClientsList))
 	r.Get("/api/oauth2_clients/search", ghttp.Adapt(s.OAuth2ClientsSearch))

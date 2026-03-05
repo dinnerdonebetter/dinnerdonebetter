@@ -25,10 +25,10 @@ const (
 	// APIServiceUsernameEnvVarKey is the environment variable name to set to override `MCPServiceConfig.APIServiceConnection.Username`.
 	APIServiceUsernameEnvVarKey = "DINNER_DONE_BETTER_API_SERVICE_USERNAME"
 
-	// AasaBundleIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.AppleAppSiteAssociation.BundleID`.
+	// AasaBundleIDEnvVarKey is the environment variable name to set to override `ConsumerWebappConfig.AppleAppSiteAssociation.BundleID`.
 	AasaBundleIDEnvVarKey = "DINNER_DONE_BETTER_AASA_BUNDLE_ID"
 
-	// AasaTeamIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.AppleAppSiteAssociation.TeamID`.
+	// AasaTeamIDEnvVarKey is the environment variable name to set to override `ConsumerWebappConfig.AppleAppSiteAssociation.TeamID`.
 	AasaTeamIDEnvVarKey = "DINNER_DONE_BETTER_AASA_TEAM_ID"
 
 	// AnalyticsCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.CircuitBreaker.ErrorRate`.

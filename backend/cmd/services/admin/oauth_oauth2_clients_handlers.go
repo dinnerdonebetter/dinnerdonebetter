@@ -17,6 +17,102 @@ const (
 	oauth2ClientIDURLParamKey = "oauth2ClientID"
 )
 
+func (s *AdminFrontendServer) OAuth2ClientCreate(res http.ResponseWriter, req *http.Request) (g.Node, error) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	c, err := fetchClientFromContext(ctx)
+	if err != nil {
+		return page("New OAuth2 Client", s.renderOAuth2ClientsError("Error: No API client available")), nil
+	}
+
+	var input *oauthsvc.OAuth2ClientCreationRequestInput
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+		return page("New OAuth2 Client", s.renderOAuth2ClientsError(fmt.Sprintf("Error decoding request: %v", err))), nil
+	}
+
+	createRes, err := c.CreateOAuth2Client(ctx, &oauthsvc.CreateOAuth2ClientRequest{
+		Input: input,
+	})
+	if err != nil {
+		return page("New OAuth2 Client", s.renderOAuth2ClientsError(fmt.Sprintf("Error creating OAuth2 client: %v", err))), nil
+	}
+
+	if createRes == nil || createRes.Created == nil {
+		return page("New OAuth2 Client", s.renderOAuth2ClientsError("Error: No OAuth2 client returned from server")), nil
+	}
+
+	http.Redirect(res, req, fmt.Sprintf("/oauth2_clients/%s", createRes.Created.Id), http.StatusSeeOther)
+	return g.El("div"), nil
+}
+
+func (s *AdminFrontendServer) OAuth2ClientNewPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	_, err := fetchClientFromContext(ctx)
+	if err != nil {
+		return page("New OAuth2 Client", s.renderOAuth2ClientsError("Error: No API client available")), nil
+	}
+
+	emptyInput := &oauthsvc.OAuth2ClientCreationRequestInput{}
+
+	formPageResult, err := components.FormPage(&components.FormPageProps[*oauthsvc.OAuth2ClientCreationRequestInput]{
+		Title:        "Create New OAuth2 Client",
+		BaseSubtitle: "Add a new OAuth2 client application",
+		Palette:      &design.StandardPalette,
+		Data:         emptyInput,
+		FormOptions: &components.FormOptions[*oauthsvc.OAuth2ClientCreationRequestInput]{
+			FormID: "create-oauth2-client-form",
+			Action: "/api/oauth2_clients",
+			Method: "POST",
+
+			EnabledFields: []string{
+				"name",
+				"description",
+			},
+
+			FieldConfigs: map[string]*components.FieldConfig{
+				"name": {
+					Placeholder: "Enter client name (e.g., iOS App, Admin Webapp)...",
+					Validation:  &components.FieldValidation{Required: true},
+				},
+				"description": {
+					Placeholder: "Enter description of the OAuth2 client...",
+					InputType:   "textarea",
+				},
+			},
+
+			FormRows: []*components.FormRow{
+				{Fields: []string{"name"}, Columns: 1},
+				{Fields: []string{"description"}, Columns: 1},
+			},
+
+			SubmitButtonText: "Create OAuth2 Client",
+			ShowCancelButton: true,
+			CancelButtonText: "Cancel",
+			CancelURL:        "/oauth2_clients",
+
+			HTMXTarget:    "body",
+			HTMXSwap:      "innerHTML",
+			HTMXPushURL:   true,
+			HTMXExtension: "json-enc",
+		},
+
+		ShowBreadcrumbs: true,
+		Breadcrumbs: []*components.Breadcrumb{
+			{Text: "Dashboard", URL: "/"},
+			{Text: "OAuth2 Clients", URL: "/oauth2_clients"},
+			{Text: "New OAuth2 Client", URL: ""},
+		},
+	})
+	if err != nil {
+		return page("New OAuth2 Client", s.renderOAuth2ClientsError(fmt.Sprintf("Error creating form: %v", err))), nil
+	}
+
+	return page("Create OAuth2 Client", formPageResult.Node), nil
+}
+
 func (s *AdminFrontendServer) OAuth2ClientPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -147,7 +243,9 @@ func (s *AdminFrontendServer) OAuth2ClientsList(_ http.ResponseWriter, req *http
 		SearchPlaceholder: "Search OAuth2 clients...",
 		HTMXSearchTarget:  "/api/oauth2_clients/search",
 		Data:              oauth2ClientsRes.Results,
-		Actions:           []g.Node{},
+		Actions: []g.Node{
+			components.ActionButton("Create OAuth2 Client", "/oauth2_clients/new", &design.StandardPalette, true),
+		},
 		TableOptions: &components.TableOptions[*oauthsvc.OAuth2Client]{
 			TableID: "oauth2-clients-table",
 			Palette: &design.StandardPalette,
@@ -172,7 +270,9 @@ func (s *AdminFrontendServer) OAuth2ClientsList(_ http.ResponseWriter, req *http
 		},
 		EmptyStateTitle:       "No OAuth2 clients found",
 		EmptyStateDescription: "No OAuth2 clients have been created yet.",
-		EmptyStateActions:     []g.Node{},
+		EmptyStateActions: []g.Node{
+			components.ActionButton("Create OAuth2 Client", "/oauth2_clients/new", &design.StandardPalette, true),
+		},
 		SubtitleGenerator: func(metadata components.TablePageMetadata) string {
 			if metadata.EmptyState {
 				return "Manage OAuth2 client applications"
