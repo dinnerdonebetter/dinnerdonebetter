@@ -248,6 +248,7 @@ struct ValidationTests {
   func testCanCreateMissingMeals() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
     let days = viewModel.displayedWeekDays
     viewModel.setDateRangeSelection(from: days[0], to: days[0])
 
@@ -259,6 +260,7 @@ struct ValidationTests {
   func testCanCreateValid() async {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()  // Use next week so dates are planable (not past/today)
     let days = viewModel.displayedWeekDays
     viewModel.setDateRangeSelection(from: days[0], to: days[1])
 
