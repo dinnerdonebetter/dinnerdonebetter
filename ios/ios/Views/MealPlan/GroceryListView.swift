@@ -8,10 +8,15 @@
 import SwiftProtobuf
 import SwiftUI
 
+private enum GroceryListViewMode {
+  case swipe
+  case list
+}
+
 struct GroceryListView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: GroceryListViewModel
-  @State private var showingSwipeReview = false
+  @State private var viewMode: GroceryListViewMode = .swipe
   @State private var showingQuantityInputForItemID: String?
   @State private var quantityInputText: String = ""
   @State private var showingEditQuantityNeededForItemID: String?
@@ -33,28 +38,36 @@ struct GroceryListView: View {
   }
 
   var body: some View {
-    menuView
-      .navigationTitle(viewModel.mealPlan.notes.isEmpty ? "Grocery List" : viewModel.mealPlan.notes)
-      .navigationBarTitleDisplayMode(.large)
-      .toolbar {
-        ToolbarItem(placement: .primaryAction) {
-          Button {
-            showingSwipeReview = true
-          } label: {
-            Label("Swipe review", systemImage: "hand.draw")
-          }
-          .disabled(viewModel.items.isEmpty)
+    Group {
+      switch viewMode {
+      case .swipe:
+        swipeReviewContent
+      case .list:
+        menuView
+      }
+    }
+    .navigationTitle(viewModel.mealPlan.notes.isEmpty ? "Grocery List" : viewModel.mealPlan.notes)
+    .navigationBarTitleDisplayMode(.large)
+    .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        Button {
+          viewMode = viewMode == .swipe ? .list : .swipe
+        } label: {
+          Label(
+            viewMode == .swipe ? "List view" : "Swipe review",
+            systemImage: viewMode == .swipe ? "list.bullet" : "hand.draw"
+          )
         }
+        .disabled(viewModel.items.isEmpty)
       }
-      .fullScreenCover(isPresented: $showingSwipeReview) {
-        SwipeReviewSheet(
-          viewModel: viewModel,
-          onDismiss: { showingSwipeReview = false }
-        )
-      }
-      .task {
-        await viewModel.loadItems()
-      }
+    }
+    .task {
+      await viewModel.loadItems()
+    }
+  }
+
+  private var swipeReviewContent: some View {
+    SwipeReviewContent(viewModel: viewModel)
   }
 
   private var menuView: some View {
@@ -262,11 +275,10 @@ struct GroceryListView: View {
   }
 }
 
-// MARK: - Swipe Review Sheet
+// MARK: - Swipe Review Content
 
-struct SwipeReviewSheet: View {
+private struct SwipeReviewContent: View {
   var viewModel: GroceryListViewModel
-  let onDismiss: () -> Void
 
   private var reviewItems: [Mealplanning_MealPlanGroceryListItem] {
     func sortPriority(_ status: Mealplanning_MealPlanGroceryListItemStatus) -> Int {
@@ -287,52 +299,55 @@ struct SwipeReviewSheet: View {
   }
 
   var body: some View {
-    NavigationStack {
-      List {
-        Section {
-          HStack {
-            HStack(spacing: 4) {
-              Image(systemName: "chevron.left")
-                .font(.caption2)
-              Text("Have")
-                .font(.caption2)
-            }
-            .foregroundColor(.green)
-            .frame(maxWidth: .infinity, alignment: .leading)
+    Group {
+      if viewModel.isLoading {
+        DSLoadingView("Loading grocery list...")
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+      } else if viewModel.items.isEmpty {
+        DSEmptyState(
+          icon: "cart",
+          title: "No grocery items",
+          message: "Grocery list items will appear here once the meal plan is finalized."
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+      } else {
+        List {
+          Section {
+            HStack {
+              HStack(spacing: 4) {
+                Image(systemName: "chevron.left")
+                  .font(.caption2)
+                Text("Have")
+                  .font(.caption2)
+              }
+              .foregroundColor(.green)
+              .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack(spacing: 4) {
-              Text("Need")
-                .font(.caption2)
-              Image(systemName: "chevron.right")
-                .font(.caption2)
+              HStack(spacing: 4) {
+                Text("Need")
+                  .font(.caption2)
+                Image(systemName: "chevron.right")
+                  .font(.caption2)
+              }
+              .foregroundColor(.orange)
+              .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            .foregroundColor(.orange)
-            .frame(maxWidth: .infinity, alignment: .trailing)
+            .listRowBackground(Color.clear)
+            .listRowInsets(EdgeInsets())
           }
-          .listRowBackground(Color.clear)
-          .listRowInsets(EdgeInsets())
-        }
 
-        Section {
-          ForEach(reviewItems, id: \.id) { item in
-            ResistantSwipeReviewRow(
-              item: item,
-              onMarkAsHave: { Task { await viewModel.markAsAlreadyOwned(item) } },
-              onMarkAsNeed: { Task { await viewModel.markAsNeeds(item) } }
-            )
-            .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
+          Section {
+            ForEach(reviewItems, id: \.id) { item in
+              ResistantSwipeReviewRow(
+                item: item,
+                onMarkAsHave: { Task { await viewModel.markAsAlreadyOwned(item) } },
+                onMarkAsNeed: { Task { await viewModel.markAsNeeds(item) } }
+              )
+              .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
+            }
           }
         }
-      }
-      .listStyle(.insetGrouped)
-      .navigationTitle("Swipe review")
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .confirmationAction) {
-          Button("Done") {
-            onDismiss()
-          }
-        }
+        .listStyle(.insetGrouped)
       }
     }
   }

@@ -16,6 +16,9 @@ struct ContentView: View {
   @State private var pendingInvitationID: String = ""
   @State private var pendingInvitationToken: String = ""
 
+  // Sheet for logged-in users who tap an invite link
+  @State private var showAcceptInvitationSheet: Bool = false
+
   var body: some View {
     Group {
       if authManager.isAuthenticated && !authManager.oauth2AccessToken.isEmpty {
@@ -45,6 +48,18 @@ struct ContentView: View {
       // Handle any pending deep link on appear
       handleDeepLink(deepLinkHandler.pendingDestination)
     }
+    .sheet(
+      isPresented: $showAcceptInvitationSheet,
+      onDismiss: { clearPendingInvitation() },
+      content: {
+        AcceptInvitationSheet(
+          invitationID: pendingInvitationID,
+          invitationToken: pendingInvitationToken,
+          onAccepted: {}
+        )
+        .environment(authManager)
+      }
+    )
   }
 
   private func handleDeepLink(_ destination: DeepLinkDestination?) {
@@ -52,11 +67,17 @@ struct ContentView: View {
 
     switch destination {
     case .acceptInvitation(let invitationID, let token):
-      // Store invitation data and navigate to registration
       pendingInvitationID = invitationID
       pendingInvitationToken = token
-      showLogin = false  // Show registration view
       deepLinkHandler.clearPendingDestination()
+
+      if authManager.isAuthenticated && !authManager.oauth2AccessToken.isEmpty {
+        // Logged in: show accept-invitation sheet
+        showAcceptInvitationSheet = true
+      } else {
+        // Not logged in: navigate to registration
+        showLogin = false
+      }
 
     case .resetPassword(let token):
       // swiftlint:disable:next todo
@@ -73,6 +94,11 @@ struct ContentView: View {
     case .unknown:
       break
     }
+  }
+
+  private func clearPendingInvitation() {
+    pendingInvitationID = ""
+    pendingInvitationToken = ""
   }
 }
 

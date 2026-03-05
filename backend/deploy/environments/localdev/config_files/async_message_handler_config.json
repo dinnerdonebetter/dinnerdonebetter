@@ -90,6 +90,8 @@
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
+		"resend": null,
+		"postmark": null,
 		"provider": "",
 		"circuitBreakerConfig": {
 			"name": "",

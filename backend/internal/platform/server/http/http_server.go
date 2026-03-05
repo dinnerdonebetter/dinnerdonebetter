@@ -19,8 +19,8 @@ import (
 )
 
 const (
-	serverNamespace = "dinner_done_better_api"
-	loggerName      = "api_server"
+	serverNamespace   = "dinner_done_better_api"
+	defaultLoggerName = "api_server"
 )
 
 type (
@@ -42,12 +42,18 @@ type (
 )
 
 // ProvideHTTPServer builds a new server instance.
+// serviceName, when non-empty, is used for the server's logger; otherwise "api_server" is used.
 func ProvideHTTPServer(
 	serverSettings Config,
 	logger logging.Logger,
 	router routing.Router,
 	tracerProvider tracing.TracerProvider,
+	serviceName string,
 ) (Server, error) {
+	loggerName := defaultLoggerName
+	if serviceName != "" {
+		loggerName = serviceName
+	}
 	srv := &server{
 		config: serverSettings,
 

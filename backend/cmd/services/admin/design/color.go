@@ -1,36 +1,12 @@
 package design
 
-type Color struct {
-	Name  string
-	Value string
-}
+import webappdesign "github.com/dinnerdonebetter/backend/internal/platform/webapp/design"
 
-type Palette struct {
-	Primary    Color
-	Secondary  Color
-	Warning    Color
-	Accent     Color
-	Background Color
-	Text       Color
-}
+type Color = webappdesign.Color
+type Palette = webappdesign.Palette
 
-var StandardPalette = Palette{
-	Primary:    Color{Name: "Primary Blue", Value: "blue-500"},
-	Secondary:  Color{Name: "Secondary Pink", Value: "pink-400"},
-	Accent:     Color{Name: "Accent Yellow", Value: "yellow-300"},
-	Warning:    Color{Name: "Warning Red", Value: "red-600"},
-	Background: Color{Name: "Background Gray", Value: "gray-100"},
-	Text:       Color{Name: "Text Dark", Value: "gray-700"},
-}
+var StandardPalette = webappdesign.StandardPalette
 
-func Background(c Color) string {
-	return "bg-" + c.Value
-}
-
-func TextColor(c Color) string {
-	return "text-" + c.Value
-}
-
-func BorderColor(c Color) string {
-	return "border-" + c.Value
-}
+func Background(c Color) string  { return webappdesign.Background(c) }
+func TextColor(c Color) string   { return webappdesign.TextColor(c) }
+func BorderColor(c Color) string { return webappdesign.BorderColor(c) }

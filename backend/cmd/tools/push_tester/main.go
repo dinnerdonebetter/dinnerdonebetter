@@ -91,5 +91,6 @@ func run() error {
 		return fmt.Errorf("invalid platform %q: must be ios or android", p)
 	}
 
-	return sender.SendPush(ctx, p, token, *title, *body)
+	msg := notifications.PushMessage{Title: *title, Body: *body}
+	return sender.SendPush(ctx, p, token, msg)
 }

@@ -259,6 +259,7 @@ class HomeViewModel {
         for: mealPlans.filter { $0.status == .finalized && $0.groceryListInitialized }
       )
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to load data: \(error.localizedDescription)"
       Self.logDiagnosticError("home data", error: error)
     }
@@ -364,6 +365,7 @@ class HomeViewModel {
         }
         allUserTasks.append(contentsOf: userTasks)
       } catch {
+        await authManager.invalidateCredentialsIfSessionError(error)
         print("⚠️ Failed to fetch tasks for meal plan \(mealPlan.id): \(error)")
       }
     }
@@ -401,6 +403,7 @@ class HomeViewModel {
           groceryLists[mealPlan.id] = response.results
         }
       } catch {
+        await authManager.invalidateCredentialsIfSessionError(error)
         print("⚠️ Failed to fetch grocery list for meal plan \(mealPlan.id): \(error)")
       }
     }

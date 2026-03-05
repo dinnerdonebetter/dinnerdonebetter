@@ -10,10 +10,14 @@ import SwiftUI
 
 struct MealPlanDetailView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(\.dismiss) private var dismiss
   let mealPlan: Mealplanning_MealPlan
   let groceryListItems: [Mealplanning_MealPlanGroceryListItem]?
   @State private var taskCount: Int?
   @State private var groceryListItemCount: Int?
+  @State private var showArchiveConfirmation = false
+  @State private var isArchiving = false
+  @State private var archiveError: String?
 
   var body: some View {
     ScrollView {
@@ -42,10 +46,75 @@ struct MealPlanDetailView: View {
       .dsScreenPadding()
     }
     .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        Button {
+          showArchiveConfirmation = true
+        } label: {
+          Label("Archive", systemImage: "archivebox")
+        }
+      }
+    }
+    .alert("Archive Meal Plan", isPresented: $showArchiveConfirmation) {
+      Button("Archive", role: .destructive) {
+        Task { await archiveMealPlan() }
+      }
+      Button("Cancel", role: .cancel) {}
+    } message: {
+      Text(
+        "This will remove the meal plan from your active plans. You can still access archived plans later."
+      )
+    }
+    .alert("Archive Failed", isPresented: .constant(archiveError != nil)) {
+      Button("OK") { archiveError = nil }
+    } message: {
+      if let error = archiveError {
+        Text(error)
+      }
+    }
+    .disabled(isArchiving)
     .task {
       await loadTaskCount()
       await loadGroceryListItemCount()
     }
+  }
+
+  private func archiveMealPlan() async {
+    isArchiving = true
+    archiveError = nil
+
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        archiveError = "Failed to connect"
+        isArchiving = false
+        return
+      }
+
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        archiveError = "Please sign in again"
+        isArchiving = false
+        return
+      }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+      var request = Mealplanning_ArchiveMealPlanRequest()
+      request.mealPlanID = mealPlan.id
+
+      _ = try await clientManager.client.mealPlanning.archiveMealPlan(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      NotificationCenter.default.post(name: .mealPlanArchived, object: nil)
+      dismiss()
+    } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
+      archiveError = error.localizedDescription
+    }
+
+    isArchiving = false
   }
 
   private func loadTaskCount() async {
@@ -85,6 +154,7 @@ struct MealPlanDetailView: View {
 
       taskCount = uniqueCount
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       print("⚠️ Failed to fetch task count: \(error)")
       taskCount = 0
     }
@@ -118,6 +188,7 @@ struct MealPlanDetailView: View {
 
       groceryListItemCount = response.results.count
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       print("⚠️ Failed to fetch grocery list item count: \(error)")
       groceryListItemCount = 0
     }

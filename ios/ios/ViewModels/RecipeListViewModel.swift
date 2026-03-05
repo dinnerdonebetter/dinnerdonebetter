@@ -69,6 +69,7 @@ class RecipeListViewModel {
 
       self.recipes = response.results
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to load recipes: \(error.localizedDescription)"
       print("❌ Error loading recipes: \(error)")
     }
@@ -134,6 +135,7 @@ class RecipeListViewModel {
 
       searchResults = response.results
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       searchError = "Failed to search recipes: \(error.localizedDescription)"
       print("❌ Error searching for recipes: \(error)")
       searchResults = []

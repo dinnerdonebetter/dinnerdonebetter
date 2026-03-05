@@ -80,7 +80,7 @@ func (a *AsyncDataChangeMessageHandler) handleMealPlanTaskNotification(ctx conte
 
 	atLeastOneSent := false
 	for _, t := range deviceTokens {
-		if a.sendPushToDevice(ctx, logger, t, req.Title, req.Body) {
+		if a.sendPushToDevice(ctx, logger, t, req) {
 			atLeastOneSent = true
 		}
 	}
@@ -111,15 +111,16 @@ func (a *AsyncDataChangeMessageHandler) handleHouseholdInvitationAcceptedNotific
 
 	logger := a.logger.WithValue("recipient_count", len(req.RecipientUserIDs)).WithValue("device_count", len(deviceTokens))
 	for _, t := range deviceTokens {
-		a.sendPushToDevice(ctx, logger, t, req.Title, req.Body)
+		a.sendPushToDevice(ctx, logger, t, req)
 	}
 	return nil
 }
 
 // sendPushToDevice sends a push notification to a device and handles BadDeviceToken by archiving.
 // Returns true if the send succeeded.
-func (a *AsyncDataChangeMessageHandler) sendPushToDevice(ctx context.Context, logger logging.Logger, t *domainnotifications.UserDeviceToken, title, body string) bool {
-	if sendErr := a.pushNotificationSender.SendPush(ctx, t.Platform, t.DeviceToken, title, body); sendErr != nil {
+func (a *AsyncDataChangeMessageHandler) sendPushToDevice(ctx context.Context, logger logging.Logger, t *domainnotifications.UserDeviceToken, req *notifications.MobileNotificationRequest) bool {
+	msg := notifications.PushMessage{Title: req.Title, Body: req.Body, BadgeCount: req.BadgeCount}
+	if sendErr := a.pushNotificationSender.SendPush(ctx, t.Platform, t.DeviceToken, msg); sendErr != nil {
 		logger.WithValue("user_device_token_id", t.ID).WithValue("error", sendErr).Error("sending push notification to device", sendErr)
 		if strings.Contains(sendErr.Error(), "BadDeviceToken") {
 			if archiveErr := a.notificationsRepo.ArchiveUserDeviceToken(ctx, t.BelongsToUser, t.ID); archiveErr != nil {

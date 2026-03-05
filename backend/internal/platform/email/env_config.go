@@ -11,6 +11,11 @@ import (
 )
 
 type (
+	// EmailBranding holds app-specific branding used when building Hermes email templates.
+	EmailBranding struct {
+		CompanyName string
+		LogoURL     string
+	}
 
 	// EnvironmentConfig is the configuration for a given environment.
 	EnvironmentConfig struct {
@@ -61,15 +66,19 @@ func (c *EnvironmentConfig) PasswordResetRedemptionEmailAddress() string {
 	return c.passwordResetRedemptionEmailAddress
 }
 
-func (c *EnvironmentConfig) BuildHermes() *hermes.Hermes {
+func (c *EnvironmentConfig) BuildHermes(branding *EmailBranding) *hermes.Hermes {
+	var name, logo, copyright string
+	if branding != nil {
+		name = branding.CompanyName
+		logo = branding.LogoURL
+		copyright = fmt.Sprintf("Copyright © %d %s. All rights reserved.", time.Now().Year(), branding.CompanyName)
+	}
 	return &hermes.Hermes{
 		Product: hermes.Product{
-			// Appears in header & footer of e-mails
-			Name: companyName,
-			Link: string(c.baseURL),
-			// Optional product logo
-			Logo:      logoURL,
-			Copyright: fmt.Sprintf("Copyright © %d %s. All rights reserved.", time.Now().Year(), companyName),
+			Name:      name,
+			Link:      string(c.baseURL),
+			Logo:      logo,
+			Copyright: copyright,
 		},
 	}
 }

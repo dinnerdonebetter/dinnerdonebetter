@@ -1,7 +1,7 @@
 {
 	"cookies": {
 		"domain": "",
-		"cookieName": " ",
+		"cookieName": "admin_webapp",
 		"base64EncodedHashKey": " ",
 		"base64EncodedBlockKey": " ",
 		"lifetime": 0,
@@ -15,7 +15,7 @@
 	},
 	"routing": {
 		"chiConfig": {
-			"serviceName": "admin_webapp",
+			"serviceName": "consumer_webapp",
 			"enableCORSForLocalhost": false
 		},
 		"provider": "chi"

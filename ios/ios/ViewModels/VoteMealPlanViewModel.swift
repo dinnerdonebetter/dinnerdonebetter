@@ -310,6 +310,7 @@ class VoteMealPlanViewModel {
 
       votingStatus = statusMap
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       print("❌ Error loading voting status: \(error)")
     }
 
@@ -380,6 +381,7 @@ class VoteMealPlanViewModel {
 
       return true
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       print("❌ Error abstaining from event: \(error)")
       return false
     }
@@ -490,6 +492,7 @@ class VoteMealPlanViewModel {
       isSubmitting = false
       return true
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       submissionError = "Failed to submit votes: \(error.localizedDescription)"
       print("❌ Error submitting votes: \(error)")
       isSubmitting = false

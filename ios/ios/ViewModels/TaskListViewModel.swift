@@ -61,6 +61,7 @@ class TaskListViewModel {
       // Load recipes for all tasks (will try to find recipe IDs from meal options if needed)
       await loadRecipesForTasks()
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to load tasks: \(error.localizedDescription)"
       print("❌ Error loading tasks: \(error)")
     }
@@ -334,6 +335,7 @@ class TaskListViewModel {
         let recipe = try await fetchRecipe(recipeID: recipeID)
         loadedRecipes[recipeID] = recipe
       } catch {
+        await authManager.invalidateCredentialsIfSessionError(error)
         print("⚠️ Failed to load recipe \(recipeID): \(error)")
       }
     }
@@ -421,6 +423,7 @@ class TaskListViewModel {
       // Reload tasks to get updated data from server
       await loadTasks()
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to update task: \(error.localizedDescription)"
       print("❌ Error updating task: \(error)")
 

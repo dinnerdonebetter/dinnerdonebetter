@@ -12,7 +12,6 @@
 		"userDataAggregationTopicName": "user_data_aggregation_requests",
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
-	"appleAppSiteAssociation": {},
 	"routing": {
 		"chiConfig": {
 			"serviceName": "api_server",
@@ -109,6 +108,8 @@
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
+		"resend": null,
+		"postmark": null,
 		"provider": "",
 		"circuitBreakerConfig": {
 			"name": "",

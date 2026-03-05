@@ -23,6 +23,7 @@ func TestProvideHTTPServer(T *testing.T) {
 			nil,
 			nil,
 			nil,
+			"",
 		)
 
 		assert.NotNil(t, x)

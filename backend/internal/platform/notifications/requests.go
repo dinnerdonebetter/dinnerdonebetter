@@ -18,8 +18,9 @@ const (
 // MobileNotificationRequest is the generic message payload for mobile push notifications.
 // RequestType determines which handler processes the request; schedulers format the message.
 type MobileNotificationRequest struct {
-	RequestType      string            `json:"requestType"`
 	Context          map[string]string `json:"context,omitempty"`
+	BadgeCount       *int              `json:"badgeCount,omitempty"`
+	RequestType      string            `json:"requestType"`
 	Title            string            `json:"title"`
 	Body             string            `json:"body"`
 	RecipientUserIDs []string          `json:"recipientUserIDs"`

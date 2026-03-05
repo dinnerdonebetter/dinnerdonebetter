@@ -165,6 +165,35 @@ resource "kubernetes_secret" "admin_webapp_config" {
   }
 }
 
+# Consumer webapp (root site): OAuth2 credentials + cookie config
+# Note: ConfigMap dinner-done-better-consumer-webapp-config (from kustomize) holds config.json;
+# this Secret holds sensitive values injected via env vars.
+resource "kubernetes_secret" "consumer_webapp_config" {
+  metadata {
+    name      = "dinner-done-better-consumer-webapp-secrets"
+    namespace = local.k8s_namespace
+
+    annotations = {
+      (local.managed_by_label) = "terraform"
+    }
+
+    labels = {
+      (local.managed_by_label) = "terraform"
+    }
+  }
+
+  depends_on = [kubernetes_namespace.prod]
+
+  data = {
+    OAUTH2_CLIENT_ID     = var.CONSUMER_WEBAPP_OAUTH2_CLIENT_ID
+    OAUTH2_CLIENT_SECRET = var.CONSUMER_WEBAPP_OAUTH2_CLIENT_SECRET
+    COOKIE_NAME          = var.CONSUMER_WEBAPP_COOKIE_NAME
+    COOKIE_HASH_KEY      = base64encode(random_string.consumer_webapp_cookie_hash_key.result)
+    COOKIE_BLOCK_KEY     = base64encode(random_string.consumer_webapp_cookie_block_key.result)
+    COOKIE_DOMAIN        = var.CONSUMER_WEBAPP_COOKIE_DOMAIN
+  }
+}
+
 # MCP server OAuth2 credentials for DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID / _SECRET
 resource "kubernetes_secret" "mcp_server_config" {
   metadata {

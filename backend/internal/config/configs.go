@@ -63,30 +63,31 @@ type (
 			MobileNotificationSchedulerConfig |
 			AsyncMessageHandlerConfig |
 			AdminWebappConfig |
+			ConsumerWebappConfig |
 			MCPServiceConfig
 	}
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_                       struct{}                      `json:"-"`
-		PushNotifications       notificationscfg.Config       `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
-		Queues                  msgconfig.QueuesConfig        `envPrefix:"QUEUES_"             json:"queues"`
-		AppleAppSiteAssociation AppleAppSiteAssociationConfig `envPrefix:"AASA_"               json:"appleAppSiteAssociation"`
-		Routing                 routingcfg.Config             `envPrefix:"ROUTING_"            json:"routing"`
-		Encoding                encoding.Config               `envPrefix:"ENCODING_"           json:"encoding"`
-		Events                  msgconfig.Config              `envPrefix:"EVENTS_"             json:"events"`
-		Observability           observability.Config          `envPrefix:"OBSERVABILITY_"      json:"observability"`
-		GRPCServer              grpc.Config                   `envPrefix:"GRPC_"               json:"grpc"`
-		Meta                    MetaSettings                  `envPrefix:"META_"               json:"meta"`
-		Analytics               analyticscfg.Config           `envPrefix:"ANALYTICS_"          json:"analytics"`
-		Email                   emailcfg.Config               `envPrefix:"EMAIL_"              json:"email"`
-		TextSearch              textsearchcfg.Config          `envPrefix:"SEARCH_"             json:"search"`
-		FeatureFlags            featureflagscfg.Config        `envPrefix:"FEATURE_FLAGS_"      json:"featureFlags"`
-		HTTPServer              http.Config                   `envPrefix:"HTTP_"               json:"http"`
-		Auth                    authcfg.Config                `envPrefix:"AUTH_"               json:"auth"`
-		Database                databasecfg.Config            `envPrefix:"DATABASE_"           json:"database"`
-		Services                ServicesConfig                `envPrefix:"SERVICE_"            json:"services"`
-		validateServices        bool
+		_ struct{} `json:"-"`
+
+		PushNotifications notificationscfg.Config `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
+		Queues            msgconfig.QueuesConfig  `envPrefix:"QUEUES_"             json:"queues"`
+		Routing           routingcfg.Config       `envPrefix:"ROUTING_"            json:"routing"`
+		Encoding          encoding.Config         `envPrefix:"ENCODING_"           json:"encoding"`
+		Events            msgconfig.Config        `envPrefix:"EVENTS_"             json:"events"`
+		Observability     observability.Config    `envPrefix:"OBSERVABILITY_"      json:"observability"`
+		GRPCServer        grpc.Config             `envPrefix:"GRPC_"               json:"grpc"`
+		Meta              MetaSettings            `envPrefix:"META_"               json:"meta"`
+		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
+		Email             emailcfg.Config         `envPrefix:"EMAIL_"              json:"email"`
+		TextSearch        textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
+		FeatureFlags      featureflagscfg.Config  `envPrefix:"FEATURE_FLAGS_"      json:"featureFlags"`
+		HTTPServer        http.Config             `envPrefix:"HTTP_"               json:"http"`
+		Auth              authcfg.Config          `envPrefix:"AUTH_"               json:"auth"`
+		Database          databasecfg.Config      `envPrefix:"DATABASE_"           json:"database"`
+		Services          ServicesConfig          `envPrefix:"SERVICE_"            json:"services"`
+		validateServices  bool
 	}
 
 	// DBCleanerConfig configures an instance of the database cleaner job.
@@ -151,7 +152,8 @@ type (
 
 	// AsyncMessageHandlerConfig configures an instance of the search data index scheduler job.
 	AsyncMessageHandlerConfig struct {
-		_                 struct{}                `json:"-"`
+		_ struct{} `json:"-"`
+
 		PushNotifications notificationscfg.Config `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
 		Queues            msgconfig.QueuesConfig  `envPrefix:"QUEUES_"             json:"queues"`
 		Storage           objectstorage.Config    `envPrefix:"STORAGE_"            json:"storage"`
@@ -214,6 +216,20 @@ type (
 		Observability        observability.Config             `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Meta                 MetaSettings                     `envPrefix:"META_"          json:"meta"`
 		HTTPServer           http.Config                      `envPrefix:"SERVER_"        json:"server"`
+	}
+
+	// ConsumerWebappConfig configures the consumer web app (root site replacement).
+	ConsumerWebappConfig struct {
+		_ struct{} `json:"-"`
+
+		Cookies                 cookies.Config                   `env:"init"                 envPrefix:"COOKIES_"           json:"cookies"`
+		APIServiceConnection    APIServiceOAuth2ConnectionConfig `envPrefix:"API_SERVICE_"   json:"apiServiceConfig"`
+		AppleAppSiteAssociation AppleAppSiteAssociationConfig    `envPrefix:"AASA_"          json:"appleAppSiteAssociation"`
+		Routing                 routingcfg.Config                `envPrefix:"ROUTING_"       json:"routing"`
+		Encoding                encoding.Config                  `envPrefix:"ENCODING_"      json:"encoding"`
+		Observability           observability.Config             `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Meta                    MetaSettings                     `envPrefix:"META_"          json:"meta"`
+		HTTPServer              http.Config                      `envPrefix:"SERVER_"        json:"server"`
 	}
 
 	// MCPServiceConfig configures an instance of the service. It is composed of all the other setting structs.
@@ -444,6 +460,30 @@ var _ validation.ValidatableWithContext = (*AdminWebappConfig)(nil)
 
 // ValidateWithContext validates a AdminWebappConfig struct.
 func (cfg *AdminWebappConfig) ValidateWithContext(ctx context.Context) error {
+	result := &multierror.Error{}
+
+	validators := map[string]func(context.Context) error{
+		"Cookies":       cfg.Cookies.ValidateWithContext,
+		"Encoding":      cfg.Encoding.ValidateWithContext,
+		"Observability": cfg.Observability.ValidateWithContext,
+		"Meta":          cfg.Meta.ValidateWithContext,
+		"Routing":       cfg.Routing.ValidateWithContext,
+		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
+	}
+
+	for name, validator := range validators {
+		if err := validator(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
+		}
+	}
+
+	return result.ErrorOrNil()
+}
+
+var _ validation.ValidatableWithContext = (*ConsumerWebappConfig)(nil)
+
+// ValidateWithContext validates a ConsumerWebappConfig struct.
+func (cfg *ConsumerWebappConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
 
 	validators := map[string]func(context.Context) error{

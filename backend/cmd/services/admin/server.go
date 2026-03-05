@@ -15,12 +15,7 @@ import (
 	phttp "github.com/dinnerdonebetter/backend/internal/platform/server/http"
 )
 
-const (
-	o11yName                       = "admin_frontend"
-	apiClientContextKey ContextKey = "api_client"
-)
-
-type ContextKey string
+const o11yName = "admin_frontend"
 
 type AdminFrontendServer struct {
 	tracer                                  tracing.Tracer
@@ -72,7 +67,11 @@ func NewAdminFrontendServer(
 		return nil, err
 	}
 
-	server, err := phttp.ProvideHTTPServer(cfg.HTTPServer, logger, router, tracerProvider)
+	serviceName := "admin_webapp"
+	if cfg.Routing.Chi != nil && cfg.Routing.Chi.ServiceName != "" {
+		serviceName = cfg.Routing.Chi.ServiceName
+	}
+	server, err := phttp.ProvideHTTPServer(cfg.HTTPServer, logger, router, tracerProvider, serviceName)
 	if err != nil {
 		return nil, err
 	}

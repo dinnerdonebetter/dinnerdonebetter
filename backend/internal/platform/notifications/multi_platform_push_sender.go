@@ -47,7 +47,7 @@ func NewMultiPlatformPushSender(
 }
 
 // SendPush sends a push notification to a single device token, routing by platform.
-func (s *MultiPlatformPushSender) SendPush(ctx context.Context, platform, token, title, body string) error {
+func (s *MultiPlatformPushSender) SendPush(ctx context.Context, platform, token string, msg PushMessage) error {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -59,12 +59,12 @@ func (s *MultiPlatformPushSender) SendPush(ctx context.Context, platform, token,
 		if s.apnsSender == nil {
 			return observability.PrepareAndLogError(ErrPlatformNotSupported, logger, span, "sending apns notification")
 		}
-		return s.apnsSender.Send(ctx, token, title, body)
+		return s.apnsSender.Send(ctx, token, msg.Title, msg.Body, msg.BadgeCount)
 	case platformAndroid:
 		if s.fcmSender == nil {
 			return observability.PrepareAndLogError(ErrPlatformNotSupported, logger, span, "sending apns notification")
 		}
-		return s.fcmSender.Send(ctx, token, title, body)
+		return s.fcmSender.Send(ctx, token, msg.Title, msg.Body)
 	default:
 		return observability.PrepareAndLogError(fmt.Errorf("unknown platform %q", platform), logger, span, "sending apns notification")
 	}

@@ -41,6 +41,7 @@ class GroceryListViewModel {
       let fetchedItems = try await fetchGroceryListItems()
       self.items = fetchedItems
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to load grocery list: \(error.localizedDescription)"
       print("❌ Error loading grocery list: \(error)")
     }
@@ -118,6 +119,7 @@ class GroceryListViewModel {
       // Reload items to get updated data
       await loadItems()
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to update item: \(error.localizedDescription)"
       print("❌ Error updating grocery list item: \(error)")
     }

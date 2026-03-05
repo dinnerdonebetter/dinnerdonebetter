@@ -128,6 +128,7 @@ class CreateMealViewModel {
         searchResults = response.results
       }
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       if searchQuery.trimmingCharacters(in: .whitespacesAndNewlines) == query {
         searchError = "Failed to search: \(error.localizedDescription)"
         searchResults = []
@@ -186,6 +187,7 @@ class CreateMealViewModel {
       )
       draftComponents.append(component)
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       addRecipeError = "Failed to add recipe: \(error.localizedDescription)"
     }
 
@@ -271,6 +273,7 @@ class CreateMealViewModel {
       isCreating = false
       return true
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       creationError = "Failed to create meal: \(error.localizedDescription)"
       isCreating = false
       return false

@@ -75,7 +75,8 @@ func NewSender(cfg *Config, tracerProvider tracing.TracerProvider, logger loggin
 
 // Send sends a push notification to a single device token.
 // The device token must be a 64-character hex string (APNs format).
-func (s *Sender) Send(ctx context.Context, deviceToken, title, body string) error {
+// badgeCount is optional; when non-nil, sets aps.badge on the app icon.
+func (s *Sender) Send(ctx context.Context, deviceToken, title, body string, badgeCount *int) error {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -88,6 +89,9 @@ func (s *Sender) Send(ctx context.Context, deviceToken, title, body string) erro
 	p := payload.NewPayload().
 		AlertTitle(title).
 		AlertBody(body)
+	if badgeCount != nil {
+		p = p.Badge(*badgeCount)
+	}
 
 	n := &apns2.Notification{
 		DeviceToken: deviceToken,

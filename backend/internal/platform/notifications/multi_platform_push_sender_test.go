@@ -21,7 +21,7 @@ func TestMultiPlatformPushSender_SendPush(t *testing.T) {
 		t.Parallel()
 
 		sender := NewMultiPlatformPushSender(nil, nil, logger, tracer)
-		err := sender.SendPush(ctx, "ios", "token", "title", "body")
+		err := sender.SendPush(ctx, "ios", "token", PushMessage{Title: "title", Body: "body"})
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, ErrPlatformNotSupported)
 	})
@@ -30,7 +30,7 @@ func TestMultiPlatformPushSender_SendPush(t *testing.T) {
 		t.Parallel()
 
 		sender := NewMultiPlatformPushSender(nil, nil, logger, tracer)
-		err := sender.SendPush(ctx, "android", "token", "title", "body")
+		err := sender.SendPush(ctx, "android", "token", PushMessage{Title: "title", Body: "body"})
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, ErrPlatformNotSupported)
 	})
@@ -39,7 +39,7 @@ func TestMultiPlatformPushSender_SendPush(t *testing.T) {
 		t.Parallel()
 
 		sender := NewMultiPlatformPushSender(nil, nil, logger, tracer)
-		err := sender.SendPush(ctx, "unknown", "token", "title", "body")
+		err := sender.SendPush(ctx, "unknown", "token", PushMessage{Title: "title", Body: "body"})
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "unknown platform")
 	})

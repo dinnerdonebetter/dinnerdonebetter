@@ -277,6 +277,7 @@ class CreateMealPlanViewModel {
         searchResults = response.results
       }
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       if searchQuery.trimmingCharacters(in: .whitespacesAndNewlines) == queryWhenStarted {
         searchError = "Failed to search meals: \(error.localizedDescription)"
         searchResults = []
@@ -444,6 +445,7 @@ class CreateMealPlanViewModel {
       isCreating = false
       return true
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       creationError = "Failed to create meal plan: \(error.localizedDescription)"
       isCreating = false
       return false

@@ -101,7 +101,6 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	appleAppSiteAssociationConfig := cfg.AppleAppSiteAssociation
 	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, repository, client)
 	stubPaymentProcessor := adapters.NewStubPaymentProcessor()
 	paymentsDataManager, err := manager2.NewPaymentsDataManager(ctx, tracerProvider, logger, paymentsRepository, stubPaymentProcessor, identityDataManager, queuesConfig, publisherProvider)
@@ -110,11 +109,12 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	}
 	webhookSignatureHeader := _wireWebhookSignatureHeaderValue
 	webhookHandler := http2.NewWebhookHandler(logger, tracerProvider, paymentsDataManager, webhookSignatureHeader)
-	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, authDataService, appleAppSiteAssociationConfig, webhookHandler)
+	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, authDataService, webhookHandler)
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(httpConfig, logger, router, tracerProvider)
+	string2 := _wireStringValue
+	server, err := http.ProvideHTTPServer(httpConfig, logger, router, tracerProvider, string2)
 	if err != nil {
 		return nil, err
 	}
@@ -123,4 +123,5 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 
 var (
 	_wireWebhookSignatureHeaderValue = http2.WebhookSignatureHeader(http2.StripeSignatureHeader)
+	_wireStringValue                 = "api_server"
 )

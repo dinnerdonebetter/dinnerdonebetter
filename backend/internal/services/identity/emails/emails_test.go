@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/branding"
 	authfakes "github.com/dinnerdonebetter/backend/internal/domain/auth/fakes"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
@@ -24,7 +25,7 @@ func TestBuildGeneratedPasswordResetTokenEmail(T *testing.T) {
 		actual, err := BuildGeneratedPasswordResetTokenEmail(user, token, &email.EnvironmentConfig{})
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
-		assert.Contains(t, actual.HTMLContent, logoURL)
+		assert.Contains(t, actual.HTMLContent, branding.LogoURL)
 	})
 }
 

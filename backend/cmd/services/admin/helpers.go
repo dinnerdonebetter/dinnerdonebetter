@@ -6,17 +6,22 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/webappauth"
+	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	g "maragu.dev/gomponents"
 )
+
+func fetchClientFromContext(ctx context.Context) (client.Client, error) {
+	return webappauth.ClientFromContext(ctx)
+}
 
 func fetchErrorString(err error, key string) string {
 	var validErr validation.Errors
@@ -48,29 +53,6 @@ func renderTimestamp(value any) g.Node {
 	default:
 		return g.Text(fmt.Sprintf("%v", v))
 	}
-}
-
-// buildCookie provides a consistent way of constructing an HTTP cookie.
-func (s *AdminFrontendServer) buildCookie(ctx context.Context, value string) *http.Cookie {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	expiry := time.Now().Add(s.config.Cookies.Lifetime)
-
-	// https://www.calhoun.io/securing-cookies-in-go/
-	cookie := &http.Cookie{
-		Name:     s.config.Cookies.CookieName,
-		Value:    value,
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   s.config.Cookies.SecureOnly,
-		// Domain:   s.config.Cookies.Domain,
-		Expires:  expiry,
-		SameSite: http.SameSiteLaxMode,
-		MaxAge:   int(time.Until(expiry).Seconds()),
-	}
-
-	return cookie
 }
 
 // buildQueryFilterFromRequest extracts a QueryFilter from the HTTP request and converts it to a gRPC filter.

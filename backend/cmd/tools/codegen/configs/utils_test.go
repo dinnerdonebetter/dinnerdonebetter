@@ -12,7 +12,7 @@ func Test_internalKubernetesEndpoint(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		expected := "https://service.namespace.svc.cluster.local:1234"
+		expected := "service.namespace.svc.cluster.local:1234"
 		actual := internalKubernetesEndpoint("service", "namespace", 1234)
 
 		assert.Equal(t, expected, actual)

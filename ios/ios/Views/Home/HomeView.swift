@@ -125,6 +125,13 @@ struct HomeView: View {
           }
         }
       }
+      .onReceive(NotificationCenter.default.publisher(for: .mealPlanArchived)) { _ in
+        if let viewModel = viewModel {
+          Task {
+            await viewModel.loadData()
+          }
+        }
+      }
     }
   }
 

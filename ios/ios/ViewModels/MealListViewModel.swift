@@ -68,6 +68,7 @@ class MealListViewModel {
 
       self.meals = response.results
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to load meals: \(error.localizedDescription)"
       print("❌ Error loading meals: \(error)")
     }
@@ -133,6 +134,7 @@ class MealListViewModel {
 
       searchResults = response.results
     } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
       searchError = "Failed to search meals: \(error.localizedDescription)"
       print("❌ Error searching for meals: \(error)")
       searchResults = []

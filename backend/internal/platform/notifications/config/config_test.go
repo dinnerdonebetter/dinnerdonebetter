@@ -119,7 +119,7 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, sender)
 		// Noop returns nil on SendPush
-		assert.NoError(t, sender.SendPush(ctx, "ios", "token", "title", "body"))
+		assert.NoError(t, sender.SendPush(ctx, "ios", "token", notifications.PushMessage{Title: "title", Body: "body"}))
 	})
 
 	t.Run("with noop provider returns noop", func(t *testing.T) {
@@ -129,7 +129,7 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		sender, err := cfg.ProvidePushSender(ctx, logger, tracer)
 		require.NoError(t, err)
 		require.NotNil(t, sender)
-		assert.NoError(t, sender.SendPush(ctx, "android", "token", "title", "body"))
+		assert.NoError(t, sender.SendPush(ctx, "android", "token", notifications.PushMessage{Title: "title", Body: "body"}))
 	})
 
 	t.Run("with apns_fcm provider and nil APNs returns noop or FCM-only sender", func(t *testing.T) {
@@ -144,7 +144,7 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, sender)
 		// FCM init typically fails in unit tests (no ADC), so we get noop; if it succeeds, iOS would error
-		_ = sender.SendPush(ctx, "ios", "token", "title", "body")
+		_ = sender.SendPush(ctx, "ios", "token", notifications.PushMessage{Title: "title", Body: "body"})
 	})
 
 	t.Run("with apns_fcm provider and nil FCM returns iOS-only sender", func(t *testing.T) {
@@ -160,7 +160,7 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, sender)
 		// Android not configured, should return ErrPlatformNotSupported
-		err = sender.SendPush(ctx, "android", "token", "title", "body")
+		err = sender.SendPush(ctx, "android", "token", notifications.PushMessage{Title: "title", Body: "body"})
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, notifications.ErrPlatformNotSupported)
 	})
@@ -177,7 +177,7 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, sender)
 		// APNs init fails; FCM init typically fails in unit tests, so we get noop
-		_ = sender.SendPush(ctx, "ios", "token", "title", "body")
+		_ = sender.SendPush(ctx, "ios", "token", notifications.PushMessage{Title: "title", Body: "body"})
 	})
 
 	t.Run("with apns_fcm provider and invalid FCM path returns iOS-only sender", func(t *testing.T) {
@@ -193,7 +193,7 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, sender)
 		// FCM init fails, so Android not configured; should return ErrPlatformNotSupported
-		err = sender.SendPush(ctx, "android", "token", "title", "body")
+		err = sender.SendPush(ctx, "android", "token", notifications.PushMessage{Title: "title", Body: "body"})
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, notifications.ErrPlatformNotSupported)
 	})
@@ -205,6 +205,6 @@ func TestConfig_ProvidePushSender(t *testing.T) {
 		sender, err := cfg.ProvidePushSender(ctx, logger, tracer)
 		require.NoError(t, err)
 		require.NotNil(t, sender)
-		assert.NoError(t, sender.SendPush(ctx, "ios", "token", "title", "body"))
+		assert.NoError(t, sender.SendPush(ctx, "ios", "token", notifications.PushMessage{Title: "title", Body: "body"}))
 	})
 }
