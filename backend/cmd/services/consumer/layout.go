@@ -52,6 +52,79 @@ func page(title string, children ...g.Node) g.Node {
 					g.Group(children),
 				),
 			),
+			footer(),
+		),
+	)
+}
+
+// legalPage renders a page for long-form legal content (Terms, Privacy Policy).
+// Uses prose typography and top-aligned layout instead of centered.
+func legalPage(title string, children ...g.Node) g.Node {
+	palette := &design.StandardPalette
+
+	return ghtml.HTML(
+		ghtml.Lang("en"),
+		ghtml.Head(
+			ghtml.Meta(ghtml.Charset("utf-8")),
+			ghtml.Meta(ghtml.Name("viewport"), ghtml.Content("width=device-width, initial-scale=1")),
+			ghtml.Title(fmt.Sprintf("%s - %s", title, appName)),
+			tailwindImport,
+			htmxImport,
+		),
+		ghtml.Body(
+			ghtml.Class(fmt.Sprintf("min-h-screen flex flex-col %s %s",
+				design.Background(palette.Background),
+				design.TextColor(palette.Text),
+			)),
+			header(),
+			ghtml.Main(
+				ghtml.Class("flex-1 flex items-start justify-center p-4"),
+				ghtml.Div(
+					ghtml.Class("w-full max-w-3xl prose prose-lg"),
+					g.Group(children),
+				),
+			),
+			footer(),
+		),
+	)
+}
+
+func footer() g.Node {
+	palette := &design.StandardPalette
+
+	return ghtml.Footer(
+		ghtml.Class(fmt.Sprintf("border-t %s %s",
+			design.BorderColor(palette.Text),
+			design.Background(palette.Background),
+		)),
+		ghtml.Div(
+			ghtml.Class("max-w-4xl mx-auto px-4 py-4"),
+			ghtml.Div(
+				ghtml.Class("flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0"),
+				ghtml.P(
+					ghtml.Class(fmt.Sprintf("text-sm %s", design.TextColor(palette.Text))),
+					g.Textf("© 2025 %s. All rights reserved.", appName),
+				),
+				ghtml.Div(
+					ghtml.Class("flex space-x-4 text-sm"),
+					ghtml.A(
+						ghtml.Href("/privacy"),
+						ghtml.Class(fmt.Sprintf("%s hover:%s transition-colors duration-200",
+							design.TextColor(palette.Text),
+							design.TextColor(palette.Primary),
+						)),
+						g.Text("Privacy Policy"),
+					),
+					ghtml.A(
+						ghtml.Href("/terms"),
+						ghtml.Class(fmt.Sprintf("%s hover:%s transition-colors duration-200",
+							design.TextColor(palette.Text),
+							design.TextColor(palette.Primary),
+						)),
+						g.Text("Terms of Service"),
+					),
+				),
+			),
 		),
 	)
 }
