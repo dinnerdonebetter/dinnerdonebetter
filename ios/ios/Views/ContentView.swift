@@ -23,10 +23,14 @@ struct ContentView: View {
   var body: some View {
     Group {
       if authManager.isAuthenticated && !authManager.oauth2AccessToken.isEmpty {
-        HomeView()
-          .presentPaywallIfNeeded(
-            requiredEntitlementIdentifier: EntitlementService.proEntitlementID
-          )
+        if RevenueCatConfiguration.isConfigured {
+          HomeView()
+            .presentPaywallIfNeeded(
+              requiredEntitlementIdentifier: EntitlementService.proEntitlementID
+            )
+        } else {
+          HomeView()
+        }
       } else if showLogin {
         LoginView(
           showRegister: Binding(

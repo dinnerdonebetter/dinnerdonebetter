@@ -3,13 +3,23 @@
 //  ios
 //
 //  Handles push notification lifecycle (device token registration).
+//  Configures RevenueCat here (before any SwiftUI views) so Purchases.shared
+//  is never accessed before configure().
 //
 
+import RevenueCat
 import UIKit
 import UserNotifications
 
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 class AppDelegate: NSObject, UIApplicationDelegate {
+  override init() {
+    super.init()
+    if RevenueCatConfiguration.isConfigured {
+      Purchases.configure(withAPIKey: RevenueCatConfiguration.revenueCatAPIKey)
+    }
+  }
+
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil

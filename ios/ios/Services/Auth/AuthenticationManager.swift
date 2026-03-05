@@ -120,7 +120,9 @@ class AuthenticationManager: AuthenticationManaging {
 
     self.isAuthenticated = true
     print("🔧 Restored credentials from Keychain for user: \(self.username)")
-    Task { await logInToRevenueCatIfNeeded() }
+    // Do NOT call logInToRevenueCatIfNeeded here. AuthManager init runs during
+    // @State setup, before IOSApp.init(), so any Task here runs before
+    // Purchases.configure() and crashes. Sync is triggered from iosApp.onAppear.
   }
 
   /// Clear all saved credentials from the Keychain.
@@ -129,7 +131,8 @@ class AuthenticationManager: AuthenticationManaging {
   }
 
   /// Log in to RevenueCat with the current account ID so purchases are tied to the user.
-  private func logInToRevenueCatIfNeeded() async {
+  /// Call from iosApp.onAppear (after Purchases.configure), not from restoreCredentials.
+  func logInToRevenueCatIfNeeded() async {
     guard RevenueCatConfiguration.isConfigured else { return }
     guard !accountID.isEmpty else { return }
     do {
