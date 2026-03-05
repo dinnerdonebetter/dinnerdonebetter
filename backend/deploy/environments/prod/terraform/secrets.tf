@@ -41,6 +41,9 @@ resource "random_string" "consumer_webapp_cookie_block_key" {
 # Sendgrid token
 variable "SENDGRID_API_KEY" {}
 
+# Resend API key
+variable "RESEND_API_KEY" {}
+
 # Segment API token
 variable "SEGMENT_API_TOKEN" {}
 
