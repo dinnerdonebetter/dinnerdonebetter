@@ -25,13 +25,11 @@ const (
 	PaymentsService_GetProducts_FullMethodName                 = "/payments.PaymentsService/GetProducts"
 	PaymentsService_UpdateProduct_FullMethodName               = "/payments.PaymentsService/UpdateProduct"
 	PaymentsService_ArchiveProduct_FullMethodName              = "/payments.PaymentsService/ArchiveProduct"
-	PaymentsService_CreateCheckoutSession_FullMethodName       = "/payments.PaymentsService/CreateCheckoutSession"
 	PaymentsService_CreateSubscription_FullMethodName          = "/payments.PaymentsService/CreateSubscription"
 	PaymentsService_GetSubscription_FullMethodName             = "/payments.PaymentsService/GetSubscription"
 	PaymentsService_GetSubscriptionsForAccount_FullMethodName  = "/payments.PaymentsService/GetSubscriptionsForAccount"
 	PaymentsService_UpdateSubscription_FullMethodName          = "/payments.PaymentsService/UpdateSubscription"
 	PaymentsService_ArchiveSubscription_FullMethodName         = "/payments.PaymentsService/ArchiveSubscription"
-	PaymentsService_CancelSubscription_FullMethodName          = "/payments.PaymentsService/CancelSubscription"
 	PaymentsService_GetPurchasesForAccount_FullMethodName      = "/payments.PaymentsService/GetPurchasesForAccount"
 	PaymentsService_GetPaymentHistoryForAccount_FullMethodName = "/payments.PaymentsService/GetPaymentHistoryForAccount"
 )
@@ -45,13 +43,11 @@ type PaymentsServiceClient interface {
 	GetProducts(ctx context.Context, in *GetProductsRequest, opts ...grpc.CallOption) (*GetProductsResponse, error)
 	UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*UpdateProductResponse, error)
 	ArchiveProduct(ctx context.Context, in *ArchiveProductRequest, opts ...grpc.CallOption) (*ArchiveProductResponse, error)
-	CreateCheckoutSession(ctx context.Context, in *CreateCheckoutSessionRequest, opts ...grpc.CallOption) (*CreateCheckoutSessionResponse, error)
 	CreateSubscription(ctx context.Context, in *CreateSubscriptionRequest, opts ...grpc.CallOption) (*CreateSubscriptionResponse, error)
 	GetSubscription(ctx context.Context, in *GetSubscriptionRequest, opts ...grpc.CallOption) (*GetSubscriptionResponse, error)
 	GetSubscriptionsForAccount(ctx context.Context, in *GetSubscriptionsForAccountRequest, opts ...grpc.CallOption) (*GetSubscriptionsForAccountResponse, error)
 	UpdateSubscription(ctx context.Context, in *UpdateSubscriptionRequest, opts ...grpc.CallOption) (*UpdateSubscriptionResponse, error)
 	ArchiveSubscription(ctx context.Context, in *ArchiveSubscriptionRequest, opts ...grpc.CallOption) (*ArchiveSubscriptionResponse, error)
-	CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*CancelSubscriptionResponse, error)
 	GetPurchasesForAccount(ctx context.Context, in *GetPurchasesForAccountRequest, opts ...grpc.CallOption) (*GetPurchasesForAccountResponse, error)
 	GetPaymentHistoryForAccount(ctx context.Context, in *GetPaymentHistoryForAccountRequest, opts ...grpc.CallOption) (*GetPaymentHistoryForAccountResponse, error)
 }
@@ -114,16 +110,6 @@ func (c *paymentsServiceClient) ArchiveProduct(ctx context.Context, in *ArchiveP
 	return out, nil
 }
 
-func (c *paymentsServiceClient) CreateCheckoutSession(ctx context.Context, in *CreateCheckoutSessionRequest, opts ...grpc.CallOption) (*CreateCheckoutSessionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateCheckoutSessionResponse)
-	err := c.cc.Invoke(ctx, PaymentsService_CreateCheckoutSession_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *paymentsServiceClient) CreateSubscription(ctx context.Context, in *CreateSubscriptionRequest, opts ...grpc.CallOption) (*CreateSubscriptionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateSubscriptionResponse)
@@ -174,16 +160,6 @@ func (c *paymentsServiceClient) ArchiveSubscription(ctx context.Context, in *Arc
 	return out, nil
 }
 
-func (c *paymentsServiceClient) CancelSubscription(ctx context.Context, in *CancelSubscriptionRequest, opts ...grpc.CallOption) (*CancelSubscriptionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CancelSubscriptionResponse)
-	err := c.cc.Invoke(ctx, PaymentsService_CancelSubscription_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *paymentsServiceClient) GetPurchasesForAccount(ctx context.Context, in *GetPurchasesForAccountRequest, opts ...grpc.CallOption) (*GetPurchasesForAccountResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetPurchasesForAccountResponse)
@@ -213,13 +189,11 @@ type PaymentsServiceServer interface {
 	GetProducts(context.Context, *GetProductsRequest) (*GetProductsResponse, error)
 	UpdateProduct(context.Context, *UpdateProductRequest) (*UpdateProductResponse, error)
 	ArchiveProduct(context.Context, *ArchiveProductRequest) (*ArchiveProductResponse, error)
-	CreateCheckoutSession(context.Context, *CreateCheckoutSessionRequest) (*CreateCheckoutSessionResponse, error)
 	CreateSubscription(context.Context, *CreateSubscriptionRequest) (*CreateSubscriptionResponse, error)
 	GetSubscription(context.Context, *GetSubscriptionRequest) (*GetSubscriptionResponse, error)
 	GetSubscriptionsForAccount(context.Context, *GetSubscriptionsForAccountRequest) (*GetSubscriptionsForAccountResponse, error)
 	UpdateSubscription(context.Context, *UpdateSubscriptionRequest) (*UpdateSubscriptionResponse, error)
 	ArchiveSubscription(context.Context, *ArchiveSubscriptionRequest) (*ArchiveSubscriptionResponse, error)
-	CancelSubscription(context.Context, *CancelSubscriptionRequest) (*CancelSubscriptionResponse, error)
 	GetPurchasesForAccount(context.Context, *GetPurchasesForAccountRequest) (*GetPurchasesForAccountResponse, error)
 	GetPaymentHistoryForAccount(context.Context, *GetPaymentHistoryForAccountRequest) (*GetPaymentHistoryForAccountResponse, error)
 	mustEmbedUnimplementedPaymentsServiceServer()
@@ -247,9 +221,6 @@ func (UnimplementedPaymentsServiceServer) UpdateProduct(context.Context, *Update
 func (UnimplementedPaymentsServiceServer) ArchiveProduct(context.Context, *ArchiveProductRequest) (*ArchiveProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveProduct not implemented")
 }
-func (UnimplementedPaymentsServiceServer) CreateCheckoutSession(context.Context, *CreateCheckoutSessionRequest) (*CreateCheckoutSessionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateCheckoutSession not implemented")
-}
 func (UnimplementedPaymentsServiceServer) CreateSubscription(context.Context, *CreateSubscriptionRequest) (*CreateSubscriptionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSubscription not implemented")
 }
@@ -264,9 +235,6 @@ func (UnimplementedPaymentsServiceServer) UpdateSubscription(context.Context, *U
 }
 func (UnimplementedPaymentsServiceServer) ArchiveSubscription(context.Context, *ArchiveSubscriptionRequest) (*ArchiveSubscriptionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveSubscription not implemented")
-}
-func (UnimplementedPaymentsServiceServer) CancelSubscription(context.Context, *CancelSubscriptionRequest) (*CancelSubscriptionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CancelSubscription not implemented")
 }
 func (UnimplementedPaymentsServiceServer) GetPurchasesForAccount(context.Context, *GetPurchasesForAccountRequest) (*GetPurchasesForAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPurchasesForAccount not implemented")
@@ -385,24 +353,6 @@ func _PaymentsService_ArchiveProduct_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PaymentsService_CreateCheckoutSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateCheckoutSessionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PaymentsServiceServer).CreateCheckoutSession(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PaymentsService_CreateCheckoutSession_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentsServiceServer).CreateCheckoutSession(ctx, req.(*CreateCheckoutSessionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _PaymentsService_CreateSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateSubscriptionRequest)
 	if err := dec(in); err != nil {
@@ -493,24 +443,6 @@ func _PaymentsService_ArchiveSubscription_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PaymentsService_CancelSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CancelSubscriptionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PaymentsServiceServer).CancelSubscription(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PaymentsService_CancelSubscription_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentsServiceServer).CancelSubscription(ctx, req.(*CancelSubscriptionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _PaymentsService_GetPurchasesForAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPurchasesForAccountRequest)
 	if err := dec(in); err != nil {
@@ -575,10 +507,6 @@ var PaymentsService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PaymentsService_ArchiveProduct_Handler,
 		},
 		{
-			MethodName: "CreateCheckoutSession",
-			Handler:    _PaymentsService_CreateCheckoutSession_Handler,
-		},
-		{
 			MethodName: "CreateSubscription",
 			Handler:    _PaymentsService_CreateSubscription_Handler,
 		},
@@ -597,10 +525,6 @@ var PaymentsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ArchiveSubscription",
 			Handler:    _PaymentsService_ArchiveSubscription_Handler,
-		},
-		{
-			MethodName: "CancelSubscription",
-			Handler:    _PaymentsService_CancelSubscription_Handler,
 		},
 		{
 			MethodName: "GetPurchasesForAccount",

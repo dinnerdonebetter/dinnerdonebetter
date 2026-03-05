@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	CreateProduct(ctx context.Context, input *ProductDatabaseCreationInput) (*Product, error)
 	GetProduct(ctx context.Context, id string) (*Product, error)
+	GetProductByExternalID(ctx context.Context, externalProductID string) (*Product, error)
 	GetProducts(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Product], error)
 	UpdateProduct(ctx context.Context, product *Product) error
 	ArchiveProduct(ctx context.Context, id string) error

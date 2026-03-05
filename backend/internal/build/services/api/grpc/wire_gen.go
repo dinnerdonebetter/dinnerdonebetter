@@ -235,8 +235,9 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	}
 	oAuthServiceServer := grpc9.NewService(logger, tracerProvider, oAuth2Manager)
 	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, repository, client)
-	stubPaymentProcessor := adapters.NewStubPaymentProcessor()
-	paymentsDataManager, err := manager10.NewPaymentsDataManager(ctx, tracerProvider, logger, paymentsRepository, stubPaymentProcessor, identityDataManager, queuesConfig, publisherProvider)
+	config3 := servicesConfig.Payments
+	mapProcessorRegistry := adapters.ProvidePaymentProcessorRegistry(logger, tracerProvider, config3)
+	paymentsDataManager, err := manager10.NewPaymentsDataManager(ctx, tracerProvider, logger, paymentsRepository, mapProcessorRegistry, identityDataManager, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err
 	}

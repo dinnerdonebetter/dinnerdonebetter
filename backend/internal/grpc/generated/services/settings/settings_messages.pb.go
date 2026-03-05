@@ -25,8 +25,8 @@ const (
 
 type DataCollection struct {
 	state                            protoimpl.MessageState                  `protogen:"open.v1"`
-	ServiceSettingConfigurations     map[string]*ServiceSettingConfiguration `json:"service_setting_configurations,omitempty"      protobuf:"bytes,1,rep,name=service_setting_configurations,json=serviceSettingConfigurations,proto3"          protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	UserServiceSettingConfigurations []*ServiceSettingConfiguration          `json:"user_service_setting_configurations,omitempty" protobuf:"bytes,2,rep,name=user_service_setting_configurations,json=userServiceSettingConfigurations,proto3"`
+	ServiceSettingConfigurations     map[string]*ServiceSettingConfiguration `protobuf:"bytes,1,rep,name=service_setting_configurations,json=serviceSettingConfigurations,proto3" json:"service_setting_configurations,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	UserServiceSettingConfigurations []*ServiceSettingConfiguration          `protobuf:"bytes,2,rep,name=user_service_setting_configurations,json=userServiceSettingConfigurations,proto3" json:"user_service_setting_configurations,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -77,18 +77,18 @@ func (x *DataCollection) GetUserServiceSettingConfigurations() []*ServiceSetting
 
 type ServiceSetting struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"      protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
-	DefaultValue  *string                `json:"default_value,omitempty"   protobuf:"bytes,2,opt,name=default_value,json=defaultValue,proto3,oneof"`
-	LastUpdatedAt *timestamppb.Timestamp `json:"last_updated_at,omitempty" protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
-	ArchivedAt    *timestamppb.Timestamp `json:"archived_at,omitempty"     protobuf:"bytes,4,opt,name=archived_at,json=archivedAt,proto3"`
-	Name          string                 `json:"name,omitempty"            protobuf:"bytes,6,opt,name=name,proto3"`
-	Id            string                 `json:"id,omitempty"              protobuf:"bytes,5,opt,name=id,proto3"`
-	Type          string                 `json:"type,omitempty"            protobuf:"bytes,7,opt,name=type,proto3"`
-	Description   string                 `json:"description,omitempty"     protobuf:"bytes,8,opt,name=description,proto3"`
-	Enumeration   []string               `json:"enumeration,omitempty"     protobuf:"bytes,9,rep,name=enumeration,proto3"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	DefaultValue  *string                `protobuf:"bytes,2,opt,name=default_value,json=defaultValue,proto3,oneof" json:"default_value,omitempty"`
+	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
+	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	Name          string                 `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
+	Id            string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
+	Type          string                 `protobuf:"bytes,7,opt,name=type,proto3" json:"type,omitempty"`
+	Description   string                 `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
+	Enumeration   []string               `protobuf:"bytes,9,rep,name=enumeration,proto3" json:"enumeration,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
-	AdminsOnly    bool `json:"admins_only,omitempty" protobuf:"varint,10,opt,name=admins_only,json=adminsOnly,proto3"`
+	AdminsOnly    bool `protobuf:"varint,10,opt,name=admins_only,json=adminsOnly,proto3" json:"admins_only,omitempty"`
 }
 
 func (x *ServiceSetting) Reset() {
@@ -193,15 +193,15 @@ func (x *ServiceSetting) GetAdminsOnly() bool {
 
 type ServiceSettingConfiguration struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
-	LastUpdatedAt    *timestamppb.Timestamp `json:"last_updated_at,omitempty"    protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
-	ArchivedAt       *timestamppb.Timestamp `json:"archived_at,omitempty"        protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
-	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,4,opt,name=id,proto3"`
-	Value            string                 `json:"value,omitempty"              protobuf:"bytes,5,opt,name=value,proto3"`
-	Notes            string                 `json:"notes,omitempty"              protobuf:"bytes,6,opt,name=notes,proto3"`
-	BelongsToUser    string                 `json:"belongs_to_user,omitempty"    protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3"`
-	BelongsToAccount string                 `json:"belongs_to_account,omitempty" protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
-	ServiceSetting   *ServiceSetting        `json:"service_setting,omitempty"    protobuf:"bytes,9,opt,name=service_setting,json=serviceSetting,proto3"`
+	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	LastUpdatedAt    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
+	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	Id               string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
+	Value            string                 `protobuf:"bytes,5,opt,name=value,proto3" json:"value,omitempty"`
+	Notes            string                 `protobuf:"bytes,6,opt,name=notes,proto3" json:"notes,omitempty"`
+	BelongsToUser    string                 `protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
+	BelongsToAccount string                 `protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
+	ServiceSetting   *ServiceSetting        `protobuf:"bytes,9,opt,name=service_setting,json=serviceSetting,proto3" json:"service_setting,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }

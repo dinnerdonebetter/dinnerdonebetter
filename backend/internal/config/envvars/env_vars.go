@@ -454,6 +454,18 @@ const (
 	// ServiceOauth2ClientsCreationDisabledEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.OAuth2Clients.OAuth2ClientCreationDisabled`.
 	ServiceOauth2ClientsCreationDisabledEnvVarKey = "DINNER_DONE_BETTER_SERVICE_OAUTH2_CLIENTS_CREATION_DISABLED"
 
+	// ServicePaymentsRevenuecatAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Payments.RevenueCat.APIKey`.
+	ServicePaymentsRevenuecatAPIKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_PAYMENTS_REVENUECAT_API_KEY"
+
+	// ServicePaymentsRevenuecatWebhookAuthHeaderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Payments.RevenueCat.WebhookAuthHeader`.
+	ServicePaymentsRevenuecatWebhookAuthHeaderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_PAYMENTS_REVENUECAT_WEBHOOK_AUTH_HEADER"
+
+	// ServicePaymentsStripeAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Payments.Stripe.APIKey`.
+	ServicePaymentsStripeAPIKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_PAYMENTS_STRIPE_API_KEY"
+
+	// ServicePaymentsStripeWebhookSecretEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Payments.Stripe.WebhookSecret`.
+	ServicePaymentsStripeWebhookSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_PAYMENTS_STRIPE_WEBHOOK_SECRET"
+
 	// ServiceUsersPublicMediaURLPrefixEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Users.PublicMediaURLPrefix`.
 	ServiceUsersPublicMediaURLPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_PUBLIC_MEDIA_URL_PREFIX"
 

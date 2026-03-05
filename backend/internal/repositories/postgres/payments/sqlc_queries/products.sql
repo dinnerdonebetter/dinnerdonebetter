@@ -47,6 +47,23 @@ FROM products
 WHERE products.archived_at IS NULL
 AND products.id = sqlc.arg(id);
 
+-- name: GetProductByExternalID :one
+SELECT
+	products.id,
+	products.name,
+	products.description,
+	products.kind,
+	products.amount_cents,
+	products.currency,
+	products.billing_interval_months,
+	products.external_product_id,
+	products.created_at,
+	products.last_updated_at,
+	products.archived_at
+FROM products
+WHERE products.archived_at IS NULL
+AND products.external_product_id = sqlc.arg(external_product_id);
+
 -- name: GetProducts :many
 SELECT
 	products.id,

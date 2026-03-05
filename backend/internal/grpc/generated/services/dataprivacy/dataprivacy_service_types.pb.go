@@ -62,8 +62,8 @@ func (*AggregateUserDataReportRequest) Descriptor() ([]byte, []int) {
 
 type AggregateUserDataReportResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	ReportId        string                 `json:"report_id,omitempty"        protobuf:"bytes,2,opt,name=report_id,json=reportId,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ReportId        string                 `protobuf:"bytes,2,opt,name=report_id,json=reportId,proto3" json:"report_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -150,10 +150,10 @@ func (*DestroyAllUserDataRequest) Descriptor() ([]byte, []int) {
 
 type DestroyAllUserDataResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Successful      bool `json:"successful,omitempty" protobuf:"varint,2,opt,name=successful,proto3"`
+	Successful      bool `protobuf:"varint,2,opt,name=successful,proto3" json:"successful,omitempty"`
 }
 
 func (x *DestroyAllUserDataResponse) Reset() {
@@ -202,7 +202,7 @@ func (x *DestroyAllUserDataResponse) GetSuccessful() bool {
 
 type FetchUserDataReportRequest struct {
 	state                       protoimpl.MessageState `protogen:"open.v1"`
-	UserDataAggregationReportId string                 `json:"user_data_aggregation_report_id,omitempty" protobuf:"bytes,1,opt,name=user_data_aggregation_report_id,json=userDataAggregationReportId,proto3"`
+	UserDataAggregationReportId string                 `protobuf:"bytes,1,opt,name=user_data_aggregation_report_id,json=userDataAggregationReportId,proto3" json:"user_data_aggregation_report_id,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }
@@ -246,8 +246,8 @@ func (x *FetchUserDataReportRequest) GetUserDataAggregationReportId() string {
 
 type FetchUserDataReportResponse struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails    *types.ResponseDetails `json:"response_details,omitempty"     protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	UserDataCollection *UserDataCollection    `json:"user_data_collection,omitempty" protobuf:"bytes,2,opt,name=user_data_collection,json=userDataCollection,proto3"`
+	ResponseDetails    *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	UserDataCollection *UserDataCollection    `protobuf:"bytes,2,opt,name=user_data_collection,json=userDataCollection,proto3" json:"user_data_collection,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }

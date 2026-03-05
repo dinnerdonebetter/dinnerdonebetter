@@ -171,19 +171,6 @@ func ConvertSubscriptionToGRPC(s *payments.Subscription) *paymentssvc.Subscripti
 	}
 }
 
-func ConvertCheckoutSessionRequestInputToDomain(input *paymentssvc.CheckoutSessionRequestInput) *payments.CheckoutSessionRequestInput {
-	if input == nil {
-		return nil
-	}
-	return &payments.CheckoutSessionRequestInput{
-		ProductID:   input.ProductId,
-		AccountID:   input.AccountId,
-		SuccessURL:  input.SuccessUrl,
-		CancelURL:   input.CancelUrl,
-		IsRecurring: input.IsRecurring,
-	}
-}
-
 func ConvertPurchaseToGRPC(p *payments.Purchase) *paymentssvc.Purchase {
 	if p == nil {
 		return nil

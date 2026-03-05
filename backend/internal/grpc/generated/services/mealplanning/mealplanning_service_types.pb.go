@@ -28,40 +28,40 @@ const (
 
 type ValidIngredientCreationRequestInput struct {
 	state                       protoimpl.MessageState      `protogen:"open.v1"`
-	StorageTemperatureInCelsius *types.OptionalFloat32Range `json:"storage_temperature_in_celsius,omitempty" protobuf:"bytes,1,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3"`
-	Warning                     string                      `json:"warning,omitempty"                        protobuf:"bytes,2,opt,name=warning,proto3"`
-	IconPath                    string                      `json:"icon_path,omitempty"                      protobuf:"bytes,3,opt,name=icon_path,json=iconPath,proto3"`
-	PluralName                  string                      `json:"plural_name,omitempty"                    protobuf:"bytes,4,opt,name=plural_name,json=pluralName,proto3"`
-	StorageInstructions         string                      `json:"storage_instructions,omitempty"           protobuf:"bytes,5,opt,name=storage_instructions,json=storageInstructions,proto3"`
-	Name                        string                      `json:"name,omitempty"                           protobuf:"bytes,6,opt,name=name,proto3"`
-	Description                 string                      `json:"description,omitempty"                    protobuf:"bytes,7,opt,name=description,proto3"`
-	Slug                        string                      `json:"slug,omitempty"                           protobuf:"bytes,8,opt,name=slug,proto3"`
-	ShoppingSuggestions         string                      `json:"shopping_suggestions,omitempty"           protobuf:"bytes,9,opt,name=shopping_suggestions,json=shoppingSuggestions,proto3"`
+	StorageTemperatureInCelsius *types.OptionalFloat32Range `protobuf:"bytes,1,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3" json:"storage_temperature_in_celsius,omitempty"`
+	Warning                     string                      `protobuf:"bytes,2,opt,name=warning,proto3" json:"warning,omitempty"`
+	IconPath                    string                      `protobuf:"bytes,3,opt,name=icon_path,json=iconPath,proto3" json:"icon_path,omitempty"`
+	PluralName                  string                      `protobuf:"bytes,4,opt,name=plural_name,json=pluralName,proto3" json:"plural_name,omitempty"`
+	StorageInstructions         string                      `protobuf:"bytes,5,opt,name=storage_instructions,json=storageInstructions,proto3" json:"storage_instructions,omitempty"`
+	Name                        string                      `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
+	Description                 string                      `protobuf:"bytes,7,opt,name=description,proto3" json:"description,omitempty"`
+	Slug                        string                      `protobuf:"bytes,8,opt,name=slug,proto3" json:"slug,omitempty"`
+	ShoppingSuggestions         string                      `protobuf:"bytes,9,opt,name=shopping_suggestions,json=shoppingSuggestions,proto3" json:"shopping_suggestions,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
-	ContainsPeanut              bool `json:"contains_peanut,omitempty"          protobuf:"varint,16,opt,name=contains_peanut,json=containsPeanut,proto3"`
-	ContainsAlcohol             bool `json:"contains_alcohol,omitempty"         protobuf:"varint,23,opt,name=contains_alcohol,json=containsAlcohol,proto3"`
-	IsLiquid                    bool `json:"is_liquid,omitempty"                protobuf:"varint,14,opt,name=is_liquid,json=isLiquid,proto3"`
-	ContainsSoy                 bool `json:"contains_soy,omitempty"             protobuf:"varint,15,opt,name=contains_soy,json=containsSoy,proto3"`
-	AnimalFlesh                 bool `json:"animal_flesh,omitempty"             protobuf:"varint,12,opt,name=animal_flesh,json=animalFlesh,proto3"`
-	AnimalDerived               bool `json:"animal_derived,omitempty"           protobuf:"varint,17,opt,name=animal_derived,json=animalDerived,proto3"`
-	RestrictToPreparations      bool `json:"restrict_to_preparations,omitempty" protobuf:"varint,18,opt,name=restrict_to_preparations,json=restrictToPreparations,proto3"`
-	ContainsDairy               bool `json:"contains_dairy,omitempty"           protobuf:"varint,19,opt,name=contains_dairy,json=containsDairy,proto3"`
-	ContainsSesame              bool `json:"contains_sesame,omitempty"          protobuf:"varint,20,opt,name=contains_sesame,json=containsSesame,proto3"`
-	ContainsTreeNut             bool `json:"contains_tree_nut,omitempty"        protobuf:"varint,21,opt,name=contains_tree_nut,json=containsTreeNut,proto3"`
-	ContainsWheat               bool `json:"contains_wheat,omitempty"           protobuf:"varint,22,opt,name=contains_wheat,json=containsWheat,proto3"`
-	ContainsEgg                 bool `json:"contains_egg,omitempty"             protobuf:"varint,13,opt,name=contains_egg,json=containsEgg,proto3"`
-	ContainsGluten              bool `json:"contains_gluten,omitempty"          protobuf:"varint,24,opt,name=contains_gluten,json=containsGluten,proto3"`
-	IsStarch                    bool `json:"is_starch,omitempty"                protobuf:"varint,25,opt,name=is_starch,json=isStarch,proto3"`
-	IsProtein                   bool `json:"is_protein,omitempty"               protobuf:"varint,26,opt,name=is_protein,json=isProtein,proto3"`
-	IsGrain                     bool `json:"is_grain,omitempty"                 protobuf:"varint,27,opt,name=is_grain,json=isGrain,proto3"`
-	IsFruit                     bool `json:"is_fruit,omitempty"                 protobuf:"varint,28,opt,name=is_fruit,json=isFruit,proto3"`
-	IsSalt                      bool `json:"is_salt,omitempty"                  protobuf:"varint,29,opt,name=is_salt,json=isSalt,proto3"`
-	IsFat                       bool `json:"is_fat,omitempty"                   protobuf:"varint,30,opt,name=is_fat,json=isFat,proto3"`
-	IsAcid                      bool `json:"is_acid,omitempty"                  protobuf:"varint,31,opt,name=is_acid,json=isAcid,proto3"`
-	IsHeat                      bool `json:"is_heat,omitempty"                  protobuf:"varint,32,opt,name=is_heat,json=isHeat,proto3"`
-	ContainsShellfish           bool `json:"contains_shellfish,omitempty"       protobuf:"varint,11,opt,name=contains_shellfish,json=containsShellfish,proto3"`
-	ContainsFish                bool `json:"contains_fish,omitempty"            protobuf:"varint,10,opt,name=contains_fish,json=containsFish,proto3"`
+	ContainsPeanut              bool `protobuf:"varint,16,opt,name=contains_peanut,json=containsPeanut,proto3" json:"contains_peanut,omitempty"`
+	ContainsAlcohol             bool `protobuf:"varint,23,opt,name=contains_alcohol,json=containsAlcohol,proto3" json:"contains_alcohol,omitempty"`
+	IsLiquid                    bool `protobuf:"varint,14,opt,name=is_liquid,json=isLiquid,proto3" json:"is_liquid,omitempty"`
+	ContainsSoy                 bool `protobuf:"varint,15,opt,name=contains_soy,json=containsSoy,proto3" json:"contains_soy,omitempty"`
+	AnimalFlesh                 bool `protobuf:"varint,12,opt,name=animal_flesh,json=animalFlesh,proto3" json:"animal_flesh,omitempty"`
+	AnimalDerived               bool `protobuf:"varint,17,opt,name=animal_derived,json=animalDerived,proto3" json:"animal_derived,omitempty"`
+	RestrictToPreparations      bool `protobuf:"varint,18,opt,name=restrict_to_preparations,json=restrictToPreparations,proto3" json:"restrict_to_preparations,omitempty"`
+	ContainsDairy               bool `protobuf:"varint,19,opt,name=contains_dairy,json=containsDairy,proto3" json:"contains_dairy,omitempty"`
+	ContainsSesame              bool `protobuf:"varint,20,opt,name=contains_sesame,json=containsSesame,proto3" json:"contains_sesame,omitempty"`
+	ContainsTreeNut             bool `protobuf:"varint,21,opt,name=contains_tree_nut,json=containsTreeNut,proto3" json:"contains_tree_nut,omitempty"`
+	ContainsWheat               bool `protobuf:"varint,22,opt,name=contains_wheat,json=containsWheat,proto3" json:"contains_wheat,omitempty"`
+	ContainsEgg                 bool `protobuf:"varint,13,opt,name=contains_egg,json=containsEgg,proto3" json:"contains_egg,omitempty"`
+	ContainsGluten              bool `protobuf:"varint,24,opt,name=contains_gluten,json=containsGluten,proto3" json:"contains_gluten,omitempty"`
+	IsStarch                    bool `protobuf:"varint,25,opt,name=is_starch,json=isStarch,proto3" json:"is_starch,omitempty"`
+	IsProtein                   bool `protobuf:"varint,26,opt,name=is_protein,json=isProtein,proto3" json:"is_protein,omitempty"`
+	IsGrain                     bool `protobuf:"varint,27,opt,name=is_grain,json=isGrain,proto3" json:"is_grain,omitempty"`
+	IsFruit                     bool `protobuf:"varint,28,opt,name=is_fruit,json=isFruit,proto3" json:"is_fruit,omitempty"`
+	IsSalt                      bool `protobuf:"varint,29,opt,name=is_salt,json=isSalt,proto3" json:"is_salt,omitempty"`
+	IsFat                       bool `protobuf:"varint,30,opt,name=is_fat,json=isFat,proto3" json:"is_fat,omitempty"`
+	IsAcid                      bool `protobuf:"varint,31,opt,name=is_acid,json=isAcid,proto3" json:"is_acid,omitempty"`
+	IsHeat                      bool `protobuf:"varint,32,opt,name=is_heat,json=isHeat,proto3" json:"is_heat,omitempty"`
+	ContainsShellfish           bool `protobuf:"varint,11,opt,name=contains_shellfish,json=containsShellfish,proto3" json:"contains_shellfish,omitempty"`
+	ContainsFish                bool `protobuf:"varint,10,opt,name=contains_fish,json=containsFish,proto3" json:"contains_fish,omitempty"`
 }
 
 func (x *ValidIngredientCreationRequestInput) Reset() {
@@ -320,10 +320,10 @@ func (x *ValidIngredientCreationRequestInput) GetIsHeat() bool {
 
 type ValidIngredientGroupCreationRequestInput struct {
 	state         protoimpl.MessageState                            `protogen:"open.v1"`
-	Name          string                                            `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3"`
-	Slug          string                                            `json:"slug,omitempty"        protobuf:"bytes,2,opt,name=slug,proto3"`
-	Description   string                                            `json:"description,omitempty" protobuf:"bytes,3,opt,name=description,proto3"`
-	Members       []*ValidIngredientGroupMemberCreationRequestInput `json:"members,omitempty"     protobuf:"bytes,4,rep,name=members,proto3"`
+	Name          string                                            `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Slug          string                                            `protobuf:"bytes,2,opt,name=slug,proto3" json:"slug,omitempty"`
+	Description   string                                            `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Members       []*ValidIngredientGroupMemberCreationRequestInput `protobuf:"bytes,4,rep,name=members,proto3" json:"members,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -388,7 +388,7 @@ func (x *ValidIngredientGroupCreationRequestInput) GetMembers() []*ValidIngredie
 
 type ValidIngredientGroupMemberCreationRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientId string                 `json:"valid_ingredient_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	ValidIngredientId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -432,9 +432,9 @@ func (x *ValidIngredientGroupMemberCreationRequestInput) GetValidIngredientId() 
 
 type ValidIngredientGroupUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          *string                `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Slug          *string                `json:"slug,omitempty"        protobuf:"bytes,2,opt,name=slug,proto3,oneof"`
-	Description   *string                `json:"description,omitempty" protobuf:"bytes,3,opt,name=description,proto3,oneof"`
+	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Slug          *string                `protobuf:"bytes,2,opt,name=slug,proto3,oneof" json:"slug,omitempty"`
+	Description   *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -492,10 +492,10 @@ func (x *ValidIngredientGroupUpdateRequestInput) GetDescription() string {
 
 type ValidIngredientMeasurementUnitCreationRequestInput struct {
 	state                  protoimpl.MessageState             `protogen:"open.v1"`
-	Notes                  string                             `json:"notes,omitempty"                     protobuf:"bytes,1,opt,name=notes,proto3"`
-	ValidMeasurementUnitId string                             `json:"valid_measurement_unit_id,omitempty" protobuf:"bytes,2,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3"`
-	ValidIngredientId      string                             `json:"valid_ingredient_id,omitempty"       protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
-	AllowableQuantity      *types.Float32RangeWithOptionalMax `json:"allowable_quantity,omitempty"        protobuf:"bytes,4,opt,name=allowable_quantity,json=allowableQuantity,proto3"`
+	Notes                  string                             `protobuf:"bytes,1,opt,name=notes,proto3" json:"notes,omitempty"`
+	ValidMeasurementUnitId string                             `protobuf:"bytes,2,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3" json:"valid_measurement_unit_id,omitempty"`
+	ValidIngredientId      string                             `protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
+	AllowableQuantity      *types.Float32RangeWithOptionalMax `protobuf:"bytes,4,opt,name=allowable_quantity,json=allowableQuantity,proto3" json:"allowable_quantity,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -560,10 +560,10 @@ func (x *ValidIngredientMeasurementUnitCreationRequestInput) GetAllowableQuantit
 
 type ValidIngredientMeasurementUnitUpdateRequestInput struct {
 	state                  protoimpl.MessageState                               `protogen:"open.v1"`
-	Notes                  *string                                              `json:"notes,omitempty"                     protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	ValidMeasurementUnitId *string                                              `json:"valid_measurement_unit_id,omitempty" protobuf:"bytes,2,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3,oneof"`
-	ValidIngredientId      *string                                              `json:"valid_ingredient_id,omitempty"       protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof"`
-	AllowableQuantity      *types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"allowable_quantity,omitempty"        protobuf:"bytes,4,opt,name=allowable_quantity,json=allowableQuantity,proto3,oneof"`
+	Notes                  *string                                              `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	ValidMeasurementUnitId *string                                              `protobuf:"bytes,2,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3,oneof" json:"valid_measurement_unit_id,omitempty"`
+	ValidIngredientId      *string                                              `protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof" json:"valid_ingredient_id,omitempty"`
+	AllowableQuantity      *types.Float32RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,4,opt,name=allowable_quantity,json=allowableQuantity,proto3,oneof" json:"allowable_quantity,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -628,9 +628,9 @@ func (x *ValidIngredientMeasurementUnitUpdateRequestInput) GetAllowableQuantity(
 
 type ValidIngredientPreparationCreationRequestInput struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Notes              string                 `json:"notes,omitempty"                protobuf:"bytes,1,opt,name=notes,proto3"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
-	ValidIngredientId  string                 `json:"valid_ingredient_id,omitempty"  protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	Notes              string                 `protobuf:"bytes,1,opt,name=notes,proto3" json:"notes,omitempty"`
+	ValidPreparationId string                 `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
+	ValidIngredientId  string                 `protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -688,9 +688,9 @@ func (x *ValidIngredientPreparationCreationRequestInput) GetValidIngredientId() 
 
 type ValidIngredientPreparationUpdateRequestInput struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Notes              *string                `json:"notes,omitempty"                protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	ValidPreparationId *string                `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3,oneof"`
-	ValidIngredientId  *string                `json:"valid_ingredient_id,omitempty"  protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof"`
+	Notes              *string                `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	ValidPreparationId *string                `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3,oneof" json:"valid_preparation_id,omitempty"`
+	ValidIngredientId  *string                `protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof" json:"valid_ingredient_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -748,14 +748,14 @@ func (x *ValidIngredientPreparationUpdateRequestInput) GetValidIngredientId() st
 
 type ValidPrepTaskConfigCreationRequestInput struct {
 	state                       protoimpl.MessageState            `protogen:"open.v1"`
-	StorageDurationInSeconds    *types.Uint32RangeWithOptionalMax `json:"storage_duration_in_seconds,omitempty"    protobuf:"bytes,1,opt,name=storage_duration_in_seconds,json=storageDurationInSeconds,proto3"`
-	StorageTemperatureInCelsius *types.OptionalFloat32Range       `json:"storage_temperature_in_celsius,omitempty" protobuf:"bytes,2,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3"`
-	StorageType                 string                            `json:"storage_type,omitempty"                   protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3"`
-	StorageInstructions         string                            `json:"storage_instructions,omitempty"           protobuf:"bytes,4,opt,name=storage_instructions,json=storageInstructions,proto3"`
-	Notes                       string                            `json:"notes,omitempty"                          protobuf:"bytes,5,opt,name=notes,proto3"`
-	Source                      string                            `json:"source,omitempty"                         protobuf:"bytes,6,opt,name=source,proto3"`
-	ValidPreparationId          string                            `json:"valid_preparation_id,omitempty"           protobuf:"bytes,7,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
-	ValidIngredientId           string                            `json:"valid_ingredient_id,omitempty"            protobuf:"bytes,8,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	StorageDurationInSeconds    *types.Uint32RangeWithOptionalMax `protobuf:"bytes,1,opt,name=storage_duration_in_seconds,json=storageDurationInSeconds,proto3" json:"storage_duration_in_seconds,omitempty"`
+	StorageTemperatureInCelsius *types.OptionalFloat32Range       `protobuf:"bytes,2,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3" json:"storage_temperature_in_celsius,omitempty"`
+	StorageType                 string                            `protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3" json:"storage_type,omitempty"`
+	StorageInstructions         string                            `protobuf:"bytes,4,opt,name=storage_instructions,json=storageInstructions,proto3" json:"storage_instructions,omitempty"`
+	Notes                       string                            `protobuf:"bytes,5,opt,name=notes,proto3" json:"notes,omitempty"`
+	Source                      string                            `protobuf:"bytes,6,opt,name=source,proto3" json:"source,omitempty"`
+	ValidPreparationId          string                            `protobuf:"bytes,7,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
+	ValidIngredientId           string                            `protobuf:"bytes,8,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }
@@ -848,14 +848,14 @@ func (x *ValidPrepTaskConfigCreationRequestInput) GetValidIngredientId() string 
 
 type ValidPrepTaskConfigUpdateRequestInput struct {
 	state                       protoimpl.MessageState                              `protogen:"open.v1"`
-	StorageDurationInSeconds    *types.Uint32RangeWithOptionalMaxUpdateRequestInput `json:"storage_duration_in_seconds,omitempty"    protobuf:"bytes,1,opt,name=storage_duration_in_seconds,json=storageDurationInSeconds,proto3"`
-	StorageTemperatureInCelsius *types.OptionalFloat32Range                         `json:"storage_temperature_in_celsius,omitempty" protobuf:"bytes,2,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3"`
-	StorageType                 *string                                             `json:"storage_type,omitempty"                   protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3,oneof"`
-	StorageInstructions         *string                                             `json:"storage_instructions,omitempty"           protobuf:"bytes,4,opt,name=storage_instructions,json=storageInstructions,proto3,oneof"`
-	Notes                       *string                                             `json:"notes,omitempty"                          protobuf:"bytes,5,opt,name=notes,proto3,oneof"`
-	Source                      *string                                             `json:"source,omitempty"                         protobuf:"bytes,6,opt,name=source,proto3,oneof"`
-	ValidPreparationId          *string                                             `json:"valid_preparation_id,omitempty"           protobuf:"bytes,7,opt,name=valid_preparation_id,json=validPreparationId,proto3,oneof"`
-	ValidIngredientId           *string                                             `json:"valid_ingredient_id,omitempty"            protobuf:"bytes,8,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof"`
+	StorageDurationInSeconds    *types.Uint32RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,1,opt,name=storage_duration_in_seconds,json=storageDurationInSeconds,proto3" json:"storage_duration_in_seconds,omitempty"`
+	StorageTemperatureInCelsius *types.OptionalFloat32Range                         `protobuf:"bytes,2,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3" json:"storage_temperature_in_celsius,omitempty"`
+	StorageType                 *string                                             `protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3,oneof" json:"storage_type,omitempty"`
+	StorageInstructions         *string                                             `protobuf:"bytes,4,opt,name=storage_instructions,json=storageInstructions,proto3,oneof" json:"storage_instructions,omitempty"`
+	Notes                       *string                                             `protobuf:"bytes,5,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	Source                      *string                                             `protobuf:"bytes,6,opt,name=source,proto3,oneof" json:"source,omitempty"`
+	ValidPreparationId          *string                                             `protobuf:"bytes,7,opt,name=valid_preparation_id,json=validPreparationId,proto3,oneof" json:"valid_preparation_id,omitempty"`
+	ValidIngredientId           *string                                             `protobuf:"bytes,8,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof" json:"valid_ingredient_id,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }
@@ -948,13 +948,13 @@ func (x *ValidPrepTaskConfigUpdateRequestInput) GetValidIngredientId() string {
 
 type ValidIngredientStateCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3"`
-	Slug          string                 `json:"slug,omitempty"        protobuf:"bytes,2,opt,name=slug,proto3"`
-	PastTense     string                 `json:"past_tense,omitempty"  protobuf:"bytes,3,opt,name=past_tense,json=pastTense,proto3"`
-	Description   string                 `json:"description,omitempty" protobuf:"bytes,4,opt,name=description,proto3"`
-	IconPath      string                 `json:"icon_path,omitempty"   protobuf:"bytes,6,opt,name=icon_path,json=iconPath,proto3"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Slug          string                 `protobuf:"bytes,2,opt,name=slug,proto3" json:"slug,omitempty"`
+	PastTense     string                 `protobuf:"bytes,3,opt,name=past_tense,json=pastTense,proto3" json:"past_tense,omitempty"`
+	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	IconPath      string                 `protobuf:"bytes,6,opt,name=icon_path,json=iconPath,proto3" json:"icon_path,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	AttributeType ValidIngredientStateAttributeType `json:"attribute_type,omitempty" protobuf:"varint,5,opt,name=attribute_type,json=attributeType,proto3,enum=mealplanning.ValidIngredientStateAttributeType"`
+	AttributeType ValidIngredientStateAttributeType `protobuf:"varint,5,opt,name=attribute_type,json=attributeType,proto3,enum=mealplanning.ValidIngredientStateAttributeType" json:"attribute_type,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -1032,9 +1032,9 @@ func (x *ValidIngredientStateCreationRequestInput) GetIconPath() string {
 
 type ValidIngredientStateIngredientCreationRequestInput struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	Notes                  string                 `json:"notes,omitempty"                     protobuf:"bytes,1,opt,name=notes,proto3"`
-	ValidIngredientStateId string                 `json:"valid_ingredient_state_id,omitempty" protobuf:"bytes,2,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3"`
-	ValidIngredientId      string                 `json:"valid_ingredient_id,omitempty"       protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	Notes                  string                 `protobuf:"bytes,1,opt,name=notes,proto3" json:"notes,omitempty"`
+	ValidIngredientStateId string                 `protobuf:"bytes,2,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3" json:"valid_ingredient_state_id,omitempty"`
+	ValidIngredientId      string                 `protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -1092,9 +1092,9 @@ func (x *ValidIngredientStateIngredientCreationRequestInput) GetValidIngredientI
 
 type ValidIngredientStateIngredientUpdateRequestInput struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	Notes                  *string                `json:"notes,omitempty"                     protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	ValidIngredientStateId *string                `json:"valid_ingredient_state_id,omitempty" protobuf:"bytes,2,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3,oneof"`
-	ValidIngredientId      *string                `json:"valid_ingredient_id,omitempty"       protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof"`
+	Notes                  *string                `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	ValidIngredientStateId *string                `protobuf:"bytes,2,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3,oneof" json:"valid_ingredient_state_id,omitempty"`
+	ValidIngredientId      *string                `protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof" json:"valid_ingredient_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -1152,12 +1152,12 @@ func (x *ValidIngredientStateIngredientUpdateRequestInput) GetValidIngredientId(
 
 type ValidIngredientStateUpdateRequestInput struct {
 	state         protoimpl.MessageState             `protogen:"open.v1"`
-	Name          *string                            `json:"name,omitempty"           protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Slug          *string                            `json:"slug,omitempty"           protobuf:"bytes,2,opt,name=slug,proto3,oneof"`
-	PastTense     *string                            `json:"past_tense,omitempty"     protobuf:"bytes,3,opt,name=past_tense,json=pastTense,proto3,oneof"`
-	Description   *string                            `json:"description,omitempty"    protobuf:"bytes,4,opt,name=description,proto3,oneof"`
-	AttributeType *ValidIngredientStateAttributeType `json:"attribute_type,omitempty" protobuf:"varint,5,opt,name=attribute_type,json=attributeType,proto3,enum=mealplanning.ValidIngredientStateAttributeType,oneof"`
-	IconPath      *string                            `json:"icon_path,omitempty"      protobuf:"bytes,6,opt,name=icon_path,json=iconPath,proto3,oneof"`
+	Name          *string                            `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Slug          *string                            `protobuf:"bytes,2,opt,name=slug,proto3,oneof" json:"slug,omitempty"`
+	PastTense     *string                            `protobuf:"bytes,3,opt,name=past_tense,json=pastTense,proto3,oneof" json:"past_tense,omitempty"`
+	Description   *string                            `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	AttributeType *ValidIngredientStateAttributeType `protobuf:"varint,5,opt,name=attribute_type,json=attributeType,proto3,enum=mealplanning.ValidIngredientStateAttributeType,oneof" json:"attribute_type,omitempty"`
+	IconPath      *string                            `protobuf:"bytes,6,opt,name=icon_path,json=iconPath,proto3,oneof" json:"icon_path,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1236,38 +1236,38 @@ func (x *ValidIngredientStateUpdateRequestInput) GetIconPath() string {
 
 type ValidIngredientUpdateRequestInput struct {
 	state                       protoimpl.MessageState      `protogen:"open.v1"`
-	Name                        *string                     `json:"name,omitempty"                           protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Description                 *string                     `json:"description,omitempty"                    protobuf:"bytes,2,opt,name=description,proto3,oneof"`
-	Warning                     *string                     `json:"warning,omitempty"                        protobuf:"bytes,3,opt,name=warning,proto3,oneof"`
-	IconPath                    *string                     `json:"icon_path,omitempty"                      protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3,oneof"`
-	ContainsDairy               *bool                       `json:"contains_dairy,omitempty"                 protobuf:"varint,5,opt,name=contains_dairy,json=containsDairy,proto3,oneof"`
-	ContainsPeanut              *bool                       `json:"contains_peanut,omitempty"                protobuf:"varint,6,opt,name=contains_peanut,json=containsPeanut,proto3,oneof"`
-	ContainsTreeNut             *bool                       `json:"contains_tree_nut,omitempty"              protobuf:"varint,7,opt,name=contains_tree_nut,json=containsTreeNut,proto3,oneof"`
-	ContainsEgg                 *bool                       `json:"contains_egg,omitempty"                   protobuf:"varint,8,opt,name=contains_egg,json=containsEgg,proto3,oneof"`
-	ContainsWheat               *bool                       `json:"contains_wheat,omitempty"                 protobuf:"varint,9,opt,name=contains_wheat,json=containsWheat,proto3,oneof"`
-	ContainsShellfish           *bool                       `json:"contains_shellfish,omitempty"             protobuf:"varint,10,opt,name=contains_shellfish,json=containsShellfish,proto3,oneof"`
-	ContainsSesame              *bool                       `json:"contains_sesame,omitempty"                protobuf:"varint,11,opt,name=contains_sesame,json=containsSesame,proto3,oneof"`
-	ContainsFish                *bool                       `json:"contains_fish,omitempty"                  protobuf:"varint,12,opt,name=contains_fish,json=containsFish,proto3,oneof"`
-	ContainsGluten              *bool                       `json:"contains_gluten,omitempty"                protobuf:"varint,13,opt,name=contains_gluten,json=containsGluten,proto3,oneof"`
-	AnimalFlesh                 *bool                       `json:"animal_flesh,omitempty"                   protobuf:"varint,14,opt,name=animal_flesh,json=animalFlesh,proto3,oneof"`
-	IsLiquid                    *bool                       `json:"is_liquid,omitempty"                      protobuf:"varint,15,opt,name=is_liquid,json=isLiquid,proto3,oneof"`
-	ContainsSoy                 *bool                       `json:"contains_soy,omitempty"                   protobuf:"varint,16,opt,name=contains_soy,json=containsSoy,proto3,oneof"`
-	PluralName                  *string                     `json:"plural_name,omitempty"                    protobuf:"bytes,17,opt,name=plural_name,json=pluralName,proto3,oneof"`
-	AnimalDerived               *bool                       `json:"animal_derived,omitempty"                 protobuf:"varint,18,opt,name=animal_derived,json=animalDerived,proto3,oneof"`
-	RestrictToPreparations      *bool                       `json:"restrict_to_preparations,omitempty"       protobuf:"varint,19,opt,name=restrict_to_preparations,json=restrictToPreparations,proto3,oneof"`
-	StorageTemperatureInCelsius *types.OptionalFloat32Range `json:"storage_temperature_in_celsius,omitempty" protobuf:"bytes,20,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3,oneof"`
-	StorageInstructions         *string                     `json:"storage_instructions,omitempty"           protobuf:"bytes,21,opt,name=storage_instructions,json=storageInstructions,proto3,oneof"`
-	Slug                        *string                     `json:"slug,omitempty"                           protobuf:"bytes,22,opt,name=slug,proto3,oneof"`
-	ContainsAlcohol             *bool                       `json:"contains_alcohol,omitempty"               protobuf:"varint,23,opt,name=contains_alcohol,json=containsAlcohol,proto3,oneof"`
-	ShoppingSuggestions         *string                     `json:"shopping_suggestions,omitempty"           protobuf:"bytes,24,opt,name=shopping_suggestions,json=shoppingSuggestions,proto3,oneof"`
-	IsStarch                    *bool                       `json:"is_starch,omitempty"                      protobuf:"varint,25,opt,name=is_starch,json=isStarch,proto3,oneof"`
-	IsProtein                   *bool                       `json:"is_protein,omitempty"                     protobuf:"varint,26,opt,name=is_protein,json=isProtein,proto3,oneof"`
-	IsGrain                     *bool                       `json:"is_grain,omitempty"                       protobuf:"varint,27,opt,name=is_grain,json=isGrain,proto3,oneof"`
-	IsFruit                     *bool                       `json:"is_fruit,omitempty"                       protobuf:"varint,28,opt,name=is_fruit,json=isFruit,proto3,oneof"`
-	IsSalt                      *bool                       `json:"is_salt,omitempty"                        protobuf:"varint,29,opt,name=is_salt,json=isSalt,proto3,oneof"`
-	IsFat                       *bool                       `json:"is_fat,omitempty"                         protobuf:"varint,30,opt,name=is_fat,json=isFat,proto3,oneof"`
-	IsAcid                      *bool                       `json:"is_acid,omitempty"                        protobuf:"varint,31,opt,name=is_acid,json=isAcid,proto3,oneof"`
-	IsHeat                      *bool                       `json:"is_heat,omitempty"                        protobuf:"varint,32,opt,name=is_heat,json=isHeat,proto3,oneof"`
+	Name                        *string                     `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Description                 *string                     `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Warning                     *string                     `protobuf:"bytes,3,opt,name=warning,proto3,oneof" json:"warning,omitempty"`
+	IconPath                    *string                     `protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3,oneof" json:"icon_path,omitempty"`
+	ContainsDairy               *bool                       `protobuf:"varint,5,opt,name=contains_dairy,json=containsDairy,proto3,oneof" json:"contains_dairy,omitempty"`
+	ContainsPeanut              *bool                       `protobuf:"varint,6,opt,name=contains_peanut,json=containsPeanut,proto3,oneof" json:"contains_peanut,omitempty"`
+	ContainsTreeNut             *bool                       `protobuf:"varint,7,opt,name=contains_tree_nut,json=containsTreeNut,proto3,oneof" json:"contains_tree_nut,omitempty"`
+	ContainsEgg                 *bool                       `protobuf:"varint,8,opt,name=contains_egg,json=containsEgg,proto3,oneof" json:"contains_egg,omitempty"`
+	ContainsWheat               *bool                       `protobuf:"varint,9,opt,name=contains_wheat,json=containsWheat,proto3,oneof" json:"contains_wheat,omitempty"`
+	ContainsShellfish           *bool                       `protobuf:"varint,10,opt,name=contains_shellfish,json=containsShellfish,proto3,oneof" json:"contains_shellfish,omitempty"`
+	ContainsSesame              *bool                       `protobuf:"varint,11,opt,name=contains_sesame,json=containsSesame,proto3,oneof" json:"contains_sesame,omitempty"`
+	ContainsFish                *bool                       `protobuf:"varint,12,opt,name=contains_fish,json=containsFish,proto3,oneof" json:"contains_fish,omitempty"`
+	ContainsGluten              *bool                       `protobuf:"varint,13,opt,name=contains_gluten,json=containsGluten,proto3,oneof" json:"contains_gluten,omitempty"`
+	AnimalFlesh                 *bool                       `protobuf:"varint,14,opt,name=animal_flesh,json=animalFlesh,proto3,oneof" json:"animal_flesh,omitempty"`
+	IsLiquid                    *bool                       `protobuf:"varint,15,opt,name=is_liquid,json=isLiquid,proto3,oneof" json:"is_liquid,omitempty"`
+	ContainsSoy                 *bool                       `protobuf:"varint,16,opt,name=contains_soy,json=containsSoy,proto3,oneof" json:"contains_soy,omitempty"`
+	PluralName                  *string                     `protobuf:"bytes,17,opt,name=plural_name,json=pluralName,proto3,oneof" json:"plural_name,omitempty"`
+	AnimalDerived               *bool                       `protobuf:"varint,18,opt,name=animal_derived,json=animalDerived,proto3,oneof" json:"animal_derived,omitempty"`
+	RestrictToPreparations      *bool                       `protobuf:"varint,19,opt,name=restrict_to_preparations,json=restrictToPreparations,proto3,oneof" json:"restrict_to_preparations,omitempty"`
+	StorageTemperatureInCelsius *types.OptionalFloat32Range `protobuf:"bytes,20,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3,oneof" json:"storage_temperature_in_celsius,omitempty"`
+	StorageInstructions         *string                     `protobuf:"bytes,21,opt,name=storage_instructions,json=storageInstructions,proto3,oneof" json:"storage_instructions,omitempty"`
+	Slug                        *string                     `protobuf:"bytes,22,opt,name=slug,proto3,oneof" json:"slug,omitempty"`
+	ContainsAlcohol             *bool                       `protobuf:"varint,23,opt,name=contains_alcohol,json=containsAlcohol,proto3,oneof" json:"contains_alcohol,omitempty"`
+	ShoppingSuggestions         *string                     `protobuf:"bytes,24,opt,name=shopping_suggestions,json=shoppingSuggestions,proto3,oneof" json:"shopping_suggestions,omitempty"`
+	IsStarch                    *bool                       `protobuf:"varint,25,opt,name=is_starch,json=isStarch,proto3,oneof" json:"is_starch,omitempty"`
+	IsProtein                   *bool                       `protobuf:"varint,26,opt,name=is_protein,json=isProtein,proto3,oneof" json:"is_protein,omitempty"`
+	IsGrain                     *bool                       `protobuf:"varint,27,opt,name=is_grain,json=isGrain,proto3,oneof" json:"is_grain,omitempty"`
+	IsFruit                     *bool                       `protobuf:"varint,28,opt,name=is_fruit,json=isFruit,proto3,oneof" json:"is_fruit,omitempty"`
+	IsSalt                      *bool                       `protobuf:"varint,29,opt,name=is_salt,json=isSalt,proto3,oneof" json:"is_salt,omitempty"`
+	IsFat                       *bool                       `protobuf:"varint,30,opt,name=is_fat,json=isFat,proto3,oneof" json:"is_fat,omitempty"`
+	IsAcid                      *bool                       `protobuf:"varint,31,opt,name=is_acid,json=isAcid,proto3,oneof" json:"is_acid,omitempty"`
+	IsHeat                      *bool                       `protobuf:"varint,32,opt,name=is_heat,json=isHeat,proto3,oneof" json:"is_heat,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }
@@ -1528,16 +1528,16 @@ func (x *ValidIngredientUpdateRequestInput) GetIsHeat() bool {
 
 type ValidInstrumentCreationRequestInput struct {
 	state                          protoimpl.MessageState `protogen:"open.v1"`
-	Name                           string                 `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3"`
-	PluralName                     string                 `json:"plural_name,omitempty" protobuf:"bytes,2,opt,name=plural_name,json=pluralName,proto3"`
-	Description                    string                 `json:"description,omitempty" protobuf:"bytes,3,opt,name=description,proto3"`
-	IconPath                       string                 `json:"icon_path,omitempty"   protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3"`
-	Slug                           string                 `json:"slug,omitempty"        protobuf:"bytes,5,opt,name=slug,proto3"`
+	Name                           string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	PluralName                     string                 `protobuf:"bytes,2,opt,name=plural_name,json=pluralName,proto3" json:"plural_name,omitempty"`
+	Description                    string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	IconPath                       string                 `protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3" json:"icon_path,omitempty"`
+	Slug                           string                 `protobuf:"bytes,5,opt,name=slug,proto3" json:"slug,omitempty"`
 	unknownFields                  protoimpl.UnknownFields
 	sizeCache                      protoimpl.SizeCache
-	DisplayInSummaryLists          bool `json:"display_in_summary_lists,omitempty"          protobuf:"varint,6,opt,name=display_in_summary_lists,json=displayInSummaryLists,proto3"`
-	IncludeInGeneratedInstructions bool `json:"include_in_generated_instructions,omitempty" protobuf:"varint,7,opt,name=include_in_generated_instructions,json=includeInGeneratedInstructions,proto3"`
-	UsableForStorage               bool `json:"usable_for_storage,omitempty"                protobuf:"varint,8,opt,name=usable_for_storage,json=usableForStorage,proto3"`
+	DisplayInSummaryLists          bool `protobuf:"varint,6,opt,name=display_in_summary_lists,json=displayInSummaryLists,proto3" json:"display_in_summary_lists,omitempty"`
+	IncludeInGeneratedInstructions bool `protobuf:"varint,7,opt,name=include_in_generated_instructions,json=includeInGeneratedInstructions,proto3" json:"include_in_generated_instructions,omitempty"`
+	UsableForStorage               bool `protobuf:"varint,8,opt,name=usable_for_storage,json=usableForStorage,proto3" json:"usable_for_storage,omitempty"`
 }
 
 func (x *ValidInstrumentCreationRequestInput) Reset() {
@@ -1628,14 +1628,14 @@ func (x *ValidInstrumentCreationRequestInput) GetUsableForStorage() bool {
 
 type ValidInstrumentUpdateRequestInput struct {
 	state                          protoimpl.MessageState `protogen:"open.v1"`
-	Name                           *string                `json:"name,omitempty"                              protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	PluralName                     *string                `json:"plural_name,omitempty"                       protobuf:"bytes,2,opt,name=plural_name,json=pluralName,proto3,oneof"`
-	Description                    *string                `json:"description,omitempty"                       protobuf:"bytes,3,opt,name=description,proto3,oneof"`
-	IconPath                       *string                `json:"icon_path,omitempty"                         protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3,oneof"`
-	Slug                           *string                `json:"slug,omitempty"                              protobuf:"bytes,5,opt,name=slug,proto3,oneof"`
-	UsableForStorage               *bool                  `json:"usable_for_storage,omitempty"                protobuf:"varint,6,opt,name=usable_for_storage,json=usableForStorage,proto3,oneof"`
-	DisplayInSummaryLists          *bool                  `json:"display_in_summary_lists,omitempty"          protobuf:"varint,7,opt,name=display_in_summary_lists,json=displayInSummaryLists,proto3,oneof"`
-	IncludeInGeneratedInstructions *bool                  `json:"include_in_generated_instructions,omitempty" protobuf:"varint,8,opt,name=include_in_generated_instructions,json=includeInGeneratedInstructions,proto3,oneof"`
+	Name                           *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	PluralName                     *string                `protobuf:"bytes,2,opt,name=plural_name,json=pluralName,proto3,oneof" json:"plural_name,omitempty"`
+	Description                    *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	IconPath                       *string                `protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3,oneof" json:"icon_path,omitempty"`
+	Slug                           *string                `protobuf:"bytes,5,opt,name=slug,proto3,oneof" json:"slug,omitempty"`
+	UsableForStorage               *bool                  `protobuf:"varint,6,opt,name=usable_for_storage,json=usableForStorage,proto3,oneof" json:"usable_for_storage,omitempty"`
+	DisplayInSummaryLists          *bool                  `protobuf:"varint,7,opt,name=display_in_summary_lists,json=displayInSummaryLists,proto3,oneof" json:"display_in_summary_lists,omitempty"`
+	IncludeInGeneratedInstructions *bool                  `protobuf:"varint,8,opt,name=include_in_generated_instructions,json=includeInGeneratedInstructions,proto3,oneof" json:"include_in_generated_instructions,omitempty"`
 	unknownFields                  protoimpl.UnknownFields
 	sizeCache                      protoimpl.SizeCache
 }
@@ -1728,12 +1728,12 @@ func (x *ValidInstrumentUpdateRequestInput) GetIncludeInGeneratedInstructions() 
 
 type ValidMeasurementUnitConversionCreationRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	OnlyForIngredient *string                `json:"only_for_ingredient,omitempty" protobuf:"bytes,1,opt,name=only_for_ingredient,json=onlyForIngredient,proto3,oneof"`
-	From              string                 `json:"from,omitempty"                protobuf:"bytes,2,opt,name=from,proto3"`
-	To                string                 `json:"to,omitempty"                  protobuf:"bytes,3,opt,name=to,proto3"`
-	Notes             string                 `json:"notes,omitempty"               protobuf:"bytes,4,opt,name=notes,proto3"`
+	OnlyForIngredient *string                `protobuf:"bytes,1,opt,name=only_for_ingredient,json=onlyForIngredient,proto3,oneof" json:"only_for_ingredient,omitempty"`
+	From              string                 `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
+	To                string                 `protobuf:"bytes,3,opt,name=to,proto3" json:"to,omitempty"`
+	Notes             string                 `protobuf:"bytes,4,opt,name=notes,proto3" json:"notes,omitempty"`
 	unknownFields     protoimpl.UnknownFields
-	Modifier          float32 `json:"modifier,omitempty" protobuf:"fixed32,5,opt,name=modifier,proto3"`
+	Modifier          float32 `protobuf:"fixed32,5,opt,name=modifier,proto3" json:"modifier,omitempty"`
 	sizeCache         protoimpl.SizeCache
 }
 
@@ -1804,11 +1804,11 @@ func (x *ValidMeasurementUnitConversionCreationRequestInput) GetModifier() float
 
 type ValidMeasurementUnitConversionUpdateRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	From              *string                `json:"from,omitempty"                protobuf:"bytes,1,opt,name=from,proto3,oneof"`
-	To                *string                `json:"to,omitempty"                  protobuf:"bytes,2,opt,name=to,proto3,oneof"`
-	OnlyForIngredient *string                `json:"only_for_ingredient,omitempty" protobuf:"bytes,3,opt,name=only_for_ingredient,json=onlyForIngredient,proto3,oneof"`
-	Modifier          *float32               `json:"modifier,omitempty"            protobuf:"fixed32,4,opt,name=modifier,proto3,oneof"`
-	Notes             *string                `json:"notes,omitempty"               protobuf:"bytes,5,opt,name=notes,proto3,oneof"`
+	From              *string                `protobuf:"bytes,1,opt,name=from,proto3,oneof" json:"from,omitempty"`
+	To                *string                `protobuf:"bytes,2,opt,name=to,proto3,oneof" json:"to,omitempty"`
+	OnlyForIngredient *string                `protobuf:"bytes,3,opt,name=only_for_ingredient,json=onlyForIngredient,proto3,oneof" json:"only_for_ingredient,omitempty"`
+	Modifier          *float32               `protobuf:"fixed32,4,opt,name=modifier,proto3,oneof" json:"modifier,omitempty"`
+	Notes             *string                `protobuf:"bytes,5,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -1880,17 +1880,17 @@ func (x *ValidMeasurementUnitConversionUpdateRequestInput) GetNotes() string {
 
 type ValidMeasurementUnitCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3"`
-	Description   string                 `json:"description,omitempty" protobuf:"bytes,2,opt,name=description,proto3"`
-	IconPath      string                 `json:"icon_path,omitempty"   protobuf:"bytes,3,opt,name=icon_path,json=iconPath,proto3"`
-	PluralName    string                 `json:"plural_name,omitempty" protobuf:"bytes,4,opt,name=plural_name,json=pluralName,proto3"`
-	Slug          string                 `json:"slug,omitempty"        protobuf:"bytes,5,opt,name=slug,proto3"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	IconPath      string                 `protobuf:"bytes,3,opt,name=icon_path,json=iconPath,proto3" json:"icon_path,omitempty"`
+	PluralName    string                 `protobuf:"bytes,4,opt,name=plural_name,json=pluralName,proto3" json:"plural_name,omitempty"`
+	Slug          string                 `protobuf:"bytes,5,opt,name=slug,proto3" json:"slug,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
-	Volumetric    bool `json:"volumetric,omitempty" protobuf:"varint,6,opt,name=volumetric,proto3"`
-	Universal     bool `json:"universal,omitempty"  protobuf:"varint,7,opt,name=universal,proto3"`
-	Metric        bool `json:"metric,omitempty"     protobuf:"varint,8,opt,name=metric,proto3"`
-	Imperial      bool `json:"imperial,omitempty"   protobuf:"varint,9,opt,name=imperial,proto3"`
+	Volumetric    bool `protobuf:"varint,6,opt,name=volumetric,proto3" json:"volumetric,omitempty"`
+	Universal     bool `protobuf:"varint,7,opt,name=universal,proto3" json:"universal,omitempty"`
+	Metric        bool `protobuf:"varint,8,opt,name=metric,proto3" json:"metric,omitempty"`
+	Imperial      bool `protobuf:"varint,9,opt,name=imperial,proto3" json:"imperial,omitempty"`
 }
 
 func (x *ValidMeasurementUnitCreationRequestInput) Reset() {
@@ -1988,15 +1988,15 @@ func (x *ValidMeasurementUnitCreationRequestInput) GetImperial() bool {
 
 type ValidMeasurementUnitUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          *string                `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Description   *string                `json:"description,omitempty" protobuf:"bytes,2,opt,name=description,proto3,oneof"`
-	IconPath      *string                `json:"icon_path,omitempty"   protobuf:"bytes,3,opt,name=icon_path,json=iconPath,proto3,oneof"`
-	Volumetric    *bool                  `json:"volumetric,omitempty"  protobuf:"varint,4,opt,name=volumetric,proto3,oneof"`
-	Universal     *bool                  `json:"universal,omitempty"   protobuf:"varint,5,opt,name=universal,proto3,oneof"`
-	Metric        *bool                  `json:"metric,omitempty"      protobuf:"varint,6,opt,name=metric,proto3,oneof"`
-	Imperial      *bool                  `json:"imperial,omitempty"    protobuf:"varint,7,opt,name=imperial,proto3,oneof"`
-	PluralName    *string                `json:"plural_name,omitempty" protobuf:"bytes,8,opt,name=plural_name,json=pluralName,proto3,oneof"`
-	Slug          *string                `json:"slug,omitempty"        protobuf:"bytes,9,opt,name=slug,proto3,oneof"`
+	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Description   *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	IconPath      *string                `protobuf:"bytes,3,opt,name=icon_path,json=iconPath,proto3,oneof" json:"icon_path,omitempty"`
+	Volumetric    *bool                  `protobuf:"varint,4,opt,name=volumetric,proto3,oneof" json:"volumetric,omitempty"`
+	Universal     *bool                  `protobuf:"varint,5,opt,name=universal,proto3,oneof" json:"universal,omitempty"`
+	Metric        *bool                  `protobuf:"varint,6,opt,name=metric,proto3,oneof" json:"metric,omitempty"`
+	Imperial      *bool                  `protobuf:"varint,7,opt,name=imperial,proto3,oneof" json:"imperial,omitempty"`
+	PluralName    *string                `protobuf:"bytes,8,opt,name=plural_name,json=pluralName,proto3,oneof" json:"plural_name,omitempty"`
+	Slug          *string                `protobuf:"bytes,9,opt,name=slug,proto3,oneof" json:"slug,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2096,23 +2096,23 @@ func (x *ValidMeasurementUnitUpdateRequestInput) GetSlug() string {
 
 type ValidPreparationCreationRequestInput struct {
 	state                       protoimpl.MessageState            `protogen:"open.v1"`
-	InstrumentCount             *types.Uint16RangeWithOptionalMax `json:"instrument_count,omitempty" protobuf:"bytes,1,opt,name=instrument_count,json=instrumentCount,proto3"`
-	IngredientCount             *types.Uint16RangeWithOptionalMax `json:"ingredient_count,omitempty" protobuf:"bytes,2,opt,name=ingredient_count,json=ingredientCount,proto3"`
-	VesselCount                 *types.Uint16RangeWithOptionalMax `json:"vessel_count,omitempty"     protobuf:"bytes,3,opt,name=vessel_count,json=vesselCount,proto3"`
-	Description                 string                            `json:"description,omitempty"      protobuf:"bytes,8,opt,name=description,proto3"`
-	PastTense                   string                            `json:"past_tense,omitempty"       protobuf:"bytes,5,opt,name=past_tense,json=pastTense,proto3"`
-	Slug                        string                            `json:"slug,omitempty"             protobuf:"bytes,6,opt,name=slug,proto3"`
-	Name                        string                            `json:"name,omitempty"             protobuf:"bytes,7,opt,name=name,proto3"`
-	IconPath                    string                            `json:"icon_path,omitempty"        protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3"`
+	InstrumentCount             *types.Uint16RangeWithOptionalMax `protobuf:"bytes,1,opt,name=instrument_count,json=instrumentCount,proto3" json:"instrument_count,omitempty"`
+	IngredientCount             *types.Uint16RangeWithOptionalMax `protobuf:"bytes,2,opt,name=ingredient_count,json=ingredientCount,proto3" json:"ingredient_count,omitempty"`
+	VesselCount                 *types.Uint16RangeWithOptionalMax `protobuf:"bytes,3,opt,name=vessel_count,json=vesselCount,proto3" json:"vessel_count,omitempty"`
+	Description                 string                            `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
+	PastTense                   string                            `protobuf:"bytes,5,opt,name=past_tense,json=pastTense,proto3" json:"past_tense,omitempty"`
+	Slug                        string                            `protobuf:"bytes,6,opt,name=slug,proto3" json:"slug,omitempty"`
+	Name                        string                            `protobuf:"bytes,7,opt,name=name,proto3" json:"name,omitempty"`
+	IconPath                    string                            `protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3" json:"icon_path,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
-	ConditionExpressionRequired bool `json:"condition_expression_required,omitempty" protobuf:"varint,11,opt,name=condition_expression_required,json=conditionExpressionRequired,proto3"`
-	ConsumesVessel              bool `json:"consumes_vessel,omitempty"               protobuf:"varint,12,opt,name=consumes_vessel,json=consumesVessel,proto3"`
-	OnlyForVessels              bool `json:"only_for_vessels,omitempty"              protobuf:"varint,13,opt,name=only_for_vessels,json=onlyForVessels,proto3"`
-	RestrictToIngredients       bool `json:"restrict_to_ingredients,omitempty"       protobuf:"varint,14,opt,name=restrict_to_ingredients,json=restrictToIngredients,proto3"`
-	YieldsNothing               bool `json:"yields_nothing,omitempty"                protobuf:"varint,15,opt,name=yields_nothing,json=yieldsNothing,proto3"`
-	TimeEstimateRequired        bool `json:"time_estimate_required,omitempty"        protobuf:"varint,10,opt,name=time_estimate_required,json=timeEstimateRequired,proto3"`
-	TemperatureRequired         bool `json:"temperature_required,omitempty"          protobuf:"varint,9,opt,name=temperature_required,json=temperatureRequired,proto3"`
+	ConditionExpressionRequired bool `protobuf:"varint,11,opt,name=condition_expression_required,json=conditionExpressionRequired,proto3" json:"condition_expression_required,omitempty"`
+	ConsumesVessel              bool `protobuf:"varint,12,opt,name=consumes_vessel,json=consumesVessel,proto3" json:"consumes_vessel,omitempty"`
+	OnlyForVessels              bool `protobuf:"varint,13,opt,name=only_for_vessels,json=onlyForVessels,proto3" json:"only_for_vessels,omitempty"`
+	RestrictToIngredients       bool `protobuf:"varint,14,opt,name=restrict_to_ingredients,json=restrictToIngredients,proto3" json:"restrict_to_ingredients,omitempty"`
+	YieldsNothing               bool `protobuf:"varint,15,opt,name=yields_nothing,json=yieldsNothing,proto3" json:"yields_nothing,omitempty"`
+	TimeEstimateRequired        bool `protobuf:"varint,10,opt,name=time_estimate_required,json=timeEstimateRequired,proto3" json:"time_estimate_required,omitempty"`
+	TemperatureRequired         bool `protobuf:"varint,9,opt,name=temperature_required,json=temperatureRequired,proto3" json:"temperature_required,omitempty"`
 }
 
 func (x *ValidPreparationCreationRequestInput) Reset() {
@@ -2252,9 +2252,9 @@ func (x *ValidPreparationCreationRequestInput) GetYieldsNothing() bool {
 
 type ValidPreparationInstrumentCreationRequestInput struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Notes              string                 `json:"notes,omitempty"                protobuf:"bytes,1,opt,name=notes,proto3"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
-	ValidInstrumentId  string                 `json:"valid_instrument_id,omitempty"  protobuf:"bytes,3,opt,name=valid_instrument_id,json=validInstrumentId,proto3"`
+	Notes              string                 `protobuf:"bytes,1,opt,name=notes,proto3" json:"notes,omitempty"`
+	ValidPreparationId string                 `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
+	ValidInstrumentId  string                 `protobuf:"bytes,3,opt,name=valid_instrument_id,json=validInstrumentId,proto3" json:"valid_instrument_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -2312,9 +2312,9 @@ func (x *ValidPreparationInstrumentCreationRequestInput) GetValidInstrumentId() 
 
 type ValidPreparationInstrumentUpdateRequestInput struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Notes              *string                `json:"notes,omitempty"                protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	ValidPreparationId *string                `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3,oneof"`
-	ValidInstrumentId  *string                `json:"valid_instrument_id,omitempty"  protobuf:"bytes,3,opt,name=valid_instrument_id,json=validInstrumentId,proto3,oneof"`
+	Notes              *string                `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	ValidPreparationId *string                `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3,oneof" json:"valid_preparation_id,omitempty"`
+	ValidInstrumentId  *string                `protobuf:"bytes,3,opt,name=valid_instrument_id,json=validInstrumentId,proto3,oneof" json:"valid_instrument_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -2372,21 +2372,21 @@ func (x *ValidPreparationInstrumentUpdateRequestInput) GetValidInstrumentId() st
 
 type ValidPreparationUpdateRequestInput struct {
 	state                       protoimpl.MessageState                              `protogen:"open.v1"`
-	InstrumentCount             *types.Uint16RangeWithOptionalMaxUpdateRequestInput `json:"instrument_count,omitempty"              protobuf:"bytes,1,opt,name=instrument_count,json=instrumentCount,proto3,oneof"`
-	IngredientCount             *types.Uint16RangeWithOptionalMaxUpdateRequestInput `json:"ingredient_count,omitempty"              protobuf:"bytes,2,opt,name=ingredient_count,json=ingredientCount,proto3,oneof"`
-	VesselCount                 *types.Uint16RangeWithOptionalMaxUpdateRequestInput `json:"vessel_count,omitempty"                  protobuf:"bytes,3,opt,name=vessel_count,json=vesselCount,proto3,oneof"`
-	Name                        *string                                             `json:"name,omitempty"                          protobuf:"bytes,4,opt,name=name,proto3,oneof"`
-	Description                 *string                                             `json:"description,omitempty"                   protobuf:"bytes,5,opt,name=description,proto3,oneof"`
-	IconPath                    *string                                             `json:"icon_path,omitempty"                     protobuf:"bytes,6,opt,name=icon_path,json=iconPath,proto3,oneof"`
-	YieldsNothing               *bool                                               `json:"yields_nothing,omitempty"                protobuf:"varint,7,opt,name=yields_nothing,json=yieldsNothing,proto3,oneof"`
-	Slug                        *string                                             `json:"slug,omitempty"                          protobuf:"bytes,8,opt,name=slug,proto3,oneof"`
-	RestrictToIngredients       *bool                                               `json:"restrict_to_ingredients,omitempty"       protobuf:"varint,9,opt,name=restrict_to_ingredients,json=restrictToIngredients,proto3,oneof"`
-	PastTense                   *string                                             `json:"past_tense,omitempty"                    protobuf:"bytes,10,opt,name=past_tense,json=pastTense,proto3,oneof"`
-	TemperatureRequired         *bool                                               `json:"temperature_required,omitempty"          protobuf:"varint,11,opt,name=temperature_required,json=temperatureRequired,proto3,oneof"`
-	TimeEstimateRequired        *bool                                               `json:"time_estimate_required,omitempty"        protobuf:"varint,12,opt,name=time_estimate_required,json=timeEstimateRequired,proto3,oneof"`
-	ConditionExpressionRequired *bool                                               `json:"condition_expression_required,omitempty" protobuf:"varint,13,opt,name=condition_expression_required,json=conditionExpressionRequired,proto3,oneof"`
-	ConsumesVessel              *bool                                               `json:"consumes_vessel,omitempty"               protobuf:"varint,14,opt,name=consumes_vessel,json=consumesVessel,proto3,oneof"`
-	OnlyForVessels              *bool                                               `json:"only_for_vessels,omitempty"              protobuf:"varint,15,opt,name=only_for_vessels,json=onlyForVessels,proto3,oneof"`
+	InstrumentCount             *types.Uint16RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,1,opt,name=instrument_count,json=instrumentCount,proto3,oneof" json:"instrument_count,omitempty"`
+	IngredientCount             *types.Uint16RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,2,opt,name=ingredient_count,json=ingredientCount,proto3,oneof" json:"ingredient_count,omitempty"`
+	VesselCount                 *types.Uint16RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,3,opt,name=vessel_count,json=vesselCount,proto3,oneof" json:"vessel_count,omitempty"`
+	Name                        *string                                             `protobuf:"bytes,4,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Description                 *string                                             `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	IconPath                    *string                                             `protobuf:"bytes,6,opt,name=icon_path,json=iconPath,proto3,oneof" json:"icon_path,omitempty"`
+	YieldsNothing               *bool                                               `protobuf:"varint,7,opt,name=yields_nothing,json=yieldsNothing,proto3,oneof" json:"yields_nothing,omitempty"`
+	Slug                        *string                                             `protobuf:"bytes,8,opt,name=slug,proto3,oneof" json:"slug,omitempty"`
+	RestrictToIngredients       *bool                                               `protobuf:"varint,9,opt,name=restrict_to_ingredients,json=restrictToIngredients,proto3,oneof" json:"restrict_to_ingredients,omitempty"`
+	PastTense                   *string                                             `protobuf:"bytes,10,opt,name=past_tense,json=pastTense,proto3,oneof" json:"past_tense,omitempty"`
+	TemperatureRequired         *bool                                               `protobuf:"varint,11,opt,name=temperature_required,json=temperatureRequired,proto3,oneof" json:"temperature_required,omitempty"`
+	TimeEstimateRequired        *bool                                               `protobuf:"varint,12,opt,name=time_estimate_required,json=timeEstimateRequired,proto3,oneof" json:"time_estimate_required,omitempty"`
+	ConditionExpressionRequired *bool                                               `protobuf:"varint,13,opt,name=condition_expression_required,json=conditionExpressionRequired,proto3,oneof" json:"condition_expression_required,omitempty"`
+	ConsumesVessel              *bool                                               `protobuf:"varint,14,opt,name=consumes_vessel,json=consumesVessel,proto3,oneof" json:"consumes_vessel,omitempty"`
+	OnlyForVessels              *bool                                               `protobuf:"varint,15,opt,name=only_for_vessels,json=onlyForVessels,proto3,oneof" json:"only_for_vessels,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }
@@ -2528,9 +2528,9 @@ func (x *ValidPreparationUpdateRequestInput) GetOnlyForVessels() bool {
 
 type ValidPreparationVesselCreationRequestInput struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Notes              string                 `json:"notes,omitempty"                protobuf:"bytes,1,opt,name=notes,proto3"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
-	ValidVesselId      string                 `json:"valid_vessel_id,omitempty"      protobuf:"bytes,3,opt,name=valid_vessel_id,json=validVesselId,proto3"`
+	Notes              string                 `protobuf:"bytes,1,opt,name=notes,proto3" json:"notes,omitempty"`
+	ValidPreparationId string                 `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
+	ValidVesselId      string                 `protobuf:"bytes,3,opt,name=valid_vessel_id,json=validVesselId,proto3" json:"valid_vessel_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -2588,9 +2588,9 @@ func (x *ValidPreparationVesselCreationRequestInput) GetValidVesselId() string {
 
 type ValidPreparationVesselUpdateRequestInput struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Notes              *string                `json:"notes,omitempty"                protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	ValidPreparationId *string                `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3,oneof"`
-	ValidVesselId      *string                `json:"valid_vessel_id,omitempty"      protobuf:"bytes,3,opt,name=valid_vessel_id,json=validVesselId,proto3,oneof"`
+	Notes              *string                `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	ValidPreparationId *string                `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3,oneof" json:"valid_preparation_id,omitempty"`
+	ValidVesselId      *string                `protobuf:"bytes,3,opt,name=valid_vessel_id,json=validVesselId,proto3,oneof" json:"valid_vessel_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -2648,22 +2648,22 @@ func (x *ValidPreparationVesselUpdateRequestInput) GetValidVesselId() string {
 
 type ValidVesselCreationRequestInput struct {
 	state                          protoimpl.MessageState `protogen:"open.v1"`
-	CapacityUnitId                 *string                `json:"capacity_unit_id,omitempty" protobuf:"bytes,1,opt,name=capacity_unit_id,json=capacityUnitId,proto3,oneof"`
-	IconPath                       string                 `json:"icon_path,omitempty"        protobuf:"bytes,3,opt,name=icon_path,json=iconPath,proto3"`
-	PluralName                     string                 `json:"plural_name,omitempty"      protobuf:"bytes,4,opt,name=plural_name,json=pluralName,proto3"`
-	Name                           string                 `json:"name,omitempty"             protobuf:"bytes,5,opt,name=name,proto3"`
-	Description                    string                 `json:"description,omitempty"      protobuf:"bytes,6,opt,name=description,proto3"`
-	Slug                           string                 `json:"slug,omitempty"             protobuf:"bytes,7,opt,name=slug,proto3"`
+	CapacityUnitId                 *string                `protobuf:"bytes,1,opt,name=capacity_unit_id,json=capacityUnitId,proto3,oneof" json:"capacity_unit_id,omitempty"`
+	IconPath                       string                 `protobuf:"bytes,3,opt,name=icon_path,json=iconPath,proto3" json:"icon_path,omitempty"`
+	PluralName                     string                 `protobuf:"bytes,4,opt,name=plural_name,json=pluralName,proto3" json:"plural_name,omitempty"`
+	Name                           string                 `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	Description                    string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
+	Slug                           string                 `protobuf:"bytes,7,opt,name=slug,proto3" json:"slug,omitempty"`
 	unknownFields                  protoimpl.UnknownFields
-	LengthInMillimeters            float32          `json:"length_in_millimeters,omitempty" protobuf:"fixed32,8,opt,name=length_in_millimeters,json=lengthInMillimeters,proto3"`
-	HeightInMillimeters            float32          `json:"height_in_millimeters,omitempty" protobuf:"fixed32,9,opt,name=height_in_millimeters,json=heightInMillimeters,proto3"`
-	Capacity                       float32          `json:"capacity,omitempty"              protobuf:"fixed32,10,opt,name=capacity,proto3"`
-	WidthInMillimeters             float32          `json:"width_in_millimeters,omitempty"  protobuf:"fixed32,11,opt,name=width_in_millimeters,json=widthInMillimeters,proto3"`
-	Shape                          ValidVesselShape `json:"shape,omitempty"                 protobuf:"varint,2,opt,name=shape,proto3,enum=mealplanning.ValidVesselShape"`
+	LengthInMillimeters            float32          `protobuf:"fixed32,8,opt,name=length_in_millimeters,json=lengthInMillimeters,proto3" json:"length_in_millimeters,omitempty"`
+	HeightInMillimeters            float32          `protobuf:"fixed32,9,opt,name=height_in_millimeters,json=heightInMillimeters,proto3" json:"height_in_millimeters,omitempty"`
+	Capacity                       float32          `protobuf:"fixed32,10,opt,name=capacity,proto3" json:"capacity,omitempty"`
+	WidthInMillimeters             float32          `protobuf:"fixed32,11,opt,name=width_in_millimeters,json=widthInMillimeters,proto3" json:"width_in_millimeters,omitempty"`
+	Shape                          ValidVesselShape `protobuf:"varint,2,opt,name=shape,proto3,enum=mealplanning.ValidVesselShape" json:"shape,omitempty"`
 	sizeCache                      protoimpl.SizeCache
-	UsableForStorage               bool `json:"usable_for_storage,omitempty"                protobuf:"varint,12,opt,name=usable_for_storage,json=usableForStorage,proto3"`
-	IncludeInGeneratedInstructions bool `json:"include_in_generated_instructions,omitempty" protobuf:"varint,13,opt,name=include_in_generated_instructions,json=includeInGeneratedInstructions,proto3"`
-	DisplayInSummaryLists          bool `json:"display_in_summary_lists,omitempty"          protobuf:"varint,14,opt,name=display_in_summary_lists,json=displayInSummaryLists,proto3"`
+	UsableForStorage               bool `protobuf:"varint,12,opt,name=usable_for_storage,json=usableForStorage,proto3" json:"usable_for_storage,omitempty"`
+	IncludeInGeneratedInstructions bool `protobuf:"varint,13,opt,name=include_in_generated_instructions,json=includeInGeneratedInstructions,proto3" json:"include_in_generated_instructions,omitempty"`
+	DisplayInSummaryLists          bool `protobuf:"varint,14,opt,name=display_in_summary_lists,json=displayInSummaryLists,proto3" json:"display_in_summary_lists,omitempty"`
 }
 
 func (x *ValidVesselCreationRequestInput) Reset() {
@@ -2796,20 +2796,20 @@ func (x *ValidVesselCreationRequestInput) GetDisplayInSummaryLists() bool {
 
 type ValidVesselUpdateRequestInput struct {
 	state                          protoimpl.MessageState `protogen:"open.v1"`
-	Name                           *string                `json:"name,omitempty"                              protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	PluralName                     *string                `json:"plural_name,omitempty"                       protobuf:"bytes,2,opt,name=plural_name,json=pluralName,proto3,oneof"`
-	Description                    *string                `json:"description,omitempty"                       protobuf:"bytes,3,opt,name=description,proto3,oneof"`
-	IconPath                       *string                `json:"icon_path,omitempty"                         protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3,oneof"`
-	UsableForStorage               *bool                  `json:"usable_for_storage,omitempty"                protobuf:"varint,5,opt,name=usable_for_storage,json=usableForStorage,proto3,oneof"`
-	Slug                           *string                `json:"slug,omitempty"                              protobuf:"bytes,6,opt,name=slug,proto3,oneof"`
-	DisplayInSummaryLists          *bool                  `json:"display_in_summary_lists,omitempty"          protobuf:"varint,7,opt,name=display_in_summary_lists,json=displayInSummaryLists,proto3,oneof"`
-	IncludeInGeneratedInstructions *bool                  `json:"include_in_generated_instructions,omitempty" protobuf:"varint,8,opt,name=include_in_generated_instructions,json=includeInGeneratedInstructions,proto3,oneof"`
-	Capacity                       *float32               `json:"capacity,omitempty"                          protobuf:"fixed32,9,opt,name=capacity,proto3,oneof"`
-	CapacityUnitId                 *string                `json:"capacity_unit_id,omitempty"                  protobuf:"bytes,10,opt,name=capacity_unit_id,json=capacityUnitId,proto3,oneof"`
-	WidthInMillimeters             *float32               `json:"width_in_millimeters,omitempty"              protobuf:"fixed32,11,opt,name=width_in_millimeters,json=widthInMillimeters,proto3,oneof"`
-	LengthInMillimeters            *float32               `json:"length_in_millimeters,omitempty"             protobuf:"fixed32,12,opt,name=length_in_millimeters,json=lengthInMillimeters,proto3,oneof"`
-	HeightInMillimeters            *float32               `json:"height_in_millimeters,omitempty"             protobuf:"fixed32,13,opt,name=height_in_millimeters,json=heightInMillimeters,proto3,oneof"`
-	Shape                          *ValidVesselShape      `json:"shape,omitempty"                             protobuf:"varint,14,opt,name=shape,proto3,enum=mealplanning.ValidVesselShape,oneof"`
+	Name                           *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	PluralName                     *string                `protobuf:"bytes,2,opt,name=plural_name,json=pluralName,proto3,oneof" json:"plural_name,omitempty"`
+	Description                    *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	IconPath                       *string                `protobuf:"bytes,4,opt,name=icon_path,json=iconPath,proto3,oneof" json:"icon_path,omitempty"`
+	UsableForStorage               *bool                  `protobuf:"varint,5,opt,name=usable_for_storage,json=usableForStorage,proto3,oneof" json:"usable_for_storage,omitempty"`
+	Slug                           *string                `protobuf:"bytes,6,opt,name=slug,proto3,oneof" json:"slug,omitempty"`
+	DisplayInSummaryLists          *bool                  `protobuf:"varint,7,opt,name=display_in_summary_lists,json=displayInSummaryLists,proto3,oneof" json:"display_in_summary_lists,omitempty"`
+	IncludeInGeneratedInstructions *bool                  `protobuf:"varint,8,opt,name=include_in_generated_instructions,json=includeInGeneratedInstructions,proto3,oneof" json:"include_in_generated_instructions,omitempty"`
+	Capacity                       *float32               `protobuf:"fixed32,9,opt,name=capacity,proto3,oneof" json:"capacity,omitempty"`
+	CapacityUnitId                 *string                `protobuf:"bytes,10,opt,name=capacity_unit_id,json=capacityUnitId,proto3,oneof" json:"capacity_unit_id,omitempty"`
+	WidthInMillimeters             *float32               `protobuf:"fixed32,11,opt,name=width_in_millimeters,json=widthInMillimeters,proto3,oneof" json:"width_in_millimeters,omitempty"`
+	LengthInMillimeters            *float32               `protobuf:"fixed32,12,opt,name=length_in_millimeters,json=lengthInMillimeters,proto3,oneof" json:"length_in_millimeters,omitempty"`
+	HeightInMillimeters            *float32               `protobuf:"fixed32,13,opt,name=height_in_millimeters,json=heightInMillimeters,proto3,oneof" json:"height_in_millimeters,omitempty"`
+	Shape                          *ValidVesselShape      `protobuf:"varint,14,opt,name=shape,proto3,enum=mealplanning.ValidVesselShape,oneof" json:"shape,omitempty"`
 	unknownFields                  protoimpl.UnknownFields
 	sizeCache                      protoimpl.SizeCache
 }
@@ -2944,13 +2944,13 @@ func (x *ValidVesselUpdateRequestInput) GetShape() ValidVesselShape {
 
 type UserIngredientPreferenceCreationRequestInput struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientGroupId string                 `json:"valid_ingredient_group_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_group_id,json=validIngredientGroupId,proto3"`
-	ValidIngredientId      string                 `json:"valid_ingredient_id,omitempty"       protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
-	Notes                  string                 `json:"notes,omitempty"                     protobuf:"bytes,3,opt,name=notes,proto3"`
+	ValidIngredientGroupId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_group_id,json=validIngredientGroupId,proto3" json:"valid_ingredient_group_id,omitempty"`
+	ValidIngredientId      string                 `protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
+	Notes                  string                 `protobuf:"bytes,3,opt,name=notes,proto3" json:"notes,omitempty"`
 	unknownFields          protoimpl.UnknownFields
-	Rating                 int32 `json:"rating,omitempty" protobuf:"varint,4,opt,name=rating,proto3"`
+	Rating                 int32 `protobuf:"varint,4,opt,name=rating,proto3" json:"rating,omitempty"`
 	sizeCache              protoimpl.SizeCache
-	Allergy                bool `json:"allergy,omitempty" protobuf:"varint,5,opt,name=allergy,proto3"`
+	Allergy                bool `protobuf:"varint,5,opt,name=allergy,proto3" json:"allergy,omitempty"`
 }
 
 func (x *UserIngredientPreferenceCreationRequestInput) Reset() {
@@ -3020,10 +3020,10 @@ func (x *UserIngredientPreferenceCreationRequestInput) GetAllergy() bool {
 
 type UserIngredientPreferenceUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Notes         *string                `json:"notes,omitempty"         protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	IngredientId  *string                `json:"ingredient_id,omitempty" protobuf:"bytes,2,opt,name=ingredient_id,json=ingredientId,proto3,oneof"`
-	Rating        *int32                 `json:"rating,omitempty"        protobuf:"varint,3,opt,name=rating,proto3,oneof"`
-	Allergy       *bool                  `json:"allergy,omitempty"       protobuf:"varint,4,opt,name=allergy,proto3,oneof"`
+	Notes         *string                `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	IngredientId  *string                `protobuf:"bytes,2,opt,name=ingredient_id,json=ingredientId,proto3,oneof" json:"ingredient_id,omitempty"`
+	Rating        *int32                 `protobuf:"varint,3,opt,name=rating,proto3,oneof" json:"rating,omitempty"`
+	Allergy       *bool                  `protobuf:"varint,4,opt,name=allergy,proto3,oneof" json:"allergy,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3088,7 +3088,7 @@ func (x *UserIngredientPreferenceUpdateRequestInput) GetAllergy() bool {
 
 type ArchiveValidIngredientRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientId string                 `json:"valid_ingredient_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	ValidIngredientId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -3132,7 +3132,7 @@ func (x *ArchiveValidIngredientRequest) GetValidIngredientId() string {
 
 type ArchiveValidIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3176,7 +3176,7 @@ func (x *ArchiveValidIngredientResponse) GetResponseDetails() *types.ResponseDet
 
 type ArchiveValidIngredientGroupRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientGroupId string                 `json:"valid_ingredient_group_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_group_id,json=validIngredientGroupId,proto3"`
+	ValidIngredientGroupId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_group_id,json=validIngredientGroupId,proto3" json:"valid_ingredient_group_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -3220,7 +3220,7 @@ func (x *ArchiveValidIngredientGroupRequest) GetValidIngredientGroupId() string 
 
 type ArchiveValidIngredientGroupResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3264,7 +3264,7 @@ func (x *ArchiveValidIngredientGroupResponse) GetResponseDetails() *types.Respon
 
 type ArchiveValidIngredientMeasurementUnitRequest struct {
 	state                            protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientMeasurementUnitId string                 `json:"valid_ingredient_measurement_unit_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_measurement_unit_id,json=validIngredientMeasurementUnitId,proto3"`
+	ValidIngredientMeasurementUnitId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_measurement_unit_id,json=validIngredientMeasurementUnitId,proto3" json:"valid_ingredient_measurement_unit_id,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -3308,7 +3308,7 @@ func (x *ArchiveValidIngredientMeasurementUnitRequest) GetValidIngredientMeasure
 
 type ArchiveValidIngredientMeasurementUnitResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3352,7 +3352,7 @@ func (x *ArchiveValidIngredientMeasurementUnitResponse) GetResponseDetails() *ty
 
 type ArchiveValidIngredientPreparationRequest struct {
 	state                        protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientPreparationId string                 `json:"valid_ingredient_preparation_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_preparation_id,json=validIngredientPreparationId,proto3"`
+	ValidIngredientPreparationId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_preparation_id,json=validIngredientPreparationId,proto3" json:"valid_ingredient_preparation_id,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -3396,7 +3396,7 @@ func (x *ArchiveValidIngredientPreparationRequest) GetValidIngredientPreparation
 
 type ArchiveValidIngredientPreparationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3440,7 +3440,7 @@ func (x *ArchiveValidIngredientPreparationResponse) GetResponseDetails() *types.
 
 type ArchiveValidPrepTaskConfigRequest struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	ValidPrepTaskConfigId string                 `json:"valid_prep_task_config_id,omitempty" protobuf:"bytes,1,opt,name=valid_prep_task_config_id,json=validPrepTaskConfigId,proto3"`
+	ValidPrepTaskConfigId string                 `protobuf:"bytes,1,opt,name=valid_prep_task_config_id,json=validPrepTaskConfigId,proto3" json:"valid_prep_task_config_id,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -3484,7 +3484,7 @@ func (x *ArchiveValidPrepTaskConfigRequest) GetValidPrepTaskConfigId() string {
 
 type ArchiveValidPrepTaskConfigResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3528,7 +3528,7 @@ func (x *ArchiveValidPrepTaskConfigResponse) GetResponseDetails() *types.Respons
 
 type ArchiveValidIngredientStateRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientStateId string                 `json:"valid_ingredient_state_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3"`
+	ValidIngredientStateId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3" json:"valid_ingredient_state_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -3572,7 +3572,7 @@ func (x *ArchiveValidIngredientStateRequest) GetValidIngredientStateId() string 
 
 type ArchiveValidIngredientStateResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3616,7 +3616,7 @@ func (x *ArchiveValidIngredientStateResponse) GetResponseDetails() *types.Respon
 
 type ArchiveValidIngredientStateIngredientRequest struct {
 	state                            protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientStateIngredientId string                 `json:"valid_ingredient_state_ingredient_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_state_ingredient_id,json=validIngredientStateIngredientId,proto3"`
+	ValidIngredientStateIngredientId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_state_ingredient_id,json=validIngredientStateIngredientId,proto3" json:"valid_ingredient_state_ingredient_id,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -3660,7 +3660,7 @@ func (x *ArchiveValidIngredientStateIngredientRequest) GetValidIngredientStateIn
 
 type ArchiveValidIngredientStateIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3704,7 +3704,7 @@ func (x *ArchiveValidIngredientStateIngredientResponse) GetResponseDetails() *ty
 
 type ArchiveValidInstrumentRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	ValidInstrumentId string                 `json:"valid_instrument_id,omitempty" protobuf:"bytes,1,opt,name=valid_instrument_id,json=validInstrumentId,proto3"`
+	ValidInstrumentId string                 `protobuf:"bytes,1,opt,name=valid_instrument_id,json=validInstrumentId,proto3" json:"valid_instrument_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -3748,7 +3748,7 @@ func (x *ArchiveValidInstrumentRequest) GetValidInstrumentId() string {
 
 type ArchiveValidInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3792,7 +3792,7 @@ func (x *ArchiveValidInstrumentResponse) GetResponseDetails() *types.ResponseDet
 
 type ArchiveValidMeasurementUnitRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	ValidMeasurementUnitId string                 `json:"valid_measurement_unit_id,omitempty" protobuf:"bytes,1,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3"`
+	ValidMeasurementUnitId string                 `protobuf:"bytes,1,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3" json:"valid_measurement_unit_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -3836,7 +3836,7 @@ func (x *ArchiveValidMeasurementUnitRequest) GetValidMeasurementUnitId() string 
 
 type ArchiveValidMeasurementUnitResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3880,7 +3880,7 @@ func (x *ArchiveValidMeasurementUnitResponse) GetResponseDetails() *types.Respon
 
 type ArchiveValidMeasurementUnitConversionRequest struct {
 	state                            protoimpl.MessageState `protogen:"open.v1"`
-	ValidMeasurementUnitConversionId string                 `json:"valid_measurement_unit_conversion_id,omitempty" protobuf:"bytes,1,opt,name=valid_measurement_unit_conversion_id,json=validMeasurementUnitConversionId,proto3"`
+	ValidMeasurementUnitConversionId string                 `protobuf:"bytes,1,opt,name=valid_measurement_unit_conversion_id,json=validMeasurementUnitConversionId,proto3" json:"valid_measurement_unit_conversion_id,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -3924,7 +3924,7 @@ func (x *ArchiveValidMeasurementUnitConversionRequest) GetValidMeasurementUnitCo
 
 type ArchiveValidMeasurementUnitConversionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -3968,7 +3968,7 @@ func (x *ArchiveValidMeasurementUnitConversionResponse) GetResponseDetails() *ty
 
 type ArchiveValidPreparationRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
+	ValidPreparationId string                 `protobuf:"bytes,1,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -4012,7 +4012,7 @@ func (x *ArchiveValidPreparationRequest) GetValidPreparationId() string {
 
 type ArchiveValidPreparationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4056,7 +4056,7 @@ func (x *ArchiveValidPreparationResponse) GetResponseDetails() *types.ResponseDe
 
 type ArchiveValidPreparationInstrumentRequest struct {
 	state                        protoimpl.MessageState `protogen:"open.v1"`
-	ValidPreparationInstrumentId string                 `json:"valid_preparation_instrument_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_instrument_id,json=validPreparationInstrumentId,proto3"`
+	ValidPreparationInstrumentId string                 `protobuf:"bytes,1,opt,name=valid_preparation_instrument_id,json=validPreparationInstrumentId,proto3" json:"valid_preparation_instrument_id,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -4100,7 +4100,7 @@ func (x *ArchiveValidPreparationInstrumentRequest) GetValidPreparationInstrument
 
 type ArchiveValidPreparationInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4144,7 +4144,7 @@ func (x *ArchiveValidPreparationInstrumentResponse) GetResponseDetails() *types.
 
 type ArchiveValidPreparationVesselRequest struct {
 	state                    protoimpl.MessageState `protogen:"open.v1"`
-	ValidPreparationVesselId string                 `json:"valid_preparation_vessel_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_vessel_id,json=validPreparationVesselId,proto3"`
+	ValidPreparationVesselId string                 `protobuf:"bytes,1,opt,name=valid_preparation_vessel_id,json=validPreparationVesselId,proto3" json:"valid_preparation_vessel_id,omitempty"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -4188,7 +4188,7 @@ func (x *ArchiveValidPreparationVesselRequest) GetValidPreparationVesselId() str
 
 type ArchiveValidPreparationVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4232,7 +4232,7 @@ func (x *ArchiveValidPreparationVesselResponse) GetResponseDetails() *types.Resp
 
 type ArchiveValidVesselRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ValidVesselId string                 `json:"valid_vessel_id,omitempty" protobuf:"bytes,1,opt,name=valid_vessel_id,json=validVesselId,proto3"`
+	ValidVesselId string                 `protobuf:"bytes,1,opt,name=valid_vessel_id,json=validVesselId,proto3" json:"valid_vessel_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4276,7 +4276,7 @@ func (x *ArchiveValidVesselRequest) GetValidVesselId() string {
 
 type ArchiveValidVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4320,7 +4320,7 @@ func (x *ArchiveValidVesselResponse) GetResponseDetails() *types.ResponseDetails
 
 type CreateValidIngredientRequest struct {
 	state         protoimpl.MessageState               `protogen:"open.v1"`
-	Input         *ValidIngredientCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidIngredientCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4364,8 +4364,8 @@ func (x *CreateValidIngredientRequest) GetInput() *ValidIngredientCreationReques
 
 type CreateValidIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredient       `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredient       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4416,7 +4416,7 @@ func (x *CreateValidIngredientResponse) GetResult() *ValidIngredient {
 
 type CreateValidIngredientGroupRequest struct {
 	state         protoimpl.MessageState                    `protogen:"open.v1"`
-	Input         *ValidIngredientGroupCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidIngredientGroupCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4460,8 +4460,8 @@ func (x *CreateValidIngredientGroupRequest) GetInput() *ValidIngredientGroupCrea
 
 type CreateValidIngredientGroupResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientGroup  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientGroup  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4512,7 +4512,7 @@ func (x *CreateValidIngredientGroupResponse) GetResult() *ValidIngredientGroup {
 
 type CreateValidIngredientMeasurementUnitRequest struct {
 	state         protoimpl.MessageState                              `protogen:"open.v1"`
-	Input         *ValidIngredientMeasurementUnitCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidIngredientMeasurementUnitCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4556,8 +4556,8 @@ func (x *CreateValidIngredientMeasurementUnitRequest) GetInput() *ValidIngredien
 
 type CreateValidIngredientMeasurementUnitResponse struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails          `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientMeasurementUnit `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails          `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientMeasurementUnit `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4608,7 +4608,7 @@ func (x *CreateValidIngredientMeasurementUnitResponse) GetResult() *ValidIngredi
 
 type CreateValidIngredientPreparationRequest struct {
 	state         protoimpl.MessageState                          `protogen:"open.v1"`
-	Input         *ValidIngredientPreparationCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidIngredientPreparationCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4652,8 +4652,8 @@ func (x *CreateValidIngredientPreparationRequest) GetInput() *ValidIngredientPre
 
 type CreateValidIngredientPreparationResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientPreparation `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientPreparation `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4704,7 +4704,7 @@ func (x *CreateValidIngredientPreparationResponse) GetResult() *ValidIngredientP
 
 type CreateValidPrepTaskConfigRequest struct {
 	state         protoimpl.MessageState                   `protogen:"open.v1"`
-	Input         *ValidPrepTaskConfigCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidPrepTaskConfigCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4748,8 +4748,8 @@ func (x *CreateValidPrepTaskConfigRequest) GetInput() *ValidPrepTaskConfigCreati
 
 type CreateValidPrepTaskConfigResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPrepTaskConfig   `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPrepTaskConfig   `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4800,7 +4800,7 @@ func (x *CreateValidPrepTaskConfigResponse) GetResult() *ValidPrepTaskConfig {
 
 type CreateValidIngredientStateRequest struct {
 	state         protoimpl.MessageState                    `protogen:"open.v1"`
-	Input         *ValidIngredientStateCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidIngredientStateCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4844,8 +4844,8 @@ func (x *CreateValidIngredientStateRequest) GetInput() *ValidIngredientStateCrea
 
 type CreateValidIngredientStateResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientState  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientState  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4896,7 +4896,7 @@ func (x *CreateValidIngredientStateResponse) GetResult() *ValidIngredientState {
 
 type CreateValidIngredientStateIngredientRequest struct {
 	state         protoimpl.MessageState                              `protogen:"open.v1"`
-	Input         *ValidIngredientStateIngredientCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidIngredientStateIngredientCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4940,8 +4940,8 @@ func (x *CreateValidIngredientStateIngredientRequest) GetInput() *ValidIngredien
 
 type CreateValidIngredientStateIngredientResponse struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails          `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientStateIngredient `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails          `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientStateIngredient `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -4992,7 +4992,7 @@ func (x *CreateValidIngredientStateIngredientResponse) GetResult() *ValidIngredi
 
 type CreateValidInstrumentRequest struct {
 	state         protoimpl.MessageState               `protogen:"open.v1"`
-	Input         *ValidInstrumentCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidInstrumentCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5036,8 +5036,8 @@ func (x *CreateValidInstrumentRequest) GetInput() *ValidInstrumentCreationReques
 
 type CreateValidInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidInstrument       `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidInstrument       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5088,7 +5088,7 @@ func (x *CreateValidInstrumentResponse) GetResult() *ValidInstrument {
 
 type CreateValidMeasurementUnitRequest struct {
 	state         protoimpl.MessageState                    `protogen:"open.v1"`
-	Input         *ValidMeasurementUnitCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidMeasurementUnitCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5132,8 +5132,8 @@ func (x *CreateValidMeasurementUnitRequest) GetInput() *ValidMeasurementUnitCrea
 
 type CreateValidMeasurementUnitResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidMeasurementUnit  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidMeasurementUnit  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5184,7 +5184,7 @@ func (x *CreateValidMeasurementUnitResponse) GetResult() *ValidMeasurementUnit {
 
 type CreateValidMeasurementUnitConversionRequest struct {
 	state         protoimpl.MessageState                              `protogen:"open.v1"`
-	Input         *ValidMeasurementUnitConversionCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidMeasurementUnitConversionCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5228,8 +5228,8 @@ func (x *CreateValidMeasurementUnitConversionRequest) GetInput() *ValidMeasureme
 
 type CreateValidMeasurementUnitConversionResponse struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails          `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidMeasurementUnitConversion `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails          `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidMeasurementUnitConversion `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5280,7 +5280,7 @@ func (x *CreateValidMeasurementUnitConversionResponse) GetResult() *ValidMeasure
 
 type CreateValidPreparationRequest struct {
 	state         protoimpl.MessageState                `protogen:"open.v1"`
-	Input         *ValidPreparationCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidPreparationCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5324,8 +5324,8 @@ func (x *CreateValidPreparationRequest) GetInput() *ValidPreparationCreationRequ
 
 type CreateValidPreparationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparation      `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparation      `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5376,7 +5376,7 @@ func (x *CreateValidPreparationResponse) GetResult() *ValidPreparation {
 
 type CreateValidPreparationInstrumentRequest struct {
 	state         protoimpl.MessageState                          `protogen:"open.v1"`
-	Input         *ValidPreparationInstrumentCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidPreparationInstrumentCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5420,8 +5420,8 @@ func (x *CreateValidPreparationInstrumentRequest) GetInput() *ValidPreparationIn
 
 type CreateValidPreparationInstrumentResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparationInstrument `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparationInstrument `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5472,7 +5472,7 @@ func (x *CreateValidPreparationInstrumentResponse) GetResult() *ValidPreparation
 
 type CreateValidPreparationVesselRequest struct {
 	state         protoimpl.MessageState                      `protogen:"open.v1"`
-	Input         *ValidPreparationVesselCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidPreparationVesselCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5516,8 +5516,8 @@ func (x *CreateValidPreparationVesselRequest) GetInput() *ValidPreparationVessel
 
 type CreateValidPreparationVesselResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparationVessel `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparationVessel `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5568,7 +5568,7 @@ func (x *CreateValidPreparationVesselResponse) GetResult() *ValidPreparationVess
 
 type CreateValidVesselRequest struct {
 	state         protoimpl.MessageState           `protogen:"open.v1"`
-	Input         *ValidVesselCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *ValidVesselCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5612,8 +5612,8 @@ func (x *CreateValidVesselRequest) GetInput() *ValidVesselCreationRequestInput {
 
 type CreateValidVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidVessel           `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidVessel           `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5700,8 +5700,8 @@ func (*GetRandomValidIngredientRequest) Descriptor() ([]byte, []int) {
 
 type GetRandomValidIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredient       `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredient       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5788,8 +5788,8 @@ func (*GetRandomValidInstrumentRequest) Descriptor() ([]byte, []int) {
 
 type GetRandomValidInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidInstrument       `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidInstrument       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5876,8 +5876,8 @@ func (*GetRandomValidPreparationRequest) Descriptor() ([]byte, []int) {
 
 type GetRandomValidPreparationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparation      `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparation      `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -5964,8 +5964,8 @@ func (*GetRandomValidVesselRequest) Descriptor() ([]byte, []int) {
 
 type GetRandomValidVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidVessel           `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidVessel           `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6016,7 +6016,7 @@ func (x *GetRandomValidVesselResponse) GetResult() *ValidVessel {
 
 type GetValidIngredientRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientId string                 `json:"valid_ingredient_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	ValidIngredientId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -6060,8 +6060,8 @@ func (x *GetValidIngredientRequest) GetValidIngredientId() string {
 
 type GetValidIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredient       `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredient       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6112,7 +6112,7 @@ func (x *GetValidIngredientResponse) GetResult() *ValidIngredient {
 
 type GetValidIngredientGroupRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientGroupId string                 `json:"valid_ingredient_group_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_group_id,json=validIngredientGroupId,proto3"`
+	ValidIngredientGroupId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_group_id,json=validIngredientGroupId,proto3" json:"valid_ingredient_group_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -6156,8 +6156,8 @@ func (x *GetValidIngredientGroupRequest) GetValidIngredientGroupId() string {
 
 type GetValidIngredientGroupResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientGroup  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientGroup  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6208,7 +6208,7 @@ func (x *GetValidIngredientGroupResponse) GetResult() *ValidIngredientGroup {
 
 type GetValidIngredientGroupsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6252,9 +6252,9 @@ func (x *GetValidIngredientGroupsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetValidIngredientGroupsResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination   `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientGroup `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientGroup `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6312,7 +6312,7 @@ func (x *GetValidIngredientGroupsResponse) GetResults() []*ValidIngredientGroup 
 
 type GetValidIngredientMeasurementUnitRequest struct {
 	state                            protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientMeasurementUnitId string                 `json:"valid_ingredient_measurement_unit_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_measurement_unit_id,json=validIngredientMeasurementUnitId,proto3"`
+	ValidIngredientMeasurementUnitId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_measurement_unit_id,json=validIngredientMeasurementUnitId,proto3" json:"valid_ingredient_measurement_unit_id,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -6356,8 +6356,8 @@ func (x *GetValidIngredientMeasurementUnitRequest) GetValidIngredientMeasurement
 
 type GetValidIngredientMeasurementUnitResponse struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails          `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientMeasurementUnit `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails          `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientMeasurementUnit `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6408,7 +6408,7 @@ func (x *GetValidIngredientMeasurementUnitResponse) GetResult() *ValidIngredient
 
 type GetValidIngredientMeasurementUnitsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6452,9 +6452,9 @@ func (x *GetValidIngredientMeasurementUnitsRequest) GetFilter() *filtering.Query
 
 type GetValidIngredientMeasurementUnitsResponse struct {
 	state           protoimpl.MessageState            `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails            `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination             `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientMeasurementUnit `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails            `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination             `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientMeasurementUnit `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6512,8 +6512,8 @@ func (x *GetValidIngredientMeasurementUnitsResponse) GetResults() []*ValidIngred
 
 type GetValidIngredientMeasurementUnitsByIngredientRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Filter            *filtering.QueryFilter `json:"filter,omitempty"              protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidIngredientId string                 `json:"valid_ingredient_id,omitempty" protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	Filter            *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidIngredientId string                 `protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -6564,9 +6564,9 @@ func (x *GetValidIngredientMeasurementUnitsByIngredientRequest) GetValidIngredie
 
 type GetValidIngredientMeasurementUnitsByIngredientResponse struct {
 	state           protoimpl.MessageState            `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails            `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination             `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientMeasurementUnit `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails            `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination             `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientMeasurementUnit `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6624,8 +6624,8 @@ func (x *GetValidIngredientMeasurementUnitsByIngredientResponse) GetResults() []
 
 type GetValidIngredientMeasurementUnitsByMeasurementUnitRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	Filter                 *filtering.QueryFilter `json:"filter,omitempty"                    protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidMeasurementUnitId string                 `json:"valid_measurement_unit_id,omitempty" protobuf:"bytes,2,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3"`
+	Filter                 *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidMeasurementUnitId string                 `protobuf:"bytes,2,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3" json:"valid_measurement_unit_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -6676,9 +6676,9 @@ func (x *GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) GetValidMea
 
 type GetValidIngredientMeasurementUnitsByMeasurementUnitResponse struct {
 	state           protoimpl.MessageState            `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails            `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination             `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientMeasurementUnit `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails            `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination             `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientMeasurementUnit `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6736,7 +6736,7 @@ func (x *GetValidIngredientMeasurementUnitsByMeasurementUnitResponse) GetResults
 
 type GetValidIngredientPreparationRequest struct {
 	state                        protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientPreparationId string                 `json:"valid_ingredient_preparation_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_preparation_id,json=validIngredientPreparationId,proto3"`
+	ValidIngredientPreparationId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_preparation_id,json=validIngredientPreparationId,proto3" json:"valid_ingredient_preparation_id,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -6780,8 +6780,8 @@ func (x *GetValidIngredientPreparationRequest) GetValidIngredientPreparationId()
 
 type GetValidIngredientPreparationResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientPreparation `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientPreparation `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6832,7 +6832,7 @@ func (x *GetValidIngredientPreparationResponse) GetResult() *ValidIngredientPrep
 
 type GetValidIngredientPreparationsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6876,9 +6876,9 @@ func (x *GetValidIngredientPreparationsRequest) GetFilter() *filtering.QueryFilt
 
 type GetValidIngredientPreparationsResponse struct {
 	state           protoimpl.MessageState        `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails        `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination         `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientPreparation `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails        `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination         `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientPreparation `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -6936,8 +6936,8 @@ func (x *GetValidIngredientPreparationsResponse) GetResults() []*ValidIngredient
 
 type GetValidIngredientPreparationsByIngredientRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Filter            *filtering.QueryFilter `json:"filter,omitempty"              protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidIngredientId string                 `json:"valid_ingredient_id,omitempty" protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	Filter            *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidIngredientId string                 `protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -6988,9 +6988,9 @@ func (x *GetValidIngredientPreparationsByIngredientRequest) GetValidIngredientId
 
 type GetValidIngredientPreparationsByIngredientResponse struct {
 	state           protoimpl.MessageState        `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails        `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination         `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientPreparation `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails        `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination         `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientPreparation `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -7048,8 +7048,8 @@ func (x *GetValidIngredientPreparationsByIngredientResponse) GetResults() []*Val
 
 type GetValidIngredientPreparationsByPreparationRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Filter             *filtering.QueryFilter `json:"filter,omitempty"               protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
+	Filter             *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidPreparationId string                 `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -7100,9 +7100,9 @@ func (x *GetValidIngredientPreparationsByPreparationRequest) GetValidPreparation
 
 type GetValidIngredientPreparationsByPreparationResponse struct {
 	state           protoimpl.MessageState        `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails        `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination         `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientPreparation `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails        `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination         `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientPreparation `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -7160,7 +7160,7 @@ func (x *GetValidIngredientPreparationsByPreparationResponse) GetResults() []*Va
 
 type GetValidPrepTaskConfigRequest struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	ValidPrepTaskConfigId string                 `json:"valid_prep_task_config_id,omitempty" protobuf:"bytes,1,opt,name=valid_prep_task_config_id,json=validPrepTaskConfigId,proto3"`
+	ValidPrepTaskConfigId string                 `protobuf:"bytes,1,opt,name=valid_prep_task_config_id,json=validPrepTaskConfigId,proto3" json:"valid_prep_task_config_id,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -7204,8 +7204,8 @@ func (x *GetValidPrepTaskConfigRequest) GetValidPrepTaskConfigId() string {
 
 type GetValidPrepTaskConfigResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPrepTaskConfig   `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPrepTaskConfig   `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -7256,7 +7256,7 @@ func (x *GetValidPrepTaskConfigResponse) GetResult() *ValidPrepTaskConfig {
 
 type GetValidPrepTaskConfigsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -7300,9 +7300,9 @@ func (x *GetValidPrepTaskConfigsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetValidPrepTaskConfigsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPrepTaskConfig `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPrepTaskConfig `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -7360,8 +7360,8 @@ func (x *GetValidPrepTaskConfigsResponse) GetResults() []*ValidPrepTaskConfig {
 
 type GetValidPrepTaskConfigsByIngredientRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Filter            *filtering.QueryFilter `json:"filter,omitempty"              protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidIngredientId string                 `json:"valid_ingredient_id,omitempty" protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	Filter            *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidIngredientId string                 `protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -7412,9 +7412,9 @@ func (x *GetValidPrepTaskConfigsByIngredientRequest) GetValidIngredientId() stri
 
 type GetValidPrepTaskConfigsByIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPrepTaskConfig `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPrepTaskConfig `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -7472,8 +7472,8 @@ func (x *GetValidPrepTaskConfigsByIngredientResponse) GetResults() []*ValidPrepT
 
 type GetValidPrepTaskConfigsByPreparationRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Filter             *filtering.QueryFilter `json:"filter,omitempty"               protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
+	Filter             *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidPreparationId string                 `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -7524,9 +7524,9 @@ func (x *GetValidPrepTaskConfigsByPreparationRequest) GetValidPreparationId() st
 
 type GetValidPrepTaskConfigsByPreparationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPrepTaskConfig `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPrepTaskConfig `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -7584,9 +7584,9 @@ func (x *GetValidPrepTaskConfigsByPreparationResponse) GetResults() []*ValidPrep
 
 type GetValidPrepTaskConfigsByIngredientAndPreparationRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Filter             *filtering.QueryFilter `json:"filter,omitempty"               protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidIngredientId  string                 `json:"valid_ingredient_id,omitempty"  protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,3,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
+	Filter             *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidIngredientId  string                 `protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
+	ValidPreparationId string                 `protobuf:"bytes,3,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -7644,9 +7644,9 @@ func (x *GetValidPrepTaskConfigsByIngredientAndPreparationRequest) GetValidPrepa
 
 type GetValidPrepTaskConfigsByIngredientAndPreparationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPrepTaskConfig `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPrepTaskConfig `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -7704,7 +7704,7 @@ func (x *GetValidPrepTaskConfigsByIngredientAndPreparationResponse) GetResults()
 
 type GetValidIngredientStateRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientStateId string                 `json:"valid_ingredient_state_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3"`
+	ValidIngredientStateId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3" json:"valid_ingredient_state_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -7748,8 +7748,8 @@ func (x *GetValidIngredientStateRequest) GetValidIngredientStateId() string {
 
 type GetValidIngredientStateResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientState  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientState  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -7800,7 +7800,7 @@ func (x *GetValidIngredientStateResponse) GetResult() *ValidIngredientState {
 
 type GetValidIngredientStateIngredientRequest struct {
 	state                            protoimpl.MessageState `protogen:"open.v1"`
-	ValidIngredientStateIngredientId string                 `json:"valid_ingredient_state_ingredient_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_state_ingredient_id,json=validIngredientStateIngredientId,proto3"`
+	ValidIngredientStateIngredientId string                 `protobuf:"bytes,1,opt,name=valid_ingredient_state_ingredient_id,json=validIngredientStateIngredientId,proto3" json:"valid_ingredient_state_ingredient_id,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -7844,8 +7844,8 @@ func (x *GetValidIngredientStateIngredientRequest) GetValidIngredientStateIngred
 
 type GetValidIngredientStateIngredientResponse struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails          `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientStateIngredient `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails          `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientStateIngredient `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -7896,7 +7896,7 @@ func (x *GetValidIngredientStateIngredientResponse) GetResult() *ValidIngredient
 
 type GetValidIngredientStateIngredientsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -7940,9 +7940,9 @@ func (x *GetValidIngredientStateIngredientsRequest) GetFilter() *filtering.Query
 
 type GetValidIngredientStateIngredientsResponse struct {
 	state           protoimpl.MessageState            `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails            `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination             `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientStateIngredient `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails            `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination             `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientStateIngredient `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8000,8 +8000,8 @@ func (x *GetValidIngredientStateIngredientsResponse) GetResults() []*ValidIngred
 
 type GetValidIngredientStateIngredientsByIngredientRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Filter            *filtering.QueryFilter `json:"filter,omitempty"              protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidIngredientId string                 `json:"valid_ingredient_id,omitempty" protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	Filter            *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidIngredientId string                 `protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -8052,9 +8052,9 @@ func (x *GetValidIngredientStateIngredientsByIngredientRequest) GetValidIngredie
 
 type GetValidIngredientStateIngredientsByIngredientResponse struct {
 	state           protoimpl.MessageState            `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails            `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination             `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientStateIngredient `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails            `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination             `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientStateIngredient `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8112,8 +8112,8 @@ func (x *GetValidIngredientStateIngredientsByIngredientResponse) GetResults() []
 
 type GetValidIngredientStateIngredientsByIngredientStateRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	Filter                 *filtering.QueryFilter `json:"filter,omitempty"                    protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidIngredientStateId string                 `json:"valid_ingredient_state_id,omitempty" protobuf:"bytes,2,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3"`
+	Filter                 *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidIngredientStateId string                 `protobuf:"bytes,2,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3" json:"valid_ingredient_state_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -8164,9 +8164,9 @@ func (x *GetValidIngredientStateIngredientsByIngredientStateRequest) GetValidIng
 
 type GetValidIngredientStateIngredientsByIngredientStateResponse struct {
 	state           protoimpl.MessageState            `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails            `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination             `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientStateIngredient `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails            `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination             `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientStateIngredient `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8224,7 +8224,7 @@ func (x *GetValidIngredientStateIngredientsByIngredientStateResponse) GetResults
 
 type GetValidIngredientStatesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -8268,9 +8268,9 @@ func (x *GetValidIngredientStatesRequest) GetFilter() *filtering.QueryFilter {
 
 type GetValidIngredientStatesResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination   `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientState `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientState `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8328,7 +8328,7 @@ func (x *GetValidIngredientStatesResponse) GetResults() []*ValidIngredientState 
 
 type GetValidIngredientsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -8372,9 +8372,9 @@ func (x *GetValidIngredientsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetValidIngredientsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredient     `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredient     `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8432,7 +8432,7 @@ func (x *GetValidIngredientsResponse) GetResults() []*ValidIngredient {
 
 type GetValidInstrumentRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	ValidInstrumentId string                 `json:"valid_instrument_id,omitempty" protobuf:"bytes,1,opt,name=valid_instrument_id,json=validInstrumentId,proto3"`
+	ValidInstrumentId string                 `protobuf:"bytes,1,opt,name=valid_instrument_id,json=validInstrumentId,proto3" json:"valid_instrument_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -8476,8 +8476,8 @@ func (x *GetValidInstrumentRequest) GetValidInstrumentId() string {
 
 type GetValidInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidInstrument       `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidInstrument       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8528,7 +8528,7 @@ func (x *GetValidInstrumentResponse) GetResult() *ValidInstrument {
 
 type GetValidInstrumentsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -8572,9 +8572,9 @@ func (x *GetValidInstrumentsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetValidInstrumentsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidInstrument     `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidInstrument     `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8632,7 +8632,7 @@ func (x *GetValidInstrumentsResponse) GetResults() []*ValidInstrument {
 
 type GetValidMeasurementUnitRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	ValidMeasurementUnitId string                 `json:"valid_measurement_unit_id,omitempty" protobuf:"bytes,1,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3"`
+	ValidMeasurementUnitId string                 `protobuf:"bytes,1,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3" json:"valid_measurement_unit_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -8676,8 +8676,8 @@ func (x *GetValidMeasurementUnitRequest) GetValidMeasurementUnitId() string {
 
 type GetValidMeasurementUnitResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidMeasurementUnit  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidMeasurementUnit  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8728,7 +8728,7 @@ func (x *GetValidMeasurementUnitResponse) GetResult() *ValidMeasurementUnit {
 
 type GetValidMeasurementUnitConversionRequest struct {
 	state                            protoimpl.MessageState `protogen:"open.v1"`
-	ValidMeasurementUnitConversionId string                 `json:"valid_measurement_unit_conversion_id,omitempty" protobuf:"bytes,1,opt,name=valid_measurement_unit_conversion_id,json=validMeasurementUnitConversionId,proto3"`
+	ValidMeasurementUnitConversionId string                 `protobuf:"bytes,1,opt,name=valid_measurement_unit_conversion_id,json=validMeasurementUnitConversionId,proto3" json:"valid_measurement_unit_conversion_id,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -8772,8 +8772,8 @@ func (x *GetValidMeasurementUnitConversionRequest) GetValidMeasurementUnitConver
 
 type GetValidMeasurementUnitConversionResponse struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails          `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidMeasurementUnitConversion `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails          `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidMeasurementUnitConversion `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8824,8 +8824,8 @@ func (x *GetValidMeasurementUnitConversionResponse) GetResult() *ValidMeasuremen
 
 type GetValidMeasurementUnitConversionsForUnitRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	Filter                 *filtering.QueryFilter `json:"filter,omitempty"                    protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidMeasurementUnitId string                 `json:"valid_measurement_unit_id,omitempty" protobuf:"bytes,2,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3"`
+	Filter                 *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidMeasurementUnitId string                 `protobuf:"bytes,2,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3" json:"valid_measurement_unit_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -8876,9 +8876,9 @@ func (x *GetValidMeasurementUnitConversionsForUnitRequest) GetValidMeasurementUn
 
 type GetValidMeasurementUnitConversionsForUnitResponse struct {
 	state           protoimpl.MessageState            `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails            `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination             `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidMeasurementUnitConversion `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails            `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination             `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidMeasurementUnitConversion `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -8936,7 +8936,7 @@ func (x *GetValidMeasurementUnitConversionsForUnitResponse) GetResults() []*Vali
 
 type GetValidMeasurementUnitsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -8980,9 +8980,9 @@ func (x *GetValidMeasurementUnitsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetValidMeasurementUnitsResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination   `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidMeasurementUnit `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidMeasurementUnit `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9040,7 +9040,7 @@ func (x *GetValidMeasurementUnitsResponse) GetResults() []*ValidMeasurementUnit 
 
 type GetValidPreparationRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
+	ValidPreparationId string                 `protobuf:"bytes,1,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -9084,8 +9084,8 @@ func (x *GetValidPreparationRequest) GetValidPreparationId() string {
 
 type GetValidPreparationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparation      `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparation      `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9136,7 +9136,7 @@ func (x *GetValidPreparationResponse) GetResult() *ValidPreparation {
 
 type GetValidPreparationInstrumentRequest struct {
 	state                        protoimpl.MessageState `protogen:"open.v1"`
-	ValidPreparationInstrumentId string                 `json:"valid_preparation_instrument_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_instrument_id,json=validPreparationInstrumentId,proto3"`
+	ValidPreparationInstrumentId string                 `protobuf:"bytes,1,opt,name=valid_preparation_instrument_id,json=validPreparationInstrumentId,proto3" json:"valid_preparation_instrument_id,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -9180,8 +9180,8 @@ func (x *GetValidPreparationInstrumentRequest) GetValidPreparationInstrumentId()
 
 type GetValidPreparationInstrumentResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparationInstrument `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparationInstrument `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9232,7 +9232,7 @@ func (x *GetValidPreparationInstrumentResponse) GetResult() *ValidPreparationIns
 
 type GetValidPreparationInstrumentsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -9276,9 +9276,9 @@ func (x *GetValidPreparationInstrumentsRequest) GetFilter() *filtering.QueryFilt
 
 type GetValidPreparationInstrumentsResponse struct {
 	state           protoimpl.MessageState        `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails        `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination         `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPreparationInstrument `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails        `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination         `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPreparationInstrument `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9336,8 +9336,8 @@ func (x *GetValidPreparationInstrumentsResponse) GetResults() []*ValidPreparatio
 
 type GetValidPreparationInstrumentsByInstrumentRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Filter            *filtering.QueryFilter `json:"filter,omitempty"              protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidInstrumentId string                 `json:"valid_instrument_id,omitempty" protobuf:"bytes,2,opt,name=valid_instrument_id,json=validInstrumentId,proto3"`
+	Filter            *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidInstrumentId string                 `protobuf:"bytes,2,opt,name=valid_instrument_id,json=validInstrumentId,proto3" json:"valid_instrument_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -9388,9 +9388,9 @@ func (x *GetValidPreparationInstrumentsByInstrumentRequest) GetValidInstrumentId
 
 type GetValidPreparationInstrumentsByInstrumentResponse struct {
 	state           protoimpl.MessageState        `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails        `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination         `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPreparationInstrument `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails        `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination         `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPreparationInstrument `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9448,8 +9448,8 @@ func (x *GetValidPreparationInstrumentsByInstrumentResponse) GetResults() []*Val
 
 type GetValidPreparationInstrumentsByPreparationRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Filter             *filtering.QueryFilter `json:"filter,omitempty"               protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
+	Filter             *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidPreparationId string                 `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -9500,9 +9500,9 @@ func (x *GetValidPreparationInstrumentsByPreparationRequest) GetValidPreparation
 
 type GetValidPreparationInstrumentsByPreparationResponse struct {
 	state           protoimpl.MessageState        `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails        `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination         `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPreparationInstrument `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails        `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination         `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPreparationInstrument `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9560,7 +9560,7 @@ func (x *GetValidPreparationInstrumentsByPreparationResponse) GetResults() []*Va
 
 type GetValidPreparationVesselRequest struct {
 	state                    protoimpl.MessageState `protogen:"open.v1"`
-	ValidPreparationVesselId string                 `json:"valid_preparation_vessel_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_vessel_id,json=validPreparationVesselId,proto3"`
+	ValidPreparationVesselId string                 `protobuf:"bytes,1,opt,name=valid_preparation_vessel_id,json=validPreparationVesselId,proto3" json:"valid_preparation_vessel_id,omitempty"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -9604,8 +9604,8 @@ func (x *GetValidPreparationVesselRequest) GetValidPreparationVesselId() string 
 
 type GetValidPreparationVesselResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparationVessel `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparationVessel `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9656,7 +9656,7 @@ func (x *GetValidPreparationVesselResponse) GetResult() *ValidPreparationVessel 
 
 type GetValidPreparationVesselsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -9700,9 +9700,9 @@ func (x *GetValidPreparationVesselsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetValidPreparationVesselsResponse struct {
 	state           protoimpl.MessageState    `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails    `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination     `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPreparationVessel `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails    `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination     `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPreparationVessel `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9760,8 +9760,8 @@ func (x *GetValidPreparationVesselsResponse) GetResults() []*ValidPreparationVes
 
 type GetValidPreparationVesselsByPreparationRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Filter             *filtering.QueryFilter `json:"filter,omitempty"               protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
+	Filter             *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidPreparationId string                 `protobuf:"bytes,2,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -9812,9 +9812,9 @@ func (x *GetValidPreparationVesselsByPreparationRequest) GetValidPreparationId()
 
 type GetValidPreparationVesselsByPreparationResponse struct {
 	state           protoimpl.MessageState    `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails    `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination     `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPreparationVessel `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails    `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination     `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPreparationVessel `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9872,8 +9872,8 @@ func (x *GetValidPreparationVesselsByPreparationResponse) GetResults() []*ValidP
 
 type GetValidPreparationVesselsByVesselRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"          protobuf:"bytes,1,opt,name=filter,proto3"`
-	ValidVesselId string                 `json:"valid_vessel_id,omitempty" protobuf:"bytes,2,opt,name=valid_vessel_id,json=validVesselId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	ValidVesselId string                 `protobuf:"bytes,2,opt,name=valid_vessel_id,json=validVesselId,proto3" json:"valid_vessel_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -9924,9 +9924,9 @@ func (x *GetValidPreparationVesselsByVesselRequest) GetValidVesselId() string {
 
 type GetValidPreparationVesselsByVesselResponse struct {
 	state           protoimpl.MessageState    `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails    `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination     `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPreparationVessel `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails    `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination     `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPreparationVessel `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -9984,7 +9984,7 @@ func (x *GetValidPreparationVesselsByVesselResponse) GetResults() []*ValidPrepar
 
 type GetValidPreparationsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -10028,9 +10028,9 @@ func (x *GetValidPreparationsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetValidPreparationsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPreparation    `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPreparation    `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -10088,7 +10088,7 @@ func (x *GetValidPreparationsResponse) GetResults() []*ValidPreparation {
 
 type GetValidVesselRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ValidVesselId string                 `json:"valid_vessel_id,omitempty" protobuf:"bytes,1,opt,name=valid_vessel_id,json=validVesselId,proto3"`
+	ValidVesselId string                 `protobuf:"bytes,1,opt,name=valid_vessel_id,json=validVesselId,proto3" json:"valid_vessel_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -10132,8 +10132,8 @@ func (x *GetValidVesselRequest) GetValidVesselId() string {
 
 type GetValidVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidVessel           `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidVessel           `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -10184,7 +10184,7 @@ func (x *GetValidVesselResponse) GetResult() *ValidVessel {
 
 type GetValidVesselsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -10228,9 +10228,9 @@ func (x *GetValidVesselsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetValidVesselsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidVessel         `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidVessel         `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -10288,11 +10288,11 @@ func (x *GetValidVesselsResponse) GetResults() []*ValidVessel {
 
 type SearchForValidIngredientGroupsRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query            string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query            string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `json:"use_search_service,omitempty" protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3"`
+	UseSearchService bool `protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3" json:"use_search_service,omitempty"`
 }
 
 func (x *SearchForValidIngredientGroupsRequest) Reset() {
@@ -10348,9 +10348,9 @@ func (x *SearchForValidIngredientGroupsRequest) GetUseSearchService() bool {
 
 type SearchForValidIngredientGroupsResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination   `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientGroup `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientGroup `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -10408,11 +10408,11 @@ func (x *SearchForValidIngredientGroupsResponse) GetResults() []*ValidIngredient
 
 type SearchForValidIngredientStatesRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query            string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query            string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `json:"use_search_service,omitempty" protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3"`
+	UseSearchService bool `protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3" json:"use_search_service,omitempty"`
 }
 
 func (x *SearchForValidIngredientStatesRequest) Reset() {
@@ -10468,9 +10468,9 @@ func (x *SearchForValidIngredientStatesRequest) GetUseSearchService() bool {
 
 type SearchForValidIngredientStatesResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination   `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredientState `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredientState `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -10528,11 +10528,11 @@ func (x *SearchForValidIngredientStatesResponse) GetResults() []*ValidIngredient
 
 type SearchForValidIngredientsRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query            string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query            string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `json:"use_search_service,omitempty" protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3"`
+	UseSearchService bool `protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3" json:"use_search_service,omitempty"`
 }
 
 func (x *SearchForValidIngredientsRequest) Reset() {
@@ -10588,9 +10588,9 @@ func (x *SearchForValidIngredientsRequest) GetUseSearchService() bool {
 
 type SearchForValidIngredientsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredient     `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredient     `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -10648,11 +10648,11 @@ func (x *SearchForValidIngredientsResponse) GetResults() []*ValidIngredient {
 
 type SearchForValidInstrumentsRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query            string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query            string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `json:"use_search_service,omitempty" protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3"`
+	UseSearchService bool `protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3" json:"use_search_service,omitempty"`
 }
 
 func (x *SearchForValidInstrumentsRequest) Reset() {
@@ -10708,9 +10708,9 @@ func (x *SearchForValidInstrumentsRequest) GetUseSearchService() bool {
 
 type SearchForValidInstrumentsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidInstrument     `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidInstrument     `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -10768,11 +10768,11 @@ func (x *SearchForValidInstrumentsResponse) GetResults() []*ValidInstrument {
 
 type SearchForValidMeasurementUnitsRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query            string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query            string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `json:"use_search_service,omitempty" protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3"`
+	UseSearchService bool `protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3" json:"use_search_service,omitempty"`
 }
 
 func (x *SearchForValidMeasurementUnitsRequest) Reset() {
@@ -10828,9 +10828,9 @@ func (x *SearchForValidMeasurementUnitsRequest) GetUseSearchService() bool {
 
 type SearchForValidMeasurementUnitsResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination   `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidMeasurementUnit `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidMeasurementUnit `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -10888,11 +10888,11 @@ func (x *SearchForValidMeasurementUnitsResponse) GetResults() []*ValidMeasuremen
 
 type SearchForValidPreparationsRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query            string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query            string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `json:"use_search_service,omitempty" protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3"`
+	UseSearchService bool `protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3" json:"use_search_service,omitempty"`
 }
 
 func (x *SearchForValidPreparationsRequest) Reset() {
@@ -10948,9 +10948,9 @@ func (x *SearchForValidPreparationsRequest) GetUseSearchService() bool {
 
 type SearchForValidPreparationsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidPreparation    `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidPreparation    `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11008,11 +11008,11 @@ func (x *SearchForValidPreparationsResponse) GetResults() []*ValidPreparation {
 
 type SearchForValidVesselsRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query            string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query            string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `json:"use_search_service,omitempty" protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3"`
+	UseSearchService bool `protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3" json:"use_search_service,omitempty"`
 }
 
 func (x *SearchForValidVesselsRequest) Reset() {
@@ -11068,9 +11068,9 @@ func (x *SearchForValidVesselsRequest) GetUseSearchService() bool {
 
 type SearchForValidVesselsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidVessel         `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidVessel         `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11128,9 +11128,9 @@ func (x *SearchForValidVesselsResponse) GetResults() []*ValidVessel {
 
 type SearchValidIngredientsByPreparationRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Filter             *filtering.QueryFilter `json:"filter,omitempty"               protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query              string                 `json:"query,omitempty"                protobuf:"bytes,2,opt,name=query,proto3"`
-	ValidPreparationId string                 `json:"valid_preparation_id,omitempty" protobuf:"bytes,3,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
+	Filter             *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query              string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
+	ValidPreparationId string                 `protobuf:"bytes,3,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -11188,9 +11188,9 @@ func (x *SearchValidIngredientsByPreparationRequest) GetValidPreparationId() str
 
 type SearchValidIngredientsByPreparationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidIngredient     `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidIngredient     `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11248,9 +11248,9 @@ func (x *SearchValidIngredientsByPreparationResponse) GetResults() []*ValidIngre
 
 type SearchValidMeasurementUnitsByIngredientRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Filter            *filtering.QueryFilter `json:"filter,omitempty"              protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query             string                 `json:"query,omitempty"               protobuf:"bytes,2,opt,name=query,proto3"`
-	ValidIngredientId string                 `json:"valid_ingredient_id,omitempty" protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	Filter            *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query             string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
+	ValidIngredientId string                 `protobuf:"bytes,3,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -11308,9 +11308,9 @@ func (x *SearchValidMeasurementUnitsByIngredientRequest) GetValidIngredientId() 
 
 type SearchValidMeasurementUnitsByIngredientResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination   `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*ValidMeasurementUnit `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*ValidMeasurementUnit `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11368,8 +11368,8 @@ func (x *SearchValidMeasurementUnitsByIngredientResponse) GetResults() []*ValidM
 
 type UpdateValidIngredientRequest struct {
 	state             protoimpl.MessageState             `protogen:"open.v1"`
-	ValidIngredientId string                             `json:"valid_ingredient_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
-	Input             *ValidIngredientUpdateRequestInput `json:"input,omitempty"               protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidIngredientId string                             `protobuf:"bytes,1,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
+	Input             *ValidIngredientUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -11420,8 +11420,8 @@ func (x *UpdateValidIngredientRequest) GetInput() *ValidIngredientUpdateRequestI
 
 type UpdateValidIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredient       `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredient       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11472,8 +11472,8 @@ func (x *UpdateValidIngredientResponse) GetResult() *ValidIngredient {
 
 type UpdateValidIngredientGroupRequest struct {
 	state                  protoimpl.MessageState                  `protogen:"open.v1"`
-	ValidIngredientGroupId string                                  `json:"valid_ingredient_group_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_group_id,json=validIngredientGroupId,proto3"`
-	Input                  *ValidIngredientGroupUpdateRequestInput `json:"input,omitempty"                     protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidIngredientGroupId string                                  `protobuf:"bytes,1,opt,name=valid_ingredient_group_id,json=validIngredientGroupId,proto3" json:"valid_ingredient_group_id,omitempty"`
+	Input                  *ValidIngredientGroupUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -11524,8 +11524,8 @@ func (x *UpdateValidIngredientGroupRequest) GetInput() *ValidIngredientGroupUpda
 
 type UpdateValidIngredientGroupResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientGroup  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientGroup  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11576,8 +11576,8 @@ func (x *UpdateValidIngredientGroupResponse) GetResult() *ValidIngredientGroup {
 
 type UpdateValidIngredientMeasurementUnitRequest struct {
 	state                            protoimpl.MessageState                            `protogen:"open.v1"`
-	ValidIngredientMeasurementUnitId string                                            `json:"valid_ingredient_measurement_unit_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_measurement_unit_id,json=validIngredientMeasurementUnitId,proto3"`
-	Input                            *ValidIngredientMeasurementUnitUpdateRequestInput `json:"input,omitempty"                                protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidIngredientMeasurementUnitId string                                            `protobuf:"bytes,1,opt,name=valid_ingredient_measurement_unit_id,json=validIngredientMeasurementUnitId,proto3" json:"valid_ingredient_measurement_unit_id,omitempty"`
+	Input                            *ValidIngredientMeasurementUnitUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -11628,8 +11628,8 @@ func (x *UpdateValidIngredientMeasurementUnitRequest) GetInput() *ValidIngredien
 
 type UpdateValidIngredientMeasurementUnitResponse struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails          `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientMeasurementUnit `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails          `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientMeasurementUnit `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11680,8 +11680,8 @@ func (x *UpdateValidIngredientMeasurementUnitResponse) GetResult() *ValidIngredi
 
 type UpdateValidIngredientPreparationRequest struct {
 	state                        protoimpl.MessageState                        `protogen:"open.v1"`
-	ValidIngredientPreparationId string                                        `json:"valid_ingredient_preparation_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_preparation_id,json=validIngredientPreparationId,proto3"`
-	Input                        *ValidIngredientPreparationUpdateRequestInput `json:"input,omitempty"                           protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidIngredientPreparationId string                                        `protobuf:"bytes,1,opt,name=valid_ingredient_preparation_id,json=validIngredientPreparationId,proto3" json:"valid_ingredient_preparation_id,omitempty"`
+	Input                        *ValidIngredientPreparationUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -11732,8 +11732,8 @@ func (x *UpdateValidIngredientPreparationRequest) GetInput() *ValidIngredientPre
 
 type UpdateValidIngredientPreparationResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientPreparation `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientPreparation `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11784,8 +11784,8 @@ func (x *UpdateValidIngredientPreparationResponse) GetResult() *ValidIngredientP
 
 type UpdateValidPrepTaskConfigRequest struct {
 	state                 protoimpl.MessageState                 `protogen:"open.v1"`
-	ValidPrepTaskConfigId string                                 `json:"valid_prep_task_config_id,omitempty" protobuf:"bytes,1,opt,name=valid_prep_task_config_id,json=validPrepTaskConfigId,proto3"`
-	Input                 *ValidPrepTaskConfigUpdateRequestInput `json:"input,omitempty"                     protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidPrepTaskConfigId string                                 `protobuf:"bytes,1,opt,name=valid_prep_task_config_id,json=validPrepTaskConfigId,proto3" json:"valid_prep_task_config_id,omitempty"`
+	Input                 *ValidPrepTaskConfigUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -11836,8 +11836,8 @@ func (x *UpdateValidPrepTaskConfigRequest) GetInput() *ValidPrepTaskConfigUpdate
 
 type UpdateValidPrepTaskConfigResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPrepTaskConfig   `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPrepTaskConfig   `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11888,8 +11888,8 @@ func (x *UpdateValidPrepTaskConfigResponse) GetResult() *ValidPrepTaskConfig {
 
 type UpdateValidIngredientStateRequest struct {
 	state                  protoimpl.MessageState                  `protogen:"open.v1"`
-	ValidIngredientStateId string                                  `json:"valid_ingredient_state_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3"`
-	Input                  *ValidIngredientStateUpdateRequestInput `json:"input,omitempty"                     protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidIngredientStateId string                                  `protobuf:"bytes,1,opt,name=valid_ingredient_state_id,json=validIngredientStateId,proto3" json:"valid_ingredient_state_id,omitempty"`
+	Input                  *ValidIngredientStateUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -11940,8 +11940,8 @@ func (x *UpdateValidIngredientStateRequest) GetInput() *ValidIngredientStateUpda
 
 type UpdateValidIngredientStateResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientState  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientState  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -11992,8 +11992,8 @@ func (x *UpdateValidIngredientStateResponse) GetResult() *ValidIngredientState {
 
 type UpdateValidIngredientStateIngredientRequest struct {
 	state                            protoimpl.MessageState                            `protogen:"open.v1"`
-	ValidIngredientStateIngredientId string                                            `json:"valid_ingredient_state_ingredient_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_state_ingredient_id,json=validIngredientStateIngredientId,proto3"`
-	Input                            *ValidIngredientStateIngredientUpdateRequestInput `json:"input,omitempty"                                protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidIngredientStateIngredientId string                                            `protobuf:"bytes,1,opt,name=valid_ingredient_state_ingredient_id,json=validIngredientStateIngredientId,proto3" json:"valid_ingredient_state_ingredient_id,omitempty"`
+	Input                            *ValidIngredientStateIngredientUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -12044,8 +12044,8 @@ func (x *UpdateValidIngredientStateIngredientRequest) GetInput() *ValidIngredien
 
 type UpdateValidIngredientStateIngredientResponse struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails          `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidIngredientStateIngredient `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails          `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidIngredientStateIngredient `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -12096,8 +12096,8 @@ func (x *UpdateValidIngredientStateIngredientResponse) GetResult() *ValidIngredi
 
 type UpdateValidInstrumentRequest struct {
 	state             protoimpl.MessageState             `protogen:"open.v1"`
-	ValidInstrumentId string                             `json:"valid_instrument_id,omitempty" protobuf:"bytes,1,opt,name=valid_instrument_id,json=validInstrumentId,proto3"`
-	Input             *ValidInstrumentUpdateRequestInput `json:"input,omitempty"               protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidInstrumentId string                             `protobuf:"bytes,1,opt,name=valid_instrument_id,json=validInstrumentId,proto3" json:"valid_instrument_id,omitempty"`
+	Input             *ValidInstrumentUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -12148,8 +12148,8 @@ func (x *UpdateValidInstrumentRequest) GetInput() *ValidInstrumentUpdateRequestI
 
 type UpdateValidInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidInstrument       `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidInstrument       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -12200,8 +12200,8 @@ func (x *UpdateValidInstrumentResponse) GetResult() *ValidInstrument {
 
 type UpdateValidMeasurementUnitRequest struct {
 	state                  protoimpl.MessageState                  `protogen:"open.v1"`
-	ValidMeasurementUnitId string                                  `json:"valid_measurement_unit_id,omitempty" protobuf:"bytes,1,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3"`
-	Input                  *ValidMeasurementUnitUpdateRequestInput `json:"input,omitempty"                     protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidMeasurementUnitId string                                  `protobuf:"bytes,1,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3" json:"valid_measurement_unit_id,omitempty"`
+	Input                  *ValidMeasurementUnitUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -12252,8 +12252,8 @@ func (x *UpdateValidMeasurementUnitRequest) GetInput() *ValidMeasurementUnitUpda
 
 type UpdateValidMeasurementUnitResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidMeasurementUnit  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidMeasurementUnit  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -12304,8 +12304,8 @@ func (x *UpdateValidMeasurementUnitResponse) GetResult() *ValidMeasurementUnit {
 
 type UpdateValidMeasurementUnitConversionRequest struct {
 	state                            protoimpl.MessageState                            `protogen:"open.v1"`
-	ValidMeasurementUnitConversionId string                                            `json:"valid_measurement_unit_conversion_id,omitempty" protobuf:"bytes,1,opt,name=valid_measurement_unit_conversion_id,json=validMeasurementUnitConversionId,proto3"`
-	Input                            *ValidMeasurementUnitConversionUpdateRequestInput `json:"input,omitempty"                                protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidMeasurementUnitConversionId string                                            `protobuf:"bytes,1,opt,name=valid_measurement_unit_conversion_id,json=validMeasurementUnitConversionId,proto3" json:"valid_measurement_unit_conversion_id,omitempty"`
+	Input                            *ValidMeasurementUnitConversionUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
 	sizeCache                        protoimpl.SizeCache
 }
@@ -12356,8 +12356,8 @@ func (x *UpdateValidMeasurementUnitConversionRequest) GetInput() *ValidMeasureme
 
 type UpdateValidMeasurementUnitConversionResponse struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails          `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidMeasurementUnitConversion `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails          `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidMeasurementUnitConversion `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -12408,8 +12408,8 @@ func (x *UpdateValidMeasurementUnitConversionResponse) GetResult() *ValidMeasure
 
 type UpdateValidPreparationRequest struct {
 	state              protoimpl.MessageState              `protogen:"open.v1"`
-	ValidPreparationId string                              `json:"valid_preparation_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
-	Input              *ValidPreparationUpdateRequestInput `json:"input,omitempty"                protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidPreparationId string                              `protobuf:"bytes,1,opt,name=valid_preparation_id,json=validPreparationId,proto3" json:"valid_preparation_id,omitempty"`
+	Input              *ValidPreparationUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -12460,8 +12460,8 @@ func (x *UpdateValidPreparationRequest) GetInput() *ValidPreparationUpdateReques
 
 type UpdateValidPreparationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparation      `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparation      `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -12512,8 +12512,8 @@ func (x *UpdateValidPreparationResponse) GetResult() *ValidPreparation {
 
 type UpdateValidPreparationInstrumentRequest struct {
 	state                        protoimpl.MessageState                        `protogen:"open.v1"`
-	ValidPreparationInstrumentId string                                        `json:"valid_preparation_instrument_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_instrument_id,json=validPreparationInstrumentId,proto3"`
-	Input                        *ValidPreparationInstrumentUpdateRequestInput `json:"input,omitempty"                           protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidPreparationInstrumentId string                                        `protobuf:"bytes,1,opt,name=valid_preparation_instrument_id,json=validPreparationInstrumentId,proto3" json:"valid_preparation_instrument_id,omitempty"`
+	Input                        *ValidPreparationInstrumentUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -12564,8 +12564,8 @@ func (x *UpdateValidPreparationInstrumentRequest) GetInput() *ValidPreparationIn
 
 type UpdateValidPreparationInstrumentResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparationInstrument `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparationInstrument `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -12616,8 +12616,8 @@ func (x *UpdateValidPreparationInstrumentResponse) GetResult() *ValidPreparation
 
 type UpdateValidPreparationVesselRequest struct {
 	state                    protoimpl.MessageState                    `protogen:"open.v1"`
-	ValidPreparationVesselId string                                    `json:"valid_preparation_vessel_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_vessel_id,json=validPreparationVesselId,proto3"`
-	Input                    *ValidPreparationVesselUpdateRequestInput `json:"input,omitempty"                       protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidPreparationVesselId string                                    `protobuf:"bytes,1,opt,name=valid_preparation_vessel_id,json=validPreparationVesselId,proto3" json:"valid_preparation_vessel_id,omitempty"`
+	Input                    *ValidPreparationVesselUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -12668,8 +12668,8 @@ func (x *UpdateValidPreparationVesselRequest) GetInput() *ValidPreparationVessel
 
 type UpdateValidPreparationVesselResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidPreparationVessel `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidPreparationVessel `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -12720,8 +12720,8 @@ func (x *UpdateValidPreparationVesselResponse) GetResult() *ValidPreparationVess
 
 type UpdateValidVesselRequest struct {
 	state         protoimpl.MessageState         `protogen:"open.v1"`
-	ValidVesselId string                         `json:"valid_vessel_id,omitempty" protobuf:"bytes,1,opt,name=valid_vessel_id,json=validVesselId,proto3"`
-	Input         *ValidVesselUpdateRequestInput `json:"input,omitempty"           protobuf:"bytes,2,opt,name=input,proto3"`
+	ValidVesselId string                         `protobuf:"bytes,1,opt,name=valid_vessel_id,json=validVesselId,proto3" json:"valid_vessel_id,omitempty"`
+	Input         *ValidVesselUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -12772,8 +12772,8 @@ func (x *UpdateValidVesselRequest) GetInput() *ValidVesselUpdateRequestInput {
 
 type UpdateValidVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *ValidVessel           `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *ValidVessel           `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -12824,7 +12824,7 @@ func (x *UpdateValidVesselResponse) GetResult() *ValidVessel {
 
 type ArchiveUserIngredientPreferenceRequest struct {
 	state                      protoimpl.MessageState `protogen:"open.v1"`
-	UserIngredientPreferenceId string                 `json:"user_ingredient_preference_id,omitempty" protobuf:"bytes,1,opt,name=user_ingredient_preference_id,json=userIngredientPreferenceId,proto3"`
+	UserIngredientPreferenceId string                 `protobuf:"bytes,1,opt,name=user_ingredient_preference_id,json=userIngredientPreferenceId,proto3" json:"user_ingredient_preference_id,omitempty"`
 	unknownFields              protoimpl.UnknownFields
 	sizeCache                  protoimpl.SizeCache
 }
@@ -12868,7 +12868,7 @@ func (x *ArchiveUserIngredientPreferenceRequest) GetUserIngredientPreferenceId()
 
 type ArchiveUserIngredientPreferenceResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -12912,7 +12912,7 @@ func (x *ArchiveUserIngredientPreferenceResponse) GetResponseDetails() *types.Re
 
 type CreateUserIngredientPreferenceRequest struct {
 	state         protoimpl.MessageState                        `protogen:"open.v1"`
-	Input         *UserIngredientPreferenceCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *UserIngredientPreferenceCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -12956,8 +12956,8 @@ func (x *CreateUserIngredientPreferenceRequest) GetInput() *UserIngredientPrefer
 
 type CreateUserIngredientPreferenceResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         []*UserIngredientPreference `json:"created,omitempty"          protobuf:"bytes,2,rep,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         []*UserIngredientPreference `protobuf:"bytes,2,rep,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -13008,7 +13008,7 @@ func (x *CreateUserIngredientPreferenceResponse) GetCreated() []*UserIngredientP
 
 type GetUserIngredientPreferenceRequest struct {
 	state                      protoimpl.MessageState `protogen:"open.v1"`
-	UserIngredientPreferenceId string                 `json:"user_ingredient_preference_id,omitempty" protobuf:"bytes,1,opt,name=user_ingredient_preference_id,json=userIngredientPreferenceId,proto3"`
+	UserIngredientPreferenceId string                 `protobuf:"bytes,1,opt,name=user_ingredient_preference_id,json=userIngredientPreferenceId,proto3" json:"user_ingredient_preference_id,omitempty"`
 	unknownFields              protoimpl.UnknownFields
 	sizeCache                  protoimpl.SizeCache
 }
@@ -13052,8 +13052,8 @@ func (x *GetUserIngredientPreferenceRequest) GetUserIngredientPreferenceId() str
 
 type GetUserIngredientPreferenceResponse struct {
 	state           protoimpl.MessageState    `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails    `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *UserIngredientPreference `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails    `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *UserIngredientPreference `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -13104,7 +13104,7 @@ func (x *GetUserIngredientPreferenceResponse) GetResult() *UserIngredientPrefere
 
 type GetUserIngredientPreferencesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -13148,9 +13148,9 @@ func (x *GetUserIngredientPreferencesRequest) GetFilter() *filtering.QueryFilter
 
 type GetUserIngredientPreferencesResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination       `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*UserIngredientPreference `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination       `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*UserIngredientPreference `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -13208,8 +13208,8 @@ func (x *GetUserIngredientPreferencesResponse) GetResults() []*UserIngredientPre
 
 type UpdateUserIngredientPreferenceRequest struct {
 	state                      protoimpl.MessageState                      `protogen:"open.v1"`
-	UserIngredientPreferenceId string                                      `json:"user_ingredient_preference_id,omitempty" protobuf:"bytes,1,opt,name=user_ingredient_preference_id,json=userIngredientPreferenceId,proto3"`
-	Input                      *UserIngredientPreferenceUpdateRequestInput `json:"input,omitempty"                         protobuf:"bytes,2,opt,name=input,proto3"`
+	UserIngredientPreferenceId string                                      `protobuf:"bytes,1,opt,name=user_ingredient_preference_id,json=userIngredientPreferenceId,proto3" json:"user_ingredient_preference_id,omitempty"`
+	Input                      *UserIngredientPreferenceUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields              protoimpl.UnknownFields
 	sizeCache                  protoimpl.SizeCache
 }
@@ -13260,8 +13260,8 @@ func (x *UpdateUserIngredientPreferenceRequest) GetInput() *UserIngredientPrefer
 
 type UpdateUserIngredientPreferenceResponse struct {
 	state           protoimpl.MessageState    `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails    `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *UserIngredientPreference `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails    `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *UserIngredientPreference `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -13312,22 +13312,22 @@ func (x *UpdateUserIngredientPreferenceResponse) GetUpdated() *UserIngredientPre
 
 type RecipeCreationRequestInput struct {
 	state               protoimpl.MessageState                            `protogen:"open.v1"`
-	InspiredByRecipeId  *string                                           `json:"inspired_by_recipe_id,omitempty" protobuf:"bytes,1,opt,name=inspired_by_recipe_id,json=inspiredByRecipeId,proto3,oneof"`
-	EstimatedPortions   *types.Float32RangeWithOptionalMax                `json:"estimated_portions,omitempty"    protobuf:"bytes,9,opt,name=estimated_portions,json=estimatedPortions,proto3"`
-	Source              string                                            `json:"source,omitempty"                protobuf:"bytes,3,opt,name=source,proto3"`
-	Description         string                                            `json:"description,omitempty"           protobuf:"bytes,4,opt,name=description,proto3"`
-	PluralPortionName   string                                            `json:"plural_portion_name,omitempty"   protobuf:"bytes,5,opt,name=plural_portion_name,json=pluralPortionName,proto3"`
-	PortionName         string                                            `json:"portion_name,omitempty"          protobuf:"bytes,6,opt,name=portion_name,json=portionName,proto3"`
-	Slug                string                                            `json:"slug,omitempty"                  protobuf:"bytes,7,opt,name=slug,proto3"`
-	Name                string                                            `json:"name,omitempty"                  protobuf:"bytes,2,opt,name=name,proto3"`
-	Media               []*RecipeMediaCreationRequestInput                `json:"media,omitempty"                 protobuf:"bytes,14,rep,name=media,proto3"`
-	PrepTasks           []*RecipePrepTaskWithinRecipeCreationRequestInput `json:"prep_tasks,omitempty"            protobuf:"bytes,10,rep,name=prep_tasks,json=prepTasks,proto3"`
-	Steps               []*RecipeStepCreationRequestInput                 `json:"steps,omitempty"                 protobuf:"bytes,11,rep,name=steps,proto3"`
+	InspiredByRecipeId  *string                                           `protobuf:"bytes,1,opt,name=inspired_by_recipe_id,json=inspiredByRecipeId,proto3,oneof" json:"inspired_by_recipe_id,omitempty"`
+	EstimatedPortions   *types.Float32RangeWithOptionalMax                `protobuf:"bytes,9,opt,name=estimated_portions,json=estimatedPortions,proto3" json:"estimated_portions,omitempty"`
+	Source              string                                            `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`
+	Description         string                                            `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	PluralPortionName   string                                            `protobuf:"bytes,5,opt,name=plural_portion_name,json=pluralPortionName,proto3" json:"plural_portion_name,omitempty"`
+	PortionName         string                                            `protobuf:"bytes,6,opt,name=portion_name,json=portionName,proto3" json:"portion_name,omitempty"`
+	Slug                string                                            `protobuf:"bytes,7,opt,name=slug,proto3" json:"slug,omitempty"`
+	Name                string                                            `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Media               []*RecipeMediaCreationRequestInput                `protobuf:"bytes,14,rep,name=media,proto3" json:"media,omitempty"`
+	PrepTasks           []*RecipePrepTaskWithinRecipeCreationRequestInput `protobuf:"bytes,10,rep,name=prep_tasks,json=prepTasks,proto3" json:"prep_tasks,omitempty"`
+	Steps               []*RecipeStepCreationRequestInput                 `protobuf:"bytes,11,rep,name=steps,proto3" json:"steps,omitempty"`
 	unknownFields       protoimpl.UnknownFields
-	YieldsComponentType MealComponentType `json:"yields_component_type,omitempty" protobuf:"varint,8,opt,name=yields_component_type,json=yieldsComponentType,proto3,enum=mealplanning.MealComponentType"`
+	YieldsComponentType MealComponentType `protobuf:"varint,8,opt,name=yields_component_type,json=yieldsComponentType,proto3,enum=mealplanning.MealComponentType" json:"yields_component_type,omitempty"`
 	sizeCache           protoimpl.SizeCache
-	EligibleForMeals    bool `json:"eligible_for_meals,omitempty" protobuf:"varint,13,opt,name=eligible_for_meals,json=eligibleForMeals,proto3"`
-	AlsoCreateMeal      bool `json:"also_create_meal,omitempty"   protobuf:"varint,12,opt,name=also_create_meal,json=alsoCreateMeal,proto3"`
+	EligibleForMeals    bool `protobuf:"varint,13,opt,name=eligible_for_meals,json=eligibleForMeals,proto3" json:"eligible_for_meals,omitempty"`
+	AlsoCreateMeal      bool `protobuf:"varint,12,opt,name=also_create_meal,json=alsoCreateMeal,proto3" json:"also_create_meal,omitempty"`
 }
 
 func (x *RecipeCreationRequestInput) Reset() {
@@ -13460,13 +13460,13 @@ func (x *RecipeCreationRequestInput) GetMedia() []*RecipeMediaCreationRequestInp
 
 type RecipeMediaCreationRequestInput struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	BelongsToRecipe     string                 `json:"belongs_to_recipe,omitempty"      protobuf:"bytes,1,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3"`
-	BelongsToRecipeStep string                 `json:"belongs_to_recipe_step,omitempty" protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3"`
-	MimeType            string                 `json:"mime_type,omitempty"              protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3"`
-	InternalPath        string                 `json:"internal_path,omitempty"          protobuf:"bytes,4,opt,name=internal_path,json=internalPath,proto3"`
-	ExternalPath        string                 `json:"external_path,omitempty"          protobuf:"bytes,5,opt,name=external_path,json=externalPath,proto3"`
+	BelongsToRecipe     string                 `protobuf:"bytes,1,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3" json:"belongs_to_recipe,omitempty"`
+	BelongsToRecipeStep string                 `protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3" json:"belongs_to_recipe_step,omitempty"`
+	MimeType            string                 `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
+	InternalPath        string                 `protobuf:"bytes,4,opt,name=internal_path,json=internalPath,proto3" json:"internal_path,omitempty"`
+	ExternalPath        string                 `protobuf:"bytes,5,opt,name=external_path,json=externalPath,proto3" json:"external_path,omitempty"`
 	unknownFields       protoimpl.UnknownFields
-	Index               uint32 `json:"index,omitempty" protobuf:"varint,6,opt,name=index,proto3"`
+	Index               uint32 `protobuf:"varint,6,opt,name=index,proto3" json:"index,omitempty"`
 	sizeCache           protoimpl.SizeCache
 }
 
@@ -13544,12 +13544,12 @@ func (x *RecipeMediaCreationRequestInput) GetIndex() uint32 {
 
 type RecipeMediaUpdateRequestInput struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	BelongsToRecipe     *string                `json:"belongs_to_recipe,omitempty"      protobuf:"bytes,1,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3,oneof"`
-	BelongsToRecipeStep *string                `json:"belongs_to_recipe_step,omitempty" protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof"`
-	MimeType            *string                `json:"mime_type,omitempty"              protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3,oneof"`
-	InternalPath        *string                `json:"internal_path,omitempty"          protobuf:"bytes,4,opt,name=internal_path,json=internalPath,proto3,oneof"`
-	ExternalPath        *string                `json:"external_path,omitempty"          protobuf:"bytes,5,opt,name=external_path,json=externalPath,proto3,oneof"`
-	Index               *uint32                `json:"index,omitempty"                  protobuf:"varint,6,opt,name=index,proto3,oneof"`
+	BelongsToRecipe     *string                `protobuf:"bytes,1,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3,oneof" json:"belongs_to_recipe,omitempty"`
+	BelongsToRecipeStep *string                `protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof" json:"belongs_to_recipe_step,omitempty"`
+	MimeType            *string                `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3,oneof" json:"mime_type,omitempty"`
+	InternalPath        *string                `protobuf:"bytes,4,opt,name=internal_path,json=internalPath,proto3,oneof" json:"internal_path,omitempty"`
+	ExternalPath        *string                `protobuf:"bytes,5,opt,name=external_path,json=externalPath,proto3,oneof" json:"external_path,omitempty"`
+	Index               *uint32                `protobuf:"varint,6,opt,name=index,proto3,oneof" json:"index,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -13628,18 +13628,18 @@ func (x *RecipeMediaUpdateRequestInput) GetIndex() uint32 {
 
 type RecipePrepTaskCreationRequestInput struct {
 	state                           protoimpl.MessageState                    `protogen:"open.v1"`
-	StorageTemperatureInCelsius     *types.OptionalFloat32Range               `json:"storage_temperature_in_celsius,omitempty"       protobuf:"bytes,1,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3"`
-	TimeBufferBeforeRecipeInSeconds *types.Uint32RangeWithOptionalMax         `json:"time_buffer_before_recipe_in_seconds,omitempty" protobuf:"bytes,2,opt,name=time_buffer_before_recipe_in_seconds,json=timeBufferBeforeRecipeInSeconds,proto3"`
-	Name                            string                                    `json:"name,omitempty"                                 protobuf:"bytes,6,opt,name=name,proto3"`
-	ExplicitStorageInstructions     string                                    `json:"explicit_storage_instructions,omitempty"        protobuf:"bytes,4,opt,name=explicit_storage_instructions,json=explicitStorageInstructions,proto3"`
-	Notes                           string                                    `json:"notes,omitempty"                                protobuf:"bytes,5,opt,name=notes,proto3"`
-	StorageType                     string                                    `json:"storage_type,omitempty"                         protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3"`
-	Description                     string                                    `json:"description,omitempty"                          protobuf:"bytes,7,opt,name=description,proto3"`
-	BelongsToRecipe                 string                                    `json:"belongs_to_recipe,omitempty"                    protobuf:"bytes,8,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3"`
-	RecipeSteps                     []*RecipePrepTaskStepCreationRequestInput `json:"recipe_steps,omitempty"                         protobuf:"bytes,9,rep,name=recipe_steps,json=recipeSteps,proto3"`
+	StorageTemperatureInCelsius     *types.OptionalFloat32Range               `protobuf:"bytes,1,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3" json:"storage_temperature_in_celsius,omitempty"`
+	TimeBufferBeforeRecipeInSeconds *types.Uint32RangeWithOptionalMax         `protobuf:"bytes,2,opt,name=time_buffer_before_recipe_in_seconds,json=timeBufferBeforeRecipeInSeconds,proto3" json:"time_buffer_before_recipe_in_seconds,omitempty"`
+	Name                            string                                    `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
+	ExplicitStorageInstructions     string                                    `protobuf:"bytes,4,opt,name=explicit_storage_instructions,json=explicitStorageInstructions,proto3" json:"explicit_storage_instructions,omitempty"`
+	Notes                           string                                    `protobuf:"bytes,5,opt,name=notes,proto3" json:"notes,omitempty"`
+	StorageType                     string                                    `protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3" json:"storage_type,omitempty"`
+	Description                     string                                    `protobuf:"bytes,7,opt,name=description,proto3" json:"description,omitempty"`
+	BelongsToRecipe                 string                                    `protobuf:"bytes,8,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3" json:"belongs_to_recipe,omitempty"`
+	RecipeSteps                     []*RecipePrepTaskStepCreationRequestInput `protobuf:"bytes,9,rep,name=recipe_steps,json=recipeSteps,proto3" json:"recipe_steps,omitempty"`
 	unknownFields                   protoimpl.UnknownFields
 	sizeCache                       protoimpl.SizeCache
-	Optional                        bool `json:"optional,omitempty" protobuf:"varint,10,opt,name=optional,proto3"`
+	Optional                        bool `protobuf:"varint,10,opt,name=optional,proto3" json:"optional,omitempty"`
 }
 
 func (x *RecipePrepTaskCreationRequestInput) Reset() {
@@ -13744,10 +13744,10 @@ func (x *RecipePrepTaskCreationRequestInput) GetOptional() bool {
 
 type RecipePrepTaskStepCreationRequestInput struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	BelongsToRecipeStep string                 `json:"belongs_to_recipe_step,omitempty" protobuf:"bytes,1,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3"`
+	BelongsToRecipeStep string                 `protobuf:"bytes,1,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3" json:"belongs_to_recipe_step,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
-	SatisfiesRecipeStep bool `json:"satisfies_recipe_step,omitempty" protobuf:"varint,2,opt,name=satisfies_recipe_step,json=satisfiesRecipeStep,proto3"`
+	SatisfiesRecipeStep bool `protobuf:"varint,2,opt,name=satisfies_recipe_step,json=satisfiesRecipeStep,proto3" json:"satisfies_recipe_step,omitempty"`
 }
 
 func (x *RecipePrepTaskStepCreationRequestInput) Reset() {
@@ -13796,9 +13796,9 @@ func (x *RecipePrepTaskStepCreationRequestInput) GetSatisfiesRecipeStep() bool {
 
 type RecipePrepTaskStepUpdateRequestInput struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	SatisfiesRecipeStep     *bool                  `json:"satisfies_recipe_step,omitempty"       protobuf:"varint,1,opt,name=satisfies_recipe_step,json=satisfiesRecipeStep,proto3,oneof"`
-	BelongsToRecipeStep     *string                `json:"belongs_to_recipe_step,omitempty"      protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof"`
-	BelongsToRecipePrepTask *string                `json:"belongs_to_recipe_prep_task,omitempty" protobuf:"bytes,3,opt,name=belongs_to_recipe_prep_task,json=belongsToRecipePrepTask,proto3,oneof"`
+	SatisfiesRecipeStep     *bool                  `protobuf:"varint,1,opt,name=satisfies_recipe_step,json=satisfiesRecipeStep,proto3,oneof" json:"satisfies_recipe_step,omitempty"`
+	BelongsToRecipeStep     *string                `protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof" json:"belongs_to_recipe_step,omitempty"`
+	BelongsToRecipePrepTask *string                `protobuf:"bytes,3,opt,name=belongs_to_recipe_prep_task,json=belongsToRecipePrepTask,proto3,oneof" json:"belongs_to_recipe_prep_task,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
@@ -13857,9 +13857,9 @@ func (x *RecipePrepTaskStepUpdateRequestInput) GetBelongsToRecipePrepTask() stri
 type RecipePrepTaskStepWithinRecipeCreationRequestInput struct {
 	state                    protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields            protoimpl.UnknownFields
-	BelongsToRecipeStepIndex uint32 `json:"belongs_to_recipe_step_index,omitempty" protobuf:"varint,1,opt,name=belongs_to_recipe_step_index,json=belongsToRecipeStepIndex,proto3"`
+	BelongsToRecipeStepIndex uint32 `protobuf:"varint,1,opt,name=belongs_to_recipe_step_index,json=belongsToRecipeStepIndex,proto3" json:"belongs_to_recipe_step_index,omitempty"`
 	sizeCache                protoimpl.SizeCache
-	SatisfiesRecipeStep      bool `json:"satisfies_recipe_step,omitempty" protobuf:"varint,2,opt,name=satisfies_recipe_step,json=satisfiesRecipeStep,proto3"`
+	SatisfiesRecipeStep      bool `protobuf:"varint,2,opt,name=satisfies_recipe_step,json=satisfiesRecipeStep,proto3" json:"satisfies_recipe_step,omitempty"`
 }
 
 func (x *RecipePrepTaskStepWithinRecipeCreationRequestInput) Reset() {
@@ -13908,16 +13908,16 @@ func (x *RecipePrepTaskStepWithinRecipeCreationRequestInput) GetSatisfiesRecipeS
 
 type RecipePrepTaskUpdateRequestInput struct {
 	state                           protoimpl.MessageState                              `protogen:"open.v1"`
-	Notes                           *string                                             `json:"notes,omitempty"                                protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	ExplicitStorageInstructions     *string                                             `json:"explicit_storage_instructions,omitempty"        protobuf:"bytes,2,opt,name=explicit_storage_instructions,json=explicitStorageInstructions,proto3,oneof"`
-	StorageType                     *string                                             `json:"storage_type,omitempty"                         protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3,oneof"`
-	Name                            *string                                             `json:"name,omitempty"                                 protobuf:"bytes,4,opt,name=name,proto3,oneof"`
-	Optional                        *bool                                               `json:"optional,omitempty"                             protobuf:"varint,5,opt,name=optional,proto3,oneof"`
-	Description                     *string                                             `json:"description,omitempty"                          protobuf:"bytes,6,opt,name=description,proto3,oneof"`
-	StorageTemperatureInCelsius     *types.OptionalFloat32Range                         `json:"storage_temperature_in_celsius,omitempty"       protobuf:"bytes,7,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3,oneof"`
-	TimeBufferBeforeRecipeInSeconds *types.Uint32RangeWithOptionalMaxUpdateRequestInput `json:"time_buffer_before_recipe_in_seconds,omitempty" protobuf:"bytes,8,opt,name=time_buffer_before_recipe_in_seconds,json=timeBufferBeforeRecipeInSeconds,proto3,oneof"`
-	BelongsToRecipe                 *string                                             `json:"belongs_to_recipe,omitempty"                    protobuf:"bytes,9,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3,oneof"`
-	TaskSteps                       []*RecipePrepTaskStepUpdateRequestInput             `json:"task_steps,omitempty"                           protobuf:"bytes,10,rep,name=task_steps,json=taskSteps,proto3"`
+	Notes                           *string                                             `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	ExplicitStorageInstructions     *string                                             `protobuf:"bytes,2,opt,name=explicit_storage_instructions,json=explicitStorageInstructions,proto3,oneof" json:"explicit_storage_instructions,omitempty"`
+	StorageType                     *string                                             `protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3,oneof" json:"storage_type,omitempty"`
+	Name                            *string                                             `protobuf:"bytes,4,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Optional                        *bool                                               `protobuf:"varint,5,opt,name=optional,proto3,oneof" json:"optional,omitempty"`
+	Description                     *string                                             `protobuf:"bytes,6,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	StorageTemperatureInCelsius     *types.OptionalFloat32Range                         `protobuf:"bytes,7,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3,oneof" json:"storage_temperature_in_celsius,omitempty"`
+	TimeBufferBeforeRecipeInSeconds *types.Uint32RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,8,opt,name=time_buffer_before_recipe_in_seconds,json=timeBufferBeforeRecipeInSeconds,proto3,oneof" json:"time_buffer_before_recipe_in_seconds,omitempty"`
+	BelongsToRecipe                 *string                                             `protobuf:"bytes,9,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3,oneof" json:"belongs_to_recipe,omitempty"`
+	TaskSteps                       []*RecipePrepTaskStepUpdateRequestInput             `protobuf:"bytes,10,rep,name=task_steps,json=taskSteps,proto3" json:"task_steps,omitempty"`
 	unknownFields                   protoimpl.UnknownFields
 	sizeCache                       protoimpl.SizeCache
 }
@@ -14024,18 +14024,18 @@ func (x *RecipePrepTaskUpdateRequestInput) GetTaskSteps() []*RecipePrepTaskStepU
 
 type RecipePrepTaskWithinRecipeCreationRequestInput struct {
 	state                           protoimpl.MessageState                                `protogen:"open.v1"`
-	StorageTemperatureInCelsius     *types.OptionalFloat32Range                           `json:"storage_temperature_in_celsius,omitempty"       protobuf:"bytes,1,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3"`
-	TimeBufferBeforeRecipeInSeconds *types.Uint32RangeWithOptionalMax                     `json:"time_buffer_before_recipe_in_seconds,omitempty" protobuf:"bytes,2,opt,name=time_buffer_before_recipe_in_seconds,json=timeBufferBeforeRecipeInSeconds,proto3"`
-	ExplicitStorageInstructions     string                                                `json:"explicit_storage_instructions,omitempty"        protobuf:"bytes,6,opt,name=explicit_storage_instructions,json=explicitStorageInstructions,proto3"`
-	Name                            string                                                `json:"name,omitempty"                                 protobuf:"bytes,4,opt,name=name,proto3"`
-	Description                     string                                                `json:"description,omitempty"                          protobuf:"bytes,5,opt,name=description,proto3"`
-	StorageType                     string                                                `json:"storage_type,omitempty"                         protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3"`
-	Notes                           string                                                `json:"notes,omitempty"                                protobuf:"bytes,7,opt,name=notes,proto3"`
-	BelongsToRecipe                 string                                                `json:"belongs_to_recipe,omitempty"                    protobuf:"bytes,8,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3"`
-	RecipeSteps                     []*RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipe_steps,omitempty"                         protobuf:"bytes,9,rep,name=recipe_steps,json=recipeSteps,proto3"`
+	StorageTemperatureInCelsius     *types.OptionalFloat32Range                           `protobuf:"bytes,1,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3" json:"storage_temperature_in_celsius,omitempty"`
+	TimeBufferBeforeRecipeInSeconds *types.Uint32RangeWithOptionalMax                     `protobuf:"bytes,2,opt,name=time_buffer_before_recipe_in_seconds,json=timeBufferBeforeRecipeInSeconds,proto3" json:"time_buffer_before_recipe_in_seconds,omitempty"`
+	ExplicitStorageInstructions     string                                                `protobuf:"bytes,6,opt,name=explicit_storage_instructions,json=explicitStorageInstructions,proto3" json:"explicit_storage_instructions,omitempty"`
+	Name                            string                                                `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+	Description                     string                                                `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	StorageType                     string                                                `protobuf:"bytes,3,opt,name=storage_type,json=storageType,proto3" json:"storage_type,omitempty"`
+	Notes                           string                                                `protobuf:"bytes,7,opt,name=notes,proto3" json:"notes,omitempty"`
+	BelongsToRecipe                 string                                                `protobuf:"bytes,8,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3" json:"belongs_to_recipe,omitempty"`
+	RecipeSteps                     []*RecipePrepTaskStepWithinRecipeCreationRequestInput `protobuf:"bytes,9,rep,name=recipe_steps,json=recipeSteps,proto3" json:"recipe_steps,omitempty"`
 	unknownFields                   protoimpl.UnknownFields
 	sizeCache                       protoimpl.SizeCache
-	Optional                        bool `json:"optional,omitempty" protobuf:"varint,10,opt,name=optional,proto3"`
+	Optional                        bool `protobuf:"varint,10,opt,name=optional,proto3" json:"optional,omitempty"`
 }
 
 func (x *RecipePrepTaskWithinRecipeCreationRequestInput) Reset() {
@@ -14140,15 +14140,15 @@ func (x *RecipePrepTaskWithinRecipeCreationRequestInput) GetOptional() bool {
 
 type RecipeRatingCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	Notes         string                 `json:"notes,omitempty"     protobuf:"bytes,2,opt,name=notes,proto3"`
-	ByUser        string                 `json:"by_user,omitempty"   protobuf:"bytes,3,opt,name=by_user,json=byUser,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	Notes         string                 `protobuf:"bytes,2,opt,name=notes,proto3" json:"notes,omitempty"`
+	ByUser        string                 `protobuf:"bytes,3,opt,name=by_user,json=byUser,proto3" json:"by_user,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Taste         float32 `json:"taste,omitempty"        protobuf:"fixed32,4,opt,name=taste,proto3"`
-	Difficulty    float32 `json:"difficulty,omitempty"   protobuf:"fixed32,5,opt,name=difficulty,proto3"`
-	Cleanup       float32 `json:"cleanup,omitempty"      protobuf:"fixed32,6,opt,name=cleanup,proto3"`
-	Instructions  float32 `json:"instructions,omitempty" protobuf:"fixed32,7,opt,name=instructions,proto3"`
-	Overall       float32 `json:"overall,omitempty"      protobuf:"fixed32,8,opt,name=overall,proto3"`
+	Taste         float32 `protobuf:"fixed32,4,opt,name=taste,proto3" json:"taste,omitempty"`
+	Difficulty    float32 `protobuf:"fixed32,5,opt,name=difficulty,proto3" json:"difficulty,omitempty"`
+	Cleanup       float32 `protobuf:"fixed32,6,opt,name=cleanup,proto3" json:"cleanup,omitempty"`
+	Instructions  float32 `protobuf:"fixed32,7,opt,name=instructions,proto3" json:"instructions,omitempty"`
+	Overall       float32 `protobuf:"fixed32,8,opt,name=overall,proto3" json:"overall,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -14240,14 +14240,14 @@ func (x *RecipeRatingCreationRequestInput) GetOverall() float32 {
 
 type RecipeRatingUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      *string                `json:"recipe_id,omitempty"    protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3,oneof"`
-	Taste         *float32               `json:"taste,omitempty"        protobuf:"fixed32,2,opt,name=taste,proto3,oneof"`
-	Difficulty    *float32               `json:"difficulty,omitempty"   protobuf:"fixed32,3,opt,name=difficulty,proto3,oneof"`
-	Cleanup       *float32               `json:"cleanup,omitempty"      protobuf:"fixed32,4,opt,name=cleanup,proto3,oneof"`
-	Instructions  *float32               `json:"instructions,omitempty" protobuf:"fixed32,5,opt,name=instructions,proto3,oneof"`
-	Overall       *float32               `json:"overall,omitempty"      protobuf:"fixed32,6,opt,name=overall,proto3,oneof"`
-	Notes         *string                `json:"notes,omitempty"        protobuf:"bytes,7,opt,name=notes,proto3,oneof"`
-	ByUser        *string                `json:"by_user,omitempty"      protobuf:"bytes,8,opt,name=by_user,json=byUser,proto3,oneof"`
+	RecipeId      *string                `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3,oneof" json:"recipe_id,omitempty"`
+	Taste         *float32               `protobuf:"fixed32,2,opt,name=taste,proto3,oneof" json:"taste,omitempty"`
+	Difficulty    *float32               `protobuf:"fixed32,3,opt,name=difficulty,proto3,oneof" json:"difficulty,omitempty"`
+	Cleanup       *float32               `protobuf:"fixed32,4,opt,name=cleanup,proto3,oneof" json:"cleanup,omitempty"`
+	Instructions  *float32               `protobuf:"fixed32,5,opt,name=instructions,proto3,oneof" json:"instructions,omitempty"`
+	Overall       *float32               `protobuf:"fixed32,6,opt,name=overall,proto3,oneof" json:"overall,omitempty"`
+	Notes         *string                `protobuf:"bytes,7,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	ByUser        *string                `protobuf:"bytes,8,opt,name=by_user,json=byUser,proto3,oneof" json:"by_user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -14340,13 +14340,13 @@ func (x *RecipeRatingUpdateRequestInput) GetByUser() string {
 
 type RecipeStepCompletionConditionCreationRequestInput struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	IngredientStateId   string                 `json:"ingredient_state_id,omitempty"    protobuf:"bytes,1,opt,name=ingredient_state_id,json=ingredientStateId,proto3"`
-	BelongsToRecipeStep string                 `json:"belongs_to_recipe_step,omitempty" protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3"`
-	Notes               string                 `json:"notes,omitempty"                  protobuf:"bytes,3,opt,name=notes,proto3"`
-	Ingredients         []uint64               `json:"ingredients,omitempty"            protobuf:"varint,4,rep,packed,name=ingredients,proto3"`
+	IngredientStateId   string                 `protobuf:"bytes,1,opt,name=ingredient_state_id,json=ingredientStateId,proto3" json:"ingredient_state_id,omitempty"`
+	BelongsToRecipeStep string                 `protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3" json:"belongs_to_recipe_step,omitempty"`
+	Notes               string                 `protobuf:"bytes,3,opt,name=notes,proto3" json:"notes,omitempty"`
+	Ingredients         []uint64               `protobuf:"varint,4,rep,packed,name=ingredients,proto3" json:"ingredients,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
-	Optional            bool `json:"optional,omitempty" protobuf:"varint,5,opt,name=optional,proto3"`
+	Optional            bool `protobuf:"varint,5,opt,name=optional,proto3" json:"optional,omitempty"`
 }
 
 func (x *RecipeStepCompletionConditionCreationRequestInput) Reset() {
@@ -14416,13 +14416,13 @@ func (x *RecipeStepCompletionConditionCreationRequestInput) GetOptional() bool {
 
 type RecipeStepCompletionConditionForExistingRecipeCreationRequestInput struct {
 	state               protoimpl.MessageState                     `protogen:"open.v1"`
-	IngredientStateId   string                                     `json:"ingredient_state_id,omitempty"    protobuf:"bytes,1,opt,name=ingredient_state_id,json=ingredientStateId,proto3"`
-	BelongsToRecipeStep string                                     `json:"belongs_to_recipe_step,omitempty" protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3"`
-	Notes               string                                     `json:"notes,omitempty"                  protobuf:"bytes,3,opt,name=notes,proto3"`
-	Ingredients         []*RecipeStepCompletionConditionIngredient `json:"ingredients,omitempty"            protobuf:"bytes,4,rep,name=ingredients,proto3"`
+	IngredientStateId   string                                     `protobuf:"bytes,1,opt,name=ingredient_state_id,json=ingredientStateId,proto3" json:"ingredient_state_id,omitempty"`
+	BelongsToRecipeStep string                                     `protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3" json:"belongs_to_recipe_step,omitempty"`
+	Notes               string                                     `protobuf:"bytes,3,opt,name=notes,proto3" json:"notes,omitempty"`
+	Ingredients         []*RecipeStepCompletionConditionIngredient `protobuf:"bytes,4,rep,name=ingredients,proto3" json:"ingredients,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
-	Optional            bool `json:"optional,omitempty" protobuf:"varint,5,opt,name=optional,proto3"`
+	Optional            bool `protobuf:"varint,5,opt,name=optional,proto3" json:"optional,omitempty"`
 }
 
 func (x *RecipeStepCompletionConditionForExistingRecipeCreationRequestInput) Reset() {
@@ -14492,7 +14492,7 @@ func (x *RecipeStepCompletionConditionForExistingRecipeCreationRequestInput) Get
 
 type RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput struct {
 	state                protoimpl.MessageState `protogen:"open.v1"`
-	RecipeStepIngredient string                 `json:"recipe_step_ingredient,omitempty" protobuf:"bytes,1,opt,name=recipe_step_ingredient,json=recipeStepIngredient,proto3"`
+	RecipeStepIngredient string                 `protobuf:"bytes,1,opt,name=recipe_step_ingredient,json=recipeStepIngredient,proto3" json:"recipe_step_ingredient,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -14536,10 +14536,10 @@ func (x *RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequest
 
 type RecipeStepCompletionConditionUpdateRequestInput struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	IngredientStateId   *string                `json:"ingredient_state_id,omitempty"    protobuf:"bytes,1,opt,name=ingredient_state_id,json=ingredientStateId,proto3,oneof"`
-	BelongsToRecipeStep *string                `json:"belongs_to_recipe_step,omitempty" protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof"`
-	Notes               *string                `json:"notes,omitempty"                  protobuf:"bytes,3,opt,name=notes,proto3,oneof"`
-	Optional            *bool                  `json:"optional,omitempty"               protobuf:"varint,4,opt,name=optional,proto3,oneof"`
+	IngredientStateId   *string                `protobuf:"bytes,1,opt,name=ingredient_state_id,json=ingredientStateId,proto3,oneof" json:"ingredient_state_id,omitempty"`
+	BelongsToRecipeStep *string                `protobuf:"bytes,2,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof" json:"belongs_to_recipe_step,omitempty"`
+	Notes               *string                `protobuf:"bytes,3,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	Optional            *bool                  `protobuf:"varint,4,opt,name=optional,proto3,oneof" json:"optional,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -14604,22 +14604,22 @@ func (x *RecipeStepCompletionConditionUpdateRequestInput) GetOptional() bool {
 
 type RecipeStepCreationRequestInput struct {
 	state                   protoimpl.MessageState                               `protogen:"open.v1"`
-	EstimatedTimeInSeconds  *types.OptionalUint32Range                           `json:"estimated_time_in_seconds,omitempty" protobuf:"bytes,1,opt,name=estimated_time_in_seconds,json=estimatedTimeInSeconds,proto3"`
-	TemperatureInCelsius    *types.OptionalFloat32Range                          `json:"temperature_in_celsius,omitempty"    protobuf:"bytes,2,opt,name=temperature_in_celsius,json=temperatureInCelsius,proto3"`
-	PreparationId           string                                               `json:"preparation_id,omitempty"            protobuf:"bytes,3,opt,name=preparation_id,json=preparationId,proto3"`
-	Notes                   string                                               `json:"notes,omitempty"                     protobuf:"bytes,4,opt,name=notes,proto3"`
-	ConditionExpression     string                                               `json:"condition_expression,omitempty"      protobuf:"bytes,5,opt,name=condition_expression,json=conditionExpression,proto3"`
-	ExplicitInstructions    string                                               `json:"explicit_instructions,omitempty"     protobuf:"bytes,6,opt,name=explicit_instructions,json=explicitInstructions,proto3"`
-	Vessels                 []*RecipeStepVesselCreationRequestInput              `json:"vessels,omitempty"                   protobuf:"bytes,8,rep,name=vessels,proto3"`
-	Instruments             []*RecipeStepInstrumentCreationRequestInput          `json:"instruments,omitempty"               protobuf:"bytes,7,rep,name=instruments,proto3"`
-	Products                []*RecipeStepProductCreationRequestInput             `json:"products,omitempty"                  protobuf:"bytes,9,rep,name=products,proto3"`
-	Ingredients             []*RecipeStepIngredientCreationRequestInput          `json:"ingredients,omitempty"               protobuf:"bytes,10,rep,name=ingredients,proto3"`
-	CompletionConditions    []*RecipeStepCompletionConditionCreationRequestInput `json:"completion_conditions,omitempty"     protobuf:"bytes,11,rep,name=completion_conditions,json=completionConditions,proto3"`
+	EstimatedTimeInSeconds  *types.OptionalUint32Range                           `protobuf:"bytes,1,opt,name=estimated_time_in_seconds,json=estimatedTimeInSeconds,proto3" json:"estimated_time_in_seconds,omitempty"`
+	TemperatureInCelsius    *types.OptionalFloat32Range                          `protobuf:"bytes,2,opt,name=temperature_in_celsius,json=temperatureInCelsius,proto3" json:"temperature_in_celsius,omitempty"`
+	PreparationId           string                                               `protobuf:"bytes,3,opt,name=preparation_id,json=preparationId,proto3" json:"preparation_id,omitempty"`
+	Notes                   string                                               `protobuf:"bytes,4,opt,name=notes,proto3" json:"notes,omitempty"`
+	ConditionExpression     string                                               `protobuf:"bytes,5,opt,name=condition_expression,json=conditionExpression,proto3" json:"condition_expression,omitempty"`
+	ExplicitInstructions    string                                               `protobuf:"bytes,6,opt,name=explicit_instructions,json=explicitInstructions,proto3" json:"explicit_instructions,omitempty"`
+	Vessels                 []*RecipeStepVesselCreationRequestInput              `protobuf:"bytes,8,rep,name=vessels,proto3" json:"vessels,omitempty"`
+	Instruments             []*RecipeStepInstrumentCreationRequestInput          `protobuf:"bytes,7,rep,name=instruments,proto3" json:"instruments,omitempty"`
+	Products                []*RecipeStepProductCreationRequestInput             `protobuf:"bytes,9,rep,name=products,proto3" json:"products,omitempty"`
+	Ingredients             []*RecipeStepIngredientCreationRequestInput          `protobuf:"bytes,10,rep,name=ingredients,proto3" json:"ingredients,omitempty"`
+	CompletionConditions    []*RecipeStepCompletionConditionCreationRequestInput `protobuf:"bytes,11,rep,name=completion_conditions,json=completionConditions,proto3" json:"completion_conditions,omitempty"`
 	unknownFields           protoimpl.UnknownFields
-	Index                   uint32 `json:"index,omitempty" protobuf:"varint,12,opt,name=index,proto3"`
+	Index                   uint32 `protobuf:"varint,12,opt,name=index,proto3" json:"index,omitempty"`
 	sizeCache               protoimpl.SizeCache
-	Optional                bool `json:"optional,omitempty"                  protobuf:"varint,13,opt,name=optional,proto3"`
-	StartTimerAutomatically bool `json:"start_timer_automatically,omitempty" protobuf:"varint,14,opt,name=start_timer_automatically,json=startTimerAutomatically,proto3"`
+	Optional                bool `protobuf:"varint,13,opt,name=optional,proto3" json:"optional,omitempty"`
+	StartTimerAutomatically bool `protobuf:"varint,14,opt,name=start_timer_automatically,json=startTimerAutomatically,proto3" json:"start_timer_automatically,omitempty"`
 }
 
 func (x *RecipeStepCreationRequestInput) Reset() {
@@ -14751,25 +14751,25 @@ func (x *RecipeStepCreationRequestInput) GetStartTimerAutomatically() bool {
 }
 
 type RecipeStepIngredientCreationRequestInput struct {
-	ValidIngredientPreparationId     *string                            `json:"valid_ingredient_preparation_id,omitempty"      protobuf:"bytes,14,opt,name=valid_ingredient_preparation_id,json=validIngredientPreparationId,proto3,oneof"`
-	ProductOfRecipeStepIndex         *uint64                            `json:"product_of_recipe_step_index,omitempty"         protobuf:"varint,1,opt,name=product_of_recipe_step_index,json=productOfRecipeStepIndex,proto3,oneof"`
-	ProductOfRecipeStepProductIndex  *uint64                            `json:"product_of_recipe_step_product_index,omitempty" protobuf:"varint,2,opt,name=product_of_recipe_step_product_index,json=productOfRecipeStepProductIndex,proto3,oneof"`
-	VesselIndex                      *uint32                            `json:"vessel_index,omitempty"                         protobuf:"varint,3,opt,name=vessel_index,json=vesselIndex,proto3,oneof"`
-	ProductPercentageToUse           *float32                           `json:"product_percentage_to_use,omitempty"            protobuf:"fixed32,4,opt,name=product_percentage_to_use,json=productPercentageToUse,proto3,oneof"`
-	RecipeStepProductRecipeId        *string                            `json:"recipe_step_product_recipe_id,omitempty"        protobuf:"bytes,5,opt,name=recipe_step_product_recipe_id,json=recipeStepProductRecipeId,proto3,oneof"`
-	RecipeStepProductRecipeSlug      *string                            `json:"recipe_step_product_recipe_slug,omitempty"      protobuf:"bytes,6,opt,name=recipe_step_product_recipe_slug,json=recipeStepProductRecipeSlug,proto3,oneof"`
-	Index                            *uint32                            `json:"index,omitempty"                                protobuf:"varint,16,opt,name=index,proto3,oneof"`
+	ValidIngredientPreparationId     *string                            `protobuf:"bytes,14,opt,name=valid_ingredient_preparation_id,json=validIngredientPreparationId,proto3,oneof" json:"valid_ingredient_preparation_id,omitempty"`
+	ProductOfRecipeStepIndex         *uint64                            `protobuf:"varint,1,opt,name=product_of_recipe_step_index,json=productOfRecipeStepIndex,proto3,oneof" json:"product_of_recipe_step_index,omitempty"`
+	ProductOfRecipeStepProductIndex  *uint64                            `protobuf:"varint,2,opt,name=product_of_recipe_step_product_index,json=productOfRecipeStepProductIndex,proto3,oneof" json:"product_of_recipe_step_product_index,omitempty"`
+	VesselIndex                      *uint32                            `protobuf:"varint,3,opt,name=vessel_index,json=vesselIndex,proto3,oneof" json:"vessel_index,omitempty"`
+	ProductPercentageToUse           *float32                           `protobuf:"fixed32,4,opt,name=product_percentage_to_use,json=productPercentageToUse,proto3,oneof" json:"product_percentage_to_use,omitempty"`
+	RecipeStepProductRecipeId        *string                            `protobuf:"bytes,5,opt,name=recipe_step_product_recipe_id,json=recipeStepProductRecipeId,proto3,oneof" json:"recipe_step_product_recipe_id,omitempty"`
+	RecipeStepProductRecipeSlug      *string                            `protobuf:"bytes,6,opt,name=recipe_step_product_recipe_slug,json=recipeStepProductRecipeSlug,proto3,oneof" json:"recipe_step_product_recipe_slug,omitempty"`
+	Index                            *uint32                            `protobuf:"varint,16,opt,name=index,proto3,oneof" json:"index,omitempty"`
 	state                            protoimpl.MessageState             `protogen:"open.v1"`
-	ValidIngredientMeasurementUnitId *string                            `json:"valid_ingredient_measurement_unit_id,omitempty" protobuf:"bytes,15,opt,name=valid_ingredient_measurement_unit_id,json=validIngredientMeasurementUnitId,proto3,oneof"`
-	Quantity                         *types.Float32RangeWithOptionalMax `json:"quantity,omitempty"                             protobuf:"bytes,10,opt,name=quantity,proto3"`
-	Name                             string                             `json:"name,omitempty"                                 protobuf:"bytes,8,opt,name=name,proto3"`
-	QuantityNotes                    string                             `json:"quantity_notes,omitempty"                       protobuf:"bytes,9,opt,name=quantity_notes,json=quantityNotes,proto3"`
-	IngredientNotes                  string                             `json:"ingredient_notes,omitempty"                     protobuf:"bytes,7,opt,name=ingredient_notes,json=ingredientNotes,proto3"`
+	ValidIngredientMeasurementUnitId *string                            `protobuf:"bytes,15,opt,name=valid_ingredient_measurement_unit_id,json=validIngredientMeasurementUnitId,proto3,oneof" json:"valid_ingredient_measurement_unit_id,omitempty"`
+	Quantity                         *types.Float32RangeWithOptionalMax `protobuf:"bytes,10,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Name                             string                             `protobuf:"bytes,8,opt,name=name,proto3" json:"name,omitempty"`
+	QuantityNotes                    string                             `protobuf:"bytes,9,opt,name=quantity_notes,json=quantityNotes,proto3" json:"quantity_notes,omitempty"`
+	IngredientNotes                  string                             `protobuf:"bytes,7,opt,name=ingredient_notes,json=ingredientNotes,proto3" json:"ingredient_notes,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
-	OptionIndex                      uint32 `json:"option_index,omitempty" protobuf:"varint,11,opt,name=option_index,json=optionIndex,proto3"`
+	OptionIndex                      uint32 `protobuf:"varint,11,opt,name=option_index,json=optionIndex,proto3" json:"option_index,omitempty"`
 	sizeCache                        protoimpl.SizeCache
-	Optional                         bool `json:"optional,omitempty" protobuf:"varint,12,opt,name=optional,proto3"`
-	ToTaste                          bool `json:"to_taste,omitempty" protobuf:"varint,13,opt,name=to_taste,json=toTaste,proto3"`
+	Optional                         bool `protobuf:"varint,12,opt,name=optional,proto3" json:"optional,omitempty"`
+	ToTaste                          bool `protobuf:"varint,13,opt,name=to_taste,json=toTaste,proto3" json:"to_taste,omitempty"`
 }
 
 func (x *RecipeStepIngredientCreationRequestInput) Reset() {
@@ -14916,21 +14916,21 @@ func (x *RecipeStepIngredientCreationRequestInput) GetIndex() uint32 {
 
 type RecipeStepIngredientUpdateRequestInput struct {
 	state                     protoimpl.MessageState                               `protogen:"open.v1"`
-	IngredientId              *string                                              `json:"ingredient_id,omitempty"                 protobuf:"bytes,1,opt,name=ingredient_id,json=ingredientId,proto3,oneof"`
-	RecipeStepProductId       *string                                              `json:"recipe_step_product_id,omitempty"        protobuf:"bytes,2,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof"`
-	Name                      *string                                              `json:"name,omitempty"                          protobuf:"bytes,3,opt,name=name,proto3,oneof"`
-	Optional                  *bool                                                `json:"optional,omitempty"                      protobuf:"varint,4,opt,name=optional,proto3,oneof"`
-	MeasurementUnitId         *string                                              `json:"measurement_unit_id,omitempty"           protobuf:"bytes,5,opt,name=measurement_unit_id,json=measurementUnitId,proto3,oneof"`
-	QuantityNotes             *string                                              `json:"quantity_notes,omitempty"                protobuf:"bytes,6,opt,name=quantity_notes,json=quantityNotes,proto3,oneof"`
-	IngredientNotes           *string                                              `json:"ingredient_notes,omitempty"              protobuf:"bytes,7,opt,name=ingredient_notes,json=ingredientNotes,proto3,oneof"`
-	BelongsToRecipeStep       *string                                              `json:"belongs_to_recipe_step,omitempty"        protobuf:"bytes,8,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof"`
-	Quantity                  *types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"quantity,omitempty"                      protobuf:"bytes,9,opt,name=quantity,proto3,oneof"`
-	OptionIndex               *uint32                                              `json:"option_index,omitempty"                  protobuf:"varint,10,opt,name=option_index,json=optionIndex,proto3,oneof"`
-	VesselIndex               *uint32                                              `json:"vessel_index,omitempty"                  protobuf:"varint,11,opt,name=vessel_index,json=vesselIndex,proto3,oneof"`
-	ToTaste                   *bool                                                `json:"to_taste,omitempty"                      protobuf:"varint,12,opt,name=to_taste,json=toTaste,proto3,oneof"`
-	ProductPercentageToUse    *float32                                             `json:"product_percentage_to_use,omitempty"     protobuf:"fixed32,13,opt,name=product_percentage_to_use,json=productPercentageToUse,proto3,oneof"`
-	RecipeStepProductRecipeId *string                                              `json:"recipe_step_product_recipe_id,omitempty" protobuf:"bytes,14,opt,name=recipe_step_product_recipe_id,json=recipeStepProductRecipeId,proto3,oneof"`
-	Index                     *uint32                                              `json:"index,omitempty"                         protobuf:"varint,15,opt,name=index,proto3,oneof"`
+	IngredientId              *string                                              `protobuf:"bytes,1,opt,name=ingredient_id,json=ingredientId,proto3,oneof" json:"ingredient_id,omitempty"`
+	RecipeStepProductId       *string                                              `protobuf:"bytes,2,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof" json:"recipe_step_product_id,omitempty"`
+	Name                      *string                                              `protobuf:"bytes,3,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Optional                  *bool                                                `protobuf:"varint,4,opt,name=optional,proto3,oneof" json:"optional,omitempty"`
+	MeasurementUnitId         *string                                              `protobuf:"bytes,5,opt,name=measurement_unit_id,json=measurementUnitId,proto3,oneof" json:"measurement_unit_id,omitempty"`
+	QuantityNotes             *string                                              `protobuf:"bytes,6,opt,name=quantity_notes,json=quantityNotes,proto3,oneof" json:"quantity_notes,omitempty"`
+	IngredientNotes           *string                                              `protobuf:"bytes,7,opt,name=ingredient_notes,json=ingredientNotes,proto3,oneof" json:"ingredient_notes,omitempty"`
+	BelongsToRecipeStep       *string                                              `protobuf:"bytes,8,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof" json:"belongs_to_recipe_step,omitempty"`
+	Quantity                  *types.Float32RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,9,opt,name=quantity,proto3,oneof" json:"quantity,omitempty"`
+	OptionIndex               *uint32                                              `protobuf:"varint,10,opt,name=option_index,json=optionIndex,proto3,oneof" json:"option_index,omitempty"`
+	VesselIndex               *uint32                                              `protobuf:"varint,11,opt,name=vessel_index,json=vesselIndex,proto3,oneof" json:"vessel_index,omitempty"`
+	ToTaste                   *bool                                                `protobuf:"varint,12,opt,name=to_taste,json=toTaste,proto3,oneof" json:"to_taste,omitempty"`
+	ProductPercentageToUse    *float32                                             `protobuf:"fixed32,13,opt,name=product_percentage_to_use,json=productPercentageToUse,proto3,oneof" json:"product_percentage_to_use,omitempty"`
+	RecipeStepProductRecipeId *string                                              `protobuf:"bytes,14,opt,name=recipe_step_product_recipe_id,json=recipeStepProductRecipeId,proto3,oneof" json:"recipe_step_product_recipe_id,omitempty"`
+	Index                     *uint32                                              `protobuf:"varint,15,opt,name=index,proto3,oneof" json:"index,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -15071,20 +15071,20 @@ func (x *RecipeStepIngredientUpdateRequestInput) GetIndex() uint32 {
 }
 
 type RecipeStepInstrumentCreationRequestInput struct {
-	ValidPreparationInstrumentId    *string                           `json:"valid_preparation_instrument_id,omitempty"      protobuf:"bytes,10,opt,name=valid_preparation_instrument_id,json=validPreparationInstrumentId,proto3,oneof"`
-	RecipeStepProductId             *string                           `json:"recipe_step_product_id,omitempty"               protobuf:"bytes,1,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof"`
-	ProductOfRecipeStepIndex        *uint64                           `json:"product_of_recipe_step_index,omitempty"         protobuf:"varint,2,opt,name=product_of_recipe_step_index,json=productOfRecipeStepIndex,proto3,oneof"`
-	ProductOfRecipeStepProductIndex *uint64                           `json:"product_of_recipe_step_product_index,omitempty" protobuf:"varint,3,opt,name=product_of_recipe_step_product_index,json=productOfRecipeStepProductIndex,proto3,oneof"`
-	Quantity                        *types.Uint32RangeWithOptionalMax `json:"quantity,omitempty"                             protobuf:"bytes,4,opt,name=quantity,proto3"`
-	Index                           *uint32                           `json:"index,omitempty"                                protobuf:"varint,11,opt,name=index,proto3,oneof"`
+	ValidPreparationInstrumentId    *string                           `protobuf:"bytes,10,opt,name=valid_preparation_instrument_id,json=validPreparationInstrumentId,proto3,oneof" json:"valid_preparation_instrument_id,omitempty"`
+	RecipeStepProductId             *string                           `protobuf:"bytes,1,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof" json:"recipe_step_product_id,omitempty"`
+	ProductOfRecipeStepIndex        *uint64                           `protobuf:"varint,2,opt,name=product_of_recipe_step_index,json=productOfRecipeStepIndex,proto3,oneof" json:"product_of_recipe_step_index,omitempty"`
+	ProductOfRecipeStepProductIndex *uint64                           `protobuf:"varint,3,opt,name=product_of_recipe_step_product_index,json=productOfRecipeStepProductIndex,proto3,oneof" json:"product_of_recipe_step_product_index,omitempty"`
+	Quantity                        *types.Uint32RangeWithOptionalMax `protobuf:"bytes,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Index                           *uint32                           `protobuf:"varint,11,opt,name=index,proto3,oneof" json:"index,omitempty"`
 	state                           protoimpl.MessageState            `protogen:"open.v1"`
-	Name                            string                            `json:"name,omitempty"                                 protobuf:"bytes,6,opt,name=name,proto3"`
-	Notes                           string                            `json:"notes,omitempty"                                protobuf:"bytes,5,opt,name=notes,proto3"`
+	Name                            string                            `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
+	Notes                           string                            `protobuf:"bytes,5,opt,name=notes,proto3" json:"notes,omitempty"`
 	unknownFields                   protoimpl.UnknownFields
-	PreferenceRank                  uint32 `json:"preference_rank,omitempty" protobuf:"varint,9,opt,name=preference_rank,json=preferenceRank,proto3"`
-	OptionIndex                     uint32 `json:"option_index,omitempty"    protobuf:"varint,7,opt,name=option_index,json=optionIndex,proto3"`
+	PreferenceRank                  uint32 `protobuf:"varint,9,opt,name=preference_rank,json=preferenceRank,proto3" json:"preference_rank,omitempty"`
+	OptionIndex                     uint32 `protobuf:"varint,7,opt,name=option_index,json=optionIndex,proto3" json:"option_index,omitempty"`
 	sizeCache                       protoimpl.SizeCache
-	Optional                        bool `json:"optional,omitempty" protobuf:"varint,8,opt,name=optional,proto3"`
+	Optional                        bool `protobuf:"varint,8,opt,name=optional,proto3" json:"optional,omitempty"`
 }
 
 func (x *RecipeStepInstrumentCreationRequestInput) Reset() {
@@ -15196,16 +15196,16 @@ func (x *RecipeStepInstrumentCreationRequestInput) GetIndex() uint32 {
 
 type RecipeStepInstrumentUpdateRequestInput struct {
 	state               protoimpl.MessageState                              `protogen:"open.v1"`
-	InstrumentId        *string                                             `json:"instrument_id,omitempty"          protobuf:"bytes,1,opt,name=instrument_id,json=instrumentId,proto3,oneof"`
-	RecipeStepProductId *string                                             `json:"recipe_step_product_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof"`
-	Notes               *string                                             `json:"notes,omitempty"                  protobuf:"bytes,3,opt,name=notes,proto3,oneof"`
-	PreferenceRank      *uint32                                             `json:"preference_rank,omitempty"        protobuf:"varint,4,opt,name=preference_rank,json=preferenceRank,proto3,oneof"`
-	BelongsToRecipeStep *string                                             `json:"belongs_to_recipe_step,omitempty" protobuf:"bytes,5,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof"`
-	Name                *string                                             `json:"name,omitempty"                   protobuf:"bytes,6,opt,name=name,proto3,oneof"`
-	Optional            *bool                                               `json:"optional,omitempty"               protobuf:"varint,7,opt,name=optional,proto3,oneof"`
-	OptionIndex         *uint32                                             `json:"option_index,omitempty"           protobuf:"varint,8,opt,name=option_index,json=optionIndex,proto3,oneof"`
-	Quantity            *types.Uint32RangeWithOptionalMaxUpdateRequestInput `json:"quantity,omitempty"               protobuf:"bytes,9,opt,name=quantity,proto3,oneof"`
-	Index               *uint32                                             `json:"index,omitempty"                  protobuf:"varint,10,opt,name=index,proto3,oneof"`
+	InstrumentId        *string                                             `protobuf:"bytes,1,opt,name=instrument_id,json=instrumentId,proto3,oneof" json:"instrument_id,omitempty"`
+	RecipeStepProductId *string                                             `protobuf:"bytes,2,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof" json:"recipe_step_product_id,omitempty"`
+	Notes               *string                                             `protobuf:"bytes,3,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	PreferenceRank      *uint32                                             `protobuf:"varint,4,opt,name=preference_rank,json=preferenceRank,proto3,oneof" json:"preference_rank,omitempty"`
+	BelongsToRecipeStep *string                                             `protobuf:"bytes,5,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof" json:"belongs_to_recipe_step,omitempty"`
+	Name                *string                                             `protobuf:"bytes,6,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Optional            *bool                                               `protobuf:"varint,7,opt,name=optional,proto3,oneof" json:"optional,omitempty"`
+	OptionIndex         *uint32                                             `protobuf:"varint,8,opt,name=option_index,json=optionIndex,proto3,oneof" json:"option_index,omitempty"`
+	Quantity            *types.Uint32RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,9,opt,name=quantity,proto3,oneof" json:"quantity,omitempty"`
+	Index               *uint32                                             `protobuf:"varint,10,opt,name=index,proto3,oneof" json:"index,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -15312,22 +15312,22 @@ func (x *RecipeStepInstrumentUpdateRequestInput) GetIndex() uint32 {
 
 type RecipeStepProductCreationRequestInput struct {
 	state                       protoimpl.MessageState      `protogen:"open.v1"`
-	StorageTemperatureInCelsius *types.OptionalFloat32Range `json:"storage_temperature_in_celsius,omitempty" protobuf:"bytes,1,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3"`
-	StorageDurationInSeconds    *types.OptionalUint32Range  `json:"storage_duration_in_seconds,omitempty"    protobuf:"bytes,2,opt,name=storage_duration_in_seconds,json=storageDurationInSeconds,proto3"`
-	MeasurementQuantity         *types.OptionalFloat32Range `json:"measurement_quantity,omitempty"           protobuf:"bytes,3,opt,name=measurement_quantity,json=measurementQuantity,proto3"`
-	ItemQuantity                *types.OptionalFloat32Range `json:"item_quantity,omitempty"                  protobuf:"bytes,4,opt,name=item_quantity,json=itemQuantity,proto3"`
-	MeasurementUnitId           *string                     `json:"measurement_unit_id,omitempty"            protobuf:"bytes,5,opt,name=measurement_unit_id,json=measurementUnitId,proto3,oneof"`
-	ContainedInVesselIndex      *uint32                     `json:"contained_in_vessel_index,omitempty"      protobuf:"varint,6,opt,name=contained_in_vessel_index,json=containedInVesselIndex,proto3,oneof"`
-	Name                        string                      `json:"name,omitempty"                           protobuf:"bytes,8,opt,name=name,proto3"`
-	QuantityNotes               string                      `json:"quantity_notes,omitempty"                 protobuf:"bytes,7,opt,name=quantity_notes,json=quantityNotes,proto3"`
-	StorageInstructions         string                      `json:"storage_instructions,omitempty"           protobuf:"bytes,9,opt,name=storage_instructions,json=storageInstructions,proto3"`
+	StorageTemperatureInCelsius *types.OptionalFloat32Range `protobuf:"bytes,1,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3" json:"storage_temperature_in_celsius,omitempty"`
+	StorageDurationInSeconds    *types.OptionalUint32Range  `protobuf:"bytes,2,opt,name=storage_duration_in_seconds,json=storageDurationInSeconds,proto3" json:"storage_duration_in_seconds,omitempty"`
+	MeasurementQuantity         *types.OptionalFloat32Range `protobuf:"bytes,3,opt,name=measurement_quantity,json=measurementQuantity,proto3" json:"measurement_quantity,omitempty"`
+	ItemQuantity                *types.OptionalFloat32Range `protobuf:"bytes,4,opt,name=item_quantity,json=itemQuantity,proto3" json:"item_quantity,omitempty"`
+	MeasurementUnitId           *string                     `protobuf:"bytes,5,opt,name=measurement_unit_id,json=measurementUnitId,proto3,oneof" json:"measurement_unit_id,omitempty"`
+	ContainedInVesselIndex      *uint32                     `protobuf:"varint,6,opt,name=contained_in_vessel_index,json=containedInVesselIndex,proto3,oneof" json:"contained_in_vessel_index,omitempty"`
+	Name                        string                      `protobuf:"bytes,8,opt,name=name,proto3" json:"name,omitempty"`
+	QuantityNotes               string                      `protobuf:"bytes,7,opt,name=quantity_notes,json=quantityNotes,proto3" json:"quantity_notes,omitempty"`
+	StorageInstructions         string                      `protobuf:"bytes,9,opt,name=storage_instructions,json=storageInstructions,proto3" json:"storage_instructions,omitempty"`
 	unknownFields               protoimpl.UnknownFields
-	Type                        RecipeStepProductType `json:"type,omitempty"  protobuf:"varint,10,opt,name=type,proto3,enum=mealplanning.RecipeStepProductType"`
-	Index                       uint32                `json:"index,omitempty" protobuf:"varint,11,opt,name=index,proto3"`
+	Type                        RecipeStepProductType `protobuf:"varint,10,opt,name=type,proto3,enum=mealplanning.RecipeStepProductType" json:"type,omitempty"`
+	Index                       uint32                `protobuf:"varint,11,opt,name=index,proto3" json:"index,omitempty"`
 	sizeCache                   protoimpl.SizeCache
-	Compostable                 bool `json:"compostable,omitempty" protobuf:"varint,12,opt,name=compostable,proto3"`
-	IsLiquid                    bool `json:"is_liquid,omitempty"   protobuf:"varint,13,opt,name=is_liquid,json=isLiquid,proto3"`
-	IsWaste                     bool `json:"is_waste,omitempty"    protobuf:"varint,14,opt,name=is_waste,json=isWaste,proto3"`
+	Compostable                 bool `protobuf:"varint,12,opt,name=compostable,proto3" json:"compostable,omitempty"`
+	IsLiquid                    bool `protobuf:"varint,13,opt,name=is_liquid,json=isLiquid,proto3" json:"is_liquid,omitempty"`
+	IsWaste                     bool `protobuf:"varint,14,opt,name=is_waste,json=isWaste,proto3" json:"is_waste,omitempty"`
 }
 
 func (x *RecipeStepProductCreationRequestInput) Reset() {
@@ -15460,21 +15460,21 @@ func (x *RecipeStepProductCreationRequestInput) GetIsWaste() bool {
 
 type RecipeStepProductUpdateRequestInput struct {
 	state                       protoimpl.MessageState      `protogen:"open.v1"`
-	Name                        *string                     `json:"name,omitempty"                           protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Type                        *RecipeStepProductType      `json:"type,omitempty"                           protobuf:"varint,2,opt,name=type,proto3,enum=mealplanning.RecipeStepProductType,oneof"`
-	MeasurementUnitId           *string                     `json:"measurement_unit_id,omitempty"            protobuf:"bytes,3,opt,name=measurement_unit_id,json=measurementUnitId,proto3,oneof"`
-	QuantityNotes               *string                     `json:"quantity_notes,omitempty"                 protobuf:"bytes,4,opt,name=quantity_notes,json=quantityNotes,proto3,oneof"`
-	BelongsToRecipeStep         *string                     `json:"belongs_to_recipe_step,omitempty"         protobuf:"bytes,5,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof"`
-	StorageTemperatureInCelsius *types.OptionalFloat32Range `json:"storage_temperature_in_celsius,omitempty" protobuf:"bytes,6,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3,oneof"`
-	StorageDurationInSeconds    *types.OptionalUint32Range  `json:"storage_duration_in_seconds,omitempty"    protobuf:"bytes,7,opt,name=storage_duration_in_seconds,json=storageDurationInSeconds,proto3,oneof"`
-	MeasurementQuantity         *types.OptionalFloat32Range `json:"measurement_quantity,omitempty"           protobuf:"bytes,8,opt,name=measurement_quantity,json=measurementQuantity,proto3,oneof"`
-	ItemQuantity                *types.OptionalFloat32Range `json:"item_quantity,omitempty"                  protobuf:"bytes,9,opt,name=item_quantity,json=itemQuantity,proto3,oneof"`
-	Compostable                 *bool                       `json:"compostable,omitempty"                    protobuf:"varint,10,opt,name=compostable,proto3,oneof"`
-	StorageInstructions         *string                     `json:"storage_instructions,omitempty"           protobuf:"bytes,11,opt,name=storage_instructions,json=storageInstructions,proto3,oneof"`
-	IsLiquid                    *bool                       `json:"is_liquid,omitempty"                      protobuf:"varint,12,opt,name=is_liquid,json=isLiquid,proto3,oneof"`
-	IsWaste                     *bool                       `json:"is_waste,omitempty"                       protobuf:"varint,13,opt,name=is_waste,json=isWaste,proto3,oneof"`
-	Index                       *uint32                     `json:"index,omitempty"                          protobuf:"varint,14,opt,name=index,proto3,oneof"`
-	ContainedInVesselIndex      *uint32                     `json:"contained_in_vessel_index,omitempty"      protobuf:"varint,15,opt,name=contained_in_vessel_index,json=containedInVesselIndex,proto3,oneof"`
+	Name                        *string                     `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Type                        *RecipeStepProductType      `protobuf:"varint,2,opt,name=type,proto3,enum=mealplanning.RecipeStepProductType,oneof" json:"type,omitempty"`
+	MeasurementUnitId           *string                     `protobuf:"bytes,3,opt,name=measurement_unit_id,json=measurementUnitId,proto3,oneof" json:"measurement_unit_id,omitempty"`
+	QuantityNotes               *string                     `protobuf:"bytes,4,opt,name=quantity_notes,json=quantityNotes,proto3,oneof" json:"quantity_notes,omitempty"`
+	BelongsToRecipeStep         *string                     `protobuf:"bytes,5,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof" json:"belongs_to_recipe_step,omitempty"`
+	StorageTemperatureInCelsius *types.OptionalFloat32Range `protobuf:"bytes,6,opt,name=storage_temperature_in_celsius,json=storageTemperatureInCelsius,proto3,oneof" json:"storage_temperature_in_celsius,omitempty"`
+	StorageDurationInSeconds    *types.OptionalUint32Range  `protobuf:"bytes,7,opt,name=storage_duration_in_seconds,json=storageDurationInSeconds,proto3,oneof" json:"storage_duration_in_seconds,omitempty"`
+	MeasurementQuantity         *types.OptionalFloat32Range `protobuf:"bytes,8,opt,name=measurement_quantity,json=measurementQuantity,proto3,oneof" json:"measurement_quantity,omitempty"`
+	ItemQuantity                *types.OptionalFloat32Range `protobuf:"bytes,9,opt,name=item_quantity,json=itemQuantity,proto3,oneof" json:"item_quantity,omitempty"`
+	Compostable                 *bool                       `protobuf:"varint,10,opt,name=compostable,proto3,oneof" json:"compostable,omitempty"`
+	StorageInstructions         *string                     `protobuf:"bytes,11,opt,name=storage_instructions,json=storageInstructions,proto3,oneof" json:"storage_instructions,omitempty"`
+	IsLiquid                    *bool                       `protobuf:"varint,12,opt,name=is_liquid,json=isLiquid,proto3,oneof" json:"is_liquid,omitempty"`
+	IsWaste                     *bool                       `protobuf:"varint,13,opt,name=is_waste,json=isWaste,proto3,oneof" json:"is_waste,omitempty"`
+	Index                       *uint32                     `protobuf:"varint,14,opt,name=index,proto3,oneof" json:"index,omitempty"`
+	ContainedInVesselIndex      *uint32                     `protobuf:"varint,15,opt,name=contained_in_vessel_index,json=containedInVesselIndex,proto3,oneof" json:"contained_in_vessel_index,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }
@@ -15616,16 +15616,16 @@ func (x *RecipeStepProductUpdateRequestInput) GetContainedInVesselIndex() uint32
 
 type RecipeStepUpdateRequestInput struct {
 	state                   protoimpl.MessageState      `protogen:"open.v1"`
-	EstimatedTimeInSeconds  *types.OptionalUint32Range  `json:"estimated_time_in_seconds,omitempty" protobuf:"bytes,1,opt,name=estimated_time_in_seconds,json=estimatedTimeInSeconds,proto3,oneof"`
-	TemperatureInCelsius    *types.OptionalFloat32Range `json:"temperature_in_celsius,omitempty"    protobuf:"bytes,2,opt,name=temperature_in_celsius,json=temperatureInCelsius,proto3,oneof"`
-	Notes                   *string                     `json:"notes,omitempty"                     protobuf:"bytes,3,opt,name=notes,proto3,oneof"`
-	Preparation             *ValidPreparation           `json:"preparation,omitempty"               protobuf:"bytes,4,opt,name=preparation,proto3,oneof"`
-	Index                   *uint32                     `json:"index,omitempty"                     protobuf:"varint,5,opt,name=index,proto3,oneof"`
-	Optional                *bool                       `json:"optional,omitempty"                  protobuf:"varint,6,opt,name=optional,proto3,oneof"`
-	ExplicitInstructions    *string                     `json:"explicit_instructions,omitempty"     protobuf:"bytes,7,opt,name=explicit_instructions,json=explicitInstructions,proto3,oneof"`
-	ConditionExpression     *string                     `json:"condition_expression,omitempty"      protobuf:"bytes,8,opt,name=condition_expression,json=conditionExpression,proto3,oneof"`
-	StartTimerAutomatically *bool                       `json:"start_timer_automatically,omitempty" protobuf:"varint,9,opt,name=start_timer_automatically,json=startTimerAutomatically,proto3,oneof"`
-	BelongsToRecipe         *string                     `json:"belongs_to_recipe,omitempty"         protobuf:"bytes,10,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3,oneof"`
+	EstimatedTimeInSeconds  *types.OptionalUint32Range  `protobuf:"bytes,1,opt,name=estimated_time_in_seconds,json=estimatedTimeInSeconds,proto3,oneof" json:"estimated_time_in_seconds,omitempty"`
+	TemperatureInCelsius    *types.OptionalFloat32Range `protobuf:"bytes,2,opt,name=temperature_in_celsius,json=temperatureInCelsius,proto3,oneof" json:"temperature_in_celsius,omitempty"`
+	Notes                   *string                     `protobuf:"bytes,3,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	Preparation             *ValidPreparation           `protobuf:"bytes,4,opt,name=preparation,proto3,oneof" json:"preparation,omitempty"`
+	Index                   *uint32                     `protobuf:"varint,5,opt,name=index,proto3,oneof" json:"index,omitempty"`
+	Optional                *bool                       `protobuf:"varint,6,opt,name=optional,proto3,oneof" json:"optional,omitempty"`
+	ExplicitInstructions    *string                     `protobuf:"bytes,7,opt,name=explicit_instructions,json=explicitInstructions,proto3,oneof" json:"explicit_instructions,omitempty"`
+	ConditionExpression     *string                     `protobuf:"bytes,8,opt,name=condition_expression,json=conditionExpression,proto3,oneof" json:"condition_expression,omitempty"`
+	StartTimerAutomatically *bool                       `protobuf:"varint,9,opt,name=start_timer_automatically,json=startTimerAutomatically,proto3,oneof" json:"start_timer_automatically,omitempty"`
+	BelongsToRecipe         *string                     `protobuf:"bytes,10,opt,name=belongs_to_recipe,json=belongsToRecipe,proto3,oneof" json:"belongs_to_recipe,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
@@ -15731,20 +15731,20 @@ func (x *RecipeStepUpdateRequestInput) GetBelongsToRecipe() string {
 }
 
 type RecipeStepVesselCreationRequestInput struct {
-	ValidPreparationVesselId        *string                           `json:"valid_preparation_vessel_id,omitempty"          protobuf:"bytes,9,opt,name=valid_preparation_vessel_id,json=validPreparationVesselId,proto3,oneof"`
-	Index                           *uint32                           `json:"index,omitempty"                                protobuf:"varint,10,opt,name=index,proto3,oneof"`
-	ProductOfRecipeStepIndex        *uint64                           `json:"product_of_recipe_step_index,omitempty"         protobuf:"varint,2,opt,name=product_of_recipe_step_index,json=productOfRecipeStepIndex,proto3,oneof"`
-	ProductOfRecipeStepProductIndex *uint64                           `json:"product_of_recipe_step_product_index,omitempty" protobuf:"varint,3,opt,name=product_of_recipe_step_product_index,json=productOfRecipeStepProductIndex,proto3,oneof"`
-	Quantity                        *types.Uint16RangeWithOptionalMax `json:"quantity,omitempty"                             protobuf:"bytes,4,opt,name=quantity,proto3"`
+	ValidPreparationVesselId        *string                           `protobuf:"bytes,9,opt,name=valid_preparation_vessel_id,json=validPreparationVesselId,proto3,oneof" json:"valid_preparation_vessel_id,omitempty"`
+	Index                           *uint32                           `protobuf:"varint,10,opt,name=index,proto3,oneof" json:"index,omitempty"`
+	ProductOfRecipeStepIndex        *uint64                           `protobuf:"varint,2,opt,name=product_of_recipe_step_index,json=productOfRecipeStepIndex,proto3,oneof" json:"product_of_recipe_step_index,omitempty"`
+	ProductOfRecipeStepProductIndex *uint64                           `protobuf:"varint,3,opt,name=product_of_recipe_step_product_index,json=productOfRecipeStepProductIndex,proto3,oneof" json:"product_of_recipe_step_product_index,omitempty"`
+	Quantity                        *types.Uint16RangeWithOptionalMax `protobuf:"bytes,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	state                           protoimpl.MessageState            `protogen:"open.v1"`
-	RecipeStepProductId             *string                           `json:"recipe_step_product_id,omitempty"               protobuf:"bytes,1,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof"`
-	Name                            string                            `json:"name,omitempty"                                 protobuf:"bytes,5,opt,name=name,proto3"`
-	Notes                           string                            `json:"notes,omitempty"                                protobuf:"bytes,6,opt,name=notes,proto3"`
-	VesselPreposition               string                            `json:"vessel_preposition,omitempty"                   protobuf:"bytes,7,opt,name=vessel_preposition,json=vesselPreposition,proto3"`
+	RecipeStepProductId             *string                           `protobuf:"bytes,1,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof" json:"recipe_step_product_id,omitempty"`
+	Name                            string                            `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	Notes                           string                            `protobuf:"bytes,6,opt,name=notes,proto3" json:"notes,omitempty"`
+	VesselPreposition               string                            `protobuf:"bytes,7,opt,name=vessel_preposition,json=vesselPreposition,proto3" json:"vessel_preposition,omitempty"`
 	unknownFields                   protoimpl.UnknownFields
-	OptionIndex                     uint32 `json:"option_index,omitempty" protobuf:"varint,11,opt,name=option_index,json=optionIndex,proto3"`
+	OptionIndex                     uint32 `protobuf:"varint,11,opt,name=option_index,json=optionIndex,proto3" json:"option_index,omitempty"`
 	sizeCache                       protoimpl.SizeCache
-	UnavailableAfterStep            bool `json:"unavailable_after_step,omitempty" protobuf:"varint,8,opt,name=unavailable_after_step,json=unavailableAfterStep,proto3"`
+	UnavailableAfterStep            bool `protobuf:"varint,8,opt,name=unavailable_after_step,json=unavailableAfterStep,proto3" json:"unavailable_after_step,omitempty"`
 }
 
 func (x *RecipeStepVesselCreationRequestInput) Reset() {
@@ -15856,16 +15856,16 @@ func (x *RecipeStepVesselCreationRequestInput) GetOptionIndex() uint32 {
 
 type RecipeStepVesselUpdateRequestInput struct {
 	state                protoimpl.MessageState                              `protogen:"open.v1"`
-	RecipeStepProductId  *string                                             `json:"recipe_step_product_id,omitempty" protobuf:"bytes,1,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof"`
-	Name                 *string                                             `json:"name,omitempty"                   protobuf:"bytes,2,opt,name=name,proto3,oneof"`
-	Notes                *string                                             `json:"notes,omitempty"                  protobuf:"bytes,3,opt,name=notes,proto3,oneof"`
-	BelongsToRecipeStep  *string                                             `json:"belongs_to_recipe_step,omitempty" protobuf:"bytes,4,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof"`
-	VesselId             *string                                             `json:"vessel_id,omitempty"              protobuf:"bytes,5,opt,name=vessel_id,json=vesselId,proto3,oneof"`
-	Quantity             *types.Uint16RangeWithOptionalMaxUpdateRequestInput `json:"quantity,omitempty"               protobuf:"bytes,6,opt,name=quantity,proto3,oneof"`
-	VesselPreposition    *string                                             `json:"vessel_preposition,omitempty"     protobuf:"bytes,7,opt,name=vessel_preposition,json=vesselPreposition,proto3,oneof"`
-	UnavailableAfterStep *bool                                               `json:"unavailable_after_step,omitempty" protobuf:"varint,8,opt,name=unavailable_after_step,json=unavailableAfterStep,proto3,oneof"`
-	Index                *uint32                                             `json:"index,omitempty"                  protobuf:"varint,9,opt,name=index,proto3,oneof"`
-	OptionIndex          *uint32                                             `json:"option_index,omitempty"           protobuf:"varint,10,opt,name=option_index,json=optionIndex,proto3,oneof"`
+	RecipeStepProductId  *string                                             `protobuf:"bytes,1,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3,oneof" json:"recipe_step_product_id,omitempty"`
+	Name                 *string                                             `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Notes                *string                                             `protobuf:"bytes,3,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	BelongsToRecipeStep  *string                                             `protobuf:"bytes,4,opt,name=belongs_to_recipe_step,json=belongsToRecipeStep,proto3,oneof" json:"belongs_to_recipe_step,omitempty"`
+	VesselId             *string                                             `protobuf:"bytes,5,opt,name=vessel_id,json=vesselId,proto3,oneof" json:"vessel_id,omitempty"`
+	Quantity             *types.Uint16RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,6,opt,name=quantity,proto3,oneof" json:"quantity,omitempty"`
+	VesselPreposition    *string                                             `protobuf:"bytes,7,opt,name=vessel_preposition,json=vesselPreposition,proto3,oneof" json:"vessel_preposition,omitempty"`
+	UnavailableAfterStep *bool                                               `protobuf:"varint,8,opt,name=unavailable_after_step,json=unavailableAfterStep,proto3,oneof" json:"unavailable_after_step,omitempty"`
+	Index                *uint32                                             `protobuf:"varint,9,opt,name=index,proto3,oneof" json:"index,omitempty"`
+	OptionIndex          *uint32                                             `protobuf:"varint,10,opt,name=option_index,json=optionIndex,proto3,oneof" json:"option_index,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -15972,16 +15972,16 @@ func (x *RecipeStepVesselUpdateRequestInput) GetOptionIndex() uint32 {
 
 type RecipeUpdateRequestInput struct {
 	state               protoimpl.MessageState                               `protogen:"open.v1"`
-	Name                *string                                              `json:"name,omitempty"                  protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Slug                *string                                              `json:"slug,omitempty"                  protobuf:"bytes,2,opt,name=slug,proto3,oneof"`
-	Source              *string                                              `json:"source,omitempty"                protobuf:"bytes,3,opt,name=source,proto3,oneof"`
-	Description         *string                                              `json:"description,omitempty"           protobuf:"bytes,4,opt,name=description,proto3,oneof"`
-	InspiredByRecipeId  *string                                              `json:"inspired_by_recipe_id,omitempty" protobuf:"bytes,5,opt,name=inspired_by_recipe_id,json=inspiredByRecipeId,proto3,oneof"`
-	EstimatedPortions   *types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimated_portions,omitempty"    protobuf:"bytes,7,opt,name=estimated_portions,json=estimatedPortions,proto3,oneof"`
-	PortionName         *string                                              `json:"portion_name,omitempty"          protobuf:"bytes,8,opt,name=portion_name,json=portionName,proto3,oneof"`
-	PluralPortionName   *string                                              `json:"plural_portion_name,omitempty"   protobuf:"bytes,9,opt,name=plural_portion_name,json=pluralPortionName,proto3,oneof"`
-	EligibleForMeals    *bool                                                `json:"eligible_for_meals,omitempty"    protobuf:"varint,10,opt,name=eligible_for_meals,json=eligibleForMeals,proto3,oneof"`
-	YieldsComponentType *MealComponentType                                   `json:"yields_component_type,omitempty" protobuf:"varint,11,opt,name=yields_component_type,json=yieldsComponentType,proto3,enum=mealplanning.MealComponentType,oneof"`
+	Name                *string                                              `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Slug                *string                                              `protobuf:"bytes,2,opt,name=slug,proto3,oneof" json:"slug,omitempty"`
+	Source              *string                                              `protobuf:"bytes,3,opt,name=source,proto3,oneof" json:"source,omitempty"`
+	Description         *string                                              `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	InspiredByRecipeId  *string                                              `protobuf:"bytes,5,opt,name=inspired_by_recipe_id,json=inspiredByRecipeId,proto3,oneof" json:"inspired_by_recipe_id,omitempty"`
+	EstimatedPortions   *types.Float32RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,7,opt,name=estimated_portions,json=estimatedPortions,proto3,oneof" json:"estimated_portions,omitempty"`
+	PortionName         *string                                              `protobuf:"bytes,8,opt,name=portion_name,json=portionName,proto3,oneof" json:"portion_name,omitempty"`
+	PluralPortionName   *string                                              `protobuf:"bytes,9,opt,name=plural_portion_name,json=pluralPortionName,proto3,oneof" json:"plural_portion_name,omitempty"`
+	EligibleForMeals    *bool                                                `protobuf:"varint,10,opt,name=eligible_for_meals,json=eligibleForMeals,proto3,oneof" json:"eligible_for_meals,omitempty"`
+	YieldsComponentType *MealComponentType                                   `protobuf:"varint,11,opt,name=yields_component_type,json=yieldsComponentType,proto3,enum=mealplanning.MealComponentType,oneof" json:"yields_component_type,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -16088,7 +16088,7 @@ func (x *RecipeUpdateRequestInput) GetYieldsComponentType() MealComponentType {
 
 type ArchiveRecipeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -16132,7 +16132,7 @@ func (x *ArchiveRecipeRequest) GetRecipeId() string {
 
 type ArchiveRecipeResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16176,8 +16176,8 @@ func (x *ArchiveRecipeResponse) GetResponseDetails() *types.ResponseDetails {
 
 type ArchiveRecipePrepTaskRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId         string                 `json:"recipe_id,omitempty"           protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipePrepTaskId string                 `json:"recipe_prep_task_id,omitempty" protobuf:"bytes,2,opt,name=recipe_prep_task_id,json=recipePrepTaskId,proto3"`
+	RecipeId         string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipePrepTaskId string                 `protobuf:"bytes,2,opt,name=recipe_prep_task_id,json=recipePrepTaskId,proto3" json:"recipe_prep_task_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -16228,7 +16228,7 @@ func (x *ArchiveRecipePrepTaskRequest) GetRecipePrepTaskId() string {
 
 type ArchiveRecipePrepTaskResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16272,8 +16272,8 @@ func (x *ArchiveRecipePrepTaskResponse) GetResponseDetails() *types.ResponseDeta
 
 type ArchiveRecipeRatingRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId       string                 `json:"recipe_id,omitempty"        protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeRatingId string                 `json:"recipe_rating_id,omitempty" protobuf:"bytes,2,opt,name=recipe_rating_id,json=recipeRatingId,proto3"`
+	RecipeId       string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeRatingId string                 `protobuf:"bytes,2,opt,name=recipe_rating_id,json=recipeRatingId,proto3" json:"recipe_rating_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -16324,7 +16324,7 @@ func (x *ArchiveRecipeRatingRequest) GetRecipeRatingId() string {
 
 type ArchiveRecipeRatingResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16368,8 +16368,8 @@ func (x *ArchiveRecipeRatingResponse) GetResponseDetails() *types.ResponseDetail
 
 type ArchiveRecipeStepRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                 `json:"recipe_step_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -16420,7 +16420,7 @@ func (x *ArchiveRecipeStepRequest) GetRecipeStepId() string {
 
 type ArchiveRecipeStepResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16464,9 +16464,9 @@ func (x *ArchiveRecipeStepResponse) GetResponseDetails() *types.ResponseDetails 
 
 type ArchiveRecipeStepCompletionConditionRequest struct {
 	state                           protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId                        string                 `json:"recipe_id,omitempty"                           protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId                    string                 `json:"recipe_step_id,omitempty"                      protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepCompletionConditionId string                 `json:"recipe_step_completion_condition_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_completion_condition_id,json=recipeStepCompletionConditionId,proto3"`
+	RecipeId                        string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId                    string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepCompletionConditionId string                 `protobuf:"bytes,3,opt,name=recipe_step_completion_condition_id,json=recipeStepCompletionConditionId,proto3" json:"recipe_step_completion_condition_id,omitempty"`
 	unknownFields                   protoimpl.UnknownFields
 	sizeCache                       protoimpl.SizeCache
 }
@@ -16524,7 +16524,7 @@ func (x *ArchiveRecipeStepCompletionConditionRequest) GetRecipeStepCompletionCon
 
 type ArchiveRecipeStepCompletionConditionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16568,9 +16568,9 @@ func (x *ArchiveRecipeStepCompletionConditionResponse) GetResponseDetails() *typ
 
 type ArchiveRecipeStepIngredientRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId               string                 `json:"recipe_id,omitempty"                 protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId           string                 `json:"recipe_step_id,omitempty"            protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepIngredientId string                 `json:"recipe_step_ingredient_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_ingredient_id,json=recipeStepIngredientId,proto3"`
+	RecipeId               string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId           string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepIngredientId string                 `protobuf:"bytes,3,opt,name=recipe_step_ingredient_id,json=recipeStepIngredientId,proto3" json:"recipe_step_ingredient_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -16628,7 +16628,7 @@ func (x *ArchiveRecipeStepIngredientRequest) GetRecipeStepIngredientId() string 
 
 type ArchiveRecipeStepIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16672,9 +16672,9 @@ func (x *ArchiveRecipeStepIngredientResponse) GetResponseDetails() *types.Respon
 
 type ArchiveRecipeStepInstrumentRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId               string                 `json:"recipe_id,omitempty"                 protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId           string                 `json:"recipe_step_id,omitempty"            protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepInstrumentId string                 `json:"recipe_step_instrument_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_instrument_id,json=recipeStepInstrumentId,proto3"`
+	RecipeId               string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId           string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepInstrumentId string                 `protobuf:"bytes,3,opt,name=recipe_step_instrument_id,json=recipeStepInstrumentId,proto3" json:"recipe_step_instrument_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -16732,7 +16732,7 @@ func (x *ArchiveRecipeStepInstrumentRequest) GetRecipeStepInstrumentId() string 
 
 type ArchiveRecipeStepInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16776,9 +16776,9 @@ func (x *ArchiveRecipeStepInstrumentResponse) GetResponseDetails() *types.Respon
 
 type ArchiveRecipeStepProductRequest struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId            string                 `json:"recipe_id,omitempty"              protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId        string                 `json:"recipe_step_id,omitempty"         protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepProductId string                 `json:"recipe_step_product_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3"`
+	RecipeId            string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId        string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepProductId string                 `protobuf:"bytes,3,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3" json:"recipe_step_product_id,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -16836,7 +16836,7 @@ func (x *ArchiveRecipeStepProductRequest) GetRecipeStepProductId() string {
 
 type ArchiveRecipeStepProductResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16880,9 +16880,9 @@ func (x *ArchiveRecipeStepProductResponse) GetResponseDetails() *types.ResponseD
 
 type ArchiveRecipeStepVesselRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId           string                 `json:"recipe_id,omitempty"             protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId       string                 `json:"recipe_step_id,omitempty"        protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepVesselId string                 `json:"recipe_step_vessel_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_vessel_id,json=recipeStepVesselId,proto3"`
+	RecipeId           string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId       string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepVesselId string                 `protobuf:"bytes,3,opt,name=recipe_step_vessel_id,json=recipeStepVesselId,proto3" json:"recipe_step_vessel_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -16940,7 +16940,7 @@ func (x *ArchiveRecipeStepVesselRequest) GetRecipeStepVesselId() string {
 
 type ArchiveRecipeStepVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -16984,7 +16984,7 @@ func (x *ArchiveRecipeStepVesselResponse) GetResponseDetails() *types.ResponseDe
 
 type CloneRecipeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17028,8 +17028,8 @@ func (x *CloneRecipeRequest) GetRecipeId() string {
 
 type CloneRecipeResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Cloned          *Recipe                `json:"cloned,omitempty"           protobuf:"bytes,2,opt,name=cloned,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Cloned          *Recipe                `protobuf:"bytes,2,opt,name=cloned,proto3" json:"cloned,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -17080,7 +17080,7 @@ func (x *CloneRecipeResponse) GetCloned() *Recipe {
 
 type CreateRecipeRequest struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
-	Input         *RecipeCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *RecipeCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17124,8 +17124,8 @@ func (x *CreateRecipeRequest) GetInput() *RecipeCreationRequestInput {
 
 type CreateRecipeResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *Recipe                `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *Recipe                `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -17176,8 +17176,8 @@ func (x *CreateRecipeResponse) GetCreated() *Recipe {
 
 type CreateRecipePrepTaskRequest struct {
 	state         protoimpl.MessageState              `protogen:"open.v1"`
-	RecipeId      string                              `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	Input         *RecipePrepTaskCreationRequestInput `json:"input,omitempty"     protobuf:"bytes,2,opt,name=input,proto3"`
+	RecipeId      string                              `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	Input         *RecipePrepTaskCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17228,8 +17228,8 @@ func (x *CreateRecipePrepTaskRequest) GetInput() *RecipePrepTaskCreationRequestI
 
 type CreateRecipePrepTaskResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipePrepTask        `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipePrepTask        `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -17280,8 +17280,8 @@ func (x *CreateRecipePrepTaskResponse) GetCreated() *RecipePrepTask {
 
 type CreateRecipeRatingRequest struct {
 	state         protoimpl.MessageState            `protogen:"open.v1"`
-	RecipeId      string                            `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	Input         *RecipeRatingCreationRequestInput `json:"input,omitempty"     protobuf:"bytes,2,opt,name=input,proto3"`
+	RecipeId      string                            `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	Input         *RecipeRatingCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17332,8 +17332,8 @@ func (x *CreateRecipeRatingRequest) GetInput() *RecipeRatingCreationRequestInput
 
 type CreateRecipeRatingResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipeRating          `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipeRating          `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -17384,8 +17384,8 @@ func (x *CreateRecipeRatingResponse) GetCreated() *RecipeRating {
 
 type CreateRecipeStepRequest struct {
 	state         protoimpl.MessageState          `protogen:"open.v1"`
-	RecipeId      string                          `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	Input         *RecipeStepCreationRequestInput `json:"input,omitempty"     protobuf:"bytes,2,opt,name=input,proto3"`
+	RecipeId      string                          `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	Input         *RecipeStepCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17436,8 +17436,8 @@ func (x *CreateRecipeStepRequest) GetInput() *RecipeStepCreationRequestInput {
 
 type CreateRecipeStepResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipeStep            `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipeStep            `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -17488,9 +17488,9 @@ func (x *CreateRecipeStepResponse) GetCreated() *RecipeStep {
 
 type CreateRecipeStepCompletionConditionRequest struct {
 	state         protoimpl.MessageState                                              `protogen:"open.v1"`
-	RecipeId      string                                                              `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                                                              `json:"recipe_step_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	Input         *RecipeStepCompletionConditionForExistingRecipeCreationRequestInput `json:"input,omitempty"          protobuf:"bytes,3,opt,name=input,proto3"`
+	RecipeId      string                                                              `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                                                              `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	Input         *RecipeStepCompletionConditionForExistingRecipeCreationRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17548,8 +17548,8 @@ func (x *CreateRecipeStepCompletionConditionRequest) GetInput() *RecipeStepCompl
 
 type CreateRecipeStepCompletionConditionResponse struct {
 	state           protoimpl.MessageState         `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails         `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipeStepCompletionCondition `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails         `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipeStepCompletionCondition `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -17600,9 +17600,9 @@ func (x *CreateRecipeStepCompletionConditionResponse) GetCreated() *RecipeStepCo
 
 type CreateRecipeStepIngredientRequest struct {
 	state         protoimpl.MessageState                    `protogen:"open.v1"`
-	RecipeId      string                                    `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                                    `json:"recipe_step_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	Input         *RecipeStepIngredientCreationRequestInput `json:"input,omitempty"          protobuf:"bytes,3,opt,name=input,proto3"`
+	RecipeId      string                                    `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                                    `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	Input         *RecipeStepIngredientCreationRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17660,8 +17660,8 @@ func (x *CreateRecipeStepIngredientRequest) GetInput() *RecipeStepIngredientCrea
 
 type CreateRecipeStepIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipeStepIngredient  `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipeStepIngredient  `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -17712,9 +17712,9 @@ func (x *CreateRecipeStepIngredientResponse) GetCreated() *RecipeStepIngredient 
 
 type CreateRecipeStepInstrumentRequest struct {
 	state         protoimpl.MessageState                    `protogen:"open.v1"`
-	RecipeId      string                                    `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                                    `json:"recipe_step_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	Input         *RecipeStepInstrumentCreationRequestInput `json:"input,omitempty"          protobuf:"bytes,3,opt,name=input,proto3"`
+	RecipeId      string                                    `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                                    `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	Input         *RecipeStepInstrumentCreationRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17772,8 +17772,8 @@ func (x *CreateRecipeStepInstrumentRequest) GetInput() *RecipeStepInstrumentCrea
 
 type CreateRecipeStepInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipeStepInstrument  `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipeStepInstrument  `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -17824,9 +17824,9 @@ func (x *CreateRecipeStepInstrumentResponse) GetCreated() *RecipeStepInstrument 
 
 type CreateRecipeStepProductRequest struct {
 	state         protoimpl.MessageState                 `protogen:"open.v1"`
-	RecipeId      string                                 `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                                 `json:"recipe_step_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	Input         *RecipeStepProductCreationRequestInput `json:"input,omitempty"          protobuf:"bytes,3,opt,name=input,proto3"`
+	RecipeId      string                                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	Input         *RecipeStepProductCreationRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17884,8 +17884,8 @@ func (x *CreateRecipeStepProductRequest) GetInput() *RecipeStepProductCreationRe
 
 type CreateRecipeStepProductResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipeStepProduct     `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipeStepProduct     `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -17936,9 +17936,9 @@ func (x *CreateRecipeStepProductResponse) GetCreated() *RecipeStepProduct {
 
 type CreateRecipeStepVesselRequest struct {
 	state         protoimpl.MessageState                `protogen:"open.v1"`
-	RecipeId      string                                `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                                `json:"recipe_step_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	Input         *RecipeStepVesselCreationRequestInput `json:"input,omitempty"          protobuf:"bytes,3,opt,name=input,proto3"`
+	RecipeId      string                                `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                                `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	Input         *RecipeStepVesselCreationRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -17996,8 +17996,8 @@ func (x *CreateRecipeStepVesselRequest) GetInput() *RecipeStepVesselCreationRequ
 
 type CreateRecipeStepVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipeStepVessel      `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipeStepVessel      `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18048,7 +18048,7 @@ func (x *CreateRecipeStepVesselResponse) GetCreated() *RecipeStepVessel {
 
 type GetMermaidDiagramForMealRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MealId        string                 `json:"meal_id,omitempty" protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3"`
+	MealId        string                 `protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3" json:"meal_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -18092,8 +18092,8 @@ func (x *GetMermaidDiagramForMealRequest) GetMealId() string {
 
 type GetMermaidDiagramForMealResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Response        string                 `json:"response,omitempty"         protobuf:"bytes,2,opt,name=response,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Response        string                 `protobuf:"bytes,2,opt,name=response,proto3" json:"response,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18144,7 +18144,7 @@ func (x *GetMermaidDiagramForMealResponse) GetResponse() string {
 
 type GetMermaidDiagramForRecipeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -18188,8 +18188,8 @@ func (x *GetMermaidDiagramForRecipeRequest) GetRecipeId() string {
 
 type GetMermaidDiagramForRecipeResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Response        string                 `json:"response,omitempty"         protobuf:"bytes,2,opt,name=response,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Response        string                 `protobuf:"bytes,2,opt,name=response,proto3" json:"response,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18240,7 +18240,7 @@ func (x *GetMermaidDiagramForRecipeResponse) GetResponse() string {
 
 type GetRecipeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -18284,8 +18284,8 @@ func (x *GetRecipeRequest) GetRecipeId() string {
 
 type GetRecipeResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *Recipe                `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *Recipe                `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18336,7 +18336,7 @@ func (x *GetRecipeResponse) GetResult() *Recipe {
 
 type EstimateRecipePrepTasksRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -18380,8 +18380,8 @@ func (x *EstimateRecipePrepTasksRequest) GetRecipeId() string {
 
 type EstimateRecipePrepTasksResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Results         []*MealPlanTask        `json:"results,omitempty"          protobuf:"bytes,2,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Results         []*MealPlanTask        `protobuf:"bytes,2,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18432,8 +18432,8 @@ func (x *EstimateRecipePrepTasksResponse) GetResults() []*MealPlanTask {
 
 type GetRecipePrepTaskRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId         string                 `json:"recipe_id,omitempty"           protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipePrepTaskId string                 `json:"recipe_prep_task_id,omitempty" protobuf:"bytes,2,opt,name=recipe_prep_task_id,json=recipePrepTaskId,proto3"`
+	RecipeId         string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipePrepTaskId string                 `protobuf:"bytes,2,opt,name=recipe_prep_task_id,json=recipePrepTaskId,proto3" json:"recipe_prep_task_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -18484,8 +18484,8 @@ func (x *GetRecipePrepTaskRequest) GetRecipePrepTaskId() string {
 
 type GetRecipePrepTaskResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *RecipePrepTask        `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *RecipePrepTask        `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18536,8 +18536,8 @@ func (x *GetRecipePrepTaskResponse) GetResult() *RecipePrepTask {
 
 type GetRecipePrepTasksRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"    protobuf:"bytes,1,opt,name=filter,proto3"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	RecipeId      string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -18588,9 +18588,9 @@ func (x *GetRecipePrepTasksRequest) GetRecipeId() string {
 
 type GetRecipePrepTasksResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipePrepTask      `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipePrepTask      `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18648,8 +18648,8 @@ func (x *GetRecipePrepTasksResponse) GetResults() []*RecipePrepTask {
 
 type GetRecipeRatingRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId       string                 `json:"recipe_id,omitempty"        protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeRatingId string                 `json:"recipe_rating_id,omitempty" protobuf:"bytes,2,opt,name=recipe_rating_id,json=recipeRatingId,proto3"`
+	RecipeId       string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeRatingId string                 `protobuf:"bytes,2,opt,name=recipe_rating_id,json=recipeRatingId,proto3" json:"recipe_rating_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -18700,8 +18700,8 @@ func (x *GetRecipeRatingRequest) GetRecipeRatingId() string {
 
 type GetRecipeRatingResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *RecipeRating          `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *RecipeRating          `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18752,8 +18752,8 @@ func (x *GetRecipeRatingResponse) GetResult() *RecipeRating {
 
 type GetRecipeRatingsForRecipeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"    protobuf:"bytes,1,opt,name=filter,proto3"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	RecipeId      string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -18804,9 +18804,9 @@ func (x *GetRecipeRatingsForRecipeRequest) GetRecipeId() string {
 
 type GetRecipeRatingsForRecipeResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipeRating        `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipeRating        `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18864,8 +18864,8 @@ func (x *GetRecipeRatingsForRecipeResponse) GetResults() []*RecipeRating {
 
 type GetRecipeStepRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                 `json:"recipe_step_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -18916,8 +18916,8 @@ func (x *GetRecipeStepRequest) GetRecipeStepId() string {
 
 type GetRecipeStepResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *RecipeStep            `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *RecipeStep            `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -18968,9 +18968,9 @@ func (x *GetRecipeStepResponse) GetResult() *RecipeStep {
 
 type GetRecipeStepCompletionConditionRequest struct {
 	state                           protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId                        string                 `json:"recipe_id,omitempty"                           protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId                    string                 `json:"recipe_step_id,omitempty"                      protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepCompletionConditionId string                 `json:"recipe_step_completion_condition_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_completion_condition_id,json=recipeStepCompletionConditionId,proto3"`
+	RecipeId                        string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId                    string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepCompletionConditionId string                 `protobuf:"bytes,3,opt,name=recipe_step_completion_condition_id,json=recipeStepCompletionConditionId,proto3" json:"recipe_step_completion_condition_id,omitempty"`
 	unknownFields                   protoimpl.UnknownFields
 	sizeCache                       protoimpl.SizeCache
 }
@@ -19028,8 +19028,8 @@ func (x *GetRecipeStepCompletionConditionRequest) GetRecipeStepCompletionConditi
 
 type GetRecipeStepCompletionConditionResponse struct {
 	state           protoimpl.MessageState         `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails         `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *RecipeStepCompletionCondition `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails         `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *RecipeStepCompletionCondition `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -19080,9 +19080,9 @@ func (x *GetRecipeStepCompletionConditionResponse) GetResult() *RecipeStepComple
 
 type GetRecipeStepCompletionConditionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"         protobuf:"bytes,1,opt,name=filter,proto3"`
-	RecipeId      string                 `json:"recipe_id,omitempty"      protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                 `json:"recipe_step_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	RecipeId      string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                 `protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -19140,9 +19140,9 @@ func (x *GetRecipeStepCompletionConditionsRequest) GetRecipeStepId() string {
 
 type GetRecipeStepCompletionConditionsResponse struct {
 	state           protoimpl.MessageState           `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails           `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination            `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipeStepCompletionCondition `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails           `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination            `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipeStepCompletionCondition `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -19200,9 +19200,9 @@ func (x *GetRecipeStepCompletionConditionsResponse) GetResults() []*RecipeStepCo
 
 type GetRecipeStepIngredientRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId               string                 `json:"recipe_id,omitempty"                 protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId           string                 `json:"recipe_step_id,omitempty"            protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepIngredientId string                 `json:"recipe_step_ingredient_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_ingredient_id,json=recipeStepIngredientId,proto3"`
+	RecipeId               string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId           string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepIngredientId string                 `protobuf:"bytes,3,opt,name=recipe_step_ingredient_id,json=recipeStepIngredientId,proto3" json:"recipe_step_ingredient_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -19260,8 +19260,8 @@ func (x *GetRecipeStepIngredientRequest) GetRecipeStepIngredientId() string {
 
 type GetRecipeStepIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *RecipeStepIngredient  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *RecipeStepIngredient  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -19312,9 +19312,9 @@ func (x *GetRecipeStepIngredientResponse) GetResult() *RecipeStepIngredient {
 
 type GetRecipeStepIngredientsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"         protobuf:"bytes,1,opt,name=filter,proto3"`
-	RecipeId      string                 `json:"recipe_id,omitempty"      protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                 `json:"recipe_step_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	RecipeId      string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                 `protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -19372,9 +19372,9 @@ func (x *GetRecipeStepIngredientsRequest) GetRecipeStepId() string {
 
 type GetRecipeStepIngredientsResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination   `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipeStepIngredient `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipeStepIngredient `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -19432,9 +19432,9 @@ func (x *GetRecipeStepIngredientsResponse) GetResults() []*RecipeStepIngredient 
 
 type GetRecipeStepInstrumentRequest struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId               string                 `json:"recipe_id,omitempty"                 protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId           string                 `json:"recipe_step_id,omitempty"            protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepInstrumentId string                 `json:"recipe_step_instrument_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_instrument_id,json=recipeStepInstrumentId,proto3"`
+	RecipeId               string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId           string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepInstrumentId string                 `protobuf:"bytes,3,opt,name=recipe_step_instrument_id,json=recipeStepInstrumentId,proto3" json:"recipe_step_instrument_id,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -19492,8 +19492,8 @@ func (x *GetRecipeStepInstrumentRequest) GetRecipeStepInstrumentId() string {
 
 type GetRecipeStepInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *RecipeStepInstrument  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *RecipeStepInstrument  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -19544,9 +19544,9 @@ func (x *GetRecipeStepInstrumentResponse) GetResult() *RecipeStepInstrument {
 
 type GetRecipeStepInstrumentsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"         protobuf:"bytes,1,opt,name=filter,proto3"`
-	RecipeId      string                 `json:"recipe_id,omitempty"      protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                 `json:"recipe_step_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	RecipeId      string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                 `protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -19604,9 +19604,9 @@ func (x *GetRecipeStepInstrumentsRequest) GetRecipeStepId() string {
 
 type GetRecipeStepInstrumentsResponse struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails  `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination   `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipeStepInstrument `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails  `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipeStepInstrument `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -19664,9 +19664,9 @@ func (x *GetRecipeStepInstrumentsResponse) GetResults() []*RecipeStepInstrument 
 
 type GetRecipeStepProductRequest struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId            string                 `json:"recipe_id,omitempty"              protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId        string                 `json:"recipe_step_id,omitempty"         protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepProductId string                 `json:"recipe_step_product_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3"`
+	RecipeId            string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId        string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepProductId string                 `protobuf:"bytes,3,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3" json:"recipe_step_product_id,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -19724,8 +19724,8 @@ func (x *GetRecipeStepProductRequest) GetRecipeStepProductId() string {
 
 type GetRecipeStepProductResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *RecipeStepProduct     `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *RecipeStepProduct     `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -19776,9 +19776,9 @@ func (x *GetRecipeStepProductResponse) GetResult() *RecipeStepProduct {
 
 type GetRecipeStepProductsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"         protobuf:"bytes,1,opt,name=filter,proto3"`
-	RecipeId      string                 `json:"recipe_id,omitempty"      protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                 `json:"recipe_step_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	RecipeId      string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                 `protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -19836,9 +19836,9 @@ func (x *GetRecipeStepProductsRequest) GetRecipeStepId() string {
 
 type GetRecipeStepProductsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipeStepProduct   `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipeStepProduct   `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -19896,9 +19896,9 @@ func (x *GetRecipeStepProductsResponse) GetResults() []*RecipeStepProduct {
 
 type GetRecipeStepVesselRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId           string                 `json:"recipe_id,omitempty"             protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId       string                 `json:"recipe_step_id,omitempty"        protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepVesselId string                 `json:"recipe_step_vessel_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_vessel_id,json=recipeStepVesselId,proto3"`
+	RecipeId           string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId       string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepVesselId string                 `protobuf:"bytes,3,opt,name=recipe_step_vessel_id,json=recipeStepVesselId,proto3" json:"recipe_step_vessel_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -19956,8 +19956,8 @@ func (x *GetRecipeStepVesselRequest) GetRecipeStepVesselId() string {
 
 type GetRecipeStepVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *RecipeStepVessel      `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *RecipeStepVessel      `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -20008,9 +20008,9 @@ func (x *GetRecipeStepVesselResponse) GetResult() *RecipeStepVessel {
 
 type GetRecipeStepVesselsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"         protobuf:"bytes,1,opt,name=filter,proto3"`
-	RecipeId      string                 `json:"recipe_id,omitempty"      protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                 `json:"recipe_step_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	RecipeId      string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                 `protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -20068,9 +20068,9 @@ func (x *GetRecipeStepVesselsRequest) GetRecipeStepId() string {
 
 type GetRecipeStepVesselsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipeStepVessel    `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipeStepVessel    `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -20128,8 +20128,8 @@ func (x *GetRecipeStepVesselsResponse) GetResults() []*RecipeStepVessel {
 
 type GetRecipeStepsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"    protobuf:"bytes,1,opt,name=filter,proto3"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	RecipeId      string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -20180,9 +20180,9 @@ func (x *GetRecipeStepsRequest) GetRecipeId() string {
 
 type GetRecipeStepsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipeStep          `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipeStep          `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -20240,8 +20240,8 @@ func (x *GetRecipeStepsResponse) GetResults() []*RecipeStep {
 
 type GetRecipesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Status        string                 `json:"status,omitempty" protobuf:"bytes,2,opt,name=status,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -20292,9 +20292,9 @@ func (x *GetRecipesRequest) GetStatus() string {
 
 type GetRecipesResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*Recipe              `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*Recipe              `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -20352,11 +20352,11 @@ func (x *GetRecipesResponse) GetResults() []*Recipe {
 
 type SearchForRecipesRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query            string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query            string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `json:"use_search_service,omitempty" protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3"`
+	UseSearchService bool `protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3" json:"use_search_service,omitempty"`
 }
 
 func (x *SearchForRecipesRequest) Reset() {
@@ -20412,9 +20412,9 @@ func (x *SearchForRecipesRequest) GetUseSearchService() bool {
 
 type SearchForRecipesResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*Recipe              `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*Recipe              `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -20472,8 +20472,8 @@ func (x *SearchForRecipesResponse) GetResults() []*Recipe {
 
 type SearchForMealEligibleRecipesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query         string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query         string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -20524,9 +20524,9 @@ func (x *SearchForMealEligibleRecipesRequest) GetQuery() string {
 
 type SearchForMealEligibleRecipesResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*Recipe              `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*Recipe              `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -20584,8 +20584,8 @@ func (x *SearchForMealEligibleRecipesResponse) GetResults() []*Recipe {
 
 type UpdateRecipeRequest struct {
 	state         protoimpl.MessageState    `protogen:"open.v1"`
-	RecipeId      string                    `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	Input         *RecipeUpdateRequestInput `json:"input,omitempty"     protobuf:"bytes,2,opt,name=input,proto3"`
+	RecipeId      string                    `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	Input         *RecipeUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -20636,8 +20636,8 @@ func (x *UpdateRecipeRequest) GetInput() *RecipeUpdateRequestInput {
 
 type UpdateRecipeResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *Recipe                `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *Recipe                `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -20688,8 +20688,8 @@ func (x *UpdateRecipeResponse) GetUpdated() *Recipe {
 
 type UpdateRecipeStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty"  protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	NewStatus     string                 `json:"new_status,omitempty" protobuf:"bytes,2,opt,name=new_status,json=newStatus,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	NewStatus     string                 `protobuf:"bytes,2,opt,name=new_status,json=newStatus,proto3" json:"new_status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -20740,8 +20740,8 @@ func (x *UpdateRecipeStatusRequest) GetNewStatus() string {
 
 type UpdateRecipeStatusResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *Recipe                `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *Recipe                `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -20792,9 +20792,9 @@ func (x *UpdateRecipeStatusResponse) GetUpdated() *Recipe {
 
 type UpdateRecipePrepTaskRequest struct {
 	state            protoimpl.MessageState            `protogen:"open.v1"`
-	RecipeId         string                            `json:"recipe_id,omitempty"           protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipePrepTaskId string                            `json:"recipe_prep_task_id,omitempty" protobuf:"bytes,2,opt,name=recipe_prep_task_id,json=recipePrepTaskId,proto3"`
-	Input            *RecipePrepTaskUpdateRequestInput `json:"input,omitempty"               protobuf:"bytes,3,opt,name=input,proto3"`
+	RecipeId         string                            `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipePrepTaskId string                            `protobuf:"bytes,2,opt,name=recipe_prep_task_id,json=recipePrepTaskId,proto3" json:"recipe_prep_task_id,omitempty"`
+	Input            *RecipePrepTaskUpdateRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -20852,8 +20852,8 @@ func (x *UpdateRecipePrepTaskRequest) GetInput() *RecipePrepTaskUpdateRequestInp
 
 type UpdateRecipePrepTaskResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipePrepTask        `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipePrepTask        `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -20904,9 +20904,9 @@ func (x *UpdateRecipePrepTaskResponse) GetUpdated() *RecipePrepTask {
 
 type UpdateRecipeRatingRequest struct {
 	state          protoimpl.MessageState          `protogen:"open.v1"`
-	RecipeId       string                          `json:"recipe_id,omitempty"        protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeRatingId string                          `json:"recipe_rating_id,omitempty" protobuf:"bytes,2,opt,name=recipe_rating_id,json=recipeRatingId,proto3"`
-	Input          *RecipeRatingUpdateRequestInput `json:"input,omitempty"            protobuf:"bytes,3,opt,name=input,proto3"`
+	RecipeId       string                          `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeRatingId string                          `protobuf:"bytes,2,opt,name=recipe_rating_id,json=recipeRatingId,proto3" json:"recipe_rating_id,omitempty"`
+	Input          *RecipeRatingUpdateRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -20964,8 +20964,8 @@ func (x *UpdateRecipeRatingRequest) GetInput() *RecipeRatingUpdateRequestInput {
 
 type UpdateRecipeRatingResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipeRating          `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipeRating          `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -21016,9 +21016,9 @@ func (x *UpdateRecipeRatingResponse) GetUpdated() *RecipeRating {
 
 type UpdateRecipeStepRequest struct {
 	state         protoimpl.MessageState        `protogen:"open.v1"`
-	RecipeId      string                        `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId  string                        `json:"recipe_step_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	Input         *RecipeStepUpdateRequestInput `json:"input,omitempty"          protobuf:"bytes,3,opt,name=input,proto3"`
+	RecipeId      string                        `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId  string                        `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	Input         *RecipeStepUpdateRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -21076,8 +21076,8 @@ func (x *UpdateRecipeStepRequest) GetInput() *RecipeStepUpdateRequestInput {
 
 type UpdateRecipeStepResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipeStep            `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipeStep            `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -21128,10 +21128,10 @@ func (x *UpdateRecipeStepResponse) GetUpdated() *RecipeStep {
 
 type UpdateRecipeStepCompletionConditionRequest struct {
 	state                           protoimpl.MessageState                           `protogen:"open.v1"`
-	RecipeId                        string                                           `json:"recipe_id,omitempty"                           protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId                    string                                           `json:"recipe_step_id,omitempty"                      protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepCompletionConditionId string                                           `json:"recipe_step_completion_condition_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_completion_condition_id,json=recipeStepCompletionConditionId,proto3"`
-	Input                           *RecipeStepCompletionConditionUpdateRequestInput `json:"input,omitempty"                               protobuf:"bytes,4,opt,name=input,proto3"`
+	RecipeId                        string                                           `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId                    string                                           `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepCompletionConditionId string                                           `protobuf:"bytes,3,opt,name=recipe_step_completion_condition_id,json=recipeStepCompletionConditionId,proto3" json:"recipe_step_completion_condition_id,omitempty"`
+	Input                           *RecipeStepCompletionConditionUpdateRequestInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields                   protoimpl.UnknownFields
 	sizeCache                       protoimpl.SizeCache
 }
@@ -21196,8 +21196,8 @@ func (x *UpdateRecipeStepCompletionConditionRequest) GetInput() *RecipeStepCompl
 
 type UpdateRecipeStepCompletionConditionResponse struct {
 	state           protoimpl.MessageState         `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails         `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipeStepCompletionCondition `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails         `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipeStepCompletionCondition `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -21248,10 +21248,10 @@ func (x *UpdateRecipeStepCompletionConditionResponse) GetUpdated() *RecipeStepCo
 
 type UpdateRecipeStepIngredientRequest struct {
 	state                  protoimpl.MessageState                  `protogen:"open.v1"`
-	RecipeId               string                                  `json:"recipe_id,omitempty"                 protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId           string                                  `json:"recipe_step_id,omitempty"            protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepIngredientId string                                  `json:"recipe_step_ingredient_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_ingredient_id,json=recipeStepIngredientId,proto3"`
-	Input                  *RecipeStepIngredientUpdateRequestInput `json:"input,omitempty"                     protobuf:"bytes,4,opt,name=input,proto3"`
+	RecipeId               string                                  `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId           string                                  `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepIngredientId string                                  `protobuf:"bytes,3,opt,name=recipe_step_ingredient_id,json=recipeStepIngredientId,proto3" json:"recipe_step_ingredient_id,omitempty"`
+	Input                  *RecipeStepIngredientUpdateRequestInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -21316,8 +21316,8 @@ func (x *UpdateRecipeStepIngredientRequest) GetInput() *RecipeStepIngredientUpda
 
 type UpdateRecipeStepIngredientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipeStepIngredient  `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipeStepIngredient  `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -21368,10 +21368,10 @@ func (x *UpdateRecipeStepIngredientResponse) GetUpdated() *RecipeStepIngredient 
 
 type UpdateRecipeStepInstrumentRequest struct {
 	state                  protoimpl.MessageState                  `protogen:"open.v1"`
-	RecipeId               string                                  `json:"recipe_id,omitempty"                 protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId           string                                  `json:"recipe_step_id,omitempty"            protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepInstrumentId string                                  `json:"recipe_step_instrument_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_instrument_id,json=recipeStepInstrumentId,proto3"`
-	Input                  *RecipeStepInstrumentUpdateRequestInput `json:"input,omitempty"                     protobuf:"bytes,4,opt,name=input,proto3"`
+	RecipeId               string                                  `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId           string                                  `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepInstrumentId string                                  `protobuf:"bytes,3,opt,name=recipe_step_instrument_id,json=recipeStepInstrumentId,proto3" json:"recipe_step_instrument_id,omitempty"`
+	Input                  *RecipeStepInstrumentUpdateRequestInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -21436,8 +21436,8 @@ func (x *UpdateRecipeStepInstrumentRequest) GetInput() *RecipeStepInstrumentUpda
 
 type UpdateRecipeStepInstrumentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipeStepInstrument  `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipeStepInstrument  `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -21488,10 +21488,10 @@ func (x *UpdateRecipeStepInstrumentResponse) GetUpdated() *RecipeStepInstrument 
 
 type UpdateRecipeStepProductRequest struct {
 	state               protoimpl.MessageState               `protogen:"open.v1"`
-	RecipeId            string                               `json:"recipe_id,omitempty"              protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId        string                               `json:"recipe_step_id,omitempty"         protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepProductId string                               `json:"recipe_step_product_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3"`
-	Input               *RecipeStepProductUpdateRequestInput `json:"input,omitempty"                  protobuf:"bytes,4,opt,name=input,proto3"`
+	RecipeId            string                               `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId        string                               `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepProductId string                               `protobuf:"bytes,3,opt,name=recipe_step_product_id,json=recipeStepProductId,proto3" json:"recipe_step_product_id,omitempty"`
+	Input               *RecipeStepProductUpdateRequestInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -21556,8 +21556,8 @@ func (x *UpdateRecipeStepProductRequest) GetInput() *RecipeStepProductUpdateRequ
 
 type UpdateRecipeStepProductResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipeStepProduct     `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipeStepProduct     `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -21608,10 +21608,10 @@ func (x *UpdateRecipeStepProductResponse) GetUpdated() *RecipeStepProduct {
 
 type UpdateRecipeStepVesselRequest struct {
 	state              protoimpl.MessageState              `protogen:"open.v1"`
-	RecipeId           string                              `json:"recipe_id,omitempty"             protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId       string                              `json:"recipe_step_id,omitempty"        protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
-	RecipeStepVesselId string                              `json:"recipe_step_vessel_id,omitempty" protobuf:"bytes,3,opt,name=recipe_step_vessel_id,json=recipeStepVesselId,proto3"`
-	Input              *RecipeStepVesselUpdateRequestInput `json:"input,omitempty"                 protobuf:"bytes,4,opt,name=input,proto3"`
+	RecipeId           string                              `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId       string                              `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
+	RecipeStepVesselId string                              `protobuf:"bytes,3,opt,name=recipe_step_vessel_id,json=recipeStepVesselId,proto3" json:"recipe_step_vessel_id,omitempty"`
+	Input              *RecipeStepVesselUpdateRequestInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -21676,8 +21676,8 @@ func (x *UpdateRecipeStepVesselRequest) GetInput() *RecipeStepVesselUpdateReques
 
 type UpdateRecipeStepVesselResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipeStepVessel      `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipeStepVessel      `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -21728,7 +21728,7 @@ func (x *UpdateRecipeStepVesselResponse) GetUpdated() *RecipeStepVessel {
 
 type InitializeMealPlanGroceryListRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountId     string                 `json:"account_id,omitempty" protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3"`
+	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -21774,7 +21774,7 @@ type InitializeMealPlanGroceryListResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
-	Success       bool `json:"success,omitempty" protobuf:"varint,1,opt,name=success,proto3"`
+	Success       bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 }
 
 func (x *InitializeMealPlanGroceryListResponse) Reset() {
@@ -21816,10 +21816,10 @@ func (x *InitializeMealPlanGroceryListResponse) GetSuccess() bool {
 
 type MealComponentCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      string                 `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
+	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	ComponentType MealComponentType `json:"component_type,omitempty" protobuf:"varint,2,opt,name=component_type,json=componentType,proto3,enum=mealplanning.MealComponentType"`
-	RecipeScale   float32           `json:"recipe_scale,omitempty"   protobuf:"fixed32,3,opt,name=recipe_scale,json=recipeScale,proto3"`
+	ComponentType MealComponentType `protobuf:"varint,2,opt,name=component_type,json=componentType,proto3,enum=mealplanning.MealComponentType" json:"component_type,omitempty"`
+	RecipeScale   float32           `protobuf:"fixed32,3,opt,name=recipe_scale,json=recipeScale,proto3" json:"recipe_scale,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -21876,9 +21876,9 @@ func (x *MealComponentCreationRequestInput) GetRecipeScale() float32 {
 
 type MealComponentUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId      *string                `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3,oneof"`
-	ComponentType *MealComponentType     `json:"component_type,omitempty" protobuf:"varint,2,opt,name=component_type,json=componentType,proto3,enum=mealplanning.MealComponentType,oneof"`
-	RecipeScale   *float32               `json:"recipe_scale,omitempty"   protobuf:"fixed32,3,opt,name=recipe_scale,json=recipeScale,proto3,oneof"`
+	RecipeId      *string                `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3,oneof" json:"recipe_id,omitempty"`
+	ComponentType *MealComponentType     `protobuf:"varint,2,opt,name=component_type,json=componentType,proto3,enum=mealplanning.MealComponentType,oneof" json:"component_type,omitempty"`
+	RecipeScale   *float32               `protobuf:"fixed32,3,opt,name=recipe_scale,json=recipeScale,proto3,oneof" json:"recipe_scale,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -21936,13 +21936,13 @@ func (x *MealComponentUpdateRequestInput) GetRecipeScale() float32 {
 
 type MealCreationRequestInput struct {
 	state                protoimpl.MessageState               `protogen:"open.v1"`
-	EstimatedPortions    *types.Float32RangeWithOptionalMax   `json:"estimated_portions,omitempty" protobuf:"bytes,1,opt,name=estimated_portions,json=estimatedPortions,proto3"`
-	Name                 string                               `json:"name,omitempty"               protobuf:"bytes,2,opt,name=name,proto3"`
-	Description          string                               `json:"description,omitempty"        protobuf:"bytes,3,opt,name=description,proto3"`
-	Components           []*MealComponentCreationRequestInput `json:"components,omitempty"         protobuf:"bytes,4,rep,name=components,proto3"`
+	EstimatedPortions    *types.Float32RangeWithOptionalMax   `protobuf:"bytes,1,opt,name=estimated_portions,json=estimatedPortions,proto3" json:"estimated_portions,omitempty"`
+	Name                 string                               `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description          string                               `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Components           []*MealComponentCreationRequestInput `protobuf:"bytes,4,rep,name=components,proto3" json:"components,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
-	EligibleForMealPlans bool `json:"eligible_for_meal_plans,omitempty" protobuf:"varint,5,opt,name=eligible_for_meal_plans,json=eligibleForMealPlans,proto3"`
+	EligibleForMealPlans bool `protobuf:"varint,5,opt,name=eligible_for_meal_plans,json=eligibleForMealPlans,proto3" json:"eligible_for_meal_plans,omitempty"`
 }
 
 func (x *MealCreationRequestInput) Reset() {
@@ -22012,12 +22012,12 @@ func (x *MealCreationRequestInput) GetEligibleForMealPlans() bool {
 
 type MealPlanCreationRequestInput struct {
 	state          protoimpl.MessageState                               `protogen:"open.v1"`
-	VotingDeadline *timestamppb.Timestamp                               `json:"voting_deadline,omitempty" protobuf:"bytes,1,opt,name=voting_deadline,json=votingDeadline,proto3"`
-	Notes          string                                               `json:"notes,omitempty"           protobuf:"bytes,2,opt,name=notes,proto3"`
-	Events         []*MealPlanEventCreationRequestInput                 `json:"events,omitempty"          protobuf:"bytes,4,rep,name=events,proto3"`
-	Selections     []*MealPlanRecipeOptionSelectionCreationRequestInput `json:"selections,omitempty"      protobuf:"bytes,5,rep,name=selections,proto3"`
+	VotingDeadline *timestamppb.Timestamp                               `protobuf:"bytes,1,opt,name=voting_deadline,json=votingDeadline,proto3" json:"voting_deadline,omitempty"`
+	Notes          string                                               `protobuf:"bytes,2,opt,name=notes,proto3" json:"notes,omitempty"`
+	Events         []*MealPlanEventCreationRequestInput                 `protobuf:"bytes,4,rep,name=events,proto3" json:"events,omitempty"`
+	Selections     []*MealPlanRecipeOptionSelectionCreationRequestInput `protobuf:"bytes,5,rep,name=selections,proto3" json:"selections,omitempty"`
 	unknownFields  protoimpl.UnknownFields
-	ElectionMethod MealPlanElectionMethod `json:"election_method,omitempty" protobuf:"varint,3,opt,name=election_method,json=electionMethod,proto3,enum=mealplanning.MealPlanElectionMethod"`
+	ElectionMethod MealPlanElectionMethod `protobuf:"varint,3,opt,name=election_method,json=electionMethod,proto3,enum=mealplanning.MealPlanElectionMethod" json:"election_method,omitempty"`
 	sizeCache      protoimpl.SizeCache
 }
 
@@ -22088,12 +22088,12 @@ func (x *MealPlanCreationRequestInput) GetSelections() []*MealPlanRecipeOptionSe
 
 type MealPlanEventCreationRequestInput struct {
 	state         protoimpl.MessageState                `protogen:"open.v1"`
-	EndsAt        *timestamppb.Timestamp                `json:"ends_at,omitempty"   protobuf:"bytes,1,opt,name=ends_at,json=endsAt,proto3"`
-	StartsAt      *timestamppb.Timestamp                `json:"starts_at,omitempty" protobuf:"bytes,2,opt,name=starts_at,json=startsAt,proto3"`
-	Notes         string                                `json:"notes,omitempty"     protobuf:"bytes,3,opt,name=notes,proto3"`
-	Options       []*MealPlanOptionCreationRequestInput `json:"options,omitempty"   protobuf:"bytes,5,rep,name=options,proto3"`
+	EndsAt        *timestamppb.Timestamp                `protobuf:"bytes,1,opt,name=ends_at,json=endsAt,proto3" json:"ends_at,omitempty"`
+	StartsAt      *timestamppb.Timestamp                `protobuf:"bytes,2,opt,name=starts_at,json=startsAt,proto3" json:"starts_at,omitempty"`
+	Notes         string                                `protobuf:"bytes,3,opt,name=notes,proto3" json:"notes,omitempty"`
+	Options       []*MealPlanOptionCreationRequestInput `protobuf:"bytes,5,rep,name=options,proto3" json:"options,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	MealName      MealPlanEventName `json:"meal_name,omitempty" protobuf:"varint,4,opt,name=meal_name,json=mealName,proto3,enum=mealplanning.MealPlanEventName"`
+	MealName      MealPlanEventName `protobuf:"varint,4,opt,name=meal_name,json=mealName,proto3,enum=mealplanning.MealPlanEventName" json:"meal_name,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -22164,11 +22164,11 @@ func (x *MealPlanEventCreationRequestInput) GetOptions() []*MealPlanOptionCreati
 
 type MealPlanEventUpdateRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Notes             *string                `json:"notes,omitempty"                protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	StartsAt          *timestamppb.Timestamp `json:"starts_at,omitempty"            protobuf:"bytes,2,opt,name=starts_at,json=startsAt,proto3,oneof"`
-	MealName          *MealPlanEventName     `json:"meal_name,omitempty"            protobuf:"varint,3,opt,name=meal_name,json=mealName,proto3,enum=mealplanning.MealPlanEventName,oneof"`
-	EndsAt            *timestamppb.Timestamp `json:"ends_at,omitempty"              protobuf:"bytes,4,opt,name=ends_at,json=endsAt,proto3,oneof"`
-	BelongsToMealPlan string                 `json:"belongs_to_meal_plan,omitempty" protobuf:"bytes,5,opt,name=belongs_to_meal_plan,json=belongsToMealPlan,proto3"`
+	Notes             *string                `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	StartsAt          *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=starts_at,json=startsAt,proto3,oneof" json:"starts_at,omitempty"`
+	MealName          *MealPlanEventName     `protobuf:"varint,3,opt,name=meal_name,json=mealName,proto3,enum=mealplanning.MealPlanEventName,oneof" json:"meal_name,omitempty"`
+	EndsAt            *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=ends_at,json=endsAt,proto3,oneof" json:"ends_at,omitempty"`
+	BelongsToMealPlan string                 `protobuf:"bytes,5,opt,name=belongs_to_meal_plan,json=belongsToMealPlan,proto3" json:"belongs_to_meal_plan,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -22240,17 +22240,17 @@ func (x *MealPlanEventUpdateRequestInput) GetBelongsToMealPlan() string {
 
 type MealPlanGroceryListItemCreationRequestInput struct {
 	state                      protoimpl.MessageState             `protogen:"open.v1"`
-	PurchasedMeasurementUnitId *string                            `json:"purchased_measurement_unit_id,omitempty" protobuf:"bytes,1,opt,name=purchased_measurement_unit_id,json=purchasedMeasurementUnitId,proto3,oneof"`
-	PurchasedUpc               *string                            `json:"purchased_upc,omitempty"                 protobuf:"bytes,2,opt,name=purchased_upc,json=purchasedUpc,proto3,oneof"`
-	PurchasePrice              *float32                           `json:"purchase_price,omitempty"                protobuf:"fixed32,3,opt,name=purchase_price,json=purchasePrice,proto3,oneof"`
-	QuantityPurchased          *float32                           `json:"quantity_purchased,omitempty"            protobuf:"fixed32,4,opt,name=quantity_purchased,json=quantityPurchased,proto3,oneof"`
-	QuantityNeeded             *types.Float32RangeWithOptionalMax `json:"quantity_needed,omitempty"               protobuf:"bytes,10,opt,name=quantity_needed,json=quantityNeeded,proto3"`
-	BelongsToMealPlan          string                             `json:"belongs_to_meal_plan,omitempty"          protobuf:"bytes,6,opt,name=belongs_to_meal_plan,json=belongsToMealPlan,proto3"`
-	ValidIngredientId          string                             `json:"valid_ingredient_id,omitempty"           protobuf:"bytes,7,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
-	ValidMeasurementUnitId     string                             `json:"valid_measurement_unit_id,omitempty"     protobuf:"bytes,8,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3"`
-	StatusExplanation          string                             `json:"status_explanation,omitempty"            protobuf:"bytes,9,opt,name=status_explanation,json=statusExplanation,proto3"`
+	PurchasedMeasurementUnitId *string                            `protobuf:"bytes,1,opt,name=purchased_measurement_unit_id,json=purchasedMeasurementUnitId,proto3,oneof" json:"purchased_measurement_unit_id,omitempty"`
+	PurchasedUpc               *string                            `protobuf:"bytes,2,opt,name=purchased_upc,json=purchasedUpc,proto3,oneof" json:"purchased_upc,omitempty"`
+	PurchasePrice              *float32                           `protobuf:"fixed32,3,opt,name=purchase_price,json=purchasePrice,proto3,oneof" json:"purchase_price,omitempty"`
+	QuantityPurchased          *float32                           `protobuf:"fixed32,4,opt,name=quantity_purchased,json=quantityPurchased,proto3,oneof" json:"quantity_purchased,omitempty"`
+	QuantityNeeded             *types.Float32RangeWithOptionalMax `protobuf:"bytes,10,opt,name=quantity_needed,json=quantityNeeded,proto3" json:"quantity_needed,omitempty"`
+	BelongsToMealPlan          string                             `protobuf:"bytes,6,opt,name=belongs_to_meal_plan,json=belongsToMealPlan,proto3" json:"belongs_to_meal_plan,omitempty"`
+	ValidIngredientId          string                             `protobuf:"bytes,7,opt,name=valid_ingredient_id,json=validIngredientId,proto3" json:"valid_ingredient_id,omitempty"`
+	ValidMeasurementUnitId     string                             `protobuf:"bytes,8,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3" json:"valid_measurement_unit_id,omitempty"`
+	StatusExplanation          string                             `protobuf:"bytes,9,opt,name=status_explanation,json=statusExplanation,proto3" json:"status_explanation,omitempty"`
 	unknownFields              protoimpl.UnknownFields
-	Status                     MealPlanGroceryListItemStatus `json:"status,omitempty" protobuf:"varint,5,opt,name=status,proto3,enum=mealplanning.MealPlanGroceryListItemStatus"`
+	Status                     MealPlanGroceryListItemStatus `protobuf:"varint,5,opt,name=status,proto3,enum=mealplanning.MealPlanGroceryListItemStatus" json:"status,omitempty"`
 	sizeCache                  protoimpl.SizeCache
 }
 
@@ -22356,16 +22356,16 @@ func (x *MealPlanGroceryListItemCreationRequestInput) GetQuantityNeeded() *types
 
 type MealPlanGroceryListItemUpdateRequestInput struct {
 	state                      protoimpl.MessageState                               `protogen:"open.v1"`
-	BelongsToMealPlan          *string                                              `json:"belongs_to_meal_plan,omitempty"          protobuf:"bytes,1,opt,name=belongs_to_meal_plan,json=belongsToMealPlan,proto3,oneof"`
-	ValidIngredientId          *string                                              `json:"valid_ingredient_id,omitempty"           protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof"`
-	ValidMeasurementUnitId     *string                                              `json:"valid_measurement_unit_id,omitempty"     protobuf:"bytes,3,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3,oneof"`
-	StatusExplanation          *string                                              `json:"status_explanation,omitempty"            protobuf:"bytes,4,opt,name=status_explanation,json=statusExplanation,proto3,oneof"`
-	QuantityPurchased          *float32                                             `json:"quantity_purchased,omitempty"            protobuf:"fixed32,5,opt,name=quantity_purchased,json=quantityPurchased,proto3,oneof"`
-	PurchasedMeasurementUnitId *string                                              `json:"purchased_measurement_unit_id,omitempty" protobuf:"bytes,6,opt,name=purchased_measurement_unit_id,json=purchasedMeasurementUnitId,proto3,oneof"`
-	PurchasedUpc               *string                                              `json:"purchased_upc,omitempty"                 protobuf:"bytes,7,opt,name=purchased_upc,json=purchasedUpc,proto3,oneof"`
-	PurchasePrice              *float32                                             `json:"purchase_price,omitempty"                protobuf:"fixed32,8,opt,name=purchase_price,json=purchasePrice,proto3,oneof"`
-	Status                     *MealPlanGroceryListItemStatus                       `json:"status,omitempty"                        protobuf:"varint,9,opt,name=status,proto3,enum=mealplanning.MealPlanGroceryListItemStatus,oneof"`
-	QuantityNeeded             *types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"quantity_needed,omitempty"               protobuf:"bytes,10,opt,name=quantity_needed,json=quantityNeeded,proto3,oneof"`
+	BelongsToMealPlan          *string                                              `protobuf:"bytes,1,opt,name=belongs_to_meal_plan,json=belongsToMealPlan,proto3,oneof" json:"belongs_to_meal_plan,omitempty"`
+	ValidIngredientId          *string                                              `protobuf:"bytes,2,opt,name=valid_ingredient_id,json=validIngredientId,proto3,oneof" json:"valid_ingredient_id,omitempty"`
+	ValidMeasurementUnitId     *string                                              `protobuf:"bytes,3,opt,name=valid_measurement_unit_id,json=validMeasurementUnitId,proto3,oneof" json:"valid_measurement_unit_id,omitempty"`
+	StatusExplanation          *string                                              `protobuf:"bytes,4,opt,name=status_explanation,json=statusExplanation,proto3,oneof" json:"status_explanation,omitempty"`
+	QuantityPurchased          *float32                                             `protobuf:"fixed32,5,opt,name=quantity_purchased,json=quantityPurchased,proto3,oneof" json:"quantity_purchased,omitempty"`
+	PurchasedMeasurementUnitId *string                                              `protobuf:"bytes,6,opt,name=purchased_measurement_unit_id,json=purchasedMeasurementUnitId,proto3,oneof" json:"purchased_measurement_unit_id,omitempty"`
+	PurchasedUpc               *string                                              `protobuf:"bytes,7,opt,name=purchased_upc,json=purchasedUpc,proto3,oneof" json:"purchased_upc,omitempty"`
+	PurchasePrice              *float32                                             `protobuf:"fixed32,8,opt,name=purchase_price,json=purchasePrice,proto3,oneof" json:"purchase_price,omitempty"`
+	Status                     *MealPlanGroceryListItemStatus                       `protobuf:"varint,9,opt,name=status,proto3,enum=mealplanning.MealPlanGroceryListItemStatus,oneof" json:"status,omitempty"`
+	QuantityNeeded             *types.Float32RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,10,opt,name=quantity_needed,json=quantityNeeded,proto3,oneof" json:"quantity_needed,omitempty"`
 	unknownFields              protoimpl.UnknownFields
 	sizeCache                  protoimpl.SizeCache
 }
@@ -22472,13 +22472,13 @@ func (x *MealPlanGroceryListItemUpdateRequestInput) GetQuantityNeeded() *types.F
 
 type MealPlanRecipeOptionSelectionCreationRequestInput struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	BelongsToMealPlanOption string                 `json:"belongs_to_meal_plan_option,omitempty" protobuf:"bytes,1,opt,name=belongs_to_meal_plan_option,json=belongsToMealPlanOption,proto3"`
-	RecipeId                string                 `json:"recipe_id,omitempty"                   protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3"`
-	RecipeStepId            string                 `json:"recipe_step_id,omitempty"              protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	BelongsToMealPlanOption string                 `protobuf:"bytes,1,opt,name=belongs_to_meal_plan_option,json=belongsToMealPlanOption,proto3" json:"belongs_to_meal_plan_option,omitempty"`
+	RecipeId                string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	RecipeStepId            string                 `protobuf:"bytes,3,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields           protoimpl.UnknownFields
-	IngredientIndex         uint32                            `json:"ingredient_index,omitempty"      protobuf:"varint,4,opt,name=ingredient_index,json=ingredientIndex,proto3"`
-	SelectedOptionIndex     uint32                            `json:"selected_option_index,omitempty" protobuf:"varint,5,opt,name=selected_option_index,json=selectedOptionIndex,proto3"`
-	SelectionType           MealPlanRecipeOptionSelectionType `json:"selection_type,omitempty"        protobuf:"varint,6,opt,name=selection_type,json=selectionType,proto3,enum=mealplanning.MealPlanRecipeOptionSelectionType"`
+	IngredientIndex         uint32                            `protobuf:"varint,4,opt,name=ingredient_index,json=ingredientIndex,proto3" json:"ingredient_index,omitempty"`
+	SelectedOptionIndex     uint32                            `protobuf:"varint,5,opt,name=selected_option_index,json=selectedOptionIndex,proto3" json:"selected_option_index,omitempty"`
+	SelectionType           MealPlanRecipeOptionSelectionType `protobuf:"varint,6,opt,name=selection_type,json=selectionType,proto3,enum=mealplanning.MealPlanRecipeOptionSelectionType" json:"selection_type,omitempty"`
 	sizeCache               protoimpl.SizeCache
 }
 
@@ -22557,7 +22557,7 @@ func (x *MealPlanRecipeOptionSelectionCreationRequestInput) GetSelectionType() M
 type MealPlanRecipeOptionSelectionUpdateRequestInput struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields       protoimpl.UnknownFields
-	SelectedOptionIndex uint32 `json:"selected_option_index,omitempty" protobuf:"varint,1,opt,name=selected_option_index,json=selectedOptionIndex,proto3"`
+	SelectedOptionIndex uint32 `protobuf:"varint,1,opt,name=selected_option_index,json=selectedOptionIndex,proto3" json:"selected_option_index,omitempty"`
 	sizeCache           protoimpl.SizeCache
 }
 
@@ -22600,13 +22600,13 @@ func (x *MealPlanRecipeOptionSelectionUpdateRequestInput) GetSelectedOptionIndex
 
 type MealPlanOptionCreationRequestInput struct {
 	state              protoimpl.MessageState                               `protogen:"open.v1"`
-	AssignedCook       *string                                              `json:"assigned_cook,omitempty"       protobuf:"bytes,1,opt,name=assigned_cook,json=assignedCook,proto3,oneof"`
-	AssignedDishwasher *string                                              `json:"assigned_dishwasher,omitempty" protobuf:"bytes,2,opt,name=assigned_dishwasher,json=assignedDishwasher,proto3,oneof"`
-	MealId             string                                               `json:"meal_id,omitempty"             protobuf:"bytes,3,opt,name=meal_id,json=mealId,proto3"`
-	Notes              string                                               `json:"notes,omitempty"               protobuf:"bytes,4,opt,name=notes,proto3"`
-	Selections         []*MealPlanRecipeOptionSelectionCreationRequestInput `json:"selections,omitempty"          protobuf:"bytes,6,rep,name=selections,proto3"`
+	AssignedCook       *string                                              `protobuf:"bytes,1,opt,name=assigned_cook,json=assignedCook,proto3,oneof" json:"assigned_cook,omitempty"`
+	AssignedDishwasher *string                                              `protobuf:"bytes,2,opt,name=assigned_dishwasher,json=assignedDishwasher,proto3,oneof" json:"assigned_dishwasher,omitempty"`
+	MealId             string                                               `protobuf:"bytes,3,opt,name=meal_id,json=mealId,proto3" json:"meal_id,omitempty"`
+	Notes              string                                               `protobuf:"bytes,4,opt,name=notes,proto3" json:"notes,omitempty"`
+	Selections         []*MealPlanRecipeOptionSelectionCreationRequestInput `protobuf:"bytes,6,rep,name=selections,proto3" json:"selections,omitempty"`
 	unknownFields      protoimpl.UnknownFields
-	MealScale          float32 `json:"meal_scale,omitempty" protobuf:"fixed32,5,opt,name=meal_scale,json=mealScale,proto3"`
+	MealScale          float32 `protobuf:"fixed32,5,opt,name=meal_scale,json=mealScale,proto3" json:"meal_scale,omitempty"`
 	sizeCache          protoimpl.SizeCache
 }
 
@@ -22684,12 +22684,12 @@ func (x *MealPlanOptionCreationRequestInput) GetSelections() []*MealPlanRecipeOp
 
 type MealPlanOptionUpdateRequestInput struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	MealId                 *string                `json:"meal_id,omitempty"                    protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3,oneof"`
-	Notes                  *string                `json:"notes,omitempty"                      protobuf:"bytes,2,opt,name=notes,proto3,oneof"`
-	AssignedCook           *string                `json:"assigned_cook,omitempty"              protobuf:"bytes,3,opt,name=assigned_cook,json=assignedCook,proto3,oneof"`
-	AssignedDishwasher     *string                `json:"assigned_dishwasher,omitempty"        protobuf:"bytes,4,opt,name=assigned_dishwasher,json=assignedDishwasher,proto3,oneof"`
-	MealScale              *float32               `json:"meal_scale,omitempty"                 protobuf:"fixed32,5,opt,name=meal_scale,json=mealScale,proto3,oneof"`
-	BelongsToMealPlanEvent *string                `json:"belongs_to_meal_plan_event,omitempty" protobuf:"bytes,6,opt,name=belongs_to_meal_plan_event,json=belongsToMealPlanEvent,proto3,oneof"`
+	MealId                 *string                `protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3,oneof" json:"meal_id,omitempty"`
+	Notes                  *string                `protobuf:"bytes,2,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	AssignedCook           *string                `protobuf:"bytes,3,opt,name=assigned_cook,json=assignedCook,proto3,oneof" json:"assigned_cook,omitempty"`
+	AssignedDishwasher     *string                `protobuf:"bytes,4,opt,name=assigned_dishwasher,json=assignedDishwasher,proto3,oneof" json:"assigned_dishwasher,omitempty"`
+	MealScale              *float32               `protobuf:"fixed32,5,opt,name=meal_scale,json=mealScale,proto3,oneof" json:"meal_scale,omitempty"`
+	BelongsToMealPlanEvent *string                `protobuf:"bytes,6,opt,name=belongs_to_meal_plan_event,json=belongsToMealPlanEvent,proto3,oneof" json:"belongs_to_meal_plan_event,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -22768,7 +22768,7 @@ func (x *MealPlanOptionUpdateRequestInput) GetBelongsToMealPlanEvent() string {
 
 type MealPlanOptionVoteCreationRequestInput struct {
 	state         protoimpl.MessageState             `protogen:"open.v1"`
-	Votes         []*MealPlanOptionVoteCreationInput `json:"votes,omitempty" protobuf:"bytes,1,rep,name=votes,proto3"`
+	Votes         []*MealPlanOptionVoteCreationInput `protobuf:"bytes,1,rep,name=votes,proto3" json:"votes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -22812,10 +22812,10 @@ func (x *MealPlanOptionVoteCreationRequestInput) GetVotes() []*MealPlanOptionVot
 
 type MealPlanOptionVoteUpdateRequestInput struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	Notes                   *string                `json:"notes,omitempty"                       protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	Rank                    *uint32                `json:"rank,omitempty"                        protobuf:"varint,2,opt,name=rank,proto3,oneof"`
-	Abstain                 *bool                  `json:"abstain,omitempty"                     protobuf:"varint,3,opt,name=abstain,proto3,oneof"`
-	BelongsToMealPlanOption string                 `json:"belongs_to_meal_plan_option,omitempty" protobuf:"bytes,4,opt,name=belongs_to_meal_plan_option,json=belongsToMealPlanOption,proto3"`
+	Notes                   *string                `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	Rank                    *uint32                `protobuf:"varint,2,opt,name=rank,proto3,oneof" json:"rank,omitempty"`
+	Abstain                 *bool                  `protobuf:"varint,3,opt,name=abstain,proto3,oneof" json:"abstain,omitempty"`
+	BelongsToMealPlanOption string                 `protobuf:"bytes,4,opt,name=belongs_to_meal_plan_option,json=belongsToMealPlanOption,proto3" json:"belongs_to_meal_plan_option,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
@@ -22880,9 +22880,9 @@ func (x *MealPlanOptionVoteUpdateRequestInput) GetBelongsToMealPlanOption() stri
 
 type MealListCreationRequestInput struct {
 	state         protoimpl.MessageState              `protogen:"open.v1"`
-	Name          string                              `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3"`
-	Description   string                              `json:"description,omitempty" protobuf:"bytes,2,opt,name=description,proto3"`
-	Items         []*MealListItemCreationRequestInput `json:"items,omitempty"       protobuf:"bytes,3,rep,name=items,proto3"`
+	Name          string                              `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                              `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Items         []*MealListItemCreationRequestInput `protobuf:"bytes,3,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -22940,8 +22940,8 @@ func (x *MealListCreationRequestInput) GetItems() []*MealListItemCreationRequest
 
 type MealListUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          *string                `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Description   *string                `json:"description,omitempty" protobuf:"bytes,2,opt,name=description,proto3,oneof"`
+	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Description   *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -22992,9 +22992,9 @@ func (x *MealListUpdateRequestInput) GetDescription() string {
 
 type MealListItemCreationRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	MealId            string                 `json:"meal_id,omitempty"              protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3"`
-	Notes             string                 `json:"notes,omitempty"                protobuf:"bytes,2,opt,name=notes,proto3"`
-	BelongsToMealList string                 `json:"belongs_to_meal_list,omitempty" protobuf:"bytes,3,opt,name=belongs_to_meal_list,json=belongsToMealList,proto3"`
+	MealId            string                 `protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3" json:"meal_id,omitempty"`
+	Notes             string                 `protobuf:"bytes,2,opt,name=notes,proto3" json:"notes,omitempty"`
+	BelongsToMealList string                 `protobuf:"bytes,3,opt,name=belongs_to_meal_list,json=belongsToMealList,proto3" json:"belongs_to_meal_list,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -23052,9 +23052,9 @@ func (x *MealListItemCreationRequestInput) GetBelongsToMealList() string {
 
 type MealListItemUpdateRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	MealId            *string                `json:"meal_id,omitempty"              protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3,oneof"`
-	Notes             *string                `json:"notes,omitempty"                protobuf:"bytes,2,opt,name=notes,proto3,oneof"`
-	BelongsToMealList *string                `json:"belongs_to_meal_list,omitempty" protobuf:"bytes,3,opt,name=belongs_to_meal_list,json=belongsToMealList,proto3,oneof"`
+	MealId            *string                `protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3,oneof" json:"meal_id,omitempty"`
+	Notes             *string                `protobuf:"bytes,2,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	BelongsToMealList *string                `protobuf:"bytes,3,opt,name=belongs_to_meal_list,json=belongsToMealList,proto3,oneof" json:"belongs_to_meal_list,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -23112,9 +23112,9 @@ func (x *MealListItemUpdateRequestInput) GetBelongsToMealList() string {
 
 type RecipeListCreationRequestInput struct {
 	state         protoimpl.MessageState                `protogen:"open.v1"`
-	Name          string                                `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3"`
-	Description   string                                `json:"description,omitempty" protobuf:"bytes,2,opt,name=description,proto3"`
-	Items         []*RecipeListItemCreationRequestInput `json:"items,omitempty"       protobuf:"bytes,3,rep,name=items,proto3"`
+	Name          string                                `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                                `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Items         []*RecipeListItemCreationRequestInput `protobuf:"bytes,3,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -23172,8 +23172,8 @@ func (x *RecipeListCreationRequestInput) GetItems() []*RecipeListItemCreationReq
 
 type RecipeListUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          *string                `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Description   *string                `json:"description,omitempty" protobuf:"bytes,2,opt,name=description,proto3,oneof"`
+	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Description   *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -23224,9 +23224,9 @@ func (x *RecipeListUpdateRequestInput) GetDescription() string {
 
 type RecipeListItemCreationRequestInput struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId            string                 `json:"recipe_id,omitempty"              protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	Notes               string                 `json:"notes,omitempty"                  protobuf:"bytes,2,opt,name=notes,proto3"`
-	BelongsToRecipeList string                 `json:"belongs_to_recipe_list,omitempty" protobuf:"bytes,3,opt,name=belongs_to_recipe_list,json=belongsToRecipeList,proto3"`
+	RecipeId            string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	Notes               string                 `protobuf:"bytes,2,opt,name=notes,proto3" json:"notes,omitempty"`
+	BelongsToRecipeList string                 `protobuf:"bytes,3,opt,name=belongs_to_recipe_list,json=belongsToRecipeList,proto3" json:"belongs_to_recipe_list,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -23284,9 +23284,9 @@ func (x *RecipeListItemCreationRequestInput) GetBelongsToRecipeList() string {
 
 type RecipeListItemUpdateRequestInput struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	RecipeId            *string                `json:"recipe_id,omitempty"              protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3,oneof"`
-	Notes               *string                `json:"notes,omitempty"                  protobuf:"bytes,2,opt,name=notes,proto3,oneof"`
-	BelongsToRecipeList *string                `json:"belongs_to_recipe_list,omitempty" protobuf:"bytes,3,opt,name=belongs_to_recipe_list,json=belongsToRecipeList,proto3,oneof"`
+	RecipeId            *string                `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3,oneof" json:"recipe_id,omitempty"`
+	Notes               *string                `protobuf:"bytes,2,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	BelongsToRecipeList *string                `protobuf:"bytes,3,opt,name=belongs_to_recipe_list,json=belongsToRecipeList,proto3,oneof" json:"belongs_to_recipe_list,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -23344,13 +23344,13 @@ func (x *RecipeListItemUpdateRequestInput) GetBelongsToRecipeList() string {
 
 type MealPlanTaskCreationRequestInput struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	AssignedToUser      *string                `json:"assigned_to_user,omitempty"     protobuf:"bytes,1,opt,name=assigned_to_user,json=assignedToUser,proto3,oneof"`
-	CreationExplanation string                 `json:"creation_explanation,omitempty" protobuf:"bytes,3,opt,name=creation_explanation,json=creationExplanation,proto3"`
-	StatusExplanation   string                 `json:"status_explanation,omitempty"   protobuf:"bytes,4,opt,name=status_explanation,json=statusExplanation,proto3"`
-	MealPlanOptionId    string                 `json:"meal_plan_option_id,omitempty"  protobuf:"bytes,5,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	RecipePrepTaskId    string                 `json:"recipe_prep_task_id,omitempty"  protobuf:"bytes,6,opt,name=recipe_prep_task_id,json=recipePrepTaskId,proto3"`
+	AssignedToUser      *string                `protobuf:"bytes,1,opt,name=assigned_to_user,json=assignedToUser,proto3,oneof" json:"assigned_to_user,omitempty"`
+	CreationExplanation string                 `protobuf:"bytes,3,opt,name=creation_explanation,json=creationExplanation,proto3" json:"creation_explanation,omitempty"`
+	StatusExplanation   string                 `protobuf:"bytes,4,opt,name=status_explanation,json=statusExplanation,proto3" json:"status_explanation,omitempty"`
+	MealPlanOptionId    string                 `protobuf:"bytes,5,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	RecipePrepTaskId    string                 `protobuf:"bytes,6,opt,name=recipe_prep_task_id,json=recipePrepTaskId,proto3" json:"recipe_prep_task_id,omitempty"`
 	unknownFields       protoimpl.UnknownFields
-	Status              MealPlanTaskStatus `json:"status,omitempty" protobuf:"varint,2,opt,name=status,proto3,enum=mealplanning.MealPlanTaskStatus"`
+	Status              MealPlanTaskStatus `protobuf:"varint,2,opt,name=status,proto3,enum=mealplanning.MealPlanTaskStatus" json:"status,omitempty"`
 	sizeCache           protoimpl.SizeCache
 }
 
@@ -23428,10 +23428,10 @@ func (x *MealPlanTaskCreationRequestInput) GetRecipePrepTaskId() string {
 
 type MealPlanTaskStatusChangeRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Status            *MealPlanTaskStatus    `json:"status,omitempty"             protobuf:"varint,1,opt,name=status,proto3,enum=mealplanning.MealPlanTaskStatus,oneof"`
-	StatusExplanation string                 `json:"status_explanation,omitempty" protobuf:"bytes,2,opt,name=status_explanation,json=statusExplanation,proto3"`
-	AssignedToUser    *string                `json:"assigned_to_user,omitempty"   protobuf:"bytes,3,opt,name=assigned_to_user,json=assignedToUser,proto3,oneof"`
-	Id                string                 `json:"id,omitempty"                 protobuf:"bytes,4,opt,name=id,proto3"`
+	Status            *MealPlanTaskStatus    `protobuf:"varint,1,opt,name=status,proto3,enum=mealplanning.MealPlanTaskStatus,oneof" json:"status,omitempty"`
+	StatusExplanation string                 `protobuf:"bytes,2,opt,name=status_explanation,json=statusExplanation,proto3" json:"status_explanation,omitempty"`
+	AssignedToUser    *string                `protobuf:"bytes,3,opt,name=assigned_to_user,json=assignedToUser,proto3,oneof" json:"assigned_to_user,omitempty"`
+	Id                string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -23496,9 +23496,9 @@ func (x *MealPlanTaskStatusChangeRequestInput) GetId() string {
 
 type MealPlanUpdateRequestInput struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	BelongsToAccount *string                `json:"belongs_to_account,omitempty" protobuf:"bytes,1,opt,name=belongs_to_account,json=belongsToAccount,proto3,oneof"`
-	Notes            *string                `json:"notes,omitempty"              protobuf:"bytes,2,opt,name=notes,proto3,oneof"`
-	VotingDeadline   *timestamppb.Timestamp `json:"voting_deadline,omitempty"    protobuf:"bytes,3,opt,name=voting_deadline,json=votingDeadline,proto3,oneof"`
+	BelongsToAccount *string                `protobuf:"bytes,1,opt,name=belongs_to_account,json=belongsToAccount,proto3,oneof" json:"belongs_to_account,omitempty"`
+	Notes            *string                `protobuf:"bytes,2,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	VotingDeadline   *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=voting_deadline,json=votingDeadline,proto3,oneof" json:"voting_deadline,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -23556,12 +23556,12 @@ func (x *MealPlanUpdateRequestInput) GetVotingDeadline() *timestamppb.Timestamp 
 
 type MealUpdateRequestInput struct {
 	state                protoimpl.MessageState                               `protogen:"open.v1"`
-	Name                 *string                                              `json:"name,omitempty"                    protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Description          *string                                              `json:"description,omitempty"             protobuf:"bytes,2,opt,name=description,proto3,oneof"`
-	CreatedByUser        *string                                              `json:"created_by_user,omitempty"         protobuf:"bytes,3,opt,name=created_by_user,json=createdByUser,proto3,oneof"`
-	EstimatedPortions    *types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimated_portions,omitempty"      protobuf:"bytes,4,opt,name=estimated_portions,json=estimatedPortions,proto3,oneof"`
-	EligibleForMealPlans *bool                                                `json:"eligible_for_meal_plans,omitempty" protobuf:"varint,5,opt,name=eligible_for_meal_plans,json=eligibleForMealPlans,proto3,oneof"`
-	Components           []*MealComponentUpdateRequestInput                   `json:"components,omitempty"              protobuf:"bytes,6,rep,name=components,proto3"`
+	Name                 *string                                              `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Description          *string                                              `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	CreatedByUser        *string                                              `protobuf:"bytes,3,opt,name=created_by_user,json=createdByUser,proto3,oneof" json:"created_by_user,omitempty"`
+	EstimatedPortions    *types.Float32RangeWithOptionalMaxUpdateRequestInput `protobuf:"bytes,4,opt,name=estimated_portions,json=estimatedPortions,proto3,oneof" json:"estimated_portions,omitempty"`
+	EligibleForMealPlans *bool                                                `protobuf:"varint,5,opt,name=eligible_for_meal_plans,json=eligibleForMealPlans,proto3,oneof" json:"eligible_for_meal_plans,omitempty"`
+	Components           []*MealComponentUpdateRequestInput                   `protobuf:"bytes,6,rep,name=components,proto3" json:"components,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -23640,7 +23640,7 @@ func (x *MealUpdateRequestInput) GetComponents() []*MealComponentUpdateRequestIn
 
 type ArchiveMealRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MealId        string                 `json:"meal_id,omitempty" protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3"`
+	MealId        string                 `protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3" json:"meal_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -23684,7 +23684,7 @@ func (x *ArchiveMealRequest) GetMealId() string {
 
 type ArchiveMealResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -23728,7 +23728,7 @@ func (x *ArchiveMealResponse) GetResponseDetails() *types.ResponseDetails {
 
 type ArchiveMealPlanRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId    string                 `json:"meal_plan_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
+	MealPlanId    string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -23772,7 +23772,7 @@ func (x *ArchiveMealPlanRequest) GetMealPlanId() string {
 
 type ArchiveMealPlanResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -23816,8 +23816,8 @@ func (x *ArchiveMealPlanResponse) GetResponseDetails() *types.ResponseDetails {
 
 type ArchiveMealPlanEventRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId      string                 `json:"meal_plan_id,omitempty"       protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId string                 `json:"meal_plan_event_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
+	MealPlanId      string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId string                 `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -23868,7 +23868,7 @@ func (x *ArchiveMealPlanEventRequest) GetMealPlanEventId() string {
 
 type ArchiveMealPlanEventResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -23912,8 +23912,8 @@ func (x *ArchiveMealPlanEventResponse) GetResponseDetails() *types.ResponseDetai
 
 type ArchiveMealPlanGroceryListItemRequest struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId                string                 `json:"meal_plan_id,omitempty"                   protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanGroceryListItemId string                 `json:"meal_plan_grocery_list_item_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_grocery_list_item_id,json=mealPlanGroceryListItemId,proto3"`
+	MealPlanId                string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanGroceryListItemId string                 `protobuf:"bytes,2,opt,name=meal_plan_grocery_list_item_id,json=mealPlanGroceryListItemId,proto3" json:"meal_plan_grocery_list_item_id,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -23964,7 +23964,7 @@ func (x *ArchiveMealPlanGroceryListItemRequest) GetMealPlanGroceryListItemId() s
 
 type ArchiveMealPlanGroceryListItemResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24008,9 +24008,9 @@ func (x *ArchiveMealPlanGroceryListItemResponse) GetResponseDetails() *types.Res
 
 type ArchiveMealPlanOptionRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId       string                 `json:"meal_plan_id,omitempty"        protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId  string                 `json:"meal_plan_event_id,omitempty"  protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	MealPlanOptionId string                 `json:"meal_plan_option_id,omitempty" protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
+	MealPlanId       string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId  string                 `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	MealPlanOptionId string                 `protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -24068,7 +24068,7 @@ func (x *ArchiveMealPlanOptionRequest) GetMealPlanOptionId() string {
 
 type ArchiveMealPlanOptionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24112,10 +24112,10 @@ func (x *ArchiveMealPlanOptionResponse) GetResponseDetails() *types.ResponseDeta
 
 type ArchiveMealPlanOptionVoteRequest struct {
 	state                protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId           string                 `json:"meal_plan_id,omitempty"             protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId      string                 `json:"meal_plan_event_id,omitempty"       protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	MealPlanOptionId     string                 `json:"meal_plan_option_id,omitempty"      protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	MealPlanOptionVoteId string                 `json:"meal_plan_option_vote_id,omitempty" protobuf:"bytes,4,opt,name=meal_plan_option_vote_id,json=mealPlanOptionVoteId,proto3"`
+	MealPlanId           string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId      string                 `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	MealPlanOptionId     string                 `protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	MealPlanOptionVoteId string                 `protobuf:"bytes,4,opt,name=meal_plan_option_vote_id,json=mealPlanOptionVoteId,proto3" json:"meal_plan_option_vote_id,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -24180,7 +24180,7 @@ func (x *ArchiveMealPlanOptionVoteRequest) GetMealPlanOptionVoteId() string {
 
 type ArchiveMealPlanOptionVoteResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24224,7 +24224,7 @@ func (x *ArchiveMealPlanOptionVoteResponse) GetResponseDetails() *types.Response
 
 type CreateMealRequest struct {
 	state         protoimpl.MessageState    `protogen:"open.v1"`
-	Input         *MealCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *MealCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -24268,8 +24268,8 @@ func (x *CreateMealRequest) GetInput() *MealCreationRequestInput {
 
 type CreateMealResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *Meal                  `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *Meal                  `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24320,7 +24320,7 @@ func (x *CreateMealResponse) GetCreated() *Meal {
 
 type CreateMealPlanRequest struct {
 	state         protoimpl.MessageState        `protogen:"open.v1"`
-	Input         *MealPlanCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *MealPlanCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -24364,8 +24364,8 @@ func (x *CreateMealPlanRequest) GetInput() *MealPlanCreationRequestInput {
 
 type CreateMealPlanResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *MealPlan              `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *MealPlan              `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24416,8 +24416,8 @@ func (x *CreateMealPlanResponse) GetCreated() *MealPlan {
 
 type CreateMealPlanEventRequest struct {
 	state         protoimpl.MessageState             `protogen:"open.v1"`
-	MealPlanId    string                             `json:"meal_plan_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	Input         *MealPlanEventCreationRequestInput `json:"input,omitempty"        protobuf:"bytes,2,opt,name=input,proto3"`
+	MealPlanId    string                             `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	Input         *MealPlanEventCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -24468,8 +24468,8 @@ func (x *CreateMealPlanEventRequest) GetInput() *MealPlanEventCreationRequestInp
 
 type CreateMealPlanEventResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *MealPlanEvent         `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *MealPlanEvent         `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24520,9 +24520,9 @@ func (x *CreateMealPlanEventResponse) GetCreated() *MealPlanEvent {
 
 type CreateMealPlanOptionRequest struct {
 	state           protoimpl.MessageState              `protogen:"open.v1"`
-	MealPlanId      string                              `json:"meal_plan_id,omitempty"       protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId string                              `json:"meal_plan_event_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	Input           *MealPlanOptionCreationRequestInput `json:"input,omitempty"              protobuf:"bytes,3,opt,name=input,proto3"`
+	MealPlanId      string                              `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId string                              `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	Input           *MealPlanOptionCreationRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24580,8 +24580,8 @@ func (x *CreateMealPlanOptionRequest) GetInput() *MealPlanOptionCreationRequestI
 
 type CreateMealPlanOptionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *MealPlanOption        `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *MealPlanOption        `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24632,9 +24632,9 @@ func (x *CreateMealPlanOptionResponse) GetCreated() *MealPlanOption {
 
 type CreateMealPlanOptionVoteRequest struct {
 	state           protoimpl.MessageState                  `protogen:"open.v1"`
-	MealPlanId      string                                  `json:"meal_plan_id,omitempty"       protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId string                                  `json:"meal_plan_event_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	Input           *MealPlanOptionVoteCreationRequestInput `json:"input,omitempty"              protobuf:"bytes,3,opt,name=input,proto3"`
+	MealPlanId      string                                  `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId string                                  `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	Input           *MealPlanOptionVoteCreationRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24692,8 +24692,8 @@ func (x *CreateMealPlanOptionVoteRequest) GetInput() *MealPlanOptionVoteCreation
 
 type CreateMealPlanOptionVoteResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         []*MealPlanOptionVote  `json:"created,omitempty"          protobuf:"bytes,2,rep,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         []*MealPlanOptionVote  `protobuf:"bytes,2,rep,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24744,8 +24744,8 @@ func (x *CreateMealPlanOptionVoteResponse) GetCreated() []*MealPlanOptionVote {
 
 type CreateMealPlanTaskRequest struct {
 	state         protoimpl.MessageState            `protogen:"open.v1"`
-	MealPlanId    string                            `json:"meal_plan_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	Input         *MealPlanTaskCreationRequestInput `json:"input,omitempty"        protobuf:"bytes,2,opt,name=input,proto3"`
+	MealPlanId    string                            `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	Input         *MealPlanTaskCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -24796,8 +24796,8 @@ func (x *CreateMealPlanTaskRequest) GetInput() *MealPlanTaskCreationRequestInput
 
 type CreateMealPlanTaskResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *MealPlanTask          `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *MealPlanTask          `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -24848,7 +24848,7 @@ func (x *CreateMealPlanTaskResponse) GetCreated() *MealPlanTask {
 
 type FinalizeMealPlanRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId    string                 `json:"meal_plan_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
+	MealPlanId    string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -24892,10 +24892,10 @@ func (x *FinalizeMealPlanRequest) GetMealPlanId() string {
 
 type FinalizeMealPlanResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Finalized       bool `json:"finalized,omitempty" protobuf:"varint,2,opt,name=finalized,proto3"`
+	Finalized       bool `protobuf:"varint,2,opt,name=finalized,proto3" json:"finalized,omitempty"`
 }
 
 func (x *FinalizeMealPlanResponse) Reset() {
@@ -24944,7 +24944,7 @@ func (x *FinalizeMealPlanResponse) GetFinalized() bool {
 
 type GetMealRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MealId        string                 `json:"meal_id,omitempty" protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3"`
+	MealId        string                 `protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3" json:"meal_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -24988,8 +24988,8 @@ func (x *GetMealRequest) GetMealId() string {
 
 type GetMealResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *Meal                  `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *Meal                  `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25040,7 +25040,7 @@ func (x *GetMealResponse) GetResult() *Meal {
 
 type GetMealPlanRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId    string                 `json:"meal_plan_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
+	MealPlanId    string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -25084,8 +25084,8 @@ func (x *GetMealPlanRequest) GetMealPlanId() string {
 
 type GetMealPlanResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *MealPlan              `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *MealPlan              `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25136,8 +25136,8 @@ func (x *GetMealPlanResponse) GetResult() *MealPlan {
 
 type GetMealPlanEventRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId      string                 `json:"meal_plan_id,omitempty"       protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId string                 `json:"meal_plan_event_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
+	MealPlanId      string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId string                 `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25188,8 +25188,8 @@ func (x *GetMealPlanEventRequest) GetMealPlanEventId() string {
 
 type GetMealPlanEventResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *MealPlanEvent         `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *MealPlanEvent         `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25240,8 +25240,8 @@ func (x *GetMealPlanEventResponse) GetResult() *MealPlanEvent {
 
 type GetMealPlanEventsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"       protobuf:"bytes,1,opt,name=filter,proto3"`
-	MealPlanId    string                 `json:"meal_plan_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	MealPlanId    string                 `protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -25292,9 +25292,9 @@ func (x *GetMealPlanEventsRequest) GetMealPlanId() string {
 
 type GetMealPlanEventsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*MealPlanEvent       `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*MealPlanEvent       `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25352,8 +25352,8 @@ func (x *GetMealPlanEventsResponse) GetResults() []*MealPlanEvent {
 
 type GetMealPlanGroceryListItemRequest struct {
 	state                     protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId                string                 `json:"meal_plan_id,omitempty"                   protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanGroceryListItemId string                 `json:"meal_plan_grocery_list_item_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_grocery_list_item_id,json=mealPlanGroceryListItemId,proto3"`
+	MealPlanId                string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanGroceryListItemId string                 `protobuf:"bytes,2,opt,name=meal_plan_grocery_list_item_id,json=mealPlanGroceryListItemId,proto3" json:"meal_plan_grocery_list_item_id,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -25404,8 +25404,8 @@ func (x *GetMealPlanGroceryListItemRequest) GetMealPlanGroceryListItemId() strin
 
 type GetMealPlanGroceryListItemResponse struct {
 	state           protoimpl.MessageState   `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails   `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *MealPlanGroceryListItem `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails   `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *MealPlanGroceryListItem `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25456,8 +25456,8 @@ func (x *GetMealPlanGroceryListItemResponse) GetResult() *MealPlanGroceryListIte
 
 type GetMealPlanGroceryListItemsForMealPlanRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"       protobuf:"bytes,1,opt,name=filter,proto3"`
-	MealPlanId    string                 `json:"meal_plan_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	MealPlanId    string                 `protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -25508,9 +25508,9 @@ func (x *GetMealPlanGroceryListItemsForMealPlanRequest) GetMealPlanId() string {
 
 type GetMealPlanGroceryListItemsForMealPlanResponse struct {
 	state           protoimpl.MessageState     `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails     `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination      `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*MealPlanGroceryListItem `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails     `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination      `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*MealPlanGroceryListItem `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25568,9 +25568,9 @@ func (x *GetMealPlanGroceryListItemsForMealPlanResponse) GetResults() []*MealPla
 
 type GetMealPlanOptionRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId       string                 `json:"meal_plan_id,omitempty"        protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId  string                 `json:"meal_plan_event_id,omitempty"  protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	MealPlanOptionId string                 `json:"meal_plan_option_id,omitempty" protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
+	MealPlanId       string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId  string                 `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	MealPlanOptionId string                 `protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -25628,8 +25628,8 @@ func (x *GetMealPlanOptionRequest) GetMealPlanOptionId() string {
 
 type GetMealPlanOptionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *MealPlanOption        `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *MealPlanOption        `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25680,10 +25680,10 @@ func (x *GetMealPlanOptionResponse) GetResult() *MealPlanOption {
 
 type GetMealPlanOptionVoteRequest struct {
 	state                protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId           string                 `json:"meal_plan_id,omitempty"             protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId      string                 `json:"meal_plan_event_id,omitempty"       protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	MealPlanOptionId     string                 `json:"meal_plan_option_id,omitempty"      protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	MealPlanOptionVoteId string                 `json:"meal_plan_option_vote_id,omitempty" protobuf:"bytes,4,opt,name=meal_plan_option_vote_id,json=mealPlanOptionVoteId,proto3"`
+	MealPlanId           string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId      string                 `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	MealPlanOptionId     string                 `protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	MealPlanOptionVoteId string                 `protobuf:"bytes,4,opt,name=meal_plan_option_vote_id,json=mealPlanOptionVoteId,proto3" json:"meal_plan_option_vote_id,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -25748,8 +25748,8 @@ func (x *GetMealPlanOptionVoteRequest) GetMealPlanOptionVoteId() string {
 
 type GetMealPlanOptionVoteResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *MealPlanOptionVote    `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *MealPlanOptionVote    `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25800,10 +25800,10 @@ func (x *GetMealPlanOptionVoteResponse) GetResult() *MealPlanOptionVote {
 
 type GetMealPlanOptionVotesRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty"              protobuf:"bytes,1,opt,name=filter,proto3"`
-	MealPlanId       string                 `json:"meal_plan_id,omitempty"        protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId  string                 `json:"meal_plan_event_id,omitempty"  protobuf:"bytes,3,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	MealPlanOptionId string                 `json:"meal_plan_option_id,omitempty" protobuf:"bytes,4,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	MealPlanId       string                 `protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId  string                 `protobuf:"bytes,3,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	MealPlanOptionId string                 `protobuf:"bytes,4,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -25868,9 +25868,9 @@ func (x *GetMealPlanOptionVotesRequest) GetMealPlanOptionId() string {
 
 type GetMealPlanOptionVotesResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*MealPlanOptionVote  `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*MealPlanOptionVote  `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25928,9 +25928,9 @@ func (x *GetMealPlanOptionVotesResponse) GetResults() []*MealPlanOptionVote {
 
 type GetMealPlanOptionsRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Filter          *filtering.QueryFilter `json:"filter,omitempty"             protobuf:"bytes,1,opt,name=filter,proto3"`
-	MealPlanId      string                 `json:"meal_plan_id,omitempty"       protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId string                 `json:"meal_plan_event_id,omitempty" protobuf:"bytes,3,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
+	Filter          *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	MealPlanId      string                 `protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId string                 `protobuf:"bytes,3,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -25988,9 +25988,9 @@ func (x *GetMealPlanOptionsRequest) GetMealPlanEventId() string {
 
 type GetMealPlanOptionsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*MealPlanOption      `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*MealPlanOption      `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26048,8 +26048,8 @@ func (x *GetMealPlanOptionsResponse) GetResults() []*MealPlanOption {
 
 type GetMealPlanTaskRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanId     string                 `json:"meal_plan_id,omitempty"      protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanTaskId string                 `json:"meal_plan_task_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_task_id,json=mealPlanTaskId,proto3"`
+	MealPlanId     string                 `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanTaskId string                 `protobuf:"bytes,2,opt,name=meal_plan_task_id,json=mealPlanTaskId,proto3" json:"meal_plan_task_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -26100,8 +26100,8 @@ func (x *GetMealPlanTaskRequest) GetMealPlanTaskId() string {
 
 type GetMealPlanTaskResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *MealPlanTask          `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *MealPlanTask          `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26152,8 +26152,8 @@ func (x *GetMealPlanTaskResponse) GetResult() *MealPlanTask {
 
 type GetMealPlanTasksRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"       protobuf:"bytes,1,opt,name=filter,proto3"`
-	MealPlanId    string                 `json:"meal_plan_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	MealPlanId    string                 `protobuf:"bytes,2,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -26204,9 +26204,9 @@ func (x *GetMealPlanTasksRequest) GetMealPlanId() string {
 
 type GetMealPlanTasksResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*MealPlanTask        `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*MealPlanTask        `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26264,7 +26264,7 @@ func (x *GetMealPlanTasksResponse) GetResults() []*MealPlanTask {
 
 type GetMealPlansForAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -26308,9 +26308,9 @@ func (x *GetMealPlansForAccountRequest) GetFilter() *filtering.QueryFilter {
 
 type GetMealPlansForAccountResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*MealPlan            `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*MealPlan            `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26368,7 +26368,7 @@ func (x *GetMealPlansForAccountResponse) GetResults() []*MealPlan {
 
 type GetMealsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -26412,9 +26412,9 @@ func (x *GetMealsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetMealsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*Meal                `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*Meal                `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26472,7 +26472,7 @@ func (x *GetMealsResponse) GetResults() []*Meal {
 
 type GetMealListsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -26516,9 +26516,9 @@ func (x *GetMealListsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetMealListsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*MealList            `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*MealList            `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26576,7 +26576,7 @@ func (x *GetMealListsResponse) GetResults() []*MealList {
 
 type CreateMealListRequest struct {
 	state         protoimpl.MessageState        `protogen:"open.v1"`
-	Input         *MealListCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *MealListCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -26620,8 +26620,8 @@ func (x *CreateMealListRequest) GetInput() *MealListCreationRequestInput {
 
 type CreateMealListResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *MealList              `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *MealList              `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26672,8 +26672,8 @@ func (x *CreateMealListResponse) GetCreated() *MealList {
 
 type UpdateMealListRequest struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
-	MealListId    string                      `json:"meal_list_id,omitempty" protobuf:"bytes,1,opt,name=meal_list_id,json=mealListId,proto3"`
-	Input         *MealListUpdateRequestInput `json:"input,omitempty"        protobuf:"bytes,2,opt,name=input,proto3"`
+	MealListId    string                      `protobuf:"bytes,1,opt,name=meal_list_id,json=mealListId,proto3" json:"meal_list_id,omitempty"`
+	Input         *MealListUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -26724,8 +26724,8 @@ func (x *UpdateMealListRequest) GetInput() *MealListUpdateRequestInput {
 
 type UpdateMealListResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *MealList              `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *MealList              `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26776,7 +26776,7 @@ func (x *UpdateMealListResponse) GetUpdated() *MealList {
 
 type ArchiveMealListRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MealListId    string                 `json:"meal_list_id,omitempty" protobuf:"bytes,1,opt,name=meal_list_id,json=mealListId,proto3"`
+	MealListId    string                 `protobuf:"bytes,1,opt,name=meal_list_id,json=mealListId,proto3" json:"meal_list_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -26820,7 +26820,7 @@ func (x *ArchiveMealListRequest) GetMealListId() string {
 
 type ArchiveMealListResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26864,8 +26864,8 @@ func (x *ArchiveMealListResponse) GetResponseDetails() *types.ResponseDetails {
 
 type GetMealListItemsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MealListId    string                 `json:"meal_list_id,omitempty" protobuf:"bytes,1,opt,name=meal_list_id,json=mealListId,proto3"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"       protobuf:"bytes,2,opt,name=filter,proto3"`
+	MealListId    string                 `protobuf:"bytes,1,opt,name=meal_list_id,json=mealListId,proto3" json:"meal_list_id,omitempty"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -26916,9 +26916,9 @@ func (x *GetMealListItemsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetMealListItemsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*MealListItem        `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*MealListItem        `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -26976,7 +26976,7 @@ func (x *GetMealListItemsResponse) GetResults() []*MealListItem {
 
 type CreateMealListItemRequest struct {
 	state         protoimpl.MessageState            `protogen:"open.v1"`
-	Input         *MealListItemCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *MealListItemCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -27020,8 +27020,8 @@ func (x *CreateMealListItemRequest) GetInput() *MealListItemCreationRequestInput
 
 type CreateMealListItemResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *MealListItem          `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *MealListItem          `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27072,8 +27072,8 @@ func (x *CreateMealListItemResponse) GetCreated() *MealListItem {
 
 type UpdateMealListItemRequest struct {
 	state          protoimpl.MessageState          `protogen:"open.v1"`
-	MealListItemId string                          `json:"meal_list_item_id,omitempty" protobuf:"bytes,1,opt,name=meal_list_item_id,json=mealListItemId,proto3"`
-	Input          *MealListItemUpdateRequestInput `json:"input,omitempty"             protobuf:"bytes,2,opt,name=input,proto3"`
+	MealListItemId string                          `protobuf:"bytes,1,opt,name=meal_list_item_id,json=mealListItemId,proto3" json:"meal_list_item_id,omitempty"`
+	Input          *MealListItemUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -27124,8 +27124,8 @@ func (x *UpdateMealListItemRequest) GetInput() *MealListItemUpdateRequestInput {
 
 type UpdateMealListItemResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *MealListItem          `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *MealListItem          `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27176,8 +27176,8 @@ func (x *UpdateMealListItemResponse) GetUpdated() *MealListItem {
 
 type ArchiveMealListItemRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	MealListItemId string                 `json:"meal_list_item_id,omitempty" protobuf:"bytes,1,opt,name=meal_list_item_id,json=mealListItemId,proto3"`
-	MealListId     string                 `json:"meal_list_id,omitempty"      protobuf:"bytes,2,opt,name=meal_list_id,json=mealListId,proto3"`
+	MealListItemId string                 `protobuf:"bytes,1,opt,name=meal_list_item_id,json=mealListItemId,proto3" json:"meal_list_item_id,omitempty"`
+	MealListId     string                 `protobuf:"bytes,2,opt,name=meal_list_id,json=mealListId,proto3" json:"meal_list_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -27228,7 +27228,7 @@ func (x *ArchiveMealListItemRequest) GetMealListId() string {
 
 type ArchiveMealListItemResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27272,7 +27272,7 @@ func (x *ArchiveMealListItemResponse) GetResponseDetails() *types.ResponseDetail
 
 type GetRecipeListsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -27316,9 +27316,9 @@ func (x *GetRecipeListsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetRecipeListsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipeList          `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipeList          `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27376,7 +27376,7 @@ func (x *GetRecipeListsResponse) GetResults() []*RecipeList {
 
 type CreateRecipeListRequest struct {
 	state         protoimpl.MessageState          `protogen:"open.v1"`
-	Input         *RecipeListCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *RecipeListCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -27420,8 +27420,8 @@ func (x *CreateRecipeListRequest) GetInput() *RecipeListCreationRequestInput {
 
 type CreateRecipeListResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipeList            `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipeList            `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27472,8 +27472,8 @@ func (x *CreateRecipeListResponse) GetCreated() *RecipeList {
 
 type UpdateRecipeListRequest struct {
 	state         protoimpl.MessageState        `protogen:"open.v1"`
-	RecipeListId  string                        `json:"recipe_list_id,omitempty" protobuf:"bytes,1,opt,name=recipe_list_id,json=recipeListId,proto3"`
-	Input         *RecipeListUpdateRequestInput `json:"input,omitempty"          protobuf:"bytes,2,opt,name=input,proto3"`
+	RecipeListId  string                        `protobuf:"bytes,1,opt,name=recipe_list_id,json=recipeListId,proto3" json:"recipe_list_id,omitempty"`
+	Input         *RecipeListUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -27524,8 +27524,8 @@ func (x *UpdateRecipeListRequest) GetInput() *RecipeListUpdateRequestInput {
 
 type UpdateRecipeListResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipeList            `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipeList            `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27576,7 +27576,7 @@ func (x *UpdateRecipeListResponse) GetUpdated() *RecipeList {
 
 type ArchiveRecipeListRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeListId  string                 `json:"recipe_list_id,omitempty" protobuf:"bytes,1,opt,name=recipe_list_id,json=recipeListId,proto3"`
+	RecipeListId  string                 `protobuf:"bytes,1,opt,name=recipe_list_id,json=recipeListId,proto3" json:"recipe_list_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -27620,7 +27620,7 @@ func (x *ArchiveRecipeListRequest) GetRecipeListId() string {
 
 type ArchiveRecipeListResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27664,8 +27664,8 @@ func (x *ArchiveRecipeListResponse) GetResponseDetails() *types.ResponseDetails 
 
 type GetRecipeListItemsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RecipeListId  string                 `json:"recipe_list_id,omitempty" protobuf:"bytes,1,opt,name=recipe_list_id,json=recipeListId,proto3"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"         protobuf:"bytes,2,opt,name=filter,proto3"`
+	RecipeListId  string                 `protobuf:"bytes,1,opt,name=recipe_list_id,json=recipeListId,proto3" json:"recipe_list_id,omitempty"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -27716,9 +27716,9 @@ func (x *GetRecipeListItemsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetRecipeListItemsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*RecipeListItem      `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*RecipeListItem      `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27776,7 +27776,7 @@ func (x *GetRecipeListItemsResponse) GetResults() []*RecipeListItem {
 
 type CreateRecipeListItemRequest struct {
 	state         protoimpl.MessageState              `protogen:"open.v1"`
-	Input         *RecipeListItemCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *RecipeListItemCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -27820,8 +27820,8 @@ func (x *CreateRecipeListItemRequest) GetInput() *RecipeListItemCreationRequestI
 
 type CreateRecipeListItemResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *RecipeListItem        `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *RecipeListItem        `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27872,8 +27872,8 @@ func (x *CreateRecipeListItemResponse) GetCreated() *RecipeListItem {
 
 type UpdateRecipeListItemRequest struct {
 	state            protoimpl.MessageState            `protogen:"open.v1"`
-	RecipeListItemId string                            `json:"recipe_list_item_id,omitempty" protobuf:"bytes,1,opt,name=recipe_list_item_id,json=recipeListItemId,proto3"`
-	Input            *RecipeListItemUpdateRequestInput `json:"input,omitempty"               protobuf:"bytes,2,opt,name=input,proto3"`
+	RecipeListItemId string                            `protobuf:"bytes,1,opt,name=recipe_list_item_id,json=recipeListItemId,proto3" json:"recipe_list_item_id,omitempty"`
+	Input            *RecipeListItemUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -27924,8 +27924,8 @@ func (x *UpdateRecipeListItemRequest) GetInput() *RecipeListItemUpdateRequestInp
 
 type UpdateRecipeListItemResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *RecipeListItem        `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *RecipeListItem        `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -27976,8 +27976,8 @@ func (x *UpdateRecipeListItemResponse) GetUpdated() *RecipeListItem {
 
 type ArchiveRecipeListItemRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	RecipeListItemId string                 `json:"recipe_list_item_id,omitempty" protobuf:"bytes,1,opt,name=recipe_list_item_id,json=recipeListItemId,proto3"`
-	RecipeListId     string                 `json:"recipe_list_id,omitempty"      protobuf:"bytes,2,opt,name=recipe_list_id,json=recipeListId,proto3"`
+	RecipeListItemId string                 `protobuf:"bytes,1,opt,name=recipe_list_item_id,json=recipeListItemId,proto3" json:"recipe_list_item_id,omitempty"`
+	RecipeListId     string                 `protobuf:"bytes,2,opt,name=recipe_list_id,json=recipeListId,proto3" json:"recipe_list_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -28028,7 +28028,7 @@ func (x *ArchiveRecipeListItemRequest) GetRecipeListId() string {
 
 type ArchiveRecipeListItemResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -28108,9 +28108,9 @@ func (*RunFinalizeMealPlanWorkerRequest) Descriptor() ([]byte, []int) {
 
 type RunFinalizeMealPlanWorkerResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
-	Finalized       uint32 `json:"finalized,omitempty" protobuf:"varint,2,opt,name=finalized,proto3"`
+	Finalized       uint32 `protobuf:"varint,2,opt,name=finalized,proto3" json:"finalized,omitempty"`
 	sizeCache       protoimpl.SizeCache
 }
 
@@ -28196,7 +28196,7 @@ func (*RunMealPlanGroceryListInitializerWorkerRequest) Descriptor() ([]byte, []i
 
 type RunMealPlanGroceryListInitializerWorkerResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -28276,7 +28276,7 @@ func (*RunMealPlanTaskCreatorWorkerRequest) Descriptor() ([]byte, []int) {
 
 type RunMealPlanTaskCreatorWorkerResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -28320,11 +28320,11 @@ func (x *RunMealPlanTaskCreatorWorkerResponse) GetResponseDetails() *types.Respo
 
 type SearchForMealsRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
-	Query            string                 `json:"query,omitempty"  protobuf:"bytes,2,opt,name=query,proto3"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Query            string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `json:"use_search_service,omitempty" protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3"`
+	UseSearchService bool `protobuf:"varint,3,opt,name=use_search_service,json=useSearchService,proto3" json:"use_search_service,omitempty"`
 }
 
 func (x *SearchForMealsRequest) Reset() {
@@ -28380,9 +28380,9 @@ func (x *SearchForMealsRequest) GetUseSearchService() bool {
 
 type SearchForMealsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*Meal                `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*Meal                `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -28440,8 +28440,8 @@ func (x *SearchForMealsResponse) GetResults() []*Meal {
 
 type UpdateMealPlanRequest struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
-	MealPlanId    string                      `json:"meal_plan_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	Input         *MealPlanUpdateRequestInput `json:"input,omitempty"        protobuf:"bytes,2,opt,name=input,proto3"`
+	MealPlanId    string                      `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	Input         *MealPlanUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -28492,8 +28492,8 @@ func (x *UpdateMealPlanRequest) GetInput() *MealPlanUpdateRequestInput {
 
 type UpdateMealPlanResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *MealPlan              `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *MealPlan              `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -28544,9 +28544,9 @@ func (x *UpdateMealPlanResponse) GetUpdated() *MealPlan {
 
 type UpdateMealPlanEventRequest struct {
 	state           protoimpl.MessageState           `protogen:"open.v1"`
-	MealPlanId      string                           `json:"meal_plan_id,omitempty"       protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId string                           `json:"meal_plan_event_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	Input           *MealPlanEventUpdateRequestInput `json:"input,omitempty"              protobuf:"bytes,3,opt,name=input,proto3"`
+	MealPlanId      string                           `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId string                           `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	Input           *MealPlanEventUpdateRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -28604,8 +28604,8 @@ func (x *UpdateMealPlanEventRequest) GetInput() *MealPlanEventUpdateRequestInput
 
 type UpdateMealPlanEventResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *MealPlanEvent         `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *MealPlanEvent         `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -28656,9 +28656,9 @@ func (x *UpdateMealPlanEventResponse) GetUpdated() *MealPlanEvent {
 
 type UpdateMealPlanGroceryListItemRequest struct {
 	state                     protoimpl.MessageState                     `protogen:"open.v1"`
-	MealPlanId                string                                     `json:"meal_plan_id,omitempty"                   protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanGroceryListItemId string                                     `json:"meal_plan_grocery_list_item_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_grocery_list_item_id,json=mealPlanGroceryListItemId,proto3"`
-	Input                     *MealPlanGroceryListItemUpdateRequestInput `json:"input,omitempty"                          protobuf:"bytes,3,opt,name=input,proto3"`
+	MealPlanId                string                                     `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanGroceryListItemId string                                     `protobuf:"bytes,2,opt,name=meal_plan_grocery_list_item_id,json=mealPlanGroceryListItemId,proto3" json:"meal_plan_grocery_list_item_id,omitempty"`
+	Input                     *MealPlanGroceryListItemUpdateRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -28716,8 +28716,8 @@ func (x *UpdateMealPlanGroceryListItemRequest) GetInput() *MealPlanGroceryListIt
 
 type UpdateMealPlanGroceryListItemResponse struct {
 	state           protoimpl.MessageState   `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails   `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *MealPlanGroceryListItem `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails   `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *MealPlanGroceryListItem `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -28768,10 +28768,10 @@ func (x *UpdateMealPlanGroceryListItemResponse) GetUpdated() *MealPlanGroceryLis
 
 type UpdateMealPlanOptionRequest struct {
 	state            protoimpl.MessageState            `protogen:"open.v1"`
-	MealPlanId       string                            `json:"meal_plan_id,omitempty"        protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId  string                            `json:"meal_plan_event_id,omitempty"  protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	MealPlanOptionId string                            `json:"meal_plan_option_id,omitempty" protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	Input            *MealPlanOptionUpdateRequestInput `json:"input,omitempty"               protobuf:"bytes,4,opt,name=input,proto3"`
+	MealPlanId       string                            `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId  string                            `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	MealPlanOptionId string                            `protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	Input            *MealPlanOptionUpdateRequestInput `protobuf:"bytes,4,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -28836,8 +28836,8 @@ func (x *UpdateMealPlanOptionRequest) GetInput() *MealPlanOptionUpdateRequestInp
 
 type UpdateMealPlanOptionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *MealPlanOption        `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *MealPlanOption        `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -28888,11 +28888,11 @@ func (x *UpdateMealPlanOptionResponse) GetUpdated() *MealPlanOption {
 
 type UpdateMealPlanOptionVoteRequest struct {
 	state                protoimpl.MessageState                `protogen:"open.v1"`
-	MealPlanId           string                                `json:"meal_plan_id,omitempty"             protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanEventId      string                                `json:"meal_plan_event_id,omitempty"       protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3"`
-	MealPlanOptionId     string                                `json:"meal_plan_option_id,omitempty"      protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	MealPlanOptionVoteId string                                `json:"meal_plan_option_vote_id,omitempty" protobuf:"bytes,4,opt,name=meal_plan_option_vote_id,json=mealPlanOptionVoteId,proto3"`
-	Input                *MealPlanOptionVoteUpdateRequestInput `json:"input,omitempty"                    protobuf:"bytes,5,opt,name=input,proto3"`
+	MealPlanId           string                                `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanEventId      string                                `protobuf:"bytes,2,opt,name=meal_plan_event_id,json=mealPlanEventId,proto3" json:"meal_plan_event_id,omitempty"`
+	MealPlanOptionId     string                                `protobuf:"bytes,3,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	MealPlanOptionVoteId string                                `protobuf:"bytes,4,opt,name=meal_plan_option_vote_id,json=mealPlanOptionVoteId,proto3" json:"meal_plan_option_vote_id,omitempty"`
+	Input                *MealPlanOptionVoteUpdateRequestInput `protobuf:"bytes,5,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -28964,8 +28964,8 @@ func (x *UpdateMealPlanOptionVoteRequest) GetInput() *MealPlanOptionVoteUpdateRe
 
 type UpdateMealPlanOptionVoteResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *MealPlanOptionVote    `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *MealPlanOptionVote    `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -29016,11 +29016,11 @@ func (x *UpdateMealPlanOptionVoteResponse) GetUpdated() *MealPlanOptionVote {
 
 type GetMealPlanRecipeOptionSelectionRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanOptionId string                 `json:"meal_plan_option_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	RecipeStepId     string                 `json:"recipe_step_id,omitempty"      protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	MealPlanOptionId string                 `protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	RecipeStepId     string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
-	IngredientIndex  uint32                            `json:"ingredient_index,omitempty" protobuf:"varint,3,opt,name=ingredient_index,json=ingredientIndex,proto3"`
-	SelectionType    MealPlanRecipeOptionSelectionType `json:"selection_type,omitempty"   protobuf:"varint,4,opt,name=selection_type,json=selectionType,proto3,enum=mealplanning.MealPlanRecipeOptionSelectionType"`
+	IngredientIndex  uint32                            `protobuf:"varint,3,opt,name=ingredient_index,json=ingredientIndex,proto3" json:"ingredient_index,omitempty"`
+	SelectionType    MealPlanRecipeOptionSelectionType `protobuf:"varint,4,opt,name=selection_type,json=selectionType,proto3,enum=mealplanning.MealPlanRecipeOptionSelectionType" json:"selection_type,omitempty"`
 	sizeCache        protoimpl.SizeCache
 }
 
@@ -29084,8 +29084,8 @@ func (x *GetMealPlanRecipeOptionSelectionRequest) GetSelectionType() MealPlanRec
 
 type GetMealPlanRecipeOptionSelectionResponse struct {
 	state           protoimpl.MessageState         `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails         `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *MealPlanRecipeOptionSelection `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails         `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *MealPlanRecipeOptionSelection `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -29136,8 +29136,8 @@ func (x *GetMealPlanRecipeOptionSelectionResponse) GetResult() *MealPlanRecipeOp
 
 type GetMealPlanRecipeOptionSelectionsForMealPlanOptionRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanOptionId string                 `json:"meal_plan_option_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	Filter           *filtering.QueryFilter `json:"filter,omitempty"              protobuf:"bytes,2,opt,name=filter,proto3"`
+	MealPlanOptionId string                 `protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	Filter           *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -29188,9 +29188,9 @@ func (x *GetMealPlanRecipeOptionSelectionsForMealPlanOptionRequest) GetFilter() 
 
 type GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse struct {
 	state           protoimpl.MessageState           `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails           `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination            `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*MealPlanRecipeOptionSelection `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails           `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination            `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*MealPlanRecipeOptionSelection `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -29248,8 +29248,8 @@ func (x *GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse) GetResults(
 
 type CreateMealPlanRecipeOptionSelectionRequest struct {
 	state            protoimpl.MessageState                             `protogen:"open.v1"`
-	MealPlanOptionId string                                             `json:"meal_plan_option_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	Input            *MealPlanRecipeOptionSelectionCreationRequestInput `json:"input,omitempty"               protobuf:"bytes,2,opt,name=input,proto3"`
+	MealPlanOptionId string                                             `protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	Input            *MealPlanRecipeOptionSelectionCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -29300,8 +29300,8 @@ func (x *CreateMealPlanRecipeOptionSelectionRequest) GetInput() *MealPlanRecipeO
 
 type CreateMealPlanRecipeOptionSelectionResponse struct {
 	state           protoimpl.MessageState         `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails         `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *MealPlanRecipeOptionSelection `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails         `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *MealPlanRecipeOptionSelection `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -29352,12 +29352,12 @@ func (x *CreateMealPlanRecipeOptionSelectionResponse) GetCreated() *MealPlanReci
 
 type UpdateMealPlanRecipeOptionSelectionRequest struct {
 	state            protoimpl.MessageState                           `protogen:"open.v1"`
-	Input            *MealPlanRecipeOptionSelectionUpdateRequestInput `json:"input,omitempty"               protobuf:"bytes,5,opt,name=input,proto3"`
-	MealPlanOptionId string                                           `json:"meal_plan_option_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	RecipeStepId     string                                           `json:"recipe_step_id,omitempty"      protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	Input            *MealPlanRecipeOptionSelectionUpdateRequestInput `protobuf:"bytes,5,opt,name=input,proto3" json:"input,omitempty"`
+	MealPlanOptionId string                                           `protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	RecipeStepId     string                                           `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
-	IngredientIndex  uint32                            `json:"ingredient_index,omitempty" protobuf:"varint,3,opt,name=ingredient_index,json=ingredientIndex,proto3"`
-	SelectionType    MealPlanRecipeOptionSelectionType `json:"selection_type,omitempty"   protobuf:"varint,4,opt,name=selection_type,json=selectionType,proto3,enum=mealplanning.MealPlanRecipeOptionSelectionType"`
+	IngredientIndex  uint32                            `protobuf:"varint,3,opt,name=ingredient_index,json=ingredientIndex,proto3" json:"ingredient_index,omitempty"`
+	SelectionType    MealPlanRecipeOptionSelectionType `protobuf:"varint,4,opt,name=selection_type,json=selectionType,proto3,enum=mealplanning.MealPlanRecipeOptionSelectionType" json:"selection_type,omitempty"`
 	sizeCache        protoimpl.SizeCache
 }
 
@@ -29428,8 +29428,8 @@ func (x *UpdateMealPlanRecipeOptionSelectionRequest) GetInput() *MealPlanRecipeO
 
 type UpdateMealPlanRecipeOptionSelectionResponse struct {
 	state           protoimpl.MessageState         `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails         `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *MealPlanRecipeOptionSelection `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails         `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *MealPlanRecipeOptionSelection `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -29480,11 +29480,11 @@ func (x *UpdateMealPlanRecipeOptionSelectionResponse) GetUpdated() *MealPlanReci
 
 type ArchiveMealPlanRecipeOptionSelectionRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	MealPlanOptionId string                 `json:"meal_plan_option_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3"`
-	RecipeStepId     string                 `json:"recipe_step_id,omitempty"      protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	MealPlanOptionId string                 `protobuf:"bytes,1,opt,name=meal_plan_option_id,json=mealPlanOptionId,proto3" json:"meal_plan_option_id,omitempty"`
+	RecipeStepId     string                 `protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3" json:"recipe_step_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
-	IngredientIndex  uint32                            `json:"ingredient_index,omitempty" protobuf:"varint,3,opt,name=ingredient_index,json=ingredientIndex,proto3"`
-	SelectionType    MealPlanRecipeOptionSelectionType `json:"selection_type,omitempty"   protobuf:"varint,4,opt,name=selection_type,json=selectionType,proto3,enum=mealplanning.MealPlanRecipeOptionSelectionType"`
+	IngredientIndex  uint32                            `protobuf:"varint,3,opt,name=ingredient_index,json=ingredientIndex,proto3" json:"ingredient_index,omitempty"`
+	SelectionType    MealPlanRecipeOptionSelectionType `protobuf:"varint,4,opt,name=selection_type,json=selectionType,proto3,enum=mealplanning.MealPlanRecipeOptionSelectionType" json:"selection_type,omitempty"`
 	sizeCache        protoimpl.SizeCache
 }
 
@@ -29548,7 +29548,7 @@ func (x *ArchiveMealPlanRecipeOptionSelectionRequest) GetSelectionType() MealPla
 
 type ArchiveMealPlanRecipeOptionSelectionResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -29592,9 +29592,9 @@ func (x *ArchiveMealPlanRecipeOptionSelectionResponse) GetResponseDetails() *typ
 
 type UpdateMealPlanTaskStatusRequest struct {
 	state          protoimpl.MessageState                `protogen:"open.v1"`
-	MealPlanId     string                                `json:"meal_plan_id,omitempty"      protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	MealPlanTaskId string                                `json:"meal_plan_task_id,omitempty" protobuf:"bytes,2,opt,name=meal_plan_task_id,json=mealPlanTaskId,proto3"`
-	Input          *MealPlanTaskStatusChangeRequestInput `json:"input,omitempty"             protobuf:"bytes,3,opt,name=input,proto3"`
+	MealPlanId     string                                `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	MealPlanTaskId string                                `protobuf:"bytes,2,opt,name=meal_plan_task_id,json=mealPlanTaskId,proto3" json:"meal_plan_task_id,omitempty"`
+	Input          *MealPlanTaskStatusChangeRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -29652,8 +29652,8 @@ func (x *UpdateMealPlanTaskStatusRequest) GetInput() *MealPlanTaskStatusChangeRe
 
 type UpdateMealPlanTaskStatusResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *MealPlanTask          `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *MealPlanTask          `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -29704,7 +29704,7 @@ func (x *UpdateMealPlanTaskStatusResponse) GetUpdated() *MealPlanTask {
 
 type CreateMealPlanTasksRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountId     string                 `json:"account_id,omitempty" protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3"`
+	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -29750,7 +29750,7 @@ type CreateMealPlanTasksResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
-	Success       bool `json:"success,omitempty" protobuf:"varint,1,opt,name=success,proto3"`
+	Success       bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 }
 
 func (x *CreateMealPlanTasksResponse) Reset() {
@@ -29794,7 +29794,7 @@ type FinalizeMealPlansRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
-	ReturnCount   bool `json:"return_count,omitempty" protobuf:"varint,1,opt,name=return_count,json=returnCount,proto3"`
+	ReturnCount   bool `protobuf:"varint,1,opt,name=return_count,json=returnCount,proto3" json:"return_count,omitempty"`
 }
 
 func (x *FinalizeMealPlansRequest) Reset() {
@@ -29837,7 +29837,7 @@ func (x *FinalizeMealPlansRequest) GetReturnCount() bool {
 type FinalizeMealPlansResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
-	Count         int64 `json:"count,omitempty" protobuf:"varint,1,opt,name=count,proto3"`
+	Count         int64 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -29880,7 +29880,7 @@ func (x *FinalizeMealPlansResponse) GetCount() int64 {
 
 type ArchiveAccountInstrumentOwnershipRequest struct {
 	state                        protoimpl.MessageState `protogen:"open.v1"`
-	AccountInstrumentOwnershipId string                 `json:"account_instrument_ownership_id,omitempty" protobuf:"bytes,1,opt,name=account_instrument_ownership_id,json=accountInstrumentOwnershipId,proto3"`
+	AccountInstrumentOwnershipId string                 `protobuf:"bytes,1,opt,name=account_instrument_ownership_id,json=accountInstrumentOwnershipId,proto3" json:"account_instrument_ownership_id,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -29924,7 +29924,7 @@ func (x *ArchiveAccountInstrumentOwnershipRequest) GetAccountInstrumentOwnership
 
 type ArchiveAccountInstrumentOwnershipResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -29968,7 +29968,7 @@ func (x *ArchiveAccountInstrumentOwnershipResponse) GetResponseDetails() *types.
 
 type CreateAccountInstrumentOwnershipRequest struct {
 	state         protoimpl.MessageState                          `protogen:"open.v1"`
-	Input         *AccountInstrumentOwnershipCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *AccountInstrumentOwnershipCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -30012,8 +30012,8 @@ func (x *CreateAccountInstrumentOwnershipRequest) GetInput() *AccountInstrumentO
 
 type CreateAccountInstrumentOwnershipResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *AccountInstrumentOwnership `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *AccountInstrumentOwnership `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -30064,7 +30064,7 @@ func (x *CreateAccountInstrumentOwnershipResponse) GetCreated() *AccountInstrume
 
 type GetAccountInstrumentOwnershipsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -30108,9 +30108,9 @@ func (x *GetAccountInstrumentOwnershipsRequest) GetFilter() *filtering.QueryFilt
 
 type GetAccountInstrumentOwnershipsResponse struct {
 	state           protoimpl.MessageState        `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails        `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination         `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*AccountInstrumentOwnership `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails        `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination         `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*AccountInstrumentOwnership `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -30168,7 +30168,7 @@ func (x *GetAccountInstrumentOwnershipsResponse) GetResults() []*AccountInstrume
 
 type GetAccountInstrumentOwnershipRequest struct {
 	state                        protoimpl.MessageState `protogen:"open.v1"`
-	AccountInstrumentOwnershipId string                 `json:"account_instrument_ownership_id,omitempty" protobuf:"bytes,1,opt,name=account_instrument_ownership_id,json=accountInstrumentOwnershipId,proto3"`
+	AccountInstrumentOwnershipId string                 `protobuf:"bytes,1,opt,name=account_instrument_ownership_id,json=accountInstrumentOwnershipId,proto3" json:"account_instrument_ownership_id,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -30212,8 +30212,8 @@ func (x *GetAccountInstrumentOwnershipRequest) GetAccountInstrumentOwnershipId()
 
 type GetAccountInstrumentOwnershipResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *AccountInstrumentOwnership `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *AccountInstrumentOwnership `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -30264,8 +30264,8 @@ func (x *GetAccountInstrumentOwnershipResponse) GetResult() *AccountInstrumentOw
 
 type UpdateAccountInstrumentOwnershipRequest struct {
 	state                        protoimpl.MessageState                        `protogen:"open.v1"`
-	AccountInstrumentOwnershipId string                                        `json:"account_instrument_ownership_id,omitempty" protobuf:"bytes,1,opt,name=account_instrument_ownership_id,json=accountInstrumentOwnershipId,proto3"`
-	Input                        *AccountInstrumentOwnershipUpdateRequestInput `json:"input,omitempty"                           protobuf:"bytes,2,opt,name=input,proto3"`
+	AccountInstrumentOwnershipId string                                        `protobuf:"bytes,1,opt,name=account_instrument_ownership_id,json=accountInstrumentOwnershipId,proto3" json:"account_instrument_ownership_id,omitempty"`
+	Input                        *AccountInstrumentOwnershipUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -30316,8 +30316,8 @@ func (x *UpdateAccountInstrumentOwnershipRequest) GetInput() *AccountInstrumentO
 
 type UpdateAccountInstrumentOwnershipResponse struct {
 	state           protoimpl.MessageState      `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails      `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *AccountInstrumentOwnership `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails      `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *AccountInstrumentOwnership `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -30368,10 +30368,10 @@ func (x *UpdateAccountInstrumentOwnershipResponse) GetUpdated() *AccountInstrume
 
 type AccountInstrumentOwnershipCreationRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Notes             string                 `json:"notes,omitempty"               protobuf:"bytes,1,opt,name=notes,proto3"`
-	ValidInstrumentId string                 `json:"valid_instrument_id,omitempty" protobuf:"bytes,2,opt,name=valid_instrument_id,json=validInstrumentId,proto3"`
+	Notes             string                 `protobuf:"bytes,1,opt,name=notes,proto3" json:"notes,omitempty"`
+	ValidInstrumentId string                 `protobuf:"bytes,2,opt,name=valid_instrument_id,json=validInstrumentId,proto3" json:"valid_instrument_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
-	Quantity          uint32 `json:"quantity,omitempty" protobuf:"varint,4,opt,name=quantity,proto3"`
+	Quantity          uint32 `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	sizeCache         protoimpl.SizeCache
 }
 
@@ -30428,9 +30428,9 @@ func (x *AccountInstrumentOwnershipCreationRequestInput) GetQuantity() uint32 {
 
 type AccountInstrumentOwnershipUpdateRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Notes             *string                `json:"notes,omitempty"               protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
-	Quantity          *uint32                `json:"quantity,omitempty"            protobuf:"varint,2,opt,name=quantity,proto3,oneof"`
-	ValidInstrumentId *string                `json:"valid_instrument_id,omitempty" protobuf:"bytes,3,opt,name=valid_instrument_id,json=validInstrumentId,proto3,oneof"`
+	Notes             *string                `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
+	Quantity          *uint32                `protobuf:"varint,2,opt,name=quantity,proto3,oneof" json:"quantity,omitempty"`
+	ValidInstrumentId *string                `protobuf:"bytes,3,opt,name=valid_instrument_id,json=validInstrumentId,proto3,oneof" json:"valid_instrument_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }

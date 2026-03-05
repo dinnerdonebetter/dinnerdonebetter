@@ -27,8 +27,8 @@ const (
 
 type AddCommentToMealPlanRequest struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
-	MealPlanId    string                       `json:"meal_plan_id,omitempty" protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3"`
-	Input         *CommentCreationRequestInput `json:"input,omitempty"        protobuf:"bytes,2,opt,name=input,proto3"`
+	MealPlanId    string                       `protobuf:"bytes,1,opt,name=meal_plan_id,json=mealPlanId,proto3" json:"meal_plan_id,omitempty"`
+	Input         *CommentCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -79,8 +79,8 @@ func (x *AddCommentToMealPlanRequest) GetInput() *CommentCreationRequestInput {
 
 type AddCommentToMealPlanResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Comment         *Comment               `json:"comment,omitempty"          protobuf:"bytes,2,opt,name=comment,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Comment         *Comment               `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -131,8 +131,8 @@ func (x *AddCommentToMealPlanResponse) GetComment() *Comment {
 
 type AddCommentToMealRequest struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
-	MealId        string                       `json:"meal_id,omitempty" protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3"`
-	Input         *CommentCreationRequestInput `json:"input,omitempty"   protobuf:"bytes,2,opt,name=input,proto3"`
+	MealId        string                       `protobuf:"bytes,1,opt,name=meal_id,json=mealId,proto3" json:"meal_id,omitempty"`
+	Input         *CommentCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -183,8 +183,8 @@ func (x *AddCommentToMealRequest) GetInput() *CommentCreationRequestInput {
 
 type AddCommentToMealResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Comment         *Comment               `json:"comment,omitempty"          protobuf:"bytes,2,opt,name=comment,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Comment         *Comment               `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -235,8 +235,8 @@ func (x *AddCommentToMealResponse) GetComment() *Comment {
 
 type AddCommentToRecipeRequest struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
-	RecipeId      string                       `json:"recipe_id,omitempty" protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
-	Input         *CommentCreationRequestInput `json:"input,omitempty"     protobuf:"bytes,2,opt,name=input,proto3"`
+	RecipeId      string                       `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	Input         *CommentCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -287,8 +287,8 @@ func (x *AddCommentToRecipeRequest) GetInput() *CommentCreationRequestInput {
 
 type AddCommentToRecipeResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Comment         *Comment               `json:"comment,omitempty"          protobuf:"bytes,2,opt,name=comment,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Comment         *Comment               `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -339,7 +339,7 @@ func (x *AddCommentToRecipeResponse) GetComment() *Comment {
 
 type CreateCommentRequest struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
-	Input         *CommentCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *CommentCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -383,8 +383,8 @@ func (x *CreateCommentRequest) GetInput() *CommentCreationRequestInput {
 
 type CreateCommentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Comment         *Comment               `json:"comment,omitempty"          protobuf:"bytes,2,opt,name=comment,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Comment         *Comment               `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -435,7 +435,7 @@ func (x *CreateCommentResponse) GetComment() *Comment {
 
 type ArchiveCommentRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CommentId     string                 `json:"comment_id,omitempty" protobuf:"bytes,1,opt,name=comment_id,json=commentId,proto3"`
+	CommentId     string                 `protobuf:"bytes,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -479,7 +479,7 @@ func (x *ArchiveCommentRequest) GetCommentId() string {
 
 type ArchiveCommentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -523,9 +523,9 @@ func (x *ArchiveCommentResponse) GetResponseDetails() *types.ResponseDetails {
 
 type GetCommentsForReferenceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TargetType    string                 `json:"target_type,omitempty"   protobuf:"bytes,1,opt,name=target_type,json=targetType,proto3"`
-	ReferencedId  string                 `json:"referenced_id,omitempty" protobuf:"bytes,2,opt,name=referenced_id,json=referencedId,proto3"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"        protobuf:"bytes,3,opt,name=filter,proto3"`
+	TargetType    string                 `protobuf:"bytes,1,opt,name=target_type,json=targetType,proto3" json:"target_type,omitempty"`
+	ReferencedId  string                 `protobuf:"bytes,2,opt,name=referenced_id,json=referencedId,proto3" json:"referenced_id,omitempty"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -583,9 +583,9 @@ func (x *GetCommentsForReferenceRequest) GetFilter() *filtering.QueryFilter {
 
 type GetCommentsForReferenceResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Data            []*Comment             `json:"data,omitempty"             protobuf:"bytes,2,rep,name=data,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,3,opt,name=pagination,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Data            []*Comment             `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -643,8 +643,8 @@ func (x *GetCommentsForReferenceResponse) GetPagination() *filtering.Pagination 
 
 type UpdateCommentRequest struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
-	CommentId     string                     `json:"comment_id,omitempty" protobuf:"bytes,1,opt,name=comment_id,json=commentId,proto3"`
-	Input         *CommentUpdateRequestInput `json:"input,omitempty"      protobuf:"bytes,2,opt,name=input,proto3"`
+	CommentId     string                     `protobuf:"bytes,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
+	Input         *CommentUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -695,8 +695,8 @@ func (x *UpdateCommentRequest) GetInput() *CommentUpdateRequestInput {
 
 type UpdateCommentResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Comment         *Comment               `json:"comment,omitempty"          protobuf:"bytes,2,opt,name=comment,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Comment         *Comment               `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

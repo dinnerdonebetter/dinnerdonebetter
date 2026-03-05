@@ -80,18 +80,6 @@ internal enum Payments_PaymentsService {
                 method: "ArchiveProduct"
             )
         }
-        /// Namespace for "CreateCheckoutSession" metadata.
-        internal enum CreateCheckoutSession {
-            /// Request type for "CreateCheckoutSession".
-            internal typealias Input = Payments_CreateCheckoutSessionRequest
-            /// Response type for "CreateCheckoutSession".
-            internal typealias Output = Payments_CreateCheckoutSessionResponse
-            /// Descriptor for "CreateCheckoutSession".
-            internal static let descriptor = GRPCCore.MethodDescriptor(
-                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "payments.PaymentsService"),
-                method: "CreateCheckoutSession"
-            )
-        }
         /// Namespace for "CreateSubscription" metadata.
         internal enum CreateSubscription {
             /// Request type for "CreateSubscription".
@@ -152,18 +140,6 @@ internal enum Payments_PaymentsService {
                 method: "ArchiveSubscription"
             )
         }
-        /// Namespace for "CancelSubscription" metadata.
-        internal enum CancelSubscription {
-            /// Request type for "CancelSubscription".
-            internal typealias Input = Payments_CancelSubscriptionRequest
-            /// Response type for "CancelSubscription".
-            internal typealias Output = Payments_CancelSubscriptionResponse
-            /// Descriptor for "CancelSubscription".
-            internal static let descriptor = GRPCCore.MethodDescriptor(
-                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "payments.PaymentsService"),
-                method: "CancelSubscription"
-            )
-        }
         /// Namespace for "GetPurchasesForAccount" metadata.
         internal enum GetPurchasesForAccount {
             /// Request type for "GetPurchasesForAccount".
@@ -195,13 +171,11 @@ internal enum Payments_PaymentsService {
             GetProducts.descriptor,
             UpdateProduct.descriptor,
             ArchiveProduct.descriptor,
-            CreateCheckoutSession.descriptor,
             CreateSubscription.descriptor,
             GetSubscription.descriptor,
             GetSubscriptionsForAccount.descriptor,
             UpdateSubscription.descriptor,
             ArchiveSubscription.descriptor,
-            CancelSubscription.descriptor,
             GetPurchasesForAccount.descriptor,
             GetPaymentHistoryForAccount.descriptor
         ]
@@ -318,25 +292,6 @@ extension Payments_PaymentsService {
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_ArchiveProductResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
-        /// Call the "CreateCheckoutSession" method.
-        ///
-        /// - Parameters:
-        ///   - request: A request containing a single `Payments_CreateCheckoutSessionRequest` message.
-        ///   - serializer: A serializer for `Payments_CreateCheckoutSessionRequest` messages.
-        ///   - deserializer: A deserializer for `Payments_CreateCheckoutSessionResponse` messages.
-        ///   - options: Options to apply to this RPC.
-        ///   - handleResponse: A closure which handles the response, the result of which is
-        ///       returned to the caller. Returning from the closure will cancel the RPC if it
-        ///       hasn't already finished.
-        /// - Returns: The result of `handleResponse`.
-        func createCheckoutSession<Result>(
-            request: GRPCCore.ClientRequest<Payments_CreateCheckoutSessionRequest>,
-            serializer: some GRPCCore.MessageSerializer<Payments_CreateCheckoutSessionRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Payments_CreateCheckoutSessionResponse>,
-            options: GRPCCore.CallOptions,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_CreateCheckoutSessionResponse>) async throws -> Result
-        ) async throws -> Result where Result: Sendable
-
         /// Call the "CreateSubscription" method.
         ///
         /// - Parameters:
@@ -430,25 +385,6 @@ extension Payments_PaymentsService {
             deserializer: some GRPCCore.MessageDeserializer<Payments_ArchiveSubscriptionResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_ArchiveSubscriptionResponse>) async throws -> Result
-        ) async throws -> Result where Result: Sendable
-
-        /// Call the "CancelSubscription" method.
-        ///
-        /// - Parameters:
-        ///   - request: A request containing a single `Payments_CancelSubscriptionRequest` message.
-        ///   - serializer: A serializer for `Payments_CancelSubscriptionRequest` messages.
-        ///   - deserializer: A deserializer for `Payments_CancelSubscriptionResponse` messages.
-        ///   - options: Options to apply to this RPC.
-        ///   - handleResponse: A closure which handles the response, the result of which is
-        ///       returned to the caller. Returning from the closure will cancel the RPC if it
-        ///       hasn't already finished.
-        /// - Returns: The result of `handleResponse`.
-        func cancelSubscription<Result>(
-            request: GRPCCore.ClientRequest<Payments_CancelSubscriptionRequest>,
-            serializer: some GRPCCore.MessageSerializer<Payments_CancelSubscriptionRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Payments_CancelSubscriptionResponse>,
-            options: GRPCCore.CallOptions,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_CancelSubscriptionResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "GetPurchasesForAccount" method.
@@ -656,36 +592,6 @@ extension Payments_PaymentsService {
             )
         }
 
-        /// Call the "CreateCheckoutSession" method.
-        ///
-        /// - Parameters:
-        ///   - request: A request containing a single `Payments_CreateCheckoutSessionRequest` message.
-        ///   - serializer: A serializer for `Payments_CreateCheckoutSessionRequest` messages.
-        ///   - deserializer: A deserializer for `Payments_CreateCheckoutSessionResponse` messages.
-        ///   - options: Options to apply to this RPC.
-        ///   - handleResponse: A closure which handles the response, the result of which is
-        ///       returned to the caller. Returning from the closure will cancel the RPC if it
-        ///       hasn't already finished.
-        /// - Returns: The result of `handleResponse`.
-        internal func createCheckoutSession<Result>(
-            request: GRPCCore.ClientRequest<Payments_CreateCheckoutSessionRequest>,
-            serializer: some GRPCCore.MessageSerializer<Payments_CreateCheckoutSessionRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Payments_CreateCheckoutSessionResponse>,
-            options: GRPCCore.CallOptions = .defaults,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_CreateCheckoutSessionResponse>) async throws -> Result = { response in
-                try response.message
-            }
-        ) async throws -> Result where Result: Sendable {
-            try await self.client.unary(
-                request: request,
-                descriptor: Payments_PaymentsService.Method.CreateCheckoutSession.descriptor,
-                serializer: serializer,
-                deserializer: deserializer,
-                options: options,
-                onResponse: handleResponse
-            )
-        }
-
         /// Call the "CreateSubscription" method.
         ///
         /// - Parameters:
@@ -829,36 +735,6 @@ extension Payments_PaymentsService {
             try await self.client.unary(
                 request: request,
                 descriptor: Payments_PaymentsService.Method.ArchiveSubscription.descriptor,
-                serializer: serializer,
-                deserializer: deserializer,
-                options: options,
-                onResponse: handleResponse
-            )
-        }
-
-        /// Call the "CancelSubscription" method.
-        ///
-        /// - Parameters:
-        ///   - request: A request containing a single `Payments_CancelSubscriptionRequest` message.
-        ///   - serializer: A serializer for `Payments_CancelSubscriptionRequest` messages.
-        ///   - deserializer: A deserializer for `Payments_CancelSubscriptionResponse` messages.
-        ///   - options: Options to apply to this RPC.
-        ///   - handleResponse: A closure which handles the response, the result of which is
-        ///       returned to the caller. Returning from the closure will cancel the RPC if it
-        ///       hasn't already finished.
-        /// - Returns: The result of `handleResponse`.
-        internal func cancelSubscription<Result>(
-            request: GRPCCore.ClientRequest<Payments_CancelSubscriptionRequest>,
-            serializer: some GRPCCore.MessageSerializer<Payments_CancelSubscriptionRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Payments_CancelSubscriptionResponse>,
-            options: GRPCCore.CallOptions = .defaults,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_CancelSubscriptionResponse>) async throws -> Result = { response in
-                try response.message
-            }
-        ) async throws -> Result where Result: Sendable {
-            try await self.client.unary(
-                request: request,
-                descriptor: Payments_PaymentsService.Method.CancelSubscription.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -1056,31 +932,6 @@ extension Payments_PaymentsService.ClientProtocol {
         )
     }
 
-    /// Call the "CreateCheckoutSession" method.
-    ///
-    /// - Parameters:
-    ///   - request: A request containing a single `Payments_CreateCheckoutSessionRequest` message.
-    ///   - options: Options to apply to this RPC.
-    ///   - handleResponse: A closure which handles the response, the result of which is
-    ///       returned to the caller. Returning from the closure will cancel the RPC if it
-    ///       hasn't already finished.
-    /// - Returns: The result of `handleResponse`.
-    internal func createCheckoutSession<Result>(
-        request: GRPCCore.ClientRequest<Payments_CreateCheckoutSessionRequest>,
-        options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_CreateCheckoutSessionResponse>) async throws -> Result = { response in
-            try response.message
-        }
-    ) async throws -> Result where Result: Sendable {
-        try await self.createCheckoutSession(
-            request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Payments_CreateCheckoutSessionRequest>(),
-            deserializer: GRPCProtobuf.ProtobufDeserializer<Payments_CreateCheckoutSessionResponse>(),
-            options: options,
-            onResponse: handleResponse
-        )
-    }
-
     /// Call the "CreateSubscription" method.
     ///
     /// - Parameters:
@@ -1201,31 +1052,6 @@ extension Payments_PaymentsService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Payments_ArchiveSubscriptionRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Payments_ArchiveSubscriptionResponse>(),
-            options: options,
-            onResponse: handleResponse
-        )
-    }
-
-    /// Call the "CancelSubscription" method.
-    ///
-    /// - Parameters:
-    ///   - request: A request containing a single `Payments_CancelSubscriptionRequest` message.
-    ///   - options: Options to apply to this RPC.
-    ///   - handleResponse: A closure which handles the response, the result of which is
-    ///       returned to the caller. Returning from the closure will cancel the RPC if it
-    ///       hasn't already finished.
-    /// - Returns: The result of `handleResponse`.
-    internal func cancelSubscription<Result>(
-        request: GRPCCore.ClientRequest<Payments_CancelSubscriptionRequest>,
-        options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_CancelSubscriptionResponse>) async throws -> Result = { response in
-            try response.message
-        }
-    ) async throws -> Result where Result: Sendable {
-        try await self.cancelSubscription(
-            request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Payments_CancelSubscriptionRequest>(),
-            deserializer: GRPCProtobuf.ProtobufDeserializer<Payments_CancelSubscriptionResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -1430,35 +1256,6 @@ extension Payments_PaymentsService.ClientProtocol {
         )
     }
 
-    /// Call the "CreateCheckoutSession" method.
-    ///
-    /// - Parameters:
-    ///   - message: request message to send.
-    ///   - metadata: Additional metadata to send, defaults to empty.
-    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
-    ///   - handleResponse: A closure which handles the response, the result of which is
-    ///       returned to the caller. Returning from the closure will cancel the RPC if it
-    ///       hasn't already finished.
-    /// - Returns: The result of `handleResponse`.
-    internal func createCheckoutSession<Result>(
-        _ message: Payments_CreateCheckoutSessionRequest,
-        metadata: GRPCCore.Metadata = [:],
-        options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_CreateCheckoutSessionResponse>) async throws -> Result = { response in
-            try response.message
-        }
-    ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Payments_CreateCheckoutSessionRequest>(
-            message: message,
-            metadata: metadata
-        )
-        return try await self.createCheckoutSession(
-            request: request,
-            options: options,
-            onResponse: handleResponse
-        )
-    }
-
     /// Call the "CreateSubscription" method.
     ///
     /// - Parameters:
@@ -1598,35 +1395,6 @@ extension Payments_PaymentsService.ClientProtocol {
             metadata: metadata
         )
         return try await self.archiveSubscription(
-            request: request,
-            options: options,
-            onResponse: handleResponse
-        )
-    }
-
-    /// Call the "CancelSubscription" method.
-    ///
-    /// - Parameters:
-    ///   - message: request message to send.
-    ///   - metadata: Additional metadata to send, defaults to empty.
-    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
-    ///   - handleResponse: A closure which handles the response, the result of which is
-    ///       returned to the caller. Returning from the closure will cancel the RPC if it
-    ///       hasn't already finished.
-    /// - Returns: The result of `handleResponse`.
-    internal func cancelSubscription<Result>(
-        _ message: Payments_CancelSubscriptionRequest,
-        metadata: GRPCCore.Metadata = [:],
-        options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Payments_CancelSubscriptionResponse>) async throws -> Result = { response in
-            try response.message
-        }
-    ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Payments_CancelSubscriptionRequest>(
-            message: message,
-            metadata: metadata
-        )
-        return try await self.cancelSubscription(
             request: request,
             options: options,
             onResponse: handleResponse

@@ -42,6 +42,7 @@ var (
 			"Auth",
 			"OAuth2Clients",
 			"UploadedMedia",
+			"Payments",
 		),
 	)
 )

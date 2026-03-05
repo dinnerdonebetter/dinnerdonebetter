@@ -102,8 +102,9 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, repository, client)
-	stubPaymentProcessor := adapters.NewStubPaymentProcessor()
-	paymentsDataManager, err := manager2.NewPaymentsDataManager(ctx, tracerProvider, logger, paymentsRepository, stubPaymentProcessor, identityDataManager, queuesConfig, publisherProvider)
+	configConfig := servicesConfig.Payments
+	mapProcessorRegistry := adapters.ProvidePaymentProcessorRegistry(logger, tracerProvider, configConfig)
+	paymentsDataManager, err := manager2.NewPaymentsDataManager(ctx, tracerProvider, logger, paymentsRepository, mapProcessorRegistry, identityDataManager, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err
 	}

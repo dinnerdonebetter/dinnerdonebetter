@@ -151,16 +151,6 @@ message CancelSubscriptionResponse {
   common.ResponseDetails response_details = 1;
 }
 
-message CreateCheckoutSessionRequest {
-  CheckoutSessionRequestInput input = 1;
-}
-
-message CreateCheckoutSessionResponse {
-  common.ResponseDetails response_details = 1;
-  string session_url = 2;
-  string session_id = 3;
-}
-
 message GetPurchasesForAccountRequest {
   string account_id = 1;
   filtering.QueryFilter filter = 2;

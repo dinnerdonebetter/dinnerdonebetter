@@ -72,6 +72,25 @@ func (r *repository) GetProduct(ctx context.Context, id string) (*payments.Produ
 	return convertProductFromGenerated(result), nil
 }
 
+func (r *repository) GetProductByExternalID(ctx context.Context, externalProductID string) (*payments.Product, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := r.logger.Clone()
+	if externalProductID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
+	logger = logger.WithValue("external_product_id", externalProductID)
+	tracing.AttachToSpan(span, "external_product_id", externalProductID)
+
+	result, err := r.generatedQuerier.GetProductByExternalID(ctx, r.readDB, database.NullStringFromString(externalProductID))
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching product by external ID")
+	}
+
+	return convertProductFromGenerated(result), nil
+}
+
 func (r *repository) GetProducts(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.Product], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()

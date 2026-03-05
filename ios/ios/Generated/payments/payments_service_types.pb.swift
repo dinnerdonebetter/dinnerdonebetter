@@ -719,52 +719,6 @@ public struct Payments_CancelSubscriptionResponse: Sendable {
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
-public struct Payments_CreateCheckoutSessionRequest: Sendable {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var input: Payments_CheckoutSessionRequestInput {
-    get {return _input ?? Payments_CheckoutSessionRequestInput()}
-    set {_input = newValue}
-  }
-  /// Returns true if `input` has been explicitly set.
-  public var hasInput: Bool {return self._input != nil}
-  /// Clears the value of `input`. Subsequent reads from it will return its default value.
-  public mutating func clearInput() {self._input = nil}
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-
-  fileprivate var _input: Payments_CheckoutSessionRequestInput? = nil
-}
-
-public struct Payments_CreateCheckoutSessionResponse: Sendable {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var responseDetails: Common_ResponseDetails {
-    get {return _responseDetails ?? Common_ResponseDetails()}
-    set {_responseDetails = newValue}
-  }
-  /// Returns true if `responseDetails` has been explicitly set.
-  public var hasResponseDetails: Bool {return self._responseDetails != nil}
-  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  public mutating func clearResponseDetails() {self._responseDetails = nil}
-
-  public var sessionURL: String = String()
-
-  public var sessionID: String = String()
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-
-  fileprivate var _responseDetails: Common_ResponseDetails? = nil
-}
-
 public struct Payments_GetPurchasesForAccountRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2016,84 +1970,6 @@ extension Payments_CancelSubscriptionResponse: SwiftProtobuf.Message, SwiftProto
 
   public static func ==(lhs: Payments_CancelSubscriptionResponse, rhs: Payments_CancelSubscriptionResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension Payments_CreateCheckoutSessionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".CreateCheckoutSessionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._input) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._input {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    } }()
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: Payments_CreateCheckoutSessionRequest, rhs: Payments_CreateCheckoutSessionRequest) -> Bool {
-    if lhs._input != rhs._input {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension Payments_CreateCheckoutSessionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".CreateCheckoutSessionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}session_url\0\u{3}session_id\0")
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.sessionURL) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.sessionID) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._responseDetails {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    } }()
-    if !self.sessionURL.isEmpty {
-      try visitor.visitSingularStringField(value: self.sessionURL, fieldNumber: 2)
-    }
-    if !self.sessionID.isEmpty {
-      try visitor.visitSingularStringField(value: self.sessionID, fieldNumber: 3)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: Payments_CreateCheckoutSessionResponse, rhs: Payments_CreateCheckoutSessionResponse) -> Bool {
-    if lhs._responseDetails != rhs._responseDetails {return false}
-    if lhs.sessionURL != rhs.sessionURL {return false}
-    if lhs.sessionID != rhs.sessionID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

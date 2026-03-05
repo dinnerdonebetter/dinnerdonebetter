@@ -36,6 +36,7 @@ var (
 			"MealPlanning",
 			"OAuth2Clients",
 			"UploadedMedia",
+			"Payments",
 		),
 		ProvideHTTPServerConfigFromAPIServiceConfig,
 		ProvideHTTPServerConfigFromAdminWebappConfig,

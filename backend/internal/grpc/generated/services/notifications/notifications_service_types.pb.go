@@ -27,7 +27,7 @@ const (
 
 type GetUserNotificationRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	UserNotificationId string                 `json:"user_notification_id,omitempty" protobuf:"bytes,1,opt,name=user_notification_id,json=userNotificationId,proto3"`
+	UserNotificationId string                 `protobuf:"bytes,1,opt,name=user_notification_id,json=userNotificationId,proto3" json:"user_notification_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -71,8 +71,8 @@ func (x *GetUserNotificationRequest) GetUserNotificationId() string {
 
 type GetUserNotificationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *UserNotification      `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *UserNotification      `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -123,7 +123,7 @@ func (x *GetUserNotificationResponse) GetResult() *UserNotification {
 
 type GetUserNotificationsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -167,9 +167,9 @@ func (x *GetUserNotificationsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetUserNotificationsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*UserNotification    `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*UserNotification    `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -227,8 +227,8 @@ func (x *GetUserNotificationsResponse) GetResults() []*UserNotification {
 
 type UpdateUserNotificationRequest struct {
 	state              protoimpl.MessageState              `protogen:"open.v1"`
-	UserNotificationId string                              `json:"user_notification_id,omitempty" protobuf:"bytes,1,opt,name=user_notification_id,json=userNotificationId,proto3"`
-	Input              *UserNotificationUpdateRequestInput `json:"input,omitempty"                protobuf:"bytes,2,opt,name=input,proto3"`
+	UserNotificationId string                              `protobuf:"bytes,1,opt,name=user_notification_id,json=userNotificationId,proto3" json:"user_notification_id,omitempty"`
+	Input              *UserNotificationUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -279,8 +279,8 @@ func (x *UpdateUserNotificationRequest) GetInput() *UserNotificationUpdateReques
 
 type UpdateUserNotificationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *UserNotification      `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *UserNotification      `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -331,10 +331,10 @@ func (x *UpdateUserNotificationResponse) GetUpdated() *UserNotification {
 
 type UserNotificationCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Content       string                 `json:"content,omitempty"         protobuf:"bytes,1,opt,name=content,proto3"`
-	BelongsToUser string                 `json:"belongs_to_user,omitempty" protobuf:"bytes,3,opt,name=belongs_to_user,json=belongsToUser,proto3"`
+	Content       string                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
+	BelongsToUser string                 `protobuf:"bytes,3,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Status        UserNotificationStatus `json:"status,omitempty" protobuf:"varint,2,opt,name=status,proto3,enum=notifications.UserNotificationStatus"`
+	Status        UserNotificationStatus `protobuf:"varint,2,opt,name=status,proto3,enum=notifications.UserNotificationStatus" json:"status,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -391,7 +391,7 @@ func (x *UserNotificationCreationRequestInput) GetBelongsToUser() string {
 
 type UserNotificationUpdateRequestInput struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Status        *UserNotificationStatus `json:"status,omitempty" protobuf:"varint,1,opt,name=status,proto3,enum=notifications.UserNotificationStatus,oneof"`
+	Status        *UserNotificationStatus `protobuf:"varint,1,opt,name=status,proto3,enum=notifications.UserNotificationStatus,oneof" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -435,7 +435,7 @@ func (x *UserNotificationUpdateRequestInput) GetStatus() UserNotificationStatus 
 
 type RegisterDeviceTokenRequest struct {
 	state         protoimpl.MessageState               `protogen:"open.v1"`
-	Input         *UserDeviceTokenCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *UserDeviceTokenCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -479,8 +479,8 @@ func (x *RegisterDeviceTokenRequest) GetInput() *UserDeviceTokenCreationRequestI
 
 type RegisterDeviceTokenResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *UserDeviceToken       `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *UserDeviceToken       `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -531,7 +531,7 @@ func (x *RegisterDeviceTokenResponse) GetCreated() *UserDeviceToken {
 
 type GetUserDeviceTokenRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	UserDeviceTokenId string                 `json:"user_device_token_id,omitempty" protobuf:"bytes,1,opt,name=user_device_token_id,json=userDeviceTokenId,proto3"`
+	UserDeviceTokenId string                 `protobuf:"bytes,1,opt,name=user_device_token_id,json=userDeviceTokenId,proto3" json:"user_device_token_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -575,8 +575,8 @@ func (x *GetUserDeviceTokenRequest) GetUserDeviceTokenId() string {
 
 type GetUserDeviceTokenResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *UserDeviceToken       `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *UserDeviceToken       `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -627,8 +627,8 @@ func (x *GetUserDeviceTokenResponse) GetResult() *UserDeviceToken {
 
 type GetUserDeviceTokensRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Filter         *filtering.QueryFilter `json:"filter,omitempty"          protobuf:"bytes,1,opt,name=filter,proto3"`
-	PlatformFilter *string                `json:"platform_filter,omitempty" protobuf:"bytes,2,opt,name=platform_filter,json=platformFilter,proto3,oneof"`
+	Filter         *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	PlatformFilter *string                `protobuf:"bytes,2,opt,name=platform_filter,json=platformFilter,proto3,oneof" json:"platform_filter,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -679,9 +679,9 @@ func (x *GetUserDeviceTokensRequest) GetPlatformFilter() string {
 
 type GetUserDeviceTokensResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*UserDeviceToken     `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*UserDeviceToken     `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -739,7 +739,7 @@ func (x *GetUserDeviceTokensResponse) GetResults() []*UserDeviceToken {
 
 type ArchiveUserDeviceTokenRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	UserDeviceTokenId string                 `json:"user_device_token_id,omitempty" protobuf:"bytes,1,opt,name=user_device_token_id,json=userDeviceTokenId,proto3"`
+	UserDeviceTokenId string                 `protobuf:"bytes,1,opt,name=user_device_token_id,json=userDeviceTokenId,proto3" json:"user_device_token_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -783,7 +783,7 @@ func (x *ArchiveUserDeviceTokenRequest) GetUserDeviceTokenId() string {
 
 type ArchiveUserDeviceTokenResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -827,8 +827,8 @@ func (x *ArchiveUserDeviceTokenResponse) GetResponseDetails() *types.ResponseDet
 
 type UserDeviceTokenCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeviceToken   string                 `json:"device_token,omitempty" protobuf:"bytes,1,opt,name=device_token,json=deviceToken,proto3"`
-	Platform      string                 `json:"platform,omitempty"     protobuf:"bytes,2,opt,name=platform,proto3"`
+	DeviceToken   string                 `protobuf:"bytes,1,opt,name=device_token,json=deviceToken,proto3" json:"device_token,omitempty"`
+	Platform      string                 `protobuf:"bytes,2,opt,name=platform,proto3" json:"platform,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

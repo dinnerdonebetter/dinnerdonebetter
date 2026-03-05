@@ -233,6 +233,10 @@
 		},
 		"oauth2Clients": {
 			"creationEnabled": false
+		},
+		"payments": {
+			"stripe": null,
+			"revenueCat": null
 		}
 	}
 }

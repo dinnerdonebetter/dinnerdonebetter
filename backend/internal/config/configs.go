@@ -71,16 +71,16 @@ type (
 	APIServiceConfig struct {
 		_ struct{} `json:"-"`
 
-		PushNotifications notificationscfg.Config `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
 		Queues            msgconfig.QueuesConfig  `envPrefix:"QUEUES_"             json:"queues"`
+		PushNotifications notificationscfg.Config `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
 		Routing           routingcfg.Config       `envPrefix:"ROUTING_"            json:"routing"`
 		Encoding          encoding.Config         `envPrefix:"ENCODING_"           json:"encoding"`
 		Events            msgconfig.Config        `envPrefix:"EVENTS_"             json:"events"`
 		Observability     observability.Config    `envPrefix:"OBSERVABILITY_"      json:"observability"`
 		GRPCServer        grpc.Config             `envPrefix:"GRPC_"               json:"grpc"`
 		Meta              MetaSettings            `envPrefix:"META_"               json:"meta"`
-		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
 		Email             emailcfg.Config         `envPrefix:"EMAIL_"              json:"email"`
+		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
 		TextSearch        textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
 		FeatureFlags      featureflagscfg.Config  `envPrefix:"FEATURE_FLAGS_"      json:"featureFlags"`
 		HTTPServer        http.Config             `envPrefix:"HTTP_"               json:"http"`

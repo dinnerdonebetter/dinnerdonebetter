@@ -280,6 +280,10 @@
 		},
 		"oauth2Clients": {
 			"creationEnabled": true
+		},
+		"payments": {
+			"stripe": null,
+			"revenueCat": null
 		}
 	}
 }
