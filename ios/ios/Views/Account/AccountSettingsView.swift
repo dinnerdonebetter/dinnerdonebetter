@@ -5,6 +5,7 @@
 //  Created by Auto on 12/8/25.
 //
 
+import RevenueCat
 import RevenueCatUI
 import SwiftUI
 
@@ -14,6 +15,7 @@ struct AccountSettingsView: View {
   @State private var showCustomerCenter = false
   @State private var showPaywall = false
   @State private var isProActive = false
+  @State private var launchOffering: Offering?
 
   var body: some View {
     NavigationStack {
@@ -78,12 +80,20 @@ struct AccountSettingsView: View {
         Task {
           isProActive = await EntitlementService.isProActive()
         }
+        if RevenueCatConfiguration.isConfigured && launchOffering == nil {
+          Task { launchOffering = await SubscriptionService.launchOffering() }
+        }
       }
       .sheet(isPresented: $showCustomerCenter) {
         CustomerCenterView()
       }
       .sheet(isPresented: $showPaywall) {
-        PaywallView()
+        if let offering = launchOffering {
+          PaywallView(offering: offering)
+        } else {
+          ProgressView("Loading...")
+            .task { launchOffering = await SubscriptionService.launchOffering() }
+        }
       }
       .onChange(of: showCustomerCenter) { _, isPresented in
         if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }

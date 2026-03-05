@@ -27,6 +27,9 @@ enum SubscriptionService {
     }
   }
 
+  /// Offering identifier for the launch paywall. Must match RevenueCat dashboard.
+  static let launchOfferingID = "launch"
+
   /// Fetches available offerings. Returns nil when RevenueCat is not configured or on error.
   static func offerings() async -> Offerings? {
     guard RevenueCatConfiguration.isConfigured else { return nil }
@@ -36,6 +39,12 @@ enum SubscriptionService {
       print("⚠️ SubscriptionService: Failed to fetch offerings: \(error)")
       return nil
     }
+  }
+
+  /// Fetches the "launch" offering. Returns nil when not configured or on error.
+  static func launchOffering() async -> Offering? {
+    guard let offerings = await offerings() else { return nil }
+    return offerings[launchOfferingID]
   }
 
   /// Purchases a package. Returns (customerInfo, true) on success, (nil, false) on failure.
