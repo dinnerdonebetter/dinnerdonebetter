@@ -5,6 +5,7 @@
 //  Created by Jeffrey Dorrycott on 12/8/25.
 //
 
+import RevenueCatUI
 import SwiftUI
 
 struct ContentView: View {
@@ -23,6 +24,9 @@ struct ContentView: View {
     Group {
       if authManager.isAuthenticated && !authManager.oauth2AccessToken.isEmpty {
         HomeView()
+          .presentPaywallIfNeeded(
+            requiredEntitlementIdentifier: EntitlementService.proEntitlementID
+          )
       } else if showLogin {
         LoginView(
           showRegister: Binding(

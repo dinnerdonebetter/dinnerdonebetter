@@ -14,6 +14,7 @@
 		002AAC2E2EE8AB7B00BEA5A7 /* BeautifulMermaid in Frameworks */ = {isa = PBXBuildFile; productRef = 002AAC2D2EE8AB7B00BEA5A7 /* BeautifulMermaid */; };
 		0062078E2F521083002DE49D /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 002AAC2B2EE8AB7A00BEA5A7 /* Segment */; };
 		006207902F521085002DE49D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 002AAC312EE8AB7C00BEA5A7 /* RevenueCat */; };
+		006207912F521086002DE49D /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 002AAC322EE8AB7D00BEA5A7 /* RevenueCatUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +80,7 @@
 				002AAC2E2EE8AB7B00BEA5A7 /* BeautifulMermaid in Frameworks */,
 				0062078E2F521083002DE49D /* Segment in Frameworks */,
 				006207902F521085002DE49D /* RevenueCat in Frameworks */,
+				006207912F521086002DE49D /* RevenueCatUI in Frameworks */,
 				002AAC242EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2Posix in Frameworks */,
 				002AAC292EE8AB7900BEA5A7 /* GRPCProtobuf in Frameworks */,
 				002AAC262EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2TransportServices in Frameworks */,
@@ -159,6 +161,7 @@
 				002AAC2B2EE8AB7A00BEA5A7 /* Segment */,
 				002AAC2D2EE8AB7B00BEA5A7 /* BeautifulMermaid */,
 				002AAC312EE8AB7C00BEA5A7 /* RevenueCat */,
+				002AAC322EE8AB7D00BEA5A7 /* RevenueCatUI */,
 			);
 			productName = ios;
 			productReference = 00D164F42EE78B510033A550 /* ios.app */;
@@ -709,6 +712,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 002AAC302EE8AB7C00BEA5A7 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
 			productName = RevenueCat;
+		};
+		002AAC322EE8AB7D00BEA5A7 /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 002AAC302EE8AB7C00BEA5A7 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCatUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
