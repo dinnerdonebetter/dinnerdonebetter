@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated: March 2025**
+Last updated: March 2025
 
 ## 1. Acceptance of Terms
 
@@ -74,4 +74,4 @@ We may update these Terms of Service from time to time. We will notify you of ma
 
 ## 12. Contact
 
-For questions about these Terms of Service, please contact us at support@dinnerdonebetter.com.
+For questions about these Terms of Service, please contact us at <support@dinnerdonebetter.com>.

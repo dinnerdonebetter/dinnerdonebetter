@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -49,11 +50,14 @@ func NewStripePaymentProcessor(
 var _ payments.PaymentProcessor = (*StripePaymentProcessor)(nil)
 
 // VerifyWebhookSignature verifies the Stripe webhook signature.
-func (s *StripePaymentProcessor) VerifyWebhookSignature(ctx context.Context, payload []byte, signature, _ string) bool {
-	ctx, span := s.tracer.StartSpan(ctx)
+func (s *StripePaymentProcessor) VerifyWebhookSignature(ctx context.Context, payload []byte, signature, accountID string) bool {
+	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := s.logger.WithSpan(span).WithValue(keys.AccountIDKey, accountID)
+
 	if s.cfg.WebhookSecret == "" {
+		logger.Debug("webhook secret is empty")
 		return true
 	}
 

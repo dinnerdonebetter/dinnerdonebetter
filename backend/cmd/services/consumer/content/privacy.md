@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated: March 2025**
+Last updated: March 2025
 
 ## 1. Introduction
 
@@ -79,7 +79,7 @@ Depending on your location, you may have the right to:
 - **Delete** your data and account
 - **Object** to or restrict certain processing
 
-To exercise these rights, contact us at privacy@dinnerdonebetter.com or through the account settings in the app.
+To exercise these rights, contact us at <privacy@dinnerdonebetter.com> or through the account settings in the app.
 
 ## 7. Cookies and Similar Technologies
 
@@ -103,4 +103,4 @@ We may update this Privacy Policy from time to time. We will notify you of mater
 
 ## 12. Contact
 
-For questions about this Privacy Policy or our data practices, please contact us at privacy@dinnerdonebetter.com.
+For questions about this Privacy Policy or our data practices, please contact us at <privacy@dinnerdonebetter.com>.
