@@ -19,6 +19,7 @@ type Querier interface {
 	CreateSubscription(ctx context.Context, db DBTX, arg *CreateSubscriptionParams) error
 	GetPaymentTransactionsForAccount(ctx context.Context, db DBTX, arg *GetPaymentTransactionsForAccountParams) ([]*GetPaymentTransactionsForAccountRow, error)
 	GetProduct(ctx context.Context, db DBTX, id string) (*Products, error)
+	GetProductByExternalID(ctx context.Context, db DBTX, externalProductID sql.NullString) (*Products, error)
 	GetProducts(ctx context.Context, db DBTX, arg *GetProductsParams) ([]*GetProductsRow, error)
 	GetPurchase(ctx context.Context, db DBTX, id string) (*Purchases, error)
 	GetPurchasesForAccount(ctx context.Context, db DBTX, arg *GetPurchasesForAccountParams) ([]*GetPurchasesForAccountRow, error)

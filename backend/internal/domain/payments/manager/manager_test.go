@@ -33,12 +33,17 @@ func buildPaymentsManagerForTest(t *testing.T) *paymentsManager {
 	mpp := &mockpublishers.PublisherProvider{}
 	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
+	stub := adapters.NewStubPaymentProcessor(nil)
+	registry := payments.NewMapProcessorRegistry(map[string]payments.PaymentProcessor{
+		"stripe":     stub,
+		"revenuecat": stub,
+	})
 	m, err := NewPaymentsDataManager(
 		ctx,
 		tracing.NewNoopTracerProvider(),
 		logging.NewNoopLogger(),
 		&paymentsmock.Repository{},
-		adapters.NewStubPaymentProcessor(),
+		registry,
 		&identitymock.IdentityDataManager{},
 		queueCfg,
 		mpp,
@@ -254,38 +259,6 @@ func TestPaymentsManager_ArchiveSubscription(t *testing.T) {
 		)
 
 		err := pm.ArchiveSubscription(ctx, subID)
-		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, expectations...)
-	})
-}
-
-func TestPaymentsManager_CancelSubscription(t *testing.T) {
-	t.Parallel()
-
-	t.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		pm := buildPaymentsManagerForTest(t)
-
-		accountID := fakes.BuildFakeID()
-		productID := fakes.BuildFakeID()
-		sub := fakes.BuildFakeSubscription(accountID, productID)
-		subID := sub.ID
-
-		expectations := setupExpectationsForPaymentsManager(
-			pm,
-			func(repo *paymentsmock.Repository) {
-				repo.On(reflection.GetMethodName(repo.GetSubscription), testutils.ContextMatcher, subID).Return(sub, nil)
-				repo.On(reflection.GetMethodName(repo.UpdateSubscriptionStatus), testutils.ContextMatcher, subID, payments.SubscriptionStatusCancelled).Return(nil)
-			},
-			map[string][]string{
-				payments.SubscriptionCanceledServiceEventType: {paymentskeys.SubscriptionIDKey},
-			},
-		)
-
-		err := pm.CancelSubscription(ctx, subID)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)

@@ -20,12 +20,9 @@ type PaymentsDataManager interface {
 	GetSubscriptionsForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.Subscription], error)
 	UpdateSubscription(ctx context.Context, id string, input *payments.SubscriptionUpdateRequestInput) error
 	ArchiveSubscription(ctx context.Context, id string) error
-	CancelSubscription(ctx context.Context, id string) error
-
-	CreateCheckoutSession(ctx context.Context, input *payments.CheckoutSessionRequestInput) (sessionURL, sessionID string, err error)
 
 	GetPurchasesForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.Purchase], error)
 	GetPaymentTransactionsForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.PaymentTransaction], error)
 
-	ProcessWebhookEvent(ctx context.Context, payload []byte, signature string, accountID string) error
+	ProcessWebhookEvent(ctx context.Context, provider string, payload []byte, signature, accountID string) error
 }

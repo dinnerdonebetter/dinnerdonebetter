@@ -5,6 +5,8 @@
 //  Created by Jeffrey Dorrycott on 12/8/25.
 //
 
+import RevenueCat
+import RevenueCatUI
 import SwiftUI
 
 struct ContentView: View {
@@ -19,10 +21,24 @@ struct ContentView: View {
   // Sheet for logged-in users who tap an invite link
   @State private var showAcceptInvitationSheet: Bool = false
 
+  // Launch offering for paywall (avoids "default" offering which has no paywall)
+  @State private var launchOffering: Offering?
+
   var body: some View {
     Group {
       if authManager.isAuthenticated && !authManager.oauth2AccessToken.isEmpty {
-        HomeView()
+        if RevenueCatConfiguration.isConfigured, let offering = launchOffering {
+          HomeView()
+            .presentPaywallIfNeeded(
+              requiredEntitlementIdentifier: EntitlementService.proEntitlementID,
+              offering: offering
+            )
+        } else if RevenueCatConfiguration.isConfigured {
+          HomeView()
+            .task { launchOffering = await SubscriptionService.launchOffering() }
+        } else {
+          HomeView()
+        }
       } else if showLogin {
         LoginView(
           showRegister: Binding(

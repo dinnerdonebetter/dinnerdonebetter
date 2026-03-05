@@ -31,6 +31,14 @@ func (m *Repository) GetProduct(ctx context.Context, id string) (*payments.Produ
 	return args.Get(0).(*payments.Product), args.Error(1)
 }
 
+func (m *Repository) GetProductByExternalID(ctx context.Context, externalProductID string) (*payments.Product, error) {
+	args := m.Called(ctx, externalProductID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*payments.Product), args.Error(1)
+}
+
 func (m *Repository) GetProducts(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.Product], error) {
 	args := m.Called(ctx, filter)
 	if args.Get(0) == nil {

@@ -41,6 +41,10 @@ func (s *ConsumerFrontendServer) setupRoutes(router routing.Router) {
 	router.Get("/accept_invitation", ghttp.Adapt(s.AcceptInvitationPage))
 	router.Get("/accept_invitation/*", ghttp.Adapt(s.AcceptInvitationPage))
 
+	// Legal (public)
+	router.Get("/terms-of-service", ghttp.Adapt(s.TermsPage))
+	router.Get("/privacy-policy", ghttp.Adapt(s.PrivacyPage))
+
 	// Protected routes
 	r.Get("/", ghttp.Adapt(s.HomePage))
 	r.Get("/account/settings", ghttp.Adapt(s.AccountSettingsPage))

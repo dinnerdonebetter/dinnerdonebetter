@@ -8,11 +8,15 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	"github.com/go-chi/chi/v5"
 )
 
 const (
 	// StripeSignatureHeader is the header Stripe uses for webhook signatures.
 	StripeSignatureHeader = "Stripe-Signature"
+	// RevenueCatAuthHeader is the header RevenueCat uses for webhook auth (Authorization).
+	RevenueCatAuthHeader = "Authorization"
 	// DefaultSignatureHeader is a fallback header name for provider-agnostic use.
 	DefaultSignatureHeader = "X-Webhook-Signature"
 )
@@ -68,7 +72,11 @@ func (h *WebhookHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		h.logger.Error("closing webhook body", err)
 	}
 
+	provider := chi.URLParam(r, "provider")
 	signature := r.Header.Get(h.signatureHeader)
+	if provider == "revenuecat" {
+		signature = r.Header.Get(RevenueCatAuthHeader)
+	}
 
 	// accountID from URL or query - for stub we pass empty; manager will parse from payload
 	accountID := ""
@@ -76,7 +84,7 @@ func (h *WebhookHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		accountID = id
 	}
 
-	if err = h.paymentsManager.ProcessWebhookEvent(ctx, payload, signature, accountID); err != nil {
+	if err = h.paymentsManager.ProcessWebhookEvent(ctx, provider, payload, signature, accountID); err != nil {
 		observability.AcknowledgeError(err, h.logger, span, "processing webhook event")
 		http.Error(w, "webhook processing failed", http.StatusBadRequest)
 		return

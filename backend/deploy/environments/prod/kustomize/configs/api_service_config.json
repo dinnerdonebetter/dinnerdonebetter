@@ -1,4 +1,12 @@
 {
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"mobileNotificationsTopicName": "mobile_notifications",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
 	"pushNotifications": {
 		"apns": {
 			"authKeyPath": "/mnt/apns/apns-auth-key.p8",
@@ -11,14 +19,6 @@
 			"credentialsPath": ""
 		},
 		"provider": "apns_fcm"
-	},
-	"queues": {
-		"dataChangesTopicName": "data_changes",
-		"outboundEmailsTopicName": "outbound_emails",
-		"searchIndexRequestsTopicName": "search_index_requests",
-		"mobileNotificationsTopicName": "mobile_notifications",
-		"userDataAggregationTopicName": "user_data_aggregation_requests",
-		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
 	"routing": {
 		"chiConfig": {
@@ -97,19 +97,6 @@
 		"runMode": "production",
 		"debug": false
 	},
-	"analytics": {
-		"segment": {
-			"apiToken": "placeholder"
-		},
-		"posthog": null,
-		"rudderstack": null,
-		"provider": "segment",
-		"circuitBreaker": {
-			"name": "prod_analytics",
-			"circuitBreakerErrorPercentage": 0.5,
-			"circuitBreakerMinimumOccurrenceThreshold": 100
-		}
-	},
 	"email": {
 		"sendgrid": {
 			"apiToken": "placeholder"
@@ -121,6 +108,19 @@
 		"provider": "sendgrid",
 		"circuitBreakerConfig": {
 			"name": "prod_emailer",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
+	},
+	"analytics": {
+		"segment": {
+			"apiToken": "placeholder"
+		},
+		"posthog": null,
+		"rudderstack": null,
+		"provider": "segment",
+		"circuitBreaker": {
+			"name": "prod_analytics",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
@@ -207,6 +207,10 @@
 		"runMigrations": true
 	},
 	"services": {
+		"payments": {
+			"stripe": null,
+			"revenueCat": null
+		},
 		"users": {
 			"publicMediaURLPrefix": "https://storage.googleapis.com/dinner-done-better-prod-media/avatars",
 			"uploads": {

@@ -83,7 +83,7 @@ func (UploadedMediaMimeType) EnumDescriptor() ([]byte, []int) {
 
 type DataCollection struct {
 	state         protoimpl.MessageState    `protogen:"open.v1"`
-	UploadedMedia map[string]*UploadedMedia `json:"uploaded_media,omitempty" protobuf:"bytes,1,rep,name=uploaded_media,json=uploadedMedia,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	UploadedMedia map[string]*UploadedMedia `protobuf:"bytes,1,rep,name=uploaded_media,json=uploadedMedia,proto3" json:"uploaded_media,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -209,9 +209,9 @@ func (*UploadRequest_Chunk) isUploadRequest_Payload() {}
 
 type UploadMetadata struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Bucket        string                 `json:"bucket,omitempty"       protobuf:"bytes,1,opt,name=bucket,proto3"`
-	ObjectName    string                 `json:"object_name,omitempty"  protobuf:"bytes,2,opt,name=object_name,json=objectName,proto3"`
-	ContentType   string                 `json:"content_type,omitempty" protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3"`
+	Bucket        string                 `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	ObjectName    string                 `protobuf:"bytes,2,opt,name=object_name,json=objectName,proto3" json:"object_name,omitempty"`
+	ContentType   string                 `protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -269,9 +269,9 @@ func (x *UploadMetadata) GetContentType() string {
 
 type UploadResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ObjectUrl     string                 `json:"object_url,omitempty" protobuf:"bytes,1,opt,name=object_url,json=objectUrl,proto3"`
+	ObjectUrl     string                 `protobuf:"bytes,1,opt,name=object_url,json=objectUrl,proto3" json:"object_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	SizeBytes     int64 `json:"size_bytes,omitempty" protobuf:"varint,2,opt,name=size_bytes,json=sizeBytes,proto3"`
+	SizeBytes     int64 `protobuf:"varint,2,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -321,14 +321,14 @@ func (x *UploadResponse) GetSizeBytes() int64 {
 
 type UploadedMedia struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"      protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
-	ArchivedAt    *timestamppb.Timestamp `json:"archived_at,omitempty"     protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3"`
-	LastUpdatedAt *timestamppb.Timestamp `json:"last_updated_at,omitempty" protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
-	Id            string                 `json:"id,omitempty"              protobuf:"bytes,4,opt,name=id,proto3"`
-	StoragePath   string                 `json:"storage_path,omitempty"    protobuf:"bytes,5,opt,name=storage_path,json=storagePath,proto3"`
-	CreatedByUser string                 `json:"created_by_user,omitempty" protobuf:"bytes,7,opt,name=created_by_user,json=createdByUser,proto3"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
+	Id            string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
+	StoragePath   string                 `protobuf:"bytes,5,opt,name=storage_path,json=storagePath,proto3" json:"storage_path,omitempty"`
+	CreatedByUser string                 `protobuf:"bytes,7,opt,name=created_by_user,json=createdByUser,proto3" json:"created_by_user,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	MimeType      UploadedMediaMimeType `json:"mime_type,omitempty" protobuf:"varint,6,opt,name=mime_type,json=mimeType,proto3,enum=uploaded_media.UploadedMediaMimeType"`
+	MimeType      UploadedMediaMimeType `protobuf:"varint,6,opt,name=mime_type,json=mimeType,proto3,enum=uploaded_media.UploadedMediaMimeType" json:"mime_type,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -413,9 +413,9 @@ func (x *UploadedMedia) GetCreatedByUser() string {
 
 type UploadedMediaCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	StoragePath   string                 `json:"storage_path,omitempty" protobuf:"bytes,1,opt,name=storage_path,json=storagePath,proto3"`
+	StoragePath   string                 `protobuf:"bytes,1,opt,name=storage_path,json=storagePath,proto3" json:"storage_path,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	MimeType      UploadedMediaMimeType `json:"mime_type,omitempty" protobuf:"varint,2,opt,name=mime_type,json=mimeType,proto3,enum=uploaded_media.UploadedMediaMimeType"`
+	MimeType      UploadedMediaMimeType `protobuf:"varint,2,opt,name=mime_type,json=mimeType,proto3,enum=uploaded_media.UploadedMediaMimeType" json:"mime_type,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -465,8 +465,8 @@ func (x *UploadedMediaCreationRequestInput) GetMimeType() UploadedMediaMimeType 
 
 type UploadedMediaUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	StoragePath   *string                `json:"storage_path,omitempty" protobuf:"bytes,1,opt,name=storage_path,json=storagePath,proto3,oneof"`
-	MimeType      *UploadedMediaMimeType `json:"mime_type,omitempty"    protobuf:"varint,2,opt,name=mime_type,json=mimeType,proto3,enum=uploaded_media.UploadedMediaMimeType,oneof"`
+	StoragePath   *string                `protobuf:"bytes,1,opt,name=storage_path,json=storagePath,proto3,oneof" json:"storage_path,omitempty"`
+	MimeType      *UploadedMediaMimeType `protobuf:"varint,2,opt,name=mime_type,json=mimeType,proto3,enum=uploaded_media.UploadedMediaMimeType,oneof" json:"mime_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -518,7 +518,7 @@ func (x *UploadedMediaUpdateRequestInput) GetMimeType() UploadedMediaMimeType {
 // CreateUploadedMedia
 type CreateUploadedMediaRequest struct {
 	state         protoimpl.MessageState             `protogen:"open.v1"`
-	Input         *UploadedMediaCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *UploadedMediaCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -562,8 +562,8 @@ func (x *CreateUploadedMediaRequest) GetInput() *UploadedMediaCreationRequestInp
 
 type CreateUploadedMediaResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *UploadedMedia         `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *UploadedMedia         `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -615,7 +615,7 @@ func (x *CreateUploadedMediaResponse) GetCreated() *UploadedMedia {
 // GetUploadedMedia
 type GetUploadedMediaRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	UploadedMediaId string                 `json:"uploaded_media_id,omitempty" protobuf:"bytes,1,opt,name=uploaded_media_id,json=uploadedMediaId,proto3"`
+	UploadedMediaId string                 `protobuf:"bytes,1,opt,name=uploaded_media_id,json=uploadedMediaId,proto3" json:"uploaded_media_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -659,8 +659,8 @@ func (x *GetUploadedMediaRequest) GetUploadedMediaId() string {
 
 type GetUploadedMediaResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *UploadedMedia         `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *UploadedMedia         `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -712,7 +712,7 @@ func (x *GetUploadedMediaResponse) GetResult() *UploadedMedia {
 // GetUploadedMediaWithIDs
 type GetUploadedMediaWithIDsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ids           []string               `json:"ids,omitempty" protobuf:"bytes,1,rep,name=ids,proto3"`
+	Ids           []string               `protobuf:"bytes,1,rep,name=ids,proto3" json:"ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -756,8 +756,8 @@ func (x *GetUploadedMediaWithIDsRequest) GetIds() []string {
 
 type GetUploadedMediaWithIDsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Results         []*UploadedMedia       `json:"results,omitempty"          protobuf:"bytes,2,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Results         []*UploadedMedia       `protobuf:"bytes,2,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -809,8 +809,8 @@ func (x *GetUploadedMediaWithIDsResponse) GetResults() []*UploadedMedia {
 // GetUploadedMediaForUser
 type GetUploadedMediaForUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `json:"user_id,omitempty" protobuf:"bytes,1,opt,name=user_id,json=userId,proto3"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"  protobuf:"bytes,2,opt,name=filter,proto3"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -861,9 +861,9 @@ func (x *GetUploadedMediaForUserRequest) GetFilter() *filtering.QueryFilter {
 
 type GetUploadedMediaForUserResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*UploadedMedia       `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*UploadedMedia       `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -922,8 +922,8 @@ func (x *GetUploadedMediaForUserResponse) GetResults() []*UploadedMedia {
 // UpdateUploadedMedia
 type UpdateUploadedMediaRequest struct {
 	state           protoimpl.MessageState           `protogen:"open.v1"`
-	UploadedMediaId string                           `json:"uploaded_media_id,omitempty" protobuf:"bytes,1,opt,name=uploaded_media_id,json=uploadedMediaId,proto3"`
-	Input           *UploadedMediaUpdateRequestInput `json:"input,omitempty"             protobuf:"bytes,2,opt,name=input,proto3"`
+	UploadedMediaId string                           `protobuf:"bytes,1,opt,name=uploaded_media_id,json=uploadedMediaId,proto3" json:"uploaded_media_id,omitempty"`
+	Input           *UploadedMediaUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -974,8 +974,8 @@ func (x *UpdateUploadedMediaRequest) GetInput() *UploadedMediaUpdateRequestInput
 
 type UpdateUploadedMediaResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *UploadedMedia         `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *UploadedMedia         `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1027,7 +1027,7 @@ func (x *UpdateUploadedMediaResponse) GetUpdated() *UploadedMedia {
 // ArchiveUploadedMedia
 type ArchiveUploadedMediaRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	UploadedMediaId string                 `json:"uploaded_media_id,omitempty" protobuf:"bytes,1,opt,name=uploaded_media_id,json=uploadedMediaId,proto3"`
+	UploadedMediaId string                 `protobuf:"bytes,1,opt,name=uploaded_media_id,json=uploadedMediaId,proto3" json:"uploaded_media_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1071,7 +1071,7 @@ func (x *ArchiveUploadedMediaRequest) GetUploadedMediaId() string {
 
 type ArchiveUploadedMediaResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

@@ -103,6 +103,22 @@ AND %s.%s = sqlc.arg(%s);`,
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetProductByExternalID",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+AND %s.external_product_id = sqlc.arg(external_product_id);`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					productsTableName,
+					productsTableName, archivedAtColumn,
+					productsTableName,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetProducts",
 					Type: ManyType,
 				},

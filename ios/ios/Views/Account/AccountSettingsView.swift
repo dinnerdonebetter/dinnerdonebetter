@@ -5,11 +5,17 @@
 //  Created by Auto on 12/8/25.
 //
 
+import RevenueCat
+import RevenueCatUI
 import SwiftUI
 
 struct AccountSettingsView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: AccountSettingsViewModel?
+  @State private var showCustomerCenter = false
+  @State private var showPaywall = false
+  @State private var isProActive = false
+  @State private var launchOffering: Offering?
 
   var body: some View {
     NavigationStack {
@@ -23,6 +29,9 @@ struct AccountSettingsView: View {
             content: {
               ScrollView {
                 VStack(spacing: DSTheme.Spacing.xl) {
+                  // Subscription Section
+                  subscriptionSection
+
                   // Members Section
                   if let account = viewModel.account {
                     membersSection(viewModel: viewModel, account: account)
@@ -66,6 +75,61 @@ struct AccountSettingsView: View {
         if let viewModel = viewModel {
           Task {
             await viewModel.loadData()
+          }
+        }
+        Task {
+          isProActive = await EntitlementService.isProActive()
+        }
+        if RevenueCatConfiguration.isConfigured && launchOffering == nil {
+          Task { launchOffering = await SubscriptionService.launchOffering() }
+        }
+      }
+      .sheet(isPresented: $showCustomerCenter) {
+        CustomerCenterView()
+      }
+      .sheet(isPresented: $showPaywall) {
+        if let offering = launchOffering {
+          PaywallView(offering: offering)
+        } else {
+          ProgressView("Loading...")
+            .task { launchOffering = await SubscriptionService.launchOffering() }
+        }
+      }
+      .onChange(of: showCustomerCenter) { _, isPresented in
+        if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
+      }
+      .onChange(of: showPaywall) { _, isPresented in
+        if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
+      }
+    }
+  }
+
+  // MARK: - Subscription Section
+  @ViewBuilder
+  private var subscriptionSection: some View {
+    if RevenueCatConfiguration.isConfigured {
+      DSSection("Subscription") {
+        VStack(spacing: DSTheme.Spacing.lg) {
+          if isProActive {
+            HStack(spacing: DSTheme.Spacing.md) {
+              Image(systemName: "crown.fill")
+                .foregroundColor(DSTheme.Colors.primary)
+              Text("Dinner Done Better Pro")
+                .font(DSTheme.Typography.label)
+                .foregroundColor(DSTheme.Colors.textPrimary)
+              Spacer()
+              DSStatusBadge(.success, style: .minimal)
+            }
+            DSButton("Manage Subscription", icon: "gearshape", style: .ghost, fullWidth: true) {
+              showCustomerCenter = true
+            }
+          } else {
+            Text("Upgrade to Pro for full access")
+              .font(DSTheme.Typography.body)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+            DSButton("Upgrade to Pro", icon: "crown", fullWidth: true) {
+              showPaywall = true
+            }
           }
         }
       }

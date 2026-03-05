@@ -2,6 +2,7 @@ import Foundation
 import GRPCCore
 import GRPCNIOTransportHTTP2
 import GRPCNIOTransportHTTP2TransportServices
+import RevenueCat
 import SwiftProtobuf
 import SwiftUI
 import UIKit
@@ -119,11 +120,40 @@ class AuthenticationManager: AuthenticationManaging {
 
     self.isAuthenticated = true
     print("🔧 Restored credentials from Keychain for user: \(self.username)")
+    // Do NOT call logInToRevenueCatIfNeeded here. AuthManager init runs during
+    // @State setup, before IOSApp.init(), so any Task here runs before
+    // Purchases.configure() and crashes. Sync is triggered from iosApp.onAppear.
   }
 
   /// Clear all saved credentials from the Keychain.
   private func clearPersistedCredentials() {
     KeychainManager.deleteAll()
+  }
+
+  /// Log in to RevenueCat with the current account ID so purchases are tied to the user.
+  /// Call from iosApp.onAppear (after Purchases.configure), not from restoreCredentials.
+  func logInToRevenueCatIfNeeded() async {
+    guard RevenueCatConfiguration.isConfigured else { return }
+    guard !accountID.isEmpty else { return }
+    do {
+      _ = try await Purchases.shared.logIn(accountID)
+      print("✅ RevenueCat: Logged in as account \(accountID)")
+    } catch {
+      print("⚠️ RevenueCat: Failed to log in: \(error)")
+    }
+  }
+
+  /// Log out from RevenueCat when the user signs out.
+  private func logOutFromRevenueCat() {
+    guard RevenueCatConfiguration.isConfigured else { return }
+    Task {
+      do {
+        _ = try await Purchases.shared.logOut()
+        print("✅ RevenueCat: Logged out")
+      } catch {
+        print("⚠️ RevenueCat: Failed to log out: \(error)")
+      }
+    }
   }
 
   /// Tear down the existing gRPC client so the next request creates one
@@ -187,6 +217,9 @@ class AuthenticationManager: AuthenticationManaging {
             ]
           )
         }
+      }
+      if result.success {
+        await logInToRevenueCatIfNeeded()
       }
       return result
     }
@@ -269,6 +302,7 @@ class AuthenticationManager: AuthenticationManaging {
             )
             DeviceTokenRegistrationService.shared.tryReportStoredToken()
           }
+          await logInToRevenueCatIfNeeded()
           await MainActor.run {
             UIApplication.shared.registerForRemoteNotifications()
           }
@@ -688,6 +722,7 @@ class AuthenticationManager: AuthenticationManaging {
 
   func logout() async {
     await DeviceTokenRegistrationService.shared.archiveCurrentDeviceToken(authManager: self)
+    logOutFromRevenueCat()
     AnalyticsConfiguration.provideEventReporter().reset()
     self.isAuthenticated = false
     self.username = ""

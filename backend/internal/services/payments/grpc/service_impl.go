@@ -91,23 +91,6 @@ func (s *serviceImpl) ArchiveProduct(ctx context.Context, request *paymentssvc.A
 	}, nil
 }
 
-func (s *serviceImpl) CreateCheckoutSession(ctx context.Context, request *paymentssvc.CreateCheckoutSessionRequest) (*paymentssvc.CreateCheckoutSessionResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	input := converters.ConvertCheckoutSessionRequestInputToDomain(request.Input)
-	sessionURL, sessionID, err := s.paymentsManager.CreateCheckoutSession(ctx, input)
-	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create checkout session")
-	}
-
-	return &paymentssvc.CreateCheckoutSessionResponse{
-		ResponseDetails: &types.ResponseDetails{TraceId: span.SpanContext().TraceID().String()},
-		SessionUrl:      sessionURL,
-		SessionId:       sessionID,
-	}, nil
-}
-
 func (s *serviceImpl) CreateSubscription(ctx context.Context, request *paymentssvc.CreateSubscriptionRequest) (*paymentssvc.CreateSubscriptionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -182,19 +165,6 @@ func (s *serviceImpl) ArchiveSubscription(ctx context.Context, request *payments
 	}
 
 	return &paymentssvc.ArchiveSubscriptionResponse{
-		ResponseDetails: &types.ResponseDetails{TraceId: span.SpanContext().TraceID().String()},
-	}, nil
-}
-
-func (s *serviceImpl) CancelSubscription(ctx context.Context, request *paymentssvc.CancelSubscriptionRequest) (*paymentssvc.CancelSubscriptionResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if err := s.paymentsManager.CancelSubscription(ctx, request.SubscriptionId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithValue(paymentskeys.SubscriptionIDKey, request.SubscriptionId), span, codes.Internal, "failed to cancel subscription")
-	}
-
-	return &paymentssvc.CancelSubscriptionResponse{
 		ResponseDetails: &types.ResponseDetails{TraceId: span.SpanContext().TraceID().String()},
 	}, nil
 }

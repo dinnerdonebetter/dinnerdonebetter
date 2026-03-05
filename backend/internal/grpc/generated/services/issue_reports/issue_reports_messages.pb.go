@@ -25,7 +25,7 @@ const (
 
 type DataCollection struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
-	IssueReports  map[string]*IssueReport `json:"issue_reports,omitempty" protobuf:"bytes,1,rep,name=issue_reports,json=issueReports,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	IssueReports  map[string]*IssueReport `protobuf:"bytes,1,rep,name=issue_reports,json=issueReports,proto3" json:"issue_reports,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -69,16 +69,16 @@ func (x *DataCollection) GetIssueReports() map[string]*IssueReport {
 
 type IssueReport struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
-	ArchivedAt       *timestamppb.Timestamp `json:"archived_at,omitempty"        protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3"`
-	LastUpdatedAt    *timestamppb.Timestamp `json:"last_updated_at,omitempty"    protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
-	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,4,opt,name=id,proto3"`
-	IssueType        string                 `json:"issue_type,omitempty"         protobuf:"bytes,5,opt,name=issue_type,json=issueType,proto3"`
-	Details          string                 `json:"details,omitempty"            protobuf:"bytes,6,opt,name=details,proto3"`
-	RelevantTable    string                 `json:"relevant_table,omitempty"     protobuf:"bytes,7,opt,name=relevant_table,json=relevantTable,proto3"`
-	RelevantRecordId string                 `json:"relevant_record_id,omitempty" protobuf:"bytes,8,opt,name=relevant_record_id,json=relevantRecordId,proto3"`
-	CreatedByUser    string                 `json:"created_by_user,omitempty"    protobuf:"bytes,9,opt,name=created_by_user,json=createdByUser,proto3"`
-	BelongsToAccount string                 `json:"belongs_to_account,omitempty" protobuf:"bytes,10,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	LastUpdatedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
+	Id               string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
+	IssueType        string                 `protobuf:"bytes,5,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
+	Details          string                 `protobuf:"bytes,6,opt,name=details,proto3" json:"details,omitempty"`
+	RelevantTable    string                 `protobuf:"bytes,7,opt,name=relevant_table,json=relevantTable,proto3" json:"relevant_table,omitempty"`
+	RelevantRecordId string                 `protobuf:"bytes,8,opt,name=relevant_record_id,json=relevantRecordId,proto3" json:"relevant_record_id,omitempty"`
+	CreatedByUser    string                 `protobuf:"bytes,9,opt,name=created_by_user,json=createdByUser,proto3" json:"created_by_user,omitempty"`
+	BelongsToAccount string                 `protobuf:"bytes,10,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }

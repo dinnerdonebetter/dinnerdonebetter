@@ -14,13 +14,11 @@ func ProvideMethodPermissions() PaymentsMethodPermissions {
 		paymentssvc.PaymentsService_GetProducts_FullMethodName:                 {authorization.ReadProductsPermission},
 		paymentssvc.PaymentsService_UpdateProduct_FullMethodName:               {authorization.UpdateProductsPermission},
 		paymentssvc.PaymentsService_ArchiveProduct_FullMethodName:              {authorization.ArchiveProductsPermission},
-		paymentssvc.PaymentsService_CreateCheckoutSession_FullMethodName:       {authorization.CreateCheckoutSessionPermission},
 		paymentssvc.PaymentsService_CreateSubscription_FullMethodName:          {authorization.CreateSubscriptionsPermission},
 		paymentssvc.PaymentsService_GetSubscription_FullMethodName:             {authorization.ReadSubscriptionsPermission},
 		paymentssvc.PaymentsService_GetSubscriptionsForAccount_FullMethodName:  {authorization.ReadSubscriptionsPermission},
 		paymentssvc.PaymentsService_UpdateSubscription_FullMethodName:          {authorization.UpdateSubscriptionsPermission},
 		paymentssvc.PaymentsService_ArchiveSubscription_FullMethodName:         {authorization.ArchiveSubscriptionsPermission},
-		paymentssvc.PaymentsService_CancelSubscription_FullMethodName:          {authorization.CancelSubscriptionPermission},
 		paymentssvc.PaymentsService_GetPurchasesForAccount_FullMethodName:      {authorization.ReadPurchasesPermission},
 		paymentssvc.PaymentsService_GetPaymentHistoryForAccount_FullMethodName: {authorization.ReadPaymentHistoryPermission},
 	}

@@ -131,6 +131,7 @@ resource "kubernetes_secret" "api_service_config" {
     PUSH_NOTIFICATIONS_APNS_TEAM_ID    = var.APNS_TEAM_ID
     PUSH_NOTIFICATIONS_APNS_BUNDLE_ID  = var.APNS_BUNDLE_ID
     PUSH_NOTIFICATIONS_APNS_PRODUCTION = var.APNS_PRODUCTION
+    RESEND_API_KEY                     = var.RESEND_API_KEY
   }
 }
 

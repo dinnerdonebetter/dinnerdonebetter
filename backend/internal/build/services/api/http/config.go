@@ -32,6 +32,7 @@ var (
 			"MealPlanning",
 			"Auth",
 			"OAuth2Clients",
+			"Payments",
 		),
 	)
 )

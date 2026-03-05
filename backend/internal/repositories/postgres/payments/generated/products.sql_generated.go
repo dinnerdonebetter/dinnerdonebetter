@@ -123,6 +123,43 @@ func (q *Queries) GetProduct(ctx context.Context, db DBTX, id string) (*Products
 	return &i, err
 }
 
+const getProductByExternalID = `-- name: GetProductByExternalID :one
+SELECT
+	products.id,
+	products.name,
+	products.description,
+	products.kind,
+	products.amount_cents,
+	products.currency,
+	products.billing_interval_months,
+	products.external_product_id,
+	products.created_at,
+	products.last_updated_at,
+	products.archived_at
+FROM products
+WHERE products.archived_at IS NULL
+AND products.external_product_id = $1
+`
+
+func (q *Queries) GetProductByExternalID(ctx context.Context, db DBTX, externalProductID sql.NullString) (*Products, error) {
+	row := db.QueryRowContext(ctx, getProductByExternalID, externalProductID)
+	var i Products
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Kind,
+		&i.AmountCents,
+		&i.Currency,
+		&i.BillingIntervalMonths,
+		&i.ExternalProductID,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
+	)
+	return &i, err
+}
+
 const getProducts = `-- name: GetProducts :many
 SELECT
 	products.id,

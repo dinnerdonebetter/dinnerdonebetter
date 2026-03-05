@@ -520,54 +520,6 @@ func TestPayments_ArchiveSubscription(T *testing.T) {
 	})
 }
 
-func TestPayments_CreateCheckoutSession(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path returns URL with stub adapter", func(t *testing.T) {
-		t.Parallel()
-		ctx := t.Context()
-
-		product := createProductForTest(t)
-		_, accountClient := createUserAndClientForTest(t)
-		accountID := getAccountIDForTest(t, accountClient)
-
-		res, err := accountClient.CreateCheckoutSession(ctx, &paymentsgrpc.CreateCheckoutSessionRequest{
-			Input: &paymentsgrpc.CheckoutSessionRequestInput{
-				ProductId:   product.ID,
-				AccountId:   accountID,
-				SuccessUrl:  "https://example.com/success",
-				CancelUrl:   "https://example.com/cancel",
-				IsRecurring: true,
-			},
-		})
-		require.NoError(t, err)
-		require.NotEmpty(t, res.SessionUrl)
-		require.NotEmpty(t, res.SessionId)
-	})
-
-	T.Run("requires auth", func(t *testing.T) {
-		t.Parallel()
-		ctx := t.Context()
-
-		product := createProductForTest(t)
-		_, accountClient := createUserAndClientForTest(t)
-		accountID := getAccountIDForTest(t, accountClient)
-
-		c := buildUnauthenticatedGRPCClientForTest(t)
-		res, err := c.CreateCheckoutSession(ctx, &paymentsgrpc.CreateCheckoutSessionRequest{
-			Input: &paymentsgrpc.CheckoutSessionRequestInput{
-				ProductId:   product.ID,
-				AccountId:   accountID,
-				SuccessUrl:  "https://example.com/success",
-				CancelUrl:   "https://example.com/cancel",
-				IsRecurring: true,
-			},
-		})
-		assert.Error(t, err)
-		assert.Nil(t, res)
-	})
-}
-
 func TestPayments_GetPurchasesForAccount(T *testing.T) {
 	T.Parallel()
 

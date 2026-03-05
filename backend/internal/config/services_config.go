@@ -9,6 +9,7 @@ import (
 	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
 	mealplanningcfg "github.com/dinnerdonebetter/backend/internal/services/mealplanning/config"
 	oauthcfg "github.com/dinnerdonebetter/backend/internal/services/oauth/config"
+	paymentscfg "github.com/dinnerdonebetter/backend/internal/services/payments/config"
 	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 
 	"github.com/hashicorp/go-multierror"
@@ -17,7 +18,9 @@ import (
 type (
 	// ServicesConfig collects the various service configurations.
 	ServicesConfig struct {
-		_             struct{}                `json:"-"`
+		_ struct{} `json:"-"`
+
+		Payments      paymentscfg.Config      `envPrefix:"PAYMENTS_"       json:"payments"`
 		Users         identitycfg.Config      `envPrefix:"USERS_"          json:"users"`
 		DataPrivacy   dataprivacycfg.Config   `envPrefix:"DATA_PRIVACY_"   json:"dataPrivacy"`
 		UploadedMedia uploadedmediacfg.Config `envPrefix:"UPLOADED_MEDIA_" json:"uploadedMedia"`

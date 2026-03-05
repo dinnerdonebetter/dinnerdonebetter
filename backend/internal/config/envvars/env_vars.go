@@ -31,13 +31,13 @@ const (
 	// AasaTeamIDEnvVarKey is the environment variable name to set to override `ConsumerWebappConfig.AppleAppSiteAssociation.TeamID`.
 	AasaTeamIDEnvVarKey = "DINNER_DONE_BETTER_AASA_TEAM_ID"
 
-	// AnalyticsCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.CircuitBreaker.ErrorRate`.
+	// AnalyticsCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `MealPlanGroceryListInitializerConfig.Analytics.CircuitBreaker.ErrorRate`.
 	AnalyticsCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_ERROR_RATE"
 
-	// AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.CircuitBreaker.MinimumSampleThreshold`.
+	// AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `MealPlanGroceryListInitializerConfig.Analytics.CircuitBreaker.MinimumSampleThreshold`.
 	AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
 
-	// AnalyticsCircuitBreakerNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.CircuitBreaker.Name`.
+	// AnalyticsCircuitBreakerNameEnvVarKey is the environment variable name to set to override `MealPlanGroceryListInitializerConfig.Analytics.CircuitBreaker.Name`.
 	AnalyticsCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_NAME"
 
 	// AnalyticsPosthogAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.Posthog.APIKey`.
@@ -154,13 +154,13 @@ const (
 	// DatabaseUserDeviceTokenEncryptionKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.UserDeviceTokenEncryptionKey`.
 	DatabaseUserDeviceTokenEncryptionKeyEnvVarKey = "DINNER_DONE_BETTER_DATABASE_USER_DEVICE_TOKEN_ENCRYPTION_KEY"
 
-	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `AsyncMessageHandlerConfig.Email.CircuitBreaker.ErrorRate`.
+	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.CircuitBreaker.ErrorRate`.
 	EmailCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_ERROR_RATE"
 
-	// EmailCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `AsyncMessageHandlerConfig.Email.CircuitBreaker.MinimumSampleThreshold`.
+	// EmailCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.CircuitBreaker.MinimumSampleThreshold`.
 	EmailCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
 
-	// EmailCircuitBreakingNameEnvVarKey is the environment variable name to set to override `AsyncMessageHandlerConfig.Email.CircuitBreaker.Name`.
+	// EmailCircuitBreakingNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.CircuitBreaker.Name`.
 	EmailCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_NAME"
 
 	// EmailMailgunDomainEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Mailgun.Domain`.
@@ -453,6 +453,18 @@ const (
 
 	// ServiceOauth2ClientsCreationDisabledEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.OAuth2Clients.OAuth2ClientCreationDisabled`.
 	ServiceOauth2ClientsCreationDisabledEnvVarKey = "DINNER_DONE_BETTER_SERVICE_OAUTH2_CLIENTS_CREATION_DISABLED"
+
+	// ServicePaymentsRevenuecatAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Payments.RevenueCat.APIKey`.
+	ServicePaymentsRevenuecatAPIKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_PAYMENTS_REVENUECAT_API_KEY"
+
+	// ServicePaymentsRevenuecatWebhookAuthHeaderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Payments.RevenueCat.WebhookAuthHeader`.
+	ServicePaymentsRevenuecatWebhookAuthHeaderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_PAYMENTS_REVENUECAT_WEBHOOK_AUTH_HEADER"
+
+	// ServicePaymentsStripeAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Payments.Stripe.APIKey`.
+	ServicePaymentsStripeAPIKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_PAYMENTS_STRIPE_API_KEY"
+
+	// ServicePaymentsStripeWebhookSecretEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Payments.Stripe.WebhookSecret`.
+	ServicePaymentsStripeWebhookSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_PAYMENTS_STRIPE_WEBHOOK_SECRET"
 
 	// ServiceUsersPublicMediaURLPrefixEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Users.PublicMediaURLPrefix`.
 	ServiceUsersPublicMediaURLPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_PUBLIC_MEDIA_URL_PREFIX"

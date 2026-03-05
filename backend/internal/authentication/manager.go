@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"math"
 	"strings"
 	"time"
 
@@ -19,9 +18,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
 const (
@@ -117,12 +113,7 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 
 	logger := m.logger.Clone()
 
-	if err := validation.ValidateStructWithContext(ctx, loginData,
-		validation.Field(&loginData.Username, validation.Required, validation.Length(4, math.MaxInt8)),
-		validation.Field(&loginData.Password, validation.Required, validation.Length(8, math.MaxInt8)),
-		// non-admin users can have unverified 2FA secrets
-		validation.Field(&loginData.TOTPToken, is.Digit, validation.RuneLength(6, 6), validation.When(adminOnly)),
-	); err != nil {
+	if err := loginData.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
