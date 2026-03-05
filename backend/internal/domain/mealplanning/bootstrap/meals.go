@@ -103,23 +103,23 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 		}
 	}
 
-	// Pair 3: Perfect Roast Chicken with Caesar Roasted Broccoli
-	if roastChicken, ok := mainRecipes["Perfect Roast Chicken"]; ok {
-		if broccoli, ok2 := sideRecipes["Caesar Roasted Broccoli"]; ok2 {
+	// Pair 3: Whole Roast Chicken with Glazed Carrots
+	if roastChicken, ok := mainRecipes["Whole Roast Chicken"]; ok {
+		if carrots, ok2 := sideRecipes["Glazed Carrots with Brown Butter and Sage"]; ok2 {
 			mainMin, mainMax := getMainPortions(roastChicken)
-			sideMin := broccoli.EstimatedPortions.Min
+			sideMin := carrots.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
 
 			components := []*mealplanning.MealComponentDatabaseCreationInput{
 				createComponent(roastChicken, mealplanning.MealComponentTypesMain, 1.0),
-				createComponent(broccoli, mealplanning.MealComponentTypesSide, scale),
+				createComponent(carrots, mealplanning.MealComponentTypesSide, scale),
 			}
 
 			meals = append(meals, &mealplanning.MealDatabaseCreationInput{
 				ID:                   identifiers.New(),
 				CreatedByUser:        userID,
-				Name:                 "Roast Chicken with Caesar Broccoli",
-				Description:          "Classic roast chicken with flavorful Caesar-roasted broccoli.",
+				Name:                 "Roast Chicken with Glazed Carrots",
+				Description:          "Classic roast chicken with brown butter glazed carrots and sage.",
 				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
@@ -199,23 +199,23 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 		}
 	}
 
-	// Pair 7: Grilled Pork Tenderloin with Roasted Brussels Sprouts
+	// Pair 7: Grilled Pork Tenderloin with Caesar Roasted Broccoli
 	if porkTenderloin, ok := mainRecipes["Grilled Pork Tenderloin"]; ok {
-		if brusselsSprouts, ok2 := sideRecipes["Roasted Brussels Sprouts"]; ok2 {
+		if broccoli, ok2 := sideRecipes["Caesar Roasted Broccoli"]; ok2 {
 			mainMin, mainMax := getMainPortions(porkTenderloin)
-			sideMin := brusselsSprouts.EstimatedPortions.Min
+			sideMin := broccoli.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
 
 			components := []*mealplanning.MealComponentDatabaseCreationInput{
 				createComponent(porkTenderloin, mealplanning.MealComponentTypesMain, 1.0),
-				createComponent(brusselsSprouts, mealplanning.MealComponentTypesSide, scale),
+				createComponent(broccoli, mealplanning.MealComponentTypesSide, scale),
 			}
 
 			meals = append(meals, &mealplanning.MealDatabaseCreationInput{
 				ID:                   identifiers.New(),
 				CreatedByUser:        userID,
-				Name:                 "Grilled Pork Tenderloin with Brussels Sprouts",
-				Description:          "Tender grilled pork with roasted Brussels sprouts.",
+				Name:                 "Grilled Pork Tenderloin with Caesar Broccoli",
+				Description:          "Tender grilled pork with Caesar-roasted broccoli.",
 				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
@@ -326,23 +326,23 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 		}
 	}
 
-	// Pair 12: Grilled Whole Cauliflower with Teriyaki Sauce with Glazed Carrots
+	// Pair 12: Grilled Whole Cauliflower with Teriyaki Sauce with Roasted Brussels Sprouts
 	if cauliflower, ok := mainRecipes["Grilled Whole Cauliflower with Teriyaki Sauce"]; ok {
-		if carrots, ok2 := sideRecipes["Glazed Carrots with Brown Butter and Sage"]; ok2 {
+		if brusselsSprouts, ok2 := sideRecipes["Roasted Brussels Sprouts"]; ok2 {
 			mainMin, mainMax := getMainPortions(cauliflower)
-			sideMin := carrots.EstimatedPortions.Min
+			sideMin := brusselsSprouts.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
 
 			components := []*mealplanning.MealComponentDatabaseCreationInput{
 				createComponent(cauliflower, mealplanning.MealComponentTypesMain, 1.0),
-				createComponent(carrots, mealplanning.MealComponentTypesSide, scale),
+				createComponent(brusselsSprouts, mealplanning.MealComponentTypesSide, scale),
 			}
 
 			meals = append(meals, &mealplanning.MealDatabaseCreationInput{
 				ID:                   identifiers.New(),
 				CreatedByUser:        userID,
-				Name:                 "Grilled Whole Cauliflower with Glazed Carrots",
-				Description:          "Smoky grilled cauliflower with sweet glazed carrots.",
+				Name:                 "Grilled Whole Cauliflower with Brussels Sprouts",
+				Description:          "Smoky grilled cauliflower with teriyaki and balsamic-glazed Brussels sprouts.",
 				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,

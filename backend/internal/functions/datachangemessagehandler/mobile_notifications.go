@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	domainnotifications "github.com/dinnerdonebetter/backend/internal/domain/notifications"
@@ -13,6 +14,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 // MobileNotificationsEventHandler handles mobile notification requests from the mobile_notifications queue.
@@ -21,23 +25,56 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 	ctx, span := a.tracer.StartSpan(ctx)
 	defer span.End()
 
+	start := time.Now()
+	status := statusSuccess
+	requestType := unknownValue
+
+	defer func() {
+		a.mobileNotificationsExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
+			metric.WithAttributes(
+				attribute.String("status", status),
+				attribute.String("request_type", requestType),
+			))
+		a.recordMessagesProcessed(ctx, topicMobileNotifications, status)
+	}()
+
 	var req notifications.MobileNotificationRequest
 	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&req); err != nil {
+		a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+		status = statusFailure
 		return fmt.Errorf("decoding mobile notification request: %w", err)
 	}
 	if req.Title == "" || req.Body == "" {
+		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+		status = statusFailure
 		return fmt.Errorf("title and body are required")
 	}
 	if req.RequestType == "" {
+		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+		status = statusFailure
 		return fmt.Errorf("request type is required")
 	}
 
+	requestType = req.RequestType
+
 	switch req.RequestType {
 	case notifications.MobileNotificationRequestTypeMealPlanTask:
-		return a.handleMealPlanTaskNotification(ctx, &req)
+		if err := a.handleMealPlanTaskNotification(ctx, &req); err != nil {
+			a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+			status = statusFailure
+			return err
+		}
+		return nil
 	case notifications.MobileNotificationRequestTypeHouseholdInvitationAccepted:
-		return a.handleHouseholdInvitationAcceptedNotification(ctx, &req)
+		if err := a.handleHouseholdInvitationAcceptedNotification(ctx, &req); err != nil {
+			a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+			status = statusFailure
+			return err
+		}
+		return nil
 	default:
+		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+		status = statusFailure
 		return fmt.Errorf("unknown request type: %q", req.RequestType)
 	}
 }
@@ -122,15 +159,24 @@ func (a *AsyncDataChangeMessageHandler) sendPushToDevice(ctx context.Context, lo
 	msg := notifications.PushMessage{Title: req.Title, Body: req.Body, BadgeCount: req.BadgeCount}
 	if sendErr := a.pushNotificationSender.SendPush(ctx, t.Platform, t.DeviceToken, msg); sendErr != nil {
 		logger.WithValue("user_device_token_id", t.ID).WithValue("error", sendErr).Error("sending push notification to device", sendErr)
+		a.pushNotificationsSentCounter.Add(ctx, 1, metric.WithAttributes(
+			attribute.String("request_type", req.RequestType),
+			attribute.String("status", statusFailure),
+		))
 		if strings.Contains(sendErr.Error(), "BadDeviceToken") {
 			if archiveErr := a.notificationsRepo.ArchiveUserDeviceToken(ctx, t.BelongsToUser, t.ID); archiveErr != nil {
 				logger.WithValue("user_device_token_id", t.ID).Error("archiving invalid device token", archiveErr)
 			} else {
+				a.badDeviceTokensArchivedCounter.Add(ctx, 1)
 				logger.WithValue("user_device_token_id", t.ID).Info("archived invalid device token (BadDeviceToken from APNs)")
 			}
 		}
 		return false
 	}
+	a.pushNotificationsSentCounter.Add(ctx, 1, metric.WithAttributes(
+		attribute.String("request_type", req.RequestType),
+		attribute.String("status", statusSuccess),
+	))
 	return true
 }
 

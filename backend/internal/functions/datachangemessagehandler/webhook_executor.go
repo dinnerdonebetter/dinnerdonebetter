@@ -17,6 +17,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 func (a *AsyncDataChangeMessageHandler) WebhookExecutionRequestsEventHandler(ctx context.Context, rawMsg []byte) error {
@@ -24,17 +27,26 @@ func (a *AsyncDataChangeMessageHandler) WebhookExecutionRequestsEventHandler(ctx
 	defer span.End()
 
 	start := time.Now()
+	status := statusSuccess
+
+	defer func() {
+		a.webhookExecutionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
+			metric.WithAttributes(attribute.String("status", status)))
+		a.recordMessagesProcessed(ctx, topicWebhookExecutionRequests, status)
+	}()
 
 	var webhookExecutionRequest webhooks.WebhookExecutionRequest
 	if err := a.decoder.DecodeBytes(ctx, rawMsg, &webhookExecutionRequest); err != nil {
+		a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicWebhookExecutionRequests)))
+		status = statusFailure
 		return fmt.Errorf("decoding JSON body: %w", err)
 	}
 
 	if err := a.handleWebhookExecutionRequest(ctx, &webhookExecutionRequest); err != nil {
+		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicWebhookExecutionRequests)))
+		status = statusFailure
 		return fmt.Errorf("handling webhook execution request: %w", err)
 	}
-
-	a.webhookExecutionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
 
 	return nil
 }

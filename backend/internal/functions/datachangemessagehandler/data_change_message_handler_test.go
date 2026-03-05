@@ -55,10 +55,12 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 	mockPublisher := &msgqueuemock.Publisher{}
 	publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), mock.AnythingOfType("string")).Return(mockPublisher, nil).Maybe()
 
-	// Set up mock histograms
-	mockHistogram := metrics.NewNoopMetricsProvider()
-	noop, _ := mockHistogram.NewFloat64Histogram("test")
-	metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), mock.AnythingOfType("string"), mock.Anything).Return(noop, nil).Maybe()
+	// Set up mock histograms and counters
+	noopProvider := metrics.NewNoopMetricsProvider()
+	noopHistogram, _ := noopProvider.NewFloat64Histogram("test")
+	noopCounter, _ := noopProvider.NewInt64Counter("test")
+	metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), mock.AnythingOfType("string"), mock.Anything).Return(noopHistogram, nil).Maybe()
+	metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), mock.AnythingOfType("string"), mock.Anything).Return(noopCounter, nil).Maybe()
 
 	internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
 	mealPlanRepo := &mealplanningmock.Repository{}
@@ -79,10 +81,17 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 		logger:                               logger,
 		tracer:                               tracer,
 		nonWebhookEventTypes:                 []string{},
-		dataChangesExecutionTimeHistogram:    noop,
-		outboundEmailsExecutionTimeHistogram: noop,
-		webhookExecutionTimestampHistogram:   noop,
-		userDataAggregationExecutionTimeHistogram: noop,
+		dataChangesExecutionTimeHistogram:    noopHistogram,
+		outboundEmailsExecutionTimeHistogram: noopHistogram,
+		webhookExecutionTimestampHistogram:   noopHistogram,
+		userDataAggregationExecutionTimeHistogram: noopHistogram,
+		searchIndexRequestsExecutionTimeHistogram: noopHistogram,
+		mobileNotificationsExecutionTimeHistogram: noopHistogram,
+		messagesProcessedCounter:                  noopCounter,
+		messageDecodeErrorsCounter:                noopCounter,
+		handlerErrorsCounter:                      noopCounter,
+		pushNotificationsSentCounter:              noopCounter,
+		badDeviceTokensArchivedCounter:            noopCounter,
 		queuesConfig: msgconfig.QueuesConfig{
 			SearchIndexRequestsTopicName: "search-index-requests",
 		},
@@ -130,13 +139,20 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		eatingDataIndexer := &mealplanningindexing.MealPlanningDataIndexer{}
 
 		// Set up metrics expectations
-		mockHistogram := metrics.NewNoopMetricsProvider()
-		noop, _ := mockHistogram.NewFloat64Histogram("test")
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "data_changes_execution_time", mock.Anything).Return(noop, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "outbound_emails_execution_time", mock.Anything).Return(noop, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "search_index_requests_execution_time", mock.Anything).Return(noop, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "user_data_aggregation_execution_time", mock.Anything).Return(noop, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "webhook_requests_execution_time", mock.Anything).Return(noop, nil)
+		noopProvider := metrics.NewNoopMetricsProvider()
+		noopHistogram, _ := noopProvider.NewFloat64Histogram("test")
+		noopCounter, _ := noopProvider.NewInt64Counter("test")
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "data_changes_execution_time", mock.Anything).Return(noopHistogram, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "outbound_emails_execution_time", mock.Anything).Return(noopHistogram, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "search_index_requests_execution_time", mock.Anything).Return(noopHistogram, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "user_data_aggregation_execution_time", mock.Anything).Return(noopHistogram, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "webhook_requests_execution_time", mock.Anything).Return(noopHistogram, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "mobile_notifications_execution_time", mock.Anything).Return(noopHistogram, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "messages_processed_total", mock.Anything).Return(noopCounter, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "message_decode_errors_total", mock.Anything).Return(noopCounter, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "handler_errors_total", mock.Anything).Return(noopCounter, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "push_notifications_sent_total", mock.Anything).Return(noopCounter, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "bad_device_tokens_archived_total", mock.Anything).Return(noopCounter, nil)
 
 		// Set up publisher expectations
 		mockPublisher := &msgqueuemock.Publisher{}
