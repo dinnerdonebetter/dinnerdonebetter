@@ -35,9 +35,11 @@ func renderMarkdown(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	var buf bytes.Buffer
-	if err := md.Convert(raw, &buf); err != nil {
+	if err = md.Convert(raw, &buf); err != nil {
 		return "", err
 	}
+
 	return buf.String(), nil
 }
