@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/yuin/goldmark"
-
 	g "maragu.dev/gomponents"
 )
 
