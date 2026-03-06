@@ -120,12 +120,16 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	assert.Equal(t, firstUser.LastName, newLastName)
 	assert.Equal(t, firstUser.Birthday.Round(time.Second), birthday.Round(time.Second))
 
-	// update first user's avatar
-	newAvatarSource := fakes.BuildFakeID()
-	assert.NoError(t, dbc.UpdateUserAvatar(ctx, firstUser.ID, newAvatarSource))
+	// update first user's avatar (create uploaded_media first, then set avatar)
+	avatarMediaID := fakes.BuildFakeID()
+	_, err = dbc.writeDB.ExecContext(ctx, `INSERT INTO uploaded_media (id, storage_path, mime_type, created_by_user) VALUES ($1, $2, $3, $4)`,
+		avatarMediaID, "avatars/"+avatarMediaID+".png", "image/png", firstUser.ID)
+	require.NoError(t, err)
+	assert.NoError(t, dbc.SetUserAvatar(ctx, firstUser.ID, avatarMediaID))
 	firstUser, err = dbc.GetUser(ctx, firstUser.ID)
 	require.NoError(t, err)
-	assert.Equal(t, *firstUser.AvatarSrc, newAvatarSource)
+	require.NotNil(t, firstUser.Avatar)
+	assert.Equal(t, firstUser.Avatar.ID, avatarMediaID)
 
 	// update first user's email address
 	newEmailAddress := fakes.BuildFakeID()
@@ -362,10 +366,10 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 	})
 }
 
-func TestQuerier_UpdateUserAvatar(T *testing.T) {
+func TestQuerier_SetUserAvatar(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with empty input", func(t *testing.T) {
+	T.Run("with empty uploaded media ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
@@ -373,7 +377,7 @@ func TestQuerier_UpdateUserAvatar(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		assert.Error(t, c.UpdateUserAvatar(ctx, exampleUser.ID, ""))
+		assert.Error(t, c.SetUserAvatar(ctx, exampleUser.ID, ""))
 	})
 }
 

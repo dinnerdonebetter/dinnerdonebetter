@@ -3,6 +3,7 @@ syntax = "proto3";
 package identity;
 
 import "google/protobuf/timestamp.proto";
+import "uploaded_media/uploaded_media.proto";
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity";
 
@@ -93,7 +94,7 @@ message User {
   google.protobuf.Timestamp last_accepted_terms_of_service = 4;
   google.protobuf.Timestamp last_accepted_privacy_policy = 5;
   google.protobuf.Timestamp two_factor_secret_verified_at = 6;
-  optional string avatar_src = 7;
+  optional uploaded_media.UploadedMedia avatar = 7;
   google.protobuf.Timestamp birthday = 8;
   google.protobuf.Timestamp archived_at = 9;
   string account_status_explanation = 10;

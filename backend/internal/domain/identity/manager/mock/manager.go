@@ -194,9 +194,9 @@ func (m *IdentityDataManager) UpdateUserUsername(ctx context.Context, userID, ne
 	return m.Called(ctx, userID, newUsername).Error(0)
 }
 
-// UploadUserAvatar is a mock function.
-func (m *IdentityDataManager) UploadUserAvatar(ctx context.Context, userID, base64EncodedImageData string) error {
-	return m.Called(ctx, userID, base64EncodedImageData).Error(0)
+// SetUserAvatar is a mock function.
+func (m *IdentityDataManager) SetUserAvatar(ctx context.Context, userID, uploadedMediaID string) error {
+	return m.Called(ctx, userID, uploadedMediaID).Error(0)
 }
 
 // AdminUpdateUserStatus is a mock function.

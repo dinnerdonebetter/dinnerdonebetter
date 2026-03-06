@@ -148,7 +148,6 @@ SELECT
 	account_invitations.to_user,
 	users.id as user_id,
 	users.username as user_username,
-	users.avatar_src as user_avatar_src,
 	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
 	users.password_last_changed_at as user_password_last_changed_at,
@@ -169,6 +168,13 @@ SELECT
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
+	uploaded_media.id as user_avatar_id,
+	uploaded_media.storage_path as user_avatar_storage_path,
+	uploaded_media.mime_type as user_avatar_mime_type,
+	uploaded_media.created_at as user_avatar_created_at,
+	uploaded_media.last_updated_at as user_avatar_last_updated_at,
+	uploaded_media.archived_at as user_avatar_archived_at,
+	uploaded_media.created_by_user as user_avatar_created_by_user,
 	account_invitations.to_name,
 	account_invitations.note,
 	account_invitations.to_email,
@@ -183,6 +189,8 @@ SELECT
 FROM account_invitations
 	JOIN accounts ON account_invitations.destination_account = accounts.id
 	JOIN users ON account_invitations.from_user = users.id
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE account_invitations.archived_at IS NULL
 	AND account_invitations.expires_at > NOW()
 	AND account_invitations.destination_account = $1
@@ -197,61 +205,67 @@ type GetAccountInvitationByAccountAndIDParams struct {
 type GetAccountInvitationByAccountAndIDRow struct {
 	ExpiresAt                                time.Time
 	AccountCreatedAt                         time.Time
-	UserCreatedAt                            time.Time
 	CreatedAt                                time.Time
-	UserLastIndexedAt                        sql.NullTime
-	UserEmailAddressVerifiedAt               sql.NullTime
-	UserLastUpdatedAt                        sql.NullTime
-	LastUpdatedAt                            sql.NullTime
-	ArchivedAt                               sql.NullTime
+	UserCreatedAt                            time.Time
 	UserLastAcceptedPrivacyPolicy            sql.NullTime
-	UserLastAcceptedTermsOfService           sql.NullTime
-	UserArchivedAt                           sql.NullTime
 	UserBirthday                             sql.NullTime
+	ArchivedAt                               sql.NullTime
+	UserLastUpdatedAt                        sql.NullTime
+	UserAvatarCreatedAt                      sql.NullTime
+	UserLastIndexedAt                        sql.NullTime
+	AccountArchivedAt                        sql.NullTime
+	UserLastAcceptedTermsOfService           sql.NullTime
+	UserEmailAddressVerifiedAt               sql.NullTime
+	UserArchivedAt                           sql.NullTime
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
 	UserPasswordLastChangedAt                sql.NullTime
-	AccountArchivedAt                        sql.NullTime
-	AccountLastUpdatedAt                     sql.NullTime
+	LastUpdatedAt                            sql.NullTime
 	AccountLastPaymentProviderSyncOccurredAt sql.NullTime
-	AccountCountry                           string
-	AccountPaymentProcessorCustomerID        string
-	AccountID                                string
-	AccountName                              string
-	FromUser                                 string
-	AccountBillingStatus                     string
+	UserAvatarLastUpdatedAt                  sql.NullTime
+	UserAvatarArchivedAt                     sql.NullTime
+	AccountLastUpdatedAt                     sql.NullTime
+	UserEmailAddress                         string
+	UserFirstName                            string
+	AccountWebhookHmacSecret                 string
 	UserID                                   string
 	UserUsername                             string
-	StatusNote                               string
-	UserEmailAddress                         string
+	Note                                     string
 	UserHashedPassword                       string
 	ID                                       string
-	Status                                   InvitationState
+	StatusNote                               string
 	UserTwoFactorSecret                      string
-	AccountZipCode                           string
+	AccountCountry                           string
 	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
+	AccountZipCode                           string
+	Status                                   InvitationState
 	AccountState                             string
-	AccountContactPhone                      string
-	AccountCity                              string
-	UserFirstName                            string
+	FromUser                                 string
 	UserLastName                             string
+	AccountCity                              string
 	AccountAddressLine2                      string
 	AccountAddressLine1                      string
 	AccountTimeZone                          TimeZone
 	AccountBelongsToUser                     string
+	AccountPaymentProcessorCustomerID        string
+	AccountContactPhone                      string
 	DestinationAccount                       string
-	AccountWebhookHmacSecret                 string
-	ToName                                   string
-	Note                                     string
-	ToEmail                                  string
 	Token                                    string
-	AccountSubscriptionPlanID                sql.NullString
-	UserEmailAddressVerificationToken        sql.NullString
-	UserAvatarSrc                            sql.NullString
-	ToUser                                   sql.NullString
+	AccountBillingStatus                     string
+	AccountName                              string
+	AccountID                                string
+	ToEmail                                  string
+	ToName                                   string
 	AccountLatitude                          sql.NullString
+	UserAvatarCreatedByUser                  sql.NullString
+	UserAvatarMimeType                       NullUploadedMediaMimeType
+	UserAvatarStoragePath                    sql.NullString
+	UserAvatarID                             sql.NullString
+	UserEmailAddressVerificationToken        sql.NullString
+	ToUser                                   sql.NullString
 	AccountLongitude                         sql.NullString
+	AccountSubscriptionPlanID                sql.NullString
 	UserRequiresPasswordChange               bool
 }
 
@@ -285,7 +299,6 @@ func (q *Queries) GetAccountInvitationByAccountAndID(ctx context.Context, db DBT
 		&i.ToUser,
 		&i.UserID,
 		&i.UserUsername,
-		&i.UserAvatarSrc,
 		&i.UserEmailAddress,
 		&i.UserHashedPassword,
 		&i.UserPasswordLastChangedAt,
@@ -306,6 +319,13 @@ func (q *Queries) GetAccountInvitationByAccountAndID(ctx context.Context, db DBT
 		&i.UserCreatedAt,
 		&i.UserLastUpdatedAt,
 		&i.UserArchivedAt,
+		&i.UserAvatarID,
+		&i.UserAvatarStoragePath,
+		&i.UserAvatarMimeType,
+		&i.UserAvatarCreatedAt,
+		&i.UserAvatarLastUpdatedAt,
+		&i.UserAvatarArchivedAt,
+		&i.UserAvatarCreatedByUser,
 		&i.ToName,
 		&i.Note,
 		&i.ToEmail,
@@ -349,7 +369,6 @@ SELECT
 	account_invitations.to_user,
 	users.id as user_id,
 	users.username as user_username,
-	users.avatar_src as user_avatar_src,
 	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
 	users.password_last_changed_at as user_password_last_changed_at,
@@ -370,6 +389,13 @@ SELECT
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
+	uploaded_media.id as user_avatar_id,
+	uploaded_media.storage_path as user_avatar_storage_path,
+	uploaded_media.mime_type as user_avatar_mime_type,
+	uploaded_media.created_at as user_avatar_created_at,
+	uploaded_media.last_updated_at as user_avatar_last_updated_at,
+	uploaded_media.archived_at as user_avatar_archived_at,
+	uploaded_media.created_by_user as user_avatar_created_by_user,
 	account_invitations.to_name,
 	account_invitations.note,
 	account_invitations.to_email,
@@ -384,6 +410,8 @@ SELECT
 FROM account_invitations
 	JOIN accounts ON account_invitations.destination_account = accounts.id
 	JOIN users ON account_invitations.from_user = users.id
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE account_invitations.archived_at IS NULL
 	AND account_invitations.expires_at > NOW()
 	AND account_invitations.to_email = LOWER($1)
@@ -398,61 +426,67 @@ type GetAccountInvitationByEmailAndTokenParams struct {
 type GetAccountInvitationByEmailAndTokenRow struct {
 	ExpiresAt                                time.Time
 	AccountCreatedAt                         time.Time
-	UserCreatedAt                            time.Time
 	CreatedAt                                time.Time
-	UserLastIndexedAt                        sql.NullTime
-	UserEmailAddressVerifiedAt               sql.NullTime
-	UserLastUpdatedAt                        sql.NullTime
-	LastUpdatedAt                            sql.NullTime
-	ArchivedAt                               sql.NullTime
+	UserCreatedAt                            time.Time
 	UserLastAcceptedPrivacyPolicy            sql.NullTime
-	UserLastAcceptedTermsOfService           sql.NullTime
-	UserArchivedAt                           sql.NullTime
 	UserBirthday                             sql.NullTime
+	ArchivedAt                               sql.NullTime
+	UserLastUpdatedAt                        sql.NullTime
+	UserAvatarCreatedAt                      sql.NullTime
+	UserLastIndexedAt                        sql.NullTime
+	AccountArchivedAt                        sql.NullTime
+	UserLastAcceptedTermsOfService           sql.NullTime
+	UserEmailAddressVerifiedAt               sql.NullTime
+	UserArchivedAt                           sql.NullTime
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
 	UserPasswordLastChangedAt                sql.NullTime
-	AccountArchivedAt                        sql.NullTime
-	AccountLastUpdatedAt                     sql.NullTime
+	LastUpdatedAt                            sql.NullTime
 	AccountLastPaymentProviderSyncOccurredAt sql.NullTime
-	AccountCountry                           string
-	AccountPaymentProcessorCustomerID        string
-	AccountID                                string
-	AccountName                              string
-	FromUser                                 string
-	AccountBillingStatus                     string
+	UserAvatarLastUpdatedAt                  sql.NullTime
+	UserAvatarArchivedAt                     sql.NullTime
+	AccountLastUpdatedAt                     sql.NullTime
+	UserEmailAddress                         string
+	UserFirstName                            string
+	AccountWebhookHmacSecret                 string
 	UserID                                   string
 	UserUsername                             string
-	StatusNote                               string
-	UserEmailAddress                         string
+	Note                                     string
 	UserHashedPassword                       string
 	ID                                       string
-	Status                                   InvitationState
+	StatusNote                               string
 	UserTwoFactorSecret                      string
-	AccountZipCode                           string
+	AccountCountry                           string
 	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
+	AccountZipCode                           string
+	Status                                   InvitationState
 	AccountState                             string
-	AccountContactPhone                      string
-	AccountCity                              string
-	UserFirstName                            string
+	FromUser                                 string
 	UserLastName                             string
+	AccountCity                              string
 	AccountAddressLine2                      string
 	AccountAddressLine1                      string
 	AccountTimeZone                          TimeZone
 	AccountBelongsToUser                     string
+	AccountPaymentProcessorCustomerID        string
+	AccountContactPhone                      string
 	DestinationAccount                       string
-	AccountWebhookHmacSecret                 string
-	ToName                                   string
-	Note                                     string
-	ToEmail                                  string
 	Token                                    string
-	AccountSubscriptionPlanID                sql.NullString
-	UserEmailAddressVerificationToken        sql.NullString
-	UserAvatarSrc                            sql.NullString
-	ToUser                                   sql.NullString
+	AccountBillingStatus                     string
+	AccountName                              string
+	AccountID                                string
+	ToEmail                                  string
+	ToName                                   string
 	AccountLatitude                          sql.NullString
+	UserAvatarCreatedByUser                  sql.NullString
+	UserAvatarMimeType                       NullUploadedMediaMimeType
+	UserAvatarStoragePath                    sql.NullString
+	UserAvatarID                             sql.NullString
+	UserEmailAddressVerificationToken        sql.NullString
+	ToUser                                   sql.NullString
 	AccountLongitude                         sql.NullString
+	AccountSubscriptionPlanID                sql.NullString
 	UserRequiresPasswordChange               bool
 }
 
@@ -486,7 +520,6 @@ func (q *Queries) GetAccountInvitationByEmailAndToken(ctx context.Context, db DB
 		&i.ToUser,
 		&i.UserID,
 		&i.UserUsername,
-		&i.UserAvatarSrc,
 		&i.UserEmailAddress,
 		&i.UserHashedPassword,
 		&i.UserPasswordLastChangedAt,
@@ -507,6 +540,13 @@ func (q *Queries) GetAccountInvitationByEmailAndToken(ctx context.Context, db DB
 		&i.UserCreatedAt,
 		&i.UserLastUpdatedAt,
 		&i.UserArchivedAt,
+		&i.UserAvatarID,
+		&i.UserAvatarStoragePath,
+		&i.UserAvatarMimeType,
+		&i.UserAvatarCreatedAt,
+		&i.UserAvatarLastUpdatedAt,
+		&i.UserAvatarArchivedAt,
+		&i.UserAvatarCreatedByUser,
 		&i.ToName,
 		&i.Note,
 		&i.ToEmail,
@@ -550,7 +590,6 @@ SELECT
 	account_invitations.to_user,
 	users.id as user_id,
 	users.username as user_username,
-	users.avatar_src as user_avatar_src,
 	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
 	users.password_last_changed_at as user_password_last_changed_at,
@@ -571,6 +610,13 @@ SELECT
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
+	uploaded_media.id as user_avatar_id,
+	uploaded_media.storage_path as user_avatar_storage_path,
+	uploaded_media.mime_type as user_avatar_mime_type,
+	uploaded_media.created_at as user_avatar_created_at,
+	uploaded_media.last_updated_at as user_avatar_last_updated_at,
+	uploaded_media.archived_at as user_avatar_archived_at,
+	uploaded_media.created_by_user as user_avatar_created_by_user,
 	account_invitations.to_name,
 	account_invitations.note,
 	account_invitations.to_email,
@@ -585,6 +631,8 @@ SELECT
 FROM account_invitations
 	JOIN accounts ON account_invitations.destination_account = accounts.id
 	JOIN users ON account_invitations.from_user = users.id
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE account_invitations.archived_at IS NULL
 	AND account_invitations.expires_at > NOW()
 	AND account_invitations.token = $1
@@ -593,61 +641,67 @@ WHERE account_invitations.archived_at IS NULL
 type GetAccountInvitationByTokenRow struct {
 	ExpiresAt                                time.Time
 	AccountCreatedAt                         time.Time
-	UserCreatedAt                            time.Time
 	CreatedAt                                time.Time
-	UserLastIndexedAt                        sql.NullTime
-	UserEmailAddressVerifiedAt               sql.NullTime
-	UserLastUpdatedAt                        sql.NullTime
-	LastUpdatedAt                            sql.NullTime
-	ArchivedAt                               sql.NullTime
+	UserCreatedAt                            time.Time
 	UserLastAcceptedPrivacyPolicy            sql.NullTime
-	UserLastAcceptedTermsOfService           sql.NullTime
-	UserArchivedAt                           sql.NullTime
 	UserBirthday                             sql.NullTime
+	ArchivedAt                               sql.NullTime
+	UserLastUpdatedAt                        sql.NullTime
+	UserAvatarCreatedAt                      sql.NullTime
+	UserLastIndexedAt                        sql.NullTime
+	AccountArchivedAt                        sql.NullTime
+	UserLastAcceptedTermsOfService           sql.NullTime
+	UserEmailAddressVerifiedAt               sql.NullTime
+	UserArchivedAt                           sql.NullTime
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
 	UserPasswordLastChangedAt                sql.NullTime
-	AccountArchivedAt                        sql.NullTime
-	AccountLastUpdatedAt                     sql.NullTime
+	LastUpdatedAt                            sql.NullTime
 	AccountLastPaymentProviderSyncOccurredAt sql.NullTime
-	AccountCountry                           string
-	AccountPaymentProcessorCustomerID        string
-	AccountID                                string
-	AccountName                              string
-	FromUser                                 string
-	AccountBillingStatus                     string
+	UserAvatarLastUpdatedAt                  sql.NullTime
+	UserAvatarArchivedAt                     sql.NullTime
+	AccountLastUpdatedAt                     sql.NullTime
+	UserEmailAddress                         string
+	UserFirstName                            string
+	AccountWebhookHmacSecret                 string
 	UserID                                   string
 	UserUsername                             string
-	StatusNote                               string
-	UserEmailAddress                         string
+	Note                                     string
 	UserHashedPassword                       string
 	ID                                       string
-	Status                                   InvitationState
+	StatusNote                               string
 	UserTwoFactorSecret                      string
-	AccountZipCode                           string
+	AccountCountry                           string
 	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
+	AccountZipCode                           string
+	Status                                   InvitationState
 	AccountState                             string
-	AccountContactPhone                      string
-	AccountCity                              string
-	UserFirstName                            string
+	FromUser                                 string
 	UserLastName                             string
+	AccountCity                              string
 	AccountAddressLine2                      string
 	AccountAddressLine1                      string
 	AccountTimeZone                          TimeZone
 	AccountBelongsToUser                     string
+	AccountPaymentProcessorCustomerID        string
+	AccountContactPhone                      string
 	DestinationAccount                       string
-	AccountWebhookHmacSecret                 string
-	ToName                                   string
-	Note                                     string
-	ToEmail                                  string
 	Token                                    string
-	AccountSubscriptionPlanID                sql.NullString
-	UserEmailAddressVerificationToken        sql.NullString
-	UserAvatarSrc                            sql.NullString
-	ToUser                                   sql.NullString
+	AccountBillingStatus                     string
+	AccountName                              string
+	AccountID                                string
+	ToEmail                                  string
+	ToName                                   string
 	AccountLatitude                          sql.NullString
+	UserAvatarCreatedByUser                  sql.NullString
+	UserAvatarMimeType                       NullUploadedMediaMimeType
+	UserAvatarStoragePath                    sql.NullString
+	UserAvatarID                             sql.NullString
+	UserEmailAddressVerificationToken        sql.NullString
+	ToUser                                   sql.NullString
 	AccountLongitude                         sql.NullString
+	AccountSubscriptionPlanID                sql.NullString
 	UserRequiresPasswordChange               bool
 }
 
@@ -681,7 +735,6 @@ func (q *Queries) GetAccountInvitationByToken(ctx context.Context, db DBTX, toke
 		&i.ToUser,
 		&i.UserID,
 		&i.UserUsername,
-		&i.UserAvatarSrc,
 		&i.UserEmailAddress,
 		&i.UserHashedPassword,
 		&i.UserPasswordLastChangedAt,
@@ -702,6 +755,13 @@ func (q *Queries) GetAccountInvitationByToken(ctx context.Context, db DBTX, toke
 		&i.UserCreatedAt,
 		&i.UserLastUpdatedAt,
 		&i.UserArchivedAt,
+		&i.UserAvatarID,
+		&i.UserAvatarStoragePath,
+		&i.UserAvatarMimeType,
+		&i.UserAvatarCreatedAt,
+		&i.UserAvatarLastUpdatedAt,
+		&i.UserAvatarArchivedAt,
+		&i.UserAvatarCreatedByUser,
 		&i.ToName,
 		&i.Note,
 		&i.ToEmail,
@@ -745,7 +805,6 @@ SELECT
 	account_invitations.to_user,
 	users.id as user_id,
 	users.username as user_username,
-	users.avatar_src as user_avatar_src,
 	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
 	users.password_last_changed_at as user_password_last_changed_at,
@@ -766,6 +825,13 @@ SELECT
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
+	uploaded_media.id as user_avatar_id,
+	uploaded_media.storage_path as user_avatar_storage_path,
+	uploaded_media.mime_type as user_avatar_mime_type,
+	uploaded_media.created_at as user_avatar_created_at,
+	uploaded_media.last_updated_at as user_avatar_last_updated_at,
+	uploaded_media.archived_at as user_avatar_archived_at,
+	uploaded_media.created_by_user as user_avatar_created_by_user,
 	account_invitations.to_name,
 	account_invitations.note,
 	account_invitations.to_email,
@@ -780,6 +846,8 @@ SELECT
 FROM account_invitations
 	JOIN accounts ON account_invitations.destination_account = accounts.id
 	JOIN users ON account_invitations.from_user = users.id
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE account_invitations.archived_at IS NULL
 	AND account_invitations.expires_at > NOW()
 	AND account_invitations.token = $1
@@ -794,61 +862,67 @@ type GetAccountInvitationByTokenAndIDParams struct {
 type GetAccountInvitationByTokenAndIDRow struct {
 	ExpiresAt                                time.Time
 	AccountCreatedAt                         time.Time
-	UserCreatedAt                            time.Time
 	CreatedAt                                time.Time
-	UserLastIndexedAt                        sql.NullTime
-	UserEmailAddressVerifiedAt               sql.NullTime
-	UserLastUpdatedAt                        sql.NullTime
-	LastUpdatedAt                            sql.NullTime
-	ArchivedAt                               sql.NullTime
+	UserCreatedAt                            time.Time
 	UserLastAcceptedPrivacyPolicy            sql.NullTime
-	UserLastAcceptedTermsOfService           sql.NullTime
-	UserArchivedAt                           sql.NullTime
 	UserBirthday                             sql.NullTime
+	ArchivedAt                               sql.NullTime
+	UserLastUpdatedAt                        sql.NullTime
+	UserAvatarCreatedAt                      sql.NullTime
+	UserLastIndexedAt                        sql.NullTime
+	AccountArchivedAt                        sql.NullTime
+	UserLastAcceptedTermsOfService           sql.NullTime
+	UserEmailAddressVerifiedAt               sql.NullTime
+	UserArchivedAt                           sql.NullTime
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
 	UserPasswordLastChangedAt                sql.NullTime
-	AccountArchivedAt                        sql.NullTime
-	AccountLastUpdatedAt                     sql.NullTime
+	LastUpdatedAt                            sql.NullTime
 	AccountLastPaymentProviderSyncOccurredAt sql.NullTime
-	AccountCountry                           string
-	AccountPaymentProcessorCustomerID        string
-	AccountID                                string
-	AccountName                              string
-	FromUser                                 string
-	AccountBillingStatus                     string
+	UserAvatarLastUpdatedAt                  sql.NullTime
+	UserAvatarArchivedAt                     sql.NullTime
+	AccountLastUpdatedAt                     sql.NullTime
+	UserEmailAddress                         string
+	UserFirstName                            string
+	AccountWebhookHmacSecret                 string
 	UserID                                   string
 	UserUsername                             string
-	StatusNote                               string
-	UserEmailAddress                         string
+	Note                                     string
 	UserHashedPassword                       string
 	ID                                       string
-	Status                                   InvitationState
+	StatusNote                               string
 	UserTwoFactorSecret                      string
-	AccountZipCode                           string
+	AccountCountry                           string
 	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
+	AccountZipCode                           string
+	Status                                   InvitationState
 	AccountState                             string
-	AccountContactPhone                      string
-	AccountCity                              string
-	UserFirstName                            string
+	FromUser                                 string
 	UserLastName                             string
+	AccountCity                              string
 	AccountAddressLine2                      string
 	AccountAddressLine1                      string
 	AccountTimeZone                          TimeZone
 	AccountBelongsToUser                     string
+	AccountPaymentProcessorCustomerID        string
+	AccountContactPhone                      string
 	DestinationAccount                       string
-	AccountWebhookHmacSecret                 string
-	ToName                                   string
-	Note                                     string
-	ToEmail                                  string
 	Token                                    string
-	AccountSubscriptionPlanID                sql.NullString
-	UserEmailAddressVerificationToken        sql.NullString
-	UserAvatarSrc                            sql.NullString
-	ToUser                                   sql.NullString
+	AccountBillingStatus                     string
+	AccountName                              string
+	AccountID                                string
+	ToEmail                                  string
+	ToName                                   string
 	AccountLatitude                          sql.NullString
+	UserAvatarCreatedByUser                  sql.NullString
+	UserAvatarMimeType                       NullUploadedMediaMimeType
+	UserAvatarStoragePath                    sql.NullString
+	UserAvatarID                             sql.NullString
+	UserEmailAddressVerificationToken        sql.NullString
+	ToUser                                   sql.NullString
 	AccountLongitude                         sql.NullString
+	AccountSubscriptionPlanID                sql.NullString
 	UserRequiresPasswordChange               bool
 }
 
@@ -882,7 +956,6 @@ func (q *Queries) GetAccountInvitationByTokenAndID(ctx context.Context, db DBTX,
 		&i.ToUser,
 		&i.UserID,
 		&i.UserUsername,
-		&i.UserAvatarSrc,
 		&i.UserEmailAddress,
 		&i.UserHashedPassword,
 		&i.UserPasswordLastChangedAt,
@@ -903,6 +976,13 @@ func (q *Queries) GetAccountInvitationByTokenAndID(ctx context.Context, db DBTX,
 		&i.UserCreatedAt,
 		&i.UserLastUpdatedAt,
 		&i.UserArchivedAt,
+		&i.UserAvatarID,
+		&i.UserAvatarStoragePath,
+		&i.UserAvatarMimeType,
+		&i.UserAvatarCreatedAt,
+		&i.UserAvatarLastUpdatedAt,
+		&i.UserAvatarArchivedAt,
+		&i.UserAvatarCreatedByUser,
 		&i.ToName,
 		&i.Note,
 		&i.ToEmail,
@@ -946,7 +1026,6 @@ SELECT
 	account_invitations.to_user,
 	users.id as user_id,
 	users.username as user_username,
-	users.avatar_src as user_avatar_src,
 	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
 	users.password_last_changed_at as user_password_last_changed_at,
@@ -967,6 +1046,13 @@ SELECT
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
+	uploaded_media.id as user_avatar_id,
+	uploaded_media.storage_path as user_avatar_storage_path,
+	uploaded_media.mime_type as user_avatar_mime_type,
+	uploaded_media.created_at as user_avatar_created_at,
+	uploaded_media.last_updated_at as user_avatar_last_updated_at,
+	uploaded_media.archived_at as user_avatar_archived_at,
+	uploaded_media.created_by_user as user_avatar_created_by_user,
 	account_invitations.to_name,
 	account_invitations.note,
 	account_invitations.to_email,
@@ -1003,6 +1089,8 @@ SELECT
 FROM account_invitations
 	JOIN accounts ON account_invitations.destination_account = accounts.id
 	JOIN users ON account_invitations.from_user = users.id
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE account_invitations.archived_at IS NULL
 	AND account_invitations.to_user = $6
 	AND account_invitations.status = $7
@@ -1037,61 +1125,67 @@ type GetPendingInvitesForUserParams struct {
 type GetPendingInvitesForUserRow struct {
 	ExpiresAt                                time.Time
 	AccountCreatedAt                         time.Time
-	UserCreatedAt                            time.Time
 	CreatedAt                                time.Time
-	UserLastIndexedAt                        sql.NullTime
-	UserEmailAddressVerifiedAt               sql.NullTime
-	UserLastUpdatedAt                        sql.NullTime
-	LastUpdatedAt                            sql.NullTime
-	ArchivedAt                               sql.NullTime
+	UserCreatedAt                            time.Time
 	UserLastAcceptedPrivacyPolicy            sql.NullTime
-	UserLastAcceptedTermsOfService           sql.NullTime
-	UserArchivedAt                           sql.NullTime
 	UserBirthday                             sql.NullTime
+	ArchivedAt                               sql.NullTime
+	UserLastUpdatedAt                        sql.NullTime
+	UserAvatarCreatedAt                      sql.NullTime
+	UserLastIndexedAt                        sql.NullTime
+	AccountArchivedAt                        sql.NullTime
+	UserLastAcceptedTermsOfService           sql.NullTime
+	UserEmailAddressVerifiedAt               sql.NullTime
+	UserArchivedAt                           sql.NullTime
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
 	UserPasswordLastChangedAt                sql.NullTime
-	AccountArchivedAt                        sql.NullTime
-	AccountLastUpdatedAt                     sql.NullTime
+	LastUpdatedAt                            sql.NullTime
 	AccountLastPaymentProviderSyncOccurredAt sql.NullTime
-	UserTwoFactorSecret                      string
+	UserAvatarLastUpdatedAt                  sql.NullTime
+	UserAvatarArchivedAt                     sql.NullTime
+	AccountLastUpdatedAt                     sql.NullTime
+	UserEmailAddress                         string
 	UserFirstName                            string
-	AccountID                                string
-	AccountName                              string
-	FromUser                                 string
-	AccountBillingStatus                     string
+	AccountWebhookHmacSecret                 string
 	UserID                                   string
 	UserUsername                             string
-	StatusNote                               string
-	UserEmailAddress                         string
+	Note                                     string
 	UserHashedPassword                       string
-	AccountCountry                           string
-	Status                                   InvitationState
 	ID                                       string
-	AccountZipCode                           string
+	StatusNote                               string
+	UserTwoFactorSecret                      string
+	AccountCountry                           string
 	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
+	AccountZipCode                           string
+	Status                                   InvitationState
 	AccountState                             string
-	AccountContactPhone                      string
-	AccountCity                              string
-	AccountWebhookHmacSecret                 string
+	FromUser                                 string
 	UserLastName                             string
+	AccountCity                              string
 	AccountAddressLine2                      string
 	AccountAddressLine1                      string
 	AccountTimeZone                          TimeZone
 	AccountBelongsToUser                     string
-	DestinationAccount                       string
 	AccountPaymentProcessorCustomerID        string
-	ToName                                   string
-	Note                                     string
-	ToEmail                                  string
+	AccountContactPhone                      string
+	DestinationAccount                       string
 	Token                                    string
-	AccountSubscriptionPlanID                sql.NullString
-	UserEmailAddressVerificationToken        sql.NullString
-	UserAvatarSrc                            sql.NullString
-	ToUser                                   sql.NullString
+	AccountBillingStatus                     string
+	AccountName                              string
+	AccountID                                string
+	ToEmail                                  string
+	ToName                                   string
 	AccountLatitude                          sql.NullString
+	UserAvatarCreatedByUser                  sql.NullString
+	UserAvatarMimeType                       NullUploadedMediaMimeType
+	UserAvatarStoragePath                    sql.NullString
+	UserAvatarID                             sql.NullString
+	UserEmailAddressVerificationToken        sql.NullString
+	ToUser                                   sql.NullString
 	AccountLongitude                         sql.NullString
+	AccountSubscriptionPlanID                sql.NullString
 	FilteredCount                            int64
 	TotalCount                               int64
 	UserRequiresPasswordChange               bool
@@ -1143,7 +1237,6 @@ func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *Ge
 			&i.ToUser,
 			&i.UserID,
 			&i.UserUsername,
-			&i.UserAvatarSrc,
 			&i.UserEmailAddress,
 			&i.UserHashedPassword,
 			&i.UserPasswordLastChangedAt,
@@ -1164,6 +1257,13 @@ func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *Ge
 			&i.UserCreatedAt,
 			&i.UserLastUpdatedAt,
 			&i.UserArchivedAt,
+			&i.UserAvatarID,
+			&i.UserAvatarStoragePath,
+			&i.UserAvatarMimeType,
+			&i.UserAvatarCreatedAt,
+			&i.UserAvatarLastUpdatedAt,
+			&i.UserAvatarArchivedAt,
+			&i.UserAvatarCreatedByUser,
 			&i.ToName,
 			&i.Note,
 			&i.ToEmail,
@@ -1219,7 +1319,6 @@ SELECT
 	account_invitations.to_user,
 	users.id as user_id,
 	users.username as user_username,
-	users.avatar_src as user_avatar_src,
 	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
 	users.password_last_changed_at as user_password_last_changed_at,
@@ -1240,6 +1339,13 @@ SELECT
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
+	uploaded_media.id as user_avatar_id,
+	uploaded_media.storage_path as user_avatar_storage_path,
+	uploaded_media.mime_type as user_avatar_mime_type,
+	uploaded_media.created_at as user_avatar_created_at,
+	uploaded_media.last_updated_at as user_avatar_last_updated_at,
+	uploaded_media.archived_at as user_avatar_archived_at,
+	uploaded_media.created_by_user as user_avatar_created_by_user,
 	account_invitations.to_name,
 	account_invitations.note,
 	account_invitations.to_email,
@@ -1276,6 +1382,8 @@ SELECT
 FROM account_invitations
 	JOIN accounts ON account_invitations.destination_account = accounts.id
 	JOIN users ON account_invitations.from_user = users.id
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE account_invitations.archived_at IS NULL
 	AND account_invitations.from_user = $6
 	AND account_invitations.status = $7
@@ -1309,61 +1417,67 @@ type GetPendingInvitesFromUserParams struct {
 type GetPendingInvitesFromUserRow struct {
 	ExpiresAt                                time.Time
 	AccountCreatedAt                         time.Time
-	UserCreatedAt                            time.Time
 	CreatedAt                                time.Time
-	UserLastIndexedAt                        sql.NullTime
-	UserEmailAddressVerifiedAt               sql.NullTime
-	UserLastUpdatedAt                        sql.NullTime
-	LastUpdatedAt                            sql.NullTime
-	ArchivedAt                               sql.NullTime
+	UserCreatedAt                            time.Time
 	UserLastAcceptedPrivacyPolicy            sql.NullTime
-	UserLastAcceptedTermsOfService           sql.NullTime
-	UserArchivedAt                           sql.NullTime
 	UserBirthday                             sql.NullTime
+	ArchivedAt                               sql.NullTime
+	UserLastUpdatedAt                        sql.NullTime
+	UserAvatarCreatedAt                      sql.NullTime
+	UserLastIndexedAt                        sql.NullTime
+	AccountArchivedAt                        sql.NullTime
+	UserLastAcceptedTermsOfService           sql.NullTime
+	UserEmailAddressVerifiedAt               sql.NullTime
+	UserArchivedAt                           sql.NullTime
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
 	UserPasswordLastChangedAt                sql.NullTime
-	AccountArchivedAt                        sql.NullTime
-	AccountLastUpdatedAt                     sql.NullTime
+	LastUpdatedAt                            sql.NullTime
 	AccountLastPaymentProviderSyncOccurredAt sql.NullTime
-	UserTwoFactorSecret                      string
+	UserAvatarLastUpdatedAt                  sql.NullTime
+	UserAvatarArchivedAt                     sql.NullTime
+	AccountLastUpdatedAt                     sql.NullTime
+	UserEmailAddress                         string
 	UserFirstName                            string
-	AccountID                                string
-	AccountName                              string
-	FromUser                                 string
-	AccountBillingStatus                     string
+	AccountWebhookHmacSecret                 string
 	UserID                                   string
 	UserUsername                             string
-	StatusNote                               string
-	UserEmailAddress                         string
+	Note                                     string
 	UserHashedPassword                       string
-	AccountCountry                           string
-	Status                                   InvitationState
 	ID                                       string
-	AccountZipCode                           string
+	StatusNote                               string
+	UserTwoFactorSecret                      string
+	AccountCountry                           string
 	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
+	AccountZipCode                           string
+	Status                                   InvitationState
 	AccountState                             string
-	AccountContactPhone                      string
-	AccountCity                              string
-	AccountWebhookHmacSecret                 string
+	FromUser                                 string
 	UserLastName                             string
+	AccountCity                              string
 	AccountAddressLine2                      string
 	AccountAddressLine1                      string
 	AccountTimeZone                          TimeZone
 	AccountBelongsToUser                     string
-	DestinationAccount                       string
 	AccountPaymentProcessorCustomerID        string
-	ToName                                   string
-	Note                                     string
-	ToEmail                                  string
+	AccountContactPhone                      string
+	DestinationAccount                       string
 	Token                                    string
-	AccountSubscriptionPlanID                sql.NullString
-	UserEmailAddressVerificationToken        sql.NullString
-	UserAvatarSrc                            sql.NullString
-	ToUser                                   sql.NullString
+	AccountBillingStatus                     string
+	AccountName                              string
+	AccountID                                string
+	ToEmail                                  string
+	ToName                                   string
 	AccountLatitude                          sql.NullString
+	UserAvatarCreatedByUser                  sql.NullString
+	UserAvatarMimeType                       NullUploadedMediaMimeType
+	UserAvatarStoragePath                    sql.NullString
+	UserAvatarID                             sql.NullString
+	UserEmailAddressVerificationToken        sql.NullString
+	ToUser                                   sql.NullString
 	AccountLongitude                         sql.NullString
+	AccountSubscriptionPlanID                sql.NullString
 	FilteredCount                            int64
 	TotalCount                               int64
 	UserRequiresPasswordChange               bool
@@ -1415,7 +1529,6 @@ func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *G
 			&i.ToUser,
 			&i.UserID,
 			&i.UserUsername,
-			&i.UserAvatarSrc,
 			&i.UserEmailAddress,
 			&i.UserHashedPassword,
 			&i.UserPasswordLastChangedAt,
@@ -1436,6 +1549,13 @@ func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *G
 			&i.UserCreatedAt,
 			&i.UserLastUpdatedAt,
 			&i.UserArchivedAt,
+			&i.UserAvatarID,
+			&i.UserAvatarStoragePath,
+			&i.UserAvatarMimeType,
+			&i.UserAvatarCreatedAt,
+			&i.UserAvatarLastUpdatedAt,
+			&i.UserAvatarArchivedAt,
+			&i.UserAvatarCreatedByUser,
 			&i.ToName,
 			&i.Note,
 			&i.ToEmail,

@@ -492,14 +492,14 @@ public struct Identity_User: @unchecked Sendable {
   /// Clears the value of `twoFactorSecretVerifiedAt`. Subsequent reads from it will return its default value.
   public mutating func clearTwoFactorSecretVerifiedAt() {_uniqueStorage()._twoFactorSecretVerifiedAt = nil}
 
-  public var avatarSrc: String {
-    get {return _storage._avatarSrc ?? String()}
-    set {_uniqueStorage()._avatarSrc = newValue}
+  public var avatar: UploadedMedia_UploadedMedia {
+    get {return _storage._avatar ?? UploadedMedia_UploadedMedia()}
+    set {_uniqueStorage()._avatar = newValue}
   }
-  /// Returns true if `avatarSrc` has been explicitly set.
-  public var hasAvatarSrc: Bool {return _storage._avatarSrc != nil}
-  /// Clears the value of `avatarSrc`. Subsequent reads from it will return its default value.
-  public mutating func clearAvatarSrc() {_uniqueStorage()._avatarSrc = nil}
+  /// Returns true if `avatar` has been explicitly set.
+  public var hasAvatar: Bool {return _storage._avatar != nil}
+  /// Clears the value of `avatar`. Subsequent reads from it will return its default value.
+  public mutating func clearAvatar() {_uniqueStorage()._avatar = nil}
 
   public var birthday: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._birthday ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
@@ -1279,7 +1279,7 @@ extension Identity_AccountUserMembershipWithUser: SwiftProtobuf.Message, SwiftPr
 
 extension Identity_User: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".User"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}password_last_changed_at\0\u{3}last_updated_at\0\u{3}last_accepted_terms_of_service\0\u{3}last_accepted_privacy_policy\0\u{3}two_factor_secret_verified_at\0\u{3}avatar_src\0\u{1}birthday\0\u{3}archived_at\0\u{3}account_status_explanation\0\u{3}two_factor_secret\0\u{3}hashed_password\0\u{1}id\0\u{3}account_status\0\u{1}username\0\u{3}first_name\0\u{3}last_name\0\u{3}email_address\0\u{3}email_address_verified_at\0\u{3}service_role\0\u{3}requires_password_change\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}password_last_changed_at\0\u{3}last_updated_at\0\u{3}last_accepted_terms_of_service\0\u{3}last_accepted_privacy_policy\0\u{3}two_factor_secret_verified_at\0\u{1}avatar\0\u{1}birthday\0\u{3}archived_at\0\u{3}account_status_explanation\0\u{3}two_factor_secret\0\u{3}hashed_password\0\u{1}id\0\u{3}account_status\0\u{1}username\0\u{3}first_name\0\u{3}last_name\0\u{3}email_address\0\u{3}email_address_verified_at\0\u{3}service_role\0\u{3}requires_password_change\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -1288,7 +1288,7 @@ extension Identity_User: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
     var _lastAcceptedTermsOfService: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _lastAcceptedPrivacyPolicy: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _twoFactorSecretVerifiedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-    var _avatarSrc: String? = nil
+    var _avatar: UploadedMedia_UploadedMedia? = nil
     var _birthday: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _accountStatusExplanation: String = String()
@@ -1319,7 +1319,7 @@ extension Identity_User: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
       _lastAcceptedTermsOfService = source._lastAcceptedTermsOfService
       _lastAcceptedPrivacyPolicy = source._lastAcceptedPrivacyPolicy
       _twoFactorSecretVerifiedAt = source._twoFactorSecretVerifiedAt
-      _avatarSrc = source._avatarSrc
+      _avatar = source._avatar
       _birthday = source._birthday
       _archivedAt = source._archivedAt
       _accountStatusExplanation = source._accountStatusExplanation
@@ -1358,7 +1358,7 @@ extension Identity_User: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._lastAcceptedTermsOfService) }()
         case 5: try { try decoder.decodeSingularMessageField(value: &_storage._lastAcceptedPrivacyPolicy) }()
         case 6: try { try decoder.decodeSingularMessageField(value: &_storage._twoFactorSecretVerifiedAt) }()
-        case 7: try { try decoder.decodeSingularStringField(value: &_storage._avatarSrc) }()
+        case 7: try { try decoder.decodeSingularMessageField(value: &_storage._avatar) }()
         case 8: try { try decoder.decodeSingularMessageField(value: &_storage._birthday) }()
         case 9: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._accountStatusExplanation) }()
@@ -1403,8 +1403,8 @@ extension Identity_User: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
       try { if let v = _storage._twoFactorSecretVerifiedAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
       } }()
-      try { if let v = _storage._avatarSrc {
-        try visitor.visitSingularStringField(value: v, fieldNumber: 7)
+      try { if let v = _storage._avatar {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
       } }()
       try { if let v = _storage._birthday {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
@@ -1463,7 +1463,7 @@ extension Identity_User: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
         if _storage._lastAcceptedTermsOfService != rhs_storage._lastAcceptedTermsOfService {return false}
         if _storage._lastAcceptedPrivacyPolicy != rhs_storage._lastAcceptedPrivacyPolicy {return false}
         if _storage._twoFactorSecretVerifiedAt != rhs_storage._twoFactorSecretVerifiedAt {return false}
-        if _storage._avatarSrc != rhs_storage._avatarSrc {return false}
+        if _storage._avatar != rhs_storage._avatar {return false}
         if _storage._birthday != rhs_storage._birthday {return false}
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
         if _storage._accountStatusExplanation != rhs_storage._accountStatusExplanation {return false}

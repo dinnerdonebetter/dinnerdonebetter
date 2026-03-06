@@ -40,7 +40,7 @@ type (
 		UpdateUserDetails(ctx context.Context, userID string, input *identity.UserDetailsUpdateRequestInput) error
 		UpdateUserEmailAddress(ctx context.Context, userID, newEmail string) error
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
-		UploadUserAvatar(ctx context.Context, userID, base64EncodedImageData string) error
+		SetUserAvatar(ctx context.Context, userID, uploadedMediaID string) error
 		AdminUpdateUserStatus(ctx context.Context, input *identity.UserAccountStatusUpdateInput) error
 
 		// Session/context helpers used by auth service and interceptors.

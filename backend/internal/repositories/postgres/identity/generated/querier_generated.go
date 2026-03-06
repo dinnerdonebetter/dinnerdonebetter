@@ -16,6 +16,7 @@ type Querier interface {
 	AddUserToAccount(ctx context.Context, db DBTX, arg *AddUserToAccountParams) error
 	ArchiveAccount(ctx context.Context, db DBTX, arg *ArchiveAccountParams) (int64, error)
 	ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveUserAvatar(ctx context.Context, db DBTX, belongsToUser string) error
 	ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error)
 	AssignInvitationsToUserByEmail(ctx context.Context, db DBTX, arg *AssignInvitationsToUserByEmailParams) (int64, error)
 	AttachAccountInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachAccountInvitationsToUserIDParams) (int64, error)
@@ -24,6 +25,7 @@ type Querier interface {
 	CreateAccountInvitation(ctx context.Context, db DBTX, arg *CreateAccountInvitationParams) error
 	CreateAccountUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateAccountUserMembershipForNewUserParams) error
 	CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error
+	CreateUserAvatar(ctx context.Context, db DBTX, arg *CreateUserAvatarParams) error
 	DeleteUser(ctx context.Context, db DBTX, id string) (int64, error)
 	GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetAccountByIDWithMembershipsRow, error)
 	GetAccountInvitationByAccountAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByAccountAndIDParams) (*GetAccountInvitationByAccountAndIDRow, error)
@@ -62,7 +64,6 @@ type Querier interface {
 	UpdateAccount(ctx context.Context, db DBTX, arg *UpdateAccountParams) (int64, error)
 	UpdateAccountBillingFields(ctx context.Context, db DBTX, arg *UpdateAccountBillingFieldsParams) (int64, error)
 	UpdateAccountWebhookEncryptionKey(ctx context.Context, db DBTX, arg *UpdateAccountWebhookEncryptionKeyParams) (int64, error)
-	UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) (int64, error)
 	UpdateUserDetails(ctx context.Context, db DBTX, arg *UpdateUserDetailsParams) (int64, error)
 	UpdateUserEmailAddress(ctx context.Context, db DBTX, arg *UpdateUserEmailAddressParams) (int64, error)
 	UpdateUserLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)

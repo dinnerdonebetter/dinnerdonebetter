@@ -3,6 +3,7 @@ syntax = "proto3";
 package identity;
 
 import "identity/identity_service_types.proto";
+import "uploaded_media/uploaded_media.proto";
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity";
 
@@ -34,5 +35,5 @@ service IdentityService {
   rpc UpdateUserDetails(UpdateUserDetailsRequest) returns (UpdateUserDetailsResponse);
   rpc UpdateUserEmailAddress(UpdateUserEmailAddressRequest) returns (UpdateUserEmailAddressResponse);
   rpc UpdateUserUsername(UpdateUserUsernameRequest) returns (UpdateUserUsernameResponse);
-  rpc UploadUserAvatar(UploadUserAvatarRequest) returns (UploadUserAvatarResponse);
+  rpc UploadUserAvatar(stream uploaded_media.UploadRequest) returns (UploadUserAvatarResponse);
 }

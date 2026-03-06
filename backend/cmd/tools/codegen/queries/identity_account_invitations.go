@@ -49,13 +49,17 @@ func buildAccountInvitationsQueries(database string) []*Query {
 			"status_note",
 		)
 
+		userWithAvatarColumns := append(
+			applyToEach(usersColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s as user_%s", usersTableName, s, s)
+			}),
+			avatarJoinSelect("user_avatar")...,
+		)
 		fullSelectColumns := mergeColumns(mergeColumns(
 			applyToEach(accountInvitationsColumns, func(i int, s string) string {
 				return fmt.Sprintf("%s.%s", accountInvitationsTableName, s)
 			}),
-			applyToEach(usersColumns, func(i int, s string) string {
-				return fmt.Sprintf("%s.%s as user_%s", usersTableName, s, s)
-			}),
+			userWithAvatarColumns,
 			3,
 		),
 			applyToEach(accountsColumns, func(i int, s string) string {
@@ -141,6 +145,7 @@ WHERE archived_at IS NULL
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s > %s
 	AND %s.%s = LOWER(sqlc.arg(%s))
@@ -149,6 +154,7 @@ WHERE %s.%s IS NULL
 					accountInvitationsTableName,
 					accountsTableName, accountInvitationsTableName, destinationAccountColumn, accountsTableName, idColumn,
 					usersTableName, accountInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					avatarJoinClause,
 					accountInvitationsTableName, archivedAtColumn,
 					accountInvitationsTableName, accountInvitationsExpiresAtColumn, currentTimeExpression,
 					accountInvitationsTableName, toEmailColumn, toEmailColumn,
@@ -165,6 +171,7 @@ WHERE %s.%s IS NULL
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s > %s
 	AND %s.%s = sqlc.arg(%s)
@@ -173,6 +180,7 @@ WHERE %s.%s IS NULL
 					accountInvitationsTableName,
 					accountsTableName, accountInvitationsTableName, destinationAccountColumn, accountsTableName, idColumn,
 					usersTableName, accountInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					avatarJoinClause,
 					accountInvitationsTableName, archivedAtColumn,
 					accountInvitationsTableName, accountInvitationsExpiresAtColumn, currentTimeExpression,
 					accountInvitationsTableName, destinationAccountColumn, destinationAccountColumn,
@@ -189,6 +197,7 @@ WHERE %s.%s IS NULL
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s > %s
 	AND %s.%s = sqlc.arg(%s)
@@ -197,6 +206,7 @@ WHERE %s.%s IS NULL
 					accountInvitationsTableName,
 					accountsTableName, accountInvitationsTableName, destinationAccountColumn, accountsTableName, idColumn,
 					usersTableName, accountInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					avatarJoinClause,
 					accountInvitationsTableName, archivedAtColumn,
 					accountInvitationsTableName, accountInvitationsExpiresAtColumn, currentTimeExpression,
 					accountInvitationsTableName, accountInvitationsTokenColumn, accountInvitationsTokenColumn,
@@ -213,6 +223,7 @@ WHERE %s.%s IS NULL
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s > %s
 	AND %s.%s = sqlc.arg(%s);`,
@@ -220,6 +231,7 @@ WHERE %s.%s IS NULL
 					accountInvitationsTableName,
 					accountsTableName, accountInvitationsTableName, destinationAccountColumn, accountsTableName, idColumn,
 					usersTableName, accountInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					avatarJoinClause,
 					accountInvitationsTableName, archivedAtColumn,
 					accountInvitationsTableName, accountInvitationsExpiresAtColumn, currentTimeExpression,
 					accountInvitationsTableName, accountInvitationsTokenColumn, accountInvitationsTokenColumn,
@@ -237,6 +249,7 @@ WHERE %s.%s IS NULL
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s = sqlc.arg(%s)
@@ -246,9 +259,9 @@ WHERE %s.%s IS NULL
 					buildFilterCountSelect(accountInvitationsTableName, true, true, []string{}),
 					buildTotalCountSelect(accountInvitationsTableName, true, []string{}),
 					accountInvitationsTableName,
-
 					accountsTableName, accountInvitationsTableName, destinationAccountColumn, accountsTableName, idColumn,
 					usersTableName, accountInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					avatarJoinClause,
 					accountInvitationsTableName, archivedAtColumn,
 					accountInvitationsTableName, fromUserColumn, fromUserColumn,
 					accountInvitationsTableName, accountInvitationsStatusColumn, accountInvitationsStatusColumn,
@@ -268,6 +281,7 @@ WHERE %s.%s IS NULL
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s = sqlc.arg(%s)
@@ -279,6 +293,7 @@ WHERE %s.%s IS NULL
 					accountInvitationsTableName,
 					accountsTableName, accountInvitationsTableName, destinationAccountColumn, accountsTableName, idColumn,
 					usersTableName, accountInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					avatarJoinClause,
 					accountInvitationsTableName, archivedAtColumn,
 					accountInvitationsTableName, toUserColumn, toUserColumn,
 					accountInvitationsTableName, accountInvitationsStatusColumn, accountInvitationsStatusColumn,

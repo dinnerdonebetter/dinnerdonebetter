@@ -9,6 +9,8 @@ package identity
 import (
 	context "context"
 
+	uploaded_media "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -81,7 +83,7 @@ type IdentityServiceClient interface {
 	UpdateUserDetails(ctx context.Context, in *UpdateUserDetailsRequest, opts ...grpc.CallOption) (*UpdateUserDetailsResponse, error)
 	UpdateUserEmailAddress(ctx context.Context, in *UpdateUserEmailAddressRequest, opts ...grpc.CallOption) (*UpdateUserEmailAddressResponse, error)
 	UpdateUserUsername(ctx context.Context, in *UpdateUserUsernameRequest, opts ...grpc.CallOption) (*UpdateUserUsernameResponse, error)
-	UploadUserAvatar(ctx context.Context, in *UploadUserAvatarRequest, opts ...grpc.CallOption) (*UploadUserAvatarResponse, error)
+	UploadUserAvatar(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[uploaded_media.UploadRequest, UploadUserAvatarResponse], error)
 }
 
 type identityServiceClient struct {
@@ -362,15 +364,18 @@ func (c *identityServiceClient) UpdateUserUsername(ctx context.Context, in *Upda
 	return out, nil
 }
 
-func (c *identityServiceClient) UploadUserAvatar(ctx context.Context, in *UploadUserAvatarRequest, opts ...grpc.CallOption) (*UploadUserAvatarResponse, error) {
+func (c *identityServiceClient) UploadUserAvatar(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[uploaded_media.UploadRequest, UploadUserAvatarResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UploadUserAvatarResponse)
-	err := c.cc.Invoke(ctx, IdentityService_UploadUserAvatar_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &IdentityService_ServiceDesc.Streams[0], IdentityService_UploadUserAvatar_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[uploaded_media.UploadRequest, UploadUserAvatarResponse]{ClientStream: stream}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type IdentityService_UploadUserAvatarClient = grpc.ClientStreamingClient[uploaded_media.UploadRequest, UploadUserAvatarResponse]
 
 // IdentityServiceServer is the server API for IdentityService service.
 // All implementations must embed UnimplementedIdentityServiceServer
@@ -403,7 +408,7 @@ type IdentityServiceServer interface {
 	UpdateUserDetails(context.Context, *UpdateUserDetailsRequest) (*UpdateUserDetailsResponse, error)
 	UpdateUserEmailAddress(context.Context, *UpdateUserEmailAddressRequest) (*UpdateUserEmailAddressResponse, error)
 	UpdateUserUsername(context.Context, *UpdateUserUsernameRequest) (*UpdateUserUsernameResponse, error)
-	UploadUserAvatar(context.Context, *UploadUserAvatarRequest) (*UploadUserAvatarResponse, error)
+	UploadUserAvatar(grpc.ClientStreamingServer[uploaded_media.UploadRequest, UploadUserAvatarResponse]) error
 	mustEmbedUnimplementedIdentityServiceServer()
 }
 
@@ -495,8 +500,8 @@ func (UnimplementedIdentityServiceServer) UpdateUserEmailAddress(context.Context
 func (UnimplementedIdentityServiceServer) UpdateUserUsername(context.Context, *UpdateUserUsernameRequest) (*UpdateUserUsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserUsername not implemented")
 }
-func (UnimplementedIdentityServiceServer) UploadUserAvatar(context.Context, *UploadUserAvatarRequest) (*UploadUserAvatarResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UploadUserAvatar not implemented")
+func (UnimplementedIdentityServiceServer) UploadUserAvatar(grpc.ClientStreamingServer[uploaded_media.UploadRequest, UploadUserAvatarResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method UploadUserAvatar not implemented")
 }
 func (UnimplementedIdentityServiceServer) mustEmbedUnimplementedIdentityServiceServer() {}
 func (UnimplementedIdentityServiceServer) testEmbeddedByValue()                         {}
@@ -1005,23 +1010,12 @@ func _IdentityService_UpdateUserUsername_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _IdentityService_UploadUserAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UploadUserAvatarRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(IdentityServiceServer).UploadUserAvatar(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: IdentityService_UploadUserAvatar_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityServiceServer).UploadUserAvatar(ctx, req.(*UploadUserAvatarRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+func _IdentityService_UploadUserAvatar_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(IdentityServiceServer).UploadUserAvatar(&grpc.GenericServerStream[uploaded_media.UploadRequest, UploadUserAvatarResponse]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type IdentityService_UploadUserAvatarServer = grpc.ClientStreamingServer[uploaded_media.UploadRequest, UploadUserAvatarResponse]
 
 // IdentityService_ServiceDesc is the grpc.ServiceDesc for IdentityService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -1138,11 +1132,13 @@ var IdentityService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "UpdateUserUsername",
 			Handler:    _IdentityService_UpdateUserUsername_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "UploadUserAvatar",
-			Handler:    _IdentityService_UploadUserAvatar_Handler,
+			StreamName:    "UploadUserAvatar",
+			Handler:       _IdentityService_UploadUserAvatar_Handler,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "identity/identity_service.proto",
 }

@@ -296,10 +296,16 @@ struct AccountSettingsView: View {
 
   // MARK: - Media Section
   private var mediaSection: some View {
-    DSSection("Media") {
+    DSSection("Profile") {
       DSListRowLink(
-        title: "Upload Photo",
-        subtitle: "Test media upload",
+        title: "Profile Photo",
+        subtitle: "Set your profile picture",
+        icon: "person.crop.circle",
+        destination: UploadAvatarView()
+      )
+      DSListRowLink(
+        title: "Upload Media",
+        subtitle: "Upload photos and media",
         icon: "photo.on.rectangle.angled",
         destination: UploadMediaView()
       )

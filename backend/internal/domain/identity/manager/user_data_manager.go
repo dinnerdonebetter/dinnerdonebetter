@@ -45,7 +45,6 @@ const (
 )
 
 var (
-	userAvatarBase64Encoding = base64.RawURLEncoding
 
 	// ErrInvalidIDProvided indicates a required ID was passed in empty.
 	ErrInvalidIDProvided = errors.New("required ID was empty")
@@ -951,7 +950,7 @@ func (m *manager) UpdateUserUsername(ctx context.Context, userID, newUsername st
 	return nil
 }
 
-func (m *manager) UploadUserAvatar(ctx context.Context, userID, base64EncodedImageData string) error {
+func (m *manager) SetUserAvatar(ctx context.Context, userID, uploadedMediaID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -959,21 +958,16 @@ func (m *manager) UploadUserAvatar(ctx context.Context, userID, base64EncodedIma
 		return ErrInvalidIDProvided
 	}
 
+	if uploadedMediaID == "" {
+		return ErrEmptyInputProvided
+	}
+
 	logger := observability.ObserveValues(map[string]any{
 		identitykeys.UserIDKey: userID,
 	}, span, m.logger)
 
-	data, err := userAvatarBase64Encoding.DecodeString(base64EncodedImageData)
-	if err != nil {
-		return observability.PrepareError(err, span, "decoding base64 encoded image data")
-	}
-
-	logger = observability.ObserveValues(map[string]any{
-		"data.length": len(data),
-	}, span, logger)
-
-	if err = m.identityRepo.UpdateUserAvatar(ctx, userID, base64EncodedImageData); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating user avatar")
+	if err := m.identityRepo.SetUserAvatar(ctx, userID, uploadedMediaID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "setting user avatar")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserAvatarChangedEventType, map[string]any{

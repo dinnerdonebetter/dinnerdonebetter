@@ -54,7 +54,6 @@ INSERT INTO users
 (
 	id,
 	username,
-	avatar_src,
 	email_address,
 	hashed_password,
 	requires_password_change,
@@ -81,25 +80,23 @@ INSERT INTO users
 	$11,
 	$12,
 	$13,
-	$14,
-	$15
+	$14
 )
 `
 
 type CreateUserParams struct {
 	TwoFactorSecretVerifiedAt     sql.NullTime
 	Birthday                      sql.NullTime
-	TwoFactorSecret               string
-	EmailAddress                  string
 	HashedPassword                string
 	ID                            string
+	TwoFactorSecret               string
+	EmailAddress                  string
 	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Username                      string
 	FirstName                     string
 	LastName                      string
-	AvatarSrc                     sql.NullString
 	EmailAddressVerificationToken sql.NullString
 	RequiresPasswordChange        bool
 }
@@ -108,7 +105,6 @@ func (q *Queries) CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams
 	_, err := db.ExecContext(ctx, createUser,
 		arg.ID,
 		arg.Username,
-		arg.AvatarSrc,
 		arg.EmailAddress,
 		arg.HashedPassword,
 		arg.RequiresPasswordChange,
@@ -141,7 +137,6 @@ const getAdminUserByUsername = `-- name: GetAdminUserByUsername :one
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -161,8 +156,17 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.service_role = 'service_admin'
 	AND users.username = $1
@@ -171,27 +175,33 @@ WHERE users.archived_at IS NULL
 
 type GetAdminUserByUsernameRow struct {
 	CreatedAt                     time.Time
-	Birthday                      sql.NullTime
 	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	LastIndexedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
 	TwoFactorSecretVerifiedAt     sql.NullTime
 	EmailAddressVerifiedAt        sql.NullTime
-	UserAccountStatus             string
-	UserAccountStatusExplanation  string
-	ID                            string
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
 	ServiceRole                   string
 	FirstName                     string
-	LastName                      string
-	TwoFactorSecret               string
 	HashedPassword                string
 	EmailAddress                  string
+	LastName                      string
+	UserAccountStatusExplanation  string
 	Username                      string
+	UserAccountStatus             string
+	ID                            string
+	TwoFactorSecret               string
 	EmailAddressVerificationToken sql.NullString
-	AvatarSrc                     sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
+	AvatarCreatedByUser           sql.NullString
 	RequiresPasswordChange        bool
 }
 
@@ -201,7 +211,6 @@ func (q *Queries) GetAdminUserByUsername(ctx context.Context, db DBTX, username 
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.AvatarSrc,
 		&i.EmailAddress,
 		&i.HashedPassword,
 		&i.PasswordLastChangedAt,
@@ -222,6 +231,13 @@ func (q *Queries) GetAdminUserByUsername(ctx context.Context, db DBTX, username 
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
+		&i.AvatarID,
+		&i.AvatarStoragePath,
+		&i.AvatarMimeType,
+		&i.AvatarCreatedAt,
+		&i.AvatarLastUpdatedAt,
+		&i.AvatarArchivedAt,
+		&i.AvatarCreatedByUser,
 	)
 	return &i, err
 }
@@ -246,7 +262,6 @@ const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -266,35 +281,50 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.email_address = $1
 `
 
 type GetUserByEmailRow struct {
 	CreatedAt                     time.Time
-	Birthday                      sql.NullTime
 	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	LastIndexedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
 	TwoFactorSecretVerifiedAt     sql.NullTime
 	EmailAddressVerifiedAt        sql.NullTime
-	UserAccountStatus             string
-	UserAccountStatusExplanation  string
-	ID                            string
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
 	ServiceRole                   string
 	FirstName                     string
-	LastName                      string
-	TwoFactorSecret               string
 	HashedPassword                string
 	EmailAddress                  string
+	LastName                      string
+	UserAccountStatusExplanation  string
 	Username                      string
+	UserAccountStatus             string
+	ID                            string
+	TwoFactorSecret               string
 	EmailAddressVerificationToken sql.NullString
-	AvatarSrc                     sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
+	AvatarCreatedByUser           sql.NullString
 	RequiresPasswordChange        bool
 }
 
@@ -304,7 +334,6 @@ func (q *Queries) GetUserByEmail(ctx context.Context, db DBTX, emailAddress stri
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.AvatarSrc,
 		&i.EmailAddress,
 		&i.HashedPassword,
 		&i.PasswordLastChangedAt,
@@ -325,6 +354,13 @@ func (q *Queries) GetUserByEmail(ctx context.Context, db DBTX, emailAddress stri
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
+		&i.AvatarID,
+		&i.AvatarStoragePath,
+		&i.AvatarMimeType,
+		&i.AvatarCreatedAt,
+		&i.AvatarLastUpdatedAt,
+		&i.AvatarArchivedAt,
+		&i.AvatarCreatedByUser,
 	)
 	return &i, err
 }
@@ -333,7 +369,6 @@ const getUserByEmailAddressVerificationToken = `-- name: GetUserByEmailAddressVe
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -353,35 +388,50 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.email_address_verification_token = $1
 `
 
 type GetUserByEmailAddressVerificationTokenRow struct {
 	CreatedAt                     time.Time
-	Birthday                      sql.NullTime
 	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	LastIndexedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
 	TwoFactorSecretVerifiedAt     sql.NullTime
 	EmailAddressVerifiedAt        sql.NullTime
-	UserAccountStatus             string
-	UserAccountStatusExplanation  string
-	ID                            string
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
 	ServiceRole                   string
 	FirstName                     string
-	LastName                      string
-	TwoFactorSecret               string
 	HashedPassword                string
 	EmailAddress                  string
+	LastName                      string
+	UserAccountStatusExplanation  string
 	Username                      string
+	UserAccountStatus             string
+	ID                            string
+	TwoFactorSecret               string
 	EmailAddressVerificationToken sql.NullString
-	AvatarSrc                     sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
+	AvatarCreatedByUser           sql.NullString
 	RequiresPasswordChange        bool
 }
 
@@ -391,7 +441,6 @@ func (q *Queries) GetUserByEmailAddressVerificationToken(ctx context.Context, db
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.AvatarSrc,
 		&i.EmailAddress,
 		&i.HashedPassword,
 		&i.PasswordLastChangedAt,
@@ -412,6 +461,13 @@ func (q *Queries) GetUserByEmailAddressVerificationToken(ctx context.Context, db
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
+		&i.AvatarID,
+		&i.AvatarStoragePath,
+		&i.AvatarMimeType,
+		&i.AvatarCreatedAt,
+		&i.AvatarLastUpdatedAt,
+		&i.AvatarArchivedAt,
+		&i.AvatarCreatedByUser,
 	)
 	return &i, err
 }
@@ -420,7 +476,6 @@ const getUserByID = `-- name: GetUserByID :one
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -440,35 +495,50 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.id = $1
 `
 
 type GetUserByIDRow struct {
 	CreatedAt                     time.Time
-	Birthday                      sql.NullTime
 	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	LastIndexedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
 	TwoFactorSecretVerifiedAt     sql.NullTime
 	EmailAddressVerifiedAt        sql.NullTime
-	UserAccountStatus             string
-	UserAccountStatusExplanation  string
-	ID                            string
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
 	ServiceRole                   string
 	FirstName                     string
-	LastName                      string
-	TwoFactorSecret               string
 	HashedPassword                string
 	EmailAddress                  string
+	LastName                      string
+	UserAccountStatusExplanation  string
 	Username                      string
+	UserAccountStatus             string
+	ID                            string
+	TwoFactorSecret               string
 	EmailAddressVerificationToken sql.NullString
-	AvatarSrc                     sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
+	AvatarCreatedByUser           sql.NullString
 	RequiresPasswordChange        bool
 }
 
@@ -478,7 +548,6 @@ func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUser
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.AvatarSrc,
 		&i.EmailAddress,
 		&i.HashedPassword,
 		&i.PasswordLastChangedAt,
@@ -499,6 +568,13 @@ func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUser
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
+		&i.AvatarID,
+		&i.AvatarStoragePath,
+		&i.AvatarMimeType,
+		&i.AvatarCreatedAt,
+		&i.AvatarLastUpdatedAt,
+		&i.AvatarArchivedAt,
+		&i.AvatarCreatedByUser,
 	)
 	return &i, err
 }
@@ -507,7 +583,6 @@ const getUserByUsername = `-- name: GetUserByUsername :one
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -527,35 +602,50 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.username = $1
 `
 
 type GetUserByUsernameRow struct {
 	CreatedAt                     time.Time
-	Birthday                      sql.NullTime
 	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	LastIndexedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
 	TwoFactorSecretVerifiedAt     sql.NullTime
 	EmailAddressVerifiedAt        sql.NullTime
-	UserAccountStatus             string
-	UserAccountStatusExplanation  string
-	ID                            string
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
 	ServiceRole                   string
 	FirstName                     string
-	LastName                      string
-	TwoFactorSecret               string
 	HashedPassword                string
 	EmailAddress                  string
+	LastName                      string
+	UserAccountStatusExplanation  string
 	Username                      string
+	UserAccountStatus             string
+	ID                            string
+	TwoFactorSecret               string
 	EmailAddressVerificationToken sql.NullString
-	AvatarSrc                     sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
+	AvatarCreatedByUser           sql.NullString
 	RequiresPasswordChange        bool
 }
 
@@ -565,7 +655,6 @@ func (q *Queries) GetUserByUsername(ctx context.Context, db DBTX, username strin
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.AvatarSrc,
 		&i.EmailAddress,
 		&i.HashedPassword,
 		&i.PasswordLastChangedAt,
@@ -586,6 +675,13 @@ func (q *Queries) GetUserByUsername(ctx context.Context, db DBTX, username strin
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
+		&i.AvatarID,
+		&i.AvatarStoragePath,
+		&i.AvatarMimeType,
+		&i.AvatarCreatedAt,
+		&i.AvatarLastUpdatedAt,
+		&i.AvatarArchivedAt,
+		&i.AvatarCreatedByUser,
 	)
 	return &i, err
 }
@@ -625,183 +721,6 @@ const getUserWithUnverifiedTwoFactor = `-- name: GetUserWithUnverifiedTwoFactor 
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
-	users.email_address,
-	users.hashed_password,
-	users.password_last_changed_at,
-	users.requires_password_change,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_role,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birthday,
-	users.email_address_verification_token,
-	users.email_address_verified_at,
-	users.first_name,
-	users.last_name,
-	users.last_accepted_terms_of_service,
-	users.last_accepted_privacy_policy,
-	users.last_indexed_at,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.id = $1
-	AND users.two_factor_secret_verified_at IS NULL
-`
-
-type GetUserWithUnverifiedTwoFactorRow struct {
-	CreatedAt                     time.Time
-	Birthday                      sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	LastIndexedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastAcceptedPrivacyPolicy     sql.NullTime
-	LastAcceptedTermsOfService    sql.NullTime
-	TwoFactorSecretVerifiedAt     sql.NullTime
-	EmailAddressVerifiedAt        sql.NullTime
-	UserAccountStatus             string
-	UserAccountStatusExplanation  string
-	ID                            string
-	ServiceRole                   string
-	FirstName                     string
-	LastName                      string
-	TwoFactorSecret               string
-	HashedPassword                string
-	EmailAddress                  string
-	Username                      string
-	EmailAddressVerificationToken sql.NullString
-	AvatarSrc                     sql.NullString
-	RequiresPasswordChange        bool
-}
-
-func (q *Queries) GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithUnverifiedTwoFactorRow, error) {
-	row := db.QueryRowContext(ctx, getUserWithUnverifiedTwoFactor, id)
-	var i GetUserWithUnverifiedTwoFactorRow
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.AvatarSrc,
-		&i.EmailAddress,
-		&i.HashedPassword,
-		&i.PasswordLastChangedAt,
-		&i.RequiresPasswordChange,
-		&i.TwoFactorSecret,
-		&i.TwoFactorSecretVerifiedAt,
-		&i.ServiceRole,
-		&i.UserAccountStatus,
-		&i.UserAccountStatusExplanation,
-		&i.Birthday,
-		&i.EmailAddressVerificationToken,
-		&i.EmailAddressVerifiedAt,
-		&i.FirstName,
-		&i.LastName,
-		&i.LastAcceptedTermsOfService,
-		&i.LastAcceptedPrivacyPolicy,
-		&i.LastIndexedAt,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-	)
-	return &i, err
-}
-
-const getUserWithVerifiedTwoFactor = `-- name: GetUserWithVerifiedTwoFactor :one
-SELECT
-	users.id,
-	users.username,
-	users.avatar_src,
-	users.email_address,
-	users.hashed_password,
-	users.password_last_changed_at,
-	users.requires_password_change,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_role,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birthday,
-	users.email_address_verification_token,
-	users.email_address_verified_at,
-	users.first_name,
-	users.last_name,
-	users.last_accepted_terms_of_service,
-	users.last_accepted_privacy_policy,
-	users.last_indexed_at,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.id = $1
-	AND users.two_factor_secret_verified_at IS NOT NULL
-`
-
-type GetUserWithVerifiedTwoFactorRow struct {
-	CreatedAt                     time.Time
-	Birthday                      sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	LastIndexedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastAcceptedPrivacyPolicy     sql.NullTime
-	LastAcceptedTermsOfService    sql.NullTime
-	TwoFactorSecretVerifiedAt     sql.NullTime
-	EmailAddressVerifiedAt        sql.NullTime
-	UserAccountStatus             string
-	UserAccountStatusExplanation  string
-	ID                            string
-	ServiceRole                   string
-	FirstName                     string
-	LastName                      string
-	TwoFactorSecret               string
-	HashedPassword                string
-	EmailAddress                  string
-	Username                      string
-	EmailAddressVerificationToken sql.NullString
-	AvatarSrc                     sql.NullString
-	RequiresPasswordChange        bool
-}
-
-func (q *Queries) GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithVerifiedTwoFactorRow, error) {
-	row := db.QueryRowContext(ctx, getUserWithVerifiedTwoFactor, id)
-	var i GetUserWithVerifiedTwoFactorRow
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.AvatarSrc,
-		&i.EmailAddress,
-		&i.HashedPassword,
-		&i.PasswordLastChangedAt,
-		&i.RequiresPasswordChange,
-		&i.TwoFactorSecret,
-		&i.TwoFactorSecretVerifiedAt,
-		&i.ServiceRole,
-		&i.UserAccountStatus,
-		&i.UserAccountStatusExplanation,
-		&i.Birthday,
-		&i.EmailAddressVerificationToken,
-		&i.EmailAddressVerifiedAt,
-		&i.FirstName,
-		&i.LastName,
-		&i.LastAcceptedTermsOfService,
-		&i.LastAcceptedPrivacyPolicy,
-		&i.LastIndexedAt,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-	)
-	return &i, err
-}
-
-const getUsers = `-- name: GetUsers :many
-SELECT
-	users.id,
-	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -822,6 +741,229 @@ SELECT
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
+FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
+WHERE users.archived_at IS NULL
+	AND users.id = $1
+	AND users.two_factor_secret_verified_at IS NULL
+`
+
+type GetUserWithUnverifiedTwoFactorRow struct {
+	CreatedAt                     time.Time
+	ArchivedAt                    sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	ServiceRole                   string
+	FirstName                     string
+	HashedPassword                string
+	EmailAddress                  string
+	LastName                      string
+	UserAccountStatusExplanation  string
+	Username                      string
+	UserAccountStatus             string
+	ID                            string
+	TwoFactorSecret               string
+	EmailAddressVerificationToken sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
+	AvatarCreatedByUser           sql.NullString
+	RequiresPasswordChange        bool
+}
+
+func (q *Queries) GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithUnverifiedTwoFactorRow, error) {
+	row := db.QueryRowContext(ctx, getUserWithUnverifiedTwoFactor, id)
+	var i GetUserWithUnverifiedTwoFactorRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.EmailAddress,
+		&i.HashedPassword,
+		&i.PasswordLastChangedAt,
+		&i.RequiresPasswordChange,
+		&i.TwoFactorSecret,
+		&i.TwoFactorSecretVerifiedAt,
+		&i.ServiceRole,
+		&i.UserAccountStatus,
+		&i.UserAccountStatusExplanation,
+		&i.Birthday,
+		&i.EmailAddressVerificationToken,
+		&i.EmailAddressVerifiedAt,
+		&i.FirstName,
+		&i.LastName,
+		&i.LastAcceptedTermsOfService,
+		&i.LastAcceptedPrivacyPolicy,
+		&i.LastIndexedAt,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
+		&i.AvatarID,
+		&i.AvatarStoragePath,
+		&i.AvatarMimeType,
+		&i.AvatarCreatedAt,
+		&i.AvatarLastUpdatedAt,
+		&i.AvatarArchivedAt,
+		&i.AvatarCreatedByUser,
+	)
+	return &i, err
+}
+
+const getUserWithVerifiedTwoFactor = `-- name: GetUserWithVerifiedTwoFactor :one
+SELECT
+	users.id,
+	users.username,
+	users.email_address,
+	users.hashed_password,
+	users.password_last_changed_at,
+	users.requires_password_change,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
+	users.last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
+FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
+WHERE users.archived_at IS NULL
+	AND users.id = $1
+	AND users.two_factor_secret_verified_at IS NOT NULL
+`
+
+type GetUserWithVerifiedTwoFactorRow struct {
+	CreatedAt                     time.Time
+	ArchivedAt                    sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	ServiceRole                   string
+	FirstName                     string
+	HashedPassword                string
+	EmailAddress                  string
+	LastName                      string
+	UserAccountStatusExplanation  string
+	Username                      string
+	UserAccountStatus             string
+	ID                            string
+	TwoFactorSecret               string
+	EmailAddressVerificationToken sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
+	AvatarCreatedByUser           sql.NullString
+	RequiresPasswordChange        bool
+}
+
+func (q *Queries) GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithVerifiedTwoFactorRow, error) {
+	row := db.QueryRowContext(ctx, getUserWithVerifiedTwoFactor, id)
+	var i GetUserWithVerifiedTwoFactorRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.EmailAddress,
+		&i.HashedPassword,
+		&i.PasswordLastChangedAt,
+		&i.RequiresPasswordChange,
+		&i.TwoFactorSecret,
+		&i.TwoFactorSecretVerifiedAt,
+		&i.ServiceRole,
+		&i.UserAccountStatus,
+		&i.UserAccountStatusExplanation,
+		&i.Birthday,
+		&i.EmailAddressVerificationToken,
+		&i.EmailAddressVerifiedAt,
+		&i.FirstName,
+		&i.LastName,
+		&i.LastAcceptedTermsOfService,
+		&i.LastAcceptedPrivacyPolicy,
+		&i.LastIndexedAt,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
+		&i.AvatarID,
+		&i.AvatarStoragePath,
+		&i.AvatarMimeType,
+		&i.AvatarCreatedAt,
+		&i.AvatarLastUpdatedAt,
+		&i.AvatarArchivedAt,
+		&i.AvatarCreatedByUser,
+	)
+	return &i, err
+}
+
+const getUsers = `-- name: GetUsers :many
+SELECT
+	users.id,
+	users.username,
+	users.email_address,
+	users.hashed_password,
+	users.password_last_changed_at,
+	users.requires_password_change,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
+	users.last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user,
 	(
 		SELECT COUNT(users.id)
 		FROM users
@@ -845,6 +987,8 @@ SELECT
 		WHERE users.archived_at IS NULL
 	) AS total_count
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND users.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
@@ -874,27 +1018,33 @@ type GetUsersParams struct {
 
 type GetUsersRow struct {
 	CreatedAt                     time.Time
+	ArchivedAt                    sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
 	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
-	ArchivedAt                    sql.NullTime
 	LastUpdatedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastIndexedAt                 sql.NullTime
 	Birthday                      sql.NullTime
-	TwoFactorSecretVerifiedAt     sql.NullTime
-	EmailAddressVerifiedAt        sql.NullTime
-	TwoFactorSecret               string
-	Username                      string
-	UserAccountStatusExplanation  string
+	LastIndexedAt                 sql.NullTime
 	UserAccountStatus             string
 	ServiceRole                   string
-	FirstName                     string
-	LastName                      string
 	EmailAddress                  string
 	ID                            string
 	HashedPassword                string
-	AvatarSrc                     sql.NullString
+	TwoFactorSecret               string
+	Username                      string
+	UserAccountStatusExplanation  string
+	LastName                      string
+	FirstName                     string
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
 	EmailAddressVerificationToken sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarCreatedByUser           sql.NullString
 	FilteredCount                 int64
 	TotalCount                    int64
 	RequiresPasswordChange        bool
@@ -920,7 +1070,6 @@ func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
-			&i.AvatarSrc,
 			&i.EmailAddress,
 			&i.HashedPassword,
 			&i.PasswordLastChangedAt,
@@ -941,6 +1090,13 @@ func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.AvatarID,
+			&i.AvatarStoragePath,
+			&i.AvatarMimeType,
+			&i.AvatarCreatedAt,
+			&i.AvatarLastUpdatedAt,
+			&i.AvatarArchivedAt,
+			&i.AvatarCreatedByUser,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {
@@ -961,7 +1117,6 @@ const getUsersForAccount = `-- name: GetUsersForAccount :many
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -982,6 +1137,13 @@ SELECT
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user,
 	(
 		SELECT COUNT(users.id)
 		FROM users
@@ -1006,6 +1168,8 @@ SELECT
 			AND account_user_memberships.belongs_to_account = $6
 	) AS total_count
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 JOIN account_user_memberships ON account_user_memberships.belongs_to_user = users.id
 WHERE users.archived_at IS NULL
 	AND users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
@@ -1039,27 +1203,33 @@ type GetUsersForAccountParams struct {
 
 type GetUsersForAccountRow struct {
 	CreatedAt                     time.Time
+	ArchivedAt                    sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
 	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
-	ArchivedAt                    sql.NullTime
 	LastUpdatedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastIndexedAt                 sql.NullTime
 	Birthday                      sql.NullTime
-	TwoFactorSecretVerifiedAt     sql.NullTime
-	EmailAddressVerifiedAt        sql.NullTime
-	TwoFactorSecret               string
-	Username                      string
-	UserAccountStatusExplanation  string
+	LastIndexedAt                 sql.NullTime
 	UserAccountStatus             string
 	ServiceRole                   string
-	FirstName                     string
-	LastName                      string
 	EmailAddress                  string
 	ID                            string
 	HashedPassword                string
-	AvatarSrc                     sql.NullString
+	TwoFactorSecret               string
+	Username                      string
+	UserAccountStatusExplanation  string
+	LastName                      string
+	FirstName                     string
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
 	EmailAddressVerificationToken sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarCreatedByUser           sql.NullString
 	FilteredCount                 int64
 	TotalCount                    int64
 	RequiresPasswordChange        bool
@@ -1086,7 +1256,6 @@ func (q *Queries) GetUsersForAccount(ctx context.Context, db DBTX, arg *GetUsers
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
-			&i.AvatarSrc,
 			&i.EmailAddress,
 			&i.HashedPassword,
 			&i.PasswordLastChangedAt,
@@ -1107,6 +1276,13 @@ func (q *Queries) GetUsersForAccount(ctx context.Context, db DBTX, arg *GetUsers
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.AvatarID,
+			&i.AvatarStoragePath,
+			&i.AvatarMimeType,
+			&i.AvatarCreatedAt,
+			&i.AvatarLastUpdatedAt,
+			&i.AvatarArchivedAt,
+			&i.AvatarCreatedByUser,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {
@@ -1127,7 +1303,6 @@ const getUsersWithIDs = `-- name: GetUsersWithIDs :many
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -1147,35 +1322,50 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.id = ANY($1::text[])
 `
 
 type GetUsersWithIDsRow struct {
 	CreatedAt                     time.Time
-	Birthday                      sql.NullTime
 	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	LastIndexedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
 	TwoFactorSecretVerifiedAt     sql.NullTime
 	EmailAddressVerifiedAt        sql.NullTime
-	UserAccountStatus             string
-	UserAccountStatusExplanation  string
-	ID                            string
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
 	ServiceRole                   string
 	FirstName                     string
-	LastName                      string
-	TwoFactorSecret               string
 	HashedPassword                string
 	EmailAddress                  string
+	LastName                      string
+	UserAccountStatusExplanation  string
 	Username                      string
+	UserAccountStatus             string
+	ID                            string
+	TwoFactorSecret               string
 	EmailAddressVerificationToken sql.NullString
-	AvatarSrc                     sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
+	AvatarCreatedByUser           sql.NullString
 	RequiresPasswordChange        bool
 }
 
@@ -1191,7 +1381,6 @@ func (q *Queries) GetUsersWithIDs(ctx context.Context, db DBTX, ids []string) ([
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
-			&i.AvatarSrc,
 			&i.EmailAddress,
 			&i.HashedPassword,
 			&i.PasswordLastChangedAt,
@@ -1212,6 +1401,13 @@ func (q *Queries) GetUsersWithIDs(ctx context.Context, db DBTX, ids []string) ([
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.AvatarID,
+			&i.AvatarStoragePath,
+			&i.AvatarMimeType,
+			&i.AvatarCreatedAt,
+			&i.AvatarLastUpdatedAt,
+			&i.AvatarArchivedAt,
+			&i.AvatarCreatedByUser,
 		); err != nil {
 			return nil, err
 		}
@@ -1296,7 +1492,6 @@ const searchUsersByUsername = `-- name: SearchUsersByUsername :many
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -1317,6 +1512,13 @@ SELECT
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user,
 	(
 		SELECT COUNT(users.id)
 		FROM users
@@ -1340,6 +1542,8 @@ SELECT
 		WHERE users.archived_at IS NULL
 	) AS total_count
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.username ILIKE '%' || $6::text || '%'
 	AND users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
@@ -1371,27 +1575,33 @@ type SearchUsersByUsernameParams struct {
 
 type SearchUsersByUsernameRow struct {
 	CreatedAt                     time.Time
+	ArchivedAt                    sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	AvatarArchivedAt              sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	AvatarLastUpdatedAt           sql.NullTime
+	AvatarCreatedAt               sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
 	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
-	ArchivedAt                    sql.NullTime
 	LastUpdatedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
-	LastIndexedAt                 sql.NullTime
 	Birthday                      sql.NullTime
-	TwoFactorSecretVerifiedAt     sql.NullTime
-	EmailAddressVerifiedAt        sql.NullTime
-	TwoFactorSecret               string
-	Username                      string
-	UserAccountStatusExplanation  string
+	LastIndexedAt                 sql.NullTime
 	UserAccountStatus             string
 	ServiceRole                   string
-	FirstName                     string
-	LastName                      string
 	EmailAddress                  string
 	ID                            string
 	HashedPassword                string
-	AvatarSrc                     sql.NullString
+	TwoFactorSecret               string
+	Username                      string
+	UserAccountStatusExplanation  string
+	LastName                      string
+	FirstName                     string
+	AvatarID                      sql.NullString
+	AvatarMimeType                NullUploadedMediaMimeType
 	EmailAddressVerificationToken sql.NullString
+	AvatarStoragePath             sql.NullString
+	AvatarCreatedByUser           sql.NullString
 	FilteredCount                 int64
 	TotalCount                    int64
 	RequiresPasswordChange        bool
@@ -1418,7 +1628,6 @@ func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, arg *Searc
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
-			&i.AvatarSrc,
 			&i.EmailAddress,
 			&i.HashedPassword,
 			&i.PasswordLastChangedAt,
@@ -1439,6 +1648,13 @@ func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, arg *Searc
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.AvatarID,
+			&i.AvatarStoragePath,
+			&i.AvatarMimeType,
+			&i.AvatarCreatedAt,
+			&i.AvatarLastUpdatedAt,
+			&i.AvatarArchivedAt,
+			&i.AvatarCreatedByUser,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {
@@ -1453,27 +1669,6 @@ func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, arg *Searc
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateUserAvatarSrc = `-- name: UpdateUserAvatarSrc :execrows
-UPDATE users SET
-	avatar_src = $1,
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-	AND id = $2
-`
-
-type UpdateUserAvatarSrcParams struct {
-	ID        string
-	AvatarSrc sql.NullString
-}
-
-func (q *Queries) UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) (int64, error) {
-	result, err := db.ExecContext(ctx, updateUserAvatarSrc, arg.AvatarSrc, arg.ID)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
 }
 
 const updateUserDetails = `-- name: UpdateUserDetails :execrows

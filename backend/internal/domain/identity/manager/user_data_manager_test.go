@@ -978,7 +978,7 @@ func TestIdentityDataManager_UpdateUserUsername(T *testing.T) {
 	})
 }
 
-func TestIdentityDataManager_UploadUserAvatar(T *testing.T) {
+func TestIdentityDataManager_SetUserAvatar(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -988,12 +988,12 @@ func TestIdentityDataManager_UploadUserAvatar(T *testing.T) {
 		m := buildIdentityDataManagerForTest(t)
 
 		userID := fakes.BuildFakeID()
-		base64EncodedImageData := "dGVzdC1kYXRh"
+		uploadedMediaID := fakes.BuildFakeID()
 
 		expectations := setupExpectationsForIdentityDataManager(
 			m,
 			func(db *identitymock.RepositoryMock) {
-				db.On(reflection.GetMethodName(m.identityRepo.UpdateUserAvatar), testutils.ContextMatcher, userID, base64EncodedImageData).Return(nil)
+				db.On(reflection.GetMethodName(m.identityRepo.SetUserAvatar), testutils.ContextMatcher, userID, uploadedMediaID).Return(nil)
 			},
 			nil,
 			nil,
@@ -1004,7 +1004,7 @@ func TestIdentityDataManager_UploadUserAvatar(T *testing.T) {
 			},
 		)
 
-		err := m.UploadUserAvatar(ctx, userID, base64EncodedImageData)
+		err := m.SetUserAvatar(ctx, userID, uploadedMediaID)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)

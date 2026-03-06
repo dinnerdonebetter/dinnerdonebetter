@@ -1,5 +1,5 @@
 //
-//  UploadMediaViewModel.swift
+//  UploadAvatarViewModel.swift
 //  ios
 //
 
@@ -13,10 +13,10 @@ private let uploadBucketName = "avatars"
 
 @Observable
 @MainActor
-class UploadMediaViewModel {
+class UploadAvatarViewModel {
   var isUploading = false
   var errorMessage: String?
-  var lastUploadedPath: String?
+  var didSucceed = false
 
   private let authManager: AuthenticationManager
 
@@ -24,10 +24,10 @@ class UploadMediaViewModel {
     self.authManager = authManager
   }
 
-  func uploadPhoto(imageData: Data, contentType: String, objectName: String) async {
+  func uploadAvatar(imageData: Data, contentType: String, objectName: String) async {
     isUploading = true
     errorMessage = nil
-    lastUploadedPath = nil
+    didSucceed = false
 
     do {
       let (clientManager, metadata) = try await getClientManagerAndMetadata()
@@ -35,7 +35,7 @@ class UploadMediaViewModel {
       var uploadOptions = GRPCCore.CallOptions.defaults
       uploadOptions.timeout = .seconds(60)
 
-      let response = try await clientManager.client.uploadedMedia.upload(
+      _ = try await clientManager.client.identity.uploadUserAvatar(
         metadata: metadata,
         options: uploadOptions,
         requestProducer: { writer in
@@ -63,11 +63,11 @@ class UploadMediaViewModel {
         }
       )
 
-      lastUploadedPath = response.objectURL
+      didSucceed = true
     } catch let error as GRPCCore.RPCError {
       let statusMessage = formatRPCError(error)
       errorMessage = "Upload failed: \(statusMessage)"
-      print("❌ Upload RPC error: \(error.code), \(error.message)")
+      print("❌ Avatar upload RPC error: \(error.code), \(error.message)")
     } catch {
       errorMessage = "Upload failed: \(error.localizedDescription)"
     }
@@ -80,13 +80,13 @@ class UploadMediaViewModel {
   ) {
     guard let clientManager = try? authManager.getClientManager() else {
       throw NSError(
-        domain: "UploadMediaViewModel", code: 1,
+        domain: "UploadAvatarViewModel", code: 1,
         userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
     }
 
     guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
       throw NSError(
-        domain: "UploadMediaViewModel", code: 2,
+        domain: "UploadAvatarViewModel", code: 2,
         userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
     }
 
@@ -97,15 +97,13 @@ class UploadMediaViewModel {
   private func formatRPCError(_ error: GRPCCore.RPCError) -> String {
     switch error.code {
     case .cancelled:
-      return
-        "Request was cancelled. This can happen if the connection was interrupted or the request took too long."
+      return "Request was cancelled. This can happen if the connection was interrupted or the request took too long."
     case .deadlineExceeded:
       return "Request timed out. Try a smaller image."
     case .unauthenticated:
       return "Session expired. Please sign in again."
     case .unavailable:
-      return
-        "Server unavailable. Is the backend running at \(APIConfiguration.grpcHost):\(APIConfiguration.grpcPort)?"
+      return "Server unavailable. Is the backend running at \(APIConfiguration.grpcHost):\(APIConfiguration.grpcPort)?"
     case .permissionDenied:
       return "Permission denied."
     case .invalidArgument:

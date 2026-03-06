@@ -2,10 +2,27 @@ package converters
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	uploadedmediaconverters "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 )
+
+func convertUserAvatarToGRPC(avatar *uploadedmedia.UploadedMedia) *uploadedmediasvc.UploadedMedia {
+	if avatar == nil {
+		return nil
+	}
+	return uploadedmediaconverters.ConvertUploadedMediaToGRPCUploadedMedia(avatar)
+}
+
+func convertGRPCAvatarToUser(avatar *uploadedmediasvc.UploadedMedia) *uploadedmedia.UploadedMedia {
+	if avatar == nil {
+		return nil
+	}
+	return uploadedmediaconverters.ConvertGRPCUploadedMediaToUploadedMedia(avatar)
+}
 
 func ConvertGRPCUserDetailsUpdateRequestInputToUserDetailsUpdateRequestInput(input *identitysvc.UserDetailsUpdateRequestInput) *identity.UserDetailsUpdateRequestInput {
 	return &identity.UserDetailsUpdateRequestInput{
@@ -37,7 +54,7 @@ func ConvertUserToGRPCUser(input *identity.User) *identitysvc.User {
 		FirstName:                  input.FirstName,
 		TwoFactorSecret:            input.TwoFactorSecret,
 		EmailAddress:               input.EmailAddress,
-		AvatarSrc:                  input.AvatarSrc,
+		Avatar:                     convertUserAvatarToGRPC(input.Avatar),
 		ServiceRole:                input.ServiceRole,
 		RequiresPasswordChange:     input.RequiresPasswordChange,
 	}
@@ -63,7 +80,7 @@ func ConvertGRPCUserToUser(input *identitysvc.User) *identity.User {
 		FirstName:                  input.FirstName,
 		TwoFactorSecret:            input.TwoFactorSecret,
 		EmailAddress:               input.EmailAddress,
-		AvatarSrc:                  input.AvatarSrc,
+		Avatar:                     convertGRPCAvatarToUser(input.Avatar),
 		ServiceRole:                input.ServiceRole,
 		RequiresPasswordChange:     input.RequiresPasswordChange,
 	}

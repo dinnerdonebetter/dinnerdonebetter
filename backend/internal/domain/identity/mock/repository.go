@@ -147,9 +147,9 @@ func (m *RepositoryMock) RedeemPasswordResetToken(ctx context.Context, passwordR
 	return m.Called(ctx, passwordResetTokenID).Error(0)
 }
 
-// UpdateUserAvatar is a mock function.
-func (m *RepositoryMock) UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error {
-	return m.Called(ctx, userID, newAvatarContent).Error(0)
+// SetUserAvatar is a mock function.
+func (m *RepositoryMock) SetUserAvatar(ctx context.Context, userID, uploadedMediaID string) error {
+	return m.Called(ctx, userID, uploadedMediaID).Error(0)
 }
 
 // UpdateUserUsername is a mock function.

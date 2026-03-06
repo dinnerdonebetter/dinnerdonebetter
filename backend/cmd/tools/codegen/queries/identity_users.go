@@ -8,12 +8,13 @@ import (
 )
 
 const (
-	usersTableName = "users"
+	usersTableName       = "users"
+	userAvatarsTableName = "user_avatars"
+	uploadedMediaTable   = "uploaded_media"
 
 	createdByUserColumn = "created_by_user"
 
 	usernameColumn               = "username"
-	avatarSourceColumn           = "avatar_src"
 	emailAddressColumn           = "email_address"
 	hashedPasswordColumn         = "hashed_password"
 	passwordLastChangedAtColumn  = "password_last_changed_at"
@@ -36,12 +37,27 @@ const (
 
 func init() {
 	registerTableName(usersTableName)
+	registerTableName(userAvatarsTableName)
+	registerTableName(uploadedMediaTable)
 }
+
+// avatarJoinColumns are the uploaded_media columns selected when joining for avatar.
+var avatarJoinColumns = []string{
+	"id", "storage_path", "mime_type", "created_at", "last_updated_at", "archived_at", "created_by_user",
+}
+
+func avatarJoinSelect(prefix string) []string {
+	return applyToEach(avatarJoinColumns, func(_ int, s string) string {
+		return fmt.Sprintf("%s.%s as %s_%s", uploadedMediaTable, s, prefix, s)
+	})
+}
+
+const avatarJoinClause = `LEFT JOIN ` + userAvatarsTableName + ` ON ` + userAvatarsTableName + `.belongs_to_user = ` + usersTableName + `.id AND ` + userAvatarsTableName + `.archived_at IS NULL
+	LEFT JOIN ` + uploadedMediaTable + ` ON ` + uploadedMediaTable + `.id = ` + userAvatarsTableName + `.uploaded_media_id AND ` + uploadedMediaTable + `.archived_at IS NULL`
 
 var usersColumns = []string{
 	idColumn,
 	usernameColumn,
-	avatarSourceColumn,
 	emailAddressColumn,
 	hashedPasswordColumn,
 	passwordLastChangedAtColumn,
@@ -190,17 +206,20 @@ func buildUsersQueries(database string) []*Query {
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = 'service_admin'
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NOT NULL;`,
-
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName, archivedAtColumn,
 					usersTableName, serviceRoleColumn,
 					usersTableName, usernameColumn, usernameColumn,
@@ -213,14 +232,18 @@ WHERE %s.%s IS NULL
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName, archivedAtColumn,
 					usersTableName, emailAddressColumn, emailAddressColumn,
 				)),
@@ -231,14 +254,18 @@ WHERE %s.%s IS NULL
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName, archivedAtColumn,
 					usersTableName, emailAddressVerificationTokenColumn, emailAddressVerificationTokenColumn,
 				)),
@@ -249,14 +276,18 @@ WHERE %s.%s IS NULL
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName, archivedAtColumn,
 					usersTableName, idColumn, idColumn,
 				)),
@@ -267,14 +298,18 @@ WHERE %s.%s IS NULL
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName, archivedAtColumn,
 					usersTableName, usernameColumn, usernameColumn,
 				)),
@@ -305,17 +340,21 @@ WHERE %s.%s IS NULL
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	%s
 %s;`,
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					buildFilterCountSelect(usersTableName, true, true, []string{}),
 					buildTotalCountSelect(usersTableName, true, []string{}),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName, archivedAtColumn,
 					buildFilterConditions(
 						usersTableName,
@@ -333,8 +372,10 @@ WHERE %s.%s IS NULL
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
+	%s,
 	%s
 FROM %s
+	%s
 JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
 	%s
@@ -342,9 +383,11 @@ WHERE %s.%s IS NULL
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					buildFilterCountSelect(usersTableName, true, true, nil),
 					buildTotalCountSelect(usersTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", accountUserMembershipsTableName, belongsToAccountColumn, belongsToAccountColumn)),
 					usersTableName,
+					avatarJoinClause,
 					accountUserMembershipsTableName, accountUserMembershipsTableName, belongsToUserColumn, usersTableName, idColumn,
 					usersTableName, archivedAtColumn,
 					buildFilterConditions(usersTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", accountUserMembershipsTableName, belongsToAccountColumn, belongsToAccountColumn), fmt.Sprintf("%s.%s IS NULL", accountUserMembershipsTableName, archivedAtColumn)),
@@ -357,14 +400,18 @@ WHERE %s.%s IS NULL
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
 					strings.Join(applyToEach(usersColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName,
 					archivedAtColumn,
 					usersTableName,
@@ -394,15 +441,19 @@ WHERE %s.%s IS NULL
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NULL;`,
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName, archivedAtColumn,
 					usersTableName, idColumn, idColumn,
 					usersTableName, twoFactorSecretVerifiedAtColumn,
@@ -414,15 +465,19 @@ WHERE %s.%s IS NULL
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NOT NULL;`,
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName, archivedAtColumn,
 					usersTableName, idColumn, idColumn,
 					usersTableName, twoFactorSecretVerifiedAtColumn,
@@ -514,8 +569,10 @@ WHERE %s IS NULL
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
+	%s,
 	%s
 FROM %s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s %s
 	%s
@@ -523,9 +580,11 @@ WHERE %s.%s IS NULL
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					buildFilterCountSelect(usersTableName, true, true, []string{}),
 					buildTotalCountSelect(usersTableName, true, []string{}),
 					usersTableName,
+					avatarJoinClause,
 					usersTableName,
 					archivedAtColumn,
 					usersTableName,
@@ -537,23 +596,6 @@ WHERE %s.%s IS NULL
 						true,
 					),
 					buildCursorLimitClause(usersTableName),
-				)),
-			},
-			{
-				Annotation: QueryAnnotation{
-					Name: "UpdateUserAvatarSrc",
-					Type: ExecRowsType,
-				},
-				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	%s = sqlc.arg(%s),
-	%s = %s
-WHERE %s IS NULL
-	AND %s = sqlc.arg(%s);`,
-					usersTableName,
-					avatarSourceColumn, avatarSourceColumn,
-					lastUpdatedAtColumn, currentTimeExpression,
-					archivedAtColumn,
-					idColumn, idColumn,
 				)),
 			},
 			{

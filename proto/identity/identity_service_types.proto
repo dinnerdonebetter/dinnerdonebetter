@@ -260,10 +260,6 @@ message UpdateUserUsernameResponse {
   common.ResponseDetails response_details = 1;
 }
 
-message UploadUserAvatarRequest {
-  string base64_encoded_data = 1;
-}
-
 message UploadUserAvatarResponse {
   common.ResponseDetails response_details = 1;
 }
