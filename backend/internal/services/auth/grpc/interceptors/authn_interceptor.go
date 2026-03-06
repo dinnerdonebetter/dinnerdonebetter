@@ -70,6 +70,9 @@ func ProvideAuthInterceptor(
 			"/identity.IdentityService/CreateUser",
 			"/auth.AuthService/VerifyTOTPSecret",
 			"/auth.AuthService/LoginForToken",
+			"/auth.AuthService/RequestPasswordResetToken",
+			"/auth.AuthService/RedeemPasswordResetToken",
+			"/auth.AuthService/VerifyEmailAddress",
 		},
 	}
 }

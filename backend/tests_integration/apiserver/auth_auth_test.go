@@ -529,6 +529,41 @@ func TestAuth_RequestingPasswordReset(T *testing.T) {
 			{EventType: "updated", ResourceType: "password_reset_tokens"},
 		})
 	})
+
+	T.Run("unauthenticated flow", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, _ := createUserAndClientForTest(t)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		res, err := unauthedClient.RequestPasswordResetToken(ctx, &authsvc.RequestPasswordResetTokenRequest{
+			EmailAddress: user.EmailAddress,
+		})
+		require.NoError(t, err)
+		assert.NotNil(t, res)
+
+		var token string
+		queryErr := databaseClient.ReadDB().QueryRow(`SELECT token FROM password_reset_tokens WHERE belongs_to_user = $1 ORDER BY created_at DESC LIMIT 1`, user.ID).Scan(&token)
+		require.NoError(t, queryErr)
+
+		_, err = unauthedClient.RedeemPasswordResetToken(ctx, &authsvc.RedeemPasswordResetTokenRequest{
+			Token:       token,
+			NewPassword: "newpassword123!",
+		})
+		require.NoError(t, err)
+
+		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
+			Input: &authsvc.UserLoginInput{
+				Username:  user.Username,
+				Password:  "newpassword123!",
+				TotpToken: generateTOTPCodeForUserForTest(t, user),
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, tokenRes)
+		assert.NotEmpty(t, tokenRes.Result.AccessToken)
+	})
 }
 
 // TODO section below this line

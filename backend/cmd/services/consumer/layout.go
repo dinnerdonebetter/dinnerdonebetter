@@ -108,7 +108,7 @@ func footer() g.Node {
 				ghtml.Div(
 					ghtml.Class("flex space-x-4 text-sm"),
 					ghtml.A(
-						ghtml.Href("/privacy"),
+						ghtml.Href("/privacy-policy"),
 						ghtml.Class(fmt.Sprintf("%s hover:%s transition-colors duration-200",
 							design.TextColor(palette.Text),
 							design.TextColor(palette.Primary),
@@ -116,7 +116,7 @@ func footer() g.Node {
 						g.Text("Privacy Policy"),
 					),
 					ghtml.A(
-						ghtml.Href("/terms"),
+						ghtml.Href("/terms-of-service"),
 						ghtml.Class(fmt.Sprintf("%s hover:%s transition-colors duration-200",
 							design.TextColor(palette.Text),
 							design.TextColor(palette.Primary),

@@ -431,12 +431,8 @@ func TestAuthManager_CreatePasswordResetToken_UserNotFound(t *testing.T) {
 	userDataManager := &identitymock.RepositoryMock{}
 	userDataManager.On(reflection.GetMethodName(userDataManager.GetUserByEmail), testutils.ContextMatcher, input.EmailAddress).Return((*identity.User)(nil), sql.ErrNoRows)
 
-	secretGen := &randommock.Generator{}
-	secretGen.On(reflection.GetMethodName(secretGen.GenerateBase32EncodedString), testutils.ContextMatcher, 32).Return("faketoken", nil)
-
 	manager := &AuthManager{
 		userDataManager:           userDataManager,
-		secretGenerator:           secretGen,
 		sessionContextDataFetcher: func(context.Context) (*sessions.ContextData, error) { return &sessions.ContextData{}, nil },
 		logger:                    logging.NewNoopLogger().WithName("auth_manager"),
 		tracer:                    tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("auth_manager")),
@@ -444,8 +440,9 @@ func TestAuthManager_CreatePasswordResetToken_UserNotFound(t *testing.T) {
 
 	err := manager.CreatePasswordResetToken(ctx, input)
 
-	assert.Error(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, secretGen)
+	// Returns success without sending email to avoid email enumeration.
+	assert.NoError(t, err)
+	mock.AssertExpectationsForObjects(t, userDataManager)
 }
 
 func TestAuthManager_RequestEmailVerificationEmail_Success(t *testing.T) {
@@ -502,6 +499,54 @@ func TestAuthManager_VerifyUserEmailAddress_Success(t *testing.T) {
 
 	require.NoError(t, err)
 	mock.AssertExpectationsForObjects(t, userDataManager, publisher)
+}
+
+func TestAuthManager_VerifyUserEmailAddressByToken_Success(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	user := identityfakes.BuildFakeUser()
+	token := "verification-token"
+
+	userDataManager := &identitymock.RepositoryMock{}
+	userDataManager.On(reflection.GetMethodName(userDataManager.GetUserByEmailAddressVerificationToken), testutils.ContextMatcher, token).Return(user, nil)
+	userDataManager.On(reflection.GetMethodName(userDataManager.MarkUserEmailAddressAsVerified), testutils.ContextMatcher, user.ID, token).Return(nil)
+
+	publisher := &mockpublishers.Publisher{}
+	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+
+	manager := &AuthManager{
+		userDataManager:       userDataManager,
+		dataChangesPublisher:  publisher,
+		logger:                logging.NewNoopLogger().WithName("auth_manager"),
+		tracer:                tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("auth_manager")),
+	}
+
+	err := manager.VerifyUserEmailAddressByToken(ctx, token)
+
+	require.NoError(t, err)
+	mock.AssertExpectationsForObjects(t, userDataManager, publisher)
+}
+
+func TestAuthManager_VerifyUserEmailAddressByToken_UserNotFound(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	token := "invalid-token"
+
+	userDataManager := &identitymock.RepositoryMock{}
+	userDataManager.On(reflection.GetMethodName(userDataManager.GetUserByEmailAddressVerificationToken), testutils.ContextMatcher, token).Return((*identity.User)(nil), sql.ErrNoRows)
+
+	manager := &AuthManager{
+		userDataManager:      userDataManager,
+		logger:               logging.NewNoopLogger().WithName("auth_manager"),
+		tracer:               tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("auth_manager")),
+	}
+
+	err := manager.VerifyUserEmailAddressByToken(ctx, token)
+
+	assert.Error(t, err)
+	mock.AssertExpectationsForObjects(t, userDataManager)
 }
 
 func TestAuthManager_UpdatePassword_Success(t *testing.T) {

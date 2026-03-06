@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"strings"
 
+	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/pkg/client"
+
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
@@ -97,6 +101,67 @@ func (s *ConsumerFrontendServer) AcceptInvitationPage(res http.ResponseWriter, r
 func isIOSWebBrowser(userAgent string) bool {
 	return strings.Contains(strings.ToLower(userAgent), "iphone") ||
 		strings.Contains(strings.ToLower(userAgent), "ipad")
+}
+
+// VerifyEmailAddressPage handles email verification links (e.g., from signup emails).
+// Token is passed via query param ?t=TOKEN. No authentication required.
+func (s *ConsumerFrontendServer) VerifyEmailAddressPage(res http.ResponseWriter, req *http.Request) (g.Node, error) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+
+	token := req.URL.Query().Get("t")
+	if token == "" {
+		return page("Verify Email",
+			verifyEmailContent("This verification link is invalid. Please check your email for the correct link or sign in to request a new one."),
+		), nil
+	}
+
+	var unauthedClient client.Client
+	var err error
+	if s.developingLocally {
+		unauthedClient, err = client.BuildUnauthenticatedGRPCClient(s.config.APIServiceConnection.GRPCAPIServerURL)
+	} else {
+		unauthedClient, err = client.BuildTLSGRPCClient(s.config.APIServiceConnection.GRPCAPIServerURL)
+	}
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "building gRPC client")
+		return page("Verify Email",
+			verifyEmailContent("Unable to verify your email at this time. Please try again later or sign in to request a new verification email."),
+		), nil
+	}
+
+	_, err = unauthedClient.VerifyEmailAddress(ctx, &authsvc.VerifyEmailAddressRequest{Token: token})
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "verifying email address")
+		return page("Verify Email",
+			verifyEmailContent("This verification link has expired or is invalid. Please sign in to request a new verification email."),
+		), nil
+	}
+
+	return page("Verify Email",
+		verifyEmailContent("Your email has been verified. You can now sign in."),
+	), nil
+}
+
+func verifyEmailContent(message string) g.Node {
+	return ghtml.Div(
+		ghtml.Class("space-y-6 text-center"),
+		ghtml.H2(
+			ghtml.Class("text-xl font-semibold"),
+			g.Text("Verify Email"),
+		),
+		ghtml.P(
+			ghtml.Class("text-gray-600"),
+			g.Text(message),
+		),
+		ghtml.A(
+			ghtml.Href("/login"),
+			ghtml.Class("inline-block px-6 py-3 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700"),
+			g.Text("Sign In"),
+		),
+	)
 }
 
 type aasaStruct struct {

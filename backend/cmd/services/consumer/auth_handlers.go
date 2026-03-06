@@ -13,9 +13,13 @@ import (
 	g "maragu.dev/gomponents"
 )
 
-func (s *ConsumerFrontendServer) LoginPage(_ http.ResponseWriter, _ *http.Request) (g.Node, error) {
+func (s *ConsumerFrontendServer) LoginPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
+	props := &components.LoginFormProps{}
+	if req.URL.Query().Get("reset") == "success" {
+		props.ResetSuccessMessage = "Your password has been reset. Sign in with your new password."
+	}
 	return page("Sign In",
-		s.componentRenderer.LoginForm(&components.LoginFormProps{}),
+		s.componentRenderer.LoginForm(props),
 	), nil
 }
 
