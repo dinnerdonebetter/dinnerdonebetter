@@ -1,5 +1,5 @@
 //
-//  UploadMediaViewModel.swift
+//  MediaUploadViewModel.swift
 //  ios
 //
 
@@ -9,25 +9,37 @@ import GRPCNIOTransportHTTP2
 import SwiftUI
 
 private let uploadChunkSize = 64 * 1024  // 64 KB
-private let uploadBucketName = "avatars"
 
+/// Generic media upload view model. Use for uploading images to any bucket:
+/// avatars, recipes, meals, or custom buckets.
 @Observable
 @MainActor
-class UploadMediaViewModel {
-  var isUploading = false
-  var errorMessage: String?
-  var lastUploadedPath: String?
+public class MediaUploadViewModel {
+  public var isUploading = false
+  public var errorMessage: String?
+  public var lastUploadedStoragePath: String?
 
   private let authManager: AuthenticationManager
+  private let bucket: MediaBucket
 
-  init(authManager: AuthenticationManager) {
+  public init(authManager: AuthenticationManager, bucket: MediaBucket) {
     self.authManager = authManager
+    self.bucket = bucket
   }
 
-  func uploadPhoto(imageData: Data, contentType: String, objectName: String) async {
+  /// Uploads media data to the configured bucket.
+  /// - Parameters:
+  ///   - imageData: Raw file data (e.g. from PhotosPickerItem or camera)
+  ///   - contentType: MIME type (e.g. "image/jpeg", "image/png")
+  ///   - objectName: Unique object name within the bucket (e.g. "uuid.jpg")
+  public func upload(
+    imageData: Data,
+    contentType: String,
+    objectName: String
+  ) async {
     isUploading = true
     errorMessage = nil
-    lastUploadedPath = nil
+    lastUploadedStoragePath = nil
 
     do {
       let (clientManager, metadata) = try await getClientManagerAndMetadata()
@@ -41,7 +53,7 @@ class UploadMediaViewModel {
         requestProducer: { writer in
           // 1. Send metadata
           var meta = UploadedMedia_UploadMetadata()
-          meta.bucket = uploadBucketName
+          meta.bucket = bucket.rawValue
           meta.objectName = objectName
           meta.contentType = contentType
 
@@ -63,11 +75,11 @@ class UploadMediaViewModel {
         }
       )
 
-      lastUploadedPath = response.objectURL
+      lastUploadedStoragePath = response.objectURL
     } catch let error as GRPCCore.RPCError {
-      let statusMessage = formatRPCError(error)
+      let statusMessage = UploadErrorFormatter.formatRPCError(error)
       errorMessage = "Upload failed: \(statusMessage)"
-      print("❌ Upload RPC error: \(error.code), \(error.message)")
+      print("❌ Media upload RPC error: \(error.code), \(error.message)")
     } catch {
       errorMessage = "Upload failed: \(error.localizedDescription)"
     }
@@ -80,21 +92,24 @@ class UploadMediaViewModel {
   ) {
     guard let clientManager = try? authManager.getClientManager() else {
       throw NSError(
-        domain: "UploadMediaViewModel", code: 1,
+        domain: "MediaUploadViewModel", code: 1,
         userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
     }
 
     guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
       throw NSError(
-        domain: "UploadMediaViewModel", code: 2,
+        domain: "MediaUploadViewModel", code: 2,
         userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
     }
 
     let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
     return (clientManager, metadata)
   }
+}
 
-  private func formatRPCError(_ error: GRPCCore.RPCError) -> String {
+/// Shared RPC error formatting for upload flows.
+enum UploadErrorFormatter {
+  static func formatRPCError(_ error: GRPCCore.RPCError) -> String {
     switch error.code {
     case .cancelled:
       return

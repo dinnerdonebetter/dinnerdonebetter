@@ -6,16 +6,15 @@
 import PhotosUI
 import SwiftUI
 
-private struct PreparedImage {
-  let data: Data
-  let contentType: String
-  let fileExtension: String
-}
-
+/// Generic media upload view. Use for uploading images to any bucket.
+/// Pass the desired bucket (e.g. .recipes, .meals) for the use case.
 struct UploadMediaView: View {
   @Environment(AuthenticationManager.self) private var authManager
-  @State private var viewModel: UploadMediaViewModel?
+  @State private var viewModel: MediaUploadViewModel?
   @State private var selectedItem: PhotosPickerItem?
+
+  /// Bucket to upload to (avatars, recipes, meals, or custom)
+  var bucket: MediaBucket = .avatars
 
   var body: some View {
     ScrollView {
@@ -55,7 +54,7 @@ struct UploadMediaView: View {
                   .multilineTextAlignment(.leading)
               }
 
-              if let path = viewModel.lastUploadedPath {
+              if let path = viewModel.lastUploadedStoragePath {
                 VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
                   Text("Uploaded successfully")
                     .font(DSTheme.Typography.label)
@@ -80,7 +79,7 @@ struct UploadMediaView: View {
     .navigationTitle("Upload Media")
     .onAppear {
       if viewModel == nil {
-        viewModel = UploadMediaViewModel(authManager: authManager)
+        viewModel = MediaUploadViewModel(authManager: authManager, bucket: bucket)
       }
     }
     .onChange(of: selectedItem) { _, newItem in
@@ -91,17 +90,17 @@ struct UploadMediaView: View {
     }
   }
 
-  private func loadAndUpload(item: PhotosPickerItem, viewModel: UploadMediaViewModel) async {
+  private func loadAndUpload(item: PhotosPickerItem, viewModel: MediaUploadViewModel) async {
     do {
       guard let data = try await item.loadTransferable(type: Data.self) else {
         viewModel.errorMessage = "Failed to load image data"
         return
       }
 
-      let prepared = prepareImageForUpload(data: data)
+      let prepared = ImagePreparationHelper.prepareImageForUpload(data: data)
       let objectName = UUID().uuidString + "." + prepared.fileExtension
 
-      await viewModel.uploadPhoto(
+      await viewModel.upload(
         imageData: prepared.data,
         contentType: prepared.contentType,
         objectName: objectName
@@ -112,60 +111,28 @@ struct UploadMediaView: View {
       viewModel.errorMessage = "Failed to load image: \(error.localizedDescription)"
     }
   }
-
-  /// Prepares image data for upload. Converts HEIC to JPEG since backend doesn't support HEIC.
-  private func prepareImageForUpload(data: Data) -> PreparedImage {
-    if Self.isHEIC(data: data), let image = UIImage(data: data),
-      let jpegData = image.jpegData(compressionQuality: 0.9)
-    {
-      return PreparedImage(data: jpegData, contentType: "image/jpeg", fileExtension: "jpg")
-    }
-    if Self.isPNG(data: data) {
-      return PreparedImage(data: data, contentType: "image/png", fileExtension: "png")
-    }
-    if Self.isJPEG(data: data) {
-      return PreparedImage(data: data, contentType: "image/jpeg", fileExtension: "jpg")
-    }
-    if Self.isGIF(data: data) {
-      return PreparedImage(data: data, contentType: "image/gif", fileExtension: "gif")
-    }
-    if let image = UIImage(data: data), let jpegData = image.jpegData(compressionQuality: 0.9) {
-      return PreparedImage(data: jpegData, contentType: "image/jpeg", fileExtension: "jpg")
-    }
-    return PreparedImage(data: data, contentType: "image/jpeg", fileExtension: "jpg")
-  }
-
-  private static func isJPEG(data: Data) -> Bool {
-    data.count >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF
-  }
-
-  private static func isPNG(data: Data) -> Bool {
-    let signature: [UInt8] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
-    return data.count >= 8 && data.prefix(8).elementsEqual(signature)
-  }
-
-  private static func isGIF(data: Data) -> Bool {
-    let signature = "GIF8"
-    return data.count >= 4 && String(data: data.prefix(4), encoding: .ascii) == signature
-  }
-
-  private static func isHEIC(data: Data) -> Bool {
-    guard data.count >= 12 else { return false }
-    let ftyp = String(data: data.subdata(in: 4..<8), encoding: .ascii)
-    guard ftyp == "ftyp" else { return false }
-    let brand = String(data: data.subdata(in: 8..<12), encoding: .ascii)
-    return brand == "heic" || brand == "heix" || brand == "mif1"
-  }
 }
 
-#Preview {
+#Preview("Avatars bucket") {
   let authManager = AuthenticationManager()
   authManager.isAuthenticated = true
   authManager.username = "Test User"
   authManager.userID = "user123"
 
   return NavigationStack {
-    UploadMediaView()
+    UploadMediaView(bucket: .avatars)
+      .environment(authManager)
+  }
+}
+
+#Preview("Recipes bucket") {
+  let authManager = AuthenticationManager()
+  authManager.isAuthenticated = true
+  authManager.username = "Test User"
+  authManager.userID = "user123"
+
+  return NavigationStack {
+    UploadMediaView(bucket: .recipes)
       .environment(authManager)
   }
 }

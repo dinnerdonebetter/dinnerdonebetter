@@ -7,12 +7,6 @@ import PhotosUI
 import SwiftUI
 import UIKit
 
-private struct PreparedImage {
-  let data: Data
-  let contentType: String
-  let fileExtension: String
-}
-
 struct UploadAvatarView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: UploadAvatarViewModel?
@@ -104,7 +98,7 @@ struct UploadAvatarView: View {
         return
       }
 
-      let prepared = prepareImageForUpload(data: data)
+      let prepared = ImagePreparationHelper.prepareImageForUpload(data: data)
       let objectName = UUID().uuidString + "." + prepared.fileExtension
 
       await viewModel.uploadAvatar(
@@ -117,49 +111,6 @@ struct UploadAvatarView: View {
     } catch {
       viewModel.errorMessage = "Failed to load image: \(error.localizedDescription)"
     }
-  }
-
-  private func prepareImageForUpload(data: Data) -> PreparedImage {
-    if Self.isHEIC(data: data), let image = UIImage(data: data),
-      let jpegData = image.jpegData(compressionQuality: 0.9)
-    {
-      return PreparedImage(data: jpegData, contentType: "image/jpeg", fileExtension: "jpg")
-    }
-    if Self.isPNG(data: data) {
-      return PreparedImage(data: data, contentType: "image/png", fileExtension: "png")
-    }
-    if Self.isJPEG(data: data) {
-      return PreparedImage(data: data, contentType: "image/jpeg", fileExtension: "jpg")
-    }
-    if Self.isGIF(data: data) {
-      return PreparedImage(data: data, contentType: "image/gif", fileExtension: "gif")
-    }
-    if let image = UIImage(data: data), let jpegData = image.jpegData(compressionQuality: 0.9) {
-      return PreparedImage(data: jpegData, contentType: "image/jpeg", fileExtension: "jpg")
-    }
-    return PreparedImage(data: data, contentType: "image/jpeg", fileExtension: "jpg")
-  }
-
-  private static func isJPEG(data: Data) -> Bool {
-    data.count >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF
-  }
-
-  private static func isPNG(data: Data) -> Bool {
-    let signature: [UInt8] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
-    return data.count >= 8 && data.prefix(8).elementsEqual(signature)
-  }
-
-  private static func isGIF(data: Data) -> Bool {
-    let signature = "GIF8"
-    return data.count >= 4 && String(data: data.prefix(4), encoding: .ascii) == signature
-  }
-
-  private static func isHEIC(data: Data) -> Bool {
-    guard data.count >= 12 else { return false }
-    let ftyp = String(data: data.subdata(in: 4..<8), encoding: .ascii)
-    guard ftyp == "ftyp" else { return false }
-    let brand = String(data: data.subdata(in: 8..<12), encoding: .ascii)
-    return brand == "heic" || brand == "heix" || brand == "mif1"
   }
 }
 
