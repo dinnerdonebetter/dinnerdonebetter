@@ -30,7 +30,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	logger, tracerProvider, _, err := cfg.Observability.ProvideThreePillars(ctx)
+	pillars, err := cfg.Observability.ProvidePillars(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,11 +39,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err = pillars.Profiler.Start(ctx); err != nil {
+		log.Fatal(err)
+	}
+
 	fs, err := NewConsumerFrontendServer(
 		ctx,
-		logger,
-		tracerProvider,
-		encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON),
+		pillars.Logger,
+		pillars.TracerProvider,
+		encoding.ProvideServerEncoderDecoder(pillars.Logger, pillars.TracerProvider, encoding.ContentTypeJSON),
 		chi.NewRouteParamManager(),
 		cfg,
 	)
@@ -51,7 +55,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("serving consumer app")
+	defer func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		if err = pillars.Profiler.Shutdown(shutdownCtx); err != nil {
+			pillars.Logger.Error("failed to shutdown profiler", err)
+		}
+	}()
+
+	pillars.Logger.Info("serving consumer app")
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(

@@ -46,6 +46,9 @@ class HomeViewModel {
   // Loading states
   var isLoading = false
   var errorMessage: String?
+  var errorTitle: String = "Error"
+  var errorIcon: String = "exclamationmark.triangle"
+  var errorIconColor = DSTheme.Colors.warning
 
   // Computed properties
   var pendingVoteMealPlans: [Mealplanning_MealPlan] {
@@ -212,7 +215,9 @@ class HomeViewModel {
 
   /// Logs error with diagnostic details (RPC code, HTTP status, NSError userInfo, etc.)
   private static func logDiagnosticError(_ context: String, error: Error) {
+    let target = "\(APIConfiguration.grpcHost):\(APIConfiguration.grpcPort)"
     print("❌ Error loading \(context): \(error)")
+    print("   └─ gRPC target: \(target)")
     if let rpcError = error as? GRPCCore.RPCError {
       print("   └─ gRPC status: \(rpcError.code), message: \(rpcError.message)")
     }
@@ -235,6 +240,9 @@ class HomeViewModel {
   func loadData() async {
     isLoading = true
     errorMessage = nil
+    errorTitle = "Error"
+    errorIcon = "exclamationmark.triangle"
+    errorIconColor = DSTheme.Colors.warning
 
     do {
       // Fetch current user for welcome message
@@ -260,7 +268,11 @@ class HomeViewModel {
       )
     } catch {
       await authManager.invalidateCredentialsIfSessionError(error)
-      errorMessage = "Failed to load data: \(error.localizedDescription)"
+      let display = ErrorDisplayFormatter.format(error, context: "load data")
+      errorMessage = display.message
+      errorTitle = display.title
+      errorIcon = display.icon
+      errorIconColor = display.iconColor
       Self.logDiagnosticError("home data", error: error)
     }
 

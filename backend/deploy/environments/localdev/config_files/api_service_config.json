@@ -55,6 +55,15 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"pprof": {
+				"port": 6060,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "api_server",
+			"provider": "pprof"
+		},
 		"logging": {
 			"serviceName": "api_server",
 			"level": "debug",
@@ -193,7 +202,7 @@
 			"revenueCat": null
 		},
 		"users": {
-			"publicMediaURLPrefix": "",
+			"publicMediaURLPrefix": "http://localhost:8000/uploads",
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {

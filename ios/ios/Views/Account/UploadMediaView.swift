@@ -6,6 +6,12 @@
 import PhotosUI
 import SwiftUI
 
+private struct PreparedImage {
+  let data: Data
+  let contentType: String
+  let fileExtension: String
+}
+
 struct UploadMediaView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: UploadMediaViewModel?
@@ -92,12 +98,12 @@ struct UploadMediaView: View {
         return
       }
 
-      let (uploadData, contentType, fileExtension) = prepareImageForUpload(data: data)
-      let objectName = UUID().uuidString + "." + fileExtension
+      let prepared = prepareImageForUpload(data: data)
+      let objectName = UUID().uuidString + "." + prepared.fileExtension
 
       await viewModel.uploadPhoto(
-        imageData: uploadData,
-        contentType: contentType,
+        imageData: prepared.data,
+        contentType: prepared.contentType,
         objectName: objectName
       )
 
@@ -108,25 +114,25 @@ struct UploadMediaView: View {
   }
 
   /// Prepares image data for upload. Converts HEIC to JPEG since backend doesn't support HEIC.
-  private func prepareImageForUpload(data: Data) -> (Data, String, String) {
+  private func prepareImageForUpload(data: Data) -> PreparedImage {
     if Self.isHEIC(data: data), let image = UIImage(data: data),
       let jpegData = image.jpegData(compressionQuality: 0.9)
     {
-      return (jpegData, "image/jpeg", "jpg")
+      return PreparedImage(data: jpegData, contentType: "image/jpeg", fileExtension: "jpg")
     }
     if Self.isPNG(data: data) {
-      return (data, "image/png", "png")
+      return PreparedImage(data: data, contentType: "image/png", fileExtension: "png")
     }
     if Self.isJPEG(data: data) {
-      return (data, "image/jpeg", "jpg")
+      return PreparedImage(data: data, contentType: "image/jpeg", fileExtension: "jpg")
     }
     if Self.isGIF(data: data) {
-      return (data, "image/gif", "gif")
+      return PreparedImage(data: data, contentType: "image/gif", fileExtension: "gif")
     }
     if let image = UIImage(data: data), let jpegData = image.jpegData(compressionQuality: 0.9) {
-      return (jpegData, "image/jpeg", "jpg")
+      return PreparedImage(data: jpegData, contentType: "image/jpeg", fileExtension: "jpg")
     }
-    return (data, "image/jpeg", "jpg")
+    return PreparedImage(data: data, contentType: "image/jpeg", fileExtension: "jpg")
   }
 
   private static func isJPEG(data: Data) -> Bool {

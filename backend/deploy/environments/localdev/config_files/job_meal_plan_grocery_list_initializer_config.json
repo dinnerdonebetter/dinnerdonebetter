@@ -51,6 +51,15 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"pprof": {
+				"port": 6060,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "meal_plan_grocery_list_initializer",
+			"provider": "pprof"
+		},
 		"logging": {
 			"serviceName": "meal_plan_grocery_list_initializer",
 			"level": "debug",

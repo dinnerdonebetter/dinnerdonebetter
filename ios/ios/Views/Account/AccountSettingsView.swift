@@ -5,13 +5,23 @@
 //  Created by Auto on 12/8/25.
 //
 
+import PhotosUI
 import RevenueCat
 import RevenueCatUI
 import SwiftUI
+import UIKit
+
+private struct PreparedImage {
+  let data: Data
+  let contentType: String
+  let fileExtension: String
+}
 
 struct AccountSettingsView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: AccountSettingsViewModel?
+  @State private var avatarViewModel: UploadAvatarViewModel?
+  @State private var selectedAvatarItem: PhotosPickerItem?
   @State private var showCustomerCenter = false
   @State private var showPaywall = false
   @State private var isProActive = false
@@ -25,6 +35,9 @@ struct AccountSettingsView: View {
             isLoading: viewModel.isLoading,
             loadingMessage: "Loading household...",
             error: viewModel.errorMessage,
+            errorTitle: viewModel.errorTitle,
+            errorIcon: viewModel.errorIcon,
+            errorIconColor: viewModel.errorIconColor,
             onRetry: { await viewModel.loadData() },
             content: {
               ScrollView {
@@ -80,11 +93,28 @@ struct AccountSettingsView: View {
             await viewModel.loadData()
           }
         }
+        if avatarViewModel == nil {
+          avatarViewModel = UploadAvatarViewModel(authManager: authManager)
+        }
+        if let avatarViewModel = avatarViewModel {
+          Task { await avatarViewModel.loadCurrentUser() }
+        }
         Task {
           isProActive = await EntitlementService.isProActive()
         }
         if RevenueCatConfiguration.isConfigured && launchOffering == nil {
           Task { launchOffering = await SubscriptionService.launchOffering() }
+        }
+      }
+      .onChange(of: selectedAvatarItem) { _, newItem in
+        guard let item = newItem, let avatarViewModel = avatarViewModel else { return }
+        Task {
+          await loadAndUploadAvatar(item: item, viewModel: avatarViewModel)
+        }
+      }
+      .onChange(of: avatarViewModel?.didSucceed) { _, didSucceed in
+        if didSucceed == true, let viewModel = viewModel {
+          Task { await viewModel.loadData() }
         }
       }
       .sheet(isPresented: $showCustomerCenter) {
@@ -294,21 +324,63 @@ struct AccountSettingsView: View {
     }
   }
 
-  // MARK: - Media Section
+  // MARK: - Profile Photo Section
+  @ViewBuilder
   private var mediaSection: some View {
-    DSSection("Profile") {
-      DSListRowLink(
-        title: "Profile Photo",
-        subtitle: "Set your profile picture",
-        icon: "person.crop.circle",
-        destination: UploadAvatarView()
-      )
-      DSListRowLink(
-        title: "Upload Media",
-        subtitle: "Upload photos and media",
-        icon: "photo.on.rectangle.angled",
-        destination: UploadMediaView()
-      )
+    DSSection("Profile Photo", subtitle: "Select a photo to set as your profile picture") {
+      if let avatarViewModel = avatarViewModel {
+        VStack(spacing: DSTheme.Spacing.lg) {
+          PhotosPicker(
+            selection: $selectedAvatarItem,
+            matching: .images,
+            photoLibrary: .shared()
+          ) {
+            HStack(spacing: DSTheme.Spacing.md) {
+              Image(systemName: "person.crop.circle.badge.plus")
+                .font(.system(size: DSTheme.IconSize.lg))
+                .foregroundColor(DSTheme.Colors.primary)
+              Text("Select Photo")
+                .font(DSTheme.Typography.label)
+                .foregroundColor(DSTheme.Colors.textPrimary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(DSTheme.Spacing.lg)
+            .background(DSTheme.Colors.cardBackground)
+            .cornerRadius(DSTheme.Radius.md)
+          }
+          .disabled(avatarViewModel.isUploading)
+
+          if avatarViewModel.isUploading {
+            ProgressView("Uploading...")
+              .padding()
+          }
+
+          if let error = avatarViewModel.errorMessage {
+            Text(error)
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.error)
+              .multilineTextAlignment(.leading)
+          }
+
+          if avatarViewModel.didSucceed {
+            HStack(spacing: DSTheme.Spacing.sm) {
+              Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(DSTheme.Colors.success)
+              Text("Profile photo updated successfully")
+                .font(DSTheme.Typography.label)
+                .foregroundColor(DSTheme.Colors.success)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(DSTheme.Spacing.md)
+            .background(DSTheme.Colors.cardBackground)
+            .cornerRadius(DSTheme.Radius.md)
+          }
+        }
+      } else {
+        ProgressView()
+          .frame(maxWidth: .infinity)
+          .padding()
+      }
     }
   }
 
@@ -320,6 +392,72 @@ struct AccountSettingsView: View {
       }
     }
     .padding(.top, DSTheme.Spacing.xl)
+  }
+
+  // MARK: - Avatar Upload Helpers
+  private func loadAndUploadAvatar(item: PhotosPickerItem, viewModel: UploadAvatarViewModel) async {
+    do {
+      guard let data = try await item.loadTransferable(type: Data.self) else {
+        viewModel.errorMessage = "Failed to load image data"
+        return
+      }
+
+      let prepared = prepareImageForUpload(data: data)
+      let objectName = UUID().uuidString + "." + prepared.fileExtension
+
+      await viewModel.uploadAvatar(
+        imageData: prepared.data,
+        contentType: prepared.contentType,
+        objectName: objectName
+      )
+
+      selectedAvatarItem = nil
+    } catch {
+      viewModel.errorMessage = "Failed to load image: \(error.localizedDescription)"
+    }
+  }
+
+  private func prepareImageForUpload(data: Data) -> PreparedImage {
+    if Self.isHEIC(data: data), let image = UIImage(data: data),
+      let jpegData = image.jpegData(compressionQuality: 0.9)
+    {
+      return PreparedImage(data: jpegData, contentType: "image/jpeg", fileExtension: "jpg")
+    }
+    if Self.isPNG(data: data) {
+      return PreparedImage(data: data, contentType: "image/png", fileExtension: "png")
+    }
+    if Self.isJPEG(data: data) {
+      return PreparedImage(data: data, contentType: "image/jpeg", fileExtension: "jpg")
+    }
+    if Self.isGIF(data: data) {
+      return PreparedImage(data: data, contentType: "image/gif", fileExtension: "gif")
+    }
+    if let image = UIImage(data: data), let jpegData = image.jpegData(compressionQuality: 0.9) {
+      return PreparedImage(data: jpegData, contentType: "image/jpeg", fileExtension: "jpg")
+    }
+    return PreparedImage(data: data, contentType: "image/jpeg", fileExtension: "jpg")
+  }
+
+  private static func isJPEG(data: Data) -> Bool {
+    data.count >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF
+  }
+
+  private static func isPNG(data: Data) -> Bool {
+    let signature: [UInt8] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
+    return data.count >= 8 && data.prefix(8).elementsEqual(signature)
+  }
+
+  private static func isGIF(data: Data) -> Bool {
+    let signature = "GIF8"
+    return data.count >= 4 && String(data: data.prefix(4), encoding: .ascii) == signature
+  }
+
+  private static func isHEIC(data: Data) -> Bool {
+    guard data.count >= 12 else { return false }
+    let ftyp = String(data: data.subdata(in: 4..<8), encoding: .ascii)
+    guard ftyp == "ftyp" else { return false }
+    let brand = String(data: data.subdata(in: 8..<12), encoding: .ascii)
+    return brand == "heic" || brand == "heix" || brand == "mif1"
   }
 }
 
@@ -355,7 +493,14 @@ struct MemberCard: View {
     DSCard {
       HStack(spacing: DSTheme.Spacing.md) {
         // Avatar
-        DSAvatarView(name: displayName, size: .lg)
+        DSAvatar(
+          name: displayName,
+          size: .lg,
+          imageURL: member.hasBelongsToUser && member.belongsToUser.hasAvatar
+            ? APIConfiguration.mediaURL(
+              forStoragePath: member.belongsToUser.avatar.storagePath, bucket: "avatars")
+            : nil
+        )
 
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
           Text(displayName)

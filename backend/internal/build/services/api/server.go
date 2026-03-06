@@ -11,17 +11,20 @@ import (
 	grpcapi "github.com/dinnerdonebetter/backend/internal/build/services/api/grpc"
 	httpapi "github.com/dinnerdonebetter/backend/internal/build/services/api/http"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/profiling"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 )
 
 type Server struct {
-	logger     logging.Logger
-	grpcServer *grpcapi.GRPCService
-	httpServer http.Server
+	logger            logging.Logger
+	grpcServer        *grpcapi.GRPCService
+	httpServer        http.Server
+	profilingProvider profiling.Provider
 }
 
-func NewServer(ctx context.Context, logger logging.Logger, cfg *config.APIServiceConfig) (*Server, error) {
+func NewServer(ctx context.Context, pillars *observability.Pillars, cfg *config.APIServiceConfig) (*Server, error) {
 	// build our server struct.
 	httpServer, err := httpapi.Build(ctx, cfg)
 	if err != nil {
@@ -34,9 +37,10 @@ func NewServer(ctx context.Context, logger logging.Logger, cfg *config.APIServic
 	}
 
 	return &Server{
-		logger:     logging.EnsureLogger(logger),
-		grpcServer: grpcServer,
-		httpServer: httpServer,
+		logger:            logging.EnsureLogger(pillars.Logger),
+		grpcServer:        grpcServer,
+		httpServer:        httpServer,
+		profilingProvider: pillars.Profiler,
 	}, nil
 }
 
@@ -49,6 +53,10 @@ func (s *Server) Run() {
 		syscall.SIGQUIT,
 		syscall.SIGTERM,
 	)
+
+	if err := s.profilingProvider.Start(context.Background()); err != nil {
+		s.logger.Error("starting profiling provider", err)
+	}
 
 	// Run servers
 	go func() {
@@ -78,6 +86,10 @@ func (s *Server) Run() {
 	defer cancelShutdown()
 
 	s.logger.Info("shutting down")
+
+	if err := s.profilingProvider.Shutdown(cancelCtx); err != nil {
+		s.logger.Error("shutting down profiling provider", err)
+	}
 
 	if err := s.httpServer.Shutdown(cancelCtx); err != nil {
 		s.logger.Error("shutting down HTTP server", err)

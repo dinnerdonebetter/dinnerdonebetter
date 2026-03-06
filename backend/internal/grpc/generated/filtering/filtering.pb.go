@@ -25,14 +25,14 @@ const (
 
 type QueryFilter struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	SortBy          *string                `protobuf:"bytes,1,opt,name=sort_by,json=sortBy,proto3,oneof" json:"sort_by,omitempty"`
-	CreatedAfter    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=created_after,json=createdAfter,proto3,oneof" json:"created_after,omitempty"`
-	CreatedBefore   *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_before,json=createdBefore,proto3,oneof" json:"created_before,omitempty"`
-	UpdatedAfter    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_after,json=updatedAfter,proto3,oneof" json:"updated_after,omitempty"`
-	UpdatedBefore   *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_before,json=updatedBefore,proto3,oneof" json:"updated_before,omitempty"`
-	MaxResponseSize *uint32                `protobuf:"varint,7,opt,name=max_response_size,json=maxResponseSize,proto3,oneof" json:"max_response_size,omitempty"`
-	IncludeArchived *bool                  `protobuf:"varint,8,opt,name=include_archived,json=includeArchived,proto3,oneof" json:"include_archived,omitempty"`
-	Cursor          *string                `protobuf:"bytes,9,opt,name=cursor,proto3,oneof" json:"cursor,omitempty"`
+	SortBy          *string                `json:"sort_by,omitempty"           protobuf:"bytes,1,opt,name=sort_by,json=sortBy,proto3,oneof"`
+	CreatedAfter    *timestamppb.Timestamp `json:"created_after,omitempty"     protobuf:"bytes,3,opt,name=created_after,json=createdAfter,proto3,oneof"`
+	CreatedBefore   *timestamppb.Timestamp `json:"created_before,omitempty"    protobuf:"bytes,4,opt,name=created_before,json=createdBefore,proto3,oneof"`
+	UpdatedAfter    *timestamppb.Timestamp `json:"updated_after,omitempty"     protobuf:"bytes,5,opt,name=updated_after,json=updatedAfter,proto3,oneof"`
+	UpdatedBefore   *timestamppb.Timestamp `json:"updated_before,omitempty"    protobuf:"bytes,6,opt,name=updated_before,json=updatedBefore,proto3,oneof"`
+	MaxResponseSize *uint32                `json:"max_response_size,omitempty" protobuf:"varint,7,opt,name=max_response_size,json=maxResponseSize,proto3,oneof"`
+	IncludeArchived *bool                  `json:"include_archived,omitempty"  protobuf:"varint,8,opt,name=include_archived,json=includeArchived,proto3,oneof"`
+	Cursor          *string                `json:"cursor,omitempty"            protobuf:"bytes,9,opt,name=cursor,proto3,oneof"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -125,13 +125,13 @@ func (x *QueryFilter) GetCursor() string {
 
 type Pagination struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	AppliedQueryFilter *QueryFilter           `protobuf:"bytes,6,opt,name=applied_query_filter,json=appliedQueryFilter,proto3" json:"applied_query_filter,omitempty"`
-	Cursor             string                 `protobuf:"bytes,4,opt,name=cursor,proto3" json:"cursor,omitempty"`
-	PreviousCursor     string                 `protobuf:"bytes,5,opt,name=previous_cursor,json=previousCursor,proto3" json:"previous_cursor,omitempty"`
+	AppliedQueryFilter *QueryFilter           `json:"applied_query_filter,omitempty" protobuf:"bytes,6,opt,name=applied_query_filter,json=appliedQueryFilter,proto3"`
+	Cursor             string                 `json:"cursor,omitempty"               protobuf:"bytes,4,opt,name=cursor,proto3"`
+	PreviousCursor     string                 `json:"previous_cursor,omitempty"      protobuf:"bytes,5,opt,name=previous_cursor,json=previousCursor,proto3"`
 	unknownFields      protoimpl.UnknownFields
-	FilteredCount      uint64 `protobuf:"varint,2,opt,name=filtered_count,json=filteredCount,proto3" json:"filtered_count,omitempty"`
-	TotalCount         uint64 `protobuf:"varint,3,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
-	MaxResponseSize    uint32 `protobuf:"varint,1,opt,name=max_response_size,json=maxResponseSize,proto3" json:"max_response_size,omitempty"`
+	FilteredCount      uint64 `json:"filtered_count,omitempty"    protobuf:"varint,2,opt,name=filtered_count,json=filteredCount,proto3"`
+	TotalCount         uint64 `json:"total_count,omitempty"       protobuf:"varint,3,opt,name=total_count,json=totalCount,proto3"`
+	MaxResponseSize    uint32 `json:"max_response_size,omitempty" protobuf:"varint,1,opt,name=max_response_size,json=maxResponseSize,proto3"`
 	sizeCache          protoimpl.SizeCache
 }
 

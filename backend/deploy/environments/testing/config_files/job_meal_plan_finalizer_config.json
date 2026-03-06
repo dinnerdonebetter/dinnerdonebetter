@@ -40,6 +40,9 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"serviceName": "meal_plan_finalizer"
+		},
 		"logging": {
 			"serviceName": "meal_plan_finalizer",
 			"level": "info",

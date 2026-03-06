@@ -116,6 +116,34 @@ struct APIConfiguration {
     currentEnvironment == .production
   }
 
+  /// Base URL where uploaded media is hosted (no bucket/path).
+  static var mediaURLPrefix: String {
+    switch currentEnvironment {
+    case .local:
+      return "http://localhost:8000/uploads"
+    case .production:
+      return "https://media.dinnerdonebetter.com"
+    }
+  }
+
+  /// Constructs the full URL for a media object from its bucket and storage path.
+  /// - Parameters:
+  ///   - storagePath: The object's path within the bucket (e.g. "userid/fileid/name.jpg")
+  ///   - bucket: The bucket name (e.g. "avatars")
+  static func mediaURL(forStoragePath storagePath: String, bucket: String) -> URL? {
+    guard !storagePath.isEmpty, !bucket.isEmpty else { return nil }
+    let prefix = mediaURLPrefix
+    let path = "\(prefix)/\(bucket)/\(storagePath)"
+    return URL(string: path)
+  }
+
+  /// Constructs the full URL string for a media object from its bucket and storage path.
+  static func mediaURLString(forStoragePath storagePath: String, bucket: String) -> String? {
+    guard !storagePath.isEmpty, !bucket.isEmpty else { return nil }
+    let prefix = mediaURLPrefix
+    return "\(prefix)/\(bucket)/\(storagePath)"
+  }
+
   // OAuth2 Configuration — values injected via Secrets.xcconfig -> Info.plist at build time
   static var oauth2ClientID: String {
     Bundle.main.infoDictionary?["OAuth2ClientID"] as? String ?? ""

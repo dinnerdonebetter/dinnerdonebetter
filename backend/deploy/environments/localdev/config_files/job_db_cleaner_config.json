@@ -1,5 +1,14 @@
 {
 	"observability": {
+		"profiling": {
+			"pprof": {
+				"port": 6060,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "db_cleaner",
+			"provider": "pprof"
+		},
 		"logging": {
 			"serviceName": "db_cleaner",
 			"level": "debug",

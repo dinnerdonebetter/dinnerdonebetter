@@ -51,6 +51,9 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"serviceName": "meal_plan_task_creator"
+		},
 		"logging": {
 			"serviceName": "meal_plan_task_creator",
 			"level": "info",

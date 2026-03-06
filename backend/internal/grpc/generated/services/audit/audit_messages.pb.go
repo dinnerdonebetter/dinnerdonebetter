@@ -25,8 +25,8 @@ const (
 
 type DataCollection struct {
 	state                  protoimpl.MessageState    `protogen:"open.v1"`
-	AccountAuditLogEntries map[string]*AuditLogEntry `protobuf:"bytes,5,rep,name=account_audit_log_entries,json=accountAuditLogEntries,proto3" json:"account_audit_log_entries,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	UserAuditLogEntries    []*AuditLogEntry          `protobuf:"bytes,9,rep,name=user_audit_log_entries,json=userAuditLogEntries,proto3" json:"user_audit_log_entries,omitempty"`
+	AccountAuditLogEntries map[string]*AuditLogEntry `json:"account_audit_log_entries,omitempty" protobuf:"bytes,5,rep,name=account_audit_log_entries,json=accountAuditLogEntries,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	UserAuditLogEntries    []*AuditLogEntry          `json:"user_audit_log_entries,omitempty"    protobuf:"bytes,9,rep,name=user_audit_log_entries,json=userAuditLogEntries,proto3"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -77,8 +77,8 @@ func (x *DataCollection) GetUserAuditLogEntries() []*AuditLogEntry {
 
 type ChangeLog struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	OldValue      string                 `protobuf:"bytes,1,opt,name=old_value,json=oldValue,proto3" json:"old_value,omitempty"`
-	NewValue      string                 `protobuf:"bytes,2,opt,name=new_value,json=newValue,proto3" json:"new_value,omitempty"`
+	OldValue      string                 `json:"old_value,omitempty" protobuf:"bytes,1,opt,name=old_value,json=oldValue,proto3"`
+	NewValue      string                 `json:"new_value,omitempty" protobuf:"bytes,2,opt,name=new_value,json=newValue,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -129,14 +129,14 @@ func (x *ChangeLog) GetNewValue() string {
 
 type AuditLogEntry struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Changes          map[string]*ChangeLog  `protobuf:"bytes,2,rep,name=changes,proto3" json:"changes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	BelongsToAccount string                 `protobuf:"bytes,3,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
-	Id               string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
-	ResourceType     string                 `protobuf:"bytes,5,opt,name=resource_type,json=resourceType,proto3" json:"resource_type,omitempty"`
-	RelevantId       string                 `protobuf:"bytes,6,opt,name=relevant_id,json=relevantId,proto3" json:"relevant_id,omitempty"`
-	EventType        string                 `protobuf:"bytes,7,opt,name=event_type,json=eventType,proto3" json:"event_type,omitempty"`
-	BelongsToUser    string                 `protobuf:"bytes,8,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
+	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	Changes          map[string]*ChangeLog  `json:"changes,omitempty"            protobuf:"bytes,2,rep,name=changes,proto3"                                  protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	BelongsToAccount string                 `json:"belongs_to_account,omitempty" protobuf:"bytes,3,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,4,opt,name=id,proto3"`
+	ResourceType     string                 `json:"resource_type,omitempty"      protobuf:"bytes,5,opt,name=resource_type,json=resourceType,proto3"`
+	RelevantId       string                 `json:"relevant_id,omitempty"        protobuf:"bytes,6,opt,name=relevant_id,json=relevantId,proto3"`
+	EventType        string                 `json:"event_type,omitempty"         protobuf:"bytes,7,opt,name=event_type,json=eventType,proto3"`
+	BelongsToUser    string                 `json:"belongs_to_user,omitempty"    protobuf:"bytes,8,opt,name=belongs_to_user,json=belongsToUser,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }

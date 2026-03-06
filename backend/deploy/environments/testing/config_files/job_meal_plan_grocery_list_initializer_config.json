@@ -51,6 +51,9 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"serviceName": "meal_plan_grocery_list_initializer"
+		},
 		"logging": {
 			"serviceName": "meal_plan_grocery_list_initializer",
 			"level": "info",

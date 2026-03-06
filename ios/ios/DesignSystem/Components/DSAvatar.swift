@@ -126,11 +126,35 @@ struct DSAvatar: View {
 
   var body: some View {
     Group {
+      if let url = imageURL {
+        AsyncImage(url: url) { phase in
+          switch phase {
+          case .success(let image):
+            image
+              .resizable()
+              .aspectRatio(contentMode: .fill)
+          case .failure, .empty:
+            initialsOverlay
+          @unknown default:
+            initialsOverlay
+          }
+        }
+        .frame(width: size.dimension, height: size.dimension)
+        .clipShape(avatarClipShape)
+      } else {
+        initialsOverlay
+          .frame(width: size.dimension, height: size.dimension)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var initialsOverlay: some View {
+    Group {
       switch style {
       case .circle:
         Circle()
           .fill(backgroundColor)
-          .frame(width: size.dimension, height: size.dimension)
           .overlay {
             Text(initials)
               .font(size.font)
@@ -139,7 +163,6 @@ struct DSAvatar: View {
       case .rounded:
         RoundedRectangle(cornerRadius: size.dimension * 0.2)
           .fill(backgroundColor)
-          .frame(width: size.dimension, height: size.dimension)
           .overlay {
             Text(initials)
               .font(size.font)
@@ -148,13 +171,23 @@ struct DSAvatar: View {
       case .square:
         RoundedRectangle(cornerRadius: DSTheme.Radius.xs)
           .fill(backgroundColor)
-          .frame(width: size.dimension, height: size.dimension)
           .overlay {
             Text(initials)
               .font(size.font)
               .foregroundColor(foregroundColor)
           }
       }
+    }
+  }
+
+  private var avatarClipShape: AnyShape {
+    switch style {
+    case .circle:
+      AnyShape(Circle())
+    case .rounded:
+      AnyShape(RoundedRectangle(cornerRadius: size.dimension * 0.2))
+    case .square:
+      AnyShape(RoundedRectangle(cornerRadius: DSTheme.Radius.xs))
     }
   }
 

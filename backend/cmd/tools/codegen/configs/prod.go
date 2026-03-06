@@ -26,6 +26,8 @@ import (
 	logotelgrpc "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/otelgrpc"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/otelgrpc"
+	profilingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/profiling/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/profiling/pyroscope"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/oteltrace"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
@@ -47,8 +49,8 @@ import (
 
 const (
 	prodGCPProject            = "dinner-done-better-prod"
-	prodMediaBucket           = "dinner-done-better-prod-media"
-	prodUserDataBucket        = "dinner-done-better-prod-userdata"
+	prodMediaBucket           = "media.dinnerdonebetter.com"
+	prodUserDataBucket        = "userdata.dinnerdonebetter.com"
 	prodOtelCollectorEndpoint = "otel-collector-svc.prod.svc.cluster.local:4317"
 	prodOAuth2Domain          = "https://dinnerdonebetter.com"
 	prodTokensAudience        = "https://http-api.dinnerdonebetter.com" //nolint:gosec // G101: audience URL, not a credential
@@ -111,6 +113,14 @@ func buildProdConfig() *config.APIServiceConfig {
 			Otel: &oteltrace.Config{
 				Insecure:          true,
 				CollectorEndpoint: prodOtelCollectorEndpoint,
+			},
+		},
+		Profiling: profilingcfg.Config{
+			ServiceName: otelServiceName,
+			Provider:    profilingcfg.ProviderPyroscope,
+			Pyroscope: &pyroscope.Config{
+				ServerAddress: "http://pyroscope.prod.svc.cluster.local:4040",
+				UploadRate:    15 * time.Second,
 			},
 		},
 	}
@@ -254,7 +264,7 @@ func buildProdConfig() *config.APIServiceConfig {
 				},
 			},
 			Users: identitycfg.Config{
-				PublicMediaURLPrefix: "https://storage.googleapis.com/" + prodMediaBucket + "/avatars",
+				PublicMediaURLPrefix: "https://" + prodMediaBucket + "/avatars",
 				Uploads: uploadscfg.Config{
 					Storage: gcpMediaStorage,
 					Debug:   false,

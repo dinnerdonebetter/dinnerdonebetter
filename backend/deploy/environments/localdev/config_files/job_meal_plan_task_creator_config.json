@@ -51,6 +51,15 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"pprof": {
+				"port": 6060,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "meal_plan_task_creator",
+			"provider": "pprof"
+		},
 		"logging": {
 			"serviceName": "meal_plan_task_creator",
 			"level": "debug",

@@ -97,13 +97,15 @@ class UploadAvatarViewModel {
   private func formatRPCError(_ error: GRPCCore.RPCError) -> String {
     switch error.code {
     case .cancelled:
-      return "Request was cancelled. This can happen if the connection was interrupted or the request took too long."
+      return
+        "Request was cancelled. This can happen if the connection was interrupted or the request took too long."
     case .deadlineExceeded:
       return "Request timed out. Try a smaller image."
     case .unauthenticated:
       return "Session expired. Please sign in again."
     case .unavailable:
-      return "Server unavailable. Is the backend running at \(APIConfiguration.grpcHost):\(APIConfiguration.grpcPort)?"
+      return
+        "Server unavailable. Is the backend running at \(APIConfiguration.grpcHost):\(APIConfiguration.grpcPort)?"
     case .permissionDenied:
       return "Permission denied."
     case .invalidArgument:

@@ -123,7 +123,7 @@ format_go_tag_alignment: ensure_tagalign_installed
 	@$(SCRIPTS_DIR)/format_go_tag_alignment.sh
 
 .PHONY: format_golang
-format_golang: goimports format_imports format_go_fieldalignment # format_go_tag_alignment
+format_golang: goimports format_imports format_go_fieldalignment format_go_tag_alignment
 	@$(SCRIPTS_DIR)/format_golang.sh $(PWD) "$(GO_FORMAT)"
 
 .PHONY: terraformat

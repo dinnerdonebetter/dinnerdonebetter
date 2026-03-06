@@ -25,18 +25,18 @@ const (
 
 type Product struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt             *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	ArchivedAt            *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	BillingIntervalMonths *int32                 `protobuf:"varint,10,opt,name=billing_interval_months,json=billingIntervalMonths,proto3,oneof" json:"billing_interval_months,omitempty"`
-	Description           string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
-	Name                  string                 `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
-	Kind                  string                 `protobuf:"bytes,7,opt,name=kind,proto3" json:"kind,omitempty"`
-	Currency              string                 `protobuf:"bytes,9,opt,name=currency,proto3" json:"currency,omitempty"`
-	Id                    string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
-	ExternalProductId     string                 `protobuf:"bytes,11,opt,name=external_product_id,json=externalProductId,proto3" json:"external_product_id,omitempty"`
+	CreatedAt             *timestamppb.Timestamp `json:"created_at,omitempty"              protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt         *timestamppb.Timestamp `json:"last_updated_at,omitempty"         protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	ArchivedAt            *timestamppb.Timestamp `json:"archived_at,omitempty"             protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
+	BillingIntervalMonths *int32                 `json:"billing_interval_months,omitempty" protobuf:"varint,10,opt,name=billing_interval_months,json=billingIntervalMonths,proto3,oneof"`
+	Description           string                 `json:"description,omitempty"             protobuf:"bytes,6,opt,name=description,proto3"`
+	Name                  string                 `json:"name,omitempty"                    protobuf:"bytes,5,opt,name=name,proto3"`
+	Kind                  string                 `json:"kind,omitempty"                    protobuf:"bytes,7,opt,name=kind,proto3"`
+	Currency              string                 `json:"currency,omitempty"                protobuf:"bytes,9,opt,name=currency,proto3"`
+	Id                    string                 `json:"id,omitempty"                      protobuf:"bytes,4,opt,name=id,proto3"`
+	ExternalProductId     string                 `json:"external_product_id,omitempty"     protobuf:"bytes,11,opt,name=external_product_id,json=externalProductId,proto3"`
 	unknownFields         protoimpl.UnknownFields
-	AmountCents           int32 `protobuf:"varint,8,opt,name=amount_cents,json=amountCents,proto3" json:"amount_cents,omitempty"`
+	AmountCents           int32 `json:"amount_cents,omitempty" protobuf:"varint,8,opt,name=amount_cents,json=amountCents,proto3"`
 	sizeCache             protoimpl.SizeCache
 }
 
@@ -149,16 +149,16 @@ func (x *Product) GetExternalProductId() string {
 
 type Subscription struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt              *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt          *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	ArchivedAt             *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	Id                     string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
-	BelongsToAccount       string                 `protobuf:"bytes,5,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
-	ProductId              string                 `protobuf:"bytes,6,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	ExternalSubscriptionId string                 `protobuf:"bytes,7,opt,name=external_subscription_id,json=externalSubscriptionId,proto3" json:"external_subscription_id,omitempty"`
-	Status                 string                 `protobuf:"bytes,8,opt,name=status,proto3" json:"status,omitempty"`
-	CurrentPeriodStart     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=current_period_start,json=currentPeriodStart,proto3" json:"current_period_start,omitempty"`
-	CurrentPeriodEnd       *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=current_period_end,json=currentPeriodEnd,proto3" json:"current_period_end,omitempty"`
+	CreatedAt              *timestamppb.Timestamp `json:"created_at,omitempty"               protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt          *timestamppb.Timestamp `json:"last_updated_at,omitempty"          protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	ArchivedAt             *timestamppb.Timestamp `json:"archived_at,omitempty"              protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
+	Id                     string                 `json:"id,omitempty"                       protobuf:"bytes,4,opt,name=id,proto3"`
+	BelongsToAccount       string                 `json:"belongs_to_account,omitempty"       protobuf:"bytes,5,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	ProductId              string                 `json:"product_id,omitempty"               protobuf:"bytes,6,opt,name=product_id,json=productId,proto3"`
+	ExternalSubscriptionId string                 `json:"external_subscription_id,omitempty" protobuf:"bytes,7,opt,name=external_subscription_id,json=externalSubscriptionId,proto3"`
+	Status                 string                 `json:"status,omitempty"                   protobuf:"bytes,8,opt,name=status,proto3"`
+	CurrentPeriodStart     *timestamppb.Timestamp `json:"current_period_start,omitempty"     protobuf:"bytes,9,opt,name=current_period_start,json=currentPeriodStart,proto3"`
+	CurrentPeriodEnd       *timestamppb.Timestamp `json:"current_period_end,omitempty"       protobuf:"bytes,10,opt,name=current_period_end,json=currentPeriodEnd,proto3"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -264,18 +264,18 @@ func (x *Subscription) GetCurrentPeriodEnd() *timestamppb.Timestamp {
 }
 
 type Purchase struct {
-	CompletedAt           *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=completed_at,json=completedAt,proto3" json:"completed_at,omitempty"`
-	CreatedAt             *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	ArchivedAt            *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	CompletedAt           *timestamppb.Timestamp `json:"completed_at,omitempty"            protobuf:"bytes,9,opt,name=completed_at,json=completedAt,proto3"`
+	CreatedAt             *timestamppb.Timestamp `json:"created_at,omitempty"              protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt         *timestamppb.Timestamp `json:"last_updated_at,omitempty"         protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	ArchivedAt            *timestamppb.Timestamp `json:"archived_at,omitempty"             protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	Id                    string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
-	BelongsToAccount      string                 `protobuf:"bytes,5,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
-	ProductId             string                 `protobuf:"bytes,6,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	Currency              string                 `protobuf:"bytes,8,opt,name=currency,proto3" json:"currency,omitempty"`
-	ExternalTransactionId string                 `protobuf:"bytes,10,opt,name=external_transaction_id,json=externalTransactionId,proto3" json:"external_transaction_id,omitempty"`
+	Id                    string                 `json:"id,omitempty"                      protobuf:"bytes,4,opt,name=id,proto3"`
+	BelongsToAccount      string                 `json:"belongs_to_account,omitempty"      protobuf:"bytes,5,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	ProductId             string                 `json:"product_id,omitempty"              protobuf:"bytes,6,opt,name=product_id,json=productId,proto3"`
+	Currency              string                 `json:"currency,omitempty"                protobuf:"bytes,8,opt,name=currency,proto3"`
+	ExternalTransactionId string                 `json:"external_transaction_id,omitempty" protobuf:"bytes,10,opt,name=external_transaction_id,json=externalTransactionId,proto3"`
 	unknownFields         protoimpl.UnknownFields
-	AmountCents           int32 `protobuf:"varint,7,opt,name=amount_cents,json=amountCents,proto3" json:"amount_cents,omitempty"`
+	AmountCents           int32 `json:"amount_cents,omitempty" protobuf:"varint,7,opt,name=amount_cents,json=amountCents,proto3"`
 	sizeCache             protoimpl.SizeCache
 }
 
@@ -381,16 +381,16 @@ func (x *Purchase) GetExternalTransactionId() string {
 
 type PaymentTransaction struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	SubscriptionId        *string                `protobuf:"bytes,3,opt,name=subscription_id,json=subscriptionId,proto3,oneof" json:"subscription_id,omitempty"`
-	PurchaseId            *string                `protobuf:"bytes,4,opt,name=purchase_id,json=purchaseId,proto3,oneof" json:"purchase_id,omitempty"`
-	CreatedAt             *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Id                    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	BelongsToAccount      string                 `protobuf:"bytes,2,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
-	ExternalTransactionId string                 `protobuf:"bytes,5,opt,name=external_transaction_id,json=externalTransactionId,proto3" json:"external_transaction_id,omitempty"`
-	Currency              string                 `protobuf:"bytes,7,opt,name=currency,proto3" json:"currency,omitempty"`
-	Status                string                 `protobuf:"bytes,8,opt,name=status,proto3" json:"status,omitempty"`
+	SubscriptionId        *string                `json:"subscription_id,omitempty"         protobuf:"bytes,3,opt,name=subscription_id,json=subscriptionId,proto3,oneof"`
+	PurchaseId            *string                `json:"purchase_id,omitempty"             protobuf:"bytes,4,opt,name=purchase_id,json=purchaseId,proto3,oneof"`
+	CreatedAt             *timestamppb.Timestamp `json:"created_at,omitempty"              protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3"`
+	Id                    string                 `json:"id,omitempty"                      protobuf:"bytes,1,opt,name=id,proto3"`
+	BelongsToAccount      string                 `json:"belongs_to_account,omitempty"      protobuf:"bytes,2,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	ExternalTransactionId string                 `json:"external_transaction_id,omitempty" protobuf:"bytes,5,opt,name=external_transaction_id,json=externalTransactionId,proto3"`
+	Currency              string                 `json:"currency,omitempty"                protobuf:"bytes,7,opt,name=currency,proto3"`
+	Status                string                 `json:"status,omitempty"                  protobuf:"bytes,8,opt,name=status,proto3"`
 	unknownFields         protoimpl.UnknownFields
-	AmountCents           int32 `protobuf:"varint,6,opt,name=amount_cents,json=amountCents,proto3" json:"amount_cents,omitempty"`
+	AmountCents           int32 `json:"amount_cents,omitempty" protobuf:"varint,6,opt,name=amount_cents,json=amountCents,proto3"`
 	sizeCache             protoimpl.SizeCache
 }
 

@@ -83,6 +83,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	s.RootConfig.Observability.Tracing.ServiceName = apiConfigObservabilityServiceName
 	s.RootConfig.Observability.Metrics.ServiceName = apiConfigObservabilityServiceName
 	s.RootConfig.Observability.Logging.ServiceName = apiConfigObservabilityServiceName
+	s.RootConfig.Observability.Profiling.ServiceName = apiConfigObservabilityServiceName
 	if s.RootConfig.Routing.Chi != nil {
 		s.RootConfig.Routing.Chi.ServiceName = apiConfigObservabilityServiceName
 	}
@@ -102,6 +103,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	dbcConfig.Observability.Tracing.ServiceName = dbcConfigObservabilityServiceName
 	dbcConfig.Observability.Metrics.ServiceName = dbcConfigObservabilityServiceName
 	dbcConfig.Observability.Logging.ServiceName = dbcConfigObservabilityServiceName
+	dbcConfig.Observability.Profiling.ServiceName = dbcConfigObservabilityServiceName
 
 	mpfConfig := &MealPlanFinalizerConfig{
 		Observability: s.RootConfig.Observability,
@@ -112,6 +114,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mpfConfig.Observability.Tracing.ServiceName = mpfConfigObservabilityServiceName
 	mpfConfig.Observability.Metrics.ServiceName = mpfConfigObservabilityServiceName
 	mpfConfig.Observability.Logging.ServiceName = mpfConfigObservabilityServiceName
+	mpfConfig.Observability.Profiling.ServiceName = mpfConfigObservabilityServiceName
 
 	mpgliConfig := &MealPlanGroceryListInitializerConfig{
 		Observability: s.RootConfig.Observability,
@@ -123,6 +126,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mpgliConfig.Observability.Tracing.ServiceName = mpgliConfigObservabilityServiceName
 	mpgliConfig.Observability.Metrics.ServiceName = mpgliConfigObservabilityServiceName
 	mpgliConfig.Observability.Logging.ServiceName = mpgliConfigObservabilityServiceName
+	mpgliConfig.Observability.Profiling.ServiceName = mpgliConfigObservabilityServiceName
 
 	mptcConfig := &MealPlanTaskCreatorConfig{
 		Observability: s.RootConfig.Observability,
@@ -134,6 +138,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mptcConfig.Observability.Tracing.ServiceName = mptcConfigObservabilityServiceName
 	mptcConfig.Observability.Metrics.ServiceName = mptcConfigObservabilityServiceName
 	mptcConfig.Observability.Logging.ServiceName = mptcConfigObservabilityServiceName
+	mptcConfig.Observability.Profiling.ServiceName = mptcConfigObservabilityServiceName
 
 	sdisConfig := &SearchDataIndexSchedulerConfig{
 		Observability: s.RootConfig.Observability,
@@ -144,6 +149,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	sdisConfig.Observability.Tracing.ServiceName = sdisConfigObservabilityServiceName
 	sdisConfig.Observability.Metrics.ServiceName = sdisConfigObservabilityServiceName
 	sdisConfig.Observability.Logging.ServiceName = sdisConfigObservabilityServiceName
+	sdisConfig.Observability.Profiling.ServiceName = sdisConfigObservabilityServiceName
 
 	mnsConfig := &MobileNotificationSchedulerConfig{
 		Observability: s.RootConfig.Observability,
@@ -154,6 +160,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mnsConfig.Observability.Tracing.ServiceName = mnsConfigObservabilityServiceName
 	mnsConfig.Observability.Metrics.ServiceName = mnsConfigObservabilityServiceName
 	mnsConfig.Observability.Logging.ServiceName = mnsConfigObservabilityServiceName
+	mnsConfig.Observability.Profiling.ServiceName = mnsConfigObservabilityServiceName
 
 	amhConfig := &AsyncMessageHandlerConfig{
 		Storage:           s.RootConfig.Services.DataPrivacy.Uploads.Storage,
@@ -169,6 +176,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	amhConfig.Observability.Tracing.ServiceName = amhConfigObservabilityServiceName
 	amhConfig.Observability.Metrics.ServiceName = amhConfigObservabilityServiceName
 	amhConfig.Observability.Logging.ServiceName = amhConfigObservabilityServiceName
+	amhConfig.Observability.Profiling.ServiceName = amhConfigObservabilityServiceName
 
 	awaConfig := &AdminWebappConfig{
 		Cookies: cookies.Config{
@@ -185,6 +193,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	awaConfig.Observability.Tracing.ServiceName = awaConfigObservabilityServiceName
 	awaConfig.Observability.Metrics.ServiceName = awaConfigObservabilityServiceName
 	awaConfig.Observability.Logging.ServiceName = awaConfigObservabilityServiceName
+	awaConfig.Observability.Profiling.ServiceName = awaConfigObservabilityServiceName
 	if awaConfig.Routing.Chi != nil {
 		awaConfig.Routing.Chi.ServiceName = awaConfigObservabilityServiceName
 	}
@@ -212,6 +221,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	cwaConfig.Observability.Tracing.ServiceName = cwaConfigObservabilityServiceName
 	cwaConfig.Observability.Metrics.ServiceName = cwaConfigObservabilityServiceName
 	cwaConfig.Observability.Logging.ServiceName = cwaConfigObservabilityServiceName
+	cwaConfig.Observability.Profiling.ServiceName = cwaConfigObservabilityServiceName
 	if cwaConfig.Routing.Chi != nil {
 		cwaConfig.Routing.Chi.ServiceName = cwaConfigObservabilityServiceName
 	}

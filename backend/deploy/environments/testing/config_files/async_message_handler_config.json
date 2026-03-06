@@ -55,6 +55,9 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"serviceName": "async_message_handler"
+		},
 		"logging": {
 			"serviceName": "async_message_handler",
 			"level": "info",

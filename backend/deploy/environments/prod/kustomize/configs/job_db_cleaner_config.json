@@ -1,5 +1,16 @@
 {
 	"observability": {
+		"profiling": {
+			"pyroscope": {
+				"serverAddress": "http://pyroscope.prod.svc.cluster.local:4040",
+				"uploadRate": 15000000000,
+				"insecure": false,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "db_cleaner",
+			"provider": "pyroscope"
+		},
 		"logging": {
 			"serviceName": "db_cleaner",
 			"level": "info",

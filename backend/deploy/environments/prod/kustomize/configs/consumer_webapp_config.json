@@ -25,6 +25,17 @@
 		"contentType": "application/json"
 	},
 	"observability": {
+		"profiling": {
+			"pyroscope": {
+				"serverAddress": "http://pyroscope.prod.svc.cluster.local:4040",
+				"uploadRate": 15000000000,
+				"insecure": false,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "consumer_webapp",
+			"provider": "pyroscope"
+		},
 		"logging": {
 			"serviceName": "consumer_webapp",
 			"level": "info",

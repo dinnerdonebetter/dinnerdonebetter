@@ -295,6 +295,39 @@ const (
 	// ObservabilityMetricsServiceNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Metrics.ServiceName`.
 	ObservabilityMetricsServiceNameEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_SERVICE_NAME"
 
+	// ObservabilityProfilingPprofEnableBlockProfileEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pprof.EnableBlockProfile`.
+	ObservabilityProfilingPprofEnableBlockProfileEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PPROF_ENABLE_BLOCK_PROFILE"
+
+	// ObservabilityProfilingPprofEnableMutexProfileEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pprof.EnableMutexProfile`.
+	ObservabilityProfilingPprofEnableMutexProfileEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PPROF_ENABLE_MUTEX_PROFILE"
+
+	// ObservabilityProfilingPprofPortEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pprof.Port`.
+	ObservabilityProfilingPprofPortEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PPROF_PORT"
+
+	// ObservabilityProfilingProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Provider`.
+	ObservabilityProfilingProviderEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PROVIDER"
+
+	// ObservabilityProfilingPyroscopeEnableBlockProfileEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.EnableBlockProfile`.
+	ObservabilityProfilingPyroscopeEnableBlockProfileEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_ENABLE_BLOCK_PROFILE"
+
+	// ObservabilityProfilingPyroscopeEnableMutexProfileEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.EnableMutexProfile`.
+	ObservabilityProfilingPyroscopeEnableMutexProfileEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_ENABLE_MUTEX_PROFILE"
+
+	// ObservabilityProfilingPyroscopeEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.Tags`.
+	ObservabilityProfilingPyroscopeEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_-"
+
+	// ObservabilityProfilingPyroscopeInsecureEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.Insecure`.
+	ObservabilityProfilingPyroscopeInsecureEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_INSECURE"
+
+	// ObservabilityProfilingPyroscopeServerAddressEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.ServerAddress`.
+	ObservabilityProfilingPyroscopeServerAddressEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_SERVER_ADDRESS"
+
+	// ObservabilityProfilingPyroscopeUploadRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.UploadRate`.
+	ObservabilityProfilingPyroscopeUploadRateEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_UPLOAD_RATE"
+
+	// ObservabilityProfilingServiceNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.ServiceName`.
+	ObservabilityProfilingServiceNameEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_SERVICE_NAME"
+
 	// ObservabilityTracingCloudtraceGoogleCloudTraceProjectIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Tracing.CloudTrace.ProjectID`.
 	ObservabilityTracingCloudtraceGoogleCloudTraceProjectIDEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_CLOUDTRACE_GOOGLE_CLOUD_TRACE_PROJECT_ID"
 

@@ -1,5 +1,8 @@
 {
 	"observability": {
+		"profiling": {
+			"serviceName": "db_cleaner"
+		},
 		"logging": {
 			"serviceName": "db_cleaner",
 			"level": "info",

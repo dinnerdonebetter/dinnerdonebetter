@@ -40,6 +40,15 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"pprof": {
+				"port": 6060,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "meal_plan_finalizer",
+			"provider": "pprof"
+		},
 		"logging": {
 			"serviceName": "meal_plan_finalizer",
 			"level": "debug",

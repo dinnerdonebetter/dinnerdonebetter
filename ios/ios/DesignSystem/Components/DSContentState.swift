@@ -94,6 +94,7 @@ struct DSErrorView: View {
   let message: String
   let title: String
   let icon: String
+  let iconColor: Color
   let retryTitle: String
   let onRetry: (() async -> Void)?
 
@@ -101,12 +102,14 @@ struct DSErrorView: View {
     _ message: String,
     title: String = "Error",
     icon: String = "exclamationmark.triangle",
+    iconColor: Color = DSTheme.Colors.warning,
     retryTitle: String = "Retry",
     onRetry: (() async -> Void)? = nil
   ) {
     self.message = message
     self.title = title
     self.icon = icon
+    self.iconColor = iconColor
     self.retryTitle = retryTitle
     self.onRetry = onRetry
   }
@@ -115,7 +118,7 @@ struct DSErrorView: View {
     VStack(spacing: DSTheme.Spacing.lg) {
       Image(systemName: icon)
         .font(.system(size: DSTheme.IconSize.xxl))
-        .foregroundColor(DSTheme.Colors.warning)
+        .foregroundColor(iconColor)
 
       VStack(spacing: DSTheme.Spacing.sm) {
         Text(title)
@@ -173,6 +176,7 @@ struct DSContentState<Content: View>: View {
   let error: String?
   let errorTitle: String
   let errorIcon: String
+  let errorIconColor: Color
   let onRetry: (() async -> Void)?
   @ViewBuilder let content: () -> Content
 
@@ -182,6 +186,7 @@ struct DSContentState<Content: View>: View {
     error: String? = nil,
     errorTitle: String = "Error",
     errorIcon: String = "exclamationmark.triangle",
+    errorIconColor: Color = DSTheme.Colors.warning,
     onRetry: (() async -> Void)? = nil,
     @ViewBuilder content: @escaping () -> Content
   ) {
@@ -190,6 +195,7 @@ struct DSContentState<Content: View>: View {
     self.error = error
     self.errorTitle = errorTitle
     self.errorIcon = errorIcon
+    self.errorIconColor = errorIconColor
     self.onRetry = onRetry
     self.content = content
   }
@@ -199,7 +205,13 @@ struct DSContentState<Content: View>: View {
       if isLoading {
         DSLoadingView(loadingMessage)
       } else if let error = error {
-        DSErrorView(error, title: errorTitle, icon: errorIcon, onRetry: onRetry)
+        DSErrorView(
+          error,
+          title: errorTitle,
+          icon: errorIcon,
+          iconColor: errorIconColor,
+          onRetry: onRetry
+        )
       } else {
         content()
       }

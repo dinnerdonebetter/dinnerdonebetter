@@ -8,6 +8,8 @@ import (
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/profiling"
+	profilingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/profiling/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 
@@ -17,11 +19,11 @@ import (
 type (
 	// Config contains settings about how we report our metrics.
 	Config struct {
-		_ struct{} `json:"-"`
-
-		Logging loggingcfg.Config `envPrefix:"LOGGING_" json:"logging"`
-		Metrics metricscfg.Config `envPrefix:"METRICS_" json:"metrics"`
-		Tracing tracingcfg.Config `envPrefix:"TRACING_" json:"tracing"`
+		_         struct{}            `json:"-"`
+		Profiling profilingcfg.Config `envPrefix:"PROFILING_" json:"profiling"`
+		Logging   loggingcfg.Config   `envPrefix:"LOGGING_"   json:"logging"`
+		Metrics   metricscfg.Config   `envPrefix:"METRICS_"   json:"metrics"`
+		Tracing   tracingcfg.Config   `envPrefix:"TRACING_"   json:"tracing"`
 	}
 )
 
@@ -33,24 +35,44 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&cfg.Logging),
 		validation.Field(&cfg.Metrics),
 		validation.Field(&cfg.Tracing),
+		validation.Field(&cfg.Profiling),
 	)
 }
 
-func (cfg *Config) ProvideThreePillars(ctx context.Context) (logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, err error) {
-	logger, err = cfg.Logging.ProvideLogger(ctx)
+// Pillars holds the four observability pillars: logging, tracing, metrics, and profiling.
+type Pillars struct {
+	Logger          logging.Logger
+	TracerProvider  tracing.TracerProvider
+	MetricsProvider metrics.Provider
+	Profiler        profiling.Provider
+}
+
+// ProvidePillars creates and returns all four observability pillars.
+func (cfg *Config) ProvidePillars(ctx context.Context) (*Pillars, error) {
+	logger, err := cfg.Logging.ProvideLogger(ctx)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("setting up logger: %w", err)
+		return nil, fmt.Errorf("setting up logger: %w", err)
 	}
 
-	tracerProvider, err = cfg.Tracing.ProvideTracerProvider(ctx, logger)
+	tracerProvider, err := cfg.Tracing.ProvideTracerProvider(ctx, logger)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("setting up tracer provider: %w", err)
+		return nil, fmt.Errorf("setting up tracer provider: %w", err)
 	}
 
-	metricsProvider, err = cfg.Metrics.ProvideMetricsProvider(ctx, logger)
+	metricsProvider, err := cfg.Metrics.ProvideMetricsProvider(ctx, logger)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("setting up metrics provider: %w", err)
+		return nil, fmt.Errorf("setting up metrics provider: %w", err)
 	}
 
-	return logger, tracerProvider, metricsProvider, nil
+	profiler, err := cfg.Profiling.ProvideProfilingProvider(ctx, logger)
+	if err != nil {
+		return nil, fmt.Errorf("setting up profiling provider: %w", err)
+	}
+
+	return &Pillars{
+		Logger:          logger,
+		TracerProvider:  tracerProvider,
+		MetricsProvider: metricsProvider,
+		Profiler:        profiler,
+	}, nil
 }
