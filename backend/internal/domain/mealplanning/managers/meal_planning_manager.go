@@ -36,6 +36,7 @@ type (
 		ReadMeal(ctx context.Context, mealID string) (*types.Meal, error)
 		SearchMeals(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error)
 		ArchiveMeal(ctx context.Context, mealID, ownerID string) error
+		AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error
 
 		ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error)
 		CreateMealPlan(ctx context.Context, ownerID, creatorID string, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error)
@@ -287,6 +288,20 @@ func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID s
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealArchivedServiceEventType, map[string]any{
 		mealplanningkeys.MealIDKey: mealID,
 	}))
+
+	return nil
+}
+
+func (m *mealPlanningManager) AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
+
+	if err := m.db.AddMealImage(ctx, mealID, uploadedMediaID, uploadedByUser); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "adding meal image")
+	}
 
 	return nil
 }

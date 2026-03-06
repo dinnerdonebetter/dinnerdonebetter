@@ -134,6 +134,7 @@ type (
 		ArchiveRecipe(ctx context.Context, recipeID, userID string) error
 		GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetRecipesWithIDs(ctx context.Context, ids []string) ([]*Recipe, error)
+		AddRecipeImage(ctx context.Context, recipeID, uploadedMediaID, uploadedByUser string) error
 	}
 )
 

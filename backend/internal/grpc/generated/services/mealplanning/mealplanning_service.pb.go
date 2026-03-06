@@ -34,7 +34,7 @@ var file_mealplanning_mealplanning_service_proto_rawDesc = string([]byte{
 	0x63, 0x65, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2d,
 	0x6d, 0x65, 0x61, 0x6c, 0x70, 0x6c, 0x61, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x2f, 0x6d, 0x65, 0x61,
 	0x6c, 0x70, 0x6c, 0x61, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
-	0x65, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xbc, 0xd8,
+	0x65, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0x86, 0xda,
 	0x01, 0x0a, 0x13, 0x4d, 0x65, 0x61, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x53,
 	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x59, 0x0a, 0x10, 0x41, 0x64, 0x64, 0x43, 0x6f, 0x6d,
 	0x6d, 0x65, 0x6e, 0x74, 0x54, 0x6f, 0x4d, 0x65, 0x61, 0x6c, 0x12, 0x21, 0x2e, 0x63, 0x6f, 0x6d,
@@ -1766,13 +1766,26 @@ var file_mealplanning_mealplanning_service_proto_rawDesc = string([]byte{
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x34, 0x2e, 0x6d, 0x65, 0x61, 0x6c, 0x70, 0x6c,
 	0x61, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65,
 	0x72, 0x49, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x65, 0x66, 0x65,
-	0x72, 0x65, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x53, 0x5a,
-	0x51, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e,
-	0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63,
-	0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72,
-	0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72,
-	0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x6d, 0x65, 0x61, 0x6c, 0x70, 0x6c, 0x61, 0x6e, 0x6e, 0x69,
-	0x6e, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x65, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a,
+	0x0f, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x4d, 0x65, 0x61, 0x6c, 0x49, 0x6d, 0x61, 0x67, 0x65,
+	0x12, 0x24, 0x2e, 0x6d, 0x65, 0x61, 0x6c, 0x70, 0x6c, 0x61, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x2e,
+	0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x4d, 0x65, 0x61, 0x6c, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x6d, 0x65, 0x61, 0x6c, 0x70, 0x6c, 0x61,
+	0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x4d, 0x65, 0x61, 0x6c,
+	0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x28, 0x01, 0x12,
+	0x66, 0x0a, 0x11, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x63, 0x69, 0x70, 0x65, 0x49,
+	0x6d, 0x61, 0x67, 0x65, 0x12, 0x26, 0x2e, 0x6d, 0x65, 0x61, 0x6c, 0x70, 0x6c, 0x61, 0x6e, 0x6e,
+	0x69, 0x6e, 0x67, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x63, 0x69, 0x70, 0x65,
+	0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x6d,
+	0x65, 0x61, 0x6c, 0x70, 0x6c, 0x61, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x55, 0x70, 0x6c, 0x6f,
+	0x61, 0x64, 0x52, 0x65, 0x63, 0x69, 0x70, 0x65, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x28, 0x01, 0x42, 0x53, 0x5a, 0x51, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65,
+	0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69,
+	0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e,
+	0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f,
+	0x6d, 0x65, 0x61, 0x6c, 0x70, 0x6c, 0x61, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 })
 
 var file_mealplanning_mealplanning_service_proto_goTypes = []any{
@@ -1997,227 +2010,231 @@ var file_mealplanning_mealplanning_service_proto_goTypes = []any{
 	(*UpdateAccountInstrumentOwnershipRequest)(nil),                     // 218: mealplanning.UpdateAccountInstrumentOwnershipRequest
 	(*comments.UpdateCommentRequest)(nil),                               // 219: comments.UpdateCommentRequest
 	(*UpdateUserIngredientPreferenceRequest)(nil),                       // 220: mealplanning.UpdateUserIngredientPreferenceRequest
-	(*comments.AddCommentToMealResponse)(nil),                           // 221: comments.AddCommentToMealResponse
-	(*comments.AddCommentToMealPlanResponse)(nil),                       // 222: comments.AddCommentToMealPlanResponse
-	(*comments.AddCommentToRecipeResponse)(nil),                         // 223: comments.AddCommentToRecipeResponse
-	(*comments.CreateCommentResponse)(nil),                              // 224: comments.CreateCommentResponse
-	(*ArchiveMealResponse)(nil),                                         // 225: mealplanning.ArchiveMealResponse
-	(*ArchiveMealPlanResponse)(nil),                                     // 226: mealplanning.ArchiveMealPlanResponse
-	(*ArchiveMealPlanEventResponse)(nil),                                // 227: mealplanning.ArchiveMealPlanEventResponse
-	(*ArchiveMealPlanGroceryListItemResponse)(nil),                      // 228: mealplanning.ArchiveMealPlanGroceryListItemResponse
-	(*ArchiveMealPlanOptionResponse)(nil),                               // 229: mealplanning.ArchiveMealPlanOptionResponse
-	(*ArchiveMealPlanOptionVoteResponse)(nil),                           // 230: mealplanning.ArchiveMealPlanOptionVoteResponse
-	(*ArchiveMealPlanRecipeOptionSelectionResponse)(nil),                // 231: mealplanning.ArchiveMealPlanRecipeOptionSelectionResponse
-	(*ArchiveMealListResponse)(nil),                                     // 232: mealplanning.ArchiveMealListResponse
-	(*ArchiveMealListItemResponse)(nil),                                 // 233: mealplanning.ArchiveMealListItemResponse
-	(*ArchiveRecipeResponse)(nil),                                       // 234: mealplanning.ArchiveRecipeResponse
-	(*ArchiveRecipePrepTaskResponse)(nil),                               // 235: mealplanning.ArchiveRecipePrepTaskResponse
-	(*ArchiveRecipeRatingResponse)(nil),                                 // 236: mealplanning.ArchiveRecipeRatingResponse
-	(*ArchiveRecipeListResponse)(nil),                                   // 237: mealplanning.ArchiveRecipeListResponse
-	(*ArchiveRecipeListItemResponse)(nil),                               // 238: mealplanning.ArchiveRecipeListItemResponse
-	(*ArchiveRecipeStepResponse)(nil),                                   // 239: mealplanning.ArchiveRecipeStepResponse
-	(*ArchiveRecipeStepCompletionConditionResponse)(nil),                // 240: mealplanning.ArchiveRecipeStepCompletionConditionResponse
-	(*ArchiveRecipeStepIngredientResponse)(nil),                         // 241: mealplanning.ArchiveRecipeStepIngredientResponse
-	(*ArchiveRecipeStepInstrumentResponse)(nil),                         // 242: mealplanning.ArchiveRecipeStepInstrumentResponse
-	(*ArchiveRecipeStepProductResponse)(nil),                            // 243: mealplanning.ArchiveRecipeStepProductResponse
-	(*ArchiveRecipeStepVesselResponse)(nil),                             // 244: mealplanning.ArchiveRecipeStepVesselResponse
-	(*ArchiveValidIngredientResponse)(nil),                              // 245: mealplanning.ArchiveValidIngredientResponse
-	(*comments.ArchiveCommentResponse)(nil),                             // 246: comments.ArchiveCommentResponse
-	(*ArchiveValidIngredientGroupResponse)(nil),                         // 247: mealplanning.ArchiveValidIngredientGroupResponse
-	(*ArchiveValidIngredientMeasurementUnitResponse)(nil),               // 248: mealplanning.ArchiveValidIngredientMeasurementUnitResponse
-	(*ArchiveValidIngredientPreparationResponse)(nil),                   // 249: mealplanning.ArchiveValidIngredientPreparationResponse
-	(*ArchiveValidPrepTaskConfigResponse)(nil),                          // 250: mealplanning.ArchiveValidPrepTaskConfigResponse
-	(*ArchiveValidIngredientStateResponse)(nil),                         // 251: mealplanning.ArchiveValidIngredientStateResponse
-	(*ArchiveValidIngredientStateIngredientResponse)(nil),               // 252: mealplanning.ArchiveValidIngredientStateIngredientResponse
-	(*ArchiveValidInstrumentResponse)(nil),                              // 253: mealplanning.ArchiveValidInstrumentResponse
-	(*ArchiveValidMeasurementUnitResponse)(nil),                         // 254: mealplanning.ArchiveValidMeasurementUnitResponse
-	(*ArchiveValidMeasurementUnitConversionResponse)(nil),               // 255: mealplanning.ArchiveValidMeasurementUnitConversionResponse
-	(*ArchiveValidPreparationResponse)(nil),                             // 256: mealplanning.ArchiveValidPreparationResponse
-	(*ArchiveValidPreparationInstrumentResponse)(nil),                   // 257: mealplanning.ArchiveValidPreparationInstrumentResponse
-	(*ArchiveValidPreparationVesselResponse)(nil),                       // 258: mealplanning.ArchiveValidPreparationVesselResponse
-	(*ArchiveValidVesselResponse)(nil),                                  // 259: mealplanning.ArchiveValidVesselResponse
-	(*CloneRecipeResponse)(nil),                                         // 260: mealplanning.CloneRecipeResponse
-	(*CreateMealResponse)(nil),                                          // 261: mealplanning.CreateMealResponse
-	(*CreateMealPlanResponse)(nil),                                      // 262: mealplanning.CreateMealPlanResponse
-	(*CreateMealPlanEventResponse)(nil),                                 // 263: mealplanning.CreateMealPlanEventResponse
-	(*CreateMealPlanOptionResponse)(nil),                                // 264: mealplanning.CreateMealPlanOptionResponse
-	(*CreateMealPlanOptionVoteResponse)(nil),                            // 265: mealplanning.CreateMealPlanOptionVoteResponse
-	(*CreateMealPlanRecipeOptionSelectionResponse)(nil),                 // 266: mealplanning.CreateMealPlanRecipeOptionSelectionResponse
-	(*CreateMealPlanTaskResponse)(nil),                                  // 267: mealplanning.CreateMealPlanTaskResponse
-	(*CreateMealListResponse)(nil),                                      // 268: mealplanning.CreateMealListResponse
-	(*CreateMealListItemResponse)(nil),                                  // 269: mealplanning.CreateMealListItemResponse
-	(*CreateRecipeResponse)(nil),                                        // 270: mealplanning.CreateRecipeResponse
-	(*CreateRecipePrepTaskResponse)(nil),                                // 271: mealplanning.CreateRecipePrepTaskResponse
-	(*CreateRecipeRatingResponse)(nil),                                  // 272: mealplanning.CreateRecipeRatingResponse
-	(*CreateRecipeListResponse)(nil),                                    // 273: mealplanning.CreateRecipeListResponse
-	(*CreateRecipeListItemResponse)(nil),                                // 274: mealplanning.CreateRecipeListItemResponse
-	(*CreateRecipeStepResponse)(nil),                                    // 275: mealplanning.CreateRecipeStepResponse
-	(*CreateRecipeStepCompletionConditionResponse)(nil),                 // 276: mealplanning.CreateRecipeStepCompletionConditionResponse
-	(*CreateRecipeStepIngredientResponse)(nil),                          // 277: mealplanning.CreateRecipeStepIngredientResponse
-	(*CreateRecipeStepInstrumentResponse)(nil),                          // 278: mealplanning.CreateRecipeStepInstrumentResponse
-	(*CreateRecipeStepProductResponse)(nil),                             // 279: mealplanning.CreateRecipeStepProductResponse
-	(*CreateRecipeStepVesselResponse)(nil),                              // 280: mealplanning.CreateRecipeStepVesselResponse
-	(*CreateValidIngredientResponse)(nil),                               // 281: mealplanning.CreateValidIngredientResponse
-	(*CreateValidIngredientGroupResponse)(nil),                          // 282: mealplanning.CreateValidIngredientGroupResponse
-	(*CreateValidIngredientMeasurementUnitResponse)(nil),                // 283: mealplanning.CreateValidIngredientMeasurementUnitResponse
-	(*CreateValidIngredientPreparationResponse)(nil),                    // 284: mealplanning.CreateValidIngredientPreparationResponse
-	(*CreateValidPrepTaskConfigResponse)(nil),                           // 285: mealplanning.CreateValidPrepTaskConfigResponse
-	(*CreateValidIngredientStateResponse)(nil),                          // 286: mealplanning.CreateValidIngredientStateResponse
-	(*CreateValidIngredientStateIngredientResponse)(nil),                // 287: mealplanning.CreateValidIngredientStateIngredientResponse
-	(*CreateValidInstrumentResponse)(nil),                               // 288: mealplanning.CreateValidInstrumentResponse
-	(*CreateValidMeasurementUnitResponse)(nil),                          // 289: mealplanning.CreateValidMeasurementUnitResponse
-	(*CreateValidMeasurementUnitConversionResponse)(nil),                // 290: mealplanning.CreateValidMeasurementUnitConversionResponse
-	(*CreateValidPreparationResponse)(nil),                              // 291: mealplanning.CreateValidPreparationResponse
-	(*CreateValidPreparationInstrumentResponse)(nil),                    // 292: mealplanning.CreateValidPreparationInstrumentResponse
-	(*CreateValidPreparationVesselResponse)(nil),                        // 293: mealplanning.CreateValidPreparationVesselResponse
-	(*CreateValidVesselResponse)(nil),                                   // 294: mealplanning.CreateValidVesselResponse
-	(*FinalizeMealPlanResponse)(nil),                                    // 295: mealplanning.FinalizeMealPlanResponse
-	(*comments.GetCommentsForReferenceResponse)(nil),                    // 296: comments.GetCommentsForReferenceResponse
-	(*GetMealResponse)(nil),                                             // 297: mealplanning.GetMealResponse
-	(*GetMealPlanResponse)(nil),                                         // 298: mealplanning.GetMealPlanResponse
-	(*GetMealPlanEventResponse)(nil),                                    // 299: mealplanning.GetMealPlanEventResponse
-	(*GetMealPlanEventsResponse)(nil),                                   // 300: mealplanning.GetMealPlanEventsResponse
-	(*GetMealPlanGroceryListItemResponse)(nil),                          // 301: mealplanning.GetMealPlanGroceryListItemResponse
-	(*GetMealPlanGroceryListItemsForMealPlanResponse)(nil),              // 302: mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse
-	(*GetMealPlanOptionResponse)(nil),                                   // 303: mealplanning.GetMealPlanOptionResponse
-	(*GetMealPlanOptionVoteResponse)(nil),                               // 304: mealplanning.GetMealPlanOptionVoteResponse
-	(*GetMealPlanOptionVotesResponse)(nil),                              // 305: mealplanning.GetMealPlanOptionVotesResponse
-	(*GetMealPlanOptionsResponse)(nil),                                  // 306: mealplanning.GetMealPlanOptionsResponse
-	(*GetMealPlanRecipeOptionSelectionResponse)(nil),                    // 307: mealplanning.GetMealPlanRecipeOptionSelectionResponse
-	(*GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse)(nil),  // 308: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse
-	(*GetMealPlanTaskResponse)(nil),                                     // 309: mealplanning.GetMealPlanTaskResponse
-	(*GetMealPlanTasksResponse)(nil),                                    // 310: mealplanning.GetMealPlanTasksResponse
-	(*GetMealPlansForAccountResponse)(nil),                              // 311: mealplanning.GetMealPlansForAccountResponse
-	(*GetMealListsResponse)(nil),                                        // 312: mealplanning.GetMealListsResponse
-	(*GetMealsResponse)(nil),                                            // 313: mealplanning.GetMealsResponse
-	(*GetMermaidDiagramForMealResponse)(nil),                            // 314: mealplanning.GetMermaidDiagramForMealResponse
-	(*GetMermaidDiagramForRecipeResponse)(nil),                          // 315: mealplanning.GetMermaidDiagramForRecipeResponse
-	(*GetRandomValidIngredientResponse)(nil),                            // 316: mealplanning.GetRandomValidIngredientResponse
-	(*GetRandomValidInstrumentResponse)(nil),                            // 317: mealplanning.GetRandomValidInstrumentResponse
-	(*GetRandomValidPreparationResponse)(nil),                           // 318: mealplanning.GetRandomValidPreparationResponse
-	(*GetRandomValidVesselResponse)(nil),                                // 319: mealplanning.GetRandomValidVesselResponse
-	(*GetRecipeResponse)(nil),                                           // 320: mealplanning.GetRecipeResponse
-	(*EstimateRecipePrepTasksResponse)(nil),                             // 321: mealplanning.EstimateRecipePrepTasksResponse
-	(*GetRecipePrepTaskResponse)(nil),                                   // 322: mealplanning.GetRecipePrepTaskResponse
-	(*GetRecipePrepTasksResponse)(nil),                                  // 323: mealplanning.GetRecipePrepTasksResponse
-	(*GetRecipeRatingResponse)(nil),                                     // 324: mealplanning.GetRecipeRatingResponse
-	(*GetRecipeRatingsForRecipeResponse)(nil),                           // 325: mealplanning.GetRecipeRatingsForRecipeResponse
-	(*GetRecipeStepResponse)(nil),                                       // 326: mealplanning.GetRecipeStepResponse
-	(*GetRecipeStepCompletionConditionResponse)(nil),                    // 327: mealplanning.GetRecipeStepCompletionConditionResponse
-	(*GetRecipeStepCompletionConditionsResponse)(nil),                   // 328: mealplanning.GetRecipeStepCompletionConditionsResponse
-	(*GetRecipeStepIngredientResponse)(nil),                             // 329: mealplanning.GetRecipeStepIngredientResponse
-	(*GetRecipeStepIngredientsResponse)(nil),                            // 330: mealplanning.GetRecipeStepIngredientsResponse
-	(*GetRecipeStepInstrumentResponse)(nil),                             // 331: mealplanning.GetRecipeStepInstrumentResponse
-	(*GetRecipeStepInstrumentsResponse)(nil),                            // 332: mealplanning.GetRecipeStepInstrumentsResponse
-	(*GetRecipeStepProductResponse)(nil),                                // 333: mealplanning.GetRecipeStepProductResponse
-	(*GetRecipeStepProductsResponse)(nil),                               // 334: mealplanning.GetRecipeStepProductsResponse
-	(*GetRecipeStepVesselResponse)(nil),                                 // 335: mealplanning.GetRecipeStepVesselResponse
-	(*GetRecipeStepVesselsResponse)(nil),                                // 336: mealplanning.GetRecipeStepVesselsResponse
-	(*GetRecipeStepsResponse)(nil),                                      // 337: mealplanning.GetRecipeStepsResponse
-	(*GetRecipeListsResponse)(nil),                                      // 338: mealplanning.GetRecipeListsResponse
-	(*GetRecipesResponse)(nil),                                          // 339: mealplanning.GetRecipesResponse
-	(*GetValidIngredientResponse)(nil),                                  // 340: mealplanning.GetValidIngredientResponse
-	(*GetValidIngredientGroupResponse)(nil),                             // 341: mealplanning.GetValidIngredientGroupResponse
-	(*GetValidIngredientGroupsResponse)(nil),                            // 342: mealplanning.GetValidIngredientGroupsResponse
-	(*GetValidIngredientMeasurementUnitResponse)(nil),                   // 343: mealplanning.GetValidIngredientMeasurementUnitResponse
-	(*GetValidIngredientMeasurementUnitsResponse)(nil),                  // 344: mealplanning.GetValidIngredientMeasurementUnitsResponse
-	(*GetValidIngredientMeasurementUnitsByIngredientResponse)(nil),      // 345: mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse
-	(*GetValidIngredientMeasurementUnitsByMeasurementUnitResponse)(nil), // 346: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse
-	(*GetValidIngredientPreparationResponse)(nil),                       // 347: mealplanning.GetValidIngredientPreparationResponse
-	(*GetValidIngredientPreparationsResponse)(nil),                      // 348: mealplanning.GetValidIngredientPreparationsResponse
-	(*GetValidIngredientPreparationsByIngredientResponse)(nil),          // 349: mealplanning.GetValidIngredientPreparationsByIngredientResponse
-	(*GetValidIngredientPreparationsByPreparationResponse)(nil),         // 350: mealplanning.GetValidIngredientPreparationsByPreparationResponse
-	(*GetValidPrepTaskConfigResponse)(nil),                              // 351: mealplanning.GetValidPrepTaskConfigResponse
-	(*GetValidPrepTaskConfigsResponse)(nil),                             // 352: mealplanning.GetValidPrepTaskConfigsResponse
-	(*GetValidPrepTaskConfigsByIngredientResponse)(nil),                 // 353: mealplanning.GetValidPrepTaskConfigsByIngredientResponse
-	(*GetValidPrepTaskConfigsByPreparationResponse)(nil),                // 354: mealplanning.GetValidPrepTaskConfigsByPreparationResponse
-	(*GetValidPrepTaskConfigsByIngredientAndPreparationResponse)(nil),   // 355: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse
-	(*GetValidIngredientStateResponse)(nil),                             // 356: mealplanning.GetValidIngredientStateResponse
-	(*GetValidIngredientStateIngredientResponse)(nil),                   // 357: mealplanning.GetValidIngredientStateIngredientResponse
-	(*GetValidIngredientStateIngredientsResponse)(nil),                  // 358: mealplanning.GetValidIngredientStateIngredientsResponse
-	(*GetValidIngredientStateIngredientsByIngredientResponse)(nil),      // 359: mealplanning.GetValidIngredientStateIngredientsByIngredientResponse
-	(*GetValidIngredientStateIngredientsByIngredientStateResponse)(nil), // 360: mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse
-	(*GetValidIngredientStatesResponse)(nil),                            // 361: mealplanning.GetValidIngredientStatesResponse
-	(*GetValidIngredientsResponse)(nil),                                 // 362: mealplanning.GetValidIngredientsResponse
-	(*GetValidInstrumentResponse)(nil),                                  // 363: mealplanning.GetValidInstrumentResponse
-	(*GetValidInstrumentsResponse)(nil),                                 // 364: mealplanning.GetValidInstrumentsResponse
-	(*GetValidMeasurementUnitResponse)(nil),                             // 365: mealplanning.GetValidMeasurementUnitResponse
-	(*GetValidMeasurementUnitConversionResponse)(nil),                   // 366: mealplanning.GetValidMeasurementUnitConversionResponse
-	(*GetValidMeasurementUnitConversionsForUnitResponse)(nil),           // 367: mealplanning.GetValidMeasurementUnitConversionsForUnitResponse
-	(*GetValidMeasurementUnitsResponse)(nil),                            // 368: mealplanning.GetValidMeasurementUnitsResponse
-	(*GetValidPreparationResponse)(nil),                                 // 369: mealplanning.GetValidPreparationResponse
-	(*GetValidPreparationInstrumentResponse)(nil),                       // 370: mealplanning.GetValidPreparationInstrumentResponse
-	(*GetValidPreparationInstrumentsResponse)(nil),                      // 371: mealplanning.GetValidPreparationInstrumentsResponse
-	(*GetValidPreparationInstrumentsByInstrumentResponse)(nil),          // 372: mealplanning.GetValidPreparationInstrumentsByInstrumentResponse
-	(*GetValidPreparationInstrumentsByPreparationResponse)(nil),         // 373: mealplanning.GetValidPreparationInstrumentsByPreparationResponse
-	(*GetValidPreparationVesselResponse)(nil),                           // 374: mealplanning.GetValidPreparationVesselResponse
-	(*GetValidPreparationVesselsResponse)(nil),                          // 375: mealplanning.GetValidPreparationVesselsResponse
-	(*GetValidPreparationVesselsByPreparationResponse)(nil),             // 376: mealplanning.GetValidPreparationVesselsByPreparationResponse
-	(*GetValidPreparationVesselsByVesselResponse)(nil),                  // 377: mealplanning.GetValidPreparationVesselsByVesselResponse
-	(*GetValidPreparationsResponse)(nil),                                // 378: mealplanning.GetValidPreparationsResponse
-	(*GetValidVesselResponse)(nil),                                      // 379: mealplanning.GetValidVesselResponse
-	(*GetValidVesselsResponse)(nil),                                     // 380: mealplanning.GetValidVesselsResponse
-	(*RunFinalizeMealPlanWorkerResponse)(nil),                           // 381: mealplanning.RunFinalizeMealPlanWorkerResponse
-	(*RunMealPlanGroceryListInitializerWorkerResponse)(nil),             // 382: mealplanning.RunMealPlanGroceryListInitializerWorkerResponse
-	(*RunMealPlanTaskCreatorWorkerResponse)(nil),                        // 383: mealplanning.RunMealPlanTaskCreatorWorkerResponse
-	(*SearchForMealsResponse)(nil),                                      // 384: mealplanning.SearchForMealsResponse
-	(*SearchForRecipesResponse)(nil),                                    // 385: mealplanning.SearchForRecipesResponse
-	(*SearchForMealEligibleRecipesResponse)(nil),                        // 386: mealplanning.SearchForMealEligibleRecipesResponse
-	(*SearchForValidIngredientGroupsResponse)(nil),                      // 387: mealplanning.SearchForValidIngredientGroupsResponse
-	(*SearchForValidIngredientStatesResponse)(nil),                      // 388: mealplanning.SearchForValidIngredientStatesResponse
-	(*SearchForValidIngredientsResponse)(nil),                           // 389: mealplanning.SearchForValidIngredientsResponse
-	(*SearchForValidInstrumentsResponse)(nil),                           // 390: mealplanning.SearchForValidInstrumentsResponse
-	(*SearchForValidMeasurementUnitsResponse)(nil),                      // 391: mealplanning.SearchForValidMeasurementUnitsResponse
-	(*SearchForValidPreparationsResponse)(nil),                          // 392: mealplanning.SearchForValidPreparationsResponse
-	(*SearchForValidVesselsResponse)(nil),                               // 393: mealplanning.SearchForValidVesselsResponse
-	(*SearchValidIngredientsByPreparationResponse)(nil),                 // 394: mealplanning.SearchValidIngredientsByPreparationResponse
-	(*SearchValidMeasurementUnitsByIngredientResponse)(nil),             // 395: mealplanning.SearchValidMeasurementUnitsByIngredientResponse
-	(*UpdateMealPlanResponse)(nil),                                      // 396: mealplanning.UpdateMealPlanResponse
-	(*UpdateMealPlanEventResponse)(nil),                                 // 397: mealplanning.UpdateMealPlanEventResponse
-	(*UpdateMealPlanGroceryListItemResponse)(nil),                       // 398: mealplanning.UpdateMealPlanGroceryListItemResponse
-	(*UpdateMealPlanOptionResponse)(nil),                                // 399: mealplanning.UpdateMealPlanOptionResponse
-	(*UpdateMealPlanOptionVoteResponse)(nil),                            // 400: mealplanning.UpdateMealPlanOptionVoteResponse
-	(*UpdateMealPlanRecipeOptionSelectionResponse)(nil),                 // 401: mealplanning.UpdateMealPlanRecipeOptionSelectionResponse
-	(*UpdateMealPlanTaskStatusResponse)(nil),                            // 402: mealplanning.UpdateMealPlanTaskStatusResponse
-	(*UpdateMealListResponse)(nil),                                      // 403: mealplanning.UpdateMealListResponse
-	(*UpdateMealListItemResponse)(nil),                                  // 404: mealplanning.UpdateMealListItemResponse
-	(*UpdateRecipeResponse)(nil),                                        // 405: mealplanning.UpdateRecipeResponse
-	(*UpdateRecipeStatusResponse)(nil),                                  // 406: mealplanning.UpdateRecipeStatusResponse
-	(*UpdateRecipePrepTaskResponse)(nil),                                // 407: mealplanning.UpdateRecipePrepTaskResponse
-	(*UpdateRecipeRatingResponse)(nil),                                  // 408: mealplanning.UpdateRecipeRatingResponse
-	(*UpdateRecipeListResponse)(nil),                                    // 409: mealplanning.UpdateRecipeListResponse
-	(*UpdateRecipeListItemResponse)(nil),                                // 410: mealplanning.UpdateRecipeListItemResponse
-	(*UpdateRecipeStepResponse)(nil),                                    // 411: mealplanning.UpdateRecipeStepResponse
-	(*UpdateRecipeStepCompletionConditionResponse)(nil),                 // 412: mealplanning.UpdateRecipeStepCompletionConditionResponse
-	(*UpdateRecipeStepIngredientResponse)(nil),                          // 413: mealplanning.UpdateRecipeStepIngredientResponse
-	(*UpdateRecipeStepInstrumentResponse)(nil),                          // 414: mealplanning.UpdateRecipeStepInstrumentResponse
-	(*UpdateRecipeStepProductResponse)(nil),                             // 415: mealplanning.UpdateRecipeStepProductResponse
-	(*UpdateRecipeStepVesselResponse)(nil),                              // 416: mealplanning.UpdateRecipeStepVesselResponse
-	(*UpdateValidIngredientResponse)(nil),                               // 417: mealplanning.UpdateValidIngredientResponse
-	(*UpdateValidIngredientGroupResponse)(nil),                          // 418: mealplanning.UpdateValidIngredientGroupResponse
-	(*UpdateValidIngredientMeasurementUnitResponse)(nil),                // 419: mealplanning.UpdateValidIngredientMeasurementUnitResponse
-	(*UpdateValidIngredientPreparationResponse)(nil),                    // 420: mealplanning.UpdateValidIngredientPreparationResponse
-	(*UpdateValidPrepTaskConfigResponse)(nil),                           // 421: mealplanning.UpdateValidPrepTaskConfigResponse
-	(*UpdateValidIngredientStateResponse)(nil),                          // 422: mealplanning.UpdateValidIngredientStateResponse
-	(*UpdateValidIngredientStateIngredientResponse)(nil),                // 423: mealplanning.UpdateValidIngredientStateIngredientResponse
-	(*UpdateValidInstrumentResponse)(nil),                               // 424: mealplanning.UpdateValidInstrumentResponse
-	(*UpdateValidMeasurementUnitResponse)(nil),                          // 425: mealplanning.UpdateValidMeasurementUnitResponse
-	(*UpdateValidMeasurementUnitConversionResponse)(nil),                // 426: mealplanning.UpdateValidMeasurementUnitConversionResponse
-	(*UpdateValidPreparationResponse)(nil),                              // 427: mealplanning.UpdateValidPreparationResponse
-	(*UpdateValidPreparationInstrumentResponse)(nil),                    // 428: mealplanning.UpdateValidPreparationInstrumentResponse
-	(*UpdateValidPreparationVesselResponse)(nil),                        // 429: mealplanning.UpdateValidPreparationVesselResponse
-	(*UpdateValidVesselResponse)(nil),                                   // 430: mealplanning.UpdateValidVesselResponse
-	(*ArchiveAccountInstrumentOwnershipResponse)(nil),                   // 431: mealplanning.ArchiveAccountInstrumentOwnershipResponse
-	(*ArchiveUserIngredientPreferenceResponse)(nil),                     // 432: mealplanning.ArchiveUserIngredientPreferenceResponse
-	(*CreateAccountInstrumentOwnershipResponse)(nil),                    // 433: mealplanning.CreateAccountInstrumentOwnershipResponse
-	(*CreateUserIngredientPreferenceResponse)(nil),                      // 434: mealplanning.CreateUserIngredientPreferenceResponse
-	(*GetAccountInstrumentOwnershipResponse)(nil),                       // 435: mealplanning.GetAccountInstrumentOwnershipResponse
-	(*GetAccountInstrumentOwnershipsResponse)(nil),                      // 436: mealplanning.GetAccountInstrumentOwnershipsResponse
-	(*GetUserIngredientPreferenceResponse)(nil),                         // 437: mealplanning.GetUserIngredientPreferenceResponse
-	(*GetUserIngredientPreferencesResponse)(nil),                        // 438: mealplanning.GetUserIngredientPreferencesResponse
-	(*UpdateAccountInstrumentOwnershipResponse)(nil),                    // 439: mealplanning.UpdateAccountInstrumentOwnershipResponse
-	(*comments.UpdateCommentResponse)(nil),                              // 440: comments.UpdateCommentResponse
-	(*UpdateUserIngredientPreferenceResponse)(nil),                      // 441: mealplanning.UpdateUserIngredientPreferenceResponse
+	(*UploadMealMediaRequest)(nil),                                      // 221: mealplanning.UploadMealMediaRequest
+	(*UploadRecipeMediaRequest)(nil),                                    // 222: mealplanning.UploadRecipeMediaRequest
+	(*comments.AddCommentToMealResponse)(nil),                           // 223: comments.AddCommentToMealResponse
+	(*comments.AddCommentToMealPlanResponse)(nil),                       // 224: comments.AddCommentToMealPlanResponse
+	(*comments.AddCommentToRecipeResponse)(nil),                         // 225: comments.AddCommentToRecipeResponse
+	(*comments.CreateCommentResponse)(nil),                              // 226: comments.CreateCommentResponse
+	(*ArchiveMealResponse)(nil),                                         // 227: mealplanning.ArchiveMealResponse
+	(*ArchiveMealPlanResponse)(nil),                                     // 228: mealplanning.ArchiveMealPlanResponse
+	(*ArchiveMealPlanEventResponse)(nil),                                // 229: mealplanning.ArchiveMealPlanEventResponse
+	(*ArchiveMealPlanGroceryListItemResponse)(nil),                      // 230: mealplanning.ArchiveMealPlanGroceryListItemResponse
+	(*ArchiveMealPlanOptionResponse)(nil),                               // 231: mealplanning.ArchiveMealPlanOptionResponse
+	(*ArchiveMealPlanOptionVoteResponse)(nil),                           // 232: mealplanning.ArchiveMealPlanOptionVoteResponse
+	(*ArchiveMealPlanRecipeOptionSelectionResponse)(nil),                // 233: mealplanning.ArchiveMealPlanRecipeOptionSelectionResponse
+	(*ArchiveMealListResponse)(nil),                                     // 234: mealplanning.ArchiveMealListResponse
+	(*ArchiveMealListItemResponse)(nil),                                 // 235: mealplanning.ArchiveMealListItemResponse
+	(*ArchiveRecipeResponse)(nil),                                       // 236: mealplanning.ArchiveRecipeResponse
+	(*ArchiveRecipePrepTaskResponse)(nil),                               // 237: mealplanning.ArchiveRecipePrepTaskResponse
+	(*ArchiveRecipeRatingResponse)(nil),                                 // 238: mealplanning.ArchiveRecipeRatingResponse
+	(*ArchiveRecipeListResponse)(nil),                                   // 239: mealplanning.ArchiveRecipeListResponse
+	(*ArchiveRecipeListItemResponse)(nil),                               // 240: mealplanning.ArchiveRecipeListItemResponse
+	(*ArchiveRecipeStepResponse)(nil),                                   // 241: mealplanning.ArchiveRecipeStepResponse
+	(*ArchiveRecipeStepCompletionConditionResponse)(nil),                // 242: mealplanning.ArchiveRecipeStepCompletionConditionResponse
+	(*ArchiveRecipeStepIngredientResponse)(nil),                         // 243: mealplanning.ArchiveRecipeStepIngredientResponse
+	(*ArchiveRecipeStepInstrumentResponse)(nil),                         // 244: mealplanning.ArchiveRecipeStepInstrumentResponse
+	(*ArchiveRecipeStepProductResponse)(nil),                            // 245: mealplanning.ArchiveRecipeStepProductResponse
+	(*ArchiveRecipeStepVesselResponse)(nil),                             // 246: mealplanning.ArchiveRecipeStepVesselResponse
+	(*ArchiveValidIngredientResponse)(nil),                              // 247: mealplanning.ArchiveValidIngredientResponse
+	(*comments.ArchiveCommentResponse)(nil),                             // 248: comments.ArchiveCommentResponse
+	(*ArchiveValidIngredientGroupResponse)(nil),                         // 249: mealplanning.ArchiveValidIngredientGroupResponse
+	(*ArchiveValidIngredientMeasurementUnitResponse)(nil),               // 250: mealplanning.ArchiveValidIngredientMeasurementUnitResponse
+	(*ArchiveValidIngredientPreparationResponse)(nil),                   // 251: mealplanning.ArchiveValidIngredientPreparationResponse
+	(*ArchiveValidPrepTaskConfigResponse)(nil),                          // 252: mealplanning.ArchiveValidPrepTaskConfigResponse
+	(*ArchiveValidIngredientStateResponse)(nil),                         // 253: mealplanning.ArchiveValidIngredientStateResponse
+	(*ArchiveValidIngredientStateIngredientResponse)(nil),               // 254: mealplanning.ArchiveValidIngredientStateIngredientResponse
+	(*ArchiveValidInstrumentResponse)(nil),                              // 255: mealplanning.ArchiveValidInstrumentResponse
+	(*ArchiveValidMeasurementUnitResponse)(nil),                         // 256: mealplanning.ArchiveValidMeasurementUnitResponse
+	(*ArchiveValidMeasurementUnitConversionResponse)(nil),               // 257: mealplanning.ArchiveValidMeasurementUnitConversionResponse
+	(*ArchiveValidPreparationResponse)(nil),                             // 258: mealplanning.ArchiveValidPreparationResponse
+	(*ArchiveValidPreparationInstrumentResponse)(nil),                   // 259: mealplanning.ArchiveValidPreparationInstrumentResponse
+	(*ArchiveValidPreparationVesselResponse)(nil),                       // 260: mealplanning.ArchiveValidPreparationVesselResponse
+	(*ArchiveValidVesselResponse)(nil),                                  // 261: mealplanning.ArchiveValidVesselResponse
+	(*CloneRecipeResponse)(nil),                                         // 262: mealplanning.CloneRecipeResponse
+	(*CreateMealResponse)(nil),                                          // 263: mealplanning.CreateMealResponse
+	(*CreateMealPlanResponse)(nil),                                      // 264: mealplanning.CreateMealPlanResponse
+	(*CreateMealPlanEventResponse)(nil),                                 // 265: mealplanning.CreateMealPlanEventResponse
+	(*CreateMealPlanOptionResponse)(nil),                                // 266: mealplanning.CreateMealPlanOptionResponse
+	(*CreateMealPlanOptionVoteResponse)(nil),                            // 267: mealplanning.CreateMealPlanOptionVoteResponse
+	(*CreateMealPlanRecipeOptionSelectionResponse)(nil),                 // 268: mealplanning.CreateMealPlanRecipeOptionSelectionResponse
+	(*CreateMealPlanTaskResponse)(nil),                                  // 269: mealplanning.CreateMealPlanTaskResponse
+	(*CreateMealListResponse)(nil),                                      // 270: mealplanning.CreateMealListResponse
+	(*CreateMealListItemResponse)(nil),                                  // 271: mealplanning.CreateMealListItemResponse
+	(*CreateRecipeResponse)(nil),                                        // 272: mealplanning.CreateRecipeResponse
+	(*CreateRecipePrepTaskResponse)(nil),                                // 273: mealplanning.CreateRecipePrepTaskResponse
+	(*CreateRecipeRatingResponse)(nil),                                  // 274: mealplanning.CreateRecipeRatingResponse
+	(*CreateRecipeListResponse)(nil),                                    // 275: mealplanning.CreateRecipeListResponse
+	(*CreateRecipeListItemResponse)(nil),                                // 276: mealplanning.CreateRecipeListItemResponse
+	(*CreateRecipeStepResponse)(nil),                                    // 277: mealplanning.CreateRecipeStepResponse
+	(*CreateRecipeStepCompletionConditionResponse)(nil),                 // 278: mealplanning.CreateRecipeStepCompletionConditionResponse
+	(*CreateRecipeStepIngredientResponse)(nil),                          // 279: mealplanning.CreateRecipeStepIngredientResponse
+	(*CreateRecipeStepInstrumentResponse)(nil),                          // 280: mealplanning.CreateRecipeStepInstrumentResponse
+	(*CreateRecipeStepProductResponse)(nil),                             // 281: mealplanning.CreateRecipeStepProductResponse
+	(*CreateRecipeStepVesselResponse)(nil),                              // 282: mealplanning.CreateRecipeStepVesselResponse
+	(*CreateValidIngredientResponse)(nil),                               // 283: mealplanning.CreateValidIngredientResponse
+	(*CreateValidIngredientGroupResponse)(nil),                          // 284: mealplanning.CreateValidIngredientGroupResponse
+	(*CreateValidIngredientMeasurementUnitResponse)(nil),                // 285: mealplanning.CreateValidIngredientMeasurementUnitResponse
+	(*CreateValidIngredientPreparationResponse)(nil),                    // 286: mealplanning.CreateValidIngredientPreparationResponse
+	(*CreateValidPrepTaskConfigResponse)(nil),                           // 287: mealplanning.CreateValidPrepTaskConfigResponse
+	(*CreateValidIngredientStateResponse)(nil),                          // 288: mealplanning.CreateValidIngredientStateResponse
+	(*CreateValidIngredientStateIngredientResponse)(nil),                // 289: mealplanning.CreateValidIngredientStateIngredientResponse
+	(*CreateValidInstrumentResponse)(nil),                               // 290: mealplanning.CreateValidInstrumentResponse
+	(*CreateValidMeasurementUnitResponse)(nil),                          // 291: mealplanning.CreateValidMeasurementUnitResponse
+	(*CreateValidMeasurementUnitConversionResponse)(nil),                // 292: mealplanning.CreateValidMeasurementUnitConversionResponse
+	(*CreateValidPreparationResponse)(nil),                              // 293: mealplanning.CreateValidPreparationResponse
+	(*CreateValidPreparationInstrumentResponse)(nil),                    // 294: mealplanning.CreateValidPreparationInstrumentResponse
+	(*CreateValidPreparationVesselResponse)(nil),                        // 295: mealplanning.CreateValidPreparationVesselResponse
+	(*CreateValidVesselResponse)(nil),                                   // 296: mealplanning.CreateValidVesselResponse
+	(*FinalizeMealPlanResponse)(nil),                                    // 297: mealplanning.FinalizeMealPlanResponse
+	(*comments.GetCommentsForReferenceResponse)(nil),                    // 298: comments.GetCommentsForReferenceResponse
+	(*GetMealResponse)(nil),                                             // 299: mealplanning.GetMealResponse
+	(*GetMealPlanResponse)(nil),                                         // 300: mealplanning.GetMealPlanResponse
+	(*GetMealPlanEventResponse)(nil),                                    // 301: mealplanning.GetMealPlanEventResponse
+	(*GetMealPlanEventsResponse)(nil),                                   // 302: mealplanning.GetMealPlanEventsResponse
+	(*GetMealPlanGroceryListItemResponse)(nil),                          // 303: mealplanning.GetMealPlanGroceryListItemResponse
+	(*GetMealPlanGroceryListItemsForMealPlanResponse)(nil),              // 304: mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse
+	(*GetMealPlanOptionResponse)(nil),                                   // 305: mealplanning.GetMealPlanOptionResponse
+	(*GetMealPlanOptionVoteResponse)(nil),                               // 306: mealplanning.GetMealPlanOptionVoteResponse
+	(*GetMealPlanOptionVotesResponse)(nil),                              // 307: mealplanning.GetMealPlanOptionVotesResponse
+	(*GetMealPlanOptionsResponse)(nil),                                  // 308: mealplanning.GetMealPlanOptionsResponse
+	(*GetMealPlanRecipeOptionSelectionResponse)(nil),                    // 309: mealplanning.GetMealPlanRecipeOptionSelectionResponse
+	(*GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse)(nil),  // 310: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse
+	(*GetMealPlanTaskResponse)(nil),                                     // 311: mealplanning.GetMealPlanTaskResponse
+	(*GetMealPlanTasksResponse)(nil),                                    // 312: mealplanning.GetMealPlanTasksResponse
+	(*GetMealPlansForAccountResponse)(nil),                              // 313: mealplanning.GetMealPlansForAccountResponse
+	(*GetMealListsResponse)(nil),                                        // 314: mealplanning.GetMealListsResponse
+	(*GetMealsResponse)(nil),                                            // 315: mealplanning.GetMealsResponse
+	(*GetMermaidDiagramForMealResponse)(nil),                            // 316: mealplanning.GetMermaidDiagramForMealResponse
+	(*GetMermaidDiagramForRecipeResponse)(nil),                          // 317: mealplanning.GetMermaidDiagramForRecipeResponse
+	(*GetRandomValidIngredientResponse)(nil),                            // 318: mealplanning.GetRandomValidIngredientResponse
+	(*GetRandomValidInstrumentResponse)(nil),                            // 319: mealplanning.GetRandomValidInstrumentResponse
+	(*GetRandomValidPreparationResponse)(nil),                           // 320: mealplanning.GetRandomValidPreparationResponse
+	(*GetRandomValidVesselResponse)(nil),                                // 321: mealplanning.GetRandomValidVesselResponse
+	(*GetRecipeResponse)(nil),                                           // 322: mealplanning.GetRecipeResponse
+	(*EstimateRecipePrepTasksResponse)(nil),                             // 323: mealplanning.EstimateRecipePrepTasksResponse
+	(*GetRecipePrepTaskResponse)(nil),                                   // 324: mealplanning.GetRecipePrepTaskResponse
+	(*GetRecipePrepTasksResponse)(nil),                                  // 325: mealplanning.GetRecipePrepTasksResponse
+	(*GetRecipeRatingResponse)(nil),                                     // 326: mealplanning.GetRecipeRatingResponse
+	(*GetRecipeRatingsForRecipeResponse)(nil),                           // 327: mealplanning.GetRecipeRatingsForRecipeResponse
+	(*GetRecipeStepResponse)(nil),                                       // 328: mealplanning.GetRecipeStepResponse
+	(*GetRecipeStepCompletionConditionResponse)(nil),                    // 329: mealplanning.GetRecipeStepCompletionConditionResponse
+	(*GetRecipeStepCompletionConditionsResponse)(nil),                   // 330: mealplanning.GetRecipeStepCompletionConditionsResponse
+	(*GetRecipeStepIngredientResponse)(nil),                             // 331: mealplanning.GetRecipeStepIngredientResponse
+	(*GetRecipeStepIngredientsResponse)(nil),                            // 332: mealplanning.GetRecipeStepIngredientsResponse
+	(*GetRecipeStepInstrumentResponse)(nil),                             // 333: mealplanning.GetRecipeStepInstrumentResponse
+	(*GetRecipeStepInstrumentsResponse)(nil),                            // 334: mealplanning.GetRecipeStepInstrumentsResponse
+	(*GetRecipeStepProductResponse)(nil),                                // 335: mealplanning.GetRecipeStepProductResponse
+	(*GetRecipeStepProductsResponse)(nil),                               // 336: mealplanning.GetRecipeStepProductsResponse
+	(*GetRecipeStepVesselResponse)(nil),                                 // 337: mealplanning.GetRecipeStepVesselResponse
+	(*GetRecipeStepVesselsResponse)(nil),                                // 338: mealplanning.GetRecipeStepVesselsResponse
+	(*GetRecipeStepsResponse)(nil),                                      // 339: mealplanning.GetRecipeStepsResponse
+	(*GetRecipeListsResponse)(nil),                                      // 340: mealplanning.GetRecipeListsResponse
+	(*GetRecipesResponse)(nil),                                          // 341: mealplanning.GetRecipesResponse
+	(*GetValidIngredientResponse)(nil),                                  // 342: mealplanning.GetValidIngredientResponse
+	(*GetValidIngredientGroupResponse)(nil),                             // 343: mealplanning.GetValidIngredientGroupResponse
+	(*GetValidIngredientGroupsResponse)(nil),                            // 344: mealplanning.GetValidIngredientGroupsResponse
+	(*GetValidIngredientMeasurementUnitResponse)(nil),                   // 345: mealplanning.GetValidIngredientMeasurementUnitResponse
+	(*GetValidIngredientMeasurementUnitsResponse)(nil),                  // 346: mealplanning.GetValidIngredientMeasurementUnitsResponse
+	(*GetValidIngredientMeasurementUnitsByIngredientResponse)(nil),      // 347: mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse
+	(*GetValidIngredientMeasurementUnitsByMeasurementUnitResponse)(nil), // 348: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse
+	(*GetValidIngredientPreparationResponse)(nil),                       // 349: mealplanning.GetValidIngredientPreparationResponse
+	(*GetValidIngredientPreparationsResponse)(nil),                      // 350: mealplanning.GetValidIngredientPreparationsResponse
+	(*GetValidIngredientPreparationsByIngredientResponse)(nil),          // 351: mealplanning.GetValidIngredientPreparationsByIngredientResponse
+	(*GetValidIngredientPreparationsByPreparationResponse)(nil),         // 352: mealplanning.GetValidIngredientPreparationsByPreparationResponse
+	(*GetValidPrepTaskConfigResponse)(nil),                              // 353: mealplanning.GetValidPrepTaskConfigResponse
+	(*GetValidPrepTaskConfigsResponse)(nil),                             // 354: mealplanning.GetValidPrepTaskConfigsResponse
+	(*GetValidPrepTaskConfigsByIngredientResponse)(nil),                 // 355: mealplanning.GetValidPrepTaskConfigsByIngredientResponse
+	(*GetValidPrepTaskConfigsByPreparationResponse)(nil),                // 356: mealplanning.GetValidPrepTaskConfigsByPreparationResponse
+	(*GetValidPrepTaskConfigsByIngredientAndPreparationResponse)(nil),   // 357: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse
+	(*GetValidIngredientStateResponse)(nil),                             // 358: mealplanning.GetValidIngredientStateResponse
+	(*GetValidIngredientStateIngredientResponse)(nil),                   // 359: mealplanning.GetValidIngredientStateIngredientResponse
+	(*GetValidIngredientStateIngredientsResponse)(nil),                  // 360: mealplanning.GetValidIngredientStateIngredientsResponse
+	(*GetValidIngredientStateIngredientsByIngredientResponse)(nil),      // 361: mealplanning.GetValidIngredientStateIngredientsByIngredientResponse
+	(*GetValidIngredientStateIngredientsByIngredientStateResponse)(nil), // 362: mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse
+	(*GetValidIngredientStatesResponse)(nil),                            // 363: mealplanning.GetValidIngredientStatesResponse
+	(*GetValidIngredientsResponse)(nil),                                 // 364: mealplanning.GetValidIngredientsResponse
+	(*GetValidInstrumentResponse)(nil),                                  // 365: mealplanning.GetValidInstrumentResponse
+	(*GetValidInstrumentsResponse)(nil),                                 // 366: mealplanning.GetValidInstrumentsResponse
+	(*GetValidMeasurementUnitResponse)(nil),                             // 367: mealplanning.GetValidMeasurementUnitResponse
+	(*GetValidMeasurementUnitConversionResponse)(nil),                   // 368: mealplanning.GetValidMeasurementUnitConversionResponse
+	(*GetValidMeasurementUnitConversionsForUnitResponse)(nil),           // 369: mealplanning.GetValidMeasurementUnitConversionsForUnitResponse
+	(*GetValidMeasurementUnitsResponse)(nil),                            // 370: mealplanning.GetValidMeasurementUnitsResponse
+	(*GetValidPreparationResponse)(nil),                                 // 371: mealplanning.GetValidPreparationResponse
+	(*GetValidPreparationInstrumentResponse)(nil),                       // 372: mealplanning.GetValidPreparationInstrumentResponse
+	(*GetValidPreparationInstrumentsResponse)(nil),                      // 373: mealplanning.GetValidPreparationInstrumentsResponse
+	(*GetValidPreparationInstrumentsByInstrumentResponse)(nil),          // 374: mealplanning.GetValidPreparationInstrumentsByInstrumentResponse
+	(*GetValidPreparationInstrumentsByPreparationResponse)(nil),         // 375: mealplanning.GetValidPreparationInstrumentsByPreparationResponse
+	(*GetValidPreparationVesselResponse)(nil),                           // 376: mealplanning.GetValidPreparationVesselResponse
+	(*GetValidPreparationVesselsResponse)(nil),                          // 377: mealplanning.GetValidPreparationVesselsResponse
+	(*GetValidPreparationVesselsByPreparationResponse)(nil),             // 378: mealplanning.GetValidPreparationVesselsByPreparationResponse
+	(*GetValidPreparationVesselsByVesselResponse)(nil),                  // 379: mealplanning.GetValidPreparationVesselsByVesselResponse
+	(*GetValidPreparationsResponse)(nil),                                // 380: mealplanning.GetValidPreparationsResponse
+	(*GetValidVesselResponse)(nil),                                      // 381: mealplanning.GetValidVesselResponse
+	(*GetValidVesselsResponse)(nil),                                     // 382: mealplanning.GetValidVesselsResponse
+	(*RunFinalizeMealPlanWorkerResponse)(nil),                           // 383: mealplanning.RunFinalizeMealPlanWorkerResponse
+	(*RunMealPlanGroceryListInitializerWorkerResponse)(nil),             // 384: mealplanning.RunMealPlanGroceryListInitializerWorkerResponse
+	(*RunMealPlanTaskCreatorWorkerResponse)(nil),                        // 385: mealplanning.RunMealPlanTaskCreatorWorkerResponse
+	(*SearchForMealsResponse)(nil),                                      // 386: mealplanning.SearchForMealsResponse
+	(*SearchForRecipesResponse)(nil),                                    // 387: mealplanning.SearchForRecipesResponse
+	(*SearchForMealEligibleRecipesResponse)(nil),                        // 388: mealplanning.SearchForMealEligibleRecipesResponse
+	(*SearchForValidIngredientGroupsResponse)(nil),                      // 389: mealplanning.SearchForValidIngredientGroupsResponse
+	(*SearchForValidIngredientStatesResponse)(nil),                      // 390: mealplanning.SearchForValidIngredientStatesResponse
+	(*SearchForValidIngredientsResponse)(nil),                           // 391: mealplanning.SearchForValidIngredientsResponse
+	(*SearchForValidInstrumentsResponse)(nil),                           // 392: mealplanning.SearchForValidInstrumentsResponse
+	(*SearchForValidMeasurementUnitsResponse)(nil),                      // 393: mealplanning.SearchForValidMeasurementUnitsResponse
+	(*SearchForValidPreparationsResponse)(nil),                          // 394: mealplanning.SearchForValidPreparationsResponse
+	(*SearchForValidVesselsResponse)(nil),                               // 395: mealplanning.SearchForValidVesselsResponse
+	(*SearchValidIngredientsByPreparationResponse)(nil),                 // 396: mealplanning.SearchValidIngredientsByPreparationResponse
+	(*SearchValidMeasurementUnitsByIngredientResponse)(nil),             // 397: mealplanning.SearchValidMeasurementUnitsByIngredientResponse
+	(*UpdateMealPlanResponse)(nil),                                      // 398: mealplanning.UpdateMealPlanResponse
+	(*UpdateMealPlanEventResponse)(nil),                                 // 399: mealplanning.UpdateMealPlanEventResponse
+	(*UpdateMealPlanGroceryListItemResponse)(nil),                       // 400: mealplanning.UpdateMealPlanGroceryListItemResponse
+	(*UpdateMealPlanOptionResponse)(nil),                                // 401: mealplanning.UpdateMealPlanOptionResponse
+	(*UpdateMealPlanOptionVoteResponse)(nil),                            // 402: mealplanning.UpdateMealPlanOptionVoteResponse
+	(*UpdateMealPlanRecipeOptionSelectionResponse)(nil),                 // 403: mealplanning.UpdateMealPlanRecipeOptionSelectionResponse
+	(*UpdateMealPlanTaskStatusResponse)(nil),                            // 404: mealplanning.UpdateMealPlanTaskStatusResponse
+	(*UpdateMealListResponse)(nil),                                      // 405: mealplanning.UpdateMealListResponse
+	(*UpdateMealListItemResponse)(nil),                                  // 406: mealplanning.UpdateMealListItemResponse
+	(*UpdateRecipeResponse)(nil),                                        // 407: mealplanning.UpdateRecipeResponse
+	(*UpdateRecipeStatusResponse)(nil),                                  // 408: mealplanning.UpdateRecipeStatusResponse
+	(*UpdateRecipePrepTaskResponse)(nil),                                // 409: mealplanning.UpdateRecipePrepTaskResponse
+	(*UpdateRecipeRatingResponse)(nil),                                  // 410: mealplanning.UpdateRecipeRatingResponse
+	(*UpdateRecipeListResponse)(nil),                                    // 411: mealplanning.UpdateRecipeListResponse
+	(*UpdateRecipeListItemResponse)(nil),                                // 412: mealplanning.UpdateRecipeListItemResponse
+	(*UpdateRecipeStepResponse)(nil),                                    // 413: mealplanning.UpdateRecipeStepResponse
+	(*UpdateRecipeStepCompletionConditionResponse)(nil),                 // 414: mealplanning.UpdateRecipeStepCompletionConditionResponse
+	(*UpdateRecipeStepIngredientResponse)(nil),                          // 415: mealplanning.UpdateRecipeStepIngredientResponse
+	(*UpdateRecipeStepInstrumentResponse)(nil),                          // 416: mealplanning.UpdateRecipeStepInstrumentResponse
+	(*UpdateRecipeStepProductResponse)(nil),                             // 417: mealplanning.UpdateRecipeStepProductResponse
+	(*UpdateRecipeStepVesselResponse)(nil),                              // 418: mealplanning.UpdateRecipeStepVesselResponse
+	(*UpdateValidIngredientResponse)(nil),                               // 419: mealplanning.UpdateValidIngredientResponse
+	(*UpdateValidIngredientGroupResponse)(nil),                          // 420: mealplanning.UpdateValidIngredientGroupResponse
+	(*UpdateValidIngredientMeasurementUnitResponse)(nil),                // 421: mealplanning.UpdateValidIngredientMeasurementUnitResponse
+	(*UpdateValidIngredientPreparationResponse)(nil),                    // 422: mealplanning.UpdateValidIngredientPreparationResponse
+	(*UpdateValidPrepTaskConfigResponse)(nil),                           // 423: mealplanning.UpdateValidPrepTaskConfigResponse
+	(*UpdateValidIngredientStateResponse)(nil),                          // 424: mealplanning.UpdateValidIngredientStateResponse
+	(*UpdateValidIngredientStateIngredientResponse)(nil),                // 425: mealplanning.UpdateValidIngredientStateIngredientResponse
+	(*UpdateValidInstrumentResponse)(nil),                               // 426: mealplanning.UpdateValidInstrumentResponse
+	(*UpdateValidMeasurementUnitResponse)(nil),                          // 427: mealplanning.UpdateValidMeasurementUnitResponse
+	(*UpdateValidMeasurementUnitConversionResponse)(nil),                // 428: mealplanning.UpdateValidMeasurementUnitConversionResponse
+	(*UpdateValidPreparationResponse)(nil),                              // 429: mealplanning.UpdateValidPreparationResponse
+	(*UpdateValidPreparationInstrumentResponse)(nil),                    // 430: mealplanning.UpdateValidPreparationInstrumentResponse
+	(*UpdateValidPreparationVesselResponse)(nil),                        // 431: mealplanning.UpdateValidPreparationVesselResponse
+	(*UpdateValidVesselResponse)(nil),                                   // 432: mealplanning.UpdateValidVesselResponse
+	(*ArchiveAccountInstrumentOwnershipResponse)(nil),                   // 433: mealplanning.ArchiveAccountInstrumentOwnershipResponse
+	(*ArchiveUserIngredientPreferenceResponse)(nil),                     // 434: mealplanning.ArchiveUserIngredientPreferenceResponse
+	(*CreateAccountInstrumentOwnershipResponse)(nil),                    // 435: mealplanning.CreateAccountInstrumentOwnershipResponse
+	(*CreateUserIngredientPreferenceResponse)(nil),                      // 436: mealplanning.CreateUserIngredientPreferenceResponse
+	(*GetAccountInstrumentOwnershipResponse)(nil),                       // 437: mealplanning.GetAccountInstrumentOwnershipResponse
+	(*GetAccountInstrumentOwnershipsResponse)(nil),                      // 438: mealplanning.GetAccountInstrumentOwnershipsResponse
+	(*GetUserIngredientPreferenceResponse)(nil),                         // 439: mealplanning.GetUserIngredientPreferenceResponse
+	(*GetUserIngredientPreferencesResponse)(nil),                        // 440: mealplanning.GetUserIngredientPreferencesResponse
+	(*UpdateAccountInstrumentOwnershipResponse)(nil),                    // 441: mealplanning.UpdateAccountInstrumentOwnershipResponse
+	(*comments.UpdateCommentResponse)(nil),                              // 442: comments.UpdateCommentResponse
+	(*UpdateUserIngredientPreferenceResponse)(nil),                      // 443: mealplanning.UpdateUserIngredientPreferenceResponse
+	(*UploadMealImageResponse)(nil),                                     // 444: mealplanning.UploadMealImageResponse
+	(*UploadRecipeImageResponse)(nil),                                   // 445: mealplanning.UploadRecipeImageResponse
 }
 var file_mealplanning_mealplanning_service_proto_depIdxs = []int32{
 	0,   // 0: mealplanning.MealPlanningService.AddCommentToMeal:input_type -> comments.AddCommentToMealRequest
@@ -2441,229 +2458,233 @@ var file_mealplanning_mealplanning_service_proto_depIdxs = []int32{
 	218, // 218: mealplanning.MealPlanningService.UpdateAccountInstrumentOwnership:input_type -> mealplanning.UpdateAccountInstrumentOwnershipRequest
 	219, // 219: mealplanning.MealPlanningService.UpdateComment:input_type -> comments.UpdateCommentRequest
 	220, // 220: mealplanning.MealPlanningService.UpdateUserIngredientPreference:input_type -> mealplanning.UpdateUserIngredientPreferenceRequest
-	221, // 221: mealplanning.MealPlanningService.AddCommentToMeal:output_type -> comments.AddCommentToMealResponse
-	222, // 222: mealplanning.MealPlanningService.AddCommentToMealPlan:output_type -> comments.AddCommentToMealPlanResponse
-	223, // 223: mealplanning.MealPlanningService.AddCommentToRecipe:output_type -> comments.AddCommentToRecipeResponse
-	224, // 224: mealplanning.MealPlanningService.CreateComment:output_type -> comments.CreateCommentResponse
-	225, // 225: mealplanning.MealPlanningService.ArchiveMeal:output_type -> mealplanning.ArchiveMealResponse
-	226, // 226: mealplanning.MealPlanningService.ArchiveMealPlan:output_type -> mealplanning.ArchiveMealPlanResponse
-	227, // 227: mealplanning.MealPlanningService.ArchiveMealPlanEvent:output_type -> mealplanning.ArchiveMealPlanEventResponse
-	228, // 228: mealplanning.MealPlanningService.ArchiveMealPlanGroceryListItem:output_type -> mealplanning.ArchiveMealPlanGroceryListItemResponse
-	229, // 229: mealplanning.MealPlanningService.ArchiveMealPlanOption:output_type -> mealplanning.ArchiveMealPlanOptionResponse
-	230, // 230: mealplanning.MealPlanningService.ArchiveMealPlanOptionVote:output_type -> mealplanning.ArchiveMealPlanOptionVoteResponse
-	231, // 231: mealplanning.MealPlanningService.ArchiveMealPlanRecipeOptionSelection:output_type -> mealplanning.ArchiveMealPlanRecipeOptionSelectionResponse
-	232, // 232: mealplanning.MealPlanningService.ArchiveMealList:output_type -> mealplanning.ArchiveMealListResponse
-	233, // 233: mealplanning.MealPlanningService.ArchiveMealListItem:output_type -> mealplanning.ArchiveMealListItemResponse
-	234, // 234: mealplanning.MealPlanningService.ArchiveRecipe:output_type -> mealplanning.ArchiveRecipeResponse
-	235, // 235: mealplanning.MealPlanningService.ArchiveRecipePrepTask:output_type -> mealplanning.ArchiveRecipePrepTaskResponse
-	236, // 236: mealplanning.MealPlanningService.ArchiveRecipeRating:output_type -> mealplanning.ArchiveRecipeRatingResponse
-	237, // 237: mealplanning.MealPlanningService.ArchiveRecipeList:output_type -> mealplanning.ArchiveRecipeListResponse
-	238, // 238: mealplanning.MealPlanningService.ArchiveRecipeListItem:output_type -> mealplanning.ArchiveRecipeListItemResponse
-	239, // 239: mealplanning.MealPlanningService.ArchiveRecipeStep:output_type -> mealplanning.ArchiveRecipeStepResponse
-	240, // 240: mealplanning.MealPlanningService.ArchiveRecipeStepCompletionCondition:output_type -> mealplanning.ArchiveRecipeStepCompletionConditionResponse
-	241, // 241: mealplanning.MealPlanningService.ArchiveRecipeStepIngredient:output_type -> mealplanning.ArchiveRecipeStepIngredientResponse
-	242, // 242: mealplanning.MealPlanningService.ArchiveRecipeStepInstrument:output_type -> mealplanning.ArchiveRecipeStepInstrumentResponse
-	243, // 243: mealplanning.MealPlanningService.ArchiveRecipeStepProduct:output_type -> mealplanning.ArchiveRecipeStepProductResponse
-	244, // 244: mealplanning.MealPlanningService.ArchiveRecipeStepVessel:output_type -> mealplanning.ArchiveRecipeStepVesselResponse
-	245, // 245: mealplanning.MealPlanningService.ArchiveValidIngredient:output_type -> mealplanning.ArchiveValidIngredientResponse
-	246, // 246: mealplanning.MealPlanningService.ArchiveComment:output_type -> comments.ArchiveCommentResponse
-	247, // 247: mealplanning.MealPlanningService.ArchiveValidIngredientGroup:output_type -> mealplanning.ArchiveValidIngredientGroupResponse
-	248, // 248: mealplanning.MealPlanningService.ArchiveValidIngredientMeasurementUnit:output_type -> mealplanning.ArchiveValidIngredientMeasurementUnitResponse
-	249, // 249: mealplanning.MealPlanningService.ArchiveValidIngredientPreparation:output_type -> mealplanning.ArchiveValidIngredientPreparationResponse
-	250, // 250: mealplanning.MealPlanningService.ArchiveValidPrepTaskConfig:output_type -> mealplanning.ArchiveValidPrepTaskConfigResponse
-	251, // 251: mealplanning.MealPlanningService.ArchiveValidIngredientState:output_type -> mealplanning.ArchiveValidIngredientStateResponse
-	252, // 252: mealplanning.MealPlanningService.ArchiveValidIngredientStateIngredient:output_type -> mealplanning.ArchiveValidIngredientStateIngredientResponse
-	253, // 253: mealplanning.MealPlanningService.ArchiveValidInstrument:output_type -> mealplanning.ArchiveValidInstrumentResponse
-	254, // 254: mealplanning.MealPlanningService.ArchiveValidMeasurementUnit:output_type -> mealplanning.ArchiveValidMeasurementUnitResponse
-	255, // 255: mealplanning.MealPlanningService.ArchiveValidMeasurementUnitConversion:output_type -> mealplanning.ArchiveValidMeasurementUnitConversionResponse
-	256, // 256: mealplanning.MealPlanningService.ArchiveValidPreparation:output_type -> mealplanning.ArchiveValidPreparationResponse
-	257, // 257: mealplanning.MealPlanningService.ArchiveValidPreparationInstrument:output_type -> mealplanning.ArchiveValidPreparationInstrumentResponse
-	258, // 258: mealplanning.MealPlanningService.ArchiveValidPreparationVessel:output_type -> mealplanning.ArchiveValidPreparationVesselResponse
-	259, // 259: mealplanning.MealPlanningService.ArchiveValidVessel:output_type -> mealplanning.ArchiveValidVesselResponse
-	260, // 260: mealplanning.MealPlanningService.CloneRecipe:output_type -> mealplanning.CloneRecipeResponse
-	261, // 261: mealplanning.MealPlanningService.CreateMeal:output_type -> mealplanning.CreateMealResponse
-	262, // 262: mealplanning.MealPlanningService.CreateMealPlan:output_type -> mealplanning.CreateMealPlanResponse
-	263, // 263: mealplanning.MealPlanningService.CreateMealPlanEvent:output_type -> mealplanning.CreateMealPlanEventResponse
-	264, // 264: mealplanning.MealPlanningService.CreateMealPlanOption:output_type -> mealplanning.CreateMealPlanOptionResponse
-	265, // 265: mealplanning.MealPlanningService.CreateMealPlanOptionVote:output_type -> mealplanning.CreateMealPlanOptionVoteResponse
-	266, // 266: mealplanning.MealPlanningService.CreateMealPlanRecipeOptionSelection:output_type -> mealplanning.CreateMealPlanRecipeOptionSelectionResponse
-	267, // 267: mealplanning.MealPlanningService.CreateMealPlanTask:output_type -> mealplanning.CreateMealPlanTaskResponse
-	268, // 268: mealplanning.MealPlanningService.CreateMealList:output_type -> mealplanning.CreateMealListResponse
-	269, // 269: mealplanning.MealPlanningService.CreateMealListItem:output_type -> mealplanning.CreateMealListItemResponse
-	270, // 270: mealplanning.MealPlanningService.CreateRecipe:output_type -> mealplanning.CreateRecipeResponse
-	271, // 271: mealplanning.MealPlanningService.CreateRecipePrepTask:output_type -> mealplanning.CreateRecipePrepTaskResponse
-	272, // 272: mealplanning.MealPlanningService.CreateRecipeRating:output_type -> mealplanning.CreateRecipeRatingResponse
-	273, // 273: mealplanning.MealPlanningService.CreateRecipeList:output_type -> mealplanning.CreateRecipeListResponse
-	274, // 274: mealplanning.MealPlanningService.CreateRecipeListItem:output_type -> mealplanning.CreateRecipeListItemResponse
-	275, // 275: mealplanning.MealPlanningService.CreateRecipeStep:output_type -> mealplanning.CreateRecipeStepResponse
-	276, // 276: mealplanning.MealPlanningService.CreateRecipeStepCompletionCondition:output_type -> mealplanning.CreateRecipeStepCompletionConditionResponse
-	277, // 277: mealplanning.MealPlanningService.CreateRecipeStepIngredient:output_type -> mealplanning.CreateRecipeStepIngredientResponse
-	278, // 278: mealplanning.MealPlanningService.CreateRecipeStepInstrument:output_type -> mealplanning.CreateRecipeStepInstrumentResponse
-	279, // 279: mealplanning.MealPlanningService.CreateRecipeStepProduct:output_type -> mealplanning.CreateRecipeStepProductResponse
-	280, // 280: mealplanning.MealPlanningService.CreateRecipeStepVessel:output_type -> mealplanning.CreateRecipeStepVesselResponse
-	281, // 281: mealplanning.MealPlanningService.CreateValidIngredient:output_type -> mealplanning.CreateValidIngredientResponse
-	282, // 282: mealplanning.MealPlanningService.CreateValidIngredientGroup:output_type -> mealplanning.CreateValidIngredientGroupResponse
-	283, // 283: mealplanning.MealPlanningService.CreateValidIngredientMeasurementUnit:output_type -> mealplanning.CreateValidIngredientMeasurementUnitResponse
-	284, // 284: mealplanning.MealPlanningService.CreateValidIngredientPreparation:output_type -> mealplanning.CreateValidIngredientPreparationResponse
-	285, // 285: mealplanning.MealPlanningService.CreateValidPrepTaskConfig:output_type -> mealplanning.CreateValidPrepTaskConfigResponse
-	286, // 286: mealplanning.MealPlanningService.CreateValidIngredientState:output_type -> mealplanning.CreateValidIngredientStateResponse
-	287, // 287: mealplanning.MealPlanningService.CreateValidIngredientStateIngredient:output_type -> mealplanning.CreateValidIngredientStateIngredientResponse
-	288, // 288: mealplanning.MealPlanningService.CreateValidInstrument:output_type -> mealplanning.CreateValidInstrumentResponse
-	289, // 289: mealplanning.MealPlanningService.CreateValidMeasurementUnit:output_type -> mealplanning.CreateValidMeasurementUnitResponse
-	290, // 290: mealplanning.MealPlanningService.CreateValidMeasurementUnitConversion:output_type -> mealplanning.CreateValidMeasurementUnitConversionResponse
-	291, // 291: mealplanning.MealPlanningService.CreateValidPreparation:output_type -> mealplanning.CreateValidPreparationResponse
-	292, // 292: mealplanning.MealPlanningService.CreateValidPreparationInstrument:output_type -> mealplanning.CreateValidPreparationInstrumentResponse
-	293, // 293: mealplanning.MealPlanningService.CreateValidPreparationVessel:output_type -> mealplanning.CreateValidPreparationVesselResponse
-	294, // 294: mealplanning.MealPlanningService.CreateValidVessel:output_type -> mealplanning.CreateValidVesselResponse
-	295, // 295: mealplanning.MealPlanningService.FinalizeMealPlan:output_type -> mealplanning.FinalizeMealPlanResponse
-	296, // 296: mealplanning.MealPlanningService.GetCommentsForReference:output_type -> comments.GetCommentsForReferenceResponse
-	297, // 297: mealplanning.MealPlanningService.GetMeal:output_type -> mealplanning.GetMealResponse
-	298, // 298: mealplanning.MealPlanningService.GetMealPlan:output_type -> mealplanning.GetMealPlanResponse
-	299, // 299: mealplanning.MealPlanningService.GetMealPlanEvent:output_type -> mealplanning.GetMealPlanEventResponse
-	300, // 300: mealplanning.MealPlanningService.GetMealPlanEvents:output_type -> mealplanning.GetMealPlanEventsResponse
-	301, // 301: mealplanning.MealPlanningService.GetMealPlanGroceryListItem:output_type -> mealplanning.GetMealPlanGroceryListItemResponse
-	302, // 302: mealplanning.MealPlanningService.GetMealPlanGroceryListItemsForMealPlan:output_type -> mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse
-	303, // 303: mealplanning.MealPlanningService.GetMealPlanOption:output_type -> mealplanning.GetMealPlanOptionResponse
-	304, // 304: mealplanning.MealPlanningService.GetMealPlanOptionVote:output_type -> mealplanning.GetMealPlanOptionVoteResponse
-	305, // 305: mealplanning.MealPlanningService.GetMealPlanOptionVotes:output_type -> mealplanning.GetMealPlanOptionVotesResponse
-	306, // 306: mealplanning.MealPlanningService.GetMealPlanOptions:output_type -> mealplanning.GetMealPlanOptionsResponse
-	307, // 307: mealplanning.MealPlanningService.GetMealPlanRecipeOptionSelection:output_type -> mealplanning.GetMealPlanRecipeOptionSelectionResponse
-	308, // 308: mealplanning.MealPlanningService.GetMealPlanRecipeOptionSelectionsForMealPlanOption:output_type -> mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse
-	309, // 309: mealplanning.MealPlanningService.GetMealPlanTask:output_type -> mealplanning.GetMealPlanTaskResponse
-	310, // 310: mealplanning.MealPlanningService.GetMealPlanTasks:output_type -> mealplanning.GetMealPlanTasksResponse
-	311, // 311: mealplanning.MealPlanningService.GetMealPlansForAccount:output_type -> mealplanning.GetMealPlansForAccountResponse
-	312, // 312: mealplanning.MealPlanningService.GetMealLists:output_type -> mealplanning.GetMealListsResponse
-	313, // 313: mealplanning.MealPlanningService.GetMeals:output_type -> mealplanning.GetMealsResponse
-	314, // 314: mealplanning.MealPlanningService.GetMermaidDiagramForMeal:output_type -> mealplanning.GetMermaidDiagramForMealResponse
-	315, // 315: mealplanning.MealPlanningService.GetMermaidDiagramForRecipe:output_type -> mealplanning.GetMermaidDiagramForRecipeResponse
-	316, // 316: mealplanning.MealPlanningService.GetRandomValidIngredient:output_type -> mealplanning.GetRandomValidIngredientResponse
-	317, // 317: mealplanning.MealPlanningService.GetRandomValidInstrument:output_type -> mealplanning.GetRandomValidInstrumentResponse
-	318, // 318: mealplanning.MealPlanningService.GetRandomValidPreparation:output_type -> mealplanning.GetRandomValidPreparationResponse
-	319, // 319: mealplanning.MealPlanningService.GetRandomValidVessel:output_type -> mealplanning.GetRandomValidVesselResponse
-	320, // 320: mealplanning.MealPlanningService.GetRecipe:output_type -> mealplanning.GetRecipeResponse
-	321, // 321: mealplanning.MealPlanningService.EstimateRecipePrepTasks:output_type -> mealplanning.EstimateRecipePrepTasksResponse
-	322, // 322: mealplanning.MealPlanningService.GetRecipePrepTask:output_type -> mealplanning.GetRecipePrepTaskResponse
-	323, // 323: mealplanning.MealPlanningService.GetRecipePrepTasks:output_type -> mealplanning.GetRecipePrepTasksResponse
-	324, // 324: mealplanning.MealPlanningService.GetRecipeRating:output_type -> mealplanning.GetRecipeRatingResponse
-	325, // 325: mealplanning.MealPlanningService.GetRecipeRatingsForRecipe:output_type -> mealplanning.GetRecipeRatingsForRecipeResponse
-	326, // 326: mealplanning.MealPlanningService.GetRecipeStep:output_type -> mealplanning.GetRecipeStepResponse
-	327, // 327: mealplanning.MealPlanningService.GetRecipeStepCompletionCondition:output_type -> mealplanning.GetRecipeStepCompletionConditionResponse
-	328, // 328: mealplanning.MealPlanningService.GetRecipeStepCompletionConditions:output_type -> mealplanning.GetRecipeStepCompletionConditionsResponse
-	329, // 329: mealplanning.MealPlanningService.GetRecipeStepIngredient:output_type -> mealplanning.GetRecipeStepIngredientResponse
-	330, // 330: mealplanning.MealPlanningService.GetRecipeStepIngredients:output_type -> mealplanning.GetRecipeStepIngredientsResponse
-	331, // 331: mealplanning.MealPlanningService.GetRecipeStepInstrument:output_type -> mealplanning.GetRecipeStepInstrumentResponse
-	332, // 332: mealplanning.MealPlanningService.GetRecipeStepInstruments:output_type -> mealplanning.GetRecipeStepInstrumentsResponse
-	333, // 333: mealplanning.MealPlanningService.GetRecipeStepProduct:output_type -> mealplanning.GetRecipeStepProductResponse
-	334, // 334: mealplanning.MealPlanningService.GetRecipeStepProducts:output_type -> mealplanning.GetRecipeStepProductsResponse
-	335, // 335: mealplanning.MealPlanningService.GetRecipeStepVessel:output_type -> mealplanning.GetRecipeStepVesselResponse
-	336, // 336: mealplanning.MealPlanningService.GetRecipeStepVessels:output_type -> mealplanning.GetRecipeStepVesselsResponse
-	337, // 337: mealplanning.MealPlanningService.GetRecipeSteps:output_type -> mealplanning.GetRecipeStepsResponse
-	338, // 338: mealplanning.MealPlanningService.GetRecipeLists:output_type -> mealplanning.GetRecipeListsResponse
-	339, // 339: mealplanning.MealPlanningService.GetRecipes:output_type -> mealplanning.GetRecipesResponse
-	340, // 340: mealplanning.MealPlanningService.GetValidIngredient:output_type -> mealplanning.GetValidIngredientResponse
-	341, // 341: mealplanning.MealPlanningService.GetValidIngredientGroup:output_type -> mealplanning.GetValidIngredientGroupResponse
-	342, // 342: mealplanning.MealPlanningService.GetValidIngredientGroups:output_type -> mealplanning.GetValidIngredientGroupsResponse
-	343, // 343: mealplanning.MealPlanningService.GetValidIngredientMeasurementUnit:output_type -> mealplanning.GetValidIngredientMeasurementUnitResponse
-	344, // 344: mealplanning.MealPlanningService.GetValidIngredientMeasurementUnits:output_type -> mealplanning.GetValidIngredientMeasurementUnitsResponse
-	345, // 345: mealplanning.MealPlanningService.GetValidIngredientMeasurementUnitsByIngredient:output_type -> mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse
-	346, // 346: mealplanning.MealPlanningService.GetValidIngredientMeasurementUnitsByMeasurementUnit:output_type -> mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse
-	347, // 347: mealplanning.MealPlanningService.GetValidIngredientPreparation:output_type -> mealplanning.GetValidIngredientPreparationResponse
-	348, // 348: mealplanning.MealPlanningService.GetValidIngredientPreparations:output_type -> mealplanning.GetValidIngredientPreparationsResponse
-	349, // 349: mealplanning.MealPlanningService.GetValidIngredientPreparationsByIngredient:output_type -> mealplanning.GetValidIngredientPreparationsByIngredientResponse
-	350, // 350: mealplanning.MealPlanningService.GetValidIngredientPreparationsByPreparation:output_type -> mealplanning.GetValidIngredientPreparationsByPreparationResponse
-	351, // 351: mealplanning.MealPlanningService.GetValidPrepTaskConfig:output_type -> mealplanning.GetValidPrepTaskConfigResponse
-	352, // 352: mealplanning.MealPlanningService.GetValidPrepTaskConfigs:output_type -> mealplanning.GetValidPrepTaskConfigsResponse
-	353, // 353: mealplanning.MealPlanningService.GetValidPrepTaskConfigsByIngredient:output_type -> mealplanning.GetValidPrepTaskConfigsByIngredientResponse
-	354, // 354: mealplanning.MealPlanningService.GetValidPrepTaskConfigsByPreparation:output_type -> mealplanning.GetValidPrepTaskConfigsByPreparationResponse
-	355, // 355: mealplanning.MealPlanningService.GetValidPrepTaskConfigsByIngredientAndPreparation:output_type -> mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse
-	356, // 356: mealplanning.MealPlanningService.GetValidIngredientState:output_type -> mealplanning.GetValidIngredientStateResponse
-	357, // 357: mealplanning.MealPlanningService.GetValidIngredientStateIngredient:output_type -> mealplanning.GetValidIngredientStateIngredientResponse
-	358, // 358: mealplanning.MealPlanningService.GetValidIngredientStateIngredients:output_type -> mealplanning.GetValidIngredientStateIngredientsResponse
-	359, // 359: mealplanning.MealPlanningService.GetValidIngredientStateIngredientsByIngredient:output_type -> mealplanning.GetValidIngredientStateIngredientsByIngredientResponse
-	360, // 360: mealplanning.MealPlanningService.GetValidIngredientStateIngredientsByIngredientState:output_type -> mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse
-	361, // 361: mealplanning.MealPlanningService.GetValidIngredientStates:output_type -> mealplanning.GetValidIngredientStatesResponse
-	362, // 362: mealplanning.MealPlanningService.GetValidIngredients:output_type -> mealplanning.GetValidIngredientsResponse
-	363, // 363: mealplanning.MealPlanningService.GetValidInstrument:output_type -> mealplanning.GetValidInstrumentResponse
-	364, // 364: mealplanning.MealPlanningService.GetValidInstruments:output_type -> mealplanning.GetValidInstrumentsResponse
-	365, // 365: mealplanning.MealPlanningService.GetValidMeasurementUnit:output_type -> mealplanning.GetValidMeasurementUnitResponse
-	366, // 366: mealplanning.MealPlanningService.GetValidMeasurementUnitConversion:output_type -> mealplanning.GetValidMeasurementUnitConversionResponse
-	367, // 367: mealplanning.MealPlanningService.GetValidMeasurementUnitConversionsForUnit:output_type -> mealplanning.GetValidMeasurementUnitConversionsForUnitResponse
-	368, // 368: mealplanning.MealPlanningService.GetValidMeasurementUnits:output_type -> mealplanning.GetValidMeasurementUnitsResponse
-	369, // 369: mealplanning.MealPlanningService.GetValidPreparation:output_type -> mealplanning.GetValidPreparationResponse
-	370, // 370: mealplanning.MealPlanningService.GetValidPreparationInstrument:output_type -> mealplanning.GetValidPreparationInstrumentResponse
-	371, // 371: mealplanning.MealPlanningService.GetValidPreparationInstruments:output_type -> mealplanning.GetValidPreparationInstrumentsResponse
-	372, // 372: mealplanning.MealPlanningService.GetValidPreparationInstrumentsByInstrument:output_type -> mealplanning.GetValidPreparationInstrumentsByInstrumentResponse
-	373, // 373: mealplanning.MealPlanningService.GetValidPreparationInstrumentsByPreparation:output_type -> mealplanning.GetValidPreparationInstrumentsByPreparationResponse
-	374, // 374: mealplanning.MealPlanningService.GetValidPreparationVessel:output_type -> mealplanning.GetValidPreparationVesselResponse
-	375, // 375: mealplanning.MealPlanningService.GetValidPreparationVessels:output_type -> mealplanning.GetValidPreparationVesselsResponse
-	376, // 376: mealplanning.MealPlanningService.GetValidPreparationVesselsByPreparation:output_type -> mealplanning.GetValidPreparationVesselsByPreparationResponse
-	377, // 377: mealplanning.MealPlanningService.GetValidPreparationVesselsByVessel:output_type -> mealplanning.GetValidPreparationVesselsByVesselResponse
-	378, // 378: mealplanning.MealPlanningService.GetValidPreparations:output_type -> mealplanning.GetValidPreparationsResponse
-	379, // 379: mealplanning.MealPlanningService.GetValidVessel:output_type -> mealplanning.GetValidVesselResponse
-	380, // 380: mealplanning.MealPlanningService.GetValidVessels:output_type -> mealplanning.GetValidVesselsResponse
-	381, // 381: mealplanning.MealPlanningService.RunFinalizeMealPlanWorker:output_type -> mealplanning.RunFinalizeMealPlanWorkerResponse
-	382, // 382: mealplanning.MealPlanningService.RunMealPlanGroceryListInitializerWorker:output_type -> mealplanning.RunMealPlanGroceryListInitializerWorkerResponse
-	383, // 383: mealplanning.MealPlanningService.RunMealPlanTaskCreatorWorker:output_type -> mealplanning.RunMealPlanTaskCreatorWorkerResponse
-	384, // 384: mealplanning.MealPlanningService.SearchForMeals:output_type -> mealplanning.SearchForMealsResponse
-	385, // 385: mealplanning.MealPlanningService.SearchForRecipes:output_type -> mealplanning.SearchForRecipesResponse
-	386, // 386: mealplanning.MealPlanningService.SearchForMealEligibleRecipes:output_type -> mealplanning.SearchForMealEligibleRecipesResponse
-	387, // 387: mealplanning.MealPlanningService.SearchForValidIngredientGroups:output_type -> mealplanning.SearchForValidIngredientGroupsResponse
-	388, // 388: mealplanning.MealPlanningService.SearchForValidIngredientStates:output_type -> mealplanning.SearchForValidIngredientStatesResponse
-	389, // 389: mealplanning.MealPlanningService.SearchForValidIngredients:output_type -> mealplanning.SearchForValidIngredientsResponse
-	390, // 390: mealplanning.MealPlanningService.SearchForValidInstruments:output_type -> mealplanning.SearchForValidInstrumentsResponse
-	391, // 391: mealplanning.MealPlanningService.SearchForValidMeasurementUnits:output_type -> mealplanning.SearchForValidMeasurementUnitsResponse
-	392, // 392: mealplanning.MealPlanningService.SearchForValidPreparations:output_type -> mealplanning.SearchForValidPreparationsResponse
-	393, // 393: mealplanning.MealPlanningService.SearchForValidVessels:output_type -> mealplanning.SearchForValidVesselsResponse
-	394, // 394: mealplanning.MealPlanningService.SearchValidIngredientsByPreparation:output_type -> mealplanning.SearchValidIngredientsByPreparationResponse
-	395, // 395: mealplanning.MealPlanningService.SearchValidMeasurementUnitsByIngredient:output_type -> mealplanning.SearchValidMeasurementUnitsByIngredientResponse
-	396, // 396: mealplanning.MealPlanningService.UpdateMealPlan:output_type -> mealplanning.UpdateMealPlanResponse
-	397, // 397: mealplanning.MealPlanningService.UpdateMealPlanEvent:output_type -> mealplanning.UpdateMealPlanEventResponse
-	398, // 398: mealplanning.MealPlanningService.UpdateMealPlanGroceryListItem:output_type -> mealplanning.UpdateMealPlanGroceryListItemResponse
-	399, // 399: mealplanning.MealPlanningService.UpdateMealPlanOption:output_type -> mealplanning.UpdateMealPlanOptionResponse
-	400, // 400: mealplanning.MealPlanningService.UpdateMealPlanOptionVote:output_type -> mealplanning.UpdateMealPlanOptionVoteResponse
-	401, // 401: mealplanning.MealPlanningService.UpdateMealPlanRecipeOptionSelection:output_type -> mealplanning.UpdateMealPlanRecipeOptionSelectionResponse
-	402, // 402: mealplanning.MealPlanningService.UpdateMealPlanTaskStatus:output_type -> mealplanning.UpdateMealPlanTaskStatusResponse
-	403, // 403: mealplanning.MealPlanningService.UpdateMealList:output_type -> mealplanning.UpdateMealListResponse
-	404, // 404: mealplanning.MealPlanningService.UpdateMealListItem:output_type -> mealplanning.UpdateMealListItemResponse
-	405, // 405: mealplanning.MealPlanningService.UpdateRecipe:output_type -> mealplanning.UpdateRecipeResponse
-	406, // 406: mealplanning.MealPlanningService.UpdateRecipeStatus:output_type -> mealplanning.UpdateRecipeStatusResponse
-	407, // 407: mealplanning.MealPlanningService.UpdateRecipePrepTask:output_type -> mealplanning.UpdateRecipePrepTaskResponse
-	408, // 408: mealplanning.MealPlanningService.UpdateRecipeRating:output_type -> mealplanning.UpdateRecipeRatingResponse
-	409, // 409: mealplanning.MealPlanningService.UpdateRecipeList:output_type -> mealplanning.UpdateRecipeListResponse
-	410, // 410: mealplanning.MealPlanningService.UpdateRecipeListItem:output_type -> mealplanning.UpdateRecipeListItemResponse
-	411, // 411: mealplanning.MealPlanningService.UpdateRecipeStep:output_type -> mealplanning.UpdateRecipeStepResponse
-	412, // 412: mealplanning.MealPlanningService.UpdateRecipeStepCompletionCondition:output_type -> mealplanning.UpdateRecipeStepCompletionConditionResponse
-	413, // 413: mealplanning.MealPlanningService.UpdateRecipeStepIngredient:output_type -> mealplanning.UpdateRecipeStepIngredientResponse
-	414, // 414: mealplanning.MealPlanningService.UpdateRecipeStepInstrument:output_type -> mealplanning.UpdateRecipeStepInstrumentResponse
-	415, // 415: mealplanning.MealPlanningService.UpdateRecipeStepProduct:output_type -> mealplanning.UpdateRecipeStepProductResponse
-	416, // 416: mealplanning.MealPlanningService.UpdateRecipeStepVessel:output_type -> mealplanning.UpdateRecipeStepVesselResponse
-	417, // 417: mealplanning.MealPlanningService.UpdateValidIngredient:output_type -> mealplanning.UpdateValidIngredientResponse
-	418, // 418: mealplanning.MealPlanningService.UpdateValidIngredientGroup:output_type -> mealplanning.UpdateValidIngredientGroupResponse
-	419, // 419: mealplanning.MealPlanningService.UpdateValidIngredientMeasurementUnit:output_type -> mealplanning.UpdateValidIngredientMeasurementUnitResponse
-	420, // 420: mealplanning.MealPlanningService.UpdateValidIngredientPreparation:output_type -> mealplanning.UpdateValidIngredientPreparationResponse
-	421, // 421: mealplanning.MealPlanningService.UpdateValidPrepTaskConfig:output_type -> mealplanning.UpdateValidPrepTaskConfigResponse
-	422, // 422: mealplanning.MealPlanningService.UpdateValidIngredientState:output_type -> mealplanning.UpdateValidIngredientStateResponse
-	423, // 423: mealplanning.MealPlanningService.UpdateValidIngredientStateIngredient:output_type -> mealplanning.UpdateValidIngredientStateIngredientResponse
-	424, // 424: mealplanning.MealPlanningService.UpdateValidInstrument:output_type -> mealplanning.UpdateValidInstrumentResponse
-	425, // 425: mealplanning.MealPlanningService.UpdateValidMeasurementUnit:output_type -> mealplanning.UpdateValidMeasurementUnitResponse
-	426, // 426: mealplanning.MealPlanningService.UpdateValidMeasurementUnitConversion:output_type -> mealplanning.UpdateValidMeasurementUnitConversionResponse
-	427, // 427: mealplanning.MealPlanningService.UpdateValidPreparation:output_type -> mealplanning.UpdateValidPreparationResponse
-	428, // 428: mealplanning.MealPlanningService.UpdateValidPreparationInstrument:output_type -> mealplanning.UpdateValidPreparationInstrumentResponse
-	429, // 429: mealplanning.MealPlanningService.UpdateValidPreparationVessel:output_type -> mealplanning.UpdateValidPreparationVesselResponse
-	430, // 430: mealplanning.MealPlanningService.UpdateValidVessel:output_type -> mealplanning.UpdateValidVesselResponse
-	431, // 431: mealplanning.MealPlanningService.ArchiveAccountInstrumentOwnership:output_type -> mealplanning.ArchiveAccountInstrumentOwnershipResponse
-	432, // 432: mealplanning.MealPlanningService.ArchiveUserIngredientPreference:output_type -> mealplanning.ArchiveUserIngredientPreferenceResponse
-	433, // 433: mealplanning.MealPlanningService.CreateAccountInstrumentOwnership:output_type -> mealplanning.CreateAccountInstrumentOwnershipResponse
-	434, // 434: mealplanning.MealPlanningService.CreateUserIngredientPreference:output_type -> mealplanning.CreateUserIngredientPreferenceResponse
-	435, // 435: mealplanning.MealPlanningService.GetAccountInstrumentOwnership:output_type -> mealplanning.GetAccountInstrumentOwnershipResponse
-	436, // 436: mealplanning.MealPlanningService.GetAccountInstrumentOwnerships:output_type -> mealplanning.GetAccountInstrumentOwnershipsResponse
-	437, // 437: mealplanning.MealPlanningService.GetUserIngredientPreference:output_type -> mealplanning.GetUserIngredientPreferenceResponse
-	438, // 438: mealplanning.MealPlanningService.GetUserIngredientPreferences:output_type -> mealplanning.GetUserIngredientPreferencesResponse
-	439, // 439: mealplanning.MealPlanningService.UpdateAccountInstrumentOwnership:output_type -> mealplanning.UpdateAccountInstrumentOwnershipResponse
-	440, // 440: mealplanning.MealPlanningService.UpdateComment:output_type -> comments.UpdateCommentResponse
-	441, // 441: mealplanning.MealPlanningService.UpdateUserIngredientPreference:output_type -> mealplanning.UpdateUserIngredientPreferenceResponse
-	221, // [221:442] is the sub-list for method output_type
-	0,   // [0:221] is the sub-list for method input_type
+	221, // 221: mealplanning.MealPlanningService.UploadMealImage:input_type -> mealplanning.UploadMealMediaRequest
+	222, // 222: mealplanning.MealPlanningService.UploadRecipeImage:input_type -> mealplanning.UploadRecipeMediaRequest
+	223, // 223: mealplanning.MealPlanningService.AddCommentToMeal:output_type -> comments.AddCommentToMealResponse
+	224, // 224: mealplanning.MealPlanningService.AddCommentToMealPlan:output_type -> comments.AddCommentToMealPlanResponse
+	225, // 225: mealplanning.MealPlanningService.AddCommentToRecipe:output_type -> comments.AddCommentToRecipeResponse
+	226, // 226: mealplanning.MealPlanningService.CreateComment:output_type -> comments.CreateCommentResponse
+	227, // 227: mealplanning.MealPlanningService.ArchiveMeal:output_type -> mealplanning.ArchiveMealResponse
+	228, // 228: mealplanning.MealPlanningService.ArchiveMealPlan:output_type -> mealplanning.ArchiveMealPlanResponse
+	229, // 229: mealplanning.MealPlanningService.ArchiveMealPlanEvent:output_type -> mealplanning.ArchiveMealPlanEventResponse
+	230, // 230: mealplanning.MealPlanningService.ArchiveMealPlanGroceryListItem:output_type -> mealplanning.ArchiveMealPlanGroceryListItemResponse
+	231, // 231: mealplanning.MealPlanningService.ArchiveMealPlanOption:output_type -> mealplanning.ArchiveMealPlanOptionResponse
+	232, // 232: mealplanning.MealPlanningService.ArchiveMealPlanOptionVote:output_type -> mealplanning.ArchiveMealPlanOptionVoteResponse
+	233, // 233: mealplanning.MealPlanningService.ArchiveMealPlanRecipeOptionSelection:output_type -> mealplanning.ArchiveMealPlanRecipeOptionSelectionResponse
+	234, // 234: mealplanning.MealPlanningService.ArchiveMealList:output_type -> mealplanning.ArchiveMealListResponse
+	235, // 235: mealplanning.MealPlanningService.ArchiveMealListItem:output_type -> mealplanning.ArchiveMealListItemResponse
+	236, // 236: mealplanning.MealPlanningService.ArchiveRecipe:output_type -> mealplanning.ArchiveRecipeResponse
+	237, // 237: mealplanning.MealPlanningService.ArchiveRecipePrepTask:output_type -> mealplanning.ArchiveRecipePrepTaskResponse
+	238, // 238: mealplanning.MealPlanningService.ArchiveRecipeRating:output_type -> mealplanning.ArchiveRecipeRatingResponse
+	239, // 239: mealplanning.MealPlanningService.ArchiveRecipeList:output_type -> mealplanning.ArchiveRecipeListResponse
+	240, // 240: mealplanning.MealPlanningService.ArchiveRecipeListItem:output_type -> mealplanning.ArchiveRecipeListItemResponse
+	241, // 241: mealplanning.MealPlanningService.ArchiveRecipeStep:output_type -> mealplanning.ArchiveRecipeStepResponse
+	242, // 242: mealplanning.MealPlanningService.ArchiveRecipeStepCompletionCondition:output_type -> mealplanning.ArchiveRecipeStepCompletionConditionResponse
+	243, // 243: mealplanning.MealPlanningService.ArchiveRecipeStepIngredient:output_type -> mealplanning.ArchiveRecipeStepIngredientResponse
+	244, // 244: mealplanning.MealPlanningService.ArchiveRecipeStepInstrument:output_type -> mealplanning.ArchiveRecipeStepInstrumentResponse
+	245, // 245: mealplanning.MealPlanningService.ArchiveRecipeStepProduct:output_type -> mealplanning.ArchiveRecipeStepProductResponse
+	246, // 246: mealplanning.MealPlanningService.ArchiveRecipeStepVessel:output_type -> mealplanning.ArchiveRecipeStepVesselResponse
+	247, // 247: mealplanning.MealPlanningService.ArchiveValidIngredient:output_type -> mealplanning.ArchiveValidIngredientResponse
+	248, // 248: mealplanning.MealPlanningService.ArchiveComment:output_type -> comments.ArchiveCommentResponse
+	249, // 249: mealplanning.MealPlanningService.ArchiveValidIngredientGroup:output_type -> mealplanning.ArchiveValidIngredientGroupResponse
+	250, // 250: mealplanning.MealPlanningService.ArchiveValidIngredientMeasurementUnit:output_type -> mealplanning.ArchiveValidIngredientMeasurementUnitResponse
+	251, // 251: mealplanning.MealPlanningService.ArchiveValidIngredientPreparation:output_type -> mealplanning.ArchiveValidIngredientPreparationResponse
+	252, // 252: mealplanning.MealPlanningService.ArchiveValidPrepTaskConfig:output_type -> mealplanning.ArchiveValidPrepTaskConfigResponse
+	253, // 253: mealplanning.MealPlanningService.ArchiveValidIngredientState:output_type -> mealplanning.ArchiveValidIngredientStateResponse
+	254, // 254: mealplanning.MealPlanningService.ArchiveValidIngredientStateIngredient:output_type -> mealplanning.ArchiveValidIngredientStateIngredientResponse
+	255, // 255: mealplanning.MealPlanningService.ArchiveValidInstrument:output_type -> mealplanning.ArchiveValidInstrumentResponse
+	256, // 256: mealplanning.MealPlanningService.ArchiveValidMeasurementUnit:output_type -> mealplanning.ArchiveValidMeasurementUnitResponse
+	257, // 257: mealplanning.MealPlanningService.ArchiveValidMeasurementUnitConversion:output_type -> mealplanning.ArchiveValidMeasurementUnitConversionResponse
+	258, // 258: mealplanning.MealPlanningService.ArchiveValidPreparation:output_type -> mealplanning.ArchiveValidPreparationResponse
+	259, // 259: mealplanning.MealPlanningService.ArchiveValidPreparationInstrument:output_type -> mealplanning.ArchiveValidPreparationInstrumentResponse
+	260, // 260: mealplanning.MealPlanningService.ArchiveValidPreparationVessel:output_type -> mealplanning.ArchiveValidPreparationVesselResponse
+	261, // 261: mealplanning.MealPlanningService.ArchiveValidVessel:output_type -> mealplanning.ArchiveValidVesselResponse
+	262, // 262: mealplanning.MealPlanningService.CloneRecipe:output_type -> mealplanning.CloneRecipeResponse
+	263, // 263: mealplanning.MealPlanningService.CreateMeal:output_type -> mealplanning.CreateMealResponse
+	264, // 264: mealplanning.MealPlanningService.CreateMealPlan:output_type -> mealplanning.CreateMealPlanResponse
+	265, // 265: mealplanning.MealPlanningService.CreateMealPlanEvent:output_type -> mealplanning.CreateMealPlanEventResponse
+	266, // 266: mealplanning.MealPlanningService.CreateMealPlanOption:output_type -> mealplanning.CreateMealPlanOptionResponse
+	267, // 267: mealplanning.MealPlanningService.CreateMealPlanOptionVote:output_type -> mealplanning.CreateMealPlanOptionVoteResponse
+	268, // 268: mealplanning.MealPlanningService.CreateMealPlanRecipeOptionSelection:output_type -> mealplanning.CreateMealPlanRecipeOptionSelectionResponse
+	269, // 269: mealplanning.MealPlanningService.CreateMealPlanTask:output_type -> mealplanning.CreateMealPlanTaskResponse
+	270, // 270: mealplanning.MealPlanningService.CreateMealList:output_type -> mealplanning.CreateMealListResponse
+	271, // 271: mealplanning.MealPlanningService.CreateMealListItem:output_type -> mealplanning.CreateMealListItemResponse
+	272, // 272: mealplanning.MealPlanningService.CreateRecipe:output_type -> mealplanning.CreateRecipeResponse
+	273, // 273: mealplanning.MealPlanningService.CreateRecipePrepTask:output_type -> mealplanning.CreateRecipePrepTaskResponse
+	274, // 274: mealplanning.MealPlanningService.CreateRecipeRating:output_type -> mealplanning.CreateRecipeRatingResponse
+	275, // 275: mealplanning.MealPlanningService.CreateRecipeList:output_type -> mealplanning.CreateRecipeListResponse
+	276, // 276: mealplanning.MealPlanningService.CreateRecipeListItem:output_type -> mealplanning.CreateRecipeListItemResponse
+	277, // 277: mealplanning.MealPlanningService.CreateRecipeStep:output_type -> mealplanning.CreateRecipeStepResponse
+	278, // 278: mealplanning.MealPlanningService.CreateRecipeStepCompletionCondition:output_type -> mealplanning.CreateRecipeStepCompletionConditionResponse
+	279, // 279: mealplanning.MealPlanningService.CreateRecipeStepIngredient:output_type -> mealplanning.CreateRecipeStepIngredientResponse
+	280, // 280: mealplanning.MealPlanningService.CreateRecipeStepInstrument:output_type -> mealplanning.CreateRecipeStepInstrumentResponse
+	281, // 281: mealplanning.MealPlanningService.CreateRecipeStepProduct:output_type -> mealplanning.CreateRecipeStepProductResponse
+	282, // 282: mealplanning.MealPlanningService.CreateRecipeStepVessel:output_type -> mealplanning.CreateRecipeStepVesselResponse
+	283, // 283: mealplanning.MealPlanningService.CreateValidIngredient:output_type -> mealplanning.CreateValidIngredientResponse
+	284, // 284: mealplanning.MealPlanningService.CreateValidIngredientGroup:output_type -> mealplanning.CreateValidIngredientGroupResponse
+	285, // 285: mealplanning.MealPlanningService.CreateValidIngredientMeasurementUnit:output_type -> mealplanning.CreateValidIngredientMeasurementUnitResponse
+	286, // 286: mealplanning.MealPlanningService.CreateValidIngredientPreparation:output_type -> mealplanning.CreateValidIngredientPreparationResponse
+	287, // 287: mealplanning.MealPlanningService.CreateValidPrepTaskConfig:output_type -> mealplanning.CreateValidPrepTaskConfigResponse
+	288, // 288: mealplanning.MealPlanningService.CreateValidIngredientState:output_type -> mealplanning.CreateValidIngredientStateResponse
+	289, // 289: mealplanning.MealPlanningService.CreateValidIngredientStateIngredient:output_type -> mealplanning.CreateValidIngredientStateIngredientResponse
+	290, // 290: mealplanning.MealPlanningService.CreateValidInstrument:output_type -> mealplanning.CreateValidInstrumentResponse
+	291, // 291: mealplanning.MealPlanningService.CreateValidMeasurementUnit:output_type -> mealplanning.CreateValidMeasurementUnitResponse
+	292, // 292: mealplanning.MealPlanningService.CreateValidMeasurementUnitConversion:output_type -> mealplanning.CreateValidMeasurementUnitConversionResponse
+	293, // 293: mealplanning.MealPlanningService.CreateValidPreparation:output_type -> mealplanning.CreateValidPreparationResponse
+	294, // 294: mealplanning.MealPlanningService.CreateValidPreparationInstrument:output_type -> mealplanning.CreateValidPreparationInstrumentResponse
+	295, // 295: mealplanning.MealPlanningService.CreateValidPreparationVessel:output_type -> mealplanning.CreateValidPreparationVesselResponse
+	296, // 296: mealplanning.MealPlanningService.CreateValidVessel:output_type -> mealplanning.CreateValidVesselResponse
+	297, // 297: mealplanning.MealPlanningService.FinalizeMealPlan:output_type -> mealplanning.FinalizeMealPlanResponse
+	298, // 298: mealplanning.MealPlanningService.GetCommentsForReference:output_type -> comments.GetCommentsForReferenceResponse
+	299, // 299: mealplanning.MealPlanningService.GetMeal:output_type -> mealplanning.GetMealResponse
+	300, // 300: mealplanning.MealPlanningService.GetMealPlan:output_type -> mealplanning.GetMealPlanResponse
+	301, // 301: mealplanning.MealPlanningService.GetMealPlanEvent:output_type -> mealplanning.GetMealPlanEventResponse
+	302, // 302: mealplanning.MealPlanningService.GetMealPlanEvents:output_type -> mealplanning.GetMealPlanEventsResponse
+	303, // 303: mealplanning.MealPlanningService.GetMealPlanGroceryListItem:output_type -> mealplanning.GetMealPlanGroceryListItemResponse
+	304, // 304: mealplanning.MealPlanningService.GetMealPlanGroceryListItemsForMealPlan:output_type -> mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse
+	305, // 305: mealplanning.MealPlanningService.GetMealPlanOption:output_type -> mealplanning.GetMealPlanOptionResponse
+	306, // 306: mealplanning.MealPlanningService.GetMealPlanOptionVote:output_type -> mealplanning.GetMealPlanOptionVoteResponse
+	307, // 307: mealplanning.MealPlanningService.GetMealPlanOptionVotes:output_type -> mealplanning.GetMealPlanOptionVotesResponse
+	308, // 308: mealplanning.MealPlanningService.GetMealPlanOptions:output_type -> mealplanning.GetMealPlanOptionsResponse
+	309, // 309: mealplanning.MealPlanningService.GetMealPlanRecipeOptionSelection:output_type -> mealplanning.GetMealPlanRecipeOptionSelectionResponse
+	310, // 310: mealplanning.MealPlanningService.GetMealPlanRecipeOptionSelectionsForMealPlanOption:output_type -> mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse
+	311, // 311: mealplanning.MealPlanningService.GetMealPlanTask:output_type -> mealplanning.GetMealPlanTaskResponse
+	312, // 312: mealplanning.MealPlanningService.GetMealPlanTasks:output_type -> mealplanning.GetMealPlanTasksResponse
+	313, // 313: mealplanning.MealPlanningService.GetMealPlansForAccount:output_type -> mealplanning.GetMealPlansForAccountResponse
+	314, // 314: mealplanning.MealPlanningService.GetMealLists:output_type -> mealplanning.GetMealListsResponse
+	315, // 315: mealplanning.MealPlanningService.GetMeals:output_type -> mealplanning.GetMealsResponse
+	316, // 316: mealplanning.MealPlanningService.GetMermaidDiagramForMeal:output_type -> mealplanning.GetMermaidDiagramForMealResponse
+	317, // 317: mealplanning.MealPlanningService.GetMermaidDiagramForRecipe:output_type -> mealplanning.GetMermaidDiagramForRecipeResponse
+	318, // 318: mealplanning.MealPlanningService.GetRandomValidIngredient:output_type -> mealplanning.GetRandomValidIngredientResponse
+	319, // 319: mealplanning.MealPlanningService.GetRandomValidInstrument:output_type -> mealplanning.GetRandomValidInstrumentResponse
+	320, // 320: mealplanning.MealPlanningService.GetRandomValidPreparation:output_type -> mealplanning.GetRandomValidPreparationResponse
+	321, // 321: mealplanning.MealPlanningService.GetRandomValidVessel:output_type -> mealplanning.GetRandomValidVesselResponse
+	322, // 322: mealplanning.MealPlanningService.GetRecipe:output_type -> mealplanning.GetRecipeResponse
+	323, // 323: mealplanning.MealPlanningService.EstimateRecipePrepTasks:output_type -> mealplanning.EstimateRecipePrepTasksResponse
+	324, // 324: mealplanning.MealPlanningService.GetRecipePrepTask:output_type -> mealplanning.GetRecipePrepTaskResponse
+	325, // 325: mealplanning.MealPlanningService.GetRecipePrepTasks:output_type -> mealplanning.GetRecipePrepTasksResponse
+	326, // 326: mealplanning.MealPlanningService.GetRecipeRating:output_type -> mealplanning.GetRecipeRatingResponse
+	327, // 327: mealplanning.MealPlanningService.GetRecipeRatingsForRecipe:output_type -> mealplanning.GetRecipeRatingsForRecipeResponse
+	328, // 328: mealplanning.MealPlanningService.GetRecipeStep:output_type -> mealplanning.GetRecipeStepResponse
+	329, // 329: mealplanning.MealPlanningService.GetRecipeStepCompletionCondition:output_type -> mealplanning.GetRecipeStepCompletionConditionResponse
+	330, // 330: mealplanning.MealPlanningService.GetRecipeStepCompletionConditions:output_type -> mealplanning.GetRecipeStepCompletionConditionsResponse
+	331, // 331: mealplanning.MealPlanningService.GetRecipeStepIngredient:output_type -> mealplanning.GetRecipeStepIngredientResponse
+	332, // 332: mealplanning.MealPlanningService.GetRecipeStepIngredients:output_type -> mealplanning.GetRecipeStepIngredientsResponse
+	333, // 333: mealplanning.MealPlanningService.GetRecipeStepInstrument:output_type -> mealplanning.GetRecipeStepInstrumentResponse
+	334, // 334: mealplanning.MealPlanningService.GetRecipeStepInstruments:output_type -> mealplanning.GetRecipeStepInstrumentsResponse
+	335, // 335: mealplanning.MealPlanningService.GetRecipeStepProduct:output_type -> mealplanning.GetRecipeStepProductResponse
+	336, // 336: mealplanning.MealPlanningService.GetRecipeStepProducts:output_type -> mealplanning.GetRecipeStepProductsResponse
+	337, // 337: mealplanning.MealPlanningService.GetRecipeStepVessel:output_type -> mealplanning.GetRecipeStepVesselResponse
+	338, // 338: mealplanning.MealPlanningService.GetRecipeStepVessels:output_type -> mealplanning.GetRecipeStepVesselsResponse
+	339, // 339: mealplanning.MealPlanningService.GetRecipeSteps:output_type -> mealplanning.GetRecipeStepsResponse
+	340, // 340: mealplanning.MealPlanningService.GetRecipeLists:output_type -> mealplanning.GetRecipeListsResponse
+	341, // 341: mealplanning.MealPlanningService.GetRecipes:output_type -> mealplanning.GetRecipesResponse
+	342, // 342: mealplanning.MealPlanningService.GetValidIngredient:output_type -> mealplanning.GetValidIngredientResponse
+	343, // 343: mealplanning.MealPlanningService.GetValidIngredientGroup:output_type -> mealplanning.GetValidIngredientGroupResponse
+	344, // 344: mealplanning.MealPlanningService.GetValidIngredientGroups:output_type -> mealplanning.GetValidIngredientGroupsResponse
+	345, // 345: mealplanning.MealPlanningService.GetValidIngredientMeasurementUnit:output_type -> mealplanning.GetValidIngredientMeasurementUnitResponse
+	346, // 346: mealplanning.MealPlanningService.GetValidIngredientMeasurementUnits:output_type -> mealplanning.GetValidIngredientMeasurementUnitsResponse
+	347, // 347: mealplanning.MealPlanningService.GetValidIngredientMeasurementUnitsByIngredient:output_type -> mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse
+	348, // 348: mealplanning.MealPlanningService.GetValidIngredientMeasurementUnitsByMeasurementUnit:output_type -> mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse
+	349, // 349: mealplanning.MealPlanningService.GetValidIngredientPreparation:output_type -> mealplanning.GetValidIngredientPreparationResponse
+	350, // 350: mealplanning.MealPlanningService.GetValidIngredientPreparations:output_type -> mealplanning.GetValidIngredientPreparationsResponse
+	351, // 351: mealplanning.MealPlanningService.GetValidIngredientPreparationsByIngredient:output_type -> mealplanning.GetValidIngredientPreparationsByIngredientResponse
+	352, // 352: mealplanning.MealPlanningService.GetValidIngredientPreparationsByPreparation:output_type -> mealplanning.GetValidIngredientPreparationsByPreparationResponse
+	353, // 353: mealplanning.MealPlanningService.GetValidPrepTaskConfig:output_type -> mealplanning.GetValidPrepTaskConfigResponse
+	354, // 354: mealplanning.MealPlanningService.GetValidPrepTaskConfigs:output_type -> mealplanning.GetValidPrepTaskConfigsResponse
+	355, // 355: mealplanning.MealPlanningService.GetValidPrepTaskConfigsByIngredient:output_type -> mealplanning.GetValidPrepTaskConfigsByIngredientResponse
+	356, // 356: mealplanning.MealPlanningService.GetValidPrepTaskConfigsByPreparation:output_type -> mealplanning.GetValidPrepTaskConfigsByPreparationResponse
+	357, // 357: mealplanning.MealPlanningService.GetValidPrepTaskConfigsByIngredientAndPreparation:output_type -> mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse
+	358, // 358: mealplanning.MealPlanningService.GetValidIngredientState:output_type -> mealplanning.GetValidIngredientStateResponse
+	359, // 359: mealplanning.MealPlanningService.GetValidIngredientStateIngredient:output_type -> mealplanning.GetValidIngredientStateIngredientResponse
+	360, // 360: mealplanning.MealPlanningService.GetValidIngredientStateIngredients:output_type -> mealplanning.GetValidIngredientStateIngredientsResponse
+	361, // 361: mealplanning.MealPlanningService.GetValidIngredientStateIngredientsByIngredient:output_type -> mealplanning.GetValidIngredientStateIngredientsByIngredientResponse
+	362, // 362: mealplanning.MealPlanningService.GetValidIngredientStateIngredientsByIngredientState:output_type -> mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse
+	363, // 363: mealplanning.MealPlanningService.GetValidIngredientStates:output_type -> mealplanning.GetValidIngredientStatesResponse
+	364, // 364: mealplanning.MealPlanningService.GetValidIngredients:output_type -> mealplanning.GetValidIngredientsResponse
+	365, // 365: mealplanning.MealPlanningService.GetValidInstrument:output_type -> mealplanning.GetValidInstrumentResponse
+	366, // 366: mealplanning.MealPlanningService.GetValidInstruments:output_type -> mealplanning.GetValidInstrumentsResponse
+	367, // 367: mealplanning.MealPlanningService.GetValidMeasurementUnit:output_type -> mealplanning.GetValidMeasurementUnitResponse
+	368, // 368: mealplanning.MealPlanningService.GetValidMeasurementUnitConversion:output_type -> mealplanning.GetValidMeasurementUnitConversionResponse
+	369, // 369: mealplanning.MealPlanningService.GetValidMeasurementUnitConversionsForUnit:output_type -> mealplanning.GetValidMeasurementUnitConversionsForUnitResponse
+	370, // 370: mealplanning.MealPlanningService.GetValidMeasurementUnits:output_type -> mealplanning.GetValidMeasurementUnitsResponse
+	371, // 371: mealplanning.MealPlanningService.GetValidPreparation:output_type -> mealplanning.GetValidPreparationResponse
+	372, // 372: mealplanning.MealPlanningService.GetValidPreparationInstrument:output_type -> mealplanning.GetValidPreparationInstrumentResponse
+	373, // 373: mealplanning.MealPlanningService.GetValidPreparationInstruments:output_type -> mealplanning.GetValidPreparationInstrumentsResponse
+	374, // 374: mealplanning.MealPlanningService.GetValidPreparationInstrumentsByInstrument:output_type -> mealplanning.GetValidPreparationInstrumentsByInstrumentResponse
+	375, // 375: mealplanning.MealPlanningService.GetValidPreparationInstrumentsByPreparation:output_type -> mealplanning.GetValidPreparationInstrumentsByPreparationResponse
+	376, // 376: mealplanning.MealPlanningService.GetValidPreparationVessel:output_type -> mealplanning.GetValidPreparationVesselResponse
+	377, // 377: mealplanning.MealPlanningService.GetValidPreparationVessels:output_type -> mealplanning.GetValidPreparationVesselsResponse
+	378, // 378: mealplanning.MealPlanningService.GetValidPreparationVesselsByPreparation:output_type -> mealplanning.GetValidPreparationVesselsByPreparationResponse
+	379, // 379: mealplanning.MealPlanningService.GetValidPreparationVesselsByVessel:output_type -> mealplanning.GetValidPreparationVesselsByVesselResponse
+	380, // 380: mealplanning.MealPlanningService.GetValidPreparations:output_type -> mealplanning.GetValidPreparationsResponse
+	381, // 381: mealplanning.MealPlanningService.GetValidVessel:output_type -> mealplanning.GetValidVesselResponse
+	382, // 382: mealplanning.MealPlanningService.GetValidVessels:output_type -> mealplanning.GetValidVesselsResponse
+	383, // 383: mealplanning.MealPlanningService.RunFinalizeMealPlanWorker:output_type -> mealplanning.RunFinalizeMealPlanWorkerResponse
+	384, // 384: mealplanning.MealPlanningService.RunMealPlanGroceryListInitializerWorker:output_type -> mealplanning.RunMealPlanGroceryListInitializerWorkerResponse
+	385, // 385: mealplanning.MealPlanningService.RunMealPlanTaskCreatorWorker:output_type -> mealplanning.RunMealPlanTaskCreatorWorkerResponse
+	386, // 386: mealplanning.MealPlanningService.SearchForMeals:output_type -> mealplanning.SearchForMealsResponse
+	387, // 387: mealplanning.MealPlanningService.SearchForRecipes:output_type -> mealplanning.SearchForRecipesResponse
+	388, // 388: mealplanning.MealPlanningService.SearchForMealEligibleRecipes:output_type -> mealplanning.SearchForMealEligibleRecipesResponse
+	389, // 389: mealplanning.MealPlanningService.SearchForValidIngredientGroups:output_type -> mealplanning.SearchForValidIngredientGroupsResponse
+	390, // 390: mealplanning.MealPlanningService.SearchForValidIngredientStates:output_type -> mealplanning.SearchForValidIngredientStatesResponse
+	391, // 391: mealplanning.MealPlanningService.SearchForValidIngredients:output_type -> mealplanning.SearchForValidIngredientsResponse
+	392, // 392: mealplanning.MealPlanningService.SearchForValidInstruments:output_type -> mealplanning.SearchForValidInstrumentsResponse
+	393, // 393: mealplanning.MealPlanningService.SearchForValidMeasurementUnits:output_type -> mealplanning.SearchForValidMeasurementUnitsResponse
+	394, // 394: mealplanning.MealPlanningService.SearchForValidPreparations:output_type -> mealplanning.SearchForValidPreparationsResponse
+	395, // 395: mealplanning.MealPlanningService.SearchForValidVessels:output_type -> mealplanning.SearchForValidVesselsResponse
+	396, // 396: mealplanning.MealPlanningService.SearchValidIngredientsByPreparation:output_type -> mealplanning.SearchValidIngredientsByPreparationResponse
+	397, // 397: mealplanning.MealPlanningService.SearchValidMeasurementUnitsByIngredient:output_type -> mealplanning.SearchValidMeasurementUnitsByIngredientResponse
+	398, // 398: mealplanning.MealPlanningService.UpdateMealPlan:output_type -> mealplanning.UpdateMealPlanResponse
+	399, // 399: mealplanning.MealPlanningService.UpdateMealPlanEvent:output_type -> mealplanning.UpdateMealPlanEventResponse
+	400, // 400: mealplanning.MealPlanningService.UpdateMealPlanGroceryListItem:output_type -> mealplanning.UpdateMealPlanGroceryListItemResponse
+	401, // 401: mealplanning.MealPlanningService.UpdateMealPlanOption:output_type -> mealplanning.UpdateMealPlanOptionResponse
+	402, // 402: mealplanning.MealPlanningService.UpdateMealPlanOptionVote:output_type -> mealplanning.UpdateMealPlanOptionVoteResponse
+	403, // 403: mealplanning.MealPlanningService.UpdateMealPlanRecipeOptionSelection:output_type -> mealplanning.UpdateMealPlanRecipeOptionSelectionResponse
+	404, // 404: mealplanning.MealPlanningService.UpdateMealPlanTaskStatus:output_type -> mealplanning.UpdateMealPlanTaskStatusResponse
+	405, // 405: mealplanning.MealPlanningService.UpdateMealList:output_type -> mealplanning.UpdateMealListResponse
+	406, // 406: mealplanning.MealPlanningService.UpdateMealListItem:output_type -> mealplanning.UpdateMealListItemResponse
+	407, // 407: mealplanning.MealPlanningService.UpdateRecipe:output_type -> mealplanning.UpdateRecipeResponse
+	408, // 408: mealplanning.MealPlanningService.UpdateRecipeStatus:output_type -> mealplanning.UpdateRecipeStatusResponse
+	409, // 409: mealplanning.MealPlanningService.UpdateRecipePrepTask:output_type -> mealplanning.UpdateRecipePrepTaskResponse
+	410, // 410: mealplanning.MealPlanningService.UpdateRecipeRating:output_type -> mealplanning.UpdateRecipeRatingResponse
+	411, // 411: mealplanning.MealPlanningService.UpdateRecipeList:output_type -> mealplanning.UpdateRecipeListResponse
+	412, // 412: mealplanning.MealPlanningService.UpdateRecipeListItem:output_type -> mealplanning.UpdateRecipeListItemResponse
+	413, // 413: mealplanning.MealPlanningService.UpdateRecipeStep:output_type -> mealplanning.UpdateRecipeStepResponse
+	414, // 414: mealplanning.MealPlanningService.UpdateRecipeStepCompletionCondition:output_type -> mealplanning.UpdateRecipeStepCompletionConditionResponse
+	415, // 415: mealplanning.MealPlanningService.UpdateRecipeStepIngredient:output_type -> mealplanning.UpdateRecipeStepIngredientResponse
+	416, // 416: mealplanning.MealPlanningService.UpdateRecipeStepInstrument:output_type -> mealplanning.UpdateRecipeStepInstrumentResponse
+	417, // 417: mealplanning.MealPlanningService.UpdateRecipeStepProduct:output_type -> mealplanning.UpdateRecipeStepProductResponse
+	418, // 418: mealplanning.MealPlanningService.UpdateRecipeStepVessel:output_type -> mealplanning.UpdateRecipeStepVesselResponse
+	419, // 419: mealplanning.MealPlanningService.UpdateValidIngredient:output_type -> mealplanning.UpdateValidIngredientResponse
+	420, // 420: mealplanning.MealPlanningService.UpdateValidIngredientGroup:output_type -> mealplanning.UpdateValidIngredientGroupResponse
+	421, // 421: mealplanning.MealPlanningService.UpdateValidIngredientMeasurementUnit:output_type -> mealplanning.UpdateValidIngredientMeasurementUnitResponse
+	422, // 422: mealplanning.MealPlanningService.UpdateValidIngredientPreparation:output_type -> mealplanning.UpdateValidIngredientPreparationResponse
+	423, // 423: mealplanning.MealPlanningService.UpdateValidPrepTaskConfig:output_type -> mealplanning.UpdateValidPrepTaskConfigResponse
+	424, // 424: mealplanning.MealPlanningService.UpdateValidIngredientState:output_type -> mealplanning.UpdateValidIngredientStateResponse
+	425, // 425: mealplanning.MealPlanningService.UpdateValidIngredientStateIngredient:output_type -> mealplanning.UpdateValidIngredientStateIngredientResponse
+	426, // 426: mealplanning.MealPlanningService.UpdateValidInstrument:output_type -> mealplanning.UpdateValidInstrumentResponse
+	427, // 427: mealplanning.MealPlanningService.UpdateValidMeasurementUnit:output_type -> mealplanning.UpdateValidMeasurementUnitResponse
+	428, // 428: mealplanning.MealPlanningService.UpdateValidMeasurementUnitConversion:output_type -> mealplanning.UpdateValidMeasurementUnitConversionResponse
+	429, // 429: mealplanning.MealPlanningService.UpdateValidPreparation:output_type -> mealplanning.UpdateValidPreparationResponse
+	430, // 430: mealplanning.MealPlanningService.UpdateValidPreparationInstrument:output_type -> mealplanning.UpdateValidPreparationInstrumentResponse
+	431, // 431: mealplanning.MealPlanningService.UpdateValidPreparationVessel:output_type -> mealplanning.UpdateValidPreparationVesselResponse
+	432, // 432: mealplanning.MealPlanningService.UpdateValidVessel:output_type -> mealplanning.UpdateValidVesselResponse
+	433, // 433: mealplanning.MealPlanningService.ArchiveAccountInstrumentOwnership:output_type -> mealplanning.ArchiveAccountInstrumentOwnershipResponse
+	434, // 434: mealplanning.MealPlanningService.ArchiveUserIngredientPreference:output_type -> mealplanning.ArchiveUserIngredientPreferenceResponse
+	435, // 435: mealplanning.MealPlanningService.CreateAccountInstrumentOwnership:output_type -> mealplanning.CreateAccountInstrumentOwnershipResponse
+	436, // 436: mealplanning.MealPlanningService.CreateUserIngredientPreference:output_type -> mealplanning.CreateUserIngredientPreferenceResponse
+	437, // 437: mealplanning.MealPlanningService.GetAccountInstrumentOwnership:output_type -> mealplanning.GetAccountInstrumentOwnershipResponse
+	438, // 438: mealplanning.MealPlanningService.GetAccountInstrumentOwnerships:output_type -> mealplanning.GetAccountInstrumentOwnershipsResponse
+	439, // 439: mealplanning.MealPlanningService.GetUserIngredientPreference:output_type -> mealplanning.GetUserIngredientPreferenceResponse
+	440, // 440: mealplanning.MealPlanningService.GetUserIngredientPreferences:output_type -> mealplanning.GetUserIngredientPreferencesResponse
+	441, // 441: mealplanning.MealPlanningService.UpdateAccountInstrumentOwnership:output_type -> mealplanning.UpdateAccountInstrumentOwnershipResponse
+	442, // 442: mealplanning.MealPlanningService.UpdateComment:output_type -> comments.UpdateCommentResponse
+	443, // 443: mealplanning.MealPlanningService.UpdateUserIngredientPreference:output_type -> mealplanning.UpdateUserIngredientPreferenceResponse
+	444, // 444: mealplanning.MealPlanningService.UploadMealImage:output_type -> mealplanning.UploadMealImageResponse
+	445, // 445: mealplanning.MealPlanningService.UploadRecipeImage:output_type -> mealplanning.UploadRecipeImageResponse
+	223, // [223:446] is the sub-list for method output_type
+	0,   // [0:223] is the sub-list for method input_type
 	0,   // [0:0] is the sub-list for extension type_name
 	0,   // [0:0] is the sub-list for extension extendee
 	0,   // [0:0] is the sub-list for field type_name

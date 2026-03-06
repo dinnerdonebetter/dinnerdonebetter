@@ -6,6 +6,7 @@ import "common.proto";
 import "filtering.proto";
 import "google/protobuf/timestamp.proto";
 import "mealplanning/mealplanning_messages.proto";
+import "uploaded_media/uploaded_media.proto";
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning";
 
@@ -3023,4 +3024,24 @@ message AccountInstrumentOwnershipUpdateRequestInput {
   optional string notes = 1;
   optional uint32 quantity = 2;
   optional string valid_instrument_id = 3;
+}
+
+message UploadMealMediaRequest {
+  string meal_id = 1;
+  uploaded_media.UploadRequest upload = 2;
+}
+
+message UploadRecipeMediaRequest {
+  string recipe_id = 1;
+  uploaded_media.UploadRequest upload = 2;
+}
+
+message UploadMealImageResponse {
+  common.ResponseDetails response_details = 1;
+  optional string uploaded_media_id = 2;
+}
+
+message UploadRecipeImageResponse {
+  common.ResponseDetails response_details = 1;
+  optional string uploaded_media_id = 2;
 }

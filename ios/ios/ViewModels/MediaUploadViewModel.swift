@@ -22,7 +22,7 @@ public class MediaUploadViewModel {
   private let authManager: AuthenticationManager
   private let bucket: MediaBucket
 
-  public init(authManager: AuthenticationManager, bucket: MediaBucket) {
+  init(authManager: AuthenticationManager, bucket: MediaBucket) {
     self.authManager = authManager
     self.bucket = bucket
   }
@@ -53,7 +53,7 @@ public class MediaUploadViewModel {
         requestProducer: { writer in
           // 1. Send metadata
           var meta = UploadedMedia_UploadMetadata()
-          meta.bucket = bucket.rawValue
+          meta.bucket = self.bucket.rawValue
           meta.objectName = objectName
           meta.contentType = contentType
 

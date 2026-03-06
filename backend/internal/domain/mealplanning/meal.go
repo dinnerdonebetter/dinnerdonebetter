@@ -153,6 +153,7 @@ type (
 		ArchiveMeal(ctx context.Context, mealID, userID string) error
 		GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetMealsWithIDs(ctx context.Context, ids []string) ([]*Meal, error)
+		AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error
 	}
 
 	// MealDataService describes a structure capable of serving traffic related to meals.

@@ -644,3 +644,32 @@ func (q *repository) ArchiveMeal(ctx context.Context, mealID, userID string) err
 
 	return nil
 }
+
+// AddMealImage adds an uploaded media image to a meal.
+func (q *repository) AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealID == "" {
+		return database.ErrInvalidIDProvided
+	}
+	if uploadedMediaID == "" {
+		return database.ErrEmptyInputProvided
+	}
+	if uploadedByUser == "" {
+		return database.ErrInvalidIDProvided
+	}
+	logger := q.logger.WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
+
+	if err := q.generatedQuerier.CreateMealImage(ctx, q.writeDB, &generated.CreateMealImageParams{
+		ID:              identifiers.New(),
+		BelongsToMeal:   mealID,
+		UploadedMediaID: uploadedMediaID,
+		UploadedByUser:  uploadedByUser,
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "creating meal image")
+	}
+
+	return nil
+}

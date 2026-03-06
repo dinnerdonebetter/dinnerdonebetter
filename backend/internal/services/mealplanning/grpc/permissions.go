@@ -155,17 +155,19 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_ArchiveRecipe_FullMethodName:                {authorization.ArchiveRecipesPermission},
 		mealplanningsvc.MealPlanningService_SearchForRecipes_FullMethodName:             {authorization.ReadRecipesPermission},
 		mealplanningsvc.MealPlanningService_CloneRecipe_FullMethodName:                  {authorization.ReadRecipesPermission},
+		mealplanningsvc.MealPlanningService_UploadRecipeImage_FullMethodName:            {authorization.UpdateRecipesPermission},
 		mealplanningsvc.MealPlanningService_SearchForMealEligibleRecipes_FullMethodName: {authorization.ReadRecipesPermission},
 		mealplanningsvc.MealPlanningService_GetMermaidDiagramForMeal_FullMethodName:     {authorization.ReadMealsPermission},
 		mealplanningsvc.MealPlanningService_GetMermaidDiagramForRecipe_FullMethodName:   {authorization.ReadRecipesPermission},
 		mealplanningsvc.MealPlanningService_EstimateRecipePrepTasks_FullMethodName:      {authorization.ReadRecipesPermission},
 
 		// Meals
-		mealplanningsvc.MealPlanningService_CreateMeal_FullMethodName:     {authorization.CreateMealsPermission},
-		mealplanningsvc.MealPlanningService_GetMeal_FullMethodName:        {authorization.ReadMealsPermission},
-		mealplanningsvc.MealPlanningService_GetMeals_FullMethodName:       {authorization.ReadMealsPermission},
-		mealplanningsvc.MealPlanningService_ArchiveMeal_FullMethodName:    {authorization.ArchiveMealsPermission},
-		mealplanningsvc.MealPlanningService_SearchForMeals_FullMethodName: {authorization.ReadMealsPermission},
+		mealplanningsvc.MealPlanningService_CreateMeal_FullMethodName:      {authorization.CreateMealsPermission},
+		mealplanningsvc.MealPlanningService_GetMeal_FullMethodName:         {authorization.ReadMealsPermission},
+		mealplanningsvc.MealPlanningService_GetMeals_FullMethodName:        {authorization.ReadMealsPermission},
+		mealplanningsvc.MealPlanningService_ArchiveMeal_FullMethodName:     {authorization.ArchiveMealsPermission},
+		mealplanningsvc.MealPlanningService_SearchForMeals_FullMethodName:  {authorization.ReadMealsPermission},
+		mealplanningsvc.MealPlanningService_UploadMealImage_FullMethodName: {authorization.UpdateMealsPermission},
 
 		// MealPlans
 		mealplanningsvc.MealPlanningService_CreateMealPlan_FullMethodName:         {authorization.CreateMealPlansPermission},

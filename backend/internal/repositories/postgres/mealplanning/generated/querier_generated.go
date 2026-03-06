@@ -86,6 +86,7 @@ type Querier interface {
 	CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error
 	CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error
 	CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error
+	CreateMealImage(ctx context.Context, db DBTX, arg *CreateMealImageParams) error
 	CreateMealList(ctx context.Context, db DBTX, arg *CreateMealListParams) error
 	CreateMealListItem(ctx context.Context, db DBTX, arg *CreateMealListItemParams) error
 	CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPlanParams) error
@@ -96,6 +97,7 @@ type Querier interface {
 	CreateMealPlanRecipeOptionSelection(ctx context.Context, db DBTX, arg *CreateMealPlanRecipeOptionSelectionParams) error
 	CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMealPlanTaskParams) error
 	CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipeParams) error
+	CreateRecipeImage(ctx context.Context, db DBTX, arg *CreateRecipeImageParams) error
 	CreateRecipeList(ctx context.Context, db DBTX, arg *CreateRecipeListParams) error
 	CreateRecipeListItem(ctx context.Context, db DBTX, arg *CreateRecipeListItemParams) error
 	CreateRecipeMedia(ctx context.Context, db DBTX, arg *CreateRecipeMediaParams) error

@@ -227,7 +227,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	mealPlanningServiceServer := grpc7.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, mealplanfinalizerWorker, worker, mealplantaskcreatorWorker, commentsDataManager)
+	mealPlanningServiceServer := grpc7.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, mealplanfinalizerWorker, worker, mealplantaskcreatorWorker, commentsDataManager, uploadedMediaManager, uploadManager)
 	userNotificationsServiceServer := grpc8.NewService(logger, tracerProvider, notificationsDataManager)
 	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
 	oAuth2Manager, err := manager10.NewOAuth2Manager(ctx, logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)

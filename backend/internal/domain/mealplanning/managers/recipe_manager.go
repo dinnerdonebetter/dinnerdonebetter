@@ -39,6 +39,7 @@ type (
 		UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error
 		UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error
 		ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error
+		AddRecipeImage(ctx context.Context, recipeID, uploadedMediaID, uploadedByUser string) error
 		RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*mealplanning.MealPlanTaskDatabaseCreationEstimate, error)
 		MealMermaid(ctx context.Context, meal *mealplanning.Meal) (string, error)
 		RecipeMermaid(ctx context.Context, recipeID string) (string, error)
@@ -375,6 +376,20 @@ func (m *recipeManager) ArchiveRecipe(ctx context.Context, recipeID, ownerID str
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeArchivedServiceEventType, map[string]any{
 		mealplanningkeys.RecipeIDKey: recipeID,
 	}))
+
+	return nil
+}
+
+func (m *recipeManager) AddRecipeImage(ctx context.Context, recipeID, uploadedMediaID, uploadedByUser string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+
+	if err := m.db.AddRecipeImage(ctx, recipeID, uploadedMediaID, uploadedByUser); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "adding recipe image")
+	}
 
 	return nil
 }

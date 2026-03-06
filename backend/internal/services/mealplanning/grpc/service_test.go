@@ -7,10 +7,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
 	commentsmanager "github.com/dinnerdonebetter/backend/internal/domain/comments/manager"
 	mockmanagers "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
+	uploadedmediamock "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/mock"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	mockuploads "github.com/dinnerdonebetter/backend/internal/platform/uploads/mock"
 	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
@@ -57,6 +59,8 @@ func TestNewService(t *testing.T) {
 		mealPlanGroceryListInitializerWorker := &mealplangrocerylistinitializer.Worker{}
 		mealPlanTaskCreatorWorker := &mealplantaskcreator.Worker{}
 		commentsManager := &noopCommentsManager{}
+		uploadedMediaManager := &uploadedmediamock.Repository{}
+		uploadManager := &mockuploads.MockUploadManager{}
 
 		service := NewService(
 			logger,
@@ -68,6 +72,8 @@ func TestNewService(t *testing.T) {
 			mealPlanGroceryListInitializerWorker,
 			mealPlanTaskCreatorWorker,
 			commentsManager,
+			uploadedMediaManager,
+			uploadManager,
 		)
 
 		assert.NotNil(t, service)

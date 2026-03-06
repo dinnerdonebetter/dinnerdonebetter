@@ -416,6 +416,11 @@ func (m *Repository) ArchiveMeal(ctx context.Context, recipeID, accountID string
 	return m.Called(ctx, recipeID, accountID).Error(0)
 }
 
+// AddMealImage is a mock function.
+func (m *Repository) AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error {
+	return m.Called(ctx, mealID, uploadedMediaID, uploadedByUser).Error(0)
+}
+
 // MarkMealAsIndexed is a mock function.
 func (m *Repository) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 	return m.Called(ctx, mealID).Error(0)
@@ -487,6 +492,11 @@ func (m *Repository) UpdateRecipeStatus(ctx context.Context, recipeID, newStatus
 // ArchiveRecipe is a mock function.
 func (m *Repository) ArchiveRecipe(ctx context.Context, recipeID, accountID string) error {
 	return m.Called(ctx, recipeID, accountID).Error(0)
+}
+
+// AddRecipeImage is a mock function.
+func (m *Repository) AddRecipeImage(ctx context.Context, recipeID, uploadedMediaID, uploadedByUser string) error {
+	return m.Called(ctx, recipeID, uploadedMediaID, uploadedByUser).Error(0)
 }
 
 // MarkRecipeAsIndexed is a mock function.
