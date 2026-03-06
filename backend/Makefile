@@ -216,6 +216,10 @@ build:
 build-api: $(ARTIFACTS_DIR)
 	$(SCRIPTS_DIR)/build.sh -o $(ARTIFACTS_DIR)/api $(THIS)/cmd/services/api
 
+.PHONY: build-bootstrap
+build-bootstrap: $(ARTIFACTS_DIR)
+	$(SCRIPTS_DIR)/build.sh -o $(ARTIFACTS_DIR)/bootstrap $(THIS)/cmd/tools/bootstrap
+
 .PHONY: test
 test: $(ARTIFACTS_DIR) vendor
 	$(SCRIPTS_DIR)/test.sh

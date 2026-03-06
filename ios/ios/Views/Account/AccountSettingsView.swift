@@ -52,6 +52,9 @@ struct AccountSettingsView: View {
                     accountInformationSection(viewModel: viewModel)
                   }
 
+                  // Media Section
+                  mediaSection
+
                   // Sign Out Button
                   signOutButton
                 }
@@ -288,6 +291,18 @@ struct AccountSettingsView: View {
           }
         }
       }
+    }
+  }
+
+  // MARK: - Media Section
+  private var mediaSection: some View {
+    DSSection("Media") {
+      DSListRowLink(
+        title: "Upload Photo",
+        subtitle: "Test media upload",
+        icon: "photo.on.rectangle.angled",
+        destination: UploadMediaView()
+      )
     }
   }
 

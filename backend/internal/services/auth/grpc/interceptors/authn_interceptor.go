@@ -237,3 +237,67 @@ func (s *AuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		return handler(ctx, req)
 	}
 }
+
+// serverStreamWithContext wraps grpc.ServerStream to inject a modified context.
+type serverStreamWithContext struct {
+	grpc.ServerStream
+	ctx context.Context
+}
+
+func (s *serverStreamWithContext) Context() context.Context {
+	return s.ctx
+}
+
+// StreamServerInterceptor returns an interceptor that authenticates and authorizes streaming RPCs.
+// Without this, streaming RPCs (e.g. UploadedMediaService.Upload) bypass auth and session context is never set.
+func (s *AuthInterceptor) StreamServerInterceptor() grpc.StreamServerInterceptor {
+	return func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		logger := s.logger.WithValue("grpc.method", info.FullMethod)
+
+		if slices.Contains(s.unauthenticatedRoutes, info.FullMethod) {
+			logger.Info("skipping authentication for streaming method")
+			return handler(srv, ss)
+		}
+
+		md, ok := metadata.FromIncomingContext(ss.Context())
+		if !ok {
+			return Unauthenticated("missing metadata")
+		}
+
+		authHeader := md.Get(authHeaderName)
+		if len(authHeader) == 0 {
+			return status.Error(codes.Unauthenticated, "missing authorization header")
+		}
+
+		sessionContextData, err := s.extractSessionContextData(ss.Context(), md)
+		if err != nil {
+			return status.Error(codes.Internal, "building session context data for user")
+		}
+
+		proceed := true
+		s.methodScopesHat.Lock()
+		if requiredPermissions, methodHasDefinedScopes := s.methodPermissions[info.FullMethod]; methodHasDefinedScopes {
+			for _, scope := range requiredPermissions {
+				hasPerm := sessionContextData.ServiceRolePermissionChecker().HasPermission(scope) ||
+					sessionContextData.AccountRolePermissionsChecker().HasPermission(scope)
+				if !hasPerm {
+					proceed = false
+					break
+				}
+			}
+		} else {
+			logger.Info(fmt.Sprintf("missing required permissions for streaming method %q", info.FullMethod))
+			proceed = false
+		}
+		s.methodScopesHat.Unlock()
+
+		if !proceed {
+			return status.Error(codes.PermissionDenied, "permission denied")
+		}
+
+		newCtx := context.WithValue(ss.Context(), sessions.SessionContextDataKey, sessionContextData)
+		wrappedStream := &serverStreamWithContext{ServerStream: ss, ctx: newCtx}
+
+		return handler(srv, wrappedStream)
+	}
+}

@@ -145,9 +145,8 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 	// Generate unique ID for the file
 	fileID := identifiers.New()
 
-	// Construct storage path: bucket/userID/fileID/objectName
+	// Construct storage path: userID/fileID/objectName
 	storagePath := filepath.Join(
-		metadata.Bucket,
 		sessionContextData.Requester.UserID,
 		fileID,
 		metadata.ObjectName,

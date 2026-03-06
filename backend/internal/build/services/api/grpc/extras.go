@@ -88,9 +88,9 @@ func BuildUnaryServerInterceptors(authInterceptor *interceptors.AuthInterceptor)
 	}
 }
 
-func BuildStreamServerInterceptors() []grpc.StreamServerInterceptor {
+func BuildStreamServerInterceptors(authInterceptor *interceptors.AuthInterceptor) []grpc.StreamServerInterceptor {
 	return []grpc.StreamServerInterceptor{
-		//
+		authInterceptor.StreamServerInterceptor(),
 	}
 }
 
