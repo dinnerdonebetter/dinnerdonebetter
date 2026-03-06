@@ -516,10 +516,10 @@ func TestAuthManager_VerifyUserEmailAddressByToken_Success(t *testing.T) {
 	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
 
 	manager := &AuthManager{
-		userDataManager:       userDataManager,
-		dataChangesPublisher:  publisher,
-		logger:                logging.NewNoopLogger().WithName("auth_manager"),
-		tracer:                tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("auth_manager")),
+		userDataManager:      userDataManager,
+		dataChangesPublisher: publisher,
+		logger:               logging.NewNoopLogger().WithName("auth_manager"),
+		tracer:               tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("auth_manager")),
 	}
 
 	err := manager.VerifyUserEmailAddressByToken(ctx, token)
@@ -538,9 +538,9 @@ func TestAuthManager_VerifyUserEmailAddressByToken_UserNotFound(t *testing.T) {
 	userDataManager.On(reflection.GetMethodName(userDataManager.GetUserByEmailAddressVerificationToken), testutils.ContextMatcher, token).Return((*identity.User)(nil), sql.ErrNoRows)
 
 	manager := &AuthManager{
-		userDataManager:      userDataManager,
-		logger:               logging.NewNoopLogger().WithName("auth_manager"),
-		tracer:               tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("auth_manager")),
+		userDataManager: userDataManager,
+		logger:          logging.NewNoopLogger().WithName("auth_manager"),
+		tracer:          tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("auth_manager")),
 	}
 
 	err := manager.VerifyUserEmailAddressByToken(ctx, token)
