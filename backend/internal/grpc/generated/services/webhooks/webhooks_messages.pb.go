@@ -126,7 +126,7 @@ func (WebhookMethod) EnumDescriptor() ([]byte, []int) {
 
 type WebhookList struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Webhooks      []*Webhook             `protobuf:"bytes,1,rep,name=webhooks,proto3" json:"webhooks,omitempty"`
+	Webhooks      []*Webhook             `json:"webhooks,omitempty" protobuf:"bytes,1,rep,name=webhooks,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -170,7 +170,7 @@ func (x *WebhookList) GetWebhooks() []*Webhook {
 
 type DataCollection struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Webhooks      map[string]*WebhookList `protobuf:"bytes,1,rep,name=webhooks,proto3" json:"webhooks,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Webhooks      map[string]*WebhookList `json:"webhooks,omitempty" protobuf:"bytes,1,rep,name=webhooks,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -213,19 +213,19 @@ func (x *DataCollection) GetWebhooks() map[string]*WebhookList {
 }
 
 type Webhook struct {
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	LastUpdatedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
+	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	ArchivedAt       *timestamppb.Timestamp `json:"archived_at,omitempty"        protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3"`
+	LastUpdatedAt    *timestamppb.Timestamp `json:"last_updated_at,omitempty"    protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedByUser    string                 `protobuf:"bytes,11,opt,name=created_by_user,json=createdByUser,proto3" json:"created_by_user,omitempty"`
-	Name             string                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
-	Url              string                 `protobuf:"bytes,5,opt,name=url,proto3" json:"url,omitempty"`
-	Id               string                 `protobuf:"bytes,7,opt,name=id,proto3" json:"id,omitempty"`
-	BelongsToAccount string                 `protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
+	CreatedByUser    string                 `json:"created_by_user,omitempty"    protobuf:"bytes,11,opt,name=created_by_user,json=createdByUser,proto3"`
+	Name             string                 `json:"name,omitempty"               protobuf:"bytes,4,opt,name=name,proto3"`
+	Url              string                 `json:"url,omitempty"                protobuf:"bytes,5,opt,name=url,proto3"`
+	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,7,opt,name=id,proto3"`
+	BelongsToAccount string                 `json:"belongs_to_account,omitempty" protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
 	unknownFields    protoimpl.UnknownFields
-	TriggerConfigs   []*WebhookTriggerConfig `protobuf:"bytes,10,rep,name=trigger_configs,json=triggerConfigs,proto3" json:"trigger_configs,omitempty"`
-	Method           WebhookMethod           `protobuf:"varint,6,opt,name=method,proto3,enum=webhooks.WebhookMethod" json:"method,omitempty"`
-	ContentType      WebhookContentType      `protobuf:"varint,9,opt,name=content_type,json=contentType,proto3,enum=webhooks.WebhookContentType" json:"content_type,omitempty"`
+	TriggerConfigs   []*WebhookTriggerConfig `json:"trigger_configs,omitempty" protobuf:"bytes,10,rep,name=trigger_configs,json=triggerConfigs,proto3"`
+	Method           WebhookMethod           `json:"method,omitempty"          protobuf:"varint,6,opt,name=method,proto3,enum=webhooks.WebhookMethod"`
+	ContentType      WebhookContentType      `json:"content_type,omitempty"    protobuf:"varint,9,opt,name=content_type,json=contentType,proto3,enum=webhooks.WebhookContentType"`
 	sizeCache        protoimpl.SizeCache
 }
 
@@ -339,11 +339,11 @@ func (x *Webhook) GetCreatedByUser() string {
 // WebhookTriggerConfig is the join-table record (webhook subscription to a trigger event).
 type WebhookTriggerConfig struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	Id               string                 `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
-	BelongsToWebhook string                 `protobuf:"bytes,4,opt,name=belongs_to_webhook,json=belongsToWebhook,proto3" json:"belongs_to_webhook,omitempty"`
-	TriggerEventId   string                 `protobuf:"bytes,5,opt,name=trigger_event_id,json=triggerEventId,proto3" json:"trigger_event_id,omitempty"`
+	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	ArchivedAt       *timestamppb.Timestamp `json:"archived_at,omitempty"        protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3"`
+	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,3,opt,name=id,proto3"`
+	BelongsToWebhook string                 `json:"belongs_to_webhook,omitempty" protobuf:"bytes,4,opt,name=belongs_to_webhook,json=belongsToWebhook,proto3"`
+	TriggerEventId   string                 `json:"trigger_event_id,omitempty"   protobuf:"bytes,5,opt,name=trigger_event_id,json=triggerEventId,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -416,12 +416,12 @@ func (x *WebhookTriggerConfig) GetTriggerEventId() string {
 // WebhookTriggerEvent is the catalog entity for available trigger event types.
 type WebhookTriggerEvent struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	Id            string                 `json:"id,omitempty"              protobuf:"bytes,1,opt,name=id,proto3"`
+	Name          string                 `json:"name,omitempty"            protobuf:"bytes,2,opt,name=name,proto3"`
+	Description   string                 `json:"description,omitempty"     protobuf:"bytes,3,opt,name=description,proto3"`
+	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"      protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"last_updated_at,omitempty" protobuf:"bytes,5,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	ArchivedAt    *timestamppb.Timestamp `json:"archived_at,omitempty"     protobuf:"bytes,6,opt,name=archived_at,json=archivedAt,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

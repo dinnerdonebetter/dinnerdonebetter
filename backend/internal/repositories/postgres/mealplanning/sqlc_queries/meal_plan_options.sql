@@ -1,3 +1,12 @@
+-- name: CheckMealInMealPlanEvent :one
+SELECT EXISTS (
+	SELECT meal_plan_options.id
+	FROM meal_plan_options
+	WHERE meal_plan_options.archived_at IS NULL
+		AND meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(belongs_to_meal_plan_event)
+		AND meal_plan_options.meal_id = sqlc.arg(meal_id)
+);
+
 -- name: ArchiveMealPlanOption :execrows
 UPDATE meal_plan_options SET
 	archived_at = NOW()

@@ -83,7 +83,7 @@ func init() {
 
 	apiServiceConfig = cfg
 
-	logger, tracerProvider, _, err := cfg.Observability.ProvideThreePillars(ctx)
+	pillars, err := cfg.Observability.ProvidePillars(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -100,10 +100,10 @@ func init() {
 	dbConnStr = dbCfg.ReadConnection.String()
 
 	// create premade admin user
-	auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, databaseClient)
-	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, databaseClient)
+	auditLogRepo := auditlogentries.ProvideAuditLogRepository(pillars.Logger, pillars.TracerProvider, databaseClient)
+	identityRepo := identityrepo.ProvideIdentityRepository(pillars.Logger, pillars.TracerProvider, auditLogRepo, databaseClient)
 	notifsRepo = notificationsrepo.ProvideNotificationsRepository(nil, nil, auditLogRepo, dbCfg, databaseClient)
-	adminUser, err := localdev.CreatePremadeAdminUser(ctx, logger, tracerProvider, identityRepo, databaseClient, premadeAdminUser)
+	adminUser, err := localdev.CreatePremadeAdminUser(ctx, pillars.Logger, pillars.TracerProvider, identityRepo, databaseClient, premadeAdminUser)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -55,6 +55,9 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"serviceName": "api_server"
+		},
 		"logging": {
 			"serviceName": "api_server",
 			"level": "info",

@@ -64,6 +64,12 @@ func (m *MockRecipeManager) ArchiveRecipe(ctx context.Context, recipeID, ownerID
 	return returnValues.Error(0)
 }
 
+func (m *MockRecipeManager) AddRecipeImage(ctx context.Context, recipeID, uploadedMediaID, uploadedByUser string) error {
+	returnValues := m.Called(ctx, recipeID, uploadedMediaID, uploadedByUser)
+
+	return returnValues.Error(0)
+}
+
 func (m *MockRecipeManager) RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*mealplanning.MealPlanTaskDatabaseCreationEstimate, error) {
 	returnValues := m.Called(ctx, recipeID)
 

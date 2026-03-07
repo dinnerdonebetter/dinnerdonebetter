@@ -34,16 +34,16 @@ const (
 
 type UserDataCollection struct {
 	state                       protoimpl.MessageState          `protogen:"open.v1"`
-	ReportId                    string                          `protobuf:"bytes,1,opt,name=report_id,json=reportId,proto3" json:"report_id,omitempty"`
-	IdentityDataCollection      *identity.DataCollection        `protobuf:"bytes,2,opt,name=identity_data_collection,json=identityDataCollection,proto3" json:"identity_data_collection,omitempty"`
-	SettingsDataCollection      *settings.DataCollection        `protobuf:"bytes,3,opt,name=settings_data_collection,json=settingsDataCollection,proto3" json:"settings_data_collection,omitempty"`
-	WebhooksDataCollection      *webhooks.DataCollection        `protobuf:"bytes,4,opt,name=webhooks_data_collection,json=webhooksDataCollection,proto3" json:"webhooks_data_collection,omitempty"`
-	MealPlanningDataCollection  *mealplanning.DataCollection    `protobuf:"bytes,5,opt,name=meal_planning_data_collection,json=mealPlanningDataCollection,proto3" json:"meal_planning_data_collection,omitempty"`
-	NotificationsDataCollection *notifications.DataCollection   `protobuf:"bytes,6,opt,name=notifications_data_collection,json=notificationsDataCollection,proto3" json:"notifications_data_collection,omitempty"`
-	AuditLogEntries             []*audit.AuditLogEntry          `protobuf:"bytes,7,rep,name=audit_log_entries,json=auditLogEntries,proto3" json:"audit_log_entries,omitempty"`
-	IssueReports                []*issue_reports.IssueReport    `protobuf:"bytes,8,rep,name=issue_reports,json=issueReports,proto3" json:"issue_reports,omitempty"`
-	UploadedMedia               []*uploaded_media.UploadedMedia `protobuf:"bytes,9,rep,name=uploaded_media,json=uploadedMedia,proto3" json:"uploaded_media,omitempty"`
-	WaitlistSignups             []*waitlists.WaitlistSignup     `protobuf:"bytes,10,rep,name=waitlist_signups,json=waitlistSignups,proto3" json:"waitlist_signups,omitempty"`
+	ReportId                    string                          `json:"report_id,omitempty"                     protobuf:"bytes,1,opt,name=report_id,json=reportId,proto3"`
+	IdentityDataCollection      *identity.DataCollection        `json:"identity_data_collection,omitempty"      protobuf:"bytes,2,opt,name=identity_data_collection,json=identityDataCollection,proto3"`
+	SettingsDataCollection      *settings.DataCollection        `json:"settings_data_collection,omitempty"      protobuf:"bytes,3,opt,name=settings_data_collection,json=settingsDataCollection,proto3"`
+	WebhooksDataCollection      *webhooks.DataCollection        `json:"webhooks_data_collection,omitempty"      protobuf:"bytes,4,opt,name=webhooks_data_collection,json=webhooksDataCollection,proto3"`
+	MealPlanningDataCollection  *mealplanning.DataCollection    `json:"meal_planning_data_collection,omitempty" protobuf:"bytes,5,opt,name=meal_planning_data_collection,json=mealPlanningDataCollection,proto3"`
+	NotificationsDataCollection *notifications.DataCollection   `json:"notifications_data_collection,omitempty" protobuf:"bytes,6,opt,name=notifications_data_collection,json=notificationsDataCollection,proto3"`
+	AuditLogEntries             []*audit.AuditLogEntry          `json:"audit_log_entries,omitempty"             protobuf:"bytes,7,rep,name=audit_log_entries,json=auditLogEntries,proto3"`
+	IssueReports                []*issue_reports.IssueReport    `json:"issue_reports,omitempty"                 protobuf:"bytes,8,rep,name=issue_reports,json=issueReports,proto3"`
+	UploadedMedia               []*uploaded_media.UploadedMedia `json:"uploaded_media,omitempty"                protobuf:"bytes,9,rep,name=uploaded_media,json=uploadedMedia,proto3"`
+	WaitlistSignups             []*waitlists.WaitlistSignup     `json:"waitlist_signups,omitempty"              protobuf:"bytes,10,rep,name=waitlist_signups,json=waitlistSignups,proto3"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }

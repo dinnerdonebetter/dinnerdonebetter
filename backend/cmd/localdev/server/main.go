@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"maps"
@@ -33,6 +34,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	identitygenerated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
+	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 )
 
 const (
@@ -344,6 +346,14 @@ func main() {
 			}
 			logger.Info("All bootstrap recipes created successfully!")
 
+			// Approve all bootstrap recipes
+			for _, r := range recipes {
+				if err = recipeManager.UpdateRecipeStatus(ctx, r.ID, mealplanning.RecipeStatusApproved); err != nil {
+					return fmt.Errorf("failed to approve recipe %s: %w", r.Name, err)
+				}
+			}
+			logger.Info("All bootstrap recipes approved!")
+
 			// Always create meals
 			logger.Info("Creating bootstrap meals...")
 			meals := bootstrap.AllMeals(adminUserID, recipes)
@@ -632,16 +642,20 @@ func main() {
 
 			logger.Info("Created votes from all members for finalized meal plan")
 
-			// Finalize the meal plan
+			// Finalize the meal plan (idempotent: already-finalized is OK on re-run)
 			finalized, finalizeErr := repo.AttemptToFinalizeMealPlan(ctx, finalizedMealPlan.ID, adminAccountID)
-			if finalizeErr != nil {
-				return fmt.Errorf("failed to finalize meal plan: %w", finalizeErr)
-			}
-			if !finalized {
+			switch {
+			case finalizeErr != nil:
+				if errors.Is(finalizeErr, mealplanningrepo.ErrAlreadyFinalized) {
+					logger.Info("Meal plan already finalized (idempotent re-run), continuing")
+				} else {
+					return fmt.Errorf("failed to finalize meal plan: %w", finalizeErr)
+				}
+			case finalized:
+				logger.Info("Finalized meal plan successfully")
+			default:
 				return fmt.Errorf("meal plan was not finalized")
 			}
-
-			logger.Info("Finalized meal plan successfully")
 
 			// Extend the current meal plan's voting deadline by one week
 			updatedMealPlan := *currentMealPlan

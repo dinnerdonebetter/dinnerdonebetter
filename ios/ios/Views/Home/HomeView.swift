@@ -21,6 +21,9 @@ struct HomeView: View {
             isLoading: viewModel.isLoading,
             loadingMessage: "Loading...",
             error: viewModel.errorMessage,
+            errorTitle: viewModel.errorTitle,
+            errorIcon: viewModel.errorIcon,
+            errorIconColor: viewModel.errorIconColor,
             onRetry: { await viewModel.loadData() },
             content: {
               VStack(spacing: 0) {
@@ -96,9 +99,17 @@ struct HomeView: View {
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
           NavigationLink(destination: AccountSettingsView()) {
-            DSAvatarView(
+            DSAvatar(
               name: viewModel?.currentUserDisplayName ?? authManager.username,
-              size: .sm
+              size: .sm,
+              imageURL: viewModel.flatMap { homeViewModel in
+                guard let user = homeViewModel.currentUser,
+                  user.hasAvatar,
+                  !user.avatar.storagePath.isEmpty
+                else { return nil }
+                return APIConfiguration.mediaURL(
+                  forStoragePath: user.avatar.storagePath, bucket: "avatars")
+              }
             )
           }
         }

@@ -55,6 +55,15 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"pprof": {
+				"port": 6060,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "async_message_handler",
+			"provider": "pprof"
+		},
 		"logging": {
 			"serviceName": "async_message_handler",
 			"level": "debug",

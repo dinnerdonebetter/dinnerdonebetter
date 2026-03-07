@@ -1,17 +1,28 @@
 package grpc
 
 import (
+	"bytes"
 	"context"
+	"errors"
+	"fmt"
+	"io"
+	"path/filepath"
 
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
+
+const maxAvatarUploadSize = 5 * 1024 * 1024 // 5 MB for avatars
 
 func (s *serviceImpl) CreateUser(ctx context.Context, request *identitysvc.CreateUserRequest) (*identitysvc.CreateUserResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
@@ -213,7 +224,8 @@ func (s *serviceImpl) UpdateUserUsername(ctx context.Context, request *identitys
 	return x, nil
 }
 
-func (s *serviceImpl) UploadUserAvatar(ctx context.Context, request *identitysvc.UploadUserAvatarRequest) (*identitysvc.UploadUserAvatarResponse, error) {
+func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploadedmediasvc.UploadRequest, identitysvc.UploadUserAvatarResponse]) error {
+	ctx := stream.Context()
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -221,16 +233,120 @@ func (s *serviceImpl) UploadUserAvatar(ctx context.Context, request *identitysvc
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+	userID := sessionContextData.GetUserID()
+	logger = logger.WithValue(identitykeys.UserIDKey, userID)
+
+	firstReq, err := stream.Recv()
+	if err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive metadata")
 	}
 
-	if err = s.identityDataManager.UploadUserAvatar(ctx, sessionContextData.GetUserID(), request.Base64EncodedData); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to upload user avatar")
+	metadata := firstReq.GetMetadata()
+	if metadata == nil {
+		return observability.PrepareAndLogGRPCStatus(
+			errors.New("first message must contain metadata"),
+			logger, span, codes.InvalidArgument, "first message must contain metadata",
+		)
 	}
 
-	x := &identitysvc.UploadUserAvatarResponse{
+	if metadata.ObjectName == "" {
+		return observability.PrepareAndLogGRPCStatus(
+			errors.New("object_name is required"),
+			logger, span, codes.InvalidArgument, "object_name is required",
+		)
+	}
+
+	if metadata.ContentType == "" {
+		return observability.PrepareAndLogGRPCStatus(
+			errors.New("content_type is required"),
+			logger, span, codes.InvalidArgument, "content_type is required",
+		)
+	}
+
+	mimeType := metadata.ContentType
+	if !uploadedmedia.IsValidMimeType(mimeType) {
+		return observability.PrepareAndLogGRPCStatus(
+			fmt.Errorf("unsupported content type: %s", mimeType),
+			logger, span, codes.InvalidArgument, "unsupported content type",
+		)
+	}
+
+	var fileData bytes.Buffer
+	totalSize := int64(0)
+
+	for {
+		req, recvErr := stream.Recv()
+		if errors.Is(recvErr, io.EOF) {
+			break
+		}
+		if recvErr != nil {
+			return observability.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
+		}
+
+		chunk := req.GetChunk()
+		if chunk == nil {
+			continue
+		}
+
+		chunkSize := int64(len(chunk))
+		if totalSize+chunkSize > maxAvatarUploadSize {
+			return observability.PrepareAndLogGRPCStatus(
+				fmt.Errorf("file size exceeds maximum allowed size of %d bytes", maxAvatarUploadSize),
+				logger, span, codes.InvalidArgument, "file too large",
+			)
+		}
+
+		if _, err = fileData.Write(chunk); err != nil {
+			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
+		}
+
+		totalSize += chunkSize
+	}
+
+	if totalSize == 0 {
+		return observability.PrepareAndLogGRPCStatus(
+			errors.New("no file data received"),
+			logger, span, codes.InvalidArgument, "no file data received",
+		)
+	}
+
+	fileID := identifiers.New()
+	storagePath := filepath.Join(userID, fileID, metadata.ObjectName)
+
+	if err = s.uploadManager.SaveFile(ctx, storagePath, fileData.Bytes()); err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
+	}
+
+	uploadedMediaInput := &uploadedmedia.UploadedMediaDatabaseCreationInput{
+		ID:            fileID,
+		StoragePath:   storagePath,
+		MimeType:      mimeType,
+		CreatedByUser: userID,
+	}
+
+	if err = uploadedMediaInput.ValidateWithContext(ctx); err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
+	}
+
+	created, err := s.uploadedMediaManager.CreateUploadedMedia(ctx, uploadedMediaInput)
+	if err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
+	}
+
+	if err = s.identityDataManager.SetUserAvatar(ctx, userID, created.ID); err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to set user avatar")
+	}
+
+	response := &identitysvc.UploadUserAvatarResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
-	return x, nil
+	if err = stream.SendAndClose(response); err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
+	}
+
+	logger.Info("avatar uploaded successfully")
+	return nil
 }

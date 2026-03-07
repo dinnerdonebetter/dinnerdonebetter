@@ -1,27 +1,35 @@
 package grpc
 
 import (
+	"context"
 	"errors"
+	"io"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	mockuploads "github.com/dinnerdonebetter/backend/internal/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
-func TestServiceImpl_CreateUser(t *testing.T) {
-	t.Parallel()
+func TestServiceImpl_CreateUser(T *testing.T) {
+	T.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -70,7 +78,7 @@ func TestServiceImpl_CreateUser(t *testing.T) {
 		assert.Equal(t, exampleResponse.EmailAddress, result.Created.EmailAddress)
 	})
 
-	t.Run("with error from data manager", func(t *testing.T) {
+	T.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -103,10 +111,10 @@ func TestServiceImpl_CreateUser(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_ArchiveUser(t *testing.T) {
-	t.Parallel()
+func TestServiceImpl_ArchiveUser(T *testing.T) {
+	T.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -126,7 +134,7 @@ func TestServiceImpl_ArchiveUser(t *testing.T) {
 		assert.NotNil(t, result.ResponseDetails)
 	})
 
-	t.Run("with error from data manager", func(t *testing.T) {
+	T.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -150,10 +158,10 @@ func TestServiceImpl_ArchiveUser(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_GetUser(t *testing.T) {
-	t.Parallel()
+func TestServiceImpl_GetUser(T *testing.T) {
+	T.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -177,7 +185,7 @@ func TestServiceImpl_GetUser(t *testing.T) {
 		assert.Equal(t, exampleUser.EmailAddress, result.Result.EmailAddress)
 	})
 
-	t.Run("with error from data manager", func(t *testing.T) {
+	T.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -201,10 +209,10 @@ func TestServiceImpl_GetUser(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_GetUsers(t *testing.T) {
-	t.Parallel()
+func TestServiceImpl_GetUsers(T *testing.T) {
+	T.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -236,7 +244,7 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 		}
 	})
 
-	t.Run("with error from data manager", func(t *testing.T) {
+	T.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -262,10 +270,10 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_SearchForUsers(t *testing.T) {
-	t.Parallel()
+func TestServiceImpl_SearchForUsers(T *testing.T) {
+	T.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -301,7 +309,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 		}
 	})
 
-	t.Run("with search service enabled", func(t *testing.T) {
+	T.Run("with search service enabled", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -335,7 +343,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 		}
 	})
 
-	t.Run("with error from data manager", func(t *testing.T) {
+	T.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -364,10 +372,10 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_UpdateUserDetails(t *testing.T) {
-	t.Parallel()
+func TestServiceImpl_UpdateUserDetails(T *testing.T) {
+	T.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -389,7 +397,7 @@ func TestServiceImpl_UpdateUserDetails(t *testing.T) {
 		assert.NotNil(t, result.ResponseDetails)
 	})
 
-	t.Run("with session error", func(t *testing.T) {
+	T.Run("with session error", func(t *testing.T) {
 		t.Parallel()
 
 		service := buildTestServiceWithSessionError(t)
@@ -410,7 +418,7 @@ func TestServiceImpl_UpdateUserDetails(t *testing.T) {
 		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
 	})
 
-	t.Run("with error from data manager", func(t *testing.T) {
+	T.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -434,10 +442,10 @@ func TestServiceImpl_UpdateUserDetails(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_UpdateUserEmailAddress(t *testing.T) {
-	t.Parallel()
+func TestServiceImpl_UpdateUserEmailAddress(T *testing.T) {
+	T.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -457,7 +465,7 @@ func TestServiceImpl_UpdateUserEmailAddress(t *testing.T) {
 		assert.NotNil(t, result.ResponseDetails)
 	})
 
-	t.Run("with session error", func(t *testing.T) {
+	T.Run("with session error", func(t *testing.T) {
 		t.Parallel()
 
 		service := buildTestServiceWithSessionError(t)
@@ -476,7 +484,7 @@ func TestServiceImpl_UpdateUserEmailAddress(t *testing.T) {
 		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
 	})
 
-	t.Run("with error from data manager", func(t *testing.T) {
+	T.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -498,10 +506,10 @@ func TestServiceImpl_UpdateUserEmailAddress(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_UpdateUserUsername(t *testing.T) {
-	t.Parallel()
+func TestServiceImpl_UpdateUserUsername(T *testing.T) {
+	T.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -521,7 +529,7 @@ func TestServiceImpl_UpdateUserUsername(t *testing.T) {
 		assert.NotNil(t, result.ResponseDetails)
 	})
 
-	t.Run("with session error", func(t *testing.T) {
+	T.Run("with session error", func(t *testing.T) {
 		t.Parallel()
 
 		service := buildTestServiceWithSessionError(t)
@@ -540,7 +548,7 @@ func TestServiceImpl_UpdateUserUsername(t *testing.T) {
 		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
 	})
 
-	t.Run("with error from data manager", func(t *testing.T) {
+	T.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
 		service, identityDataManager := buildTestService(t)
@@ -562,66 +570,151 @@ func TestServiceImpl_UpdateUserUsername(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_UploadUserAvatar(t *testing.T) {
-	t.Parallel()
+// mockAvatarUploadStream mocks the client streaming interface for UploadUserAvatar.
+type mockAvatarUploadStream struct {
+	ctx context.Context
+	mock.Mock
+}
 
-	t.Run("standard", func(t *testing.T) {
+func (m *mockAvatarUploadStream) Context() context.Context {
+	if m.ctx == nil {
+		return context.Background()
+	}
+	return m.ctx
+}
+
+func (m *mockAvatarUploadStream) RecvMsg(msg any) error {
+	args := m.Called()
+	if args.Get(0) != nil && msg != nil {
+		proto.Merge(msg.(proto.Message), args.Get(0).(*uploadedmediasvc.UploadRequest))
+	}
+	return args.Error(1)
+}
+
+func (m *mockAvatarUploadStream) SendMsg(msg any) error {
+	args := m.Called(msg)
+	if len(args) == 0 {
+		return nil
+	}
+	return args.Error(0)
+}
+
+func (m *mockAvatarUploadStream) Recv() (*uploadedmediasvc.UploadRequest, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*uploadedmediasvc.UploadRequest), args.Error(1)
+}
+
+func (m *mockAvatarUploadStream) SendAndClose(response *identitysvc.UploadUserAvatarResponse) error {
+	args := m.Called(response)
+	return args.Error(0)
+}
+
+func (m *mockAvatarUploadStream) SendHeader(_ metadata.MD) error {
+	return nil
+}
+
+func (m *mockAvatarUploadStream) SetHeader(_ metadata.MD) error {
+	return nil
+}
+
+func (m *mockAvatarUploadStream) SetTrailer(_ metadata.MD) {
+}
+
+func TestServiceImpl_UploadUserAvatar(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		service, identityDataManager := buildTestService(t)
+		service, identityDataManager, uploadedMediaRepo := buildTestServiceWithUploadMocks(t)
 
-		base64Data := "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-
-		identityDataManager.On(reflection.GetMethodName(identityDataManager.UploadUserAvatar), testutils.ContextMatcher, mock.AnythingOfType("string"), base64Data).Return(nil)
-
-		request := &identitysvc.UploadUserAvatarRequest{
-			Base64EncodedData: base64Data,
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: &uploadedmediasvc.UploadMetadata{
+					ObjectName:  "avatar.png",
+					ContentType: "image/png",
+				},
+			},
+		}
+		chunkReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Chunk{
+				Chunk: []byte("image-data"),
+			},
 		}
 
-		result, err := service.UploadUserAvatar(t.Context(), request)
+		mockStream := &mockAvatarUploadStream{ctx: t.Context()}
+		mockStream.On("RecvMsg").Return(metadataReq, nil).Once()
+		mockStream.On("RecvMsg").Return(chunkReq, nil).Once()
+		mockStream.On("RecvMsg").Return(nil, io.EOF).Once()
+		mockStream.On("SendMsg", mock.AnythingOfType("*identity.UploadUserAvatarResponse")).Return(nil).Once()
+
+		uploadManager := service.uploadManager.(*mockuploads.MockUploadManager)
+		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+		uploadedMediaRepo.On(reflection.GetMethodName(uploadedMediaRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(&uploadedmedia.UploadedMedia{ID: identityfakes.BuildFakeID()}, nil)
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.SetUserAvatar), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
+
+		stream := &grpc.GenericServerStream[uploadedmediasvc.UploadRequest, identitysvc.UploadUserAvatarResponse]{ServerStream: mockStream}
+		err := service.UploadUserAvatar(stream)
 
 		assert.NoError(t, err)
-		assert.NotNil(t, result)
-		assert.NotNil(t, result.ResponseDetails)
+		mock.AssertExpectationsForObjects(t, mockStream, identityDataManager, uploadedMediaRepo, uploadManager)
 	})
 
-	t.Run("with session error", func(t *testing.T) {
+	T.Run("with session error", func(t *testing.T) {
 		t.Parallel()
 
 		service := buildTestServiceWithSessionError(t)
 
-		request := &identitysvc.UploadUserAvatarRequest{
-			Base64EncodedData: "test-data",
-		}
+		mockStream := &mockAvatarUploadStream{ctx: t.Context()}
 
-		result, err := service.UploadUserAvatar(t.Context(), request)
+		stream := &grpc.GenericServerStream[uploadedmediasvc.UploadRequest, identitysvc.UploadUserAvatarResponse]{ServerStream: mockStream}
+		err := service.UploadUserAvatar(stream)
 
 		assert.Error(t, err)
-		assert.Nil(t, result)
-
 		grpcErr, ok := status.FromError(err)
 		assert.True(t, ok)
 		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
 	})
 
-	t.Run("with error from data manager", func(t *testing.T) {
+	T.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
-		service, identityDataManager := buildTestService(t)
+		service, identityDataManager, uploadedMediaRepo := buildTestServiceWithUploadMocks(t)
 
-		identityDataManager.On(reflection.GetMethodName(identityDataManager.UploadUserAvatar), testutils.ContextMatcher, mock.AnythingOfType("string"), "test-data").Return(errors.New("upload error"))
-
-		request := &identitysvc.UploadUserAvatarRequest{
-			Base64EncodedData: "test-data",
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: &uploadedmediasvc.UploadMetadata{
+					ObjectName:  "avatar.png",
+					ContentType: "image/png",
+				},
+			},
+		}
+		chunkReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Chunk{
+				Chunk: []byte("image-data"),
+			},
 		}
 
-		result, err := service.UploadUserAvatar(t.Context(), request)
+		mockStream := &mockAvatarUploadStream{ctx: t.Context()}
+		mockStream.On("RecvMsg").Return(metadataReq, nil).Once()
+		mockStream.On("RecvMsg").Return(chunkReq, nil).Once()
+		mockStream.On("RecvMsg").Return(nil, io.EOF).Once()
+
+		uploadManager := service.uploadManager.(*mockuploads.MockUploadManager)
+		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+		uploadedMediaRepo.On(reflection.GetMethodName(uploadedMediaRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(&uploadedmedia.UploadedMedia{ID: identityfakes.BuildFakeID()}, nil)
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.SetUserAvatar), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("set avatar error"))
+
+		stream := &grpc.GenericServerStream[uploadedmediasvc.UploadRequest, identitysvc.UploadUserAvatarResponse]{ServerStream: mockStream}
+		err := service.UploadUserAvatar(stream)
 
 		assert.Error(t, err)
-		assert.Nil(t, result)
-
 		grpcErr, ok := status.FromError(err)
 		assert.True(t, ok)
 		assert.Equal(t, codes.Internal, grpcErr.Code())
+		mock.AssertExpectationsForObjects(t, mockStream, identityDataManager, uploadedMediaRepo, uploadManager)
 	})
 }

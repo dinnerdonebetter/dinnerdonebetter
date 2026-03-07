@@ -40,6 +40,9 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"serviceName": "search_data_index_scheduler"
+		},
 		"logging": {
 			"serviceName": "search_data_index_scheduler",
 			"level": "info",

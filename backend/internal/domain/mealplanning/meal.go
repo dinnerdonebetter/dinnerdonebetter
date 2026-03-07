@@ -144,6 +144,7 @@ type (
 	// MealDataManager describes a structure capable of storing meals permanently.
 	MealDataManager interface {
 		MealExists(ctx context.Context, mealID string) (bool, error)
+		FindMealWithSameComponents(ctx context.Context, creatorID string, input *MealCreationRequestInput) (*Meal, error)
 		GetMeal(ctx context.Context, mealID string) (*Meal, error)
 		GetMeals(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Meal], error)
 		GetMealsCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Meal], error)
@@ -153,6 +154,7 @@ type (
 		ArchiveMeal(ctx context.Context, mealID, userID string) error
 		GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetMealsWithIDs(ctx context.Context, ids []string) ([]*Meal, error)
+		AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error
 	}
 
 	// MealDataService describes a structure capable of serving traffic related to meals.

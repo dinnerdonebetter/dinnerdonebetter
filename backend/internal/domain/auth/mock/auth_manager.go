@@ -71,3 +71,9 @@ func (m *AuthManager) VerifyUserEmailAddress(ctx context.Context, input *auth.Em
 	args := m.Called(ctx, input)
 	return args.Error(0)
 }
+
+// VerifyUserEmailAddressByToken is a mock method.
+func (m *AuthManager) VerifyUserEmailAddressByToken(ctx context.Context, token string) error {
+	args := m.Called(ctx, token)
+	return args.Error(0)
+}

@@ -40,6 +40,9 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"serviceName": "mobile_notification_scheduler"
+		},
 		"logging": {
 			"serviceName": "mobile_notification_scheduler",
 			"level": "info",

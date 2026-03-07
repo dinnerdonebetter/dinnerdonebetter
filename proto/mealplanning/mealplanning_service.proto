@@ -229,4 +229,6 @@ service MealPlanningService {
   rpc UpdateAccountInstrumentOwnership(UpdateAccountInstrumentOwnershipRequest) returns (UpdateAccountInstrumentOwnershipResponse);
   rpc UpdateComment(comments.UpdateCommentRequest) returns (comments.UpdateCommentResponse);
   rpc UpdateUserIngredientPreference(UpdateUserIngredientPreferenceRequest) returns (UpdateUserIngredientPreferenceResponse);
+  rpc UploadMealImage(stream UploadMealMediaRequest) returns (UploadMealImageResponse);
+  rpc UploadRecipeImage(stream UploadRecipeMediaRequest) returns (UploadRecipeImageResponse);
 }

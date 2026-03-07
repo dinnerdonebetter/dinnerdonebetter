@@ -462,27 +462,22 @@ func (l *AuthManager) CreatePasswordResetToken(ctx context.Context, input *auth.
 	defer span.End()
 
 	logger := l.logger.WithSpan(span)
-
-	sessionContextData, err := l.sessionContextDataFetcher(ctx)
-	if err != nil {
-		return observability.PrepareError(err, span, "failed to get session context data")
-	}
-	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
-
-	if err = input.ValidateWithContext(ctx); err != nil {
+	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "provided input was invalid")
+	}
+
+	u, err := l.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		// Do not leak user existence; return success without sending email.
+		return nil
+	}
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
 	token, err := l.secretGenerator.GenerateBase32EncodedString(ctx, passwordResetTokenSize)
 	if err != nil {
 		return observability.PrepareError(err, span, "generating secret")
-	}
-
-	u, err := l.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return observability.PrepareError(err, span, "user not found")
-	} else if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
 	dbInput := &auth.PasswordResetTokenDatabaseCreationInput{
@@ -515,14 +510,11 @@ func (l *AuthManager) PasswordResetTokenRedemption(ctx context.Context, input *a
 	defer span.End()
 
 	logger := l.logger.WithSpan(span)
-
-	sessionContextData, err := l.sessionContextDataFetcher(ctx)
-	if err != nil {
-		return observability.PrepareError(err, span, "failed to get session context data")
+	if sessionContextData, err := l.sessionContextDataFetcher(ctx); err == nil {
+		logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 	}
-	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
-	if err = input.ValidateWithContext(ctx); err != nil {
+	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "provided input was invalid")
 	}
 
@@ -636,6 +628,42 @@ func (l *AuthManager) VerifyUserEmailAddress(ctx context.Context, input *auth.Em
 	}
 
 	if err = l.userDataManager.MarkUserEmailAddressAsVerified(ctx, user.ID, input.Token); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return observability.PrepareError(err, span, "user not found")
+		}
+		return observability.PrepareAndLogError(err, logger, span, "marking user email as verified")
+	}
+
+	l.dataChangesPublisher.PublishAsync(ctx, &audit.DataChangeMessage{
+		EventType: auth.UserEmailAddressVerifiedEventType,
+		UserID:    user.ID,
+	})
+
+	return nil
+}
+
+// VerifyUserEmailAddressByToken verifies a user's email address using only the verification token.
+// It does not require session context and is used for unauthenticated verification (e.g., from email links).
+func (l *AuthManager) VerifyUserEmailAddressByToken(ctx context.Context, token string) error {
+	ctx, span := l.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := l.logger.WithSpan(span)
+
+	input := &auth.EmailAddressVerificationRequestInput{Token: token}
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return observability.PrepareError(err, span, "provided input was invalid")
+	}
+
+	user, err := l.userDataManager.GetUserByEmailAddressVerificationToken(ctx, token)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return observability.PrepareError(err, span, "user not found")
+		}
+		return observability.PrepareAndLogError(err, logger, span, "fetching user")
+	}
+
+	if err = l.userDataManager.MarkUserEmailAddressAsVerified(ctx, user.ID, token); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return observability.PrepareError(err, span, "user not found")
 		}

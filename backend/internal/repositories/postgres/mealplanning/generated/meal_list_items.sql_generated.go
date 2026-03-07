@@ -28,6 +28,28 @@ func (q *Queries) ArchiveMealListItem(ctx context.Context, db DBTX, arg *Archive
 	return result.RowsAffected()
 }
 
+const checkMealInMealList = `-- name: CheckMealInMealList :one
+SELECT EXISTS (
+	SELECT meal_list_items.id
+	FROM meal_list_items
+	WHERE meal_list_items.archived_at IS NULL
+		AND meal_list_items.belongs_to_meal_list = $1
+		AND meal_list_items.meal_id = $2
+)
+`
+
+type CheckMealInMealListParams struct {
+	BelongsToMealList string
+	MealID            string
+}
+
+func (q *Queries) CheckMealInMealList(ctx context.Context, db DBTX, arg *CheckMealInMealListParams) (bool, error) {
+	row := db.QueryRowContext(ctx, checkMealInMealList, arg.BelongsToMealList, arg.MealID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const createMealListItem = `-- name: CreateMealListItem :exec
 INSERT INTO meal_list_items (
 	id,

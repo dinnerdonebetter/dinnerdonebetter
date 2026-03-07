@@ -16,6 +16,8 @@ type Props struct {
 	PasswordError,
 	TOTPError,
 	GeneralError string
+	// ResetSuccessMessage is shown when the user has successfully reset their password (e.g. "Your password has been reset. Sign in with your new password.").
+	ResetSuccessMessage string
 }
 
 // Config allows customizing the form copy per app.
@@ -24,6 +26,8 @@ type Config struct {
 	Title string
 	// SubmitButtonText is the submit button label (e.g. "Log In" or "Sign In").
 	SubmitButtonText string
+	// ForgotPasswordLink is the href for the "Forgot password?" link. If empty, the link is not shown.
+	ForgotPasswordLink string
 }
 
 // DefaultConfig returns config with "Login" / "Log In" copy.
@@ -37,8 +41,9 @@ func DefaultConfig() Config {
 // SignInConfig returns config with "Sign In" copy.
 func SignInConfig() Config {
 	return Config{
-		Title:            "Sign In",
-		SubmitButtonText: "Sign In",
+		Title:              "Sign In",
+		SubmitButtonText:   "Sign In",
+		ForgotPasswordLink: "/forgot_password",
 	}
 }
 
@@ -67,6 +72,11 @@ func Form(props *Props, cfg Config, palette *design.Palette) g.Node {
 				g.Text(cfg.Title),
 			),
 
+			g.If(props.ResetSuccessMessage != "", ghtml.Div(
+				ghtml.Class(fmt.Sprintf("mb-4 p-3 rounded-md text-sm bg-green-50 border border-green-200 %s", design.TextColor(palette.Primary))),
+				g.Text(props.ResetSuccessMessage),
+			)),
+
 			ghtml.Form(
 				ghtml.Class("space-y-4"),
 				ghtml.Method("post"),
@@ -78,6 +88,14 @@ func Form(props *Props, cfg Config, palette *design.Palette) g.Node {
 
 				wrapInputElement("username", props.UsernameError, usernameInput("username", "username", "", palette), palette),
 				wrapInputElement("password", props.PasswordError, passwordInput("password", "password", "", palette), palette),
+				g.If(cfg.ForgotPasswordLink != "", ghtml.Div(
+					ghtml.Class("text-right -mt-2"),
+					ghtml.A(
+						ghtml.Href(cfg.ForgotPasswordLink),
+						ghtml.Class(fmt.Sprintf("text-sm %s hover:underline", design.TextColor(palette.Primary))),
+						g.Text("Forgot password?"),
+					),
+				)),
 				wrapInputElement("TOTP code", props.TOTPError, totpTokenInput("totp", "totpToken", "", palette), palette),
 
 				submitButton(cfg.SubmitButtonText),

@@ -10,25 +10,37 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	managermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
+	uploadedmediamock "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/mock"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	mockuploads "github.com/dinnerdonebetter/backend/internal/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func buildTestService(t *testing.T) (*serviceImpl, *managermock.IdentityDataManager) {
 	t.Helper()
+	service, identityDataManager, _ := buildTestServiceWithUploadMocks(t)
+	return service, identityDataManager
+}
+
+func buildTestServiceWithUploadMocks(t *testing.T) (*serviceImpl, *managermock.IdentityDataManager, *uploadedmediamock.Repository) {
+	t.Helper()
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	identityDataManager := &managermock.IdentityDataManager{}
+	uploadedMediaRepo := &uploadedmediamock.Repository{}
+	uploadManager := &mockuploads.MockUploadManager{}
 
 	service := &serviceImpl{
-		tracer:              tracer,
-		logger:              logger,
-		identityDataManager: identityDataManager,
+		tracer:               tracer,
+		logger:               logger,
+		identityDataManager:  identityDataManager,
+		uploadedMediaManager: uploadedMediaRepo,
+		uploadManager:        uploadManager,
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -44,7 +56,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *managermock.IdentityDataMana
 		},
 	}
 
-	return service, identityDataManager
+	return service, identityDataManager, uploadedMediaRepo
 }
 
 func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
@@ -55,9 +67,11 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 	identityDataManager := &managermock.IdentityDataManager{}
 
 	service := &serviceImpl{
-		tracer:              tracer,
-		logger:              logger,
-		identityDataManager: identityDataManager,
+		tracer:               tracer,
+		logger:               logger,
+		identityDataManager:  identityDataManager,
+		uploadedMediaManager: &uploadedmediamock.Repository{},
+		uploadManager:        &mockuploads.MockUploadManager{},
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		},
@@ -79,7 +93,9 @@ func TestNewService(t *testing.T) {
 		}
 		identityDataManager := &managermock.IdentityDataManager{}
 
-		service := NewService(logger, tracerProvider, sessionContextDataFetcher, identityDataManager)
+		uploadedMediaManager := &uploadedmediamock.Repository{}
+		uploadManager := &mockuploads.MockUploadManager{}
+		service := NewService(logger, tracerProvider, sessionContextDataFetcher, identityDataManager, uploadedMediaManager, uploadManager)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*identitysvc.IdentityServiceServer)(nil), service)
@@ -91,6 +107,8 @@ func TestNewService(t *testing.T) {
 		assert.NotNil(t, impl.tracer)
 		assert.NotNil(t, impl.sessionContextDataFetcher)
 		assert.Equal(t, identityDataManager, impl.identityDataManager)
+		assert.Equal(t, uploadedMediaManager, impl.uploadedMediaManager)
+		assert.Equal(t, uploadManager, impl.uploadManager)
 	})
 }
 

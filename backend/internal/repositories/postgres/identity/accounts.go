@@ -80,7 +80,7 @@ func (r *repository) GetAccount(ctx context.Context, accountID string) (*identit
 				LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.UserLastAcceptedTermsOfService),
 				LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
 				TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
-				AvatarSrc:                  database.StringPointerFromNullString(result.UserAvatarSrc),
+				Avatar:                     avatarFromRow(result.UserAvatarID, result.UserAvatarStoragePath, result.UserAvatarMimeType, result.UserAvatarCreatedAt, result.UserAvatarLastUpdatedAt, result.UserAvatarArchivedAt, result.UserAvatarCreatedByUser),
 				Birthday:                   database.TimePointerFromNullTime(result.UserBirthday),
 				ArchivedAt:                 database.TimePointerFromNullTime(result.UserArchivedAt),
 				AccountStatusExplanation:   result.UserUserAccountStatusExplanation,

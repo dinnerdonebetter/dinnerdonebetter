@@ -494,7 +494,9 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		Media:               []*mealplanning.RecipeMediaCreationRequestInput{},
 	}
 
-	return []*mealplanning.RecipeCreationRequestInput{
+	_ = []*mealplanning.RecipeCreationRequestInput{
 		grilledCauliflowerRecipe,
 	}
+
+	return nil
 }

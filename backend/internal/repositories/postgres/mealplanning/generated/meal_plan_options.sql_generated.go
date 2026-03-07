@@ -32,6 +32,28 @@ func (q *Queries) ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *Archi
 	return result.RowsAffected()
 }
 
+const checkMealInMealPlanEvent = `-- name: CheckMealInMealPlanEvent :one
+SELECT EXISTS (
+	SELECT meal_plan_options.id
+	FROM meal_plan_options
+	WHERE meal_plan_options.archived_at IS NULL
+		AND meal_plan_options.belongs_to_meal_plan_event = $1
+		AND meal_plan_options.meal_id = $2
+)
+`
+
+type CheckMealInMealPlanEventParams struct {
+	MealID                 string
+	BelongsToMealPlanEvent sql.NullString
+}
+
+func (q *Queries) CheckMealInMealPlanEvent(ctx context.Context, db DBTX, arg *CheckMealInMealPlanEventParams) (bool, error) {
+	row := db.QueryRowContext(ctx, checkMealInMealPlanEvent, arg.BelongsToMealPlanEvent, arg.MealID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const checkMealPlanOptionExistence = `-- name: CheckMealPlanOptionExistence :one
 SELECT EXISTS (
 	SELECT meal_plan_options.id

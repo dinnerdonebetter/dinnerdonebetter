@@ -2,6 +2,7 @@ package managers
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
@@ -36,6 +37,7 @@ type (
 		ReadMeal(ctx context.Context, mealID string) (*types.Meal, error)
 		SearchMeals(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error)
 		ArchiveMeal(ctx context.Context, mealID, ownerID string) error
+		AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error
 
 		ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error)
 		CreateMealPlan(ctx context.Context, ownerID, creatorID string, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error)
@@ -184,6 +186,14 @@ func (m *mealPlanningManager) CreateMeal(ctx context.Context, creatorID string, 
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	existing, err := m.db.FindMealWithSameComponents(ctx, creatorID, input)
+	if err != nil && !errors.Is(err, types.ErrNoMatchingMeal) {
+		return nil, observability.PrepareAndLogError(err, m.logger.WithSpan(span), span, "checking for duplicate meal")
+	}
+	if existing != nil {
+		return nil, types.ErrDuplicateMeal
+	}
+
 	convertedInput := converters.ConvertMealCreationRequestInputToMealDatabaseCreationInput(input)
 	convertedInput.CreatedByUser = creatorID
 	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealIDKey, convertedInput.ID)
@@ -291,6 +301,20 @@ func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID s
 	return nil
 }
 
+func (m *mealPlanningManager) AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
+
+	if err := m.db.AddMealImage(ctx, mealID, uploadedMediaID, uploadedByUser); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "adding meal image")
+	}
+
+	return nil
+}
+
 func (m *mealPlanningManager) ListMealLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealList], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -322,6 +346,7 @@ func (m *mealPlanningManager) CreateMealList(ctx context.Context, userID string,
 		return nil, observability.PrepareError(err, span, "validating meal list input")
 	}
 
+	seenMealIDs := map[string]bool{}
 	dbInput := &types.MealListDatabaseCreationInput{
 		ID:            identifiers.New(),
 		Name:          input.Name,
@@ -333,6 +358,10 @@ func (m *mealPlanningManager) CreateMealList(ctx context.Context, userID string,
 		if item == nil {
 			continue
 		}
+		if seenMealIDs[item.MealID] {
+			return nil, types.ErrDuplicateMealInList
+		}
+		seenMealIDs[item.MealID] = true
 
 		dbInput.Items = append(dbInput.Items, &types.MealListItemDatabaseCreationInput{
 			ID:                identifiers.New(),
@@ -409,6 +438,14 @@ func (m *mealPlanningManager) AddMealToMealList(ctx context.Context, mealListID,
 
 	if mealListID == "" || mealID == "" {
 		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
+	exists, err := m.db.MealExistsInMealList(ctx, mealListID, mealID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "checking if meal exists in list")
+	}
+	if exists {
+		return nil, types.ErrDuplicateMealInList
 	}
 
 	input := &types.MealListItemDatabaseCreationInput{
@@ -819,6 +856,16 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
+	if convertedInput.BelongsToMealPlanEvent != "" {
+		exists, err := m.db.MealExistsAsOptionInEvent(ctx, convertedInput.BelongsToMealPlanEvent, convertedInput.MealID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, m.logger.WithSpan(span), span, "checking if meal exists as option in event")
+		}
+		if exists {
+			return nil, types.ErrDuplicateMealPlanOption
+		}
+	}
+
 	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanOptionIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, convertedInput.ID)
 
@@ -849,6 +896,14 @@ func (m *mealPlanningManager) CreateMealPlanOptionWithEventID(ctx context.Contex
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
 	// Set the meal plan event ID that was missing before
 	convertedInput.BelongsToMealPlanEvent = mealPlanEventID
+
+	exists, err := m.db.MealExistsAsOptionInEvent(ctx, mealPlanEventID, convertedInput.MealID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, m.logger.WithSpan(span), span, "checking if meal exists as option in event")
+	}
+	if exists {
+		return nil, types.ErrDuplicateMealPlanOption
+	}
 
 	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanOptionIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanOptionIDKey, convertedInput.ID)

@@ -5,13 +5,17 @@
 //  Created by Auto on 12/8/25.
 //
 
+import PhotosUI
 import RevenueCat
 import RevenueCatUI
 import SwiftUI
+import UIKit
 
 struct AccountSettingsView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: AccountSettingsViewModel?
+  @State private var avatarViewModel: UploadAvatarViewModel?
+  @State private var selectedAvatarItem: PhotosPickerItem?
   @State private var showCustomerCenter = false
   @State private var showPaywall = false
   @State private var isProActive = false
@@ -19,88 +23,101 @@ struct AccountSettingsView: View {
 
   var body: some View {
     NavigationStack {
-      Group {
-        if let viewModel = viewModel {
-          DSContentState(
-            isLoading: viewModel.isLoading,
-            loadingMessage: "Loading household...",
-            error: viewModel.errorMessage,
-            onRetry: { await viewModel.loadData() },
-            content: {
-              ScrollView {
-                VStack(spacing: DSTheme.Spacing.xl) {
-                  // Subscription Section
-                  subscriptionSection
-
-                  // Members Section
-                  if let account = viewModel.account {
-                    membersSection(viewModel: viewModel, account: account)
-                  }
-
-                  // Send Invitation Section (admins only)
-                  if viewModel.isAccountAdmin {
-                    sendInvitationSection(viewModel: viewModel)
-                  }
-
-                  // Invitations (sent) and their status
-                  if !viewModel.invitations.isEmpty {
-                    pendingInvitationsSection(viewModel: viewModel)
-                  }
-
-                  // Household details (address, contact)
-                  if viewModel.account != nil {
-                    accountInformationSection(viewModel: viewModel)
-                  }
-
-                  // Sign Out Button
-                  signOutButton
-                }
-                .dsScreenPadding()
-              }
-            })
-        } else {
-          DSInitializingView()
-        }
+      accountSettingsContent
+    }
+    .navigationTitle("My Household")
+    .refreshable {
+      if let viewModel = viewModel {
+        await viewModel.loadData()
       }
-      .navigationTitle("My Household")
-      .refreshable {
-        if let viewModel = viewModel {
+    }
+    .onAppear {
+      if viewModel == nil {
+        viewModel = AccountSettingsViewModel(authManager: authManager)
+      }
+      if let viewModel = viewModel {
+        Task {
           await viewModel.loadData()
         }
       }
-      .onAppear {
-        if viewModel == nil {
-          viewModel = AccountSettingsViewModel(authManager: authManager)
-        }
-        if let viewModel = viewModel {
-          Task {
-            await viewModel.loadData()
-          }
-        }
-        Task {
-          isProActive = await EntitlementService.isProActive()
-        }
-        if RevenueCatConfiguration.isConfigured && launchOffering == nil {
-          Task { launchOffering = await SubscriptionService.launchOffering() }
-        }
+      if avatarViewModel == nil {
+        avatarViewModel = UploadAvatarViewModel(authManager: authManager)
       }
-      .sheet(isPresented: $showCustomerCenter) {
-        CustomerCenterView()
+      Task {
+        isProActive = await EntitlementService.isProActive()
       }
-      .sheet(isPresented: $showPaywall) {
-        if let offering = launchOffering {
-          PaywallView(offering: offering)
-        } else {
-          ProgressView("Loading...")
-            .task { launchOffering = await SubscriptionService.launchOffering() }
+      if RevenueCatConfiguration.isConfigured && launchOffering == nil {
+        Task { launchOffering = await SubscriptionService.launchOffering() }
+      }
+    }
+    .onChange(of: selectedAvatarItem) { _, newItem in
+      guard let item = newItem, let avatarViewModel = avatarViewModel else { return }
+      Task {
+        await loadAndUploadAvatar(item: item, viewModel: avatarViewModel)
+      }
+    }
+    .onChange(of: avatarViewModel?.didSucceed) { _, didSucceed in
+      if didSucceed == true, let viewModel = viewModel {
+        Task { await viewModel.loadData() }
+      }
+    }
+    .sheet(isPresented: $showCustomerCenter) {
+      CustomerCenterView()
+    }
+    .sheet(isPresented: $showPaywall) {
+      if let offering = launchOffering {
+        PaywallView(offering: offering)
+      } else {
+        ProgressView("Loading...")
+          .task { launchOffering = await SubscriptionService.launchOffering() }
+      }
+    }
+    .onChange(of: showCustomerCenter) { _, isPresented in
+      if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
+    }
+    .onChange(of: showPaywall) { _, isPresented in
+      if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
+    }
+  }
+
+  @ViewBuilder
+  private var accountSettingsContent: some View {
+    if let viewModel = viewModel {
+      DSContentState(
+        isLoading: viewModel.isLoading,
+        loadingMessage: "Loading household...",
+        error: viewModel.errorMessage,
+        errorTitle: viewModel.errorTitle,
+        errorIcon: viewModel.errorIcon,
+        errorIconColor: viewModel.errorIconColor,
+        onRetry: { await viewModel.loadData() },
+        content: { accountSettingsScrollContent(viewModel: viewModel) }
+      )
+    } else {
+      DSInitializingView()
+    }
+  }
+
+  private func accountSettingsScrollContent(viewModel: AccountSettingsViewModel) -> some View {
+    ScrollView {
+      VStack(spacing: DSTheme.Spacing.xl) {
+        subscriptionSection
+        if let account = viewModel.account {
+          membersSection(viewModel: viewModel, account: account)
         }
+        if viewModel.isAccountAdmin {
+          sendInvitationSection(viewModel: viewModel)
+        }
+        if !viewModel.invitations.isEmpty {
+          pendingInvitationsSection(viewModel: viewModel)
+        }
+        if viewModel.account != nil {
+          accountInformationSection(viewModel: viewModel)
+        }
+        mediaSection
+        signOutButton
       }
-      .onChange(of: showCustomerCenter) { _, isPresented in
-        if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
-      }
-      .onChange(of: showPaywall) { _, isPresented in
-        if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
-      }
+      .dsScreenPadding()
     }
   }
 
@@ -291,6 +308,66 @@ struct AccountSettingsView: View {
     }
   }
 
+  // MARK: - Profile Photo Section
+  @ViewBuilder
+  private var mediaSection: some View {
+    DSSection("Profile Photo", subtitle: "Select a photo to set as your profile picture") {
+      if let avatarViewModel = avatarViewModel {
+        VStack(spacing: DSTheme.Spacing.lg) {
+          PhotosPicker(
+            selection: $selectedAvatarItem,
+            matching: .images,
+            photoLibrary: .shared()
+          ) {
+            HStack(spacing: DSTheme.Spacing.md) {
+              Image(systemName: "person.crop.circle.badge.plus")
+                .font(.system(size: DSTheme.IconSize.lg))
+                .foregroundColor(DSTheme.Colors.primary)
+              Text("Select Photo")
+                .font(DSTheme.Typography.label)
+                .foregroundColor(DSTheme.Colors.textPrimary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(DSTheme.Spacing.lg)
+            .background(DSTheme.Colors.cardBackground)
+            .cornerRadius(DSTheme.Radius.md)
+          }
+          .disabled(avatarViewModel.isUploading)
+
+          if avatarViewModel.isUploading {
+            ProgressView("Uploading...")
+              .padding()
+          }
+
+          if let error = avatarViewModel.errorMessage {
+            Text(error)
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.error)
+              .multilineTextAlignment(.leading)
+          }
+
+          if avatarViewModel.didSucceed {
+            HStack(spacing: DSTheme.Spacing.sm) {
+              Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(DSTheme.Colors.success)
+              Text("Profile photo updated successfully")
+                .font(DSTheme.Typography.label)
+                .foregroundColor(DSTheme.Colors.success)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(DSTheme.Spacing.md)
+            .background(DSTheme.Colors.cardBackground)
+            .cornerRadius(DSTheme.Radius.md)
+          }
+        }
+      } else {
+        ProgressView()
+          .frame(maxWidth: .infinity)
+          .padding()
+      }
+    }
+  }
+
   // MARK: - Sign Out Button
   private var signOutButton: some View {
     DSButton("Sign Out", style: .ghost, fullWidth: true) {
@@ -299,6 +376,29 @@ struct AccountSettingsView: View {
       }
     }
     .padding(.top, DSTheme.Spacing.xl)
+  }
+
+  // MARK: - Avatar Upload Helpers
+  private func loadAndUploadAvatar(item: PhotosPickerItem, viewModel: UploadAvatarViewModel) async {
+    do {
+      guard let data = try await item.loadTransferable(type: Data.self) else {
+        viewModel.errorMessage = "Failed to load image data"
+        return
+      }
+
+      let prepared = ImagePreparationHelper.prepareImageForUpload(data: data)
+      let objectName = UUID().uuidString + "." + prepared.fileExtension
+
+      await viewModel.uploadAvatar(
+        imageData: prepared.data,
+        contentType: prepared.contentType,
+        objectName: objectName
+      )
+
+      selectedAvatarItem = nil
+    } catch {
+      viewModel.errorMessage = "Failed to load image: \(error.localizedDescription)"
+    }
   }
 }
 
@@ -334,7 +434,14 @@ struct MemberCard: View {
     DSCard {
       HStack(spacing: DSTheme.Spacing.md) {
         // Avatar
-        DSAvatarView(name: displayName, size: .lg)
+        DSAvatar(
+          name: displayName,
+          size: .lg,
+          imageURL: member.hasBelongsToUser && member.belongsToUser.hasAvatar
+            ? APIConfiguration.mediaURL(
+              forStoragePath: member.belongsToUser.avatar.storagePath, bucket: "avatars")
+            : nil
+        )
 
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
           Text(displayName)

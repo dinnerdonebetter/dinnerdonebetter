@@ -58,3 +58,39 @@ func TestIntegration_MealListItems(t *testing.T) {
 	err = dbc.ArchiveMealListItem(ctx, createdItem.ID, createdList.ID)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
+
+func TestIntegration_MealExistsInMealList(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, _, container := buildDatabaseClientForTest(t)
+	defer func() {
+		assert.NoError(t, container.Terminate(ctx))
+	}()
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+	listInput := buildMealListForTest(user.ID)
+	createdList, err := dbc.CreateMealList(ctx, listInput)
+	require.NoError(t, err)
+
+	itemInput := buildMealListItemForTest(createdList.ID, meal.ID)
+	_, err = dbc.CreateMealListItem(ctx, itemInput)
+	require.NoError(t, err)
+
+	exists, err := dbc.MealExistsInMealList(ctx, createdList.ID, meal.ID)
+	require.NoError(t, err)
+	assert.True(t, exists)
+
+	exists, err = dbc.MealExistsInMealList(ctx, createdList.ID, "nonexistent-meal-id")
+	require.NoError(t, err)
+	assert.False(t, exists)
+
+	anotherMeal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+	exists, err = dbc.MealExistsInMealList(ctx, createdList.ID, anotherMeal.ID)
+	require.NoError(t, err)
+	assert.False(t, exists)
+}

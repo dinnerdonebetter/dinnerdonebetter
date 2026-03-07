@@ -54,6 +54,12 @@ func (m *MockMealPlanningManager) ArchiveMeal(ctx context.Context, mealID, owner
 	return returnValues.Error(0)
 }
 
+func (m *MockMealPlanningManager) AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error {
+	returnValues := m.Called(ctx, mealID, uploadedMediaID, uploadedByUser)
+
+	return returnValues.Error(0)
+}
+
 func (m *MockMealPlanningManager) ListMealLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealList], error) {
 	returnValues := m.Called(ctx, filter)
 

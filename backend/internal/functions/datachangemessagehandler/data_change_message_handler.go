@@ -26,10 +26,24 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 const (
 	o11yName = "async_data_change_message_handler"
+
+	topicDataChanges              = "data_changes"
+	topicOutboundEmails           = "outbound_emails"
+	topicSearchIndexRequests      = "search_index_requests"
+	topicWebhookExecutionRequests = "webhook_execution_requests"
+	topicUserDataAggregation      = "user_data_aggregation"
+	topicMobileNotifications      = "mobile_notifications"
+
+	statusSuccess = "success"
+	statusFailure = "failure"
+	unknownValue  = "unknown"
 )
 
 var (
@@ -37,8 +51,8 @@ var (
 )
 
 type AsyncDataChangeMessageHandler struct {
-	searchDataIndexPublisher                  messagequeue.Publisher
-	identityRepo                              identity.Repository
+	uploadManager                             uploads.UploadManager
+	tracer                                    tracing.Tracer
 	dataPrivacyRepo                           dataprivacy.Repository
 	internalOpsRepo                           internalops.InternalOpsDataManager
 	logger                                    logging.Logger
@@ -47,21 +61,27 @@ type AsyncDataChangeMessageHandler struct {
 	userDataAggregationExecutionTimeHistogram metrics.Float64Histogram
 	outboundEmailsPublisher                   messagequeue.Publisher
 	webhookRepo                               webhooks.Repository
-	consumerProvider                          messagequeue.ConsumerProvider
+	outboundEmailsExecutionTimeHistogram      metrics.Float64Histogram
 	analyticsEventReporter                    analytics.EventReporter
 	dataChangesExecutionTimeHistogram         metrics.Float64Histogram
 	webhookExecutionRequestPublisher          messagequeue.Publisher
 	mobileNotificationsPublisher              messagequeue.Publisher
 	emailer                                   email.Emailer
-	uploadManager                             uploads.UploadManager
-	tracer                                    tracing.Tracer
-	outboundEmailsExecutionTimeHistogram      metrics.Float64Histogram
+	identityRepo                              identity.Repository
+	searchDataIndexPublisher                  messagequeue.Publisher
+	consumerProvider                          messagequeue.ConsumerProvider
 	searchIndexRequestsExecutionTimeHistogram metrics.Float64Histogram
-	userDataIndexer                           *identityindexing.UserDataIndexer
-	mealPlanningDataIndexer                   *mealplanningindexing.MealPlanningDataIndexer
+	badDeviceTokensArchivedCounter            metrics.Int64Counter
+	pushNotificationsSentCounter              metrics.Int64Counter
 	mealPlanRepo                              mealplanning.Repository
 	notificationsRepo                         notificationsmanager.NotificationsDataManager
 	pushNotificationSender                    platformnotifications.PushNotificationSender
+	handlerErrorsCounter                      metrics.Int64Counter
+	messageDecodeErrorsCounter                metrics.Int64Counter
+	messagesProcessedCounter                  metrics.Int64Counter
+	mobileNotificationsExecutionTimeHistogram metrics.Float64Histogram
+	mealPlanningDataIndexer                   *mealplanningindexing.MealPlanningDataIndexer
+	userDataIndexer                           *identityindexing.UserDataIndexer
 	queuesConfig                              msgconfig.QueuesConfig
 	nonWebhookEventTypes                      []string
 	nonWebhookEventTypesHat                   sync.RWMutex
@@ -71,6 +91,13 @@ func (a *AsyncDataChangeMessageHandler) SetNonWebhookEventTypes(nonWebhookEventT
 	a.nonWebhookEventTypesHat.Lock()
 	defer a.nonWebhookEventTypesHat.Unlock()
 	a.nonWebhookEventTypes = nonWebhookEventTypes
+}
+
+func (a *AsyncDataChangeMessageHandler) recordMessagesProcessed(ctx context.Context, topic, status string) {
+	a.messagesProcessedCounter.Add(ctx, 1, metric.WithAttributes(
+		attribute.String("topic", topic),
+		attribute.String("status", status),
+	))
 }
 
 func NewAsyncDataChangeMessageHandler(
@@ -120,6 +147,36 @@ func NewAsyncDataChangeMessageHandler(
 		return nil, fmt.Errorf("setting up webhookExecutionRequests execution time histogram: %w", err)
 	}
 
+	mobileNotificationsExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("mobile_notifications_execution_time")
+	if err != nil {
+		return nil, fmt.Errorf("setting up mobileNotifications execution time histogram: %w", err)
+	}
+
+	messagesProcessedCounter, err := metricsProvider.NewInt64Counter("messages_processed_total")
+	if err != nil {
+		return nil, fmt.Errorf("setting up messages processed counter: %w", err)
+	}
+
+	messageDecodeErrorsCounter, err := metricsProvider.NewInt64Counter("message_decode_errors_total")
+	if err != nil {
+		return nil, fmt.Errorf("setting up message decode errors counter: %w", err)
+	}
+
+	handlerErrorsCounter, err := metricsProvider.NewInt64Counter("handler_errors_total")
+	if err != nil {
+		return nil, fmt.Errorf("setting up handler errors counter: %w", err)
+	}
+
+	pushNotificationsSentCounter, err := metricsProvider.NewInt64Counter("push_notifications_sent_total")
+	if err != nil {
+		return nil, fmt.Errorf("setting up push notifications sent counter: %w", err)
+	}
+
+	badDeviceTokensArchivedCounter, err := metricsProvider.NewInt64Counter("bad_device_tokens_archived_total")
+	if err != nil {
+		return nil, fmt.Errorf("setting up bad device tokens archived counter: %w", err)
+	}
+
 	outboundEmailsPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.Queues.OutboundEmailsTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("configuring outbound emails publisher: %w", err)
@@ -162,6 +219,12 @@ func NewAsyncDataChangeMessageHandler(
 		searchIndexRequestsExecutionTimeHistogram: searchIndexRequestsExecutionTimeHistogram,
 		userDataAggregationExecutionTimeHistogram: userDataAggregationExecutionTimeHistogram,
 		webhookExecutionTimestampHistogram:        webhookExecutionTimestampHistogram,
+		mobileNotificationsExecutionTimeHistogram: mobileNotificationsExecutionTimeHistogram,
+		messagesProcessedCounter:                  messagesProcessedCounter,
+		messageDecodeErrorsCounter:                messageDecodeErrorsCounter,
+		handlerErrorsCounter:                      handlerErrorsCounter,
+		pushNotificationsSentCounter:              pushNotificationsSentCounter,
+		badDeviceTokensArchivedCounter:            badDeviceTokensArchivedCounter,
 		decoder:                                   decoder,
 		userDataIndexer:                           coreDataIndexer,
 		mealPlanningDataIndexer:                   eatingDataIndexer,

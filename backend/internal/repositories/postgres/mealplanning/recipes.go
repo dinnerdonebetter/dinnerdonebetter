@@ -1390,3 +1390,32 @@ func (q *repository) ArchiveRecipe(ctx context.Context, recipeID, userID string)
 
 	return nil
 }
+
+// AddRecipeImage adds an uploaded media image to a recipe.
+func (q *repository) AddRecipeImage(ctx context.Context, recipeID, uploadedMediaID, uploadedByUser string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return database.ErrInvalidIDProvided
+	}
+	if uploadedMediaID == "" {
+		return database.ErrEmptyInputProvided
+	}
+	if uploadedByUser == "" {
+		return database.ErrInvalidIDProvided
+	}
+	logger := q.logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+
+	if err := q.generatedQuerier.CreateRecipeImage(ctx, q.writeDB, &generated.CreateRecipeImageParams{
+		ID:              identifiers.New(),
+		BelongsToRecipe: recipeID,
+		UploadedMediaID: uploadedMediaID,
+		UploadedByUser:  uploadedByUser,
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "creating recipe image")
+	}
+
+	return nil
+}

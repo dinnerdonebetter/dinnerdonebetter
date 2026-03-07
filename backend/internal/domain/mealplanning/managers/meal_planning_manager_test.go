@@ -145,6 +145,7 @@ func TestMealPlanningManager_CreateMeal(T *testing.T) {
 		expectations := setupExpectationsForMealPlanningManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.FindMealWithSameComponents), testutils.ContextMatcher, creator, testutils.MatchType[*mealplanning.MealCreationRequestInput]()).Return(nil, mealplanning.ErrNoMatchingMeal)
 				db.On(reflection.GetMethodName(mpm.db.CreateMeal), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
@@ -155,6 +156,30 @@ func TestMealPlanningManager_CreateMeal(T *testing.T) {
 		actual, err := mpm.CreateMeal(ctx, creator, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+
+	T.Run("returns ErrDuplicateMeal when FindMealWithSameComponents returns existing meal", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		creator := fakes.BuildFakeID()
+		existingMeal := fakes.BuildFakeMeal()
+		fakeInput := fakes.BuildFakeMealCreationRequestInput()
+
+		expectations := setupExpectationsForMealPlanningManager(
+			mpm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.FindMealWithSameComponents), testutils.ContextMatcher, creator, testutils.MatchType[*mealplanning.MealCreationRequestInput]()).Return(existingMeal, nil)
+			},
+		)
+
+		actual, err := mpm.CreateMeal(ctx, creator, fakeInput)
+		assert.ErrorIs(t, err, mealplanning.ErrDuplicateMeal)
+		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -441,6 +466,7 @@ func TestMealPlanningManager_AddMealToMealList(T *testing.T) {
 		expectations := setupExpectationsForMealPlanningManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.MealExistsInMealList), testutils.ContextMatcher, listID, mealID).Return(false, nil)
 				db.On(reflection.GetMethodName(mpm.db.CreateMealListItem), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealListItemDatabaseCreationInput]()).Return(expected, nil)
 			},
 		)
@@ -448,6 +474,30 @@ func TestMealPlanningManager_AddMealToMealList(T *testing.T) {
 		actual, err := mpm.AddMealToMealList(ctx, listID, mealID, expected.Notes)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+
+	T.Run("returns ErrDuplicateMealInList when MealExistsInMealList returns true", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		listID := fakes.BuildFakeID()
+		mealID := fakes.BuildFakeID()
+		notes := t.Name()
+
+		expectations := setupExpectationsForMealPlanningManager(
+			mpm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.MealExistsInMealList), testutils.ContextMatcher, listID, mealID).Return(true, nil)
+			},
+		)
+
+		actual, err := mpm.AddMealToMealList(ctx, listID, mealID, notes)
+		assert.ErrorIs(t, err, mealplanning.ErrDuplicateMealInList)
+		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -950,6 +1000,33 @@ func TestMealPlanningManager_CreateMealPlanOption(T *testing.T) {
 		actual, err := mpm.CreateMealPlanOption(ctx, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestMealPlanningManager_CreateMealPlanOptionWithEventID(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns ErrDuplicateMealPlanOption when MealExistsAsOptionInEvent returns true", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		eventID := fakes.BuildFakeID()
+		fakeInput := fakes.BuildFakeMealPlanOptionCreationRequestInput()
+
+		expectations := setupExpectationsForMealPlanningManager(
+			mpm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.MealExistsAsOptionInEvent), testutils.ContextMatcher, eventID, fakeInput.MealID).Return(true, nil)
+			},
+		)
+
+		actual, err := mpm.CreateMealPlanOptionWithEventID(ctx, eventID, fakeInput)
+		assert.ErrorIs(t, err, mealplanning.ErrDuplicateMealPlanOption)
+		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})

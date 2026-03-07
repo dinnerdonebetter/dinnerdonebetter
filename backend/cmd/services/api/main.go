@@ -45,12 +45,12 @@ func runServe(_ *cobra.Command, _ []string) error {
 	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.HTTPServer.StartupDeadline)
 	defer cancel()
 
-	logger, err := cfg.Observability.Logging.ProvideLogger(rootCtx)
+	pillars, err := cfg.Observability.ProvidePillars(buildCtx)
 	if err != nil {
-		return fmt.Errorf("could not create logger: %w", err)
+		return fmt.Errorf("could not create observability pillars: %w", err)
 	}
 
-	server, err := apiserver.NewServer(buildCtx, logger, cfg)
+	server, err := apiserver.NewServer(buildCtx, pillars, cfg)
 	if err != nil {
 		return fmt.Errorf("could not create server: %w", err)
 	}

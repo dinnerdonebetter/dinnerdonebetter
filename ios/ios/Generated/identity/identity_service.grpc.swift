@@ -347,7 +347,7 @@ internal enum Identity_IdentityService {
         /// Namespace for "UploadUserAvatar" metadata.
         internal enum UploadUserAvatar {
             /// Request type for "UploadUserAvatar".
-            internal typealias Input = Identity_UploadUserAvatarRequest
+            internal typealias Input = UploadedMedia_UploadRequest
             /// Response type for "UploadUserAvatar".
             internal typealias Output = Identity_UploadUserAvatarResponse
             /// Descriptor for "UploadUserAvatar".
@@ -921,8 +921,8 @@ extension Identity_IdentityService {
         /// Call the "UploadUserAvatar" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Identity_UploadUserAvatarRequest` message.
-        ///   - serializer: A serializer for `Identity_UploadUserAvatarRequest` messages.
+        ///   - request: A streaming request producing `UploadedMedia_UploadRequest` messages.
+        ///   - serializer: A serializer for `UploadedMedia_UploadRequest` messages.
         ///   - deserializer: A deserializer for `Identity_UploadUserAvatarResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
@@ -930,8 +930,8 @@ extension Identity_IdentityService {
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         func uploadUserAvatar<Result>(
-            request: GRPCCore.ClientRequest<Identity_UploadUserAvatarRequest>,
-            serializer: some GRPCCore.MessageSerializer<Identity_UploadUserAvatarRequest>,
+            request: GRPCCore.StreamingClientRequest<UploadedMedia_UploadRequest>,
+            serializer: some GRPCCore.MessageSerializer<UploadedMedia_UploadRequest>,
             deserializer: some GRPCCore.MessageDeserializer<Identity_UploadUserAvatarResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Identity_UploadUserAvatarResponse>) async throws -> Result
@@ -1767,8 +1767,8 @@ extension Identity_IdentityService {
         /// Call the "UploadUserAvatar" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Identity_UploadUserAvatarRequest` message.
-        ///   - serializer: A serializer for `Identity_UploadUserAvatarRequest` messages.
+        ///   - request: A streaming request producing `UploadedMedia_UploadRequest` messages.
+        ///   - serializer: A serializer for `UploadedMedia_UploadRequest` messages.
         ///   - deserializer: A deserializer for `Identity_UploadUserAvatarResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
@@ -1776,15 +1776,15 @@ extension Identity_IdentityService {
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         internal func uploadUserAvatar<Result>(
-            request: GRPCCore.ClientRequest<Identity_UploadUserAvatarRequest>,
-            serializer: some GRPCCore.MessageSerializer<Identity_UploadUserAvatarRequest>,
+            request: GRPCCore.StreamingClientRequest<UploadedMedia_UploadRequest>,
+            serializer: some GRPCCore.MessageSerializer<UploadedMedia_UploadRequest>,
             deserializer: some GRPCCore.MessageDeserializer<Identity_UploadUserAvatarResponse>,
             options: GRPCCore.CallOptions = .defaults,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Identity_UploadUserAvatarResponse>) async throws -> Result = { response in
                 try response.message
             }
         ) async throws -> Result where Result: Sendable {
-            try await self.client.unary(
+            try await self.client.clientStreaming(
                 request: request,
                 descriptor: Identity_IdentityService.Method.UploadUserAvatar.descriptor,
                 serializer: serializer,
@@ -2477,14 +2477,14 @@ extension Identity_IdentityService.ClientProtocol {
     /// Call the "UploadUserAvatar" method.
     ///
     /// - Parameters:
-    ///   - request: A request containing a single `Identity_UploadUserAvatarRequest` message.
+    ///   - request: A streaming request producing `UploadedMedia_UploadRequest` messages.
     ///   - options: Options to apply to this RPC.
     ///   - handleResponse: A closure which handles the response, the result of which is
     ///       returned to the caller. Returning from the closure will cancel the RPC if it
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func uploadUserAvatar<Result>(
-        request: GRPCCore.ClientRequest<Identity_UploadUserAvatarRequest>,
+        request: GRPCCore.StreamingClientRequest<UploadedMedia_UploadRequest>,
         options: GRPCCore.CallOptions = .defaults,
         onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Identity_UploadUserAvatarResponse>) async throws -> Result = { response in
             try response.message
@@ -2492,7 +2492,7 @@ extension Identity_IdentityService.ClientProtocol {
     ) async throws -> Result where Result: Sendable {
         try await self.uploadUserAvatar(
             request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Identity_UploadUserAvatarRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<UploadedMedia_UploadRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Identity_UploadUserAvatarResponse>(),
             options: options,
             onResponse: handleResponse
@@ -3289,24 +3289,25 @@ extension Identity_IdentityService.ClientProtocol {
     /// Call the "UploadUserAvatar" method.
     ///
     /// - Parameters:
-    ///   - message: request message to send.
     ///   - metadata: Additional metadata to send, defaults to empty.
     ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - producer: A closure producing request messages to send to the server. The request
+    ///       stream is closed when the closure returns.
     ///   - handleResponse: A closure which handles the response, the result of which is
     ///       returned to the caller. Returning from the closure will cancel the RPC if it
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func uploadUserAvatar<Result>(
-        _ message: Identity_UploadUserAvatarRequest,
         metadata: GRPCCore.Metadata = [:],
         options: GRPCCore.CallOptions = .defaults,
+        requestProducer producer: @Sendable @escaping (GRPCCore.RPCWriter<UploadedMedia_UploadRequest>) async throws -> Void,
         onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Identity_UploadUserAvatarResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Identity_UploadUserAvatarRequest>(
-            message: message,
-            metadata: metadata
+        let request = GRPCCore.StreamingClientRequest<UploadedMedia_UploadRequest>(
+            metadata: metadata,
+            producer: producer
         )
         return try await self.uploadUserAvatar(
             request: request,

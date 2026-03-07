@@ -24,6 +24,9 @@
 		"contentType": "application/json"
 	},
 	"observability": {
+		"profiling": {
+			"serviceName": "admin_webapp"
+		},
 		"logging": {
 			"serviceName": "admin_webapp",
 			"level": "info",

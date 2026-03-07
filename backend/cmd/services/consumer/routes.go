@@ -36,6 +36,11 @@ func (s *ConsumerFrontendServer) setupRoutes(router routing.Router) {
 	// Auth (public)
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))
+	router.Get("/verify_email_address", ghttp.Adapt(s.VerifyEmailAddressPage))
+	router.Get("/forgot_password", ghttp.Adapt(s.ForgotPasswordPage))
+	router.Post("/forgot_password/submit", ghttp.Adapt(s.ForgotPasswordSubmission))
+	router.Get("/reset_password", ghttp.Adapt(s.ResetPasswordPage))
+	router.Post("/reset_password/submit", ghttp.Adapt(s.ResetPasswordSubmission))
 
 	// Accept invitation - Option A: show "Open in app" page (public)
 	router.Get("/accept_invitation", ghttp.Adapt(s.AcceptInvitationPage))

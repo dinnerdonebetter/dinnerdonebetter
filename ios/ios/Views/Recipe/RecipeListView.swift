@@ -152,9 +152,7 @@ struct RecipeCard: View {
         // Recipe metadata - secondary row (source, yields type, prep tasks, eligible)
         HStack(spacing: DSTheme.Spacing.md) {
           if !recipe.source.isEmpty {
-            Label(recipe.source, systemImage: "link")
-              .font(DSTheme.Typography.caption)
-              .foregroundColor(DSTheme.Colors.textSecondary)
+            RecipeSourceView(source: recipe.source)
               .lineLimit(1)
           }
 

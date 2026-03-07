@@ -120,7 +120,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1, // approximately 0.5 teaspoon
+					Min: 6, // ~1.2g per pound for 5 lb chicken
 				},
 			},
 		},
@@ -151,7 +151,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](6),
 				},
 			},
 		},
@@ -168,7 +168,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 9, // 1 tablespoon = 9g
+					Min: 30, // ~6g per pound for 5 lb chicken (dry brine ratio)
 				},
 				Index: pointer.To[uint16](0),
 			},
@@ -177,7 +177,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "freshly ground black pepper",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1, // 0.5 teaspoon ≈ 1g
+					Min: 6, // ~1.2g per pound for 5 lb chicken
 				},
 				Index: pointer.To[uint16](1),
 			},
@@ -186,7 +186,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientMeasurementUnitID: &bakingPowderGramVIMU.ID,
 				Name:                             "baking powder",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 4, // 1 teaspoon ≈ 4g
+					Min: 20, // ~1 tsp (4g) per pound for 5 lb chicken (crispy skin)
 				},
 				Optional: true,
 				Index:    pointer.To[uint16](2),
@@ -208,7 +208,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](12), // approximately 12g total
+					Min: pointer.To[float32](36), // 30g salt + 6g pepper; 56g with optional baking powder
 				},
 			},
 		},
@@ -234,7 +234,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "seasoning mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 12,
+					Min: 36,
 				},
 			},
 		},
@@ -734,8 +734,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Perfect Roast Chicken",
-			Slug:                "perfect-roast-chicken",
+			Name:                "Whole Roast Chicken",
+			Slug:                "whole-roast-chicken",
 			Source:              "https://www.seriouseats.com/perfect-roast-chicken-recipe-8384377",
 			Description:         "A dry-brine fully seasons the chicken and allows the skin to dehydrate, improving browning and crisping during cooking. Measuring the internal temperature of the chicken to determine doneness leads to more reliable and superior results than going by time. Rubbing the chicken skin with oil before roasting, instead of basting with watery drippings, ensures even browning and a crisp skin.",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,

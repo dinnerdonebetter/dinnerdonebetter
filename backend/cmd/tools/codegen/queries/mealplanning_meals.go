@@ -99,6 +99,34 @@ func buildMealsQueries(database string) []*Query {
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetMealsByCreatorAndName",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+	JOIN %s ON %s.%s=%s.%s
+		AND %s.%s IS NULL
+		AND EXISTS (SELECT 1 FROM %s WHERE %s.%s = %s.%s AND %s.%s IS NULL)
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s)
+ORDER BY %s.%s ASC, %s.%s ASC;`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					mealsTableName,
+					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
+					mealComponentsTableName, archivedAtColumn,
+					recipesTableName, recipesTableName, idColumn, mealComponentsTableName, recipeIDColumn,
+					recipesTableName, archivedAtColumn,
+					mealsTableName, archivedAtColumn,
+					mealsTableName, createdByUserColumn, createdByUserColumn,
+					mealsTableName, nameColumn, nameColumn,
+					mealsTableName, idColumn,
+					mealComponentsTableName, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetMealsNeedingIndexing",
 					Type: ManyType,
 				},

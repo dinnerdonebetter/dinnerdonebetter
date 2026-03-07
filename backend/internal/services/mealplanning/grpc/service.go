@@ -6,9 +6,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	commentsmanager "github.com/dinnerdonebetter/backend/internal/domain/comments/manager"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
+	uploadedmediamanager "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/manager"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
 	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
@@ -33,6 +35,8 @@ type (
 		mealPlanGroceryListInitializerWorker *mealplangrocerylistinitializer.Worker
 		mealPlanTaskCreatorWorker            *mealplantaskcreator.Worker
 		commentsManager                      commentsmanager.CommentsDataManager
+		uploadedMediaManager                 uploadedmediamanager.UploadedMediaManager
+		uploadManager                        uploads.UploadManager
 	}
 )
 
@@ -46,6 +50,8 @@ func NewService(
 	mealPlanGroceryListInitializerWorker *mealplangrocerylistinitializer.Worker,
 	mealPlanTaskCreatorWorker *mealplantaskcreator.Worker,
 	commentsManager commentsmanager.CommentsDataManager,
+	uploadedMediaManager uploadedmediamanager.UploadedMediaManager,
+	uploadManager uploads.UploadManager,
 ) mealplanningsvc.MealPlanningServiceServer {
 	return &serviceImpl{
 		logger:                               logging.EnsureLogger(logger).WithName(o11yName),
@@ -57,6 +63,8 @@ func NewService(
 		mealPlanGroceryListInitializerWorker: mealPlanGroceryListInitializerWorker,
 		mealPlanTaskCreatorWorker:            mealPlanTaskCreatorWorker,
 		commentsManager:                      commentsManager,
+		uploadedMediaManager:                 uploadedMediaManager,
+		uploadManager:                        uploadManager,
 		sessionContextDataFetcher:            sessions.FetchContextDataFromContext,
 	}
 }

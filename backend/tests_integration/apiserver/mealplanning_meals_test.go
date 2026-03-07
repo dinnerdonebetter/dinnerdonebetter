@@ -15,6 +15,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -260,6 +262,123 @@ func TestMeals_GetMermaidDiagramForMeal(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, res)
 		assert.NotEmpty(t, res.Response, "mermaid diagram should not be empty")
+	})
+}
+
+func createMealWithInputForTest(t *testing.T, clientToUse client.Client, name string, components []*types.MealComponentCreationRequestInput) (*types.Meal, *types.MealCreationRequestInput) {
+	t.Helper()
+
+	ctx := t.Context()
+
+	exampleMeal := fakes.BuildFakeMeal()
+	exampleMeal.Name = name
+	exampleMealInput := mpconverters.ConvertMealToMealCreationRequestInput(exampleMeal)
+	exampleMealInput.Components = components
+
+	createdMealRes, err := clientToUse.CreateMeal(ctx, &mealplanninggrpc.CreateMealRequest{Input: converters.ConvertMealCreationRequestInputToGRPCMealCreationRequestInput(exampleMealInput)})
+	require.NoError(t, err)
+
+	fetchedMealRes, err := clientToUse.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealId: createdMealRes.Created.Id})
+	require.NoError(t, err)
+
+	return converters.ConvertGRPCMealToMeal(fetchedMealRes.Result), exampleMealInput
+}
+
+func TestMeals_DuplicatePrevention(T *testing.T) {
+	T.Parallel()
+
+	T.Run("rejects duplicate meal (same name and components)", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		_, _, r1 := createRecipeForTest(t, nil)
+		_, _, r2 := createRecipeForTest(t, nil)
+		components := []*types.MealComponentCreationRequestInput{
+			{RecipeID: r1.ID, ComponentType: types.MealComponentTypesMain, RecipeScale: 1.0},
+			{RecipeID: r2.ID, ComponentType: types.MealComponentTypesSide, RecipeScale: 1.0},
+		}
+
+		createdMeal, input := createMealWithInputForTest(t, userClient, "Dup Meal", components)
+		require.NotNil(t, createdMeal)
+
+		_, err := userClient.CreateMeal(ctx, &mealplanninggrpc.CreateMealRequest{Input: converters.ConvertMealCreationRequestInputToGRPCMealCreationRequestInput(input)})
+		assert.Error(t, err)
+		assert.Equal(t, codes.AlreadyExists, status.Code(err))
+
+		_, err = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: createdMeal.ID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("allows meal with same name but different components", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		_, _, r1 := createRecipeForTest(t, nil)
+		_, _, r2 := createRecipeForTest(t, nil)
+		m1, _ := createMealWithInputForTest(t, userClient, "Shared Name", []*types.MealComponentCreationRequestInput{
+			{RecipeID: r1.ID, ComponentType: types.MealComponentTypesMain, RecipeScale: 1.0},
+		})
+		m2, _ := createMealWithInputForTest(t, userClient, "Shared Name", []*types.MealComponentCreationRequestInput{
+			{RecipeID: r2.ID, ComponentType: types.MealComponentTypesMain, RecipeScale: 1.0},
+		})
+
+		require.NotEqual(t, m1.ID, m2.ID)
+
+		_, err := userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: m1.ID})
+		assert.NoError(t, err)
+		_, err = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: m2.ID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("allows meal with same components but different name", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		_, _, r1 := createRecipeForTest(t, nil)
+		_, _, r2 := createRecipeForTest(t, nil)
+		components := []*types.MealComponentCreationRequestInput{
+			{RecipeID: r1.ID, ComponentType: types.MealComponentTypesMain, RecipeScale: 1.0},
+			{RecipeID: r2.ID, ComponentType: types.MealComponentTypesSide, RecipeScale: 1.0},
+		}
+
+		m1, _ := createMealWithInputForTest(t, userClient, "Meal A", components)
+		m2, _ := createMealWithInputForTest(t, userClient, "Meal B", components)
+
+		require.NotEqual(t, m1.ID, m2.ID)
+
+		_, err := userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: m1.ID})
+		assert.NoError(t, err)
+		_, err = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: m2.ID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("allows same meal structure for different user", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, user1Client := createUserAndClientForTest(t)
+		_, user2Client := createUserAndClientForTest(t)
+
+		_, _, r1 := createRecipeForTest(t, nil)
+		components := []*types.MealComponentCreationRequestInput{
+			{RecipeID: r1.ID, ComponentType: types.MealComponentTypesMain, RecipeScale: 1.0},
+		}
+
+		m1, _ := createMealWithInputForTest(t, user1Client, "Shared", components)
+		m2, _ := createMealWithInputForTest(t, user2Client, "Shared", components)
+
+		require.NotEqual(t, m1.ID, m2.ID)
+
+		_, err := user1Client.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: m1.ID})
+		assert.NoError(t, err)
+		_, err = user2Client.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: m2.ID})
+		assert.NoError(t, err)
 	})
 }
 

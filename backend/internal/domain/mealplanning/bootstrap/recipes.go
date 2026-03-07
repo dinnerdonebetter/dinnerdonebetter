@@ -35,6 +35,12 @@ func AllRecipes(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput 
 	recipes = append(recipes, CornbreadRecipe(enums)...)
 	recipes = append(recipes, TeriyakiSauceRecipe(enums)...)
 	recipes = append(recipes, UltraFluffyMashedPotatoesRecipe(enums)...)
+	recipes = append(recipes, GochujangButterPastaRecipe(enums)...)
+	recipes = append(recipes, OnePanPastaRecipe(enums)...)
+	recipes = append(recipes, PeanutButterNoodlesRecipe(enums)...)
+	recipes = append(recipes, ChickenVermicelliSoupRecipe(enums)...)
+	recipes = append(recipes, ChickenFlorentineRecipe(enums)...)
+	recipes = append(recipes, ChanaMasalaRecipe(enums)...)
 
 	return recipes
 }

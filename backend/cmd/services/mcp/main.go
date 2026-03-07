@@ -76,11 +76,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	logger, tracerProvider, _, err := cfg.Observability.ProvideThreePillars(ctx)
+	pillars, err := cfg.Observability.ProvidePillars(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, _ = logger, tracerProvider
+	logger := pillars.Logger
 
 	if err = cfg.ValidateWithContext(ctx); err != nil {
 		log.Fatal(err)

@@ -25,6 +25,15 @@
 		"contentType": "application/json"
 	},
 	"observability": {
+		"profiling": {
+			"pprof": {
+				"port": 6060,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "consumer_webapp",
+			"provider": "pprof"
+		},
 		"logging": {
 			"serviceName": "consumer_webapp",
 			"level": "debug",

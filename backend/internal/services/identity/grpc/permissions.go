@@ -64,5 +64,6 @@ func ProvideMethodPermissions() IdentityMethodPermissions {
 		identitysvc.IdentityService_CreateAccount_FullMethodName:                 noPerms,
 		identitysvc.IdentityService_GetAccount_FullMethodName:                    noPerms,
 		identitysvc.IdentityService_GetAccounts_FullMethodName:                   noPerms,
+		identitysvc.IdentityService_UploadUserAvatar_FullMethodName:              noPerms,
 	}
 }

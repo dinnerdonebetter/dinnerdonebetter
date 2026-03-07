@@ -99,10 +99,11 @@ func CreateOAuth2ClientForService(ctx context.Context, pgc database.Client, dbCf
 }
 
 func BuildInProcessServer(ctx context.Context, cfg *config.APIServiceConfig) (server *apiserver.Server, databaseClient database.Client, dbCfg *databasecfg.Config, err error) {
-	logger, _, _, err := cfg.Observability.ProvideThreePillars(ctx)
+	pillars, err := cfg.Observability.ProvidePillars(ctx)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("setting up logger: %w", err)
+		return nil, nil, nil, fmt.Errorf("setting up observability pillars: %w", err)
 	}
+	logger := pillars.Logger
 
 	redisConfig, _, err := redis.BuildContainerBackedRedisConfig(ctx)
 	if err != nil {
@@ -128,7 +129,7 @@ func BuildInProcessServer(ctx context.Context, cfg *config.APIServiceConfig) (se
 	}
 
 	// create premade admin user
-	server, err = apiserver.NewServer(ctx, logger, cfg)
+	server, err = apiserver.NewServer(ctx, pillars, cfg)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("building API server: %w", err)
 	}
@@ -222,14 +223,14 @@ func AllInOne(ctx context.Context, cfg *config.APIServiceConfig, initFuncs ...Da
 
 	log.Printf("%sDATABASE CONNECTION URL: %s%s", strings.Repeat("\n", 10), dbCfg.ReadConnection.URI(), strings.Repeat("\n", 10))
 
-	logger, tracerProvider, _, err := cfg.Observability.ProvideThreePillars(ctx)
+	pillars, err := cfg.Observability.ProvidePillars(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting o11y pillars: %w", err)
 	}
 
 	// Run all database initialization functions
 	for i, initFunc := range initFuncs {
-		if err = initFunc(ctx, databaseClient, dbCfg, logger, tracerProvider); err != nil {
+		if err = initFunc(ctx, databaseClient, dbCfg, pillars.Logger, pillars.TracerProvider); err != nil {
 			return nil, fmt.Errorf("running database init function %d: %w", i, err)
 		}
 	}

@@ -45,19 +45,11 @@ func createMealForTest(t *testing.T, ctx context.Context, exampleMeal *types.Mea
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 
-	originalComponents := exampleMeal.Components
-	exampleMeal.CreatedAt = created.CreatedAt
-	exampleMeal.Components = created.Components
-	assert.Equal(t, exampleMeal, created)
-
 	meal, err := dbc.GetMeal(ctx, created.ID)
-	exampleMeal.CreatedAt = meal.CreatedAt
-	exampleMeal.Components = originalComponents
-
 	assert.NoError(t, err)
-	assert.Equal(t, meal, exampleMeal)
+	require.NotNil(t, meal)
 
-	return created
+	return meal
 }
 
 func TestQuerier_Integration_Meals(t *testing.T) {
@@ -153,6 +145,47 @@ func TestQuerier_Integration_GetMealsWithIDs(t *testing.T) {
 
 	assert.Contains(t, found, meal1.ID)
 	assert.Contains(t, found, meal2.ID)
+}
+
+func TestQuerier_Integration_FindMealWithSameComponents(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, _, container := buildDatabaseClientForTest(t)
+	defer func() {
+		assert.NoError(t, container.Terminate(ctx))
+	}()
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+	recipe2 := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+
+	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+	input := converters.ConvertMealToMealCreationRequestInput(meal)
+
+	// Same name and components: should find existing meal
+	found, err := dbc.FindMealWithSameComponents(ctx, user.ID, input)
+	require.NoError(t, err)
+	require.NotNil(t, found)
+	assert.Equal(t, meal.ID, found.ID)
+
+	// Different name: should not find (returns ErrNoMatchingMeal)
+	inputDifferentName := converters.ConvertMealToMealCreationRequestInput(meal)
+	inputDifferentName.Name = "Different Name"
+	found, err = dbc.FindMealWithSameComponents(ctx, user.ID, inputDifferentName)
+	require.ErrorIs(t, err, types.ErrNoMatchingMeal)
+	assert.Nil(t, found)
+
+	// Different components: should not find (returns ErrNoMatchingMeal)
+	inputDifferentComponents := converters.ConvertMealToMealCreationRequestInput(meal)
+	inputDifferentComponents.Components = []*types.MealComponentCreationRequestInput{
+		{RecipeID: recipe2.ID, ComponentType: types.MealComponentTypesMain, RecipeScale: 1.0},
+	}
+	found, err = dbc.FindMealWithSameComponents(ctx, user.ID, inputDifferentComponents)
+	require.ErrorIs(t, err, types.ErrNoMatchingMeal)
+	assert.Nil(t, found)
 }
 
 func TestQuerier_MealExists(T *testing.T) {

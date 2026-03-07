@@ -19,6 +19,7 @@ type AuthManagerInterface interface {
 	CreatePasswordResetToken(ctx context.Context, input *auth.PasswordResetTokenCreationRequestInput) error
 	RequestUsernameReminder(ctx context.Context, input *auth.UsernameReminderRequestInput) error
 	VerifyUserEmailAddress(ctx context.Context, input *auth.EmailAddressVerificationRequestInput) error
+	VerifyUserEmailAddressByToken(ctx context.Context, token string) error
 	TOTPSecretVerification(ctx context.Context, input *auth.TOTPSecretVerificationInput) error
 	UpdatePassword(ctx context.Context, input *auth.PasswordUpdateInput) error
 }

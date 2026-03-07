@@ -28,6 +28,36 @@ SELECT EXISTS (
 		AND meals.id = sqlc.arg(id)
 );
 
+-- name: GetMealsByCreatorAndName :many
+SELECT
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.min_estimated_portions,
+	meals.max_estimated_portions,
+	meals.eligible_for_meal_plans,
+	meals.last_indexed_at,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
+	meals.created_by_user,
+	meal_components.id as component_id,
+	meal_components.meal_id as component_meal_id,
+	meal_components.recipe_id as component_recipe_id,
+	meal_components.meal_component_type as component_meal_component_type,
+	meal_components.recipe_scale as component_recipe_scale,
+	meal_components.created_at as component_created_at,
+	meal_components.last_updated_at as component_last_updated_at,
+	meal_components.archived_at as component_archived_at
+FROM meals
+	JOIN meal_components ON meal_components.meal_id=meals.id
+		AND meal_components.archived_at IS NULL
+		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
+WHERE meals.archived_at IS NULL
+	AND meals.created_by_user = sqlc.arg(created_by_user)
+	AND meals.name = sqlc.arg(name)
+ORDER BY meals.id ASC, meal_components.id ASC;
+
 -- name: GetMealsNeedingIndexing :many
 SELECT meals.id
 	FROM meals

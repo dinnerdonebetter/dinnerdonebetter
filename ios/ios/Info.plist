@@ -37,6 +37,8 @@
 	<string>$(SEGMENT_WRITE_KEY)</string>
 	<key>RevenueCatAPIKey</key>
 	<string>$(REVENUECAT_API_KEY)</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Dinner Done Better needs access to your photo library to upload photos.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

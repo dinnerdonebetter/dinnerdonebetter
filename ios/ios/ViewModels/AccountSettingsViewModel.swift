@@ -28,6 +28,9 @@ class AccountSettingsViewModel {
   // Loading states
   var isLoading = false
   var errorMessage: String?
+  var errorTitle: String = "Error"
+  var errorIcon: String = "exclamationmark.triangle"
+  var errorIconColor = DSTheme.Colors.warning
 
   // Form state
   var accountName: String = ""
@@ -79,6 +82,9 @@ class AccountSettingsViewModel {
   func loadData() async {
     isLoading = true
     errorMessage = nil
+    errorTitle = "Error"
+    errorIcon = "exclamationmark.triangle"
+    errorIconColor = DSTheme.Colors.warning
 
     do {
       let result = try await fetchAllData()
@@ -88,7 +94,11 @@ class AccountSettingsViewModel {
       initializeFormFields(from: result.account)
     } catch {
       await authManager.invalidateCredentialsIfSessionError(error)
-      errorMessage = "Failed to load data: \(error.localizedDescription)"
+      let display = ErrorDisplayFormatter.format(error, context: "load data")
+      errorMessage = display.message
+      errorTitle = display.title
+      errorIcon = display.icon
+      errorIconColor = display.iconColor
       print("❌ Error loading account settings: \(error)")
     }
 

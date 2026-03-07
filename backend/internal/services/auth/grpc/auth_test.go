@@ -689,11 +689,13 @@ func TestServiceImpl_RedeemPasswordResetToken(t *testing.T) {
 		mock.AssertExpectationsForObjects(t, authManager)
 	})
 
-	t.Run("error fetching session context", func(t *testing.T) {
+	t.Run("success without session", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _, _ := buildTestService(t)
-		ctx := t.Context() // No session context data
+		service, _, authManager, _, _ := buildTestService(t)
+		ctx := t.Context() // No session context data - unauthenticated flow
+
+		authManager.On(reflection.GetMethodName(authManager.PasswordResetTokenRedemption), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenRedemptionRequestInput")).Return(nil)
 
 		request := &authsvc.RedeemPasswordResetTokenRequest{
 			Token:       "reset-token",
@@ -702,12 +704,9 @@ func TestServiceImpl_RedeemPasswordResetToken(t *testing.T) {
 
 		response, err := service.RedeemPasswordResetToken(ctx, request)
 
-		assert.Error(t, err)
-		assert.Nil(t, response)
-
-		grpcErr, ok := status.FromError(err)
-		assert.True(t, ok)
-		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		mock.AssertExpectationsForObjects(t, authManager)
 	})
 
 	t.Run("error redeeming token", func(t *testing.T) {
@@ -905,11 +904,13 @@ func TestServiceImpl_RequestPasswordResetToken(t *testing.T) {
 		mock.AssertExpectationsForObjects(t, authManager)
 	})
 
-	t.Run("error fetching session context", func(t *testing.T) {
+	t.Run("success without session", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _, _ := buildTestService(t)
-		ctx := t.Context() // No session context data
+		service, _, authManager, _, _ := buildTestService(t)
+		ctx := t.Context() // No session context data - unauthenticated flow
+
+		authManager.On(reflection.GetMethodName(authManager.CreatePasswordResetToken), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenCreationRequestInput")).Return(nil)
 
 		request := &authsvc.RequestPasswordResetTokenRequest{
 			EmailAddress: "test@example.com",
@@ -917,12 +918,9 @@ func TestServiceImpl_RequestPasswordResetToken(t *testing.T) {
 
 		response, err := service.RequestPasswordResetToken(ctx, request)
 
-		assert.Error(t, err)
-		assert.Nil(t, response)
-
-		grpcErr, ok := status.FromError(err)
-		assert.True(t, ok)
-		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		mock.AssertExpectationsForObjects(t, authManager)
 	})
 
 	t.Run("error creating password reset token", func(t *testing.T) {
@@ -1027,9 +1025,9 @@ func TestServiceImpl_VerifyEmailAddress(t *testing.T) {
 		t.Parallel()
 
 		service, _, authManager, _, _ := buildTestService(t)
-		ctx := buildContextWithSessionData(t)
+		ctx := t.Context()
 
-		authManager.On(reflection.GetMethodName(authManager.VerifyUserEmailAddress), mock.Anything, mock.AnythingOfType("*auth.EmailAddressVerificationRequestInput")).Return(nil)
+		authManager.On(reflection.GetMethodName(authManager.VerifyUserEmailAddressByToken), mock.Anything, "verification-token").Return(nil)
 
 		request := &authsvc.VerifyEmailAddressRequest{
 			Token: "verification-token",
@@ -1046,33 +1044,13 @@ func TestServiceImpl_VerifyEmailAddress(t *testing.T) {
 		mock.AssertExpectationsForObjects(t, authManager)
 	})
 
-	t.Run("error fetching session context", func(t *testing.T) {
-		t.Parallel()
-
-		service, _, _, _, _ := buildTestService(t)
-		ctx := t.Context() // No session context data
-
-		request := &authsvc.VerifyEmailAddressRequest{
-			Token: "verification-token",
-		}
-
-		response, err := service.VerifyEmailAddress(ctx, request)
-
-		assert.Error(t, err)
-		assert.Nil(t, response)
-
-		grpcErr, ok := status.FromError(err)
-		assert.True(t, ok)
-		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
-	})
-
 	t.Run("error verifying email address", func(t *testing.T) {
 		t.Parallel()
 
 		service, _, authManager, _, _ := buildTestService(t)
-		ctx := buildContextWithSessionData(t)
+		ctx := t.Context()
 
-		authManager.On(reflection.GetMethodName(authManager.VerifyUserEmailAddress), mock.Anything, mock.AnythingOfType("*auth.EmailAddressVerificationRequestInput")).Return(errors.New("verification failed"))
+		authManager.On(reflection.GetMethodName(authManager.VerifyUserEmailAddressByToken), mock.Anything, "invalid-token").Return(errors.New("verification failed"))
 
 		request := &authsvc.VerifyEmailAddressRequest{
 			Token: "invalid-token",

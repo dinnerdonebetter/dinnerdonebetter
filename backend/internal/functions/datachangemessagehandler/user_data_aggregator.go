@@ -11,6 +11,9 @@ import (
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 // UserDataAggregationEventHandler handles user data aggregation requests for GDPR/CCPA compliance.
@@ -22,9 +25,18 @@ func (a *AsyncDataChangeMessageHandler) UserDataAggregationEventHandler(
 	defer span.End()
 
 	start := time.Now()
+	status := statusSuccess
+
+	defer func() {
+		a.userDataAggregationExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
+			metric.WithAttributes(attribute.String("status", status)))
+		a.recordMessagesProcessed(ctx, topicUserDataAggregation, status)
+	}()
 
 	var userDataCollectionRequest dataprivacy.UserDataAggregationRequest
 	if err := a.decoder.DecodeBytes(ctx, rawMsg, &userDataCollectionRequest); err != nil {
+		a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicUserDataAggregation)))
+		status = statusFailure
 		return fmt.Errorf("decoding JSON body: %w", err)
 	}
 
@@ -37,6 +49,8 @@ func (a *AsyncDataChangeMessageHandler) UserDataAggregationEventHandler(
 	// Fetch the user's complete data collection
 	collection, err := a.dataPrivacyRepo.FetchUserDataCollection(ctx, userDataCollectionRequest.UserID)
 	if err != nil {
+		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicUserDataAggregation)))
+		status = statusFailure
 		return observability.PrepareAndLogError(err, logger, span, "fetching user data collection")
 	}
 
@@ -45,6 +59,8 @@ func (a *AsyncDataChangeMessageHandler) UserDataAggregationEventHandler(
 	// Marshal the collection to JSON
 	collectionBytes, err := json.Marshal(collection)
 	if err != nil {
+		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicUserDataAggregation)))
+		status = statusFailure
 		return observability.PrepareAndLogError(err, logger, span, "marshaling collection")
 	}
 
@@ -52,10 +68,10 @@ func (a *AsyncDataChangeMessageHandler) UserDataAggregationEventHandler(
 
 	// Save to object storage with report ID as filename
 	if err = a.uploadManager.SaveFile(ctx, fmt.Sprintf("%s.json", userDataCollectionRequest.ReportID), collectionBytes); err != nil {
+		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicUserDataAggregation)))
+		status = statusFailure
 		return observability.PrepareAndLogError(err, logger, span, "saving collection")
 	}
-
-	a.userDataAggregationExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
 
 	logger.Info("user data aggregation complete")
 

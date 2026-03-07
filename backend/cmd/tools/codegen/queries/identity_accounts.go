@@ -127,16 +127,22 @@ WHERE %s IS NULL
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
+	%s
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
 					strings.Join(append(
 						append(
-							applyToEach(accountsColumns, func(_ int, s string) string {
-								return fmt.Sprintf("%s.%s", accountsTableName, s)
-							}),
-							applyToEach(usersColumns, func(_ int, s string) string {
-								return fmt.Sprintf("%s.%s as user_%s", usersTableName, s, s)
+							append(
+								applyToEach(accountsColumns, func(_ int, s string) string {
+									return fmt.Sprintf("%s.%s", accountsTableName, s)
+								}),
+								applyToEach(usersColumns, func(_ int, s string) string {
+									return fmt.Sprintf("%s.%s as user_%s", usersTableName, s, s)
+								})...,
+							),
+							applyToEach(avatarJoinSelect("user_avatar"), func(_ int, s string) string {
+								return s
 							})...,
 						),
 						applyToEach(accountUserMembershipsColumns, func(_ int, s string) string {
@@ -146,6 +152,7 @@ WHERE %s.%s IS NULL
 					accountsTableName,
 					accountUserMembershipsTableName, accountUserMembershipsTableName, belongsToAccountColumn, accountsTableName, idColumn,
 					usersTableName, accountUserMembershipsTableName, belongsToUserColumn, usersTableName, idColumn,
+					avatarJoinClause,
 					accountsTableName, archivedAtColumn,
 					accountUserMembershipsTableName, archivedAtColumn,
 					accountsTableName, idColumn, idColumn,

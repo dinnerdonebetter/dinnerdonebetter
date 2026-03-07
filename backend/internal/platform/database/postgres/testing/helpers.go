@@ -13,6 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -76,6 +77,45 @@ func splitReverseConcat(input string) string {
 const (
 	defaultPostgresImage = "postgres:17"
 )
+
+// userFromGetUserByIDRow converts a GetUserByIDRow to User. Used by CreateUserForTest.
+func userFromGetUserByIDRow(row *generated.GetUserByIDRow) *identity.User {
+	var avatar *uploadedmedia.UploadedMedia
+	if row.AvatarID.Valid && row.AvatarStoragePath.Valid && row.AvatarMimeType.Valid && row.AvatarCreatedByUser.Valid && row.AvatarCreatedAt.Valid {
+		avatar = &uploadedmedia.UploadedMedia{
+			ID:            row.AvatarID.String,
+			StoragePath:   row.AvatarStoragePath.String,
+			MimeType:      string(row.AvatarMimeType.UploadedMediaMimeType),
+			CreatedAt:     row.AvatarCreatedAt.Time,
+			LastUpdatedAt: database.TimePointerFromNullTime(row.AvatarLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(row.AvatarArchivedAt),
+			CreatedByUser: row.AvatarCreatedByUser.String,
+		}
+	}
+	return &identity.User{
+		CreatedAt:                  row.CreatedAt,
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(row.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(row.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(row.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(row.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(row.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(row.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(row.ArchivedAt),
+		AccountStatusExplanation:   row.UserAccountStatusExplanation,
+		TwoFactorSecret:            row.TwoFactorSecret,
+		HashedPassword:             row.HashedPassword,
+		ID:                         row.ID,
+		AccountStatus:              row.UserAccountStatus,
+		Username:                   row.Username,
+		FirstName:                  row.FirstName,
+		LastName:                   row.LastName,
+		EmailAddress:               row.EmailAddress,
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(row.EmailAddressVerifiedAt),
+		Avatar:                     avatar,
+		ServiceRole:                row.ServiceRole,
+		RequiresPasswordChange:     row.RequiresPasswordChange,
+	}
+}
 
 func BuildDatabaseContainerForTest(t *testing.T) (*postgres.PostgresContainer, *sql.DB, *databasecfg.Config) {
 	t.Helper()
@@ -150,7 +190,6 @@ func CreateUserForTest(t *testing.T, exampleUser *identity.User, db *sql.DB) *id
 	err := dbc.CreateUser(ctx, db, &generated.CreateUserParams{
 		ID:                            exampleUser.ID,
 		Username:                      exampleUser.Username,
-		AvatarSrc:                     database.NullStringFromStringPointer(exampleUser.AvatarSrc),
 		EmailAddress:                  exampleUser.EmailAddress,
 		HashedPassword:                exampleUser.HashedPassword,
 		RequiresPasswordChange:        exampleUser.RequiresPasswordChange,
@@ -169,29 +208,7 @@ func CreateUserForTest(t *testing.T, exampleUser *identity.User, db *sql.DB) *id
 	dbCreated, err := dbc.GetUserByID(ctx, db, exampleUser.ID)
 	require.NoError(t, err)
 
-	created := &identity.User{
-		CreatedAt:                  dbCreated.CreatedAt,
-		PasswordLastChangedAt:      database.TimePointerFromNullTime(dbCreated.PasswordLastChangedAt),
-		LastUpdatedAt:              database.TimePointerFromNullTime(dbCreated.LastUpdatedAt),
-		LastAcceptedTermsOfService: database.TimePointerFromNullTime(dbCreated.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(dbCreated.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(dbCreated.TwoFactorSecretVerifiedAt),
-		AvatarSrc:                  database.StringPointerFromNullString(dbCreated.AvatarSrc),
-		Birthday:                   database.TimePointerFromNullTime(dbCreated.Birthday),
-		ArchivedAt:                 database.TimePointerFromNullTime(dbCreated.ArchivedAt),
-		AccountStatusExplanation:   dbCreated.UserAccountStatusExplanation,
-		TwoFactorSecret:            dbCreated.TwoFactorSecret,
-		HashedPassword:             dbCreated.HashedPassword,
-		ID:                         dbCreated.ID,
-		AccountStatus:              dbCreated.UserAccountStatus,
-		Username:                   dbCreated.Username,
-		FirstName:                  dbCreated.FirstName,
-		LastName:                   dbCreated.LastName,
-		EmailAddress:               dbCreated.EmailAddress,
-		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(dbCreated.EmailAddressVerifiedAt),
-		ServiceRole:                dbCreated.ServiceRole,
-		RequiresPasswordChange:     dbCreated.RequiresPasswordChange,
-	}
+	created := userFromGetUserByIDRow(dbCreated)
 	exampleUser.CreatedAt = created.CreatedAt
 	exampleUser.Birthday = created.Birthday
 	exampleUser.TwoFactorSecretVerifiedAt = created.TwoFactorSecretVerifiedAt

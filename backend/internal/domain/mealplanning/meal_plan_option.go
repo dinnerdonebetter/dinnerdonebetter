@@ -86,6 +86,7 @@ type (
 
 	// MealPlanOptionDataManager describes a structure capable of storing meal plan options permanently.
 	MealPlanOptionDataManager interface {
+		MealExistsAsOptionInEvent(ctx context.Context, mealPlanEventID, mealID string) (bool, error)
 		MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (bool, error)
 		GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*MealPlanOption, error)
 		GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlanOption], error)

@@ -5,6 +5,7 @@
 //  Created by Auto on 12/8/25.
 //
 
+import PhotosUI
 import SwiftProtobuf
 import SwiftUI
 
@@ -61,6 +62,8 @@ struct MealDetailView: View {
   @State private var customUpNextOrder: [String] = []
   @State private var customForLaterOrder: [String] = []
   @State private var isDAGSectionExpanded = false
+  @State private var uploadMealImageViewModel: UploadMealImageViewModel?
+  @State private var selectedMealImageItem: PhotosPickerItem?
 
   let mealID: String
   /// When true, scale editing is hidden because the scale is set by the meal plan.
@@ -129,6 +132,10 @@ struct MealDetailView: View {
       if viewModel == nil {
         viewModel = MealDetailViewModel(mealID: mealID, authManager: authManager)
       }
+      if uploadMealImageViewModel == nil {
+        uploadMealImageViewModel = UploadMealImageViewModel(
+          mealID: mealID, authManager: authManager)
+      }
       if let viewModel = viewModel {
         Task {
           await viewModel.loadMeal()
@@ -150,6 +157,86 @@ struct MealDetailView: View {
         ensureComponentDataLoaded(for: meal)
         loadStepOrderFromUserDefaults(mealID: meal.id)
       }
+    }
+    .onChange(of: selectedMealImageItem) { _, newItem in
+      guard let item = newItem, let uploadVM = uploadMealImageViewModel else { return }
+      Task {
+        await loadAndUploadMealImage(item: item, viewModel: uploadVM)
+      }
+    }
+    .onChange(of: uploadMealImageViewModel?.didSucceed) { _, didSucceed in
+      if didSucceed == true {
+        selectedMealImageItem = nil
+        Task {
+          await viewModel?.loadMeal()
+        }
+      }
+    }
+  }
+
+  private func mealImageUploadSection(uploadVM: UploadMealImageViewModel) -> some View {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+      PhotosPicker(
+        selection: $selectedMealImageItem,
+        matching: .images,
+        photoLibrary: .shared()
+      ) {
+        HStack(spacing: DSTheme.Spacing.md) {
+          Image(systemName: "photo.badge.plus")
+            .font(.system(size: DSTheme.IconSize.lg))
+            .foregroundColor(DSTheme.Colors.primary)
+          Text("Add Meal Photo")
+            .font(DSTheme.Typography.label)
+            .foregroundColor(DSTheme.Colors.textPrimary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(DSTheme.Spacing.md)
+        .background(DSTheme.Colors.cardBackground)
+        .cornerRadius(DSTheme.Radius.md)
+      }
+      .disabled(uploadVM.isUploading)
+
+      if uploadVM.isUploading {
+        ProgressView("Uploading...")
+          .font(DSTheme.Typography.caption)
+      }
+
+      if let error = uploadVM.errorMessage {
+        Text(error)
+          .font(DSTheme.Typography.caption)
+          .foregroundColor(DSTheme.Colors.error)
+      }
+
+      if uploadVM.didSucceed {
+        HStack(spacing: DSTheme.Spacing.sm) {
+          Image(systemName: "checkmark.circle.fill")
+            .foregroundColor(DSTheme.Colors.success)
+          Text("Photo added successfully")
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.success)
+        }
+      }
+    }
+  }
+
+  private func loadAndUploadMealImage(item: PhotosPickerItem, viewModel: UploadMealImageViewModel)
+    async
+  {
+    do {
+      guard let data = try await item.loadTransferable(type: Data.self) else {
+        viewModel.errorMessage = "Failed to load image data"
+        return
+      }
+      let prepared = ImagePreparationHelper.prepareImageForUpload(data: data)
+      let objectName = UUID().uuidString + "." + prepared.fileExtension
+      await viewModel.uploadMealImage(
+        imageData: prepared.data,
+        contentType: prepared.contentType,
+        objectName: objectName
+      )
+      selectedMealImageItem = nil
+    } catch {
+      viewModel.errorMessage = "Failed to load image: \(error.localizedDescription)"
     }
   }
 
@@ -173,6 +260,14 @@ struct MealDetailView: View {
             .font(DSTheme.Typography.body)
             .foregroundColor(DSTheme.Colors.textSecondary)
         }
+      }
+
+      // Meal Image Upload
+      Divider()
+        .padding(.vertical, DSTheme.Spacing.xs)
+
+      if let uploadVM = uploadMealImageViewModel {
+        mealImageUploadSection(uploadVM: uploadVM)
       }
 
       // Meal Scale Control (hidden when viewing from meal plan – scale is set by the plan)

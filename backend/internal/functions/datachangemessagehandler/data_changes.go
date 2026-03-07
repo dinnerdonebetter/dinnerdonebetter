@@ -29,6 +29,9 @@ import (
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingemails "github.com/dinnerdonebetter/backend/internal/services/mealplanning/emails"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 func (a *AsyncDataChangeMessageHandler) DataChangesEventHandler(ctx context.Context, rawMsg []byte) error {
@@ -36,17 +39,32 @@ func (a *AsyncDataChangeMessageHandler) DataChangesEventHandler(ctx context.Cont
 	defer span.End()
 
 	start := time.Now()
+	status := statusSuccess
+	eventType := unknownValue
+
+	defer func() {
+		a.dataChangesExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
+			metric.WithAttributes(
+				attribute.String("status", status),
+				attribute.String("event_type", eventType),
+			))
+		a.recordMessagesProcessed(ctx, topicDataChanges, status)
+	}()
 
 	var dataChangeMessage audit.DataChangeMessage
 	if err := a.decoder.DecodeBytes(ctx, rawMsg, &dataChangeMessage); err != nil {
+		a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicDataChanges)))
+		status = statusFailure
 		return fmt.Errorf("decoding message body: %w", err)
 	}
 
+	eventType = dataChangeMessage.EventType
+
 	if err := a.handleDataChangeMessage(ctx, &dataChangeMessage); err != nil {
+		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicDataChanges)))
+		status = statusFailure
 		return observability.PrepareAndLogError(err, a.logger, span, "handling data change message")
 	}
-
-	a.dataChangesExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
 
 	return nil
 }

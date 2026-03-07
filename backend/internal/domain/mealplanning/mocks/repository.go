@@ -400,6 +400,15 @@ func (m *Repository) SearchForMeals(ctx context.Context, query string, filter *f
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Meal]), returnValues.Error(1)
 }
 
+// FindMealWithSameComponents is a mock function.
+func (m *Repository) FindMealWithSameComponents(ctx context.Context, creatorID string, input *mealplanning.MealCreationRequestInput) (*mealplanning.Meal, error) {
+	returnValues := m.Called(ctx, creatorID, input)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*mealplanning.Meal), returnValues.Error(1)
+}
+
 // CreateMeal is a mock function.
 func (m *Repository) CreateMeal(ctx context.Context, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
 	returnValues := m.Called(ctx, input)
@@ -414,6 +423,11 @@ func (m *Repository) UpdateMeal(ctx context.Context, updated *mealplanning.Meal)
 // ArchiveMeal is a mock function.
 func (m *Repository) ArchiveMeal(ctx context.Context, recipeID, accountID string) error {
 	return m.Called(ctx, recipeID, accountID).Error(0)
+}
+
+// AddMealImage is a mock function.
+func (m *Repository) AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error {
+	return m.Called(ctx, mealID, uploadedMediaID, uploadedByUser).Error(0)
 }
 
 // MarkMealAsIndexed is a mock function.
@@ -487,6 +501,11 @@ func (m *Repository) UpdateRecipeStatus(ctx context.Context, recipeID, newStatus
 // ArchiveRecipe is a mock function.
 func (m *Repository) ArchiveRecipe(ctx context.Context, recipeID, accountID string) error {
 	return m.Called(ctx, recipeID, accountID).Error(0)
+}
+
+// AddRecipeImage is a mock function.
+func (m *Repository) AddRecipeImage(ctx context.Context, recipeID, uploadedMediaID, uploadedByUser string) error {
+	return m.Called(ctx, recipeID, uploadedMediaID, uploadedByUser).Error(0)
 }
 
 // MarkRecipeAsIndexed is a mock function.
@@ -721,6 +740,12 @@ func (m *Repository) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 func (m *Repository) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanOption], error) {
 	returnValues := m.Called(ctx, mealPlanID, mealPlanEventID, filter)
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlanOption]), returnValues.Error(1)
+}
+
+// MealExistsAsOptionInEvent is a mock function.
+func (m *Repository) MealExistsAsOptionInEvent(ctx context.Context, mealPlanEventID, mealID string) (bool, error) {
+	returnValues := m.Called(ctx, mealPlanEventID, mealID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // CreateMealPlanOption is a mock function.
@@ -1689,6 +1714,12 @@ func (m *Repository) UpdateRecipeListItem(ctx context.Context, updated *mealplan
 // ArchiveRecipeListItem is a mock function.
 func (m *Repository) ArchiveRecipeListItem(ctx context.Context, recipeListItemID, recipeListID string) error {
 	return m.Called(ctx, recipeListItemID, recipeListID).Error(0)
+}
+
+// MealExistsInMealList is a mock function.
+func (m *Repository) MealExistsInMealList(ctx context.Context, mealListID, mealID string) (bool, error) {
+	returnValues := m.Called(ctx, mealListID, mealID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetMealListItems is a mock function.

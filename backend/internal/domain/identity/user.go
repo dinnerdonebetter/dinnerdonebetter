@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -46,27 +47,27 @@ type (
 	User struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt                  time.Time  `json:"createdAt"`
-		PasswordLastChangedAt      *time.Time `json:"passwordLastChangedAt"`
-		LastUpdatedAt              *time.Time `json:"lastUpdatedAt"`
-		LastAcceptedTermsOfService *time.Time `json:"lastAcceptedTOS"`
-		LastAcceptedPrivacyPolicy  *time.Time `json:"lastAcceptedPrivacyPolicy"`
-		TwoFactorSecretVerifiedAt  *time.Time `json:"twoFactorSecretVerifiedAt"`
-		AvatarSrc                  *string    `json:"avatar"`
-		Birthday                   *time.Time `json:"birthday"`
-		ArchivedAt                 *time.Time `json:"archivedAt"`
-		AccountStatusExplanation   string     `json:"accountStatusExplanation"`
-		TwoFactorSecret            string     `json:"-"`
-		HashedPassword             string     `json:"-"`
-		ID                         string     `json:"id"`
-		AccountStatus              string     `json:"accountStatus"`
-		Username                   string     `json:"username"`
-		FirstName                  string     `json:"firstName"`
-		LastName                   string     `json:"lastName"`
-		EmailAddress               string     `json:"emailAddress"`
-		EmailAddressVerifiedAt     *time.Time `json:"emailAddressVerifiedAt"`
-		ServiceRole                string     `json:"serviceRole"`
-		RequiresPasswordChange     bool       `json:"requiresPasswordChange"`
+		CreatedAt                  time.Time                    `json:"createdAt"`
+		PasswordLastChangedAt      *time.Time                   `json:"passwordLastChangedAt"`
+		LastUpdatedAt              *time.Time                   `json:"lastUpdatedAt"`
+		LastAcceptedTermsOfService *time.Time                   `json:"lastAcceptedTOS"`
+		LastAcceptedPrivacyPolicy  *time.Time                   `json:"lastAcceptedPrivacyPolicy"`
+		TwoFactorSecretVerifiedAt  *time.Time                   `json:"twoFactorSecretVerifiedAt"`
+		Avatar                     *uploadedmedia.UploadedMedia `json:"avatar"`
+		Birthday                   *time.Time                   `json:"birthday"`
+		ArchivedAt                 *time.Time                   `json:"archivedAt"`
+		AccountStatusExplanation   string                       `json:"accountStatusExplanation"`
+		TwoFactorSecret            string                       `json:"-"`
+		HashedPassword             string                       `json:"-"`
+		ID                         string                       `json:"id"`
+		AccountStatus              string                       `json:"accountStatus"`
+		Username                   string                       `json:"username"`
+		FirstName                  string                       `json:"firstName"`
+		LastName                   string                       `json:"lastName"`
+		EmailAddress               string                       `json:"emailAddress"`
+		EmailAddressVerifiedAt     *time.Time                   `json:"emailAddressVerifiedAt"`
+		ServiceRole                string                       `json:"serviceRole"`
+		RequiresPasswordChange     bool                         `json:"requiresPasswordChange"`
 	}
 
 	// UserRegistrationInput represents the input required from users to register an account.
@@ -92,7 +93,6 @@ type (
 
 		Birthday              *time.Time `json:"-"`
 		ID                    string     `json:"-"`
-		AvatarSrc             *string    `json:"-"`
 		HashedPassword        string     `json:"-"`
 		TwoFactorSecret       string     `json:"-"`
 		InvitationToken       string     `json:"-"`
@@ -170,7 +170,7 @@ type (
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
 		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
-		UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error
+		SetUserAvatar(ctx context.Context, userID, uploadedMediaID string) error
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
 		UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error
 		UpdateUserDetails(ctx context.Context, userID string, input *UserDetailsDatabaseUpdateInput) error

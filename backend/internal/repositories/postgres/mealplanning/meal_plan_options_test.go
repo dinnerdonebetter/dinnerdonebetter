@@ -125,6 +125,43 @@ func TestQuerier_Integration_MealPlanOptions(t *testing.T) {
 	}
 }
 
+func TestQuerier_Integration_MealExistsAsOptionInEvent(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, _, container := buildDatabaseClientForTest(t)
+	defer func() {
+		assert.NoError(t, container.Terminate(ctx))
+	}()
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
+
+	meal := createMealForTest(t, ctx, nil, dbc)
+
+	exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
+	exampleMealPlan.BelongsToAccount = account.ID
+	mealPlan := createMealPlanForTest(t, ctx, exampleMealPlan, dbc)
+
+	eventID := mealPlan.Events[0].ID
+	existingOptionMealID := mealPlan.Events[0].Options[0].Meal.ID
+
+	exists, err := dbc.MealExistsAsOptionInEvent(ctx, eventID, existingOptionMealID)
+	require.NoError(t, err)
+	assert.True(t, exists)
+
+	exists, err = dbc.MealExistsAsOptionInEvent(ctx, eventID, "nonexistent-meal-id")
+	require.NoError(t, err)
+	assert.False(t, exists)
+
+	newMeal := createMealForTest(t, ctx, nil, dbc)
+	exists, err = dbc.MealExistsAsOptionInEvent(ctx, eventID, newMeal.ID)
+	require.NoError(t, err)
+	assert.False(t, exists)
+}
+
 func TestQuerier_MealPlanOptionExists(T *testing.T) {
 	T.Parallel()
 
@@ -510,8 +547,6 @@ func TestQuerier_Integration_MealPlanOptions_CursorBasedPagination(t *testing.T)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
-	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
-	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
 
 	// Create a meal plan with one event but no options in it
 	// We create this directly without using createMealPlanForTest to avoid strict nil vs empty slice comparisons
@@ -550,6 +585,9 @@ func TestQuerier_Integration_MealPlanOptions_CursorBasedPagination(t *testing.T)
 		PageSize:   3,
 		ItemName:   "meal plan option",
 		CreateItem: func(ctx context.Context, i int) *types.MealPlanOption {
+			// Create a distinct meal for each option (duplicate prevention forbids same meal twice per event)
+			recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+			meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
 			mealPlanOption := buildMealPlanOptionForIntegrationTest(meal)
 			mealPlanOption.BelongsToMealPlanEvent = mealPlanEventID
 			return createMealPlanOptionForTest(t, ctx, createdMealPlan.ID, mealPlanOption, dbc)

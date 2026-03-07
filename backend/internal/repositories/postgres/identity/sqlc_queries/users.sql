@@ -21,7 +21,6 @@ INSERT INTO users
 (
 	id,
 	username,
-	avatar_src,
 	email_address,
 	hashed_password,
 	requires_password_change,
@@ -37,7 +36,6 @@ INSERT INTO users
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(username),
-	sqlc.arg(avatar_src),
 	sqlc.arg(email_address),
 	sqlc.arg(hashed_password),
 	sqlc.arg(requires_password_change),
@@ -56,162 +54,6 @@ INSERT INTO users
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
-	users.email_address,
-	users.hashed_password,
-	users.password_last_changed_at,
-	users.requires_password_change,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_role,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birthday,
-	users.email_address_verification_token,
-	users.email_address_verified_at,
-	users.first_name,
-	users.last_name,
-	users.last_accepted_terms_of_service,
-	users.last_accepted_privacy_policy,
-	users.last_indexed_at,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.service_role = 'service_admin'
-	AND users.username = sqlc.arg(username)
-	AND users.two_factor_secret_verified_at IS NOT NULL;
-
--- name: GetUserByEmail :one
-SELECT
-	users.id,
-	users.username,
-	users.avatar_src,
-	users.email_address,
-	users.hashed_password,
-	users.password_last_changed_at,
-	users.requires_password_change,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_role,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birthday,
-	users.email_address_verification_token,
-	users.email_address_verified_at,
-	users.first_name,
-	users.last_name,
-	users.last_accepted_terms_of_service,
-	users.last_accepted_privacy_policy,
-	users.last_indexed_at,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.email_address = sqlc.arg(email_address);
-
--- name: GetUserByEmailAddressVerificationToken :one
-SELECT
-	users.id,
-	users.username,
-	users.avatar_src,
-	users.email_address,
-	users.hashed_password,
-	users.password_last_changed_at,
-	users.requires_password_change,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_role,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birthday,
-	users.email_address_verification_token,
-	users.email_address_verified_at,
-	users.first_name,
-	users.last_name,
-	users.last_accepted_terms_of_service,
-	users.last_accepted_privacy_policy,
-	users.last_indexed_at,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.email_address_verification_token = sqlc.arg(email_address_verification_token);
-
--- name: GetUserByID :one
-SELECT
-	users.id,
-	users.username,
-	users.avatar_src,
-	users.email_address,
-	users.hashed_password,
-	users.password_last_changed_at,
-	users.requires_password_change,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_role,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birthday,
-	users.email_address_verification_token,
-	users.email_address_verified_at,
-	users.first_name,
-	users.last_name,
-	users.last_accepted_terms_of_service,
-	users.last_accepted_privacy_policy,
-	users.last_indexed_at,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.id = sqlc.arg(id);
-
--- name: GetUserByUsername :one
-SELECT
-	users.id,
-	users.username,
-	users.avatar_src,
-	users.email_address,
-	users.hashed_password,
-	users.password_last_changed_at,
-	users.requires_password_change,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_role,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birthday,
-	users.email_address_verification_token,
-	users.email_address_verified_at,
-	users.first_name,
-	users.last_name,
-	users.last_accepted_terms_of_service,
-	users.last_accepted_privacy_policy,
-	users.last_indexed_at,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.username = sqlc.arg(username);
-
--- name: GetEmailVerificationTokenByUserID :one
-SELECT
-	users.email_address_verification_token
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.email_address_verified_at IS NULL
-	AND users.id = sqlc.arg(id);
-
--- name: GetUsers :many
-SELECT
-	users.id,
-	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -232,6 +74,208 @@ SELECT
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
+FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
+WHERE users.archived_at IS NULL
+	AND users.service_role = 'service_admin'
+	AND users.username = sqlc.arg(username)
+	AND users.two_factor_secret_verified_at IS NOT NULL;
+
+-- name: GetUserByEmail :one
+SELECT
+	users.id,
+	users.username,
+	users.email_address,
+	users.hashed_password,
+	users.password_last_changed_at,
+	users.requires_password_change,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
+	users.last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
+FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
+WHERE users.archived_at IS NULL
+	AND users.email_address = sqlc.arg(email_address);
+
+-- name: GetUserByEmailAddressVerificationToken :one
+SELECT
+	users.id,
+	users.username,
+	users.email_address,
+	users.hashed_password,
+	users.password_last_changed_at,
+	users.requires_password_change,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
+	users.last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
+FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
+WHERE users.archived_at IS NULL
+	AND users.email_address_verification_token = sqlc.arg(email_address_verification_token);
+
+-- name: GetUserByID :one
+SELECT
+	users.id,
+	users.username,
+	users.email_address,
+	users.hashed_password,
+	users.password_last_changed_at,
+	users.requires_password_change,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
+	users.last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
+FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
+WHERE users.archived_at IS NULL
+	AND users.id = sqlc.arg(id);
+
+-- name: GetUserByUsername :one
+SELECT
+	users.id,
+	users.username,
+	users.email_address,
+	users.hashed_password,
+	users.password_last_changed_at,
+	users.requires_password_change,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
+	users.last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
+FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
+WHERE users.archived_at IS NULL
+	AND users.username = sqlc.arg(username);
+
+-- name: GetEmailVerificationTokenByUserID :one
+SELECT
+	users.email_address_verification_token
+FROM users
+WHERE users.archived_at IS NULL
+	AND users.email_address_verified_at IS NULL
+	AND users.id = sqlc.arg(id);
+
+-- name: GetUsers :many
+SELECT
+	users.id,
+	users.username,
+	users.email_address,
+	users.hashed_password,
+	users.password_last_changed_at,
+	users.requires_password_change,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
+	users.last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user,
 	(
 		SELECT COUNT(users.id)
 		FROM users
@@ -255,6 +299,8 @@ SELECT
 		WHERE users.archived_at IS NULL
 	) AS total_count
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND users.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
@@ -275,7 +321,6 @@ LIMIT COALESCE(sqlc.narg(result_limit), 50);
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -296,6 +341,13 @@ SELECT
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user,
 	(
 		SELECT COUNT(users.id)
 		FROM users
@@ -320,6 +372,8 @@ SELECT
 			AND account_user_memberships.belongs_to_account = sqlc.arg(belongs_to_account)
 	) AS total_count
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 JOIN account_user_memberships ON account_user_memberships.belongs_to_user = users.id
 WHERE users.archived_at IS NULL
 	AND users.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
@@ -343,7 +397,6 @@ LIMIT COALESCE(sqlc.narg(result_limit), 50);
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -363,8 +416,17 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.id = ANY(sqlc.arg(ids)::text[]);
 
@@ -379,7 +441,6 @@ WHERE users.archived_at IS NULL
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -399,8 +460,17 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id)
 	AND users.two_factor_secret_verified_at IS NULL;
@@ -409,7 +479,6 @@ WHERE users.archived_at IS NULL
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -429,8 +498,17 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id)
 	AND users.two_factor_secret_verified_at IS NOT NULL;
@@ -471,7 +549,6 @@ WHERE archived_at IS NULL
 SELECT
 	users.id,
 	users.username,
-	users.avatar_src,
 	users.email_address,
 	users.hashed_password,
 	users.password_last_changed_at,
@@ -492,6 +569,13 @@ SELECT
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
+	uploaded_media.id as avatar_id,
+	uploaded_media.storage_path as avatar_storage_path,
+	uploaded_media.mime_type as avatar_mime_type,
+	uploaded_media.created_at as avatar_created_at,
+	uploaded_media.last_updated_at as avatar_last_updated_at,
+	uploaded_media.archived_at as avatar_archived_at,
+	uploaded_media.created_by_user as avatar_created_by_user,
 	(
 		SELECT COUNT(users.id)
 		FROM users
@@ -515,6 +599,8 @@ SELECT
 		WHERE users.archived_at IS NULL
 	) AS total_count
 FROM users
+	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
+	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
 WHERE users.archived_at IS NULL
 	AND users.username ILIKE '%' || sqlc.arg(username)::text || '%'
 	AND users.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
@@ -531,13 +617,6 @@ WHERE users.archived_at IS NULL
 	AND users.id > COALESCE(sqlc.narg(cursor), '')
 ORDER BY users.id ASC
 LIMIT COALESCE(sqlc.narg(result_limit), 50);
-
--- name: UpdateUserAvatarSrc :execrows
-UPDATE users SET
-	avatar_src = sqlc.arg(avatar_src),
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-	AND id = sqlc.arg(id);
 
 -- name: UpdateUserDetails :execrows
 UPDATE users SET

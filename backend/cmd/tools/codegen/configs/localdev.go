@@ -21,6 +21,8 @@ import (
 	logotelgrpc "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/otelgrpc"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/otelgrpc"
+	profilingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/profiling/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/profiling/pprof"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/oteltrace"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
@@ -79,6 +81,13 @@ var (
 			Otel: &oteltrace.Config{
 				Insecure:          true,
 				CollectorEndpoint: "otel_collector:4317",
+			},
+		},
+		Profiling: profilingcfg.Config{
+			ServiceName: otelServiceName,
+			Provider:    profilingcfg.ProviderPprof,
+			Pprof: &pprof.Config{
+				Port: pprof.DefaultPort,
 			},
 		},
 	}
@@ -216,7 +225,8 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				},
 			},
 			Users: identitycfg.Config{
-				Uploads: uploadsConfig,
+				PublicMediaURLPrefix: "http://localhost:8000/uploads",
+				Uploads:              uploadsConfig,
 			},
 			UploadedMedia: uploadedmediacfg.Config{
 				Uploads: uploadsConfig,

@@ -59,6 +59,17 @@
 		}
 	},
 	"observability": {
+		"profiling": {
+			"pyroscope": {
+				"serverAddress": "http://pyroscope.prod.svc.cluster.local:4040",
+				"uploadRate": 15000000000,
+				"insecure": false,
+				"enableMutexProfile": false,
+				"enableBlockProfile": false
+			},
+			"serviceName": "api_server",
+			"provider": "pyroscope"
+		},
 		"logging": {
 			"serviceName": "api_server",
 			"level": "info",
@@ -212,14 +223,14 @@
 			"revenueCat": null
 		},
 		"users": {
-			"publicMediaURLPrefix": "https://storage.googleapis.com/dinner-done-better-prod-media/avatars",
+			"publicMediaURLPrefix": "https://media.dinnerdonebetter.com/avatars",
 			"uploads": {
 				"storageConfig": {
 					"gcpConfig": {
-						"bucketName": "dinner-done-better-prod-media"
+						"bucketName": "media.dinnerdonebetter.com"
 					},
 					"bucketPrefix": "avatars/",
-					"bucketName": "dinner-done-better-prod-media",
+					"bucketName": "media.dinnerdonebetter.com",
 					"uploadFilenameKey": "avatar",
 					"provider": "gcp"
 				},
@@ -230,9 +241,9 @@
 			"uploads": {
 				"storageConfig": {
 					"gcpConfig": {
-						"bucketName": "dinner-done-better-prod-userdata"
+						"bucketName": "userdata.dinnerdonebetter.com"
 					},
-					"bucketName": "dinner-done-better-prod-userdata",
+					"bucketName": "userdata.dinnerdonebetter.com",
 					"provider": "gcp"
 				},
 				"debug": false
@@ -242,10 +253,10 @@
 			"uploads": {
 				"storageConfig": {
 					"gcpConfig": {
-						"bucketName": "dinner-done-better-prod-media"
+						"bucketName": "media.dinnerdonebetter.com"
 					},
 					"bucketPrefix": "avatars/",
-					"bucketName": "dinner-done-better-prod-media",
+					"bucketName": "media.dinnerdonebetter.com",
 					"uploadFilenameKey": "avatar",
 					"provider": "gcp"
 				},

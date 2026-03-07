@@ -15,7 +15,6 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	combinePrep := enums.Preparations["combine"]
 	coatPrep := enums.Preparations["coat"]
 	transferPrep := enums.Preparations["transfer"]
-	linePrep := enums.Preparations["line"]
 	soakPrep := enums.Preparations["soak"]
 	microwavePrep := enums.Preparations["microwave"]
 	heatPrep := enums.Preparations["heat"]
@@ -127,9 +126,9 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	coatBareHandsVPI := enums.PreparationInstruments[coatPrep.ID][bareHands.ID]
 	coatMediumBowlVPV := enums.PreparationVessels[coatPrep.ID][mediumBowl.ID]
 	transferBakingSheetVPV := enums.PreparationVessels[transferPrep.ID][bakingSheet.ID]
-	lineAluminumFoilVIP := enums.IngredientPreparations[linePrep.ID][aluminumFoilIngredient.ID]
-	lineAluminumFoilVIMU := enums.IngredientMeasurementUnits[aluminumFoilIngredient.ID][unitMeasurement.ID]
-	lineBakingSheetVPV := enums.PreparationVessels[linePrep.ID][bakingSheet.ID]
+	addAluminumFoilVIP := enums.IngredientPreparations[addPrep.ID][aluminumFoilIngredient.ID]
+	aluminumFoilUnitVIMU := enums.IngredientMeasurementUnits[aluminumFoilIngredient.ID][unitMeasurement.ID]
+	addBakingSheetVPV := enums.PreparationVessels[addPrep.ID][bakingSheet.ID]
 	soakMicrowaveBowlVPV := enums.PreparationVessels[soakPrep.ID][microwaveSafeBowl.ID]
 	microwaveMicrowaveBowlVPV := enums.PreparationVessels[microwavePrep.ID][microwaveSafeBowl.ID]
 	heatDutchOvenVPV := enums.PreparationVessels[heatPrep.ID][dutchOven.ID]
@@ -267,15 +266,15 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 	}
 
-	// Step 2: Create aluminum foil boat on baking sheet
+	// Step 2: Add aluminum foil to create boat on baking sheet
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        linePrep.ID,
+		PreparationID:        addPrep.ID,
 		Index:                2,
 		ExplicitInstructions: "In the center of a rimmed baking sheet, create a roughly 9- by 13-inch aluminum-foil boat with 1-inch sides, and set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &lineAluminumFoilVIP.ID,
-				ValidIngredientMeasurementUnitID: &lineAluminumFoilVIMU.ID,
+				ValidIngredientPreparationID:     &addAluminumFoilVIP.ID,
+				ValidIngredientMeasurementUnitID: &aluminumFoilUnitVIMU.ID,
 				Name:                             "aluminum foil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -284,7 +283,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &lineBakingSheetVPV.ID,
+				ValidPreparationVesselID: &addBakingSheetVPV.ID,
 				Name:                     "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
