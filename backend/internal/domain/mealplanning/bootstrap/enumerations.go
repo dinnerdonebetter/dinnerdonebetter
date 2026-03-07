@@ -8701,6 +8701,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(gbpBoilPrep, gbpPasta); err != nil {
 		return err
 	}
+	if err = createVIP(gbpBoilPrep, gbpWater); err != nil {
+		return err
+	}
+	if err = createVIP(gbpBoilPrep, gbpSalt); err != nil {
+		return err
+	}
 	if err = createVPV(gbpBoilPrep, gbpPot); err != nil {
 		return err
 	}

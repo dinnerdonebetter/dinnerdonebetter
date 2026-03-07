@@ -127,4 +127,6 @@ Discrete vs continuous: set `ItemQuantity` for countable items (patties, cookies
 
 ## Post-Conversion Checklist
 
+- [ ] no step contains compound instructions
+- [ ] all steps preparations match that of their instructions
 - [ ] `make dry_run` succeeds from the backend folder
