@@ -36,6 +36,25 @@ func buildMealListItemsQueries(database string) []*Query {
 		return []*Query{
 			{
 				Annotation: QueryAnnotation{
+					Name: "CheckMealInMealList",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.belongs_to_meal_list = sqlc.arg(%s)
+		AND %s.%s = sqlc.arg(%s)
+);`,
+					mealListItemsTableName, idColumn,
+					mealListItemsTableName,
+					mealListItemsTableName, archivedAtColumn,
+					mealListItemsTableName, "belongs_to_meal_list",
+					mealListItemsTableName, mealIDColumn, mealIDColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "ArchiveMealListItem",
 					Type: ExecRowsType,
 				},

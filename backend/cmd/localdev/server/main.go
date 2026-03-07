@@ -348,7 +348,7 @@ func main() {
 
 			// Approve all bootstrap recipes
 			for _, r := range recipes {
-				if err := recipeManager.UpdateRecipeStatus(ctx, r.ID, mealplanning.RecipeStatusApproved); err != nil {
+				if err = recipeManager.UpdateRecipeStatus(ctx, r.ID, mealplanning.RecipeStatusApproved); err != nil {
 					return fmt.Errorf("failed to approve recipe %s: %w", r.Name, err)
 				}
 			}

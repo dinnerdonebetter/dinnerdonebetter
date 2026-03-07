@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"sort"
 
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
@@ -20,6 +21,93 @@ import (
 var (
 	_ mealplanning.MealDataManager = (*repository)(nil)
 )
+
+// FindMealWithSameComponents finds an existing meal by the creator with the same name and components.
+// Returns nil, ErrNoMatchingMeal if no match is found (callers should treat ErrNoMatchingMeal as "no duplicate").
+func (q *repository) FindMealWithSameComponents(ctx context.Context, creatorID string, input *mealplanning.MealCreationRequestInput) (*mealplanning.Meal, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil || creatorID == "" {
+		return nil, mealplanning.ErrNoMatchingMeal
+	}
+	if input.Name == "" || len(input.Components) == 0 {
+		return nil, mealplanning.ErrNoMatchingMeal
+	}
+
+	logger := q.logger.WithValue(mealplanningkeys.MealIDKey, "find_dup").WithValue("meal.name", input.Name)
+	tracing.AttachToSpan(span, "meal.name", input.Name)
+
+	rows, err := q.generatedQuerier.GetMealsByCreatorAndName(ctx, q.readDB, &generated.GetMealsByCreatorAndNameParams{
+		CreatedByUser: creatorID,
+		Name:          input.Name,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meals by creator and name")
+	}
+	if len(rows) == 0 {
+		return nil, mealplanning.ErrNoMatchingMeal
+	}
+
+	// Group rows by meal ID and build component slices for comparison
+	mealsByID := map[string][]*generated.GetMealsByCreatorAndNameRow{}
+	for _, row := range rows {
+		mealsByID[row.ID] = append(mealsByID[row.ID], row)
+	}
+
+	for mealID, componentRows := range mealsByID {
+		if len(componentRows) != len(input.Components) {
+			continue
+		}
+		// Sort componentRows by (recipe_id, type, scale) and build a matching sorted input
+		// so we compare the same logical components regardless of physical order.
+		sort.Slice(componentRows, func(i, j int) bool {
+			ri, rj := componentRows[i], componentRows[j]
+			if ri.ComponentRecipeID != rj.ComponentRecipeID {
+				return ri.ComponentRecipeID < rj.ComponentRecipeID
+			}
+			if ri.ComponentMealComponentType != rj.ComponentMealComponentType {
+				return string(ri.ComponentMealComponentType) < string(rj.ComponentMealComponentType)
+			}
+			return ri.ComponentRecipeScale < rj.ComponentRecipeScale
+		})
+		sortedInput := make([]*mealplanning.MealComponentCreationRequestInput, len(input.Components))
+		copy(sortedInput, input.Components)
+		sort.Slice(sortedInput, func(i, j int) bool {
+			ci, cj := sortedInput[i], sortedInput[j]
+			if ci == nil || cj == nil {
+				return false
+			}
+			if ci.RecipeID != cj.RecipeID {
+				return ci.RecipeID < cj.RecipeID
+			}
+			if ci.ComponentType != cj.ComponentType {
+				return ci.ComponentType < cj.ComponentType
+			}
+			return ci.RecipeScale < cj.RecipeScale
+		})
+		componentsMatch := true
+		for i, row := range componentRows {
+			c := sortedInput[i]
+			if c == nil {
+				componentsMatch = false
+				break
+			}
+			rowScale := database.Float32FromString(row.ComponentRecipeScale)
+			if row.ComponentRecipeID != c.RecipeID ||
+				string(row.ComponentMealComponentType) != c.ComponentType ||
+				rowScale != c.RecipeScale {
+				componentsMatch = false
+				break
+			}
+		}
+		if componentsMatch {
+			return q.GetMeal(ctx, mealID)
+		}
+	}
+
+	return nil, mealplanning.ErrNoMatchingMeal
+}
 
 // MealExists fetches whether a meal exists from the database.
 func (q *repository) MealExists(ctx context.Context, mealID string) (exists bool, err error) {

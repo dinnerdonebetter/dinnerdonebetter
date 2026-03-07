@@ -2,8 +2,10 @@ package grpc
 
 import (
 	"context"
+	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
+	mp "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
@@ -212,6 +214,9 @@ func (s *serviceImpl) CreateMeal(ctx context.Context, request *mealplanningsvc.C
 
 	created, err := s.mealPlanningManager.CreateMeal(ctx, sessionContextData.GetUserID(), input)
 	if err != nil {
+		if errors.Is(err, mp.ErrDuplicateMeal) {
+			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.AlreadyExists, "meal with same name and components already exists")
+		}
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal")
 	}
 
@@ -268,6 +273,9 @@ func (s *serviceImpl) CreateMealList(ctx context.Context, request *mealplannings
 
 	created, err := s.mealPlanningManager.CreateMealList(ctx, sessionContextData.GetUserID(), input)
 	if err != nil {
+		if errors.Is(err, mp.ErrDuplicateMealInList) {
+			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.AlreadyExists, "meal already exists in list")
+		}
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating meal list")
 	}
 
@@ -377,6 +385,9 @@ func (s *serviceImpl) CreateMealListItem(ctx context.Context, request *mealplann
 
 	created, err := s.mealPlanningManager.AddMealToMealList(ctx, request.Input.BelongsToMealList, input.MealID, input.Notes)
 	if err != nil {
+		if errors.Is(err, mp.ErrDuplicateMealInList) {
+			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.AlreadyExists, "meal already exists in list")
+		}
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating meal list item")
 	}
 
@@ -500,6 +511,9 @@ func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealpla
 
 	created, err := s.mealPlanningManager.CreateMealPlanOptionWithEventID(ctx, request.MealPlanEventId, input)
 	if err != nil {
+		if errors.Is(err, mp.ErrDuplicateMealPlanOption) {
+			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.AlreadyExists, "meal already exists as option for this event")
+		}
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan option")
 	}
 

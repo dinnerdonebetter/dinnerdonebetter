@@ -51,6 +51,8 @@ type Querier interface {
 	ChangeMealPlanTaskStatus(ctx context.Context, db DBTX, arg *ChangeMealPlanTaskStatusParams) error
 	CheckAccountInstrumentOwnershipExistence(ctx context.Context, db DBTX, arg *CheckAccountInstrumentOwnershipExistenceParams) (bool, error)
 	CheckMealExistence(ctx context.Context, db DBTX, id string) (bool, error)
+	CheckMealInMealList(ctx context.Context, db DBTX, arg *CheckMealInMealListParams) (bool, error)
+	CheckMealInMealPlanEvent(ctx context.Context, db DBTX, arg *CheckMealInMealPlanEventParams) (bool, error)
 	CheckMealPlanEventExistence(ctx context.Context, db DBTX, arg *CheckMealPlanEventExistenceParams) (bool, error)
 	CheckMealPlanExistence(ctx context.Context, db DBTX, arg *CheckMealPlanExistenceParams) (bool, error)
 	CheckMealPlanGroceryListItemExistence(ctx context.Context, db DBTX, arg *CheckMealPlanGroceryListItemExistenceParams) (bool, error)
@@ -164,6 +166,7 @@ type Querier interface {
 	GetMealPlanTaskNotificationContext(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskNotificationContextRow, error)
 	GetMealPlansForAccount(ctx context.Context, db DBTX, arg *GetMealPlansForAccountParams) ([]*GetMealPlansForAccountRow, error)
 	GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error)
+	GetMealsByCreatorAndName(ctx context.Context, db DBTX, arg *GetMealsByCreatorAndNameParams) ([]*GetMealsByCreatorAndNameRow, error)
 	GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error)
 	GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetMealsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetMealsWithIDsRow, error)

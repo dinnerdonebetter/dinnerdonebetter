@@ -11,6 +11,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanOption) {
@@ -156,5 +158,92 @@ func TestMealPlanOptions_Listing(T *testing.T) {
 
 		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		assert.NoError(t, err)
+	})
+}
+
+func TestMealPlanOptions_DuplicatePrevention(T *testing.T) {
+	T.Parallel()
+
+	T.Run("rejects adding same meal twice to same event", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		createdMealPlan := createMealPlanForTest(t, userClient, nil)
+
+		require.NotEmpty(t, createdMealPlan.Events)
+		createdMealPlanEvent := createdMealPlan.Events[0]
+		createdMealPlanOption := createdMealPlanEvent.Options[0]
+		require.NotNil(t, createdMealPlanOption)
+
+		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
+		exampleMealPlanOption.Meal.ID = createdMealPlanOption.Meal.ID
+		exampleMealPlanOption.BelongsToMealPlanEvent = createdMealPlanEvent.ID
+		exampleMealPlanOption.AssignedCook = nil
+
+		exampleMealPlanOptionInput := mpconverters.ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(exampleMealPlanOption)
+
+		_, err := userClient.CreateMealPlanOption(ctx, &mealplanninggrpc.CreateMealPlanOptionRequest{
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
+			Input:           converters.ConvertMealPlanOptionCreationRequestInputToGRPCMealPlanOptionCreationRequestInput(exampleMealPlanOptionInput),
+		})
+		assert.Error(t, err)
+		assert.Equal(t, codes.AlreadyExists, status.Code(err))
+	})
+
+	T.Run("allows same meal in different events", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		createdMealPlan := createMealPlanForTest(t, userClient, nil)
+
+		require.NotEmpty(t, createdMealPlan.Events)
+		require.GreaterOrEqual(t, len(createdMealPlan.Events), 2, "need at least 2 events")
+		event1 := createdMealPlan.Events[0]
+		event2 := createdMealPlan.Events[1]
+		mealID := event1.Options[0].Meal.ID
+
+		exampleOption := fakes.BuildFakeMealPlanOption()
+		exampleOption.Meal.ID = mealID
+		exampleOption.BelongsToMealPlanEvent = event2.ID
+		exampleOption.AssignedCook = nil
+		exampleOptionInput := mpconverters.ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(exampleOption)
+
+		_, err := userClient.CreateMealPlanOption(ctx, &mealplanninggrpc.CreateMealPlanOptionRequest{
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: event2.ID,
+			Input:           converters.ConvertMealPlanOptionCreationRequestInputToGRPCMealPlanOptionCreationRequestInput(exampleOptionInput),
+		})
+		require.NoError(t, err)
+	})
+
+	T.Run("allows different meals in same event", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		createdMealPlan := createMealPlanForTest(t, userClient, nil)
+
+		require.NotEmpty(t, createdMealPlan.Events)
+		createdMealPlanEvent := createdMealPlan.Events[0]
+		existingOption := createdMealPlanEvent.Options[0]
+
+		createdMeal := createMealForTest(t, userClient, nil)
+		exampleOption := fakes.BuildFakeMealPlanOption()
+		exampleOption.Meal.ID = createdMeal.ID
+		exampleOption.BelongsToMealPlanEvent = createdMealPlanEvent.ID
+		exampleOption.AssignedCook = nil
+		exampleOptionInput := mpconverters.ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(exampleOption)
+
+		_, err := userClient.CreateMealPlanOption(ctx, &mealplanninggrpc.CreateMealPlanOptionRequest{
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
+			Input:           converters.ConvertMealPlanOptionCreationRequestInputToGRPCMealPlanOptionCreationRequestInput(exampleOptionInput),
+		})
+		require.NoError(t, err)
+
+		_ = existingOption
 	})
 }

@@ -17,6 +17,28 @@ var (
 	_ types.MealListItemDataManager = (*repository)(nil)
 )
 
+// MealExistsInMealList returns true if the meal already exists in the list (non-archived).
+func (q *repository) MealExistsInMealList(ctx context.Context, mealListID, mealID string) (bool, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealListID == "" || mealID == "" {
+		return false, database.ErrInvalidIDProvided
+	}
+	logger := q.logger.WithValue(mealplanningkeys.MealListIDKey, mealListID).WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealListIDKey, mealListID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
+
+	result, err := q.generatedQuerier.CheckMealInMealList(ctx, q.readDB, &generated.CheckMealInMealListParams{
+		BelongsToMealList: mealListID,
+		MealID:            mealID,
+	})
+	if err != nil {
+		return false, observability.PrepareAndLogError(err, logger, span, "checking if meal exists in list")
+	}
+	return result, nil
+}
+
 // GetMealListItems fetches meal list items for a given list with filtering.
 func (q *repository) GetMealListItems(ctx context.Context, mealListID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.MealListItem], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

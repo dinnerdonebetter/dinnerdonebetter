@@ -328,6 +328,28 @@ func (q *repository) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPla
 	return x, nil
 }
 
+// MealExistsAsOptionInEvent returns true if the meal already exists as a non-archived option for the event.
+func (q *repository) MealExistsAsOptionInEvent(ctx context.Context, mealPlanEventID, mealID string) (bool, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanEventID == "" || mealID == "" {
+		return false, database.ErrInvalidIDProvided
+	}
+	logger := q.logger.WithValue(mealplanningkeys.MealPlanEventIDKey, mealPlanEventID).WithValue(mealplanningkeys.MealIDKey, mealID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
+
+	result, err := q.generatedQuerier.CheckMealInMealPlanEvent(ctx, q.readDB, &generated.CheckMealInMealPlanEventParams{
+		BelongsToMealPlanEvent: database.NullStringFromString(mealPlanEventID),
+		MealID:                 mealID,
+	})
+	if err != nil {
+		return false, observability.PrepareAndLogError(err, logger, span, "checking if meal exists as option in event")
+	}
+	return result, nil
+}
+
 // createMealPlanOption creates a meal plan option in the database.
 func (q *repository) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *mealplanning.MealPlanOptionDatabaseCreationInput, markAsChosen bool) (*mealplanning.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

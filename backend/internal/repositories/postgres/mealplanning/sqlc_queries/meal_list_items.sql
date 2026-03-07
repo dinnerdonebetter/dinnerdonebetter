@@ -1,3 +1,12 @@
+-- name: CheckMealInMealList :one
+SELECT EXISTS (
+	SELECT meal_list_items.id
+	FROM meal_list_items
+	WHERE meal_list_items.archived_at IS NULL
+		AND meal_list_items.belongs_to_meal_list = sqlc.arg(belongs_to_meal_list)
+		AND meal_list_items.meal_id = sqlc.arg(meal_id)
+);
+
 -- name: ArchiveMealListItem :execrows
 UPDATE meal_list_items SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_list = sqlc.arg(belongs_to_meal_list) AND id = sqlc.arg(id);
 

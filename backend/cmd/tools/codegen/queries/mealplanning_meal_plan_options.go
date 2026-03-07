@@ -55,6 +55,25 @@ func buildMealPlanOptionsQueries(database string) []*Query {
 		return []*Query{
 			{
 				Annotation: QueryAnnotation{
+					Name: "CheckMealInMealPlanEvent",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
+		AND %s.%s = sqlc.arg(%s)
+);`,
+					mealPlanOptionsTableName, idColumn,
+					mealPlanOptionsTableName,
+					mealPlanOptionsTableName, archivedAtColumn,
+					mealPlanOptionsTableName, belongsToMealPlanEventColumn, belongsToMealPlanEventColumn,
+					mealPlanOptionsTableName, mealIDColumn, mealIDColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "ArchiveMealPlanOption",
 					Type: ExecRowsType,
 				},
