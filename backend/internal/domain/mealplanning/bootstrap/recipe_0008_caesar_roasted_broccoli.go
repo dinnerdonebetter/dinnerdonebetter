@@ -13,7 +13,7 @@ import (
 func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]*mealplanning.Recipe) []*mealplanning.RecipeCreationRequestInput {
 	// Get preparations
 	grindPrep := enums.Preparations["grind"]
-	linePrep := enums.Preparations["line"]
+	addPrep := enums.Preparations["add"]
 	adjustPrep := enums.Preparations["adjust"]
 	preheatPrep := enums.Preparations["preheat"]
 	tossPrep := enums.Preparations["toss"]
@@ -56,9 +56,9 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	transferBakingSheetVPV := enums.PreparationVessels[transferPrep.ID][bakingSheet.ID]
 	transferServingPlatterVPV := enums.PreparationVessels[transferPrep.ID][servingPlatter.ID]
 
-	lineAluminumFoilVIP := enums.IngredientPreparations[linePrep.ID][aluminumFoilIngredient.ID]
-	lineAluminumFoilVIMU := enums.IngredientMeasurementUnits[aluminumFoilIngredient.ID][unitMeasurement.ID]
-	lineBakingSheetVPV := enums.PreparationVessels[linePrep.ID][bakingSheet.ID]
+	addAluminumFoilVIP := enums.IngredientPreparations[addPrep.ID][aluminumFoilIngredient.ID]
+	aluminumFoilUnitVIMU := enums.IngredientMeasurementUnits[aluminumFoilIngredient.ID][unitMeasurement.ID]
+	addBakingSheetVPV := enums.PreparationVessels[addPrep.ID][bakingSheet.ID]
 
 	adjustOvenVPV := enums.PreparationVessels[adjustPrep.ID][oven.ID]
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
@@ -144,15 +144,15 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		},
 	}
 
-	// Step 1: Line baking sheet with aluminum foil
+	// Step 1: Add aluminum foil to line baking sheet
 	brStep1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        linePrep.ID,
+		PreparationID:        addPrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Line a rimmed baking sheet with aluminum foil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &lineAluminumFoilVIP.ID,
-				ValidIngredientMeasurementUnitID: &lineAluminumFoilVIMU.ID,
+				ValidIngredientPreparationID:     &addAluminumFoilVIP.ID,
+				ValidIngredientMeasurementUnitID: &aluminumFoilUnitVIMU.ID,
 				Name:                             "aluminum foil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -161,7 +161,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &lineBakingSheetVPV.ID,
+				ValidPreparationVesselID: &addBakingSheetVPV.ID,
 				Name:                     "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,

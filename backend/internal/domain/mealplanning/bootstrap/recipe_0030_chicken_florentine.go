@@ -1,0 +1,922 @@
+package bootstrap
+
+import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
+)
+
+// ChickenFlorentineRecipe creates the Chicken Florentine recipe.
+// Source: https://cooking.nytimes.com/recipes/1026291-chicken-florentine
+func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
+	// Get preparations
+	combinePrep := enums.Preparations["combine"]
+	coatPrep := enums.Preparations["coat"]
+	meltPrep := enums.Preparations["melt"]
+	cookPrep := enums.Preparations["cook"]
+	removePrep := enums.Preparations["remove"]
+	addPrep := enums.Preparations["add"]
+	simmerPrep := enums.Preparations["simmer"]
+	mincePrep := enums.Preparations["mince"]
+	topPrep := enums.Preparations["top"]
+
+	// Get ingredients
+	flour := enums.Ingredients["flour"]
+	parmesan := enums.Ingredients["parmesan cheese"]
+	salt := enums.Ingredients["salt"]
+	blackPepper := enums.Ingredients["black pepper"]
+	chickenBreast := enums.Ingredients["chicken breast"]
+	oliveOil := enums.Ingredients["olive oil"]
+	butter := enums.Ingredients["butter"]
+	shallot := enums.Ingredients["shallot"]
+	garlic := enums.Ingredients["garlic"]
+	whiteWine := enums.Ingredients["dry white wine"]
+	chickenStock := enums.Ingredients["chicken stock"]
+	basil := enums.Ingredients["basil"]
+	oregano := enums.Ingredients["oregano"]
+	heavyCream := enums.Ingredients["heavy cream"]
+	creamCheese := enums.Ingredients["cream cheese"]
+	spinach := enums.Ingredients["spinach"]
+
+	// Get measurement units
+	cupMeasurement := enums.MeasurementUnits["cup"]
+	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	unitMeasurement := enums.MeasurementUnits["unit"]
+	cloveMeasurement := enums.MeasurementUnits["clove"]
+	ounceMeasurement := enums.MeasurementUnits["ounce"]
+
+	// Get instruments
+	bareHands := enums.Instruments["bare hands"]
+	spoon := enums.Instruments["spoon"]
+	woodenSpoon := enums.Instruments["wooden spoon"]
+	knife := enums.Instruments["knife"]
+
+	// Get vessels
+	largePlate := enums.Vessels["large plate"]
+	pan := enums.Vessels["pan"]
+	cuttingBoard := enums.Vessels["cutting board"]
+
+	// Get bridge table entries
+	combineFlourVIP := enums.IngredientPreparations[combinePrep.ID][flour.ID]
+	combineParmesanVIP := enums.IngredientPreparations[combinePrep.ID][parmesan.ID]
+	combineSaltVIP := enums.IngredientPreparations[combinePrep.ID][salt.ID]
+	combinePepperVIP := enums.IngredientPreparations[combinePrep.ID][blackPepper.ID]
+	combinePlateVPV := enums.PreparationVessels[combinePrep.ID][largePlate.ID]
+
+	coatChickenVIP := enums.IngredientPreparations[coatPrep.ID][chickenBreast.ID]
+	coatBareHandsVPI := enums.PreparationInstruments[coatPrep.ID][bareHands.ID]
+
+	meltButterVIP := enums.IngredientPreparations[meltPrep.ID][butter.ID]
+	meltOliveOilVIP := enums.IngredientPreparations[meltPrep.ID][oliveOil.ID]
+	meltPanVPV := enums.PreparationVessels[meltPrep.ID][pan.ID]
+	meltSpoonVPI := enums.PreparationInstruments[meltPrep.ID][spoon.ID]
+
+	cookChickenVIP := enums.IngredientPreparations[cookPrep.ID][chickenBreast.ID]
+
+	removeChickenVIP := enums.IngredientPreparations[removePrep.ID][chickenBreast.ID]
+
+	addButterVIP := enums.IngredientPreparations[addPrep.ID][butter.ID]
+	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
+	addWineVIP := enums.IngredientPreparations[addPrep.ID][whiteWine.ID]
+	addStockVIP := enums.IngredientPreparations[addPrep.ID][chickenStock.ID]
+	addBasilVIP := enums.IngredientPreparations[addPrep.ID][basil.ID]
+	addOreganoVIP := enums.IngredientPreparations[addPrep.ID][oregano.ID]
+	addCreamVIP := enums.IngredientPreparations[addPrep.ID][heavyCream.ID]
+	addCreamCheeseVIP := enums.IngredientPreparations[addPrep.ID][creamCheese.ID]
+	addSpinachVIP := enums.IngredientPreparations[addPrep.ID][spinach.ID]
+	addPanVPV := enums.PreparationVessels[addPrep.ID][pan.ID]
+	addSpoonVPI := enums.PreparationInstruments[addPrep.ID][spoon.ID]
+	addWoodenSpoonVPI := enums.PreparationInstruments[addPrep.ID][woodenSpoon.ID]
+
+	minceShallotVIP := enums.IngredientPreparations[mincePrep.ID][shallot.ID]
+	minceGarlicVIP := enums.IngredientPreparations[mincePrep.ID][garlic.ID]
+	minceKnifeVPI := enums.PreparationInstruments[mincePrep.ID][knife.ID]
+	minceCuttingBoardVPV := enums.PreparationVessels[mincePrep.ID][cuttingBoard.ID]
+
+	simmerChickenVIP := enums.IngredientPreparations[simmerPrep.ID][chickenBreast.ID]
+
+	topParmesanVIP := enums.IngredientPreparations[topPrep.ID][parmesan.ID]
+	topPanVPV := enums.PreparationVessels[topPrep.ID][pan.ID]
+
+	// Measurement unit bridges
+	flourCupVIMU := enums.IngredientMeasurementUnits[flour.ID][cupMeasurement.ID]
+	parmesanCupVIMU := enums.IngredientMeasurementUnits[parmesan.ID][cupMeasurement.ID]
+	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
+	pepperTeaspoonVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][teaspoonMeasurement.ID]
+	chickenPoundVIMU := enums.IngredientMeasurementUnits[chickenBreast.ID][enums.MeasurementUnits["pound"].ID]
+	oliveOilTbspVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][tablespoonMeasurement.ID]
+	butterTbspVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
+	shallotUnitVIMU := enums.IngredientMeasurementUnits[shallot.ID][unitMeasurement.ID]
+	garlicCloveVIMU := enums.IngredientMeasurementUnits[garlic.ID][cloveMeasurement.ID]
+	wineCupVIMU := enums.IngredientMeasurementUnits[whiteWine.ID][cupMeasurement.ID]
+	stockCupVIMU := enums.IngredientMeasurementUnits[chickenStock.ID][cupMeasurement.ID]
+	basilTeaspoonVIMU := enums.IngredientMeasurementUnits[basil.ID][teaspoonMeasurement.ID]
+	oreganoTeaspoonVIMU := enums.IngredientMeasurementUnits[oregano.ID][teaspoonMeasurement.ID]
+	creamCupVIMU := enums.IngredientMeasurementUnits[heavyCream.ID][cupMeasurement.ID]
+	creamCheeseOunceVIMU := enums.IngredientMeasurementUnits[creamCheese.ID][ounceMeasurement.ID]
+	spinachCupVIMU := enums.IngredientMeasurementUnits[spinach.ID][cupMeasurement.ID]
+
+	// Ingredient states
+	brownedState := enums.IngredientStates["browned"]
+	tenderState := enums.IngredientStates["tender"]
+	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
+
+	// Step 0: Mince shallot and garlic
+	step0 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        mincePrep.ID,
+		Index:                0,
+		ExplicitInstructions: "Mince the shallot and garlic.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ValidIngredientPreparationID:     &minceShallotVIP.ID,
+				ValidIngredientMeasurementUnitID: &shallotUnitVIMU.ID,
+				Name:                             "medium shallot",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &minceGarlicVIP.ID,
+				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
+				Name:                             "garlic cloves",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &minceKnifeVPI.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ValidPreparationVesselID: &minceCuttingBoardVPV.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "minced shallot and garlic",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 1: Combine flour, Parmesan, salt, and pepper on plate
+	step1 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        combinePrep.ID,
+		Index:                1,
+		ExplicitInstructions: "On a plate, mix together the flour, Parmesan and 1 teaspoon each salt and pepper.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ValidIngredientPreparationID:     &combineFlourVIP.ID,
+				ValidIngredientMeasurementUnitID: &flourCupVIMU.ID,
+				Name:                             "all-purpose flour",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.25,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &combineParmesanVIP.ID,
+				ValidIngredientMeasurementUnitID: &parmesanCupVIMU.ID,
+				Name:                             "grated Parmesan",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.25,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &combineSaltVIP.ID,
+				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
+				Name:                             "salt",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &combinePepperVIP.ID,
+				ValidIngredientMeasurementUnitID: &pepperTeaspoonVIMU.ID,
+				Name:                             "black pepper",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ValidPreparationVesselID: &combinePlateVPV.ID,
+				Name:                     "plate",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "flour-Parmesan mixture",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "plate with dredging mixture",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 2: Dredge chicken in flour mixture
+	step2 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        coatPrep.ID,
+		Index:                2,
+		ExplicitInstructions: "Dredge each chicken breast in the mixture, evenly coating on both sides.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:         pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				ValidIngredientPreparationID:     &coatChickenVIP.ID,
+				ValidIngredientMeasurementUnitID: &chickenPoundVIMU.ID,
+				Name:                             "thin-cut boneless skinless chicken breasts",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &coatBareHandsVPI.ID,
+				Name:                         "bare hands",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "plate with dredging mixture",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "dredged chicken breasts",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+				ItemQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+		},
+	}
+
+	// Step 3: Heat olive oil and 2 tablespoons butter in pan
+	step3 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        meltPrep.ID,
+		Index:                3,
+		ExplicitInstructions: "Heat a large pan over medium. Add olive oil and 2 tablespoons of butter to the pan and melt to combine.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ValidIngredientPreparationID:     &meltOliveOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &oliveOilTbspVIMU.ID,
+				Name:                             "olive oil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &meltButterVIP.ID,
+				ValidIngredientMeasurementUnitID: &butterTbspVIMU.ID,
+				Name:                             "butter",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &meltSpoonVPI.ID,
+				Name:                         "spoon",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ValidPreparationVesselID: &meltPanVPV.ID,
+				Name:                     "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "melted oil and butter",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "large pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 4: Cook chicken until golden brown (not cooked through)
+	step4 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        cookPrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Add the chicken and cook until golden brown (but not cooked through), about 4 minutes on each side.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](480),
+			Max: pointer.To[uint32](480),
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &cookChickenVIP.ID,
+				Name:                            "dredged chicken breasts",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: brownedState.ID,
+				Notes:             "chicken should be golden brown but not cooked through",
+				Ingredients:       []uint64{0},
+				Optional:          false,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "seared chicken breasts",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+				ItemQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+			{
+				Name:  "large pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 5: Remove chicken from pan and set aside
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        removePrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Remove chicken from pan and set aside.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &removeChickenVIP.ID,
+				Name:                            "seared chicken breasts",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "seared chicken set aside",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+				ItemQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+			{
+				Name:  "large pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 6: Add remaining butter, shallot, garlic; cook until softened
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        addPrep.ID,
+		Index:                6,
+		ExplicitInstructions: "Add remaining 2 tablespoons of butter to the pan and let it melt. Add shallot, garlic and a pinch of salt and cook, stirring until the shallot is softened and the garlic is aromatic, about 2 minutes.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](120),
+			Max: pointer.To[uint32](120),
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ValidIngredientPreparationID:     &addButterVIP.ID,
+				ValidIngredientMeasurementUnitID: &butterTbspVIMU.ID,
+				Name:                             "remaining butter",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "minced shallot and garlic",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ValidIngredientPreparationID: &addSaltVIP.ID,
+				QuantityNotes:                "pinch",
+				Name:                         "salt",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &addSpoonVPI.ID,
+				Name:                         "spoon",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &addPanVPV.ID,
+				Name:                            "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: tenderState.ID,
+				Notes:             "shallot should be softened and garlic aromatic",
+				Ingredients:       []uint64{1},
+				Optional:          false,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "cooked shallot and garlic",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "large pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 7: Add wine, broth, basil, oregano; reduce by half
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        addPrep.ID,
+		Index:                7,
+		ExplicitInstructions: "Add wine, broth, basil and oregano, and stir, scraping the browned bits from the bottom of the pan, until the liquid has reduced by about half, 3 to 4 minutes.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](180),
+			Max: pointer.To[uint32](240),
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "cooked shallot and garlic",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &addWineVIP.ID,
+				ValidIngredientMeasurementUnitID: &wineCupVIMU.ID,
+				Name:                             "dry white wine",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.5,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &addStockVIP.ID,
+				ValidIngredientMeasurementUnitID: &stockCupVIMU.ID,
+				Name:                             "chicken broth",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.5,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &addBasilVIP.ID,
+				ValidIngredientMeasurementUnitID: &basilTeaspoonVIMU.ID,
+				Name:                             "dried basil (or 1 tablespoon chopped fresh)",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &addOreganoVIP.ID,
+				ValidIngredientMeasurementUnitID: &oreganoTeaspoonVIMU.ID,
+				Name:                             "dried oregano (or 1 teaspoon chopped fresh)",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &addWoodenSpoonVPI.ID,
+				Name:                         "wooden spoon",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: desiredConsistencyState.ID,
+				Notes:             "liquid should have reduced by about half",
+				Ingredients:       []uint64{0},
+				Optional:          false,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "reduced wine-broth mixture",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "large pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 8: Add heavy cream and cream cheese; stir until thick sauce forms
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        addPrep.ID,
+		Index:                8,
+		ExplicitInstructions: "Add the heavy cream and cream cheese and stir, allowing the cream cheese to soften and melt, until a thick sauce forms, about 6 minutes.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](360),
+			Max: pointer.To[uint32](360),
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "reduced wine-broth mixture",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &addCreamVIP.ID,
+				ValidIngredientMeasurementUnitID: &creamCupVIMU.ID,
+				Name:                             "heavy cream",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.5,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &addCreamCheeseVIP.ID,
+				ValidIngredientMeasurementUnitID: &creamCheeseOunceVIMU.ID,
+				Name:                             "cream cheese, at room temperature",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &addWoodenSpoonVPI.ID,
+				Name:                         "wooden spoon",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: desiredConsistencyState.ID,
+				Notes:             "sauce should be thick",
+				Ingredients:       []uint64{0},
+				Optional:          false,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "thick cream sauce",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "large pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 9: Add baby spinach and stir until wilted
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        addPrep.ID,
+		Index:                9,
+		ExplicitInstructions: "Add baby spinach and stir until it is folded into the cream sauce and the spinach is beginning to wilt, about 1 minute.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](60),
+			Max: pointer.To[uint32](60),
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "thick cream sauce",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ValidIngredientPreparationID:     &addSpinachVIP.ID,
+				ValidIngredientMeasurementUnitID: &spinachCupVIMU.ID,
+				Name:                             "packed baby spinach",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &addWoodenSpoonVPI.ID,
+				Name:                         "wooden spoon",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: tenderState.ID,
+				Notes:             "spinach should be beginning to wilt",
+				Ingredients:       []uint64{1},
+				Optional:          false,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "cream sauce with spinach",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "large pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 10: Return chicken to pan and simmer until cooked through
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        simmerPrep.ID,
+		Index:                10,
+		ExplicitInstructions: "Return the chicken breasts to the pan and simmer until the chicken is cooked through, 4 to 5 minutes.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](240),
+			Max: pointer.To[uint32](300),
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &simmerChickenVIP.ID,
+				Name:                            "seared chicken set aside",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "cream sauce with spinach",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: tenderState.ID,
+				Notes:             "chicken should be cooked through",
+				Ingredients:       []uint64{0},
+				Optional:          false,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "chicken florentine",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "large pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 11: Remove from heat and top with Parmesan
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        topPrep.ID,
+		Index:                11,
+		ExplicitInstructions: "Remove from heat and serve immediately with freshly grated Parmesan on top.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "chicken florentine",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ValidIngredientPreparationID: &topParmesanVIP.ID,
+				QuantityNotes:                "for serving",
+				Name:                         "freshly grated Parmesan",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &topPanVPV.ID,
+				Name:                            "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "chicken florentine with Parmesan",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	return []*mealplanning.RecipeCreationRequestInput{
+		{
+			Name:                "Chicken Florentine",
+			Slug:                "chicken-florentine",
+			Description:         "Pan-seared chicken breasts in a creamy spinach sauce with Parmesan, white wine, and herbs. A classic Italian-American dish.",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Source:            "https://cooking.nytimes.com/recipes/1026291-chicken-florentine",
+			PortionName:       "serving",
+			PluralPortionName: "servings",
+			EligibleForMeals:  true,
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11,
+			},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
+		},
+	}
+}

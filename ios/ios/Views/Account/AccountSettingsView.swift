@@ -23,111 +23,101 @@ struct AccountSettingsView: View {
 
   var body: some View {
     NavigationStack {
-      Group {
-        if let viewModel = viewModel {
-          DSContentState(
-            isLoading: viewModel.isLoading,
-            loadingMessage: "Loading household...",
-            error: viewModel.errorMessage,
-            errorTitle: viewModel.errorTitle,
-            errorIcon: viewModel.errorIcon,
-            errorIconColor: viewModel.errorIconColor,
-            onRetry: { await viewModel.loadData() },
-            content: {
-              ScrollView {
-                VStack(spacing: DSTheme.Spacing.xl) {
-                  // Subscription Section
-                  subscriptionSection
-
-                  // Members Section
-                  if let account = viewModel.account {
-                    membersSection(viewModel: viewModel, account: account)
-                  }
-
-                  // Send Invitation Section (admins only)
-                  if viewModel.isAccountAdmin {
-                    sendInvitationSection(viewModel: viewModel)
-                  }
-
-                  // Invitations (sent) and their status
-                  if !viewModel.invitations.isEmpty {
-                    pendingInvitationsSection(viewModel: viewModel)
-                  }
-
-                  // Household details (address, contact)
-                  if viewModel.account != nil {
-                    accountInformationSection(viewModel: viewModel)
-                  }
-
-                  // Media Section
-                  mediaSection
-
-                  // Sign Out Button
-                  signOutButton
-                }
-                .dsScreenPadding()
-              }
-            })
-        } else {
-          DSInitializingView()
-        }
+      accountSettingsContent
+    }
+    .navigationTitle("My Household")
+    .refreshable {
+      if let viewModel = viewModel {
+        await viewModel.loadData()
       }
-      .navigationTitle("My Household")
-      .refreshable {
-        if let viewModel = viewModel {
+    }
+    .onAppear {
+      if viewModel == nil {
+        viewModel = AccountSettingsViewModel(authManager: authManager)
+      }
+      if let viewModel = viewModel {
+        Task {
           await viewModel.loadData()
         }
       }
-      .onAppear {
-        if viewModel == nil {
-          viewModel = AccountSettingsViewModel(authManager: authManager)
-        }
-        if let viewModel = viewModel {
-          Task {
-            await viewModel.loadData()
-          }
-        }
-        if avatarViewModel == nil {
-          avatarViewModel = UploadAvatarViewModel(authManager: authManager)
-        }
-        if let avatarViewModel = avatarViewModel {
-          Task { await avatarViewModel.loadCurrentUser() }
-        }
-        Task {
-          isProActive = await EntitlementService.isProActive()
-        }
-        if RevenueCatConfiguration.isConfigured && launchOffering == nil {
-          Task { launchOffering = await SubscriptionService.launchOffering() }
-        }
+      if avatarViewModel == nil {
+        avatarViewModel = UploadAvatarViewModel(authManager: authManager)
       }
-      .onChange(of: selectedAvatarItem) { _, newItem in
-        guard let item = newItem, let avatarViewModel = avatarViewModel else { return }
-        Task {
-          await loadAndUploadAvatar(item: item, viewModel: avatarViewModel)
+      Task {
+        isProActive = await EntitlementService.isProActive()
+      }
+      if RevenueCatConfiguration.isConfigured && launchOffering == nil {
+        Task { launchOffering = await SubscriptionService.launchOffering() }
+      }
+    }
+    .onChange(of: selectedAvatarItem) { _, newItem in
+      guard let item = newItem, let avatarViewModel = avatarViewModel else { return }
+      Task {
+        await loadAndUploadAvatar(item: item, viewModel: avatarViewModel)
+      }
+    }
+    .onChange(of: avatarViewModel?.didSucceed) { _, didSucceed in
+      if didSucceed == true, let viewModel = viewModel {
+        Task { await viewModel.loadData() }
+      }
+    }
+    .sheet(isPresented: $showCustomerCenter) {
+      CustomerCenterView()
+    }
+    .sheet(isPresented: $showPaywall) {
+      if let offering = launchOffering {
+        PaywallView(offering: offering)
+      } else {
+        ProgressView("Loading...")
+          .task { launchOffering = await SubscriptionService.launchOffering() }
+      }
+    }
+    .onChange(of: showCustomerCenter) { _, isPresented in
+      if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
+    }
+    .onChange(of: showPaywall) { _, isPresented in
+      if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
+    }
+  }
+
+  @ViewBuilder
+  private var accountSettingsContent: some View {
+    if let viewModel = viewModel {
+      DSContentState(
+        isLoading: viewModel.isLoading,
+        loadingMessage: "Loading household...",
+        error: viewModel.errorMessage,
+        errorTitle: viewModel.errorTitle,
+        errorIcon: viewModel.errorIcon,
+        errorIconColor: viewModel.errorIconColor,
+        onRetry: { await viewModel.loadData() },
+        content: { accountSettingsScrollContent(viewModel: viewModel) }
+      )
+    } else {
+      DSInitializingView()
+    }
+  }
+
+  private func accountSettingsScrollContent(viewModel: AccountSettingsViewModel) -> some View {
+    ScrollView {
+      VStack(spacing: DSTheme.Spacing.xl) {
+        subscriptionSection
+        if let account = viewModel.account {
+          membersSection(viewModel: viewModel, account: account)
         }
-      }
-      .onChange(of: avatarViewModel?.didSucceed) { _, didSucceed in
-        if didSucceed == true, let viewModel = viewModel {
-          Task { await viewModel.loadData() }
+        if viewModel.isAccountAdmin {
+          sendInvitationSection(viewModel: viewModel)
         }
-      }
-      .sheet(isPresented: $showCustomerCenter) {
-        CustomerCenterView()
-      }
-      .sheet(isPresented: $showPaywall) {
-        if let offering = launchOffering {
-          PaywallView(offering: offering)
-        } else {
-          ProgressView("Loading...")
-            .task { launchOffering = await SubscriptionService.launchOffering() }
+        if !viewModel.invitations.isEmpty {
+          pendingInvitationsSection(viewModel: viewModel)
         }
+        if viewModel.account != nil {
+          accountInformationSection(viewModel: viewModel)
+        }
+        mediaSection
+        signOutButton
       }
-      .onChange(of: showCustomerCenter) { _, isPresented in
-        if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
-      }
-      .onChange(of: showPaywall) { _, isPresented in
-        if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
-      }
+      .dsScreenPadding()
     }
   }
 

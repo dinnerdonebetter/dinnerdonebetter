@@ -247,6 +247,19 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "shortening", Description: "Solid vegetable shortening for baking and frying", PluralName: "shortening", StorageInstructions: "Store in a cool, dry place", Slug: "shortening", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		// Paper towels as an ingredient (consumed when used for drying)
 		{ID: identifiers.New(), Name: "paper towels", Description: "Absorbent paper towels for drying", PluralName: "paper towels", StorageInstructions: "Store in a cool, dry place", Slug: "paper-towels", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Gochujang butter pasta recipe ingredients
+		{ID: identifiers.New(), Name: "gochujang paste", Description: "Korean fermented chili paste (not sauce)", PluralName: "gochujang paste", StorageInstructions: "Keep refrigerated after opening", Slug: "gochujang-paste", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: true, AnimalDerived: false, RestrictToPreparations: false},
+		// Peanut butter noodles recipe ingredients
+		{ID: identifiers.New(), Name: "peanut butter", Description: "Creamy peanut butter", PluralName: "peanut butter", StorageInstructions: "Store in a cool, dry place; refrigerate after opening", Slug: "peanut-butter", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: true, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Chicken and vermicelli soup recipe ingredients
+		{ID: identifiers.New(), Name: "tomato paste", Description: "Concentrated tomato paste in a can or tube", PluralName: "tomato paste", StorageInstructions: "Refrigerate after opening", Slug: "tomato-paste", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "vermicelli", Description: "Thin pasta noodles such as broken wheat vermicelli, angel hair, or fideo", PluralName: "vermicelli", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "vermicelli", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Chicken Florentine recipe ingredients
+		{ID: identifiers.New(), Name: "dry white wine", Description: "Dry white wine for cooking, such as Sauvignon Blanc or Pinot Grigio", PluralName: "dry white wine", StorageInstructions: "Store in a cool, dark place; refrigerate after opening", Slug: "dry-white-wine", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Chana Masala recipe ingredients
+		{ID: identifiers.New(), Name: "ghee", Description: "Clarified butter used in Indian cooking", PluralName: "ghee", StorageInstructions: "Store in a cool, dry place or refrigerate", Slug: "ghee", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "ground coriander", Description: "Ground coriander seed, a citrusy spice", PluralName: "ground coriander", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "ground-coriander", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "fresh Thai chile", Description: "Small, hot fresh chile such as Thai green or bird's eye chile", PluralName: "fresh Thai chiles", StorageInstructions: "Store in the refrigerator", Slug: "fresh-thai-chile", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for _, ing := range ingredients {
@@ -1713,6 +1726,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"braise", "Cook slowly in a covered pot with liquid", "braised", "braise", true, true},
 		// Grilled pork tenderloin recipe preparations
 		{"carve", "Cut cooked meat into slices for serving", "carved", "carve", false, false},
+		{"shred", "Pull or tear cooked meat into thin strips using forks or fingers", "shredded", "shred", false, false},
 		{"turn", "Rotate food while cooking to cook evenly on all sides", "turned", "turn", false, false},
 		{"oil", "Apply oil to a surface using a brush, cloth, or paper towel", "oiled", "oil", false, false},
 		{"clean", "Remove debris or residue from a surface", "cleaned", "clean", false, false},
@@ -1822,6 +1836,14 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 
 	// Create bridge table entries for tortillas recipe
 	if err = createTortillasBridgeEntries(ctx, repo, logger, enums); err != nil {
+		return nil, err
+	}
+
+	if err = createChickenFlorentineBridgeEntries(ctx, repo, logger, enums); err != nil {
+		return nil, err
+	}
+
+	if err = createChanaMasalaBridgeEntries(ctx, repo, logger, enums); err != nil {
 		return nil, err
 	}
 
@@ -3701,7 +3723,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	caesarCoatPrep := enums.Preparations["coat"]
 	caesarSeasonPrep := enums.Preparations["season"]
 	caesarTransferPrep := enums.Preparations["transfer"]
-	caesarLinePrep := enums.Preparations["line"]
 	caesarPreheatPrep := enums.Preparations["preheat"]
 	caesarTossPrep := enums.Preparations["toss"]
 	caesarRoastPrep := enums.Preparations["roast"]
@@ -3842,14 +3863,15 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
-	// === LINE PREPARATION for baking sheet ===
-	if err = createVIP(caesarLinePrep, caesarAluminumFoilIngredient); err != nil {
+	// === ADD PREPARATION for aluminum foil (as ingredient) ===
+	caesarAddPrep := enums.Preparations["add"]
+	if err = createVIP(caesarAddPrep, caesarAluminumFoilIngredient); err != nil {
 		return err
 	}
 	if err = createVIMU(caesarAluminumFoilIngredient, caesarUnitMeasurement); err != nil {
 		return err
 	}
-	if err = createVPV(caesarLinePrep, caesarBakingSheet); err != nil {
+	if err = createVPV(caesarAddPrep, caesarBakingSheet); err != nil {
 		return err
 	}
 
@@ -6567,10 +6589,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	bcLinePrep, err := getPreparation("line")
-	if err != nil {
-		return err
-	}
 	bcSoakPrep, err := getPreparation("soak")
 	if err != nil {
 		return err
@@ -6808,14 +6826,14 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
-	// === LINE PREPARATION ===
-	if err = createVIP(bcLinePrep, bcAluminumFoilIngredient); err != nil {
+	// === ADD PREPARATION for aluminum foil (as ingredient) ===
+	if err = createVIP(bcAddPrep, bcAluminumFoilIngredient); err != nil {
 		return err
 	}
 	if err = createVIMU(bcAluminumFoilIngredient, bcUnitMeasurement); err != nil {
 		return err
 	}
-	if err = createVPV(bcLinePrep, bcBakingSheet); err != nil {
+	if err = createVPV(bcAddPrep, bcBakingSheet); err != nil {
 		return err
 	}
 
@@ -8579,6 +8597,896 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// === GOCHUJANG BUTTER PASTA RECIPE BRIDGE ENTRIES ===
+	gbpPasta, err := getIngredient("pasta")
+	if err != nil {
+		return err
+	}
+	gbpButter, err := getIngredient("butter")
+	if err != nil {
+		return err
+	}
+	gbpGarlic, err := getIngredient("garlic")
+	if err != nil {
+		return err
+	}
+	gbpGochujangPaste, err := getIngredient("gochujang paste")
+	if err != nil {
+		return err
+	}
+	gbpHoney, err := getIngredient("honey")
+	if err != nil {
+		return err
+	}
+	gbpVinegar, err := getIngredient("vinegar")
+	if err != nil {
+		return err
+	}
+	gbpSalt, err := getIngredient("salt")
+	if err != nil {
+		return err
+	}
+	gbpWater, err := getIngredient("water")
+	if err != nil {
+		return err
+	}
+	gbpPot, err := getVessel("pot")
+	if err != nil {
+		return err
+	}
+	gbpColander, err := getVessel("colander")
+	if err != nil {
+		return err
+	}
+	gbpSubmergePrep, err := getPreparation("submerge")
+	if err != nil {
+		return err
+	}
+	gbpBoilPrep, err := getPreparation("boil")
+	if err != nil {
+		return err
+	}
+	gbpAddPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	gbpRestPrep, err := getPreparation("rest")
+	if err != nil {
+		return err
+	}
+	gbpDrainPrep, err := getPreparation("drain")
+	if err != nil {
+		return err
+	}
+	gbpReservePrep, err := getPreparation("reserve")
+	if err != nil {
+		return err
+	}
+	gbpStirPrep, err := getPreparation("stir")
+	if err != nil {
+		return err
+	}
+	gbpMincePrep, err := getPreparation("mince")
+	if err != nil {
+		return err
+	}
+	gbpWoodenSpoon, err := getInstrument("wooden spoon")
+	if err != nil {
+		return err
+	}
+	gbpKnife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+	gbpCuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+	gbpPoundMeasurement := enums.MeasurementUnits["pound"]
+	gbpCupMeasurement := enums.MeasurementUnits["cup"]
+
+	// Pasta and pot for boiling
+	if err = createVIP(gbpSubmergePrep, gbpPasta); err != nil {
+		return err
+	}
+	if err = createVIP(gbpSubmergePrep, gbpWater); err != nil {
+		return err
+	}
+	if err = createVIP(gbpSubmergePrep, gbpSalt); err != nil {
+		return err
+	}
+	if err = createVPV(gbpSubmergePrep, gbpPot); err != nil {
+		return err
+	}
+	if err = createVIP(gbpBoilPrep, gbpPasta); err != nil {
+		return err
+	}
+	if err = createVPV(gbpBoilPrep, gbpPot); err != nil {
+		return err
+	}
+	if err = createVPI(gbpBoilPrep, gbpWoodenSpoon); err != nil {
+		return err
+	}
+	if err = createVIP(gbpRestPrep, gbpPasta); err != nil {
+		return err
+	}
+	if err = createVIP(gbpDrainPrep, gbpPasta); err != nil {
+		return err
+	}
+	if err = createVPV(gbpDrainPrep, gbpColander); err != nil {
+		return err
+	}
+	if err = createVIP(gbpReservePrep, gbpWater); err != nil {
+		return err
+	}
+	if err = createVIP(gbpStirPrep, gbpPasta); err != nil {
+		return err
+	}
+	if err = createVIP(gbpStirPrep, gbpButter); err != nil {
+		return err
+	}
+	if err = createVIP(gbpStirPrep, gbpGarlic); err != nil {
+		return err
+	}
+	if err = createVIP(gbpStirPrep, gbpGochujangPaste); err != nil {
+		return err
+	}
+	if err = createVIP(gbpStirPrep, gbpVinegar); err != nil {
+		return err
+	}
+	if err = createVIP(gbpStirPrep, gbpSalt); err != nil {
+		return err
+	}
+	if err = createVPV(gbpStirPrep, gbpPot); err != nil {
+		return err
+	}
+	// melt+butter, melt+pan, add+garlic, add+honey, add+pan exist from other recipes
+	if err = createVIP(gbpAddPrep, gbpGochujangPaste); err != nil {
+		return err
+	}
+	// add+salt exists from glazed carrots
+	if err = createVIP(gbpAddPrep, gbpVinegar); err != nil {
+		return err
+	}
+	// reduce+pan, reduce+spoon exist from glazed carrots
+	// season+salt exists from other recipes
+	if err = createVIP(gbpMincePrep, gbpGarlic); err != nil {
+		return err
+	}
+	if err = createVPI(gbpMincePrep, gbpKnife); err != nil {
+		return err
+	}
+	if err = createVPV(gbpMincePrep, gbpCuttingBoard); err != nil {
+		return err
+	}
+	if err = createVIMU(gbpPasta, gbpPoundMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(gbpGochujangPaste, gbpCupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(gbpHoney, gbpCupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(gbpVinegar, gbpCupMeasurement); err != nil {
+		return err
+	}
+	// garlic+clove, butter+tablespoon, water+cup exist from other recipes
+
+	// === PEANUT BUTTER NOODLES RECIPE BRIDGE ENTRIES ===
+	pbnPeanutButter, err := getIngredient("peanut butter")
+	if err != nil {
+		return err
+	}
+	pbnPasta, err := getIngredient("pasta")
+	if err != nil {
+		return err
+	}
+	pbnButter, err := getIngredient("butter")
+	if err != nil {
+		return err
+	}
+	pbnParmesan, err := getIngredient("parmesan cheese")
+	if err != nil {
+		return err
+	}
+	pbnSoySauce, err := getIngredient("soy sauce")
+	if err != nil {
+		return err
+	}
+	pbnSalt, err := getIngredient("salt")
+	if err != nil {
+		return err
+	}
+	pbnWater, err := getIngredient("water")
+	if err != nil {
+		return err
+	}
+	pbnPot, err := getVessel("pot")
+	if err != nil {
+		return err
+	}
+	pbnColander, err := getVessel("colander")
+	if err != nil {
+		return err
+	}
+	pbnSubmergePrep, err := getPreparation("submerge")
+	if err != nil {
+		return err
+	}
+	pbnBoilPrep, err := getPreparation("boil")
+	if err != nil {
+		return err
+	}
+	pbnReservePrep, err := getPreparation("reserve")
+	if err != nil {
+		return err
+	}
+	pbnDrainPrep, err := getPreparation("drain")
+	if err != nil {
+		return err
+	}
+	pbnAddPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	pbnRemoveFromHeatPrep, err := getPreparation("remove from heat")
+	if err != nil {
+		return err
+	}
+	pbnStirPrep, err := getPreparation("stir")
+	if err != nil {
+		return err
+	}
+	pbnSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	pbnTopPrep, err := getPreparation("top")
+	if err != nil {
+		return err
+	}
+	pbnWoodenSpoon, err := getInstrument("wooden spoon")
+	if err != nil {
+		return err
+	}
+	pbnSpoon, err := getInstrument("spoon")
+	if err != nil {
+		return err
+	}
+	// Submerge, boil, drain, reserve for pasta/water/salt/pot/colander may exist from gochujang
+	if err = createVIP(pbnSubmergePrep, pbnPasta); err != nil {
+		return err
+	}
+	if err = createVIP(pbnSubmergePrep, pbnWater); err != nil {
+		return err
+	}
+	if err = createVIP(pbnSubmergePrep, pbnSalt); err != nil {
+		return err
+	}
+	if err = createVPV(pbnSubmergePrep, pbnPot); err != nil {
+		return err
+	}
+	if err = createVIP(pbnBoilPrep, pbnPasta); err != nil {
+		return err
+	}
+	if err = createVPV(pbnBoilPrep, pbnPot); err != nil {
+		return err
+	}
+	if err = createVPI(pbnBoilPrep, pbnWoodenSpoon); err != nil {
+		return err
+	}
+	if err = createVIP(pbnReservePrep, pbnWater); err != nil {
+		return err
+	}
+	if err = createVIP(pbnDrainPrep, pbnPasta); err != nil {
+		return err
+	}
+	if err = createVPV(pbnDrainPrep, pbnColander); err != nil {
+		return err
+	}
+	if err = createVIP(pbnAddPrep, pbnPeanutButter); err != nil {
+		return err
+	}
+	if err = createVIP(pbnAddPrep, pbnButter); err != nil {
+		return err
+	}
+	if err = createVIP(pbnAddPrep, pbnParmesan); err != nil {
+		return err
+	}
+	if err = createVIP(pbnAddPrep, pbnSoySauce); err != nil {
+		return err
+	}
+	if err = createVPV(pbnAddPrep, pbnPot); err != nil {
+		return err
+	}
+	if err = createVPV(pbnRemoveFromHeatPrep, pbnPot); err != nil {
+		return err
+	}
+	if err = createVIP(pbnStirPrep, pbnPeanutButter); err != nil {
+		return err
+	}
+	if err = createVIP(pbnStirPrep, pbnButter); err != nil {
+		return err
+	}
+	if err = createVIP(pbnStirPrep, pbnParmesan); err != nil {
+		return err
+	}
+	if err = createVIP(pbnStirPrep, pbnSoySauce); err != nil {
+		return err
+	}
+	if err = createVIP(pbnStirPrep, pbnPasta); err != nil {
+		return err
+	}
+	if err = createVPV(pbnStirPrep, pbnPot); err != nil {
+		return err
+	}
+	if err = createVPI(pbnStirPrep, pbnSpoon); err != nil {
+		return err
+	}
+	if err = createVIP(pbnSeasonPrep, pbnSalt); err != nil {
+		return err
+	}
+	if err = createVPV(pbnSeasonPrep, pbnPot); err != nil {
+		return err
+	}
+	if err = createVIP(pbnTopPrep, pbnParmesan); err != nil {
+		return err
+	}
+	if err = createVPV(pbnTopPrep, pbnPot); err != nil {
+		return err
+	}
+	pbnTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	pbnTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	pbnOunceMeasurement := enums.MeasurementUnits["ounce"]
+	pbnCupMeasurement := enums.MeasurementUnits["cup"]
+	if err = createVIMU(pbnPeanutButter, pbnTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(pbnButter, pbnTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(pbnParmesan, pbnTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(pbnSoySauce, pbnTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(pbnPasta, pbnOunceMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(pbnWater, pbnCupMeasurement); err != nil {
+		return err
+	}
+
+	// === ONE-PAN PASTA RECIPE BRIDGE ENTRIES ===
+	oppTomato, err := getIngredient("tomato")
+	if err != nil {
+		return err
+	}
+	oppLemon, err := getIngredient("lemon")
+	if err != nil {
+		return err
+	}
+	oppWater, err := getIngredient("water")
+	if err != nil {
+		return err
+	}
+	oppPasta, err := getIngredient("pasta")
+	if err != nil {
+		return err
+	}
+	oppOliveOil, err := getIngredient("olive oil")
+	if err != nil {
+		return err
+	}
+	oppSalt, err := getIngredient("salt")
+	if err != nil {
+		return err
+	}
+	oppKale, err := getIngredient("kale")
+	if err != nil {
+		return err
+	}
+	oppSpinach, err := getIngredient("spinach")
+	if err != nil {
+		return err
+	}
+	oppBlackPepper, err := getIngredient("black pepper")
+	if err != nil {
+		return err
+	}
+	oppParmesan, err := getIngredient("parmesan cheese")
+	if err != nil {
+		return err
+	}
+	oppSautePan, err := getVessel("sauté pan")
+	if err != nil {
+		return err
+	}
+	oppPot, err := getVessel("pot")
+	if err != nil {
+		return err
+	}
+	oppKnife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+	oppMicroplane, err := getInstrument("microplane")
+	if err != nil {
+		return err
+	}
+	oppTongs, err := getInstrument("tongs")
+	if err != nil {
+		return err
+	}
+	oppCuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+	oppHalvePrep, err := getPreparation("halve")
+	if err != nil {
+		return err
+	}
+	oppZestPrep, err := getPreparation("zest")
+	if err != nil {
+		return err
+	}
+	oppBoilPrep, err := getPreparation("boil")
+	if err != nil {
+		return err
+	}
+	oppAddPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	oppCoverPrep, err := getPreparation("cover")
+	if err != nil {
+		return err
+	}
+	oppSimmerPrep, err := getPreparation("simmer")
+	if err != nil {
+		return err
+	}
+	oppCookPrep, err := getPreparation("cook")
+	if err != nil {
+		return err
+	}
+	oppSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	oppTopPrep, err := getPreparation("top")
+	if err != nil {
+		return err
+	}
+	oppCupMeasurement := enums.MeasurementUnits["cup"]
+	oppQuartMeasurement := enums.MeasurementUnits["quart"]
+
+	if err = createVIP(oppHalvePrep, oppTomato); err != nil {
+		return err
+	}
+	if err = createVPI(oppHalvePrep, oppKnife); err != nil {
+		return err
+	}
+	if err = createVPV(oppHalvePrep, oppCuttingBoard); err != nil {
+		return err
+	}
+	if err = createVIP(oppZestPrep, oppLemon); err != nil {
+		return err
+	}
+	if err = createVPI(oppZestPrep, oppMicroplane); err != nil {
+		return err
+	}
+	if err = createVIP(oppBoilPrep, oppWater); err != nil {
+		return err
+	}
+	if err = createVPV(oppBoilPrep, oppPot); err != nil {
+		return err
+	}
+	if err = createVIP(oppAddPrep, oppPasta); err != nil {
+		return err
+	}
+	if err = createVIP(oppAddPrep, oppTomato); err != nil {
+		return err
+	}
+	if err = createVIP(oppAddPrep, oppOliveOil); err != nil {
+		return err
+	}
+	if err = createVIP(oppAddPrep, oppSalt); err != nil {
+		return err
+	}
+	if err = createVIP(oppAddPrep, oppWater); err != nil {
+		return err
+	}
+	if err = createVIP(oppAddPrep, oppKale); err != nil {
+		return err
+	}
+	if err = createVIP(oppAddPrep, oppSpinach); err != nil {
+		return err
+	}
+	if err = createVPV(oppAddPrep, oppSautePan); err != nil {
+		return err
+	}
+	if err = createVPV(oppCoverPrep, oppSautePan); err != nil {
+		return err
+	}
+	if err = createVIP(oppSimmerPrep, oppPasta); err != nil {
+		return err
+	}
+	if err = createVPI(oppSimmerPrep, oppTongs); err != nil {
+		return err
+	}
+	if err = createVPV(oppSimmerPrep, oppSautePan); err != nil {
+		return err
+	}
+	if err = createVIP(oppCookPrep, oppPasta); err != nil {
+		return err
+	}
+	if err = createVIP(oppCookPrep, oppKale); err != nil {
+		return err
+	}
+	if err = createVIP(oppCookPrep, oppSpinach); err != nil {
+		return err
+	}
+	if err = createVPI(oppCookPrep, oppTongs); err != nil {
+		return err
+	}
+	if err = createVPV(oppCookPrep, oppSautePan); err != nil {
+		return err
+	}
+	if err = createVIP(oppSeasonPrep, oppSalt); err != nil {
+		return err
+	}
+	if err = createVIP(oppSeasonPrep, oppBlackPepper); err != nil {
+		return err
+	}
+	if err = createVPV(oppSeasonPrep, oppSautePan); err != nil {
+		return err
+	}
+	if err = createVIP(oppTopPrep, oppParmesan); err != nil {
+		return err
+	}
+	if err = createVPV(oppTopPrep, oppSautePan); err != nil {
+		return err
+	}
+	if err = createVIMU(oppTomato, oppCupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(oppWater, oppQuartMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(oppKale, oppCupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(oppSpinach, oppCupMeasurement); err != nil {
+		return err
+	}
+	// olive oil+tablespoon, salt+teaspoon, pasta+pound, lemon+unit exist from other recipes
+
+	// === CHICKEN AND VERMICELLI SOUP RECIPE BRIDGE ENTRIES ===
+	cvsTomatoPaste, err := getIngredient("tomato paste")
+	if err != nil {
+		return err
+	}
+	cvsVermicelli, err := getIngredient("vermicelli")
+	if err != nil {
+		return err
+	}
+	cvsChickenBreast, err := getIngredient("chicken breast")
+	if err != nil {
+		return err
+	}
+	cvsOnion, err := getIngredient("onion")
+	if err != nil {
+		return err
+	}
+	cvsPotato, err := getIngredient("potato")
+	if err != nil {
+		return err
+	}
+	cvsCarrot, err := getIngredient("carrot")
+	if err != nil {
+		return err
+	}
+	cvsTurmeric, err := getIngredient("turmeric")
+	if err != nil {
+		return err
+	}
+	cvsParsley, err := getIngredient("parsley")
+	if err != nil {
+		return err
+	}
+	cvsLimeJuice, err := getIngredient("lime juice")
+	if err != nil {
+		return err
+	}
+	cvsWater, err := getIngredient("water")
+	if err != nil {
+		return err
+	}
+	cvsSalt, err := getIngredient("salt")
+	if err != nil {
+		return err
+	}
+	cvsBlackPepper, err := getIngredient("black pepper")
+	if err != nil {
+		return err
+	}
+	cvsButter, err := getIngredient("butter")
+	if err != nil {
+		return err
+	}
+	cvsOliveOil, err := getIngredient("olive oil")
+	if err != nil {
+		return err
+	}
+	cvsPot, err := getVessel("pot")
+	if err != nil {
+		return err
+	}
+	cvsMediumBowl, err := getVessel("medium bowl")
+	if err != nil {
+		return err
+	}
+	cvsMeltPrep, err := getPreparation("melt")
+	if err != nil {
+		return err
+	}
+	cvsSautePrep, err := getPreparation("sauté")
+	if err != nil {
+		return err
+	}
+	cvsSprinklePrep, err := getPreparation("sprinkle")
+	if err != nil {
+		return err
+	}
+	cvsAddPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	cvsCookPrep, err := getPreparation("cook")
+	if err != nil {
+		return err
+	}
+	cvsPlacePrep, err := getPreparation("place")
+	if err != nil {
+		return err
+	}
+	cvsSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	cvsCoverPrep, err := getPreparation("cover")
+	if err != nil {
+		return err
+	}
+	cvsBoilPrep, err := getPreparation("boil")
+	if err != nil {
+		return err
+	}
+	cvsAdjustPrep, err := getPreparation("adjust")
+	if err != nil {
+		return err
+	}
+	cvsSimmerPrep, err := getPreparation("simmer")
+	if err != nil {
+		return err
+	}
+	cvsTransferPrep, err := getPreparation("transfer")
+	if err != nil {
+		return err
+	}
+	cvsShredPrep, err := getPreparation("shred")
+	if err != nil {
+		return err
+	}
+	cvsStirPrep, err := getPreparation("stir")
+	if err != nil {
+		return err
+	}
+	cvsRemoveFromHeatPrep, err := getPreparation("remove from heat")
+	if err != nil {
+		return err
+	}
+	cvsRestPrep, err := getPreparation("rest")
+	if err != nil {
+		return err
+	}
+	cvsWoodenSpoon, err := getInstrument("wooden spoon")
+	if err != nil {
+		return err
+	}
+	cvsFork, err := getInstrument("fork")
+	if err != nil {
+		return err
+	}
+	cvsTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	cvsTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	cvsCupMeasurement := enums.MeasurementUnits["cup"]
+	cvsUnitMeasurement := enums.MeasurementUnits["unit"]
+
+	// Melt butter/olive oil in pot
+	if err = createVIP(cvsMeltPrep, cvsButter); err != nil {
+		return err
+	}
+	if err = createVIP(cvsMeltPrep, cvsOliveOil); err != nil {
+		return err
+	}
+	if err = createVPV(cvsMeltPrep, cvsPot); err != nil {
+		return err
+	}
+	// Sauté onion
+	if err = createVIP(cvsSautePrep, cvsOnion); err != nil {
+		return err
+	}
+	if err = createVPV(cvsSautePrep, cvsPot); err != nil {
+		return err
+	}
+	// Sprinkle turmeric
+	if err = createVIP(cvsSprinklePrep, cvsTurmeric); err != nil {
+		return err
+	}
+	if err = createVPV(cvsSprinklePrep, cvsPot); err != nil {
+		return err
+	}
+	// Add potato, carrot, tomato paste, chicken, vermicelli
+	if err = createVIP(cvsAddPrep, cvsPotato); err != nil {
+		return err
+	}
+	if err = createVIP(cvsAddPrep, cvsCarrot); err != nil {
+		return err
+	}
+	if err = createVIP(cvsAddPrep, cvsTomatoPaste); err != nil {
+		return err
+	}
+	if err = createVIP(cvsAddPrep, cvsChickenBreast); err != nil {
+		return err
+	}
+	if err = createVIP(cvsAddPrep, cvsVermicelli); err != nil {
+		return err
+	}
+	if err = createVPV(cvsAddPrep, cvsPot); err != nil {
+		return err
+	}
+	// Cook tomato paste
+	if err = createVIP(cvsCookPrep, cvsTomatoPaste); err != nil {
+		return err
+	}
+	if err = createVPV(cvsCookPrep, cvsPot); err != nil {
+		return err
+	}
+	if err = createVPI(cvsCookPrep, cvsWoodenSpoon); err != nil {
+		return err
+	}
+	// Place chicken
+	if err = createVIP(cvsPlacePrep, cvsChickenBreast); err != nil {
+		return err
+	}
+	if err = createVPV(cvsPlacePrep, cvsPot); err != nil {
+		return err
+	}
+	// Season
+	if err = createVIP(cvsSeasonPrep, cvsChickenBreast); err != nil {
+		return err
+	}
+	if err = createVIP(cvsSeasonPrep, cvsSalt); err != nil {
+		return err
+	}
+	if err = createVIP(cvsSeasonPrep, cvsBlackPepper); err != nil {
+		return err
+	}
+	if err = createVPV(cvsSeasonPrep, cvsPot); err != nil {
+		return err
+	}
+	// Add water
+	if err = createVIP(cvsAddPrep, cvsWater); err != nil {
+		return err
+	}
+	// Cover
+	if err = createVPV(cvsCoverPrep, cvsPot); err != nil {
+		return err
+	}
+	// Boil
+	if err = createVPV(cvsBoilPrep, cvsPot); err != nil {
+		return err
+	}
+	// Adjust heat
+	if err = createVPV(cvsAdjustPrep, cvsPot); err != nil {
+		return err
+	}
+	// Simmer
+	if err = createVIP(cvsSimmerPrep, cvsChickenBreast); err != nil {
+		return err
+	}
+	if err = createVIP(cvsSimmerPrep, cvsVermicelli); err != nil {
+		return err
+	}
+	if err = createVPV(cvsSimmerPrep, cvsPot); err != nil {
+		return err
+	}
+	// Transfer chicken
+	if err = createVIP(cvsTransferPrep, cvsChickenBreast); err != nil {
+		return err
+	}
+	if err = createVPV(cvsTransferPrep, cvsMediumBowl); err != nil {
+		return err
+	}
+	// Shred chicken
+	if err = createVIP(cvsShredPrep, cvsChickenBreast); err != nil {
+		return err
+	}
+	if err = createVPI(cvsShredPrep, cvsFork); err != nil {
+		return err
+	}
+	if err = createVPV(cvsShredPrep, cvsMediumBowl); err != nil {
+		return err
+	}
+	// Stir parsley, lime juice
+	if err = createVIP(cvsStirPrep, cvsParsley); err != nil {
+		return err
+	}
+	if err = createVIP(cvsStirPrep, cvsLimeJuice); err != nil {
+		return err
+	}
+	if err = createVPV(cvsStirPrep, cvsPot); err != nil {
+		return err
+	}
+	// Remove from heat
+	if err = createVPV(cvsRemoveFromHeatPrep, cvsPot); err != nil {
+		return err
+	}
+	// Rest
+	if err = createVIP(cvsRestPrep, cvsParsley); err != nil {
+		return err
+	}
+	if err = createVPV(cvsRestPrep, cvsPot); err != nil {
+		return err
+	}
+	// Measurement units
+	if err = createVIMU(cvsTomatoPaste, cvsTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsVermicelli, cvsCupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsParsley, cvsTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsLimeJuice, cvsTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsChickenBreast, cvsUnitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsOnion, cvsUnitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsPotato, cvsUnitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsCarrot, cvsUnitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsTurmeric, cvsTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsWater, cvsCupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsSalt, cvsTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsBlackPepper, cvsTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsButter, cvsTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsOliveOil, cvsTablespoonMeasurement); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -10020,5 +10928,981 @@ func createTortillasBridgeEntries(ctx context.Context, repo mealplanning.Reposit
 	}
 
 	logger.Debug("Created tortillas bridge entries")
+	return nil
+}
+
+// createChickenFlorentineBridgeEntries creates all the bridge table entries needed for the Chicken Florentine recipe.
+func createChickenFlorentineBridgeEntries(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, enums *Enumerations) error {
+	getIngredient := func(name string) (*mealplanning.ValidIngredient, error) {
+		ing := enums.Ingredients[name]
+		if ing == nil {
+			return nil, fmt.Errorf("ingredient '%s' not found in enumerations", name)
+		}
+		return ing, nil
+	}
+	getInstrument := func(name string) (*mealplanning.ValidInstrument, error) {
+		inst := enums.Instruments[name]
+		if inst == nil {
+			return nil, fmt.Errorf("instrument '%s' not found in enumerations", name)
+		}
+		return inst, nil
+	}
+	getVessel := func(name string) (*mealplanning.ValidVessel, error) {
+		vessel := enums.Vessels[name]
+		if vessel == nil {
+			return nil, fmt.Errorf("vessel '%s' not found in enumerations", name)
+		}
+		return vessel, nil
+	}
+	getPreparation := func(name string) (*mealplanning.ValidPreparation, error) {
+		prep := enums.Preparations[name]
+		if prep == nil {
+			return nil, fmt.Errorf("preparation '%s' not found in enumerations", name)
+		}
+		return prep, nil
+	}
+	getMeasurementUnit := func(name string) (*mealplanning.ValidMeasurementUnit, error) {
+		unit := enums.MeasurementUnits[name]
+		if unit == nil {
+			return nil, fmt.Errorf("measurement unit '%s' not found in enumerations", name)
+		}
+		return unit, nil
+	}
+
+	createVIP := func(prep *mealplanning.ValidPreparation, ing *mealplanning.ValidIngredient) error {
+		if prep == nil || ing == nil {
+			return fmt.Errorf("nil prep or ingredient")
+		}
+		vip, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidIngredientID:  ing.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VIP: %w", err)
+		}
+		if enums.IngredientPreparations[prep.ID] == nil {
+			enums.IngredientPreparations[prep.ID] = make(map[string]*mealplanning.ValidIngredientPreparation)
+		}
+		enums.IngredientPreparations[prep.ID][ing.ID] = vip
+		return nil
+	}
+	createVIMU := func(ing *mealplanning.ValidIngredient, unit *mealplanning.ValidMeasurementUnit) error {
+		if ing == nil || unit == nil {
+			return fmt.Errorf("nil ingredient or unit")
+		}
+		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
+			ID:                     identifiers.New(),
+			ValidIngredientID:      ing.ID,
+			ValidMeasurementUnitID: unit.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VIMU: %w", err)
+		}
+		if enums.IngredientMeasurementUnits[ing.ID] == nil {
+			enums.IngredientMeasurementUnits[ing.ID] = make(map[string]*mealplanning.ValidIngredientMeasurementUnit)
+		}
+		enums.IngredientMeasurementUnits[ing.ID][unit.ID] = vimu
+		return nil
+	}
+	createVPV := func(prep *mealplanning.ValidPreparation, vessel *mealplanning.ValidVessel) error {
+		if prep == nil || vessel == nil {
+			return fmt.Errorf("nil prep or vessel")
+		}
+		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidVesselID:      vessel.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VPV: %w", err)
+		}
+		if enums.PreparationVessels[prep.ID] == nil {
+			enums.PreparationVessels[prep.ID] = make(map[string]*mealplanning.ValidPreparationVessel)
+		}
+		enums.PreparationVessels[prep.ID][vessel.ID] = vpv
+		return nil
+	}
+	createVPI := func(prep *mealplanning.ValidPreparation, inst *mealplanning.ValidInstrument) error {
+		if prep == nil || inst == nil {
+			return fmt.Errorf("nil prep or instrument")
+		}
+		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidInstrumentID:  inst.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VPI: %w", err)
+		}
+		if enums.PreparationInstruments[prep.ID] == nil {
+			enums.PreparationInstruments[prep.ID] = make(map[string]*mealplanning.ValidPreparationInstrument)
+		}
+		enums.PreparationInstruments[prep.ID][inst.ID] = vpi
+		return nil
+	}
+
+	// Get ingredients
+	flour, err := getIngredient("flour")
+	if err != nil {
+		return err
+	}
+	parmesan, err := getIngredient("parmesan cheese")
+	if err != nil {
+		return err
+	}
+	salt, err := getIngredient("salt")
+	if err != nil {
+		return err
+	}
+	blackPepper, err := getIngredient("black pepper")
+	if err != nil {
+		return err
+	}
+	chickenBreast, err := getIngredient("chicken breast")
+	if err != nil {
+		return err
+	}
+	oliveOil, err := getIngredient("olive oil")
+	if err != nil {
+		return err
+	}
+	butter, err := getIngredient("butter")
+	if err != nil {
+		return err
+	}
+	shallot, err := getIngredient("shallot")
+	if err != nil {
+		return err
+	}
+	garlic, err := getIngredient("garlic")
+	if err != nil {
+		return err
+	}
+	whiteWine, err := getIngredient("dry white wine")
+	if err != nil {
+		return err
+	}
+	chickenStock, err := getIngredient("chicken stock")
+	if err != nil {
+		return err
+	}
+	basil, err := getIngredient("basil")
+	if err != nil {
+		return err
+	}
+	oregano, err := getIngredient("oregano")
+	if err != nil {
+		return err
+	}
+	heavyCream, err := getIngredient("heavy cream")
+	if err != nil {
+		return err
+	}
+	creamCheese, err := getIngredient("cream cheese")
+	if err != nil {
+		return err
+	}
+	spinach, err := getIngredient("spinach")
+	if err != nil {
+		return err
+	}
+
+	// Get preparations
+	combinePrep, err := getPreparation("combine")
+	if err != nil {
+		return err
+	}
+	coatPrep, err := getPreparation("coat")
+	if err != nil {
+		return err
+	}
+	meltPrep, err := getPreparation("melt")
+	if err != nil {
+		return err
+	}
+	cookPrep, err := getPreparation("cook")
+	if err != nil {
+		return err
+	}
+	addPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	mincePrep, err := getPreparation("mince")
+	if err != nil {
+		return err
+	}
+	stirPrep, err := getPreparation("stir")
+	if err != nil {
+		return err
+	}
+	simmerPrep, err := getPreparation("simmer")
+	if err != nil {
+		return err
+	}
+	removePrep, err := getPreparation("remove")
+	if err != nil {
+		return err
+	}
+	topPrep, err := getPreparation("top")
+	if err != nil {
+		return err
+	}
+
+	// Get instruments and vessels
+	bareHands, err := getInstrument("bare hands")
+	if err != nil {
+		return err
+	}
+	spoon, err := getInstrument("spoon")
+	if err != nil {
+		return err
+	}
+	woodenSpoon, err := getInstrument("wooden spoon")
+	if err != nil {
+		return err
+	}
+	knife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+	largePlate, err := getVessel("large plate")
+	if err != nil {
+		return err
+	}
+	pan, err := getVessel("pan")
+	if err != nil {
+		return err
+	}
+	cuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+
+	// Get measurement units
+	cupMeasurement, err := getMeasurementUnit("cup")
+	if err != nil {
+		return err
+	}
+	teaspoonMeasurement, err := getMeasurementUnit("teaspoon")
+	if err != nil {
+		return err
+	}
+	unitMeasurement, err := getMeasurementUnit("unit")
+	if err != nil {
+		return err
+	}
+	cloveMeasurement, err := getMeasurementUnit("clove")
+	if err != nil {
+		return err
+	}
+	ounceMeasurement, err := getMeasurementUnit("ounce")
+	if err != nil {
+		return err
+	}
+	poundMeasurement, err := getMeasurementUnit("pound")
+	if err != nil {
+		return err
+	}
+
+	// Combine: flour, parmesan, salt, pepper
+	if err = createVIP(combinePrep, flour); err != nil {
+		return err
+	}
+	if err = createVIP(combinePrep, parmesan); err != nil {
+		return err
+	}
+	if err = createVIP(combinePrep, salt); err != nil {
+		return err
+	}
+	if err = createVIP(combinePrep, blackPepper); err != nil {
+		return err
+	}
+	if err = createVPV(combinePrep, largePlate); err != nil {
+		return err
+	}
+
+	// Coat: chicken breast
+	if err = createVIP(coatPrep, chickenBreast); err != nil {
+		return err
+	}
+	if err = createVPI(coatPrep, bareHands); err != nil {
+		return err
+	}
+	if err = createVPV(coatPrep, largePlate); err != nil {
+		return err
+	}
+
+	// Melt: butter, olive oil
+	if err = createVIP(meltPrep, butter); err != nil {
+		return err
+	}
+	if err = createVIP(meltPrep, oliveOil); err != nil {
+		return err
+	}
+	if err = createVPV(meltPrep, pan); err != nil {
+		return err
+	}
+	if err = createVPI(meltPrep, spoon); err != nil {
+		return err
+	}
+
+	// Cook: chicken (pan-sear)
+	if err = createVIP(cookPrep, chickenBreast); err != nil {
+		return err
+	}
+	if err = createVPV(cookPrep, pan); err != nil {
+		return err
+	}
+
+	// Add: butter, shallot, garlic, wine, broth, basil, oregano, cream, cream cheese, spinach
+	if err = createVIP(addPrep, butter); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, shallot); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, garlic); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, whiteWine); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, chickenStock); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, basil); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, oregano); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, heavyCream); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, creamCheese); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, spinach); err != nil {
+		return err
+	}
+	if err = createVPV(addPrep, pan); err != nil {
+		return err
+	}
+	if err = createVPI(addPrep, spoon); err != nil {
+		return err
+	}
+	if err = createVPI(addPrep, woodenSpoon); err != nil {
+		return err
+	}
+
+	// Mince: shallot, garlic
+	if err = createVIP(mincePrep, shallot); err != nil {
+		return err
+	}
+	if err = createVIP(mincePrep, garlic); err != nil {
+		return err
+	}
+	if err = createVPI(mincePrep, knife); err != nil {
+		return err
+	}
+	if err = createVPV(mincePrep, cuttingBoard); err != nil {
+		return err
+	}
+
+	// Stir: for sauce
+	if err = createVPI(stirPrep, spoon); err != nil {
+		return err
+	}
+	if err = createVPI(stirPrep, woodenSpoon); err != nil {
+		return err
+	}
+	if err = createVPV(stirPrep, pan); err != nil {
+		return err
+	}
+
+	// Simmer: chicken
+	if err = createVIP(simmerPrep, chickenBreast); err != nil {
+		return err
+	}
+	if err = createVPV(simmerPrep, pan); err != nil {
+		return err
+	}
+
+	// Remove: chicken
+	if err = createVIP(removePrep, chickenBreast); err != nil {
+		return err
+	}
+	if err = createVPV(removePrep, pan); err != nil {
+		return err
+	}
+
+	// Top: parmesan
+	if err = createVIP(topPrep, parmesan); err != nil {
+		return err
+	}
+	if err = createVPV(topPrep, pan); err != nil {
+		return err
+	}
+
+	// Measurement units for new ingredients
+	if err = createVIMU(whiteWine, cupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(flour, cupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(parmesan, cupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(chickenStock, cupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(creamCheese, ounceMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(spinach, cupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(chickenBreast, poundMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(chickenBreast, unitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(shallot, unitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(garlic, cloveMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(basil, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(oregano, teaspoonMeasurement); err != nil {
+		return err
+	}
+
+	logger.Debug("Created Chicken Florentine bridge entries")
+	return nil
+}
+
+// createChanaMasalaBridgeEntries creates all the bridge table entries needed for the Chana Masala recipe.
+func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, enums *Enumerations) error {
+	getIngredient := func(name string) (*mealplanning.ValidIngredient, error) {
+		ing := enums.Ingredients[name]
+		if ing == nil {
+			return nil, fmt.Errorf("ingredient '%s' not found in enumerations", name)
+		}
+		return ing, nil
+	}
+	getPreparation := func(name string) (*mealplanning.ValidPreparation, error) {
+		prep := enums.Preparations[name]
+		if prep == nil {
+			return nil, fmt.Errorf("preparation '%s' not found in enumerations", name)
+		}
+		return prep, nil
+	}
+	getVessel := func(name string) (*mealplanning.ValidVessel, error) {
+		vessel := enums.Vessels[name]
+		if vessel == nil {
+			return nil, fmt.Errorf("vessel '%s' not found in enumerations", name)
+		}
+		return vessel, nil
+	}
+	getInstrument := func(name string) (*mealplanning.ValidInstrument, error) {
+		inst := enums.Instruments[name]
+		if inst == nil {
+			return nil, fmt.Errorf("instrument '%s' not found in enumerations", name)
+		}
+		return inst, nil
+	}
+
+	createVIP := func(prep *mealplanning.ValidPreparation, ing *mealplanning.ValidIngredient) error {
+		if prep == nil || ing == nil {
+			return fmt.Errorf("prep or ing is nil")
+		}
+		// Check if bridge already exists (from another recipe's bridge creation)
+		if prepMap, ok := enums.IngredientPreparations[prep.ID]; ok {
+			if existing, exists := prepMap[ing.ID]; exists && existing != nil {
+				return nil // Already exists
+			}
+		}
+		vip, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidIngredientID:  ing.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VIP %s+%s: %w", prep.Name, ing.Name, err)
+		}
+		if enums.IngredientPreparations[prep.ID] == nil {
+			enums.IngredientPreparations[prep.ID] = make(map[string]*mealplanning.ValidIngredientPreparation)
+		}
+		enums.IngredientPreparations[prep.ID][ing.ID] = vip
+		return nil
+	}
+	createVIMU := func(ing *mealplanning.ValidIngredient, unit *mealplanning.ValidMeasurementUnit) error {
+		if ing == nil || unit == nil {
+			return fmt.Errorf("ing or unit is nil")
+		}
+		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
+			ID:                     identifiers.New(),
+			ValidIngredientID:      ing.ID,
+			ValidMeasurementUnitID: unit.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VIMU %s+%s: %w", ing.Name, unit.Name, err)
+		}
+		if enums.IngredientMeasurementUnits[ing.ID] == nil {
+			enums.IngredientMeasurementUnits[ing.ID] = make(map[string]*mealplanning.ValidIngredientMeasurementUnit)
+		}
+		enums.IngredientMeasurementUnits[ing.ID][unit.ID] = vimu
+		return nil
+	}
+	createVPI := func(prep *mealplanning.ValidPreparation, inst *mealplanning.ValidInstrument) error {
+		if prep == nil || inst == nil {
+			return fmt.Errorf("prep or inst is nil")
+		}
+		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidInstrumentID:  inst.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VPI %s+%s: %w", prep.Name, inst.Name, err)
+		}
+		if enums.PreparationInstruments[prep.ID] == nil {
+			enums.PreparationInstruments[prep.ID] = make(map[string]*mealplanning.ValidPreparationInstrument)
+		}
+		enums.PreparationInstruments[prep.ID][inst.ID] = vpi
+		return nil
+	}
+	createVPV := func(prep *mealplanning.ValidPreparation, vessel *mealplanning.ValidVessel) error {
+		if prep == nil || vessel == nil {
+			return fmt.Errorf("prep or vessel is nil")
+		}
+		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidVesselID:      vessel.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VPV %s+%s: %w", prep.Name, vessel.Name, err)
+		}
+		if enums.PreparationVessels[prep.ID] == nil {
+			enums.PreparationVessels[prep.ID] = make(map[string]*mealplanning.ValidPreparationVessel)
+		}
+		enums.PreparationVessels[prep.ID][vessel.ID] = vpv
+		return nil
+	}
+
+	meltPrep, err := getPreparation("melt")
+	if err != nil {
+		return err
+	}
+	heatPrep, err := getPreparation("heat")
+	if err != nil {
+		return err
+	}
+	addPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	cookPrep, err := getPreparation("cook")
+	if err != nil {
+		return err
+	}
+	stirPrep, err := getPreparation("stir")
+	if err != nil {
+		return err
+	}
+	simmerPrep, err := getPreparation("simmer")
+	if err != nil {
+		return err
+	}
+	boilPrep, err := getPreparation("boil")
+	if err != nil {
+		return err
+	}
+	reducePrep, err := getPreparation("reduce")
+	if err != nil {
+		return err
+	}
+	smashPrep, err := getPreparation("smash")
+	if err != nil {
+		return err
+	}
+	topPrep, err := getPreparation("top")
+	if err != nil {
+		return err
+	}
+	chopPrep, err := getPreparation("chop")
+	if err != nil {
+		return err
+	}
+	dicePrep, err := getPreparation("dice")
+	if err != nil {
+		return err
+	}
+	mincePrep, err := getPreparation("mince")
+	if err != nil {
+		return err
+	}
+
+	ghee, err := getIngredient("ghee")
+	if err != nil {
+		return err
+	}
+	groundCoriander, err := getIngredient("ground coriander")
+	if err != nil {
+		return err
+	}
+	freshThaiChile, err := getIngredient("fresh Thai chile")
+	if err != nil {
+		return err
+	}
+	garlic, err := getIngredient("garlic")
+	if err != nil {
+		return err
+	}
+	ginger, err := getIngredient("ginger")
+	if err != nil {
+		return err
+	}
+	onion, err := getIngredient("onion")
+	if err != nil {
+		return err
+	}
+	cuminSeeds, err := getIngredient("cumin seeds")
+	if err != nil {
+		return err
+	}
+	turmeric, err := getIngredient("turmeric")
+	if err != nil {
+		return err
+	}
+	chiliPowder, err := getIngredient("chili powder")
+	if err != nil {
+		return err
+	}
+	tomato, err := getIngredient("tomato")
+	if err != nil {
+		return err
+	}
+	salt, err := getIngredient("salt")
+	if err != nil {
+		return err
+	}
+	chickpeas, err := getIngredient("chickpeas")
+	if err != nil {
+		return err
+	}
+	chickenStock, err := getIngredient("chicken stock")
+	if err != nil {
+		return err
+	}
+	vegetableStock, err := getIngredient("vegetable stock")
+	if err != nil {
+		return err
+	}
+	water, err := getIngredient("water")
+	if err != nil {
+		return err
+	}
+	garamMasala, err := getIngredient("garam masala")
+	if err != nil {
+		return err
+	}
+	cilantro, err := getIngredient("cilantro")
+	if err != nil {
+		return err
+	}
+
+	pot, err := getVessel("pot")
+	if err != nil {
+		return err
+	}
+	cuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+
+	woodenSpoon, err := getInstrument("wooden spoon")
+	if err != nil {
+		return err
+	}
+	spoon, err := getInstrument("spoon")
+	if err != nil {
+		return err
+	}
+	knife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+
+	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	cupMeasurement := enums.MeasurementUnits["cup"]
+	unitMeasurement := enums.MeasurementUnits["unit"]
+	cloveMeasurement := enums.MeasurementUnits["clove"]
+
+	// Measurement units for all Chana Masala ingredients
+	if err = createVIMU(garlic, cloveMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(ginger, unitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(onion, unitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cuminSeeds, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(turmeric, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(salt, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(chickenStock, cupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(garamMasala, teaspoonMeasurement); err != nil {
+		return err
+	}
+
+	// Melt: ghee
+	if err = createVIP(meltPrep, ghee); err != nil {
+		return err
+	}
+	if err = createVPV(meltPrep, pot); err != nil {
+		return err
+	}
+	if err = createVPI(meltPrep, spoon); err != nil {
+		return err
+	}
+
+	// Heat: ghee (alternative to melt for oil)
+	if err = createVIP(heatPrep, ghee); err != nil {
+		return err
+	}
+	if err = createVPV(heatPrep, pot); err != nil {
+		return err
+	}
+
+	// Add: garlic, ginger, onion, chiles, spices, tomatoes, salt, chickpeas, stock
+	if err = createVIP(addPrep, garlic); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, ginger); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, onion); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, freshThaiChile); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, cuminSeeds); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, turmeric); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, groundCoriander); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, chiliPowder); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, tomato); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, salt); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, chickpeas); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, chickenStock); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, vegetableStock); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, water); err != nil {
+		return err
+	}
+	if err = createVPV(addPrep, pot); err != nil {
+		return err
+	}
+	if err = createVPI(addPrep, woodenSpoon); err != nil {
+		return err
+	}
+
+	// Cook: onion, garlic, ginger, tomatoes
+	if err = createVIP(cookPrep, onion); err != nil {
+		return err
+	}
+	if err = createVIP(cookPrep, garlic); err != nil {
+		return err
+	}
+	if err = createVIP(cookPrep, ginger); err != nil {
+		return err
+	}
+	if err = createVIP(cookPrep, tomato); err != nil {
+		return err
+	}
+	if err = createVPV(cookPrep, pot); err != nil {
+		return err
+	}
+	if err = createVPI(cookPrep, woodenSpoon); err != nil {
+		return err
+	}
+
+	// Stir: spices, chickpeas
+	if err = createVIP(stirPrep, cuminSeeds); err != nil {
+		return err
+	}
+	if err = createVIP(stirPrep, turmeric); err != nil {
+		return err
+	}
+	if err = createVIP(stirPrep, groundCoriander); err != nil {
+		return err
+	}
+	if err = createVIP(stirPrep, chiliPowder); err != nil {
+		return err
+	}
+	if err = createVIP(stirPrep, chickpeas); err != nil {
+		return err
+	}
+	if err = createVPV(stirPrep, pot); err != nil {
+		return err
+	}
+	if err = createVPI(stirPrep, woodenSpoon); err != nil {
+		return err
+	}
+
+	// Simmer: chickpeas
+	if err = createVIP(simmerPrep, chickpeas); err != nil {
+		return err
+	}
+	if err = createVPV(simmerPrep, pot); err != nil {
+		return err
+	}
+
+	// Boil: chickpeas
+	if err = createVIP(boilPrep, chickpeas); err != nil {
+		return err
+	}
+	if err = createVPV(boilPrep, pot); err != nil {
+		return err
+	}
+
+	// Reduce: for reducing heat
+	if err = createVPV(reducePrep, pot); err != nil {
+		return err
+	}
+
+	// Smash: chickpeas
+	if err = createVIP(smashPrep, chickpeas); err != nil {
+		return err
+	}
+	if err = createVPV(smashPrep, pot); err != nil {
+		return err
+	}
+	if err = createVPI(smashPrep, spoon); err != nil {
+		return err
+	}
+
+	// Top: garam masala, cilantro, ginger
+	if err = createVIP(topPrep, garamMasala); err != nil {
+		return err
+	}
+	if err = createVIP(topPrep, cilantro); err != nil {
+		return err
+	}
+	if err = createVIP(topPrep, ginger); err != nil {
+		return err
+	}
+	if err = createVPV(topPrep, pot); err != nil {
+		return err
+	}
+
+	// Chop: onion, tomato, chiles, cilantro (chop for tomato = finely chop)
+	if err = createVIP(chopPrep, onion); err != nil {
+		return err
+	}
+	if err = createVIP(chopPrep, tomato); err != nil {
+		return err
+	}
+	if err = createVIP(chopPrep, freshThaiChile); err != nil {
+		return err
+	}
+	if err = createVIP(chopPrep, cilantro); err != nil {
+		return err
+	}
+	if err = createVPI(chopPrep, knife); err != nil {
+		return err
+	}
+	if err = createVPV(chopPrep, cuttingBoard); err != nil {
+		return err
+	}
+
+	// Dice: onion, tomato
+	if err = createVIP(dicePrep, onion); err != nil {
+		return err
+	}
+	if err = createVIP(dicePrep, tomato); err != nil {
+		return err
+	}
+	if err = createVPI(dicePrep, knife); err != nil {
+		return err
+	}
+	if err = createVPV(dicePrep, cuttingBoard); err != nil {
+		return err
+	}
+
+	// Mince: garlic, ginger
+	if err = createVIP(mincePrep, garlic); err != nil {
+		return err
+	}
+	if err = createVIP(mincePrep, ginger); err != nil {
+		return err
+	}
+	if err = createVPI(mincePrep, knife); err != nil {
+		return err
+	}
+	if err = createVPV(mincePrep, cuttingBoard); err != nil {
+		return err
+	}
+
+	// Measurement units for new ingredients and tomato (unit for Roma tomatoes)
+	if err = createVIMU(ghee, tablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(groundCoriander, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(freshThaiChile, unitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(chickpeas, cupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(tomato, unitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cilantro, tablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(chiliPowder, teaspoonMeasurement); err != nil {
+		return err
+	}
+
+	logger.Debug("Created Chana Masala bridge entries")
 	return nil
 }
