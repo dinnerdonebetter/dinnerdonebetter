@@ -400,6 +400,10 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           .foregroundColor(.secondary)
       }
 
+      if !recipe.source.isEmpty {
+        RecipeSourceView(source: recipe.source)
+      }
+
       // Progress indicator and time estimate
       let completedCount =
         viewModel.completedSteps.count + ((showWashHandsStepCard && sharedWashHandsValue) ? 1 : 0)

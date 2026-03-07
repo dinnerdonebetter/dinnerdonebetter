@@ -23,7 +23,6 @@
 
 # Go
 vendor
-backend/server
 
 # Log files
 *.log
