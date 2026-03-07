@@ -259,7 +259,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Chana Masala recipe ingredients
 		{ID: identifiers.New(), Name: "ghee", Description: "Clarified butter used in Indian cooking", PluralName: "ghee", StorageInstructions: "Store in a cool, dry place or refrigerate", Slug: "ghee", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "ground coriander", Description: "Ground coriander seed, a citrusy spice", PluralName: "ground coriander", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "ground-coriander", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
-		{ID: identifiers.New(), Name: "fresh Thai chile", Description: "Small, hot fresh chile such as Thai green or bird's eye chile", PluralName: "fresh Thai chiles", StorageInstructions: "Store in the refrigerator", Slug: "fresh-thai-chile", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "fresh Thai chile", Description: "Small, hot fresh chile such as Thai green chile", PluralName: "fresh Thai chiles", StorageInstructions: "Store in the refrigerator", Slug: "fresh-thai-chile", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "bird's eye chile", Description: "Small, hot fresh chile also known as Thai bird's eye", PluralName: "bird's eye chiles", StorageInstructions: "Store in the refrigerator", Slug: "birds-eye-chile", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for _, ing := range ingredients {
@@ -399,6 +400,11 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 			return nil, fmt.Errorf("failed to create measurement unit %s: %w", unit.name, err2)
 		}
 		enums.MeasurementUnits[unit.name] = validUnit
+	}
+
+	// Create base measurement unit conversions (e.g., 1 tbsp butter = 14g)
+	if err := createBaseMeasurementUnitConversions(ctx, repo, enums); err != nil {
+		return nil, fmt.Errorf("failed to create base measurement unit conversions: %w", err)
 	}
 
 	// Create additional ingredient states for recipe completion conditions
@@ -1882,6 +1888,97 @@ func NewRecipeValidatorFromEnumerations(enums *Enumerations) *recipevalidator.Re
 	}
 
 	return recipevalidator.NewRecipeValidator(vipMap, vimuMap, vpiMap, vpvMap)
+}
+
+// createBaseMeasurementUnitConversions creates common unit conversions for the bootstrap enumeration set.
+// Includes universal conversions (tbsp→mL, oz→g) and ingredient-specific conversions (e.g., 1 tbsp butter = 14g).
+func createBaseMeasurementUnitConversions(ctx context.Context, repo mealplanning.Repository, enums *Enumerations) error {
+	gram := enums.MeasurementUnits["gram"]
+	milliliter := enums.MeasurementUnits["milliliter"]
+	tablespoon := enums.MeasurementUnits["tablespoon"]
+	teaspoon := enums.MeasurementUnits["teaspoon"]
+	cup := enums.MeasurementUnits["cup"]
+	ounce := enums.MeasurementUnits["ounce"]
+	pound := enums.MeasurementUnits["pound"]
+	fluidOunce := enums.MeasurementUnits["fluid ounce"]
+
+	createConversion := func(from, to *mealplanning.ValidMeasurementUnit, modifier float32, ingredient *mealplanning.ValidIngredient) error {
+		if from == nil || to == nil {
+			return fmt.Errorf("from or to measurement unit is nil")
+		}
+		input := &mealplanning.ValidMeasurementUnitConversionDatabaseCreationInput{
+			ID:       identifiers.New(),
+			From:     from.ID,
+			To:       to.ID,
+			Modifier: modifier,
+		}
+		if ingredient != nil {
+			input.OnlyForIngredient = &ingredient.ID
+		}
+		_, err := repo.CreateValidMeasurementUnitConversion(ctx, input)
+		if err != nil {
+			return fmt.Errorf("failed to create conversion %s→%s: %w", from.Name, to.Name, err)
+		}
+		return nil
+	}
+
+	// Universal volume conversions
+	if err := createConversion(tablespoon, milliliter, 15, nil); err != nil {
+		return err
+	}
+	if err := createConversion(teaspoon, milliliter, 5, nil); err != nil {
+		return err
+	}
+	if err := createConversion(cup, milliliter, 240, nil); err != nil {
+		return err
+	}
+	if err := createConversion(fluidOunce, milliliter, 29.5735, nil); err != nil {
+		return err
+	}
+
+	// Universal mass conversions
+	if err := createConversion(ounce, gram, 28.3495, nil); err != nil {
+		return err
+	}
+	if err := createConversion(pound, gram, 453.592, nil); err != nil {
+		return err
+	}
+
+	// Ingredient-specific: volumetric unit → grams (1 tbsp/1 tsp of ingredient = X grams)
+	ingredientConversions := []struct {
+		ingredientName string
+		tbspPerGram    float32 // grams per 1 tablespoon
+		tspPerGram     float32 // grams per 1 teaspoon (optional, 0 = skip)
+	}{
+		{"butter", 14.2, 0},
+		{"salted butter", 14.2, 0},
+		{"olive oil", 13.5, 0},
+		{"vegetable oil", 14, 0},
+		{"flour", 8, 0},
+		{"sugar", 12.5, 0},
+		{"salt", 0, 6},
+		{"honey", 21, 0},
+		{"milk", 15.2, 0}, // ~1g/mL
+	}
+
+	for _, c := range ingredientConversions {
+		ing := enums.Ingredients[c.ingredientName]
+		if ing == nil {
+			continue // ingredient may not exist in bootstrap set
+		}
+		if c.tbspPerGram > 0 {
+			if err := createConversion(tablespoon, gram, c.tbspPerGram, ing); err != nil {
+				return err
+			}
+		}
+		if c.tspPerGram > 0 {
+			if err := createConversion(teaspoon, gram, c.tspPerGram, ing); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 // createSteakRecipeBridgeEntries creates all the bridge table entries needed for the steak recipe.
@@ -9444,6 +9541,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	// Boil
+	if err = createVIP(cvsBoilPrep, cvsChickenBreast); err != nil {
+		return err
+	}
 	if err = createVPV(cvsBoilPrep, cvsPot); err != nil {
 		return err
 	}
@@ -11594,6 +11694,10 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	adjustPrep, err := getPreparation("adjust")
+	if err != nil {
+		return err
+	}
 	chopPrep, err := getPreparation("chop")
 	if err != nil {
 		return err
@@ -11611,11 +11715,19 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	vegetableOil, err := getIngredient("vegetable oil")
+	if err != nil {
+		return err
+	}
 	groundCoriander, err := getIngredient("ground coriander")
 	if err != nil {
 		return err
 	}
 	freshThaiChile, err := getIngredient("fresh Thai chile")
+	if err != nil {
+		return err
+	}
+	birdsEyeChile, err := getIngredient("bird's eye chile")
 	if err != nil {
 		return err
 	}
@@ -11703,12 +11815,13 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	cupMeasurement := enums.MeasurementUnits["cup"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
 	cloveMeasurement := enums.MeasurementUnits["clove"]
+	gramMeasurement := enums.MeasurementUnits["gram"]
 
 	// Measurement units for all Chana Masala ingredients
 	if err = createVIMU(garlic, cloveMeasurement); err != nil {
 		return err
 	}
-	if err = createVIMU(ginger, unitMeasurement); err != nil {
+	if err = createVIMU(ginger, gramMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(onion, unitMeasurement); err != nil {
@@ -11729,9 +11842,15 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(garamMasala, teaspoonMeasurement); err != nil {
 		return err
 	}
+	if err = createVIMU(vegetableOil, tablespoonMeasurement); err != nil {
+		return err
+	}
 
-	// Melt: ghee
+	// Melt: ghee, vegetable oil (neutral oil alternative)
 	if err = createVIP(meltPrep, ghee); err != nil {
+		return err
+	}
+	if err = createVIP(meltPrep, vegetableOil); err != nil {
 		return err
 	}
 	if err = createVPV(meltPrep, pot); err != nil {
@@ -11760,6 +11879,9 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIP(addPrep, freshThaiChile); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, birdsEyeChile); err != nil {
 		return err
 	}
 	if err = createVIP(addPrep, cuminSeeds); err != nil {
@@ -11796,6 +11918,11 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPI(addPrep, woodenSpoon); err != nil {
+		return err
+	}
+
+	// Adjust: pot (for increasing/reducing heat)
+	if err = createVPV(adjustPrep, pot); err != nil {
 		return err
 	}
 
@@ -11898,6 +12025,9 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(chopPrep, freshThaiChile); err != nil {
 		return err
 	}
+	if err = createVIP(chopPrep, birdsEyeChile); err != nil {
+		return err
+	}
 	if err = createVIP(chopPrep, cilantro); err != nil {
 		return err
 	}
@@ -11944,6 +12074,9 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIMU(freshThaiChile, unitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(birdsEyeChile, unitMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(chickpeas, cupMeasurement); err != nil {

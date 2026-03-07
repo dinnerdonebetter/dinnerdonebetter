@@ -43,6 +43,9 @@ Converts prose recipe instructions into `[]*mealplanning.RecipeCreationRequestIn
 - Completion conditions get their own step with `CompletionConditions`
 - Reserving liquid is its own step when explicitly mentioned
 - Drain and return-to-vessel are separate steps
+- Covering and reducing heat are separate steps
+- Reducing and letting simmer are separate steps
+- cooking both sides of a piece of meat is two steps, since there will be a cooking period, then flip, then another cooking period.
 
 --
 

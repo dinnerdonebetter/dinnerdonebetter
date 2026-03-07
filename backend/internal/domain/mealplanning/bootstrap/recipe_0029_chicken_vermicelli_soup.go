@@ -13,13 +13,17 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	meltPrep := enums.Preparations["melt"]
 	sautePrep := enums.Preparations["sauté"]
 	sprinklePrep := enums.Preparations["sprinkle"]
+	adjustPrep := enums.Preparations["adjust"]
 	addPrep := enums.Preparations["add"]
 	cookPrep := enums.Preparations["cook"]
 	placePrep := enums.Preparations["place"]
 	seasonPrep := enums.Preparations["season"]
+	coverPrep := enums.Preparations["cover"]
+	boilPrep := enums.Preparations["boil"]
 	simmerPrep := enums.Preparations["simmer"]
 	transferPrep := enums.Preparations["transfer"]
 	shredPrep := enums.Preparations["shred"]
+	removeFromHeatPrep := enums.Preparations["remove from heat"]
 	stirPrep := enums.Preparations["stir"]
 
 	// Get ingredients
@@ -65,6 +69,8 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	addCarrotVIP := enums.IngredientPreparations[addPrep.ID][carrot.ID]
 	addPotVPV := enums.PreparationVessels[addPrep.ID][largePot.ID]
 
+	adjustPotVPV := enums.PreparationVessels[adjustPrep.ID][largePot.ID]
+
 	cookTomatoPasteVIP := enums.IngredientPreparations[cookPrep.ID][tomatoPaste.ID]
 	cookPotVPV := enums.PreparationVessels[cookPrep.ID][largePot.ID]
 	cookWoodenSpoonVPI := enums.PreparationInstruments[cookPrep.ID][woodenSpoon.ID]
@@ -80,6 +86,9 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	addWaterVIP := enums.IngredientPreparations[addPrep.ID][water.ID]
 	addChickenVIP := enums.IngredientPreparations[addPrep.ID][chickenBreast.ID]
 	addVermicelliVIP := enums.IngredientPreparations[addPrep.ID][vermicelli.ID]
+	coverPotVPV := enums.PreparationVessels[coverPrep.ID][largePot.ID]
+	boilChickenVIP := enums.IngredientPreparations[boilPrep.ID][chickenBreast.ID]
+	boilPotVPV := enums.PreparationVessels[boilPrep.ID][largePot.ID]
 	simmerChickenVIP := enums.IngredientPreparations[simmerPrep.ID][chickenBreast.ID]
 	simmerPotVPV := enums.PreparationVessels[simmerPrep.ID][largePot.ID]
 
@@ -89,6 +98,8 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	shredChickenVIP := enums.IngredientPreparations[shredPrep.ID][chickenBreast.ID]
 	shredForkVPI := enums.PreparationInstruments[shredPrep.ID][fork.ID]
 	shredMediumBowlVPV := enums.PreparationVessels[shredPrep.ID][mediumBowl.ID]
+
+	removeFromHeatPotVPV := enums.PreparationVessels[removeFromHeatPrep.ID][largePot.ID]
 
 	stirParsleyVIP := enums.IngredientPreparations[stirPrep.ID][parsley.ID]
 	stirLimeJuiceVIP := enums.IngredientPreparations[stirPrep.ID][limeJuice.ID]
@@ -114,6 +125,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	translucentState := enums.IngredientStates["translucent"]
 	combinedState := enums.IngredientStates["combined"]
 	tenderState := enums.IngredientStates["tender"]
+	atTemperatureState := enums.IngredientStates["at temperature"]
 
 	// Step 0: Melt butter (or olive oil) in large pot over medium heat
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
@@ -156,6 +168,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300),
 		},
+		StartTimerAutomatically: true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &sauteOnionVIP.ID,
@@ -257,6 +270,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120),
 		},
+		StartTimerAutomatically: true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &addPotatoVIP.ID,
@@ -295,15 +309,41 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 4: Adjust heat to medium-low, add tomato paste, cook until color releases (2-3 min)
+	// Step 4: Adjust heat to medium-low
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
+		PreparationID:        adjustPrep.ID,
 		Index:                4,
-		ExplicitInstructions: "Adjust heat to medium-low and add the tomato paste. Cook, stirring frequently, until the tomato paste releases its color into the oil, 2 to 3 minutes.",
+		ExplicitInstructions: "Adjust heat to medium-low.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &adjustPotVPV.ID,
+				Name:                            "pot with vegetables",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "pot with vegetables",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 5: Add tomato paste and cook, stirring frequently, until color releases
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        cookPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Add the tomato paste. Cook, stirring frequently, until the tomato paste releases its color into the oil, 2 to 3 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120),
 			Max: pointer.To[uint32](180),
 		},
+		StartTimerAutomatically: true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &cookTomatoPasteVIP.ID,
@@ -325,7 +365,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &cookPotVPV.ID,
 				Name:                            "pot with vegetables",
@@ -343,10 +383,10 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 5: Place chicken on top of vegetables
-	step5 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 6: Place chicken on top of vegetables
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        placePrep.ID,
-		Index:                5,
+		Index:                6,
 		ExplicitInstructions: "Place the chicken breast on top of the vegetables.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -360,7 +400,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &placePotVPV.ID,
 				Name:                            "pot with cooked tomato paste and vegetables",
@@ -378,14 +418,14 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 6: Season with salt and pepper
-	step6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 7: Season with salt and pepper
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                6,
+		Index:                7,
 		ExplicitInstructions: "Season with 2 teaspoons salt and ¼ teaspoon pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &seasonChickenVIP.ID,
 				Name:                            "chicken in pot",
@@ -412,7 +452,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &seasonPotVPV.ID,
 				Name:                            "pot with chicken on vegetables",
@@ -430,10 +470,10 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 7: Add water and stir
-	step7 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 8: Add water and stir
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        addPrep.ID,
-		Index:                7,
+		Index:                8,
 		ExplicitInstructions: "Add 6 cups of water and stir.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -447,7 +487,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot with seasoned chicken and vegetables",
@@ -465,17 +505,161 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 8: Partially cover, bring to boil, then cover completely, adjust to low, simmer 40 min
-	step8 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 9: Partially cover
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        coverPrep.ID,
+		Index:                9,
+		ExplicitInstructions: "Partially cover the pot.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &coverPotVPV.ID,
+				Name:                            "pot with chicken and seasoned soup base",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "partially covered pot with chicken and soup base",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 10: Increase heat
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        adjustPrep.ID,
+		Index:                10,
+		ExplicitInstructions: "Increase heat to high.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &adjustPotVPV.ID,
+				Name:                            "partially covered pot with chicken and soup base",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "partially covered pot with chicken and soup base (high heat)",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 11: Bring to a boil
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        boilPrep.ID,
+		Index:                11,
+		ExplicitInstructions: "Bring the soup to a boil.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &boilChickenVIP.ID,
+				Name:                            "chicken in soup",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &boilPotVPV.ID,
+				Name:                            "partially covered pot with chicken and soup base (high heat)",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: atTemperatureState.ID,
+				Notes:             "soup should be at a rolling boil",
+				Ingredients:       []uint64{0},
+				Optional:          false,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "partially covered pot with soup at boil",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 12: Cover completely
+	step12 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        coverPrep.ID,
+		Index:                12,
+		ExplicitInstructions: "Cover the pot completely.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &coverPotVPV.ID,
+				Name:                            "partially covered pot with soup at boil",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "fully covered pot with soup at boil",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 13: Adjust heat to low
+	step13 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        adjustPrep.ID,
+		Index:                13,
+		ExplicitInstructions: "Adjust heat to low.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &adjustPotVPV.ID,
+				Name:                            "fully covered pot with soup at boil",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "fully covered pot with soup (low heat)",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 14: Simmer 40 minutes
+	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        simmerPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Partially cover, increase heat and bring to a boil, then cover completely, adjust heat to low and simmer gently for 40 minutes.",
+		Index:                14,
+		ExplicitInstructions: "Simmer gently for 40 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](2400),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &simmerChickenVIP.ID,
 				Name:                            "chicken in soup",
@@ -486,15 +670,16 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &simmerPotVPV.ID,
-				Name:                            "pot with chicken and seasoned soup base",
+				Name:                            "fully covered pot with soup (low heat)",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
+		StartTimerAutomatically: true,
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 				Name:  "simmered soup with cooked chicken",
@@ -512,14 +697,14 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 9: Transfer chicken to medium bowl and shred with two forks
-	step9 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 15: Transfer chicken to medium bowl and shred with two forks
+	step15 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        transferPrep.ID,
-		Index:                9,
+		Index:                15,
 		ExplicitInstructions: "Transfer the chicken to a medium bowl.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &transferChickenVIP.ID,
 				Name:                            "cooked chicken breast",
@@ -550,14 +735,14 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 10: Shred chicken with two forks
-	step10 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 16: Shred chicken with two forks
+	step16 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        shredPrep.ID,
-		Index:                10,
+		Index:                16,
 		ExplicitInstructions: "Shred the chicken with two forks while the soup continues to simmer.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &shredChickenVIP.ID,
 				Name:                            "chicken in bowl",
@@ -597,17 +782,18 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 11: Add shredded chicken and vermicelli, bring to lively simmer, cover, simmer 10 min
-	step11 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 17: Add shredded chicken and vermicelli, bring to lively simmer, cover, simmer 10 min
+	step17 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        addPrep.ID,
-		Index:                11,
+		Index:                17,
 		ExplicitInstructions: "Taste the soup and adjust salt as needed. Add the shredded chicken and vermicelli, stir and increase heat to bring the soup to a lively simmer. Cover, adjust heat to low and simmer until the noodles soften and the flavors come together, 10 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](600),
 		},
+		StartTimerAutomatically: true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &addChickenVIP.ID,
 				Name:                            "shredded chicken",
@@ -626,7 +812,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "simmered soup (without chicken)",
@@ -652,15 +838,41 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 	}
 
-	// Step 12: Remove from heat, stir in parsley and lime juice, let rest 5-10 min
-	step12 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 18: Remove from heat
+	step18 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        removeFromHeatPrep.ID,
+		Index:                18,
+		ExplicitInstructions: "Remove the pot from the heat.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &removeFromHeatPotVPV.ID,
+				Name:                            "pot with finished soup",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "pot with finished soup (off heat)",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 19: Stir in parsley and lime juice, let rest 5-10 min
+	step19 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        stirPrep.ID,
-		Index:                12,
-		ExplicitInstructions: "Remove from the heat, stir in the parsley and lime juice and let sit, covered, for 5 to 10 minutes. Taste and adjust seasoning with more lime juice, salt or pepper as needed.",
+		Index:                19,
+		ExplicitInstructions: "Stir in the parsley and lime juice and let sit, covered, for 5 to 10 minutes. Taste and adjust seasoning with more lime juice, salt or pepper as needed.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300),
 			Max: pointer.To[uint32](600),
 		},
+		StartTimerAutomatically: true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &stirParsleyVIP.ID,
@@ -690,10 +902,10 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &stirPotVPV.ID,
-				Name:                            "pot with finished soup",
+				Name:                            "pot with finished soup (off heat)",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -705,6 +917,27 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 			},
+		},
+	}
+
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Chop aromatics, vegetables, and herbs",
+		Description:                 "Finely chop the onion; dice the potato into small cubes and finely chop the carrot; chop the parsley; juice the lime or lemon. Onion and carrot keep 3 to 4 days; potato is best used within 1 day (store diced potato in water to prevent browning); parsley keeps 1 to 2 days wrapped in a damp paper towel; lime juice keeps 1 to 2 days.",
+		Notes:                       "Having these prepared ahead streamlines the soup-making process, especially during the initial sauté and final garnish steps.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store onion and carrot in an airtight container in the refrigerator. Store diced potato in a bowl of water in the refrigerator if prepping more than a few hours ahead. Wrap parsley in a damp paper towel and refrigerate. Store lime juice in an airtight container in the refrigerator.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 19, SatisfiesRecipeStep: true},
 		},
 	}
 
@@ -722,9 +955,9 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
-				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12,
+				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18, step19,
 			},
-			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}

@@ -12,6 +12,10 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	// Get preparations
 	meltPrep := enums.Preparations["melt"]
 	addPrep := enums.Preparations["add"]
+	adjustPrep := enums.Preparations["adjust"]
+	boilPrep := enums.Preparations["boil"]
+	reducePrep := enums.Preparations["reduce"]
+	cookPrep := enums.Preparations["cook"]
 	simmerPrep := enums.Preparations["simmer"]
 	smashPrep := enums.Preparations["smash"]
 	topPrep := enums.Preparations["top"]
@@ -21,10 +25,12 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 
 	// Get ingredients
 	ghee := enums.Ingredients["ghee"]
+	vegetableOil := enums.Ingredients["vegetable oil"]
 	garlic := enums.Ingredients["garlic"]
 	ginger := enums.Ingredients["ginger"]
 	onion := enums.Ingredients["onion"]
 	freshThaiChile := enums.Ingredients["fresh Thai chile"]
+	birdsEyeChile := enums.Ingredients["bird's eye chile"]
 	cuminSeeds := enums.Ingredients["cumin seeds"]
 	turmeric := enums.Ingredients["turmeric"]
 	groundCoriander := enums.Ingredients["ground coriander"]
@@ -42,6 +48,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	cupMeasurement := enums.MeasurementUnits["cup"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
 	cloveMeasurement := enums.MeasurementUnits["clove"]
+	gramMeasurement := enums.MeasurementUnits["gram"]
 
 	// Get instruments
 	woodenSpoon := enums.Instruments["wooden spoon"]
@@ -54,6 +61,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 
 	// Get bridge table entries
 	meltGheeVIP := enums.IngredientPreparations[meltPrep.ID][ghee.ID]
+	meltVegetableOilVIP := enums.IngredientPreparations[meltPrep.ID][vegetableOil.ID]
 	meltPotVPV := enums.PreparationVessels[meltPrep.ID][pot.ID]
 	meltSpoonVPI := enums.PreparationInstruments[meltPrep.ID][spoon.ID]
 
@@ -70,6 +78,17 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	addStockVIP := enums.IngredientPreparations[addPrep.ID][chickenStock.ID]
 	addPotVPV := enums.PreparationVessels[addPrep.ID][pot.ID]
 	addWoodenSpoonVPI := enums.PreparationInstruments[addPrep.ID][woodenSpoon.ID]
+
+	adjustPotVPV := enums.PreparationVessels[adjustPrep.ID][pot.ID]
+
+	boilChickpeasVIP := enums.IngredientPreparations[boilPrep.ID][chickpeas.ID]
+	boilPotVPV := enums.PreparationVessels[boilPrep.ID][pot.ID]
+
+	reducePotVPV := enums.PreparationVessels[reducePrep.ID][pot.ID]
+
+	cookTomatoVIP := enums.IngredientPreparations[cookPrep.ID][tomato.ID]
+	cookPotVPV := enums.PreparationVessels[cookPrep.ID][pot.ID]
+	cookWoodenSpoonVPI := enums.PreparationInstruments[cookPrep.ID][woodenSpoon.ID]
 
 	simmerChickpeasVIP := enums.IngredientPreparations[simmerPrep.ID][chickpeas.ID]
 	simmerPotVPV := enums.PreparationVessels[simmerPrep.ID][pot.ID]
@@ -93,17 +112,20 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	minceKnifeVPI := enums.PreparationInstruments[mincePrep.ID][knife.ID]
 	minceCuttingBoardVPV := enums.PreparationVessels[mincePrep.ID][cuttingBoard.ID]
 
-	chopChilesVIP := enums.IngredientPreparations[chopPrep.ID][freshThaiChile.ID]
+	chopThaiChilesVIP := enums.IngredientPreparations[chopPrep.ID][freshThaiChile.ID]
+	chopBirdsEyeChilesVIP := enums.IngredientPreparations[chopPrep.ID][birdsEyeChile.ID]
 	chopCilantroVIP := enums.IngredientPreparations[chopPrep.ID][cilantro.ID]
 	chopKnifeVPI := enums.PreparationInstruments[chopPrep.ID][knife.ID]
 	chopCuttingBoardVPV := enums.PreparationVessels[chopPrep.ID][cuttingBoard.ID]
 
 	// Measurement unit bridges
 	gheeTbspVIMU := enums.IngredientMeasurementUnits[ghee.ID][tablespoonMeasurement.ID]
+	vegetableOilTbspVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][tablespoonMeasurement.ID]
 	garlicCloveVIMU := enums.IngredientMeasurementUnits[garlic.ID][cloveMeasurement.ID]
-	gingerUnitVIMU := enums.IngredientMeasurementUnits[ginger.ID][unitMeasurement.ID]
+	gingerGramVIMU := enums.IngredientMeasurementUnits[ginger.ID][gramMeasurement.ID]
 	onionUnitVIMU := enums.IngredientMeasurementUnits[onion.ID][unitMeasurement.ID]
-	chileUnitVIMU := enums.IngredientMeasurementUnits[freshThaiChile.ID][unitMeasurement.ID]
+	thaiChileUnitVIMU := enums.IngredientMeasurementUnits[freshThaiChile.ID][unitMeasurement.ID]
+	birdsEyeChileUnitVIMU := enums.IngredientMeasurementUnits[birdsEyeChile.ID][unitMeasurement.ID]
 	cuminTspVIMU := enums.IngredientMeasurementUnits[cuminSeeds.ID][teaspoonMeasurement.ID]
 	turmericTspVIMU := enums.IngredientMeasurementUnits[turmeric.ID][teaspoonMeasurement.ID]
 	corianderTspVIMU := enums.IngredientMeasurementUnits[groundCoriander.ID][teaspoonMeasurement.ID]
@@ -117,6 +139,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 
 	// Ingredient states
 	translucentState := enums.IngredientStates["translucent"]
+	atTemperatureState := enums.IngredientStates["at temperature"]
 	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
 
 	// Step 0: Dice the onion
@@ -169,7 +192,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        mincePrep.ID,
 		Index:                1,
-		ExplicitInstructions: "Mince the garlic and grate or mince the ginger (from a peeled 2-inch piece) to yield about 1 tablespoon each.",
+		ExplicitInstructions: "Mince the garlic and grate or mince the ginger to yield about 1 tablespoon each.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &minceGarlicVIP.ID,
@@ -181,10 +204,10 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			},
 			{
 				ValidIngredientPreparationID:     &minceGingerVIP.ID,
-				ValidIngredientMeasurementUnitID: &gingerUnitVIMU.ID,
-				Name:                             "fresh ginger (2-inch piece)",
+				ValidIngredientMeasurementUnitID: &gingerGramVIMU.ID,
+				Name:                             "fresh ginger",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 15,
 				},
 			},
 		},
@@ -272,12 +295,24 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "Chop the Thai green or bird's eye chiles.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &chopChilesVIP.ID,
-				ValidIngredientMeasurementUnitID: &chileUnitVIMU.ID,
-				Name:                             "Thai green or bird's eye chiles",
+				ValidIngredientPreparationID:     &chopThaiChilesVIP.ID,
+				ValidIngredientMeasurementUnitID: &thaiChileUnitVIMU.ID,
+				Name:                             "Thai green chiles",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &chopBirdsEyeChilesVIP.ID,
+				ValidIngredientMeasurementUnitID: &birdsEyeChileUnitVIMU.ID,
+				Name:                             "bird's eye chiles",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
@@ -357,7 +392,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 5: Melt ghee in pot over medium heat
+	// Step 5: Melt ghee or heat neutral oil in pot over medium heat
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        meltPrep.ID,
 		Index:                5,
@@ -366,10 +401,22 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidIngredientPreparationID:     &meltGheeVIP.ID,
 				ValidIngredientMeasurementUnitID: &gheeTbspVIMU.ID,
-				Name:                             "ghee or neutral oil",
+				Name:                             "ghee",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &meltVegetableOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &vegetableOilTbspVIMU.ID,
+				Name:                             "neutral oil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
@@ -573,15 +620,11 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 8: Add tomatoes and salt; cook until jammy
+	// Step 8: Add tomatoes and salt
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        addPrep.ID,
 		Index:                8,
-		ExplicitInstructions: "Add the tomatoes and their juices and salt. Increase the heat to high and cook, stirring often, until the mixture is jammy, 5 to 7 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](300),
-			Max: pointer.To[uint32](420),
-		},
+		ExplicitInstructions: "Add the tomatoes and their juices and salt to the pot.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
@@ -621,6 +664,92 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				},
 			},
 		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "tomato mixture in pot",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "pot with tomato mixture",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 9: Increase heat to high
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        adjustPrep.ID,
+		Index:                9,
+		ExplicitInstructions: "Increase the heat to high.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &adjustPotVPV.ID,
+				Name:                            "pot with tomato mixture",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "pot with tomato mixture (high heat)",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 10: Cook, stirring often, until jammy
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        cookPrep.ID,
+		Index:                10,
+		ExplicitInstructions: "Cook, stirring often, until the mixture is jammy, 5 to 7 minutes.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](300),
+			Max: pointer.To[uint32](420),
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &cookTomatoVIP.ID,
+				Name:                            "tomato mixture in pot",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &cookWoodenSpoonVPI.ID,
+				Name:                         "wooden spoon",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &cookPotVPV.ID,
+				Name:                            "pot with tomato mixture (high heat)",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
 				IngredientStateID: desiredConsistencyState.ID,
@@ -650,10 +779,10 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 9: Add chickpeas and stock; bring to boil
-	step9 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 11: Add chickpeas and stock; bring to boil
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        addPrep.ID,
-		Index:                9,
+		Index:                11,
 		ExplicitInstructions: "Stir in the chickpeas and stock (or water). Bring to a boil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -684,7 +813,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot with jammy tomato masala",
@@ -714,18 +843,87 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 10: Bring to boil, then reduce heat and simmer until thickened
-	step10 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 12: Bring to a boil
+	step12 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        boilPrep.ID,
+		Index:                12,
+		ExplicitInstructions: "Bring the mixture to a boil.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &boilChickpeasVIP.ID,
+				Name:                            "chickpeas in masala",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &boilPotVPV.ID,
+				Name:                            "pot with chickpeas and stock",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: atTemperatureState.ID,
+				Notes:             "mixture should be at a rolling boil",
+				Ingredients:       []uint64{0},
+				Optional:          false,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "pot with chickpeas at boil",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 13: Reduce heat
+	step13 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        reducePrep.ID,
+		Index:                13,
+		ExplicitInstructions: "Reduce heat to maintain a gentle simmer.",
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &reducePotVPV.ID,
+				Name:                            "pot with chickpeas at boil",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:  "pot with chickpeas at simmer",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
+			},
+		},
+	}
+
+	// Step 14: Simmer until thickened
+	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        simmerPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Bring to a boil, then reduce heat and simmer until the mixture has thickened slightly, 5 to 7 minutes.",
+		Index:                14,
+		ExplicitInstructions: "Simmer until the mixture has thickened slightly, 5 to 7 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300),
 			Max: pointer.To[uint32](420),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &simmerChickpeasVIP.ID,
 				Name:                            "chickpeas in masala",
@@ -736,13 +934,21 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &simmerPotVPV.ID,
-				Name:                            "pot with chickpeas and stock",
+				Name:                            "pot with chickpeas at simmer",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: desiredConsistencyState.ID,
+				Notes:             "mixture should have thickened slightly",
+				Ingredients:       []uint64{0},
+				Optional:          false,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -757,14 +963,14 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 11: Smash chickpeas to thicken
-	step11 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 15: Smash chickpeas to thicken
+	step15 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        smashPrep.ID,
-		Index:                11,
+		Index:                15,
 		ExplicitInstructions: "With the back of a spoon, smash some of the chickpeas against the inside of the pot to thicken the mixture; continue smashing until it reaches the desired thickness.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &smashChickpeasVIP.ID,
 				Name:                            "chickpeas in masala",
@@ -784,7 +990,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &smashPotVPV.ID,
 				Name:                            "pot with simmering chickpeas",
@@ -822,14 +1028,14 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 12: Sprinkle with garam masala and top with cilantro and ginger
-	step12 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 16: Sprinkle with garam masala and top with cilantro and ginger
+	step16 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        topPrep.ID,
-		Index:                12,
-		ExplicitInstructions: "Sprinkle with garam masala and top with cilantro and ginger. If desired, serve with rice or roti and lemon wedges alongside.",
+		Index:                16,
+		ExplicitInstructions: "Sprinkle with garam masala and top with cilantro and ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "thickened chana masala",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -855,7 +1061,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			},
 			{
 				ValidIngredientPreparationID:     &topGingerVIP.ID,
-				ValidIngredientMeasurementUnitID: &gingerUnitVIMU.ID,
+				ValidIngredientMeasurementUnitID: &gingerGramVIMU.ID,
 				Name:                             "fresh ginger, peeled and sliced into matchsticks (for serving)",
 				QuantityNotes:                    "optional",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -865,7 +1071,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &topPotVPV.ID,
 				Name:                            "pot with chana masala",
@@ -887,6 +1093,65 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Dice onion and mince garlic and ginger",
+		Description:                 "Peel and finely chop the medium red onion. Mince the garlic cloves and grate or mince the ginger to yield about 1 tablespoon each. Onion, garlic, and ginger keep 3 to 4 days in an airtight container in the refrigerator.",
+		Notes:                       "Having the aromatics ready speeds up the initial cooking step.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the diced onion and minced garlic and ginger in an airtight container in the refrigerator for up to 3 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: true},
+		},
+	}
+
+	prepTask2 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Chop tomatoes and chiles",
+		Description:                 "Finely chop the Roma tomatoes. Chop the Thai green or bird's eye chiles. Chopped tomatoes keep 1 to 2 days refrigerated; chopped chiles keep 3 to 4 days.",
+		Notes:                       "Having these ready streamlines the masala-building steps.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the chopped tomatoes and chiles in separate airtight containers in the refrigerator for up to 2 days (tomatoes) or 3 days (chiles).",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: true},
+		},
+	}
+
+	prepTask3 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Chop cilantro",
+		Description:                 "Chop the cilantro leaves and tender stems. Chopped cilantro keeps 1 to 2 days when wrapped in a damp paper towel or stored with stems in water.",
+		Notes:                       "Cilantro is used as a garnish at the end; having it ready makes final assembly quick.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Wrap the chopped cilantro in a damp paper towel and store in an airtight container in the refrigerator, or store stems-down in a glass of water with a plastic bag over the leaves.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](172800), // 2 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Chana Masala",
@@ -901,9 +1166,9 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
-				step0, step1, step2, step2b, step4, step5, step6, step7, step8, step9, step10, step11, step12,
+				step0, step1, step2, step2b, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16,
 			},
-			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2, prepTask3},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}

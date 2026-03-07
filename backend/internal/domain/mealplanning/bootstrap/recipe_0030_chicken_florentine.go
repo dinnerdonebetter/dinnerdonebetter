@@ -353,14 +353,14 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 4: Cook chicken until golden brown (not cooked through)
+	// Step 4: Add chicken and cook first side until golden brown
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        cookPrep.ID,
 		Index:                4,
-		ExplicitInstructions: "Add the chicken and cook until golden brown (but not cooked through), about 4 minutes on each side.",
+		ExplicitInstructions: "Add the chicken and cook until the first side is golden brown, about 4 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](480),
-			Max: pointer.To[uint32](480),
+			Min: pointer.To[uint32](240),
+			Max: pointer.To[uint32](240),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -386,7 +386,66 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
 				IngredientStateID: brownedState.ID,
-				Notes:             "chicken should be golden brown but not cooked through",
+				Notes:             "first side should be golden brown",
+				Ingredients:       []uint64{0},
+				Optional:          false,
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "chicken with first side browned",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+				ItemQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+			{
+				Name:  "large pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 5: Flip chicken and cook second side until golden brown (not cooked through)
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        cookPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Flip the chicken and cook until the second side is golden brown (but not cooked through), about 4 minutes.",
+		EstimatedTimeInSeconds: types.OptionalUint32Range{
+			Min: pointer.To[uint32](240),
+			Max: pointer.To[uint32](240),
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &cookChickenVIP.ID,
+				Name:                            "chicken with first side browned",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: brownedState.ID,
+				Notes:             "both sides should be golden brown but not cooked through",
 				Ingredients:       []uint64{0},
 				Optional:          false,
 			},
@@ -412,14 +471,14 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 5: Remove chicken from pan and set aside
-	step5 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 6: Remove chicken from pan and set aside
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        removePrep.ID,
-		Index:                5,
+		Index:                6,
 		ExplicitInstructions: "Remove chicken from pan and set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &removeChickenVIP.ID,
 				Name:                            "seared chicken breasts",
@@ -430,7 +489,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "large pan",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -459,10 +518,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 6: Add remaining butter, shallot, garlic; cook until softened
-	step6 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 7: Add remaining butter, shallot, garlic; cook until softened
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        addPrep.ID,
-		Index:                6,
+		Index:                7,
 		ExplicitInstructions: "Add remaining 2 tablespoons of butter to the pan and let it melt. Add shallot, garlic and a pinch of salt and cook, stirring until the shallot is softened and the garlic is aromatic, about 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120),
@@ -505,7 +564,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &addPanVPV.ID,
 				Name:                            "large pan",
@@ -540,10 +599,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 7: Add wine, broth, basil, oregano; reduce by half
-	step7 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 8: Add wine, broth, basil, oregano; reduce by half
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        addPrep.ID,
-		Index:                7,
+		Index:                8,
 		ExplicitInstructions: "Add wine, broth, basil and oregano, and stir, scraping the browned bits from the bottom of the pan, until the liquid has reduced by about half, 3 to 4 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](180),
@@ -551,7 +610,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "cooked shallot and garlic",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -602,7 +661,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "large pan",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -636,10 +695,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 8: Add heavy cream and cream cheese; stir until thick sauce forms
-	step8 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 9: Add heavy cream and cream cheese; stir until thick sauce forms
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        addPrep.ID,
-		Index:                8,
+		Index:                9,
 		ExplicitInstructions: "Add the heavy cream and cream cheese and stir, allowing the cream cheese to soften and melt, until a thick sauce forms, about 6 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](360),
@@ -647,7 +706,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "reduced wine-broth mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -682,7 +741,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "large pan",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -716,10 +775,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 9: Add baby spinach and stir until wilted
-	step9 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 10: Add baby spinach and stir until wilted
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        addPrep.ID,
-		Index:                9,
+		Index:                10,
 		ExplicitInstructions: "Add baby spinach and stir until it is folded into the cream sauce and the spinach is beginning to wilt, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),
@@ -727,7 +786,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "thick cream sauce",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -754,7 +813,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "large pan",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -788,10 +847,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 10: Return chicken to pan and simmer until cooked through
-	step10 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 11: Return chicken to pan and simmer until cooked through
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        simmerPrep.ID,
-		Index:                10,
+		Index:                11,
 		ExplicitInstructions: "Return the chicken breasts to the pan and simmer until the chicken is cooked through, 4 to 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](240),
@@ -799,7 +858,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &simmerChickenVIP.ID,
 				Name:                            "seared chicken set aside",
@@ -808,7 +867,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "cream sauce with spinach",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -818,7 +877,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Name:                            "large pan",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -852,14 +911,14 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
-	// Step 11: Remove from heat and top with Parmesan
-	step11 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 12: Remove from heat and top with Parmesan
+	step12 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        topPrep.ID,
-		Index:                11,
+		Index:                12,
 		ExplicitInstructions: "Remove from heat and serve immediately with freshly grated Parmesan on top.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "chicken florentine",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -877,7 +936,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &topPanVPV.ID,
 				Name:                            "large pan",
@@ -899,6 +958,25 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 	}
 
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                        "Mince shallot and garlic",
+		Description:                 "Mince the medium shallot and garlic cloves. Minced shallot and garlic keep 3 to 4 days in an airtight container in the refrigerator.",
+		Notes:                       "Having the aromatics ready speeds up the sauce-making step after searing the chicken.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the minced shallot and garlic in an airtight container in the refrigerator for up to 3 days.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4),
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](259200), // 3 days
+		},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
 			Name:                "Chicken Florentine",
@@ -913,9 +991,9 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
-				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11,
+				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12,
 			},
-			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}
