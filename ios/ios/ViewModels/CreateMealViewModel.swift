@@ -274,7 +274,8 @@ class CreateMealViewModel {
       return true
     } catch let error as GRPCCore.RPCError {
       await authManager.invalidateCredentialsIfSessionError(error)
-      creationError = error.code == .alreadyExists
+      creationError =
+        error.code == .alreadyExists
         ? "A meal with this name and components already exists."
         : "Failed to create meal: \(error.localizedDescription)"
       isCreating = false

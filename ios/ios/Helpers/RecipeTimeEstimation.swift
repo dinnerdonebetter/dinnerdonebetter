@@ -6,6 +6,7 @@
 //  Steps without time use 1-3 minutes (60-180 seconds) as fallback.
 //
 
+import Foundation
 import SwiftProtobuf
 
 // MARK: - RecipeTimeEstimate
@@ -111,6 +112,38 @@ enum RecipeTimeEstimation {
       return "Up to \(maxStr) in advance"
     }
     return "At least \(formatDuration(seconds: range.min)) in advance"
+  }
+
+  /// Formats elapsed and total time for timer display (e.g. "2:30 / 5:00").
+  static func formatElapsed(elapsedSeconds: TimeInterval, totalSeconds: UInt32) -> String {
+    let elapsed = max(0, Int(elapsedSeconds))
+    let total = Int(totalSeconds)
+    let elapsedMin = elapsed / 60
+    let elapsedSec = elapsed % 60
+    let totalMin = total / 60
+    let totalSec = total % 60
+    return String(format: "%d:%02d / %d:%02d", elapsedMin, elapsedSec, totalMin, totalSec)
+  }
+
+  /// Formats elapsed with min-max range (e.g. "0:30 / 0:30-1:00" when min=30, max=60).
+  static func formatElapsedWithRange(
+    elapsedSeconds: TimeInterval, minSeconds: UInt32, maxSeconds: UInt32?
+  ) -> String {
+    let elapsed = max(0, Int(elapsedSeconds))
+    let elapsedMin = elapsed / 60
+    let elapsedSec = elapsed % 60
+    let elapsedStr = String(format: "%d:%02d", elapsedMin, elapsedSec)
+    if let max = maxSeconds, max > minSeconds {
+      let minMin = Int(minSeconds) / 60
+      let minSec = Int(minSeconds) % 60
+      let maxMin = Int(max) / 60
+      let maxSec = Int(max) % 60
+      let rangeStr = String(format: "%d:%02d-%d:%02d", minMin, minSec, maxMin, maxSec)
+      return "\(elapsedStr) / \(rangeStr)"
+    }
+    let totalMin = Int(minSeconds) / 60
+    let totalSec = Int(minSeconds) % 60
+    return "\(elapsedStr) / \(String(format: "%d:%02d", totalMin, totalSec))"
   }
 
   /// Formats a step's optional time range for display.

@@ -164,6 +164,39 @@ private struct FocusModeGroupsViewNoReorder<Item: Identifiable, Row: View>: View
   }
 }
 
+/// Grey overlay shown over the steps section when wash hands gate is active.
+/// Uses a clear band at the top so section headers like "Up Next" remain visible.
+private struct StepsBlockedOverlay: View {
+  private static let headerClearHeight: CGFloat = 56
+  private static let grayOverlayTopPadding: CGFloat = -10
+
+  var body: some View {
+    VStack(spacing: 0) {
+      Color.clear
+        .frame(height: Self.headerClearHeight)
+        .frame(maxWidth: .infinity)
+      Color(.systemGray5)
+        .opacity(0.65)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.top, Self.grayOverlayTopPadding)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .overlay(
+      VStack(spacing: 8) {
+        Image(systemName: "hands.sparkles")
+          .font(.largeTitle)
+          .foregroundColor(.secondary)
+        Text("Complete wash hands above to unlock steps")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
+          .padding(.horizontal)
+      }
+    )
+    .allowsHitTesting(true)
+  }
+}
+
 struct StepFlowSection<
   Item: Identifiable,
   Header: View,
@@ -177,6 +210,7 @@ struct StepFlowSection<
   let allowToggle: Bool
   let allStepsTitle: String
   let emptyMessage: String?
+  let showStepsOverlay: Bool
   let headerContent: () -> Header
   let allModeLeadingContent: () -> AllLead
   let focusModeLeadingContent: () -> FocusLead
@@ -193,6 +227,7 @@ struct StepFlowSection<
     allowToggle: Bool = true,
     allStepsTitle: String = "All Steps",
     emptyMessage: String? = nil,
+    showStepsOverlay: Bool = false,
     onReorder: ((String, IndexSet, Int) -> Void)? = nil,
     @ViewBuilder headerContent: @escaping () -> Header,
     @ViewBuilder allModeLeadingContent: @escaping () -> AllLead,
@@ -205,11 +240,26 @@ struct StepFlowSection<
     self.allowToggle = allowToggle
     self.allStepsTitle = allStepsTitle
     self.emptyMessage = emptyMessage
+    self.showStepsOverlay = showStepsOverlay
     self.headerContent = headerContent
     self.allModeLeadingContent = allModeLeadingContent
     self.focusModeLeadingContent = focusModeLeadingContent
     self.rowContent = rowContent
     self.onReorder = onReorder
+  }
+
+  @ViewBuilder
+  private func stepsContentWithOverlay<Content: View>(
+    @ViewBuilder content: () -> Content
+  ) -> some View {
+    if showStepsOverlay {
+      ZStack(alignment: .topLeading) {
+        content()
+        StepsBlockedOverlay()
+      }
+    } else {
+      content()
+    }
   }
 
   @ViewBuilder
@@ -258,18 +308,26 @@ struct StepFlowSection<
 
           allModeLeadingContent()
 
-          ForEach(allSteps) { item in
-            rowContent(item)
-          }
+          stepsContentWithOverlay(
+            content: {
+              ForEach(allSteps) { item in
+                rowContent(item)
+              }
+            }
+          )
         }
       } else {
         focusModeLeadingContent()
 
-        focusModeContent
-          .onDrop(
-            of: [.text, .plainText],
-            delegate: StepReorderDropOutsideDelegate(activeDrag: $activeDrag)
-          )
+        stepsContentWithOverlay(
+          content: {
+            focusModeContent
+              .onDrop(
+                of: [.text, .plainText],
+                delegate: StepReorderDropOutsideDelegate(activeDrag: $activeDrag)
+              )
+          }
+        )
       }
 
       if let emptyMessage, allSteps.isEmpty {

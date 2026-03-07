@@ -26,6 +26,10 @@ class PerformRecipeViewModel {
   // Track which steps are completed (by step ID: "recipeID:stepID")
   var completedSteps: Set<String> = []
 
+  // Track when user checked steps with timers (stepKey -> start Date)
+  // Step stays in Up Next until elapsed >= estimatedTimeInSeconds.min
+  var stepTimerStartTimes: [String: Date] = [:]
+
   // Track which prep tasks are completed (by prep task ID)
   var completedPrepTasks: Set<String> = []
 
@@ -233,6 +237,44 @@ class PerformRecipeViewModel {
     return recipe.associatedRecipes.first { $0.id == recipeID }?.steps.first { $0.id == stepID }
   }
 
+  private func stepHasTimer(_ step: Mealplanning_RecipeStep) -> Bool {
+    step.estimatedTimeInSeconds.hasMin && step.estimatedTimeInSeconds.min > 0
+  }
+
+  /// Display total (max when both min/max exist, else min) - for "elapsed / total" display
+  private func stepTimerDurationSeconds(_ step: Mealplanning_RecipeStep) -> UInt32? {
+    guard step.estimatedTimeInSeconds.hasMin, step.estimatedTimeInSeconds.min > 0 else {
+      return nil
+    }
+    if step.estimatedTimeInSeconds.hasMax,
+      step.estimatedTimeInSeconds.max >= step.estimatedTimeInSeconds.min
+    {
+      return step.estimatedTimeInSeconds.max
+    }
+    return step.estimatedTimeInSeconds.min
+  }
+
+  /// Done threshold - step auto-completes when elapsed >= this (max when both exist, else min)
+  private func stepTimerDoneThresholdSeconds(_ step: Mealplanning_RecipeStep) -> UInt32? {
+    guard step.estimatedTimeInSeconds.hasMin, step.estimatedTimeInSeconds.min > 0 else {
+      return nil
+    }
+    if step.estimatedTimeInSeconds.hasMax,
+      step.estimatedTimeInSeconds.max >= step.estimatedTimeInSeconds.min
+    {
+      return step.estimatedTimeInSeconds.max
+    }
+    return step.estimatedTimeInSeconds.min
+  }
+
+  /// Min threshold - user can skip only when elapsed >= this
+  private func stepTimerMinSeconds(_ step: Mealplanning_RecipeStep) -> UInt32? {
+    guard step.estimatedTimeInSeconds.hasMin, step.estimatedTimeInSeconds.min > 0 else {
+      return nil
+    }
+    return step.estimatedTimeInSeconds.min
+  }
+
   func stepCompletionConditionIdentifier(
     condition: Mealplanning_RecipeStepCompletionCondition,
     index: Int
@@ -436,6 +478,7 @@ class PerformRecipeViewModel {
       // If unchecking wash hands, uncheck all other steps
       if !washHandsCompleted {
         completedSteps.removeAll()
+        stepTimerStartTimes.removeAll()
         clearStepCompletionConditionProgress()
       }
       return
@@ -469,14 +512,24 @@ class PerformRecipeViewModel {
       return
     }
 
-    if completedSteps.contains(currentStepKey) {
+    if stepTimerStartTimes[currentStepKey] != nil {
+      print("🔘 [\(recipeName)] toggleStep '\(stepName)' → CANCEL timer")
+      stepTimerStartTimes.removeValue(forKey: currentStepKey)
+    } else if completedSteps.contains(currentStepKey) {
       print("🔘 [\(recipeName)] toggleStep '\(stepName)' → UNCHECKING (and dependents)")
       uncheckStepAndDependents(stepKey: currentStepKey)
     } else {
-      completedSteps.insert(currentStepKey)
-      print(
-        "🔘 [\(recipeName)] toggleStep '\(stepName)' → CHECKED ✅ | completedSteps now=\(completedSteps.count)"
-      )
+      if let step = stepFor(recipeID: recipeID, stepID: stepID), stepHasTimer(step) {
+        stepTimerStartTimes[currentStepKey] = Date()
+        print(
+          "🔘 [\(recipeName)] toggleStep '\(stepName)' → TIMER STARTED ⏱ | stepTimerStartTimes now=\(stepTimerStartTimes.count)"
+        )
+      } else {
+        completedSteps.insert(currentStepKey)
+        print(
+          "🔘 [\(recipeName)] toggleStep '\(stepName)' → CHECKED ✅ | completedSteps now=\(completedSteps.count)"
+        )
+      }
     }
 
     print("🔘 [\(recipeName)] completedSteps after toggle: \(completedSteps.sorted())")
@@ -486,6 +539,7 @@ class PerformRecipeViewModel {
   private func uncheckStepAndDependents(stepKey: String) {
     guard let recipe = recipe else { return }
     completedSteps.remove(stepKey)
+    stepTimerStartTimes.removeValue(forKey: stepKey)
 
     // Parse recipeID and stepID from stepKey
     let components = stepKey.split(separator: ":", maxSplits: 1)
@@ -601,6 +655,93 @@ class PerformRecipeViewModel {
     return completedSteps.contains(currentStepKey)
   }
 
+  // MARK: - Step timer state (for UI)
+
+  func isStepTimerActive(recipeID: String, stepID: String) -> Bool {
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID),
+      stepHasTimer(step),
+      let startDate = stepTimerStartTimes[stepKey(recipeID: recipeID, stepID: stepID)],
+      let doneThreshold = stepTimerDoneThresholdSeconds(step)
+    else {
+      return false
+    }
+    return Date().timeIntervalSince(startDate) < Double(doneThreshold)
+  }
+
+  func stepTimerElapsedSeconds(recipeID: String, stepID: String) -> TimeInterval? {
+    guard isStepTimerActive(recipeID: recipeID, stepID: stepID),
+      let startDate = stepTimerStartTimes[stepKey(recipeID: recipeID, stepID: stepID)]
+    else {
+      return nil
+    }
+    return Date().timeIntervalSince(startDate)
+  }
+
+  func stepTimerDurationSeconds(recipeID: String, stepID: String) -> UInt32? {
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
+      return nil
+    }
+    return stepTimerDurationSeconds(step)
+  }
+
+  func stepTimerMinSeconds(recipeID: String, stepID: String) -> UInt32? {
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
+      return nil
+    }
+    return stepTimerMinSeconds(step)
+  }
+
+  func stepTimerMaxSeconds(recipeID: String, stepID: String) -> UInt32? {
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
+      return nil
+    }
+    guard step.estimatedTimeInSeconds.hasMax,
+      step.estimatedTimeInSeconds.max >= step.estimatedTimeInSeconds.min
+    else {
+      return nil
+    }
+    return step.estimatedTimeInSeconds.max
+  }
+
+  func canSkipStepTimer(recipeID: String, stepID: String) -> Bool {
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID),
+      let minSeconds = stepTimerMinSeconds(step),
+      let startDate = stepTimerStartTimes[stepKey(recipeID: recipeID, stepID: stepID)]
+    else {
+      return false
+    }
+    return Date().timeIntervalSince(startDate) >= Double(minSeconds)
+  }
+
+  func skipStepTimer(recipeID: String, stepID: String) {
+    let currentStepKey = stepKey(recipeID: recipeID, stepID: stepID)
+    guard stepTimerStartTimes[currentStepKey] != nil else { return }
+    guard canSkipStepTimer(recipeID: recipeID, stepID: stepID) else { return }
+    stepTimerStartTimes.removeValue(forKey: currentStepKey)
+    completedSteps.insert(currentStepKey)
+  }
+
+  var hasActiveStepTimers: Bool {
+    for (stepKey, startDate) in stepTimerStartTimes {
+      let components = stepKey.split(separator: ":", maxSplits: 1)
+      guard components.count == 2,
+        let recipeID = String(components[0]) as String?,
+        let stepID = String(components[1]) as String?
+      else {
+        continue
+      }
+      guard let step = stepFor(recipeID: recipeID, stepID: stepID),
+        let doneThreshold = stepTimerDoneThresholdSeconds(step)
+      else {
+        continue
+      }
+      if Date().timeIntervalSince(startDate) < Double(doneThreshold) {
+        return true
+      }
+    }
+    return false
+  }
+
   // Get all prerequisite step indices for a given step (old API for main recipe)
   func getPrerequisiteStepIndices(_ stepIndex: Int) -> [Int] {
     guard let recipe = recipe, stepIndex >= 0, stepIndex < recipe.steps.count else {
@@ -643,6 +784,19 @@ class PerformRecipeViewModel {
       }
       return stepID
     }()
+
+    if let startDate = stepTimerStartTimes[currentStepKey],
+      let step = stepFor(recipeID: recipeID, stepID: stepID),
+      let doneThreshold = stepTimerDoneThresholdSeconds(step)
+    {
+      let elapsed = Date().timeIntervalSince(startDate)
+      if elapsed >= Double(doneThreshold) {
+        stepTimerStartTimes.removeValue(forKey: currentStepKey)
+        completedSteps.insert(currentStepKey)
+        return .done
+      }
+      return .upNext  // Timer still running - stay in Up Next
+    }
 
     if completedSteps.contains(currentStepKey) {
       return .done

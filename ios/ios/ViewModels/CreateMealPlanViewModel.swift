@@ -446,7 +446,8 @@ class CreateMealPlanViewModel {
       return true
     } catch let error as GRPCCore.RPCError {
       await authManager.invalidateCredentialsIfSessionError(error)
-      creationError = error.code == .alreadyExists
+      creationError =
+        error.code == .alreadyExists
         ? "One or more meals are already in this plan."
         : "Failed to create meal plan: \(error.localizedDescription)"
       isCreating = false

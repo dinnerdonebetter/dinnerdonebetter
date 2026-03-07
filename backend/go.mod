@@ -110,12 +110,19 @@ require (
 	gonum.org/v1/gonum v0.16.0
 	google.golang.org/adk v0.2.0
 	google.golang.org/api v0.252.0
-	google.golang.org/genai v1.39.0
+	google.golang.org/genai v1.45.0
 	google.golang.org/grpc v1.76.0
 	google.golang.org/protobuf v1.36.10
 	gopkg.in/matryer/try.v1 v1.0.0-20150601225556-312d2599e12e
 	maragu.dev/gomponents v1.2.0
 	resenje.org/schulze v0.6.1
+)
+
+require (
+	github.com/anthropics/anthropic-sdk-go v1.21.0 // indirect
+	github.com/mozilla-ai/any-llm-go v0.8.0
+	github.com/openai/openai-go v1.12.0 // indirect
+	github.com/tidwall/sjson v1.2.5 // indirect
 )
 
 require (

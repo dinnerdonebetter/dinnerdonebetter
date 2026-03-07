@@ -20,8 +20,14 @@ class RecipeListViewModel {
   var errorMessage: String?
   var searchError: String?
 
+  /// Recipe status filter for GetRecipes. Default "approved"; service admins can toggle to "submitted".
+  var recipeStatusFilter: String = "approved"
+  /// True when current user has service_role = "service_admin". Enables status toggle in UI.
+  var isServiceAdmin = false
+
   private let authManager: AuthenticationManager
   private var searchTask: Task<Void, Never>?
+  private var hasCheckedServiceAdmin = false
 
   init(authManager: AuthenticationManager) {
     self.authManager = authManager
@@ -56,9 +62,9 @@ class RecipeListViewModel {
 
       let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
 
-      // Create request - use "submitted" status to match webapp behavior
+      // Create request - use selected status (approved by default; service admins can toggle)
       var request = Mealplanning_GetRecipesRequest()
-      request.status = "submitted"
+      request.status = recipeStatusFilter
 
       // Execute request
       let response = try await clientManager.client.mealPlanning.getRecipes(
@@ -142,5 +148,34 @@ class RecipeListViewModel {
     }
 
     isSearching = false
+  }
+
+  /// Fetches current user to determine if they are a service_admin. Call once when recipe list appears.
+  func loadCurrentUserForAdminCheck() async {
+    guard !hasCheckedServiceAdmin else { return }
+    hasCheckedServiceAdmin = true
+
+    do {
+      guard let clientManager = try? authManager.getClientManager() else { return }
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else { return }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+      let response = try await clientManager.client.auth.getSelf(
+        Auth_GetSelfRequest(),
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      if response.hasResult {
+        isServiceAdmin = response.result.serviceRole == "service_admin"
+      }
+    } catch {
+      // Non-fatal: just leave isServiceAdmin false
+    }
+  }
+
+  /// Updates recipe status filter and reloads. For service admin toggle.
+  func setRecipeStatusFilter(_ status: String) {
+    recipeStatusFilter = status
   }
 }

@@ -62,6 +62,8 @@ struct MealDetailView: View {
   @State private var customUpNextOrder: [String] = []
   @State private var customForLaterOrder: [String] = []
   @State private var isDAGSectionExpanded = false
+  @State private var mealTimerTick: Int = 0
+  @State private var mealTimerRefresh: Timer?
   @State private var uploadMealImageViewModel: UploadMealImageViewModel?
   @State private var selectedMealImageItem: PhotosPickerItem?
 
@@ -106,6 +108,7 @@ struct MealDetailView: View {
                   if !meal.components.isEmpty {
                     mealFlowModeSection
                     if mealFlowMode == .unified {
+                      _ = mealTimerTick
                       unifiedMealStepsSection(meal: meal)
                     } else {
                       componentsSection(meal: meal)
@@ -151,6 +154,19 @@ struct MealDetailView: View {
           }
         }
       }
+      if hasActiveMealStepTimers {
+        startMealTimerRefresh()
+      }
+    }
+    .onChange(of: hasActiveMealStepTimers) { _, hasActive in
+      if hasActive {
+        startMealTimerRefresh()
+      } else {
+        stopMealTimerRefresh()
+      }
+    }
+    .onDisappear {
+      stopMealTimerRefresh()
     }
     .onChange(of: viewModel?.meal?.id) { _, _ in
       if let meal = viewModel?.meal {
@@ -495,14 +511,18 @@ struct MealDetailView: View {
         .buttonStyle(.plain)
 
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-          Text("🧼 Wash your hands")
-            .font(DSTheme.Typography.title3)
-            .foregroundColor(
-              mealWashHandsCompleted
-                ? DSTheme.Colors.textSecondary
-                : DSTheme.Colors.textPrimary
-            )
-            .italic(mealWashHandsCompleted)
+          HStack(spacing: DSTheme.Spacing.sm) {
+            Image(systemName: "hands.sparkles")
+              .font(DSTheme.Typography.title3)
+            Text("Wash your hands")
+              .font(DSTheme.Typography.title3)
+          }
+          .foregroundColor(
+            mealWashHandsCompleted
+              ? DSTheme.Colors.textSecondary
+              : DSTheme.Colors.textPrimary
+          )
+          .italic(mealWashHandsCompleted)
 
           Text("Complete this once to unlock all component steps.")
             .font(DSTheme.Typography.caption)
@@ -706,6 +726,7 @@ struct MealDetailView: View {
       focusedGroups: focusedGroups,
       allStepsTitle: "All Steps",
       emptyMessage: "Loading component steps...",
+      showStepsOverlay: !mealWashHandsCompleted,
       onReorder: { groupId, source, destination in
         let items = groupId == "Up Next" ? orderedUpNext : orderedForLater
         var mutable = items
@@ -727,10 +748,10 @@ struct MealDetailView: View {
           .font(DSTheme.Typography.title2)
       },
       allModeLeadingContent: {
-        EmptyView()
+        KeepScreenAwakeButton(inline: true)
       },
       focusModeLeadingContent: {
-        EmptyView()
+        KeepScreenAwakeButton(inline: true)
       },
       rowContent: { item in
         VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
@@ -760,9 +781,17 @@ struct MealDetailView: View {
               }
               : nil,
             canCheckOverride: item.isMerged
-              ? item.sources.allSatisfy { source in
+              ? (item.sources.allSatisfy { source in
                 source.viewModel.canCheckStep(recipeID: source.recipeID, stepID: source.step.id)
               }
+                || item.sources.contains { source in
+                  source.viewModel.isStepTimerActive(
+                    recipeID: source.recipeID, stepID: source.step.id)
+                }
+                || item.sources.allSatisfy { source in
+                  source.viewModel.isStepCompleted(
+                    recipeID: source.recipeID, stepID: source.step.id)
+                })
               : nil,
             onToggleOverride: item.isMerged
               ? {
@@ -771,11 +800,56 @@ struct MealDetailView: View {
                 }
               }
               : nil,
-            ingredientBreakdownBySource: item.ingredientBreakdownBySource
+            ingredientBreakdownBySource: item.ingredientBreakdownBySource,
+            timerElapsedSeconds: item.isMerged
+              ? mergedStepTimerElapsed(sources: item.sources)
+              : nil,
+            timerDurationSeconds: item.isMerged
+              ? mergedStepTimerDuration(sources: item.sources)
+              : nil,
+            onSkipTimerOverride: item.isMerged
+              ? {
+                for source in item.sources {
+                  source.viewModel.skipStepTimer(
+                    recipeID: source.recipeID, stepID: source.step.id)
+                }
+              }
+              : nil,
+            canSkipTimerOverride: item.isMerged
+              ? item.sources.contains { source in
+                source.viewModel.canSkipStepTimer(
+                  recipeID: source.recipeID, stepID: source.step.id)
+              }
+              : nil,
+            timerMinSeconds: item.isMerged
+              ? mergedStepTimerMin(sources: item.sources)
+              : nil,
+            timerMaxSeconds: item.isMerged
+              ? mergedStepTimerMax(sources: item.sources)
+              : nil
           )
         }
       }
     )
+  }
+
+  private var hasActiveMealStepTimers: Bool {
+    componentViewModels.values.contains { $0.hasActiveStepTimers }
+  }
+
+  private func startMealTimerRefresh() {
+    guard mealTimerRefresh == nil else { return }
+    mealTimerRefresh = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+      mealTimerTick += 1
+    }
+    if let timer = mealTimerRefresh {
+      RunLoop.main.add(timer, forMode: .common)
+    }
+  }
+
+  private func stopMealTimerRefresh() {
+    mealTimerRefresh?.invalidate()
+    mealTimerRefresh = nil
   }
 
   private func formatUnifiedStepTitle(step: Mealplanning_RecipeStep, index: Int) -> String {
@@ -783,6 +857,82 @@ struct MealDetailView: View {
       return step.preparation.name
     }
     return "Step \(index + 1)"
+  }
+
+  private func mergedStepTimerElapsed(sources: [UnifiedMealStepSource]) -> TimeInterval? {
+    var best: (elapsed: TimeInterval, duration: UInt32)?
+    for source in sources {
+      guard source.viewModel.isStepTimerActive(recipeID: source.recipeID, stepID: source.step.id),
+        let elapsed = source.viewModel.stepTimerElapsedSeconds(
+          recipeID: source.recipeID, stepID: source.step.id),
+        let duration = source.viewModel.stepTimerDurationSeconds(
+          recipeID: source.recipeID, stepID: source.step.id)
+      else { continue }
+      let remaining = Double(duration) - elapsed
+      if best.map({ remaining > Double($0.duration) - $0.elapsed }) ?? true {
+        best = (elapsed, duration)
+      }
+    }
+    return best?.elapsed
+  }
+
+  private func mergedStepTimerDuration(sources: [UnifiedMealStepSource]) -> UInt32? {
+    var best: (elapsed: TimeInterval, duration: UInt32)?
+    for source in sources {
+      guard source.viewModel.isStepTimerActive(recipeID: source.recipeID, stepID: source.step.id),
+        let elapsed = source.viewModel.stepTimerElapsedSeconds(
+          recipeID: source.recipeID, stepID: source.step.id),
+        let duration = source.viewModel.stepTimerDurationSeconds(
+          recipeID: source.recipeID, stepID: source.step.id)
+      else { continue }
+      let remaining = Double(duration) - elapsed
+      if best.map({ remaining > Double($0.duration) - $0.elapsed }) ?? true {
+        best = (elapsed, duration)
+      }
+    }
+    return best?.duration
+  }
+
+  private func mergedStepTimerMin(sources: [UnifiedMealStepSource]) -> UInt32? {
+    var best: (elapsed: TimeInterval, duration: UInt32)?
+    var bestSource: UnifiedMealStepSource?
+    for source in sources {
+      guard source.viewModel.isStepTimerActive(recipeID: source.recipeID, stepID: source.step.id),
+        let elapsed = source.viewModel.stepTimerElapsedSeconds(
+          recipeID: source.recipeID, stepID: source.step.id),
+        let duration = source.viewModel.stepTimerDurationSeconds(
+          recipeID: source.recipeID, stepID: source.step.id)
+      else { continue }
+      let remaining = Double(duration) - elapsed
+      if best.map({ remaining > Double($0.duration) - $0.elapsed }) ?? true {
+        best = (elapsed, duration)
+        bestSource = source
+      }
+    }
+    return bestSource.flatMap {
+      $0.viewModel.stepTimerMinSeconds(recipeID: $0.recipeID, stepID: $0.step.id)
+    }
+  }
+
+  private func mergedStepTimerMax(sources: [UnifiedMealStepSource]) -> UInt32? {
+    var best: (elapsed: TimeInterval, duration: UInt32)?
+    var bestSource: UnifiedMealStepSource?
+    for source in sources {
+      guard source.viewModel.isStepTimerActive(recipeID: source.recipeID, stepID: source.step.id),
+        let elapsed = source.viewModel.stepTimerElapsedSeconds(
+          recipeID: source.recipeID, stepID: source.step.id),
+        let duration = source.viewModel.stepTimerDurationSeconds(
+          recipeID: source.recipeID, stepID: source.step.id)
+      else { continue }
+      let remaining = Double(duration) - elapsed
+      if best.map({ remaining > Double($0.duration) - $0.elapsed }) ?? true {
+        best = (elapsed, duration)
+        bestSource = source
+      }
+    }
+    return bestSource.flatMap {
+      $0.viewModel.stepTimerMaxSeconds(recipeID: $0.recipeID, stepID: $0.step.id)
+    }
   }
 
   private func componentTagStyle(for componentIndex: Int) -> (background: Color, foreground: Color)
@@ -826,6 +976,7 @@ struct MealDetailView: View {
       print("🧼   set washHands=\(isCompleted) on viewModel for recipe \(recipeID.suffix(6))")
       if !isCompleted {
         viewModel.completedSteps.removeAll()
+        viewModel.stepTimerStartTimes.removeAll()
         viewModel.clearStepCompletionConditionProgress()
       }
     }

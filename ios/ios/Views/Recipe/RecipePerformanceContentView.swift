@@ -5,7 +5,6 @@
 //  Created by Auto on 12/8/25.
 //
 
-import PhotosUI
 import SwiftProtobuf
 import SwiftUI
 
@@ -43,8 +42,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @State private var showCompletedSteps: Bool = true
   @State private var customUpNextOrder: [String] = []
   @State private var customForLaterOrder: [String] = []
-  @State private var uploadRecipeImageViewModel: UploadRecipeImageViewModel?
-  @State private var selectedRecipeImageItem: PhotosPickerItem?
+  @State private var timerTick: Int = 0
+  @State private var timerRefresh: Timer?
 
   private var isShowingCompletedSteps: Bool {
     sharedCompletedStepsVisibility?.wrappedValue ?? showCompletedSteps
@@ -70,6 +69,21 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     } else {
       internalRecipeScale = newValue
     }
+  }
+
+  private func startTimerRefresh() {
+    guard timerRefresh == nil else { return }
+    timerRefresh = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+      timerTick += 1
+    }
+    if let timer = timerRefresh {
+      RunLoop.main.add(timer, forMode: .common)
+    }
+  }
+
+  private func stopTimerRefresh() {
+    timerRefresh?.invalidate()
+    timerRefresh = nil
   }
 
   init(
@@ -139,7 +153,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           prepTasksSection(recipe: recipe, viewModel: viewModel)
         }
 
-        // Steps list
+        // Steps list (timerTick forces refresh when step timers are active)
+        _ = timerTick
         stepsList(recipe: recipe, viewModel: viewModel, scale: recipeScale)
       }
       .padding()
@@ -152,6 +167,19 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         showCompletedSteps = false
       }
       loadStepOrderFromUserDefaults(recipeID: recipe.id)
+      if viewModel.hasActiveStepTimers {
+        startTimerRefresh()
+      }
+    }
+    .onChange(of: viewModel.hasActiveStepTimers) { _, hasActive in
+      if hasActive {
+        startTimerRefresh()
+      } else {
+        stopTimerRefresh()
+      }
+    }
+    .onDisappear {
+      stopTimerRefresh()
     }
     .onChange(of: sharedWashHandsValue) { _, newValue in
       if sharedWashHandsCompleted != nil {
@@ -160,102 +188,6 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     }
     .onChange(of: recipe.id) { _, newID in
       loadStepOrderFromUserDefaults(recipeID: newID)
-      if !hideIngredientsAndInstruments {
-        uploadRecipeImageViewModel = UploadRecipeImageViewModel(
-          recipeID: newID,
-          authManager: authManager
-        )
-      }
-    }
-    .onAppear {
-      if !hideIngredientsAndInstruments, uploadRecipeImageViewModel == nil {
-        uploadRecipeImageViewModel = UploadRecipeImageViewModel(
-          recipeID: recipe.id,
-          authManager: authManager
-        )
-      }
-    }
-    .onChange(of: selectedRecipeImageItem) { _, newItem in
-      guard let item = newItem, let uploadVM = uploadRecipeImageViewModel else { return }
-      Task {
-        await loadAndUploadRecipeImage(item: item, viewModel: uploadVM)
-      }
-    }
-    .onChange(of: uploadRecipeImageViewModel?.didSucceed) { _, didSucceed in
-      if didSucceed == true {
-        selectedRecipeImageItem = nil
-        Task {
-          await viewModel.loadRecipe()
-        }
-      }
-    }
-  }
-
-  private func recipeImageUploadSection(uploadVM: UploadRecipeImageViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      PhotosPicker(
-        selection: $selectedRecipeImageItem,
-        matching: .images,
-        photoLibrary: .shared()
-      ) {
-        HStack(spacing: 8) {
-          Image(systemName: "photo.badge.plus")
-            .font(.system(size: 20))
-            .foregroundColor(.blue)
-          Text("Add Recipe Photo")
-            .font(.subheadline)
-            .foregroundColor(.primary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(8)
-        .background(Color(.systemGray5))
-        .cornerRadius(8)
-      }
-      .disabled(uploadVM.isUploading)
-
-      if uploadVM.isUploading {
-        ProgressView("Uploading...")
-          .font(.caption)
-      }
-
-      if let error = uploadVM.errorMessage {
-        Text(error)
-          .font(.caption)
-          .foregroundColor(.red)
-      }
-
-      if uploadVM.didSucceed {
-        HStack(spacing: 4) {
-          Image(systemName: "checkmark.circle.fill")
-            .foregroundColor(.green)
-          Text("Photo added successfully")
-            .font(.caption)
-            .foregroundColor(.green)
-        }
-      }
-    }
-    .padding(.vertical, 4)
-  }
-
-  private func loadAndUploadRecipeImage(
-    item: PhotosPickerItem,
-    viewModel: UploadRecipeImageViewModel
-  ) async {
-    do {
-      guard let data = try await item.loadTransferable(type: Data.self) else {
-        viewModel.errorMessage = "Failed to load image data"
-        return
-      }
-      let prepared = ImagePreparationHelper.prepareImageForUpload(data: data)
-      let objectName = UUID().uuidString + "." + prepared.fileExtension
-      await viewModel.uploadRecipeImage(
-        imageData: prepared.data,
-        contentType: prepared.contentType,
-        objectName: objectName
-      )
-      selectedRecipeImageItem = nil
-    } catch {
-      viewModel.errorMessage = "Failed to load image: \(error.localizedDescription)"
     }
   }
 
@@ -479,11 +411,6 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
             }
             .buttonStyle(.plain)
           }
-        }
-
-        // Recipe image upload (only when viewing standalone, not embedded in meal)
-        if let uploadVM = uploadRecipeImageViewModel {
-          recipeImageUploadSection(uploadVM: uploadVM)
         }
 
         Slider(
@@ -1417,6 +1344,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       focusedGroups: focusedGroups,
       allowToggle: allowCompletedStepsToggle,
       allStepsTitle: "All Steps",
+      showStepsOverlay: !sharedWashHandsValue
+        && (showWashHandsStepCard || sharedWashHandsCompleted != nil),
       onReorder: { groupId, source, destination in
         let items = groupId == "Up Next" ? orderedUpNext : orderedForLater
         var mutable = items
@@ -1439,13 +1368,19 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           .padding(.horizontal, 4)
       },
       allModeLeadingContent: {
-        if showWashHandsStepCard, !sharedWashHandsValue, allSteps.first != nil {
-          washHandsStepCard(viewModel: viewModel)
+        VStack(alignment: .leading, spacing: 12) {
+          KeepScreenAwakeButton(inline: true)
+          if showWashHandsStepCard, !sharedWashHandsValue, allSteps.first != nil {
+            washHandsStepCard(viewModel: viewModel)
+          }
         }
       },
       focusModeLeadingContent: {
-        if showWashHandsStepCard, !sharedWashHandsValue, upNextSteps.first != nil {
-          washHandsStepCard(viewModel: viewModel)
+        VStack(alignment: .leading, spacing: 12) {
+          KeepScreenAwakeButton(inline: true)
+          if showWashHandsStepCard, !sharedWashHandsValue, upNextSteps.first != nil {
+            washHandsStepCard(viewModel: viewModel)
+          }
         }
       },
       rowContent: { stepInfo in
@@ -1559,10 +1494,14 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
         // Step title
         VStack(alignment: .leading, spacing: 4) {
-          Text("🧼 Wash your hands")
-            .font(.headline)
-            .foregroundColor(isCompleted ? .secondary : .primary)
-            .italic(isCompleted)
+          HStack(spacing: 6) {
+            Image(systemName: "hands.sparkles")
+              .font(.headline)
+            Text("Wash your hands")
+              .font(.headline)
+          }
+          .foregroundColor(isCompleted ? .secondary : .primary)
+          .italic(isCompleted)
         }
 
         Spacer()
