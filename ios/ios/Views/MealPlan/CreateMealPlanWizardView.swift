@@ -19,6 +19,9 @@ struct CreateMealPlanWizardView: View {
   @State private var viewModel: CreateMealPlanViewModel?
   @State private var recipesForOptionSelection: [Mealplanning_Recipe]?
 
+  var acceptedOccupiedDates: Set<Date> = []
+  var proposedOccupiedDates: Set<Date> = []
+
   var body: some View {
     Group {
       if let viewModel = viewModel {
@@ -98,7 +101,11 @@ struct CreateMealPlanWizardView: View {
     .navigationBarTitleDisplayMode(.large)
     .onAppear {
       if viewModel == nil {
-        viewModel = CreateMealPlanViewModel(authManager: authManager)
+        viewModel = CreateMealPlanViewModel(
+          authManager: authManager,
+          acceptedOccupiedDates: acceptedOccupiedDates,
+          proposedOccupiedDates: proposedOccupiedDates
+        )
       }
     }
   }

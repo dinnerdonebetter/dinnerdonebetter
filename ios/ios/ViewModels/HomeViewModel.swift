@@ -121,6 +121,34 @@ class HomeViewModel {
     mealPlan.events.map { timestampToDate($0.endsAt) }.max() ?? Date.distantFuture
   }
 
+  /// Calendar days with finalized (accepted) meal plan events. Shown in red.
+  var acceptedOccupiedDates: Set<Date> {
+    let cal = Calendar.current
+    var occupied = Set<Date>()
+    for plan in allMealPlans where plan.status == .finalized {
+      for event in plan.events {
+        let date = Self.timestampToDate(event.startsAt)
+        occupied.insert(cal.startOfDay(for: date))
+      }
+    }
+    return occupied
+  }
+
+  /// Calendar days with awaiting-votes (proposed) meal plan events. Shown in yellow.
+  /// Excludes dates already in acceptedOccupiedDates.
+  var proposedOccupiedDates: Set<Date> {
+    let cal = Calendar.current
+    var occupied = Set<Date>()
+    let accepted = acceptedOccupiedDates
+    for plan in allMealPlans where plan.status == .awaitingVotes {
+      for event in plan.events {
+        let date = cal.startOfDay(for: Self.timestampToDate(event.startsAt))
+        if !accepted.contains(date) { occupied.insert(date) }
+      }
+    }
+    return occupied
+  }
+
   var activeTaskLists: [(mealPlanID: String, tasks: [Mealplanning_MealPlanTask])] {
     return tasksByMealPlan.compactMap { mealPlanID, tasks in
       let mealPlan = allMealPlans.first { $0.id == mealPlanID }

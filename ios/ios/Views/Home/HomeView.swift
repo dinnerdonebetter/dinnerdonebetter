@@ -82,7 +82,7 @@ struct HomeView: View {
                 VStack(spacing: DSTheme.Spacing.lg) {
                   Divider()
 
-                  createMealPlanSection
+                  createMealPlanSection(viewModel: viewModel)
 
                   quickAccessRow
                 }
@@ -155,8 +155,13 @@ struct HomeView: View {
   }
 
   // MARK: - Create Meal Plan CTA
-  private var createMealPlanSection: some View {
-    NavigationLink(destination: CreateMealPlanWizardView()) {
+  private func createMealPlanSection(viewModel: HomeViewModel) -> some View {
+    NavigationLink(
+      destination: CreateMealPlanWizardView(
+        acceptedOccupiedDates: viewModel.acceptedOccupiedDates,
+        proposedOccupiedDates: viewModel.proposedOccupiedDates
+      )
+    ) {
       HStack(spacing: DSTheme.Spacing.md) {
         ZStack {
           Circle()
