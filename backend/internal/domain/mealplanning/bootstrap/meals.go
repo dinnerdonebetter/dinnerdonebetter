@@ -267,5 +267,37 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 		}
 	}
 
+	// Single-recipe meals (recipes 26+): complete dishes that stand alone
+	singleRecipeMeals := []struct {
+		recipeName string
+		mealName   string
+		desc       string
+	}{
+		{"Gochujang Butter Pasta", "Gochujang Butter Pasta", "Spicy-sweet Korean-inspired pasta with gochujang and butter."},
+		{"One-Pan Pasta with Tomatoes and Greens", "One-Pan Pasta with Tomatoes and Greens", "Pasta cooked in one pan with cherry tomatoes, kale, and spinach."},
+		{"Peanut Butter Noodles", "Peanut Butter Noodles", "Creamy peanut butter noodles with Parmesan and soy sauce."},
+		{"Chicken and Vermicelli Soup with Lime", "Chicken and Vermicelli Soup with Lime", "Hearty chicken soup with vermicelli and bright lime."},
+		{"Chicken Florentine", "Chicken Florentine", "Chicken in creamy spinach sauce with Parmesan."},
+		{"Chana Masala", "Chana Masala", "Spiced chickpea curry with tomatoes and aromatics."},
+	}
+
+	for _, m := range singleRecipeMeals {
+		if recipe, ok := mainRecipes[m.recipeName]; ok {
+			mainMin, mainMax := getMainPortions(recipe)
+			components := []*mealplanning.MealComponentDatabaseCreationInput{
+				createComponent(recipe, mealplanning.MealComponentTypesMain, 1.0),
+			}
+			meals = append(meals, &mealplanning.MealDatabaseCreationInput{
+				ID:                   identifiers.New(),
+				CreatedByUser:        userID,
+				Name:                 m.mealName,
+				Description:          m.desc,
+				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				Components:           components,
+				EligibleForMealPlans: true,
+			})
+		}
+	}
+
 	return meals
 }

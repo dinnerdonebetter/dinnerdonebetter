@@ -28,6 +28,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Get ingredients
 	butter := enums.Ingredients["butter"]
+	oliveOil := enums.Ingredients["olive oil"]
 	onion := enums.Ingredients["onion"]
 	turmeric := enums.Ingredients["turmeric"]
 	potato := enums.Ingredients["potato"]
@@ -40,6 +41,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	vermicelli := enums.Ingredients["vermicelli"]
 	parsley := enums.Ingredients["parsley"]
 	limeJuice := enums.Ingredients["lime juice"]
+	lemonJuice := enums.Ingredients["lemon juice"]
 
 	// Get measurement units
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
@@ -57,6 +59,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Get bridge table entries
 	meltButterVIP := enums.IngredientPreparations[meltPrep.ID][butter.ID]
+	meltOliveOilVIP := enums.IngredientPreparations[meltPrep.ID][oliveOil.ID]
 	meltPotVPV := enums.PreparationVessels[meltPrep.ID][largePot.ID]
 
 	sauteOnionVIP := enums.IngredientPreparations[sautePrep.ID][onion.ID]
@@ -103,11 +106,13 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	stirParsleyVIP := enums.IngredientPreparations[stirPrep.ID][parsley.ID]
 	stirLimeJuiceVIP := enums.IngredientPreparations[stirPrep.ID][limeJuice.ID]
+	stirLemonJuiceVIP := enums.IngredientPreparations[stirPrep.ID][lemonJuice.ID]
 	stirPotVPV := enums.PreparationVessels[stirPrep.ID][largePot.ID]
 	stirWoodenSpoonVPI := enums.PreparationInstruments[stirPrep.ID][woodenSpoon.ID]
 
 	// Measurement unit bridges
 	butterTbspVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
+	oliveOilTbspVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][tablespoonMeasurement.ID]
 	onionUnitVIMU := enums.IngredientMeasurementUnits[onion.ID][unitMeasurement.ID]
 	turmericTspVIMU := enums.IngredientMeasurementUnits[turmeric.ID][teaspoonMeasurement.ID]
 	potatoUnitVIMU := enums.IngredientMeasurementUnits[potato.ID][unitMeasurement.ID]
@@ -120,6 +125,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	vermicelliCupVIMU := enums.IngredientMeasurementUnits[vermicelli.ID][cupMeasurement.ID]
 	parsleyTbspVIMU := enums.IngredientMeasurementUnits[parsley.ID][tablespoonMeasurement.ID]
 	limeJuiceTbspVIMU := enums.IngredientMeasurementUnits[limeJuice.ID][tablespoonMeasurement.ID]
+	lemonJuiceTbspVIMU := enums.IngredientMeasurementUnits[lemonJuice.ID][tablespoonMeasurement.ID]
 
 	// Ingredient states
 	translucentState := enums.IngredientStates["translucent"]
@@ -136,10 +142,22 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTbspVIMU.ID,
-				Name:                             "butter or olive oil",
+				Name:                             "butter",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &meltOliveOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &oliveOilTbspVIMU.ID,
+				Name:                             "olive oil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -173,10 +191,11 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidIngredientPreparationID:     &sauteOnionVIP.ID,
 				ValidIngredientMeasurementUnitID: &onionUnitVIMU.ID,
-				Name:                             "small or ½ large yellow onion, finely chopped",
+				Name:                             "yellow onion",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
+				QuantityNotes: "small or ½ large, finely chopped",
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -881,14 +900,27 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
+				Index: pointer.To[uint16](0),
 			},
 			{
 				ValidIngredientPreparationID:     &stirLimeJuiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &limeJuiceTbspVIMU.ID,
-				Name:                             "lime or lemon juice",
+				Name:                             "lime juice",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
+				Index:       pointer.To[uint16](1),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &stirLemonJuiceVIP.ID,
+				ValidIngredientMeasurementUnitID: &lemonJuiceTbspVIMU.ID,
+				Name:                             "lemon juice",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](1),
+				OptionIndex: 1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{

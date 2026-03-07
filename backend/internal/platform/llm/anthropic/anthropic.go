@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/llm"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+
 	anyllm "github.com/mozilla-ai/any-llm-go"
 	anyllmanthropic "github.com/mozilla-ai/any-llm-go/providers/anthropic"
-
-	"github.com/dinnerdonebetter/backend/internal/platform/llm"
 )
 
 // NewProvider creates a new Anthropic-backed LLM provider.
@@ -54,7 +55,7 @@ func (p *anthropicProvider) Completion(ctx context.Context, params llm.Completio
 
 	anyllmParams := anyllm.CompletionParams{
 		Model:    model,
-		Messages: toAnyLLMMessages(params.Messages),
+		Messages: toAnyLLMMessages(pointer.ToSlice(params.Messages)),
 	}
 
 	resp, err := p.provider.Completion(ctx, anyllmParams)
@@ -65,7 +66,7 @@ func (p *anthropicProvider) Completion(ctx context.Context, params llm.Completio
 	return toCompletionResult(resp), nil
 }
 
-func toAnyLLMMessages(msgs []llm.Message) []anyllm.Message {
+func toAnyLLMMessages(msgs []*llm.Message) []anyllm.Message {
 	out := make([]anyllm.Message, len(msgs))
 	for i, m := range msgs {
 		out[i] = anyllm.Message{

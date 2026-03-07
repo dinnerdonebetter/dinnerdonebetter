@@ -15,11 +15,11 @@ import (
 // anthropicMessageResponse mimics the Anthropic Messages API response format.
 func anthropicMessageResponse(content string) map[string]any {
 	return map[string]any{
-		"id":         "msg-test",
-		"type":       "message",
-		"role":       "assistant",
-		"model":      "claude-sonnet-4-20250514",
-		"content":    []map[string]any{{"type": "text", "text": content}},
+		"id":          "msg-test",
+		"type":        "message",
+		"role":        "assistant",
+		"model":       "claude-sonnet-4-20250514",
+		"content":     []map[string]any{{"type": "text", "text": content}},
 		"stop_reason": "end_turn",
 		"usage": map[string]any{
 			"input_tokens":  10,
@@ -51,9 +51,9 @@ func TestNewProvider(T *testing.T) {
 		t.Parallel()
 
 		provider, err := NewProvider(&Config{
-			APIKey:        "test-key",
-			BaseURL:       "https://custom.example.com",
-			DefaultModel:  "claude-sonnet-4",
+			APIKey:       "test-key",
+			BaseURL:      "https://custom.example.com",
+			DefaultModel: "claude-sonnet-4",
 		})
 		require.NoError(t, err)
 		require.NotNil(t, provider)
@@ -103,9 +103,9 @@ func TestAnthropicProvider_Completion(T *testing.T) {
 		t.Cleanup(ts.Close)
 
 		provider, err := NewProvider(&Config{
-			APIKey:        "test-key",
-			BaseURL:       ts.URL,
-			DefaultModel:  "claude-sonnet-4",
+			APIKey:       "test-key",
+			BaseURL:      ts.URL,
+			DefaultModel: "claude-sonnet-4",
 		})
 		require.NoError(t, err)
 

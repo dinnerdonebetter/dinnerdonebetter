@@ -456,7 +456,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 			{
 				ValidIngredientPreparationID:     &addChickenStockVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenStockCupVIMU.ID,
-				Name:                             "homemade chicken stock or store-bought low-sodium chicken broth",
+				Name:                             "chicken stock",
 				QuantityNotes:                    "about 120ml",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,

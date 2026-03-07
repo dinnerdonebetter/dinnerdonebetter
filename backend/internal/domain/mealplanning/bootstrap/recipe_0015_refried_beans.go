@@ -32,7 +32,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	pintoBeans := enums.Ingredients["pinto beans"]
 	water := enums.Ingredients["water"]
 	epazote := enums.Ingredients["epazote"]
-	whiteOnion := enums.Ingredients["onion"]
+	whiteOnion := enums.Ingredients["white onion"]
 	garlic := enums.Ingredients["garlic"]
 	salt := enums.Ingredients["salt"]
 	lard := enums.Ingredients["lard"]

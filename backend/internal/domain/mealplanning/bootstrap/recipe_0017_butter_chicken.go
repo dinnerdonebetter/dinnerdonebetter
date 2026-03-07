@@ -47,6 +47,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	cashews := enums.Ingredients["raw cashews"]
 	water := enums.Ingredients["water"]
 	canolaOil := enums.Ingredients["canola oil"]
+	vegetableOil := enums.Ingredients["vegetable oil"]
 	whiteOnion := enums.Ingredients["white onion"]
 	bakingSoda := enums.Ingredients["baking soda"]
 	garlic := enums.Ingredients["garlic"]
@@ -104,7 +105,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	soakCashewsVIP := enums.IngredientPreparations[soakPrep.ID][cashews.ID]
 	soakWaterVIP := enums.IngredientPreparations[soakPrep.ID][water.ID]
 	microwaveCashewsVIP := enums.IngredientPreparations[microwavePrep.ID][cashews.ID]
-	heatOilVIP := enums.IngredientPreparations[heatPrep.ID][canolaOil.ID]
+	heatCanolaOilVIP := enums.IngredientPreparations[heatPrep.ID][canolaOil.ID]
+	heatVegetableOilVIP := enums.IngredientPreparations[heatPrep.ID][vegetableOil.ID]
 	cookOnionVIP := enums.IngredientPreparations[cookPrep.ID][whiteOnion.ID]
 	cookBakingSodaVIP := enums.IngredientPreparations[cookPrep.ID][bakingSoda.ID]
 	cookGingerVIP := enums.IngredientPreparations[cookPrep.ID][ginger.ID]
@@ -180,6 +182,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	cannedTomatoesOunceVIMU := enums.IngredientMeasurementUnits[cannedTomatoes.ID][ounceMeasurement.ID]
 	cashewsOunceVIMU := enums.IngredientMeasurementUnits[cashews.ID][ounceMeasurement.ID]
 	canolaOilTablespoonVIMU := enums.IngredientMeasurementUnits[canolaOil.ID][tablespoonMeasurement.ID]
+	vegetableOilTablespoonVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][tablespoonMeasurement.ID]
 	whiteOnionUnitVIMU := enums.IngredientMeasurementUnits[whiteOnion.ID][unitMeasurement.ID]
 	bakingSodaTeaspoonVIMU := enums.IngredientMeasurementUnits[bakingSoda.ID][teaspoonMeasurement.ID]
 	garlicCloveVIMU := enums.IngredientMeasurementUnits[garlic.ID][cloveMeasurement.ID]
@@ -758,10 +761,20 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "In a Dutch oven, heat the canola oil over medium-high heat until shimmering.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &heatOilVIP.ID,
+				ValidIngredientPreparationID:     &heatCanolaOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &canolaOilTablespoonVIMU.ID,
-				Name:                             "canola oil or other neutral-flavored oil",
+				Name:                             "canola oil",
 				Quantity:                         types.Float32RangeWithOptionalMax{Min: 2},
+				Index:                            pointer.To[uint16](0),
+				OptionIndex:                      0,
+			},
+			{
+				ValidIngredientPreparationID:     &heatVegetableOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
+				Name:                             "vegetable oil",
+				Quantity:                         types.Float32RangeWithOptionalMax{Min: 2},
+				Index:                            pointer.To[uint16](0),
+				OptionIndex:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -783,7 +796,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 			{
 				IngredientStateID: shimmeringState.ID,
 				Notes:             "Oil should shimmer when viewed",
-				Ingredients:       []uint64{0},
+				Ingredients:       []uint64{0, 1},
 				Optional:          false,
 			},
 		},

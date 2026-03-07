@@ -35,10 +35,12 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	turmeric := enums.Ingredients["turmeric"]
 	groundCoriander := enums.Ingredients["ground coriander"]
 	chiliPowder := enums.Ingredients["chili powder"]
-	tomato := enums.Ingredients["tomato"]
+	romaTomatoes := enums.Ingredients["Roma tomatoes"]
 	salt := enums.Ingredients["salt"]
 	chickpeas := enums.Ingredients["chickpeas"]
 	chickenStock := enums.Ingredients["chicken stock"]
+	vegetableStock := enums.Ingredients["vegetable stock"]
+	water := enums.Ingredients["water"]
 	garamMasala := enums.Ingredients["garam masala"]
 	cilantro := enums.Ingredients["cilantro"]
 
@@ -72,10 +74,12 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	addTurmericVIP := enums.IngredientPreparations[addPrep.ID][turmeric.ID]
 	addCorianderVIP := enums.IngredientPreparations[addPrep.ID][groundCoriander.ID]
 	addChiliPowderVIP := enums.IngredientPreparations[addPrep.ID][chiliPowder.ID]
-	addTomatoVIP := enums.IngredientPreparations[addPrep.ID][tomato.ID]
+	addRomaTomatoVIP := enums.IngredientPreparations[addPrep.ID][romaTomatoes.ID]
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 	addChickpeasVIP := enums.IngredientPreparations[addPrep.ID][chickpeas.ID]
-	addStockVIP := enums.IngredientPreparations[addPrep.ID][chickenStock.ID]
+	addChickenStockVIP := enums.IngredientPreparations[addPrep.ID][chickenStock.ID]
+	addVegetableStockVIP := enums.IngredientPreparations[addPrep.ID][vegetableStock.ID]
+	addWaterVIP := enums.IngredientPreparations[addPrep.ID][water.ID]
 	addPotVPV := enums.PreparationVessels[addPrep.ID][pot.ID]
 	addWoodenSpoonVPI := enums.PreparationInstruments[addPrep.ID][woodenSpoon.ID]
 
@@ -86,7 +90,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 
 	reducePotVPV := enums.PreparationVessels[reducePrep.ID][pot.ID]
 
-	cookTomatoVIP := enums.IngredientPreparations[cookPrep.ID][tomato.ID]
+	cookRomaTomatoVIP := enums.IngredientPreparations[cookPrep.ID][romaTomatoes.ID]
 	cookPotVPV := enums.PreparationVessels[cookPrep.ID][pot.ID]
 	cookWoodenSpoonVPI := enums.PreparationInstruments[cookPrep.ID][woodenSpoon.ID]
 
@@ -103,7 +107,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	topPotVPV := enums.PreparationVessels[topPrep.ID][pot.ID]
 
 	diceOnionVIP := enums.IngredientPreparations[dicePrep.ID][onion.ID]
-	chopTomatoVIP := enums.IngredientPreparations[chopPrep.ID][tomato.ID]
+	chopRomaTomatoVIP := enums.IngredientPreparations[chopPrep.ID][romaTomatoes.ID]
 	diceKnifeVPI := enums.PreparationInstruments[dicePrep.ID][knife.ID]
 	diceCuttingBoardVPV := enums.PreparationVessels[dicePrep.ID][cuttingBoard.ID]
 
@@ -130,10 +134,12 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	turmericTspVIMU := enums.IngredientMeasurementUnits[turmeric.ID][teaspoonMeasurement.ID]
 	corianderTspVIMU := enums.IngredientMeasurementUnits[groundCoriander.ID][teaspoonMeasurement.ID]
 	chiliPowderTspVIMU := enums.IngredientMeasurementUnits[chiliPowder.ID][teaspoonMeasurement.ID]
-	tomatoUnitVIMU := enums.IngredientMeasurementUnits[tomato.ID][unitMeasurement.ID]
+	romaTomatoUnitVIMU := enums.IngredientMeasurementUnits[romaTomatoes.ID][unitMeasurement.ID]
 	saltTspVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
 	chickpeasCupVIMU := enums.IngredientMeasurementUnits[chickpeas.ID][cupMeasurement.ID]
-	stockCupVIMU := enums.IngredientMeasurementUnits[chickenStock.ID][cupMeasurement.ID]
+	chickenStockCupVIMU := enums.IngredientMeasurementUnits[chickenStock.ID][cupMeasurement.ID]
+	vegetableStockCupVIMU := enums.IngredientMeasurementUnits[vegetableStock.ID][cupMeasurement.ID]
+	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
 	garamMasalaTspVIMU := enums.IngredientMeasurementUnits[garamMasala.ID][teaspoonMeasurement.ID]
 	cilantroTbspVIMU := enums.IngredientMeasurementUnits[cilantro.ID][tablespoonMeasurement.ID]
 
@@ -249,8 +255,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "Finely chop the Roma tomatoes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &chopTomatoVIP.ID,
-				ValidIngredientMeasurementUnitID: &tomatoUnitVIMU.ID,
+				ValidIngredientPreparationID:     &chopRomaTomatoVIP.ID,
+				ValidIngredientMeasurementUnitID: &romaTomatoUnitVIMU.ID,
 				Name:                             "Roma tomatoes",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
@@ -573,7 +579,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidIngredientPreparationID:     &addChiliPowderVIP.ID,
 				ValidIngredientMeasurementUnitID: &chiliPowderTspVIMU.ID,
-				Name:                             "Kashmiri or other hot red chile powder",
+				Name:                             "chili powder",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -629,7 +635,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &addTomatoVIP.ID,
+				ValidIngredientPreparationID:    &addRomaTomatoVIP.ID,
 				Name:                            "finely chopped tomatoes",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -723,7 +729,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &cookTomatoVIP.ID,
+				ValidIngredientPreparationID:    &cookRomaTomatoVIP.ID,
 				Name:                            "tomato mixture in pot",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -788,18 +794,42 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidIngredientPreparationID:     &addChickpeasVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickpeasCupVIMU.ID,
-				Name:                             "drained chickpeas (2 (15-ounce) cans or 3 cups cooked)",
+				Name:                             "drained chickpeas",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
 				},
+				QuantityNotes: "2 (15-ounce) cans or 3 cups cooked",
+				Index:         pointer.To[uint16](0),
 			},
 			{
-				ValidIngredientPreparationID:     &addStockVIP.ID,
-				ValidIngredientMeasurementUnitID: &stockCupVIMU.ID,
-				Name:                             "unsalted chicken or vegetable stock, or water",
+				ValidIngredientPreparationID:     &addChickenStockVIP.ID,
+				ValidIngredientMeasurementUnitID: &chickenStockCupVIMU.ID,
+				Name:                             "chicken stock",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
+				Index:       pointer.To[uint16](1),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &addVegetableStockVIP.ID,
+				ValidIngredientMeasurementUnitID: &vegetableStockCupVIMU.ID,
+				Name:                             "vegetable stock",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+				Index:       pointer.To[uint16](1),
+				OptionIndex: 1,
+			},
+			{
+				ValidIngredientPreparationID:     &addWaterVIP.ID,
+				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
+				Name:                             "water",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+				Index:       pointer.To[uint16](1),
+				OptionIndex: 2,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{

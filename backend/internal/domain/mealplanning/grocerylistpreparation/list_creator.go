@@ -102,9 +102,11 @@ func (g *groceryListCreator) processRecipeIngredients(
 					},
 				})
 			} else {
-				// This ingredient is not part of an option group - aggregate as before
-				if existing, ok := aggregatedInputs[ingredient.Ingredient.ID]; !ok {
-					aggregatedInputs[ingredient.Ingredient.ID] = &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
+				// This ingredient is not part of an option group - aggregate by (ingredient, unit)
+				// Same ingredient with different units (e.g., salt in tsp vs grams) becomes separate line items
+				aggregationKey := fmt.Sprintf("%s:%s", ingredient.Ingredient.ID, ingredient.MeasurementUnit.ID)
+				if existing, ok := aggregatedInputs[aggregationKey]; !ok {
+					aggregatedInputs[aggregationKey] = &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 						BelongsToMealPlanOption: &optionID,
 						RecipeID:                &recipe.ID,
 						RecipeStepID:            &step.ID,
@@ -119,16 +121,12 @@ func (g *groceryListCreator) processRecipeIngredients(
 						},
 					}
 				} else {
-					if existing.ValidMeasurementUnitID == ingredient.MeasurementUnit.ID {
-						existing.QuantityNeeded.Min += minQty
+					existing.QuantityNeeded.Min += minQty
 
-						if existing.QuantityNeeded.Max != nil && maxQty != nil {
-							*existing.QuantityNeeded.Max += *maxQty
-						} else if maxQty != nil {
-							existing.QuantityNeeded.Max = maxQty
-						}
-					} else {
-						logger.Error("creating grocery list", fmt.Errorf("mismatched measurement units: %s and %s", existing.ValidMeasurementUnitID, ingredient.MeasurementUnit.ID))
+					if existing.QuantityNeeded.Max != nil && maxQty != nil {
+						*existing.QuantityNeeded.Max += *maxQty
+					} else if maxQty != nil {
+						existing.QuantityNeeded.Max = maxQty
 					}
 				}
 			}

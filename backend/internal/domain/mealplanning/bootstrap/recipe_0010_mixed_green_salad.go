@@ -1418,7 +1418,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 			{
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
-				Name:                             "kosher or sea salt",
+				Name:                             "salt",
 				ToTaste:                          true,
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,

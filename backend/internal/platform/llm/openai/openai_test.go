@@ -35,9 +35,9 @@ func TestNewProvider(T *testing.T) {
 		t.Parallel()
 
 		provider, err := NewProvider(&Config{
-			APIKey:         "test-key",
-			BaseURL:        "https://custom.example.com/v1",
-			DefaultModel:   "gpt-4o",
+			APIKey:       "test-key",
+			BaseURL:      "https://custom.example.com/v1",
+			DefaultModel: "gpt-4o",
 		})
 		require.NoError(t, err)
 		require.NotNil(t, provider)
@@ -109,8 +109,8 @@ func TestOpenAIProvider_Completion(T *testing.T) {
 		t.Cleanup(ts.Close)
 
 		provider, err := NewProvider(&Config{
-			APIKey:        "test-key",
-			BaseURL:       ts.URL + "/v1",
+			APIKey:       "test-key",
+			BaseURL:      ts.URL + "/v1",
 			DefaultModel: "gpt-4o",
 		})
 		require.NoError(t, err)

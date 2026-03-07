@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/llm"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+
 	anyllm "github.com/mozilla-ai/any-llm-go"
 	anyllmopenai "github.com/mozilla-ai/any-llm-go/providers/openai"
-
-	"github.com/dinnerdonebetter/backend/internal/platform/llm"
 )
 
 // NewProvider creates a new OpenAI-backed LLM provider.
@@ -32,7 +33,7 @@ func NewProvider(cfg *Config) (llm.Provider, error) {
 	}
 
 	return &openaiProvider{
-		provider:      provider,
+		provider:     provider,
 		defaultModel: cfg.DefaultModel,
 	}, nil
 }
@@ -54,7 +55,7 @@ func (p *openaiProvider) Completion(ctx context.Context, params llm.CompletionPa
 
 	anyllmParams := anyllm.CompletionParams{
 		Model:    model,
-		Messages: toAnyLLMMessages(params.Messages),
+		Messages: toAnyLLMMessages(pointer.ToSlice(params.Messages)),
 	}
 
 	resp, err := p.provider.Completion(ctx, anyllmParams)
@@ -65,7 +66,7 @@ func (p *openaiProvider) Completion(ctx context.Context, params llm.CompletionPa
 	return toCompletionResult(resp), nil
 }
 
-func toAnyLLMMessages(msgs []llm.Message) []anyllm.Message {
+func toAnyLLMMessages(msgs []*llm.Message) []anyllm.Message {
 	out := make([]anyllm.Message, len(msgs))
 	for i, m := range msgs {
 		out[i] = anyllm.Message{

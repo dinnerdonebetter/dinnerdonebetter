@@ -23,10 +23,10 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	topPrep := enums.Preparations["top"]
 
 	// Get ingredients
-	tomato := enums.Ingredients["tomato"]
+	cherryTomatoes := enums.Ingredients["cherry tomatoes"]
 	lemon := enums.Ingredients["lemon"]
 	water := enums.Ingredients["water"]
-	pasta := enums.Ingredients["pasta"]
+	spaghetti := enums.Ingredients["spaghetti"]
 	oliveOil := enums.Ingredients["olive oil"]
 	salt := enums.Ingredients["salt"]
 	kale := enums.Ingredients["kale"]
@@ -54,7 +54,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	largeBowl := enums.Vessels["large bowl"]
 
 	// Get bridge table entries
-	halveTomatoVIP := enums.IngredientPreparations[halvePrep.ID][tomato.ID]
+	halveCherryTomatoVIP := enums.IngredientPreparations[halvePrep.ID][cherryTomatoes.ID]
 	halveKnifeVPI := enums.PreparationInstruments[halvePrep.ID][knife.ID]
 	halveCuttingBoardVPV := enums.PreparationVessels[halvePrep.ID][cuttingBoard.ID]
 
@@ -73,8 +73,8 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	boilWaterVIP := enums.IngredientPreparations[boilPrep.ID][water.ID]
 	boilPotVPV := enums.PreparationVessels[boilPrep.ID][pot.ID]
 
-	addPastaVIP := enums.IngredientPreparations[addPrep.ID][pasta.ID]
-	addTomatoVIP := enums.IngredientPreparations[addPrep.ID][tomato.ID]
+	addSpaghettiVIP := enums.IngredientPreparations[addPrep.ID][spaghetti.ID]
+	addCherryTomatoVIP := enums.IngredientPreparations[addPrep.ID][cherryTomatoes.ID]
 	addOliveOilVIP := enums.IngredientPreparations[addPrep.ID][oliveOil.ID]
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 	addWaterVIP := enums.IngredientPreparations[addPrep.ID][water.ID]
@@ -83,11 +83,11 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	coverSautePanVPV := enums.PreparationVessels[coverPrep.ID][sautePan.ID]
 	uncoverSautePanVPV := enums.PreparationVessels[uncoverPrep.ID][sautePan.ID]
 
-	simmerPastaVIP := enums.IngredientPreparations[simmerPrep.ID][pasta.ID]
+	simmerSpaghettiVIP := enums.IngredientPreparations[simmerPrep.ID][spaghetti.ID]
 	simmerTongsVPI := enums.PreparationInstruments[simmerPrep.ID][tongs.ID]
 	simmerSautePanVPV := enums.PreparationVessels[simmerPrep.ID][sautePan.ID]
 
-	cookPastaVIP := enums.IngredientPreparations[cookPrep.ID][pasta.ID]
+	cookSpaghettiVIP := enums.IngredientPreparations[cookPrep.ID][spaghetti.ID]
 	cookTongsVPI := enums.PreparationInstruments[cookPrep.ID][tongs.ID]
 	cookSautePanVPV := enums.PreparationVessels[cookPrep.ID][sautePan.ID]
 
@@ -99,10 +99,10 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	topSautePanVPV := enums.PreparationVessels[topPrep.ID][sautePan.ID]
 
 	// Measurement unit bridges (2 pints cherry tomatoes ≈ 4 cups)
-	tomatoCupVIMU := enums.IngredientMeasurementUnits[tomato.ID][cupMeasurement.ID]
+	cherryTomatoCupVIMU := enums.IngredientMeasurementUnits[cherryTomatoes.ID][cupMeasurement.ID]
 	lemonUnitVIMU := enums.IngredientMeasurementUnits[lemon.ID][unitMeasurement.ID]
 	waterQuartVIMU := enums.IngredientMeasurementUnits[water.ID][quartMeasurement.ID]
-	pastaPoundVIMU := enums.IngredientMeasurementUnits[pasta.ID][poundMeasurement.ID]
+	spaghettiPoundVIMU := enums.IngredientMeasurementUnits[spaghetti.ID][poundMeasurement.ID]
 	oliveOilTablespoonVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][tablespoonMeasurement.ID]
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
 	kaleCupVIMU := enums.IngredientMeasurementUnits[kale.ID][cupMeasurement.ID]
@@ -120,8 +120,8 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "Halve the cherry tomatoes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &halveTomatoVIP.ID,
-				ValidIngredientMeasurementUnitID: &tomatoCupVIMU.ID,
+				ValidIngredientPreparationID:     &halveCherryTomatoVIP.ID,
+				ValidIngredientMeasurementUnitID: &cherryTomatoCupVIMU.ID,
 				Name:                             "cherry tomatoes",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
@@ -245,8 +245,8 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "Place spaghetti, halved tomatoes, lemon zest, olive oil, and 2 teaspoons kosher salt in a large, dry, shallow pan. The pan should be large enough that the dry spaghetti can lie flat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &addPastaVIP.ID,
-				ValidIngredientMeasurementUnitID: &pastaPoundVIMU.ID,
+				ValidIngredientPreparationID:     &addSpaghettiVIP.ID,
+				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "spaghetti",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -255,7 +255,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &addTomatoVIP.ID,
+				ValidIngredientPreparationID:    &addCherryTomatoVIP.ID,
 				Name:                            "halved cherry tomatoes",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -465,7 +465,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &simmerPastaVIP.ID,
+				ValidIngredientPreparationID:    &simmerSpaghettiVIP.ID,
 				Name:                            "uncovered spaghetti at boil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -677,12 +677,12 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        cookPrep.ID,
 		Index:                11,
-		ExplicitInstructions: "Continue cooking until the remaining liquid has reduced to a sauce and the pasta is cooked through.",
+		ExplicitInstructions: "Continue cooking until the remaining liquid has reduced to a sauce and the spaghetti is cooked through.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &cookPastaVIP.ID,
+				ValidIngredientPreparationID:    &cookSpaghettiVIP.ID,
 				Name:                            "spaghetti with greens",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -712,7 +712,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
 				IngredientStateID: tenderState.ID,
-				Notes:             "pasta should be cooked through",
+				Notes:             "spaghetti should be cooked through",
 				Ingredients:       []uint64{0},
 				Optional:          false,
 			},
@@ -851,7 +851,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
 		Name:                        "Halve cherry tomatoes and zest lemons",
 		Description:                 "Halve the cherry tomatoes and zest the lemons. Halved cherry tomatoes keep 1 to 2 days refrigerated; lemon zest keeps 1 to 2 days in an airtight container.",
-		Notes:                       "Having these ready ahead makes the pasta come together quickly once the water boils.",
+		Notes:                       "Having these ready ahead makes the spaghetti come together quickly once the water boils.",
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store halved tomatoes and lemon zest in separate airtight containers in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
@@ -871,7 +871,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	prepTask2 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
 		Name:                        "Wash and chop kale or spinach",
 		Description:                 "Wash the kale or spinach leaves, remove stems from kale (if using), and chop the leaves. Washed and chopped kale keeps 2 to 3 days; spinach keeps 1 to 2 days.",
-		Notes:                       "Prepared greens wilt quickly into the pasta when added near the end.",
+		Notes:                       "Prepared greens wilt quickly into the spaghetti when added near the end.",
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the washed and chopped greens in an airtight container in the refrigerator for up to 2 days (spinach) or 3 days (kale).",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,

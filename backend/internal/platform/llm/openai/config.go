@@ -9,10 +9,10 @@ import (
 
 // Config configures the OpenAI LLM provider.
 type Config struct {
-	APIKey   string        `env:"API_KEY"   json:"apiKey,omitempty"`
-	BaseURL  string        `env:"BASE_URL"  json:"baseURL,omitempty"`
-	Timeout  time.Duration `env:"TIMEOUT"  json:"timeout"`
-	DefaultModel string    `env:"DEFAULT_MODEL" json:"defaultModel,omitempty"`
+	APIKey       string        `env:"API_KEY"       json:"apiKey,omitempty"`
+	BaseURL      string        `env:"BASE_URL"      json:"baseURL,omitempty"`
+	DefaultModel string        `env:"DEFAULT_MODEL" json:"defaultModel,omitempty"`
+	Timeout      time.Duration `env:"TIMEOUT"       json:"timeout"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

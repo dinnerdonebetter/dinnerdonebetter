@@ -51,6 +51,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "onion", Description: "Yellow cooking onion", PluralName: "onions", StorageInstructions: "Store in a cool, dry, well-ventilated place", Slug: "onion", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "carrot", Description: "Fresh orange carrots", PluralName: "carrots", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "carrot", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "tomato", Description: "Ripe red tomatoes", PluralName: "tomatoes", StorageInstructions: "Store at room temperature until ripe, then refrigerate", Slug: "tomato", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "cherry tomatoes", Description: "Small round tomatoes, often sold on the vine", PluralName: "cherry tomatoes", StorageInstructions: "Store at room temperature until ripe, then refrigerate", Slug: "cherry-tomatoes", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "Roma tomatoes", Description: "Plum tomatoes, ideal for cooking and sauces", PluralName: "Roma tomatoes", StorageInstructions: "Store at room temperature until ripe, then refrigerate", Slug: "roma-tomatoes", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "bell pepper", Description: "Red bell pepper", PluralName: "bell peppers", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "bell-pepper", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "broccoli", Description: "Fresh broccoli florets", PluralName: "broccoli", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "broccoli", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "chicken breast", Description: "Boneless, skinless chicken breast", PluralName: "chicken breasts", StorageInstructions: "Keep refrigerated at or below 40°F", Slug: "chicken-breast", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
@@ -62,7 +64,6 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "cheddar cheese", Description: "Sharp cheddar cheese", PluralName: "cheddar cheese", StorageInstructions: "Keep refrigerated, wrap tightly", Slug: "cheddar-cheese", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "eggs", Description: "Large chicken eggs", PluralName: "eggs", StorageInstructions: "Keep refrigerated in original carton", Slug: "eggs", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: true, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "rice", Description: "Long-grain white rice", PluralName: "rice", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "rice", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
-		{ID: identifiers.New(), Name: "pasta", Description: "Dried spaghetti pasta", PluralName: "pasta", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "pasta", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "spaghetti", Description: "Dried spaghetti pasta", PluralName: "spaghetti", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "spaghetti", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "instant ramen noodles", Description: "Individual package of instant ramen noodles, without seasoning packet", PluralName: "instant ramen noodles", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "instant-ramen-noodles", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "bread", Description: "White sandwich bread", PluralName: "bread", StorageInstructions: "Store at room temperature in a bread box or sealed bag", Slug: "bread", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -71,7 +72,9 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "black pepper", Description: "Ground black pepper (deprecated: use whole black peppercorns)", PluralName: "black pepper", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "black-pepper", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: true},
 		{ID: identifiers.New(), Name: "whole black peppercorns", Description: "Whole dried black peppercorns for grinding", PluralName: "whole black peppercorns", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "whole-black-peppercorns", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "basil", Description: "Fresh basil leaves", PluralName: "basil", StorageInstructions: "Store in the refrigerator, stems in water", Slug: "basil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "dried basil", Description: "Dried basil leaves", PluralName: "dried basil", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "dried-basil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "oregano", Description: "Dried oregano", PluralName: "oregano", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "oregano", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "fresh oregano", Description: "Fresh oregano leaves", PluralName: "fresh oregano", StorageInstructions: "Store in the refrigerator, wrapped in damp paper towel", Slug: "fresh-oregano", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "thyme", Description: "Fresh thyme sprigs", PluralName: "thyme", StorageInstructions: "Store in the refrigerator, wrapped in damp paper towel", Slug: "thyme", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "parsley", Description: "Fresh flat-leaf parsley", PluralName: "parsley", StorageInstructions: "Store in the refrigerator, stems in water", Slug: "parsley", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "cilantro", Description: "Fresh cilantro leaves", PluralName: "cilantro", StorageInstructions: "Store in the refrigerator, stems in water", Slug: "cilantro", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -103,6 +106,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "sugar", Description: "Granulated white sugar", PluralName: "sugar", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "sugar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "honey", Description: "Raw honey", PluralName: "honey", StorageInstructions: "Store at room temperature in a sealed container", Slug: "honey", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "vinegar", Description: "White wine vinegar", PluralName: "vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "sherry vinegar", Description: "Spanish sherry vinegar for dressings and sauces", PluralName: "sherry vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "sherry-vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "rice vinegar", Description: "Rice vinegar, mild and slightly sweet", PluralName: "rice vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "rice-vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "soy sauce", Description: "Low-sodium soy sauce", PluralName: "soy sauce", StorageInstructions: "Store in a cool, dark place", Slug: "soy-sauce", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: true, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "ginger", Description: "Fresh ginger root", PluralName: "ginger", StorageInstructions: "Store in the refrigerator, wrapped in paper towel", Slug: "ginger", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "turmeric", Description: "Ground turmeric", PluralName: "turmeric", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "turmeric", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -2223,11 +2228,18 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === HEAT PREPARATION ===
 	// Ingredient-Preparation links
+	canolaOil := enums.Ingredients["canola oil"]
 	if err = createVIP(heatPrep, vegetableOil); err != nil {
+		return err
+	}
+	if err = createVIP(heatPrep, canolaOil); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links (already created for vegetableOil)
+	if err = createVIMU(canolaOil, milliliterMeasurement); err != nil {
+		return err
+	}
 
 	// Preparation-Instrument links
 	stovetop := enums.Instruments["stovetop"]
@@ -2704,6 +2716,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	roastChickenWholeChicken := enums.Ingredients["whole chicken"]
 	roastChickenBakingPowder := enums.Ingredients["baking powder"]
 	roastChickenVegetableOil := enums.Ingredients["vegetable oil"]
+	roastChickenCanolaOil := enums.Ingredients["canola oil"]
 	roastChickenSalt := enums.Ingredients["salt"]
 	roastChickenWholePeppercorns := enums.Ingredients["whole black peppercorns"]
 
@@ -2820,6 +2833,13 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// === HEAT PREPARATION (for stainless steel skillet) ===
+	// Ingredient-Preparation links
+	if err = createVIP(roastChickenHeatPrep, roastChickenVegetableOil); err != nil {
+		return err
+	}
+	if err = createVIP(roastChickenHeatPrep, roastChickenCanolaOil); err != nil {
+		return err
+	}
 	// Preparation-Vessel links
 	if err = createVPV(roastChickenHeatPrep, stainlessSteelSkillet); err != nil {
 		return err
@@ -2831,6 +2851,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIP(roastChickenRubPrep, roastChickenVegetableOil); err != nil {
+		return err
+	}
+	if err = createVIP(roastChickenRubPrep, roastChickenCanolaOil); err != nil {
 		return err
 	}
 
@@ -5658,7 +5681,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	rbWhiteOnion, err := getIngredient("onion")
+	rbWhiteOnion, err := getIngredient("white onion")
 	if err != nil {
 		return err
 	}
@@ -6750,6 +6773,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	bcCashews := enums.Ingredients["raw cashews"]
 	bcWater := enums.Ingredients["water"]
 	bcCanolaOil := enums.Ingredients["canola oil"]
+	bcVegetableOil := enums.Ingredients["vegetable oil"]
 	bcWhiteOnion := enums.Ingredients["white onion"]
 	bcBakingSoda := enums.Ingredients["baking soda"]
 	bcGarlic := enums.Ingredients["garlic"]
@@ -6957,6 +6981,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === HEAT PREPARATION ===
 	if err = createVIP(bcHeatPrep, bcCanolaOil); err != nil {
+		return err
+	}
+	if err = createVIP(bcHeatPrep, bcVegetableOil); err != nil {
 		return err
 	}
 	if err = createVPV(bcHeatPrep, bcDutchOven); err != nil {
@@ -8697,7 +8724,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// === GOCHUJANG BUTTER PASTA RECIPE BRIDGE ENTRIES ===
-	gbpPasta, err := getIngredient("pasta")
+	gbpSpaghetti, err := getIngredient("spaghetti")
 	if err != nil {
 		return err
 	}
@@ -8717,7 +8744,11 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	gbpVinegar, err := getIngredient("vinegar")
+	gbpSherryVinegar, err := getIngredient("sherry vinegar")
+	if err != nil {
+		return err
+	}
+	gbpRiceVinegar, err := getIngredient("rice vinegar")
 	if err != nil {
 		return err
 	}
@@ -8788,8 +8819,8 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	gbpPoundMeasurement := enums.MeasurementUnits["pound"]
 	gbpCupMeasurement := enums.MeasurementUnits["cup"]
 
-	// Pasta and pot for boiling
-	if err = createVIP(gbpSubmergePrep, gbpPasta); err != nil {
+	// Spaghetti and pot for boiling
+	if err = createVIP(gbpSubmergePrep, gbpSpaghetti); err != nil {
 		return err
 	}
 	if err = createVIP(gbpSubmergePrep, gbpWater); err != nil {
@@ -8801,7 +8832,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPV(gbpSubmergePrep, gbpPot); err != nil {
 		return err
 	}
-	if err = createVIP(gbpBoilPrep, gbpPasta); err != nil {
+	if err = createVIP(gbpBoilPrep, gbpSpaghetti); err != nil {
 		return err
 	}
 	if err = createVIP(gbpBoilPrep, gbpWater); err != nil {
@@ -8816,10 +8847,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPI(gbpBoilPrep, gbpWoodenSpoon); err != nil {
 		return err
 	}
-	if err = createVIP(gbpRestPrep, gbpPasta); err != nil {
+	if err = createVIP(gbpRestPrep, gbpSpaghetti); err != nil {
 		return err
 	}
-	if err = createVIP(gbpDrainPrep, gbpPasta); err != nil {
+	if err = createVIP(gbpDrainPrep, gbpSpaghetti); err != nil {
 		return err
 	}
 	if err = createVPV(gbpDrainPrep, gbpColander); err != nil {
@@ -8834,7 +8865,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(gbpReservePrep, gbpWater); err != nil {
 		return err
 	}
-	if err = createVIP(gbpStirPrep, gbpPasta); err != nil {
+	if err = createVIP(gbpStirPrep, gbpSpaghetti); err != nil {
 		return err
 	}
 	if err = createVIP(gbpStirPrep, gbpButter); err != nil {
@@ -8846,7 +8877,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(gbpStirPrep, gbpGochujangPaste); err != nil {
 		return err
 	}
-	if err = createVIP(gbpStirPrep, gbpVinegar); err != nil {
+	if err = createVIP(gbpStirPrep, gbpSherryVinegar); err != nil {
+		return err
+	}
+	if err = createVIP(gbpStirPrep, gbpRiceVinegar); err != nil {
 		return err
 	}
 	if err = createVIP(gbpStirPrep, gbpSalt); err != nil {
@@ -8860,7 +8894,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	// add+salt exists from glazed carrots
-	if err = createVIP(gbpAddPrep, gbpVinegar); err != nil {
+	if err = createVIP(gbpAddPrep, gbpSherryVinegar); err != nil {
+		return err
+	}
+	if err = createVIP(gbpAddPrep, gbpRiceVinegar); err != nil {
 		return err
 	}
 	// reduce+pan, reduce+spoon exist from glazed carrots
@@ -8874,7 +8911,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPV(gbpMincePrep, gbpCuttingBoard); err != nil {
 		return err
 	}
-	if err = createVIMU(gbpPasta, gbpPoundMeasurement); err != nil {
+	if err = createVIMU(gbpSpaghetti, gbpPoundMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(gbpGochujangPaste, gbpCupMeasurement); err != nil {
@@ -8883,7 +8920,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(gbpHoney, gbpCupMeasurement); err != nil {
 		return err
 	}
-	if err = createVIMU(gbpVinegar, gbpCupMeasurement); err != nil {
+	if err = createVIMU(gbpSherryVinegar, gbpCupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(gbpRiceVinegar, gbpCupMeasurement); err != nil {
 		return err
 	}
 	// garlic+clove, butter+tablespoon, water+cup exist from other recipes
@@ -9095,7 +9135,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// === ONE-PAN PASTA RECIPE BRIDGE ENTRIES ===
-	oppTomato, err := getIngredient("tomato")
+	oppCherryTomatoes, err := getIngredient("cherry tomatoes")
 	if err != nil {
 		return err
 	}
@@ -9107,7 +9147,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	oppPasta, err := getIngredient("pasta")
+	oppSpaghetti, err := getIngredient("spaghetti")
 	if err != nil {
 		return err
 	}
@@ -9202,7 +9242,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	oppCupMeasurement := enums.MeasurementUnits["cup"]
 	oppQuartMeasurement := enums.MeasurementUnits["quart"]
 
-	if err = createVIP(oppHalvePrep, oppTomato); err != nil {
+	if err = createVIP(oppHalvePrep, oppCherryTomatoes); err != nil {
 		return err
 	}
 	if err = createVPI(oppHalvePrep, oppKnife); err != nil {
@@ -9223,10 +9263,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPV(oppBoilPrep, oppPot); err != nil {
 		return err
 	}
-	if err = createVIP(oppAddPrep, oppPasta); err != nil {
+	if err = createVIP(oppAddPrep, oppSpaghetti); err != nil {
 		return err
 	}
-	if err = createVIP(oppAddPrep, oppTomato); err != nil {
+	if err = createVIP(oppAddPrep, oppCherryTomatoes); err != nil {
 		return err
 	}
 	if err = createVIP(oppAddPrep, oppOliveOil); err != nil {
@@ -9253,7 +9293,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPV(oppUncoverPrep, oppSautePan); err != nil {
 		return err
 	}
-	if err = createVIP(oppSimmerPrep, oppPasta); err != nil {
+	if err = createVIP(oppSimmerPrep, oppSpaghetti); err != nil {
 		return err
 	}
 	if err = createVPI(oppSimmerPrep, oppTongs); err != nil {
@@ -9262,7 +9302,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPV(oppSimmerPrep, oppSautePan); err != nil {
 		return err
 	}
-	if err = createVIP(oppCookPrep, oppPasta); err != nil {
+	if err = createVIP(oppCookPrep, oppSpaghetti); err != nil {
 		return err
 	}
 	if err = createVIP(oppCookPrep, oppKale); err != nil {
@@ -9325,7 +9365,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPV(oppChopPrep, oppCuttingBoard); err != nil {
 		return err
 	}
-	if err = createVIMU(oppTomato, oppCupMeasurement); err != nil {
+	if err = createVIMU(oppCherryTomatoes, oppCupMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(oppWater, oppQuartMeasurement); err != nil {
@@ -9337,7 +9377,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(oppSpinach, oppCupMeasurement); err != nil {
 		return err
 	}
-	// olive oil+tablespoon, salt+teaspoon, pasta+pound, lemon+unit exist from other recipes
+	// olive oil+tablespoon, salt+teaspoon, spaghetti+pound, lemon+unit exist from other recipes
 
 	// === CHICKEN AND VERMICELLI SOUP RECIPE BRIDGE ENTRIES ===
 	cvsTomatoPaste, err := getIngredient("tomato paste")
@@ -9373,6 +9413,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	cvsLimeJuice, err := getIngredient("lime juice")
+	if err != nil {
+		return err
+	}
+	cvsLemonJuice, err := getIngredient("lemon juice")
 	if err != nil {
 		return err
 	}
@@ -9607,6 +9651,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(cvsStirPrep, cvsLimeJuice); err != nil {
 		return err
 	}
+	if err = createVIP(cvsStirPrep, cvsLemonJuice); err != nil {
+		return err
+	}
 	if err = createVPV(cvsStirPrep, cvsPot); err != nil {
 		return err
 	}
@@ -9632,6 +9679,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIMU(cvsLimeJuice, cvsTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(cvsLemonJuice, cvsTablespoonMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(cvsChickenBreast, cvsUnitMeasurement); err != nil {
@@ -11269,7 +11319,15 @@ func createChickenFlorentineBridgeEntries(ctx context.Context, repo mealplanning
 	if err != nil {
 		return err
 	}
+	driedBasil, err := getIngredient("dried basil")
+	if err != nil {
+		return err
+	}
 	oregano, err := getIngredient("oregano")
+	if err != nil {
+		return err
+	}
+	freshOregano, err := getIngredient("fresh oregano")
 	if err != nil {
 		return err
 	}
@@ -11367,6 +11425,10 @@ func createChickenFlorentineBridgeEntries(ctx context.Context, repo mealplanning
 	if err != nil {
 		return err
 	}
+	tablespoonMeasurement, err := getMeasurementUnit("tablespoon")
+	if err != nil {
+		return err
+	}
 	unitMeasurement, err := getMeasurementUnit("unit")
 	if err != nil {
 		return err
@@ -11453,7 +11515,13 @@ func createChickenFlorentineBridgeEntries(ctx context.Context, repo mealplanning
 	if err = createVIP(addPrep, basil); err != nil {
 		return err
 	}
+	if err = createVIP(addPrep, driedBasil); err != nil {
+		return err
+	}
 	if err = createVIP(addPrep, oregano); err != nil {
+		return err
+	}
+	if err = createVIP(addPrep, freshOregano); err != nil {
 		return err
 	}
 	if err = createVIP(addPrep, heavyCream); err != nil {
@@ -11558,7 +11626,16 @@ func createChickenFlorentineBridgeEntries(ctx context.Context, repo mealplanning
 	if err = createVIMU(basil, teaspoonMeasurement); err != nil {
 		return err
 	}
+	if err = createVIMU(basil, tablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(driedBasil, teaspoonMeasurement); err != nil {
+		return err
+	}
 	if err = createVIMU(oregano, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(freshOregano, teaspoonMeasurement); err != nil {
 		return err
 	}
 
@@ -11777,7 +11854,7 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	tomato, err := getIngredient("tomato")
+	romaTomatoes, err := getIngredient("Roma tomatoes")
 	if err != nil {
 		return err
 	}
@@ -11861,6 +11938,12 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(chickenStock, cupMeasurement); err != nil {
 		return err
 	}
+	if err = createVIMU(vegetableStock, cupMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(water, cupMeasurement); err != nil {
+		return err
+	}
 	if err = createVIMU(garamMasala, teaspoonMeasurement); err != nil {
 		return err
 	}
@@ -11918,7 +12001,7 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(addPrep, chiliPowder); err != nil {
 		return err
 	}
-	if err = createVIP(addPrep, tomato); err != nil {
+	if err = createVIP(addPrep, romaTomatoes); err != nil {
 		return err
 	}
 	if err = createVIP(addPrep, salt); err != nil {
@@ -11958,7 +12041,7 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(cookPrep, ginger); err != nil {
 		return err
 	}
-	if err = createVIP(cookPrep, tomato); err != nil {
+	if err = createVIP(cookPrep, romaTomatoes); err != nil {
 		return err
 	}
 	if err = createVPV(cookPrep, pot); err != nil {
@@ -12041,7 +12124,7 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(chopPrep, onion); err != nil {
 		return err
 	}
-	if err = createVIP(chopPrep, tomato); err != nil {
+	if err = createVIP(chopPrep, romaTomatoes); err != nil {
 		return err
 	}
 	if err = createVIP(chopPrep, freshThaiChile); err != nil {
@@ -12064,7 +12147,7 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(dicePrep, onion); err != nil {
 		return err
 	}
-	if err = createVIP(dicePrep, tomato); err != nil {
+	if err = createVIP(dicePrep, romaTomatoes); err != nil {
 		return err
 	}
 	if err = createVPI(dicePrep, knife); err != nil {
@@ -12104,7 +12187,7 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(chickpeas, cupMeasurement); err != nil {
 		return err
 	}
-	if err = createVIMU(tomato, unitMeasurement); err != nil {
+	if err = createVIMU(romaTomatoes, unitMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(cilantro, tablespoonMeasurement); err != nil {
