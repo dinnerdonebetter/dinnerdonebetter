@@ -44,6 +44,12 @@ Converts prose recipe instructions into `[]*mealplanning.RecipeCreationRequestIn
 - Reserving liquid is its own step when explicitly mentioned
 - Drain and return-to-vessel are separate steps
 
+--
+
+## Ingredient decomposition (critical)
+
+If a recipe step calls for a minced clove of garlic, don't just put garlic as the ingredient with "minced" in the description, you must create a preceeding step that minces the garlic.
+
 ---
 
 ## Vessel and Instrument Chaining
@@ -112,6 +118,12 @@ Common states: `tender`, `browned`, `at temperature`, `shimmering`, `at desired 
 - `instrument`: tool output (rare)
 
 Discrete vs continuous: set `ItemQuantity` for countable items (patties, cookies); omit for bulk (sauce, liquid).
+
+-- 
+
+## Prep tasks
+
+A critical value proposition of the service is that we will save you time when cooking. Many components of recipes can be prepared ahead of time if stored properly. For instance, you can dice an onion up to 72 hours ahead of cook time if you put it in the fridge. Many recipes will fail to call out prep task opportunities, you should seek them out and document them proactively.
 
 ---
 

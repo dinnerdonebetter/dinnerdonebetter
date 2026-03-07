@@ -11,9 +11,12 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	// Get preparations
 	halvePrep := enums.Preparations["halve"]
 	zestPrep := enums.Preparations["zest"]
+	rinsePrep := enums.Preparations["rinse"]
+	chopPrep := enums.Preparations["chop"]
 	boilPrep := enums.Preparations["boil"]
 	addPrep := enums.Preparations["add"]
 	coverPrep := enums.Preparations["cover"]
+	uncoverPrep := enums.Preparations["uncover"]
 	simmerPrep := enums.Preparations["simmer"]
 	cookPrep := enums.Preparations["cook"]
 	seasonPrep := enums.Preparations["season"]
@@ -48,6 +51,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	pot := enums.Vessels["pot"]
 	sautePan := enums.Vessels["sauté pan"]
 	cuttingBoard := enums.Vessels["cutting board"]
+	largeBowl := enums.Vessels["large bowl"]
 
 	// Get bridge table entries
 	halveTomatoVIP := enums.IngredientPreparations[halvePrep.ID][tomato.ID]
@@ -57,6 +61,15 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	zestLemonVIP := enums.IngredientPreparations[zestPrep.ID][lemon.ID]
 	zestMicroplaneVPI := enums.PreparationInstruments[zestPrep.ID][microplane.ID]
 
+	rinseKaleVIP := enums.IngredientPreparations[rinsePrep.ID][kale.ID]
+	rinseSpinachVIP := enums.IngredientPreparations[rinsePrep.ID][spinach.ID]
+	rinseLargeBowlVPV := enums.PreparationVessels[rinsePrep.ID][largeBowl.ID]
+
+	chopKaleVIP := enums.IngredientPreparations[chopPrep.ID][kale.ID]
+	chopSpinachVIP := enums.IngredientPreparations[chopPrep.ID][spinach.ID]
+	chopKnifeVPI := enums.PreparationInstruments[chopPrep.ID][knife.ID]
+	chopCuttingBoardVPV := enums.PreparationVessels[chopPrep.ID][cuttingBoard.ID]
+
 	boilWaterVIP := enums.IngredientPreparations[boilPrep.ID][water.ID]
 	boilPotVPV := enums.PreparationVessels[boilPrep.ID][pot.ID]
 
@@ -65,11 +78,10 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	addOliveOilVIP := enums.IngredientPreparations[addPrep.ID][oliveOil.ID]
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 	addWaterVIP := enums.IngredientPreparations[addPrep.ID][water.ID]
-	addKaleVIP := enums.IngredientPreparations[addPrep.ID][kale.ID]
-	addSpinachVIP := enums.IngredientPreparations[addPrep.ID][spinach.ID]
 	addSautePanVPV := enums.PreparationVessels[addPrep.ID][sautePan.ID]
 
 	coverSautePanVPV := enums.PreparationVessels[coverPrep.ID][sautePan.ID]
+	uncoverSautePanVPV := enums.PreparationVessels[uncoverPrep.ID][sautePan.ID]
 
 	simmerPastaVIP := enums.IngredientPreparations[simmerPrep.ID][pasta.ID]
 	simmerTongsVPI := enums.PreparationInstruments[simmerPrep.ID][tongs.ID]
@@ -97,6 +109,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 	spinachCupVIMU := enums.IngredientMeasurementUnits[spinach.ID][cupMeasurement.ID]
 
 	// Ingredient states
+	atTemperatureState := enums.IngredientStates["at temperature"]
 	tenderState := enums.IngredientStates["tender"]
 	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
 
@@ -370,6 +383,14 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				},
 			},
 		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
+			{
+				IngredientStateID: atTemperatureState.ID,
+				Notes:             "water should be at a rolling boil",
+				Ingredients:       []uint64{0},
+				Optional:          false,
+			},
+		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 				Name:              "covered spaghetti at boil",
@@ -388,20 +409,64 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 6: Uncover and simmer, stirring with tongs
+	// Step 6: Uncover
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        simmerPrep.ID,
+		PreparationID:        uncoverPrep.ID,
 		Index:                6,
-		ExplicitInstructions: "Remove the lid and simmer for about 6 minutes, using tongs to move the spaghetti around now and then so it doesn't stick.",
+		ExplicitInstructions: "Remove the lid.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "covered spaghetti at boil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &uncoverSautePanVPV.ID,
+				Name:                            "large shallow pan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "uncovered spaghetti at boil",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				Name:  "large shallow pan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
+		},
+	}
+
+	// Step 7: Reduce to simmer and cook, stirring with tongs
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        simmerPrep.ID,
+		Index:                7,
+		ExplicitInstructions: "Reduce the heat to a simmer and cook for about 6 minutes, using tongs to move the spaghetti around now and then so it doesn't stick.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](360),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &simmerPastaVIP.ID,
-				Name:                            "covered spaghetti at boil",
+				Name:                            "uncovered spaghetti at boil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -418,7 +483,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &simmerSautePanVPV.ID,
 				Name:                            "large shallow pan",
@@ -445,14 +510,125 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 7: Add kale or spinach
-	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Add kale or spinach (leaves only, washed and chopped) and continue cooking.",
+	// Step 8: Wash kale or spinach
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        rinsePrep.ID,
+		Index:                8,
+		ExplicitInstructions: "Wash the kale or spinach leaves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ValidIngredientPreparationID:     &rinseKaleVIP.ID,
+				ValidIngredientMeasurementUnitID: &kaleCupVIMU.ID,
+				Name:                             "kale (leaves only)",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 4,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &rinseSpinachVIP.ID,
+				ValidIngredientMeasurementUnitID: &spinachCupVIMU.ID,
+				Name:                             "spinach (leaves only)",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 4,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ValidPreparationVesselID: &rinseLargeBowlVPV.ID,
+				Name:                     "large bowl",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "washed kale or spinach",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+		},
+	}
+
+	// Step 9: Chop kale or spinach
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        chopPrep.ID,
+		Index:                9,
+		ExplicitInstructions: "Remove stems from kale (if using) and chop the leaves. If using spinach, chop the leaves.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				ValidIngredientPreparationID:     &chopKaleVIP.ID,
+				ValidIngredientMeasurementUnitID: &kaleCupVIMU.ID,
+				Name:                             "washed kale",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 4,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				ValidIngredientPreparationID:     &chopSpinachVIP.ID,
+				ValidIngredientMeasurementUnitID: &spinachCupVIMU.ID,
+				Name:                             "washed spinach",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 4,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &chopKnifeVPI.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+			{
+				ValidPreparationVesselID: &chopCuttingBoardVPV.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+			{
+				Name:              "chopped kale or spinach",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+		},
+	}
+
+	// Step 10: Add kale or spinach
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID:        addPrep.ID,
+		Index:                10,
+		ExplicitInstructions: "Add the chopped kale or spinach and continue cooking.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "simmered spaghetti",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -460,30 +636,19 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				},
 			},
 			{
-				ValidIngredientPreparationID:     &addKaleVIP.ID,
-				ValidIngredientMeasurementUnitID: &kaleCupVIMU.ID,
-				Name:                             "kale (leaves only, washed and chopped)",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "chopped kale or spinach",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
 				},
-				Index:       pointer.To[uint16](1),
-				OptionIndex: 0,
-			},
-			{
-				ValidIngredientPreparationID:     &addSpinachVIP.ID,
-				ValidIngredientMeasurementUnitID: &spinachCupVIMU.ID,
-				Name:                             "spinach (leaves only, washed and chopped)",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 4,
-				},
-				Index:       pointer.To[uint16](1),
-				OptionIndex: 1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &addSautePanVPV.ID,
 				Name:                            "large shallow pan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -508,14 +673,14 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 8: Cook until liquid reduces to sauce and pasta is tender
-	step8 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 11: Cook until liquid reduces to sauce and pasta is tender
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        cookPrep.ID,
-		Index:                8,
+		Index:                11,
 		ExplicitInstructions: "Continue cooking until the remaining liquid has reduced to a sauce and the pasta is cooked through.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &cookPastaVIP.ID,
 				Name:                            "spaghetti with greens",
@@ -535,7 +700,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &cookSautePanVPV.ID,
 				Name:                            "large shallow pan",
@@ -576,14 +741,14 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 9: Season and top with Parmesan
-	step9 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 12: Season and top with Parmesan
+	step12 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        seasonPrep.ID,
-		Index:                9,
-		ExplicitInstructions: "Taste, season with salt and pepper to taste, and top with Parmesan.",
+		Index:                12,
+		ExplicitInstructions: "Taste, season with salt and pepper to taste.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "one-pan pasta",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -609,7 +774,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &seasonSautePanVPV.ID,
 				Name:                            "large shallow pan",
@@ -636,14 +801,14 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 	}
 
-	// Step 10: Top with Parmesan
-	step10 := &mealplanning.RecipeStepCreationRequestInput{
+	// Step 13: Top with Parmesan
+	step13 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        topPrep.ID,
-		Index:                10,
+		Index:                13,
 		ExplicitInstructions: "Top with Parmesan for serving.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "seasoned one-pan pasta",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -661,7 +826,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &topSautePanVPV.ID,
 				Name:                            "large shallow pan",
@@ -697,7 +862,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
-				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10,
+				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13,
 			},
 			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
 			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},

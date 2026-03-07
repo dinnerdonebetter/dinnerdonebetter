@@ -8638,6 +8638,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	gbpSmallBowl, err := getVessel("small bowl")
+	if err != nil {
+		return err
+	}
 	gbpSubmergePrep, err := getPreparation("submerge")
 	if err != nil {
 		return err
@@ -8720,6 +8724,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPV(gbpDrainPrep, gbpColander); err != nil {
+		return err
+	}
+	if err = createVPV(gbpDrainPrep, gbpPot); err != nil {
+		return err
+	}
+	if err = createVPV(gbpDrainPrep, gbpSmallBowl); err != nil {
 		return err
 	}
 	if err = createVIP(gbpReservePrep, gbpWater); err != nil {
@@ -9050,6 +9060,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	oppUncoverPrep, err := getPreparation("uncover")
+	if err != nil {
+		return err
+	}
 	oppSimmerPrep, err := getPreparation("simmer")
 	if err != nil {
 		return err
@@ -9117,6 +9131,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPV(oppCoverPrep, oppSautePan); err != nil {
 		return err
 	}
+	if err = createVPV(oppUncoverPrep, oppSautePan); err != nil {
+		return err
+	}
 	if err = createVIP(oppSimmerPrep, oppPasta); err != nil {
 		return err
 	}
@@ -9154,6 +9171,39 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPV(oppTopPrep, oppSautePan); err != nil {
+		return err
+	}
+	oppRinsePrep, err := getPreparation("rinse")
+	if err != nil {
+		return err
+	}
+	oppChopPrep, err := getPreparation("chop")
+	if err != nil {
+		return err
+	}
+	oppLargeBowl, err := getVessel("large bowl")
+	if err != nil {
+		return err
+	}
+	if err = createVIP(oppRinsePrep, oppKale); err != nil {
+		return err
+	}
+	if err = createVIP(oppRinsePrep, oppSpinach); err != nil {
+		return err
+	}
+	if err = createVPV(oppRinsePrep, oppLargeBowl); err != nil {
+		return err
+	}
+	if err = createVIP(oppChopPrep, oppKale); err != nil {
+		return err
+	}
+	if err = createVIP(oppChopPrep, oppSpinach); err != nil {
+		return err
+	}
+	if err = createVPI(oppChopPrep, oppKnife); err != nil {
+		return err
+	}
+	if err = createVPV(oppChopPrep, oppCuttingBoard); err != nil {
 		return err
 	}
 	if err = createVIMU(oppTomato, oppCupMeasurement); err != nil {
