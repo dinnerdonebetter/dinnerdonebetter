@@ -63,6 +63,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "eggs", Description: "Large chicken eggs", PluralName: "eggs", StorageInstructions: "Keep refrigerated in original carton", Slug: "eggs", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: true, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "rice", Description: "Long-grain white rice", PluralName: "rice", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "rice", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "pasta", Description: "Dried spaghetti pasta", PluralName: "pasta", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "pasta", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "spaghetti", Description: "Dried spaghetti pasta", PluralName: "spaghetti", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "spaghetti", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "instant ramen noodles", Description: "Individual package of instant ramen noodles, without seasoning packet", PluralName: "instant ramen noodles", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "instant-ramen-noodles", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "bread", Description: "White sandwich bread", PluralName: "bread", StorageInstructions: "Store at room temperature in a bread box or sealed bag", Slug: "bread", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "olive oil", Description: "Extra virgin olive oil", PluralName: "olive oil", StorageInstructions: "Store in a cool, dark place away from light", Slug: "olive-oil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "salt", Description: "Fine sea salt", PluralName: "salt", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "salt", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -8891,7 +8893,11 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	pbnPasta, err := getIngredient("pasta")
+	pbnSpaghetti, err := getIngredient("spaghetti")
+	if err != nil {
+		return err
+	}
+	pbnInstantRamen, err := getIngredient("instant ramen noodles")
 	if err != nil {
 		return err
 	}
@@ -8967,8 +8973,11 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	// Submerge, boil, drain, reserve for pasta/water/salt/pot/colander may exist from gochujang
-	if err = createVIP(pbnSubmergePrep, pbnPasta); err != nil {
+	// Submerge, boil, drain, reserve for spaghetti/instant ramen/water/salt/pot/colander
+	if err = createVIP(pbnSubmergePrep, pbnSpaghetti); err != nil {
+		return err
+	}
+	if err = createVIP(pbnSubmergePrep, pbnInstantRamen); err != nil {
 		return err
 	}
 	if err = createVIP(pbnSubmergePrep, pbnWater); err != nil {
@@ -8980,7 +8989,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPV(pbnSubmergePrep, pbnPot); err != nil {
 		return err
 	}
-	if err = createVIP(pbnBoilPrep, pbnPasta); err != nil {
+	if err = createVIP(pbnBoilPrep, pbnSpaghetti); err != nil {
+		return err
+	}
+	if err = createVIP(pbnBoilPrep, pbnInstantRamen); err != nil {
 		return err
 	}
 	if err = createVPV(pbnBoilPrep, pbnPot); err != nil {
@@ -8992,7 +9004,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(pbnReservePrep, pbnWater); err != nil {
 		return err
 	}
-	if err = createVIP(pbnDrainPrep, pbnPasta); err != nil {
+	if err = createVIP(pbnDrainPrep, pbnSpaghetti); err != nil {
+		return err
+	}
+	if err = createVIP(pbnDrainPrep, pbnInstantRamen); err != nil {
 		return err
 	}
 	if err = createVPV(pbnDrainPrep, pbnColander); err != nil {
@@ -9028,7 +9043,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(pbnStirPrep, pbnSoySauce); err != nil {
 		return err
 	}
-	if err = createVIP(pbnStirPrep, pbnPasta); err != nil {
+	if err = createVIP(pbnStirPrep, pbnSpaghetti); err != nil {
+		return err
+	}
+	if err = createVIP(pbnStirPrep, pbnInstantRamen); err != nil {
 		return err
 	}
 	if err = createVPV(pbnStirPrep, pbnPot); err != nil {
@@ -9065,7 +9083,11 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(pbnSoySauce, pbnTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err = createVIMU(pbnPasta, pbnOunceMeasurement); err != nil {
+	if err = createVIMU(pbnSpaghetti, pbnOunceMeasurement); err != nil {
+		return err
+	}
+	pbnUnitMeasurement := enums.MeasurementUnits["unit"]
+	if err = createVIMU(pbnInstantRamen, pbnUnitMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(pbnWater, pbnCupMeasurement); err != nil {

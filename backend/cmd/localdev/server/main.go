@@ -346,6 +346,14 @@ func main() {
 			}
 			logger.Info("All bootstrap recipes created successfully!")
 
+			// Approve all bootstrap recipes
+			for _, r := range recipes {
+				if err := recipeManager.UpdateRecipeStatus(ctx, r.ID, mealplanning.RecipeStatusApproved); err != nil {
+					return fmt.Errorf("failed to approve recipe %s: %w", r.Name, err)
+				}
+			}
+			logger.Info("All bootstrap recipes approved!")
+
 			// Always create meals
 			logger.Info("Creating bootstrap meals...")
 			meals := bootstrap.AllMeals(adminUserID, recipes)
