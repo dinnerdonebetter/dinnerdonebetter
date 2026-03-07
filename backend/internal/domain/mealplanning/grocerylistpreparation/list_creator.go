@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/numbers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -254,6 +255,15 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 		dbInputs = append(dbInputs, i)
 	}
 	dbInputs = append(dbInputs, optionInputs...)
+
+	// Round quantities to the nearest tenth for cleaner grocery list display
+	for _, item := range dbInputs {
+		item.QuantityNeeded.Min = numbers.RoundToDecimalPlaces(item.QuantityNeeded.Min, 1)
+		if item.QuantityNeeded.Max != nil {
+			rounded := numbers.RoundToDecimalPlaces(*item.QuantityNeeded.Max, 1)
+			item.QuantityNeeded.Max = &rounded
+		}
+	}
 
 	return dbInputs, nil
 }

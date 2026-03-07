@@ -8,26 +8,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-private func focusModeSectionHeader(title: String, color: Color) -> some View {
-  HStack(spacing: 12) {
-    Rectangle()
-      .fill(Color.secondary.opacity(0.5))
-      .frame(height: 1)
-      .frame(maxWidth: .infinity)
-    Text(title)
-      .font(.headline)
-      .fontWeight(.semibold)
-      .foregroundColor(color)
-    Rectangle()
-      .fill(Color.secondary.opacity(0.5))
-      .frame(height: 1)
-      .frame(maxWidth: .infinity)
-  }
-  .padding(.vertical, 8)
-  .frame(maxWidth: .infinity)
-  .background(Color(uiColor: .systemBackground))
-}
-
 struct StepFlowGroup<Item: Identifiable>: Identifiable {
   let id: String
   let title: String
@@ -135,7 +115,7 @@ private struct FocusModeGroupsView<Item: Identifiable, Row: View>: View {
                 )
             }
           } header: {
-            focusModeSectionHeader(title: group.title, color: group.color)
+            DSRuleFlankedHeader(title: group.title, color: group.color)
           }
         }
       }
@@ -156,7 +136,7 @@ private struct FocusModeGroupsViewNoReorder<Item: Identifiable, Row: View>: View
               rowContent(item)
             }
           } header: {
-            focusModeSectionHeader(title: group.title, color: group.color)
+            DSRuleFlankedHeader(title: group.title, color: group.color)
           }
         }
       }

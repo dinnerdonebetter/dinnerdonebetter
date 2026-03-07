@@ -167,6 +167,45 @@ struct DSSectionHeader: View {
   }
 }
 
+// MARK: - Rule-Flanked Header
+
+/// A section header with horizontal rules flanking the title, matching the recipe step flow style.
+///
+/// Usage:
+/// ```swift
+/// DSRuleFlankedHeader(title: "Up Next", color: .orange)
+/// DSRuleFlankedHeader(title: "Have", color: .green)
+/// ```
+struct DSRuleFlankedHeader: View {
+  let title: String
+  let color: Color
+
+  init(title: String, color: Color) {
+    self.title = title
+    self.color = color
+  }
+
+  var body: some View {
+    HStack(spacing: 12) {
+      Rectangle()
+        .fill(Color.secondary.opacity(0.5))
+        .frame(height: 1)
+        .frame(maxWidth: .infinity)
+      Text(title)
+        .font(.headline)
+        .fontWeight(.semibold)
+        .foregroundColor(color)
+      Rectangle()
+        .fill(Color.secondary.opacity(0.5))
+        .frame(height: 1)
+        .frame(maxWidth: .infinity)
+    }
+    .padding(.vertical, 8)
+    .frame(maxWidth: .infinity)
+    .background(Color(uiColor: .systemBackground))
+  }
+}
+
 // MARK: - Empty Section Content
 
 /// A helper view for displaying empty state within a section.

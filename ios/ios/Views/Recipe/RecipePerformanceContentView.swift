@@ -154,8 +154,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         }
 
         // Steps list (timerTick forces refresh when step timers are active)
-        _ = timerTick
         stepsList(recipe: recipe, viewModel: viewModel, scale: recipeScale)
+          .id(timerTick)
       }
       .padding()
     }

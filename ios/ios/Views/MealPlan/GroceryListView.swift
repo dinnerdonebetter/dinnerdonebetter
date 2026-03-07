@@ -8,21 +8,17 @@
 import SwiftProtobuf
 import SwiftUI
 
-private enum GroceryListViewMode {
-  case swipe
-  case list
+private enum GroceryItemSection {
+  case need
+  case have
+  case unavailable
 }
 
 struct GroceryListView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: GroceryListViewModel
-  @State private var viewMode: GroceryListViewMode = .swipe
-  @State private var showingQuantityInputForItemID: String?
-  @State private var quantityInputText: String = ""
-  @State private var showingEditQuantityNeededForItemID: String?
-  @State private var quantityNeededMinText: String = ""
-  @State private var quantityNeededMaxText: String = ""
-  @State private var showingStatusMenuForItemID: String?
+  @State private var itemForEditSheet: Mealplanning_MealPlanGroceryListItem?
+  @State private var quantityText: String = ""
 
   init(
     mealPlan: Mealplanning_MealPlan, items: [Mealplanning_MealPlanGroceryListItem],
@@ -38,39 +34,6 @@ struct GroceryListView: View {
   }
 
   var body: some View {
-    Group {
-      switch viewMode {
-      case .swipe:
-        swipeReviewContent
-      case .list:
-        menuView
-      }
-    }
-    .navigationTitle(viewModel.mealPlan.notes.isEmpty ? "Grocery List" : viewModel.mealPlan.notes)
-    .navigationBarTitleDisplayMode(.large)
-    .toolbar {
-      ToolbarItem(placement: .primaryAction) {
-        Button {
-          viewMode = viewMode == .swipe ? .list : .swipe
-        } label: {
-          Label(
-            viewMode == .swipe ? "List view" : "Swipe review",
-            systemImage: viewMode == .swipe ? "list.bullet" : "hand.draw"
-          )
-        }
-        .disabled(viewModel.items.isEmpty)
-      }
-    }
-    .task {
-      await viewModel.loadItems()
-    }
-  }
-
-  private var swipeReviewContent: some View {
-    SwipeReviewContent(viewModel: viewModel)
-  }
-
-  private var menuView: some View {
     ScrollView {
       LazyVStack(alignment: .leading, spacing: DSTheme.Spacing.xl, pinnedViews: [.sectionHeaders]) {
         headerSection
@@ -85,56 +48,68 @@ struct GroceryListView: View {
         } else {
           if !viewModel.needsItems.isEmpty {
             Section {
-              itemRows(items: viewModel.needsItems)
+              itemRows(items: viewModel.needsItems, section: GroceryItemSection.need)
             } header: {
-              sectionHeader(title: "Needed", color: .orange)
-            }
-          }
-
-          if !viewModel.alreadyOwnedItems.isEmpty {
-            Section {
-              itemRows(items: viewModel.alreadyOwnedItems)
-            } header: {
-              sectionHeader(title: "Already Owned", color: .blue)
-            }
-          }
-
-          if !viewModel.acquiredItems.isEmpty {
-            Section {
-              itemRows(items: viewModel.acquiredItems)
-            } header: {
-              sectionHeader(title: "Acquired", color: .green)
+              DSRuleFlankedHeader(title: "Need", color: .orange)
             }
           }
 
           if !viewModel.unavailableItems.isEmpty {
             Section {
-              itemRows(items: viewModel.unavailableItems)
+              itemRows(items: viewModel.unavailableItems, section: GroceryItemSection.unavailable)
             } header: {
-              sectionHeader(title: "Unavailable", color: .red)
+              DSRuleFlankedHeader(title: "Unavailable", color: .red)
+            }
+          }
+
+          if !viewModel.haveItems.isEmpty {
+            Section {
+              itemRows(items: viewModel.haveItems, section: GroceryItemSection.have)
+            } header: {
+              DSRuleFlankedHeader(title: "Have", color: .green)
             }
           }
         }
 
         if let errorMessage = viewModel.errorMessage {
-          Text(errorMessage)
+          HStack {
+            Text(errorMessage)
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.error)
+            Spacer()
+            Button("Retry") {
+              Task { await viewModel.loadItems() }
+            }
             .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.error)
-            .padding()
+          }
+          .padding()
         }
       }
       .padding(.vertical, DSTheme.Spacing.md)
     }
-  }
-
-  private func sectionHeader(title: String, color: Color) -> some View {
-    Text(title)
-      .font(DSTheme.Typography.label)
-      .foregroundColor(color)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.horizontal, DSTheme.Spacing.md)
-      .padding(.vertical, DSTheme.Spacing.sm)
-      .background(.regularMaterial)
+    .navigationTitle(viewModel.mealPlan.notes.isEmpty ? "Grocery List" : viewModel.mealPlan.notes)
+    .navigationBarTitleDisplayMode(.large)
+    .refreshable {
+      await viewModel.loadItems()
+    }
+    .task {
+      await viewModel.loadItems()
+    }
+    .sheet(item: $itemForEditSheet) { item in
+      EditQuantitySheet(
+        item: item,
+        quantityText: $quantityText,
+        onSave: {
+          Task {
+            await handleQuantitySubmit(for: item)
+          }
+        },
+        onCancel: {
+          itemForEditSheet = nil
+          quantityText = ""
+        }
+      )
+    }
   }
 
   private var headerSection: some View {
@@ -158,75 +133,24 @@ struct GroceryListView: View {
   }
 
   private func itemRows(
-    items: [Mealplanning_MealPlanGroceryListItem]
+    items: [Mealplanning_MealPlanGroceryListItem],
+    section: GroceryItemSection
   ) -> some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
       ForEach(items, id: \.id) { item in
-        EnhancedGroceryItemRow(
+        GroceryListItemRow(
           item: item,
-          viewModel: viewModel,
-          showingQuantityInput: showingQuantityInputForItemID == item.id,
-          quantityInputText: $quantityInputText,
-          showingEditQuantityNeeded: showingEditQuantityNeededForItemID == item.id,
-          quantityNeededMinText: $quantityNeededMinText,
-          quantityNeededMaxText: $quantityNeededMaxText,
-          showingStatusMenu: showingStatusMenuForItemID == item.id,
-          onStatusMenuToggle: {
-            if showingStatusMenuForItemID == item.id {
-              showingStatusMenuForItemID = nil
-            } else {
-              showingStatusMenuForItemID = item.id
-            }
-          },
+          section: section,
+          isUpdating: viewModel.isUpdating,
           onMarkAsAcquired: {
-            Task {
-              await viewModel.markAsAcquired(item)
-              showingStatusMenuForItemID = nil
-            }
-          },
-          onMarkAsAlreadyOwned: {
-            Task {
-              await viewModel.markAsAlreadyOwned(item)
-              showingStatusMenuForItemID = nil
-            }
+            Task { await viewModel.markAsAcquired(item) }
           },
           onMarkAsNeeds: {
-            showingQuantityInputForItemID = item.id
-            quantityInputText = item.hasQuantityPurchased ? String(item.quantityPurchased) : ""
-            showingStatusMenuForItemID = nil
+            Task { await viewModel.markAsNeeds(item) }
           },
-          onMarkAsUnavailable: {
-            Task {
-              await viewModel.markAsUnavailable(item)
-              showingStatusMenuForItemID = nil
-            }
-          },
-          onEditQuantityNeeded: {
-            showingEditQuantityNeededForItemID = item.id
-            quantityNeededMinText = item.hasQuantityNeeded ? String(item.quantityNeeded.min) : ""
-            quantityNeededMaxText =
-              item.hasQuantityNeeded && item.quantityNeeded.hasMax
-              ? String(item.quantityNeeded.max) : ""
-            showingStatusMenuForItemID = nil
-          },
-          onQuantityPurchasedSubmit: {
-            Task {
-              await handleQuantityPurchasedSubmit(for: item)
-            }
-          },
-          onQuantityPurchasedCancel: {
-            showingQuantityInputForItemID = nil
-            quantityInputText = ""
-          },
-          onQuantityNeededSubmit: {
-            Task {
-              await handleQuantityNeededSubmit(for: item)
-            }
-          },
-          onQuantityNeededCancel: {
-            showingEditQuantityNeededForItemID = nil
-            quantityNeededMinText = ""
-            quantityNeededMaxText = ""
+          onEditQuantity: {
+            itemForEditSheet = item
+            quantityText = item.hasQuantityNeeded ? String(item.quantityNeeded.min) : ""
           }
         )
       }
@@ -234,629 +158,195 @@ struct GroceryListView: View {
     .padding(.horizontal, DSTheme.Spacing.md)
   }
 
-  private func handleQuantityPurchasedSubmit(for item: Mealplanning_MealPlanGroceryListItem) async {
-    guard let quantity = Float(quantityInputText), quantity > 0 else {
-      // If no valid quantity, just mark as needed
-      await viewModel.markAsNeeds(item)
-      showingQuantityInputForItemID = nil
-      quantityInputText = ""
+  private func handleQuantitySubmit(for item: Mealplanning_MealPlanGroceryListItem) async {
+    guard let value = Float(quantityText), value > 0 else {
+      itemForEditSheet = nil
+      quantityText = ""
       return
     }
 
-    // Mark as needed and set quantity purchased
-    await viewModel.updateItem(
-      item,
-      status: .needs,
-      quantityNeededMin: nil,
-      quantityNeededMax: nil,
-      quantityPurchased: quantity
-    )
+    await viewModel.updateQuantityNeeded(item, min: value, max: nil)
 
-    showingQuantityInputForItemID = nil
-    quantityInputText = ""
-  }
-
-  private func handleQuantityNeededSubmit(for item: Mealplanning_MealPlanGroceryListItem) async {
-    guard let min = Float(quantityNeededMinText), min > 0 else {
-      // Invalid input, cancel
-      showingEditQuantityNeededForItemID = nil
-      quantityNeededMinText = ""
-      quantityNeededMaxText = ""
-      return
-    }
-
-    let max: Float? = quantityNeededMaxText.isEmpty ? nil : Float(quantityNeededMaxText)
-
-    await viewModel.updateQuantityNeeded(item, min: min, max: max)
-
-    showingEditQuantityNeededForItemID = nil
-    quantityNeededMinText = ""
-    quantityNeededMaxText = ""
+    itemForEditSheet = nil
+    quantityText = ""
   }
 }
 
-// MARK: - Swipe Review Content
+// MARK: - Edit Quantity Sheet
 
-private struct SwipeReviewContent: View {
-  var viewModel: GroceryListViewModel
-
-  private var reviewItems: [Mealplanning_MealPlanGroceryListItem] {
-    func sortPriority(_ status: Mealplanning_MealPlanGroceryListItemStatus) -> Int {
-      switch status {
-      case .needs: return 0
-      case .unknown: return 1
-      case .unavailable: return 2
-      case .acquired, .alreadyOwned: return 3
-      default: return 1
-      }
-    }
-    return viewModel.items.sorted { item1, item2 in
-      let priority1 = sortPriority(item1.status)
-      let priority2 = sortPriority(item2.status)
-      if priority1 != priority2 { return priority1 < priority2 }
-      return item1.ingredient.name < item2.ingredient.name
-    }
-  }
-
-  var body: some View {
-    Group {
-      if viewModel.isLoading {
-        DSLoadingView("Loading grocery list...")
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
-      } else if viewModel.items.isEmpty {
-        DSEmptyState(
-          icon: "cart",
-          title: "No grocery items",
-          message: "Grocery list items will appear here once the meal plan is finalized."
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-      } else {
-        List {
-          Section {
-            HStack {
-              HStack(spacing: 4) {
-                Image(systemName: "chevron.left")
-                  .font(.caption2)
-                Text("Have")
-                  .font(.caption2)
-              }
-              .foregroundColor(.green)
-              .frame(maxWidth: .infinity, alignment: .leading)
-
-              HStack(spacing: 4) {
-                Text("Need")
-                  .font(.caption2)
-                Image(systemName: "chevron.right")
-                  .font(.caption2)
-              }
-              .foregroundColor(.orange)
-              .frame(maxWidth: .infinity, alignment: .trailing)
-            }
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets())
-          }
-
-          Section {
-            ForEach(reviewItems, id: \.id) { item in
-              ResistantSwipeReviewRow(
-                item: item,
-                onMarkAsHave: { Task { await viewModel.markAsAlreadyOwned(item) } },
-                onMarkAsNeed: { Task { await viewModel.markAsNeeds(item) } }
-              )
-              .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
-            }
-          }
-        }
-        .listStyle(.insetGrouped)
-      }
-    }
-  }
-}
-
-// MARK: - Resistant Swipe Review Row
-
-private struct ResistantSwipeReviewRow: View {
+private struct EditQuantitySheet: View {
   let item: Mealplanning_MealPlanGroceryListItem
-  let onMarkAsHave: () -> Void
-  let onMarkAsNeed: () -> Void
+  @Binding var quantityText: String
+  let onSave: () -> Void
+  let onCancel: () -> Void
 
-  private let swipeThreshold: CGFloat = 60
-  private let resistanceFactor: CGFloat = 0.25
-
-  @State private var dragOffset: CGFloat = 0
-  @State private var hasTriggeredResistanceHaptic = false
-  @State private var isHorizontalDrag: Bool?
-
-  private var isAlreadyHave: Bool {
-    item.status == .acquired || item.status == .alreadyOwned
-  }
-
-  private var isAlreadyNeed: Bool {
-    item.status == .needs
-  }
-
-  private var appliedOffset: CGFloat {
-    let raw = dragOffset
-    if raw > 0 {
-      if isAlreadyNeed {
-        return raw * resistanceFactor
+  var body: some View {
+    NavigationStack {
+      Form {
+        Section {
+          HStack {
+            TextField("0", text: $quantityText)
+              .keyboardType(.decimalPad)
+              .onChange(of: quantityText) { _, newValue in
+                let filtered = filterDecimalInput(newValue)
+                if filtered != newValue { quantityText = filtered }
+              }
+            if !item.measurementUnit.name.isEmpty {
+              Text(item.measurementUnit.name)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            }
+          }
+        } header: {
+          Text("Quantity")
+        }
       }
-      return raw
-    } else {
-      if isAlreadyHave {
-        return raw * resistanceFactor
+      .navigationTitle("Edit quantity")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .cancellationAction) {
+          Button("Cancel") {
+            onCancel()
+          }
+        }
+        ToolbarItem(placement: .confirmationAction) {
+          Button("Save") {
+            onSave()
+          }
+          .disabled(Float(quantityText) == nil || (Float(quantityText) ?? 0) <= 0)
+        }
       }
-      return raw
     }
+  }
+
+  private func filterDecimalInput(_ value: String) -> String {
+    var filtered = value.filter { $0.isNumber || $0 == "." }
+    let parts = filtered.split(separator: ".", omittingEmptySubsequences: false)
+    if parts.count > 2 {
+      filtered = parts[0] + "." + parts.dropFirst().joined()
+    }
+    return filtered
+  }
+}
+
+// MARK: - Grocery List Item Row
+
+private struct GroceryListItemRow: View {
+  let item: Mealplanning_MealPlanGroceryListItem
+  let section: GroceryItemSection
+  let isUpdating: Bool
+  let onMarkAsAcquired: () -> Void
+  let onMarkAsNeeds: () -> Void
+  let onEditQuantity: () -> Void
+
+  private var displayText: String {
+    formatIngredientWithQuantity(
+      name: item.ingredient.name,
+      quantityNeeded: item.hasQuantityNeeded ? item.quantityNeeded : nil,
+      unit: item.measurementUnit
+    )
   }
 
   var body: some View {
-    GeometryReader { geometry in
-      ZStack(alignment: .leading) {
-        HStack {
-          Color.orange
-            .frame(width: swipeThreshold + 20)
-            .overlay {
-              HStack {
-                Image(systemName: "cart.fill")
-                Text("Need")
-                  .font(.caption)
-                  .fontWeight(.medium)
-              }
-              .foregroundColor(.white)
-            }
-          Spacer()
-          Color.green
-            .frame(width: swipeThreshold + 20)
-            .overlay {
-              HStack {
-                Text("Have")
-                  .font(.caption)
-                  .fontWeight(.medium)
-                Image(systemName: "checkmark.circle.fill")
-              }
-              .foregroundColor(.white)
-            }
+    HStack(spacing: 12) {
+      switch section {
+      case .need:
+        Button {
+          onMarkAsAcquired()
+        } label: {
+          Image(systemName: "circle")
+            .font(.title2)
+            .foregroundColor(.orange)
         }
+        .buttonStyle(.plain)
+        .disabled(isUpdating)
 
-        ZStack {
-          Color(.secondarySystemGroupedBackground)
-          swipeReviewRowContent
-            .padding(.horizontal, 16)
+        Button {
+          onEditQuantity()
+        } label: {
+          HStack {
+            Text(displayText)
+              .font(.body)
+              .fontWeight(.medium)
+              .foregroundColor(.primary)
+              .multilineTextAlignment(.leading)
+            Spacer(minLength: 0)
+          }
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+          .contentShape(Rectangle())
         }
-        .frame(width: geometry.size.width, height: geometry.size.height)
-        .offset(x: appliedOffset)
-        .simultaneousGesture(
-          DragGesture(minimumDistance: 10)
-            .onChanged { value in
-              if isHorizontalDrag == nil {
-                let horizontal = abs(value.translation.width)
-                let vertical = abs(value.translation.height)
-                isHorizontalDrag = horizontal > vertical
-              }
+        .buttonStyle(.plain)
+        .disabled(isUpdating)
 
-              guard isHorizontalDrag == true else { return }
+      case .have:
+        Button {
+          onMarkAsNeeds()
+        } label: {
+          Image(systemName: "arrow.uturn.backward")
+            .font(.title3)
+            .foregroundColor(.green)
+        }
+        .buttonStyle(.plain)
+        .disabled(isUpdating)
 
-              let translation = value.translation.width
-              dragOffset = translation
-
-              if translation > 20 && isAlreadyNeed, !hasTriggeredResistanceHaptic {
-                hasTriggeredResistanceHaptic = true
-                let generator = UIImpactFeedbackGenerator(style: .light)
-                generator.impactOccurred()
-              } else if translation < -20 && isAlreadyHave, !hasTriggeredResistanceHaptic {
-                hasTriggeredResistanceHaptic = true
-                let generator = UIImpactFeedbackGenerator(style: .light)
-                generator.impactOccurred()
-              }
-            }
-            .onEnded { value in
-              defer {
-                isHorizontalDrag = nil
-                hasTriggeredResistanceHaptic = false
-              }
-
-              guard isHorizontalDrag == true else { return }
-
-              let translation = value.translation.width
-
-              if translation > swipeThreshold, !isAlreadyNeed {
-                onMarkAsNeed()
-              } else if translation < -swipeThreshold, !isAlreadyHave {
-                onMarkAsHave()
-              }
-
-              withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-                dragOffset = 0
-              }
-            }
-        )
-      }
-    }
-    .frame(height: 64)
-    .clipped()
-  }
-
-  private var swipeReviewRowContent: some View {
-    HStack {
-      VStack(alignment: .leading, spacing: 2) {
-        Text(item.ingredient.name)
+        Text(displayText)
           .font(.body)
           .fontWeight(.medium)
+          .foregroundColor(.primary)
+          .frame(maxWidth: .infinity, alignment: .leading)
 
-        if item.hasQuantityNeeded {
-          Text(formatQuantityNeeded(item.quantityNeeded))
-            .font(.caption)
-            .foregroundColor(.secondary)
-        }
-      }
-
-      Spacer()
-
-      if let label = statusLabel {
-        Text(label)
-          .font(.caption)
-          .fontWeight(.medium)
-          .foregroundColor(statusColor)
-      } else {
-        Text("—")
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
-    }
-    .padding(.vertical, 12)
-  }
-
-  private var statusLabel: String? {
-    switch item.status {
-    case .acquired, .alreadyOwned: return "Have"
-    case .needs: return "Need"
-    case .unavailable: return "Unavailable"
-    case .unknown: return nil
-    default: return nil
-    }
-  }
-
-  private var statusColor: Color {
-    switch item.status {
-    case .acquired, .alreadyOwned: return .green
-    case .needs: return .orange
-    case .unavailable: return .red
-    default: return .gray
-    }
-  }
-
-  private func formatQuantityNeeded(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
-    let unitName = MeasurementUnitFormatter.displayName(
-      for: quantity.min, unit: item.measurementUnit)
-    let unit = unitName.isEmpty ? "" : " \(unitName)"
-    if quantity.hasMax && quantity.min != quantity.max {
-      return "\(formatNumber(quantity.min))–\(formatNumber(quantity.max))\(unit)"
-    } else {
-      return "\(formatNumber(quantity.min))\(unit)"
-    }
-  }
-
-  private func formatNumber(_ value: Float) -> String {
-    value.truncatingRemainder(dividingBy: 1) == 0
-      ? String(format: "%.0f", value) : String(format: "%g", value)
-  }
-}
-
-// MARK: - Enhanced Grocery Item Row
-
-struct EnhancedGroceryItemRow: View {
-  let item: Mealplanning_MealPlanGroceryListItem
-  let viewModel: GroceryListViewModel
-  let showingQuantityInput: Bool
-  @Binding var quantityInputText: String
-  let showingEditQuantityNeeded: Bool
-  @Binding var quantityNeededMinText: String
-  @Binding var quantityNeededMaxText: String
-  let showingStatusMenu: Bool
-  let onStatusMenuToggle: () -> Void
-  let onMarkAsAcquired: () -> Void
-  let onMarkAsAlreadyOwned: () -> Void
-  let onMarkAsNeeds: () -> Void
-  let onMarkAsUnavailable: () -> Void
-  let onEditQuantityNeeded: () -> Void
-  let onQuantityPurchasedSubmit: () -> Void
-  let onQuantityPurchasedCancel: () -> Void
-  let onQuantityNeededSubmit: () -> Void
-  let onQuantityNeededCancel: () -> Void
-
-  var body: some View {
-    VStack(spacing: 0) {
-      // Main row
-      HStack(spacing: 12) {
-        // Item info
-        VStack(alignment: .leading, spacing: 4) {
-          Text(item.ingredient.name)
-            .font(.body)
-            .fontWeight(.medium)
-
-          // Quantity needed (editable)
-          if item.hasQuantityNeeded {
-            Button {
-              onEditQuantityNeeded()
-            } label: {
-              HStack(spacing: 4) {
-                Text(formatQuantityNeeded(item.quantityNeeded))
-                  .font(.caption)
-                  .foregroundColor(.secondary)
-                Image(systemName: "pencil")
-                  .font(.caption2)
-                  .foregroundColor(.secondary)
-              }
-            }
-            .buttonStyle(.plain)
-          }
-
-          // Show quantity purchased if item is marked as have
-          if (item.status == .acquired || item.status == .alreadyOwned) && item.hasQuantityPurchased
-          {
-            Text(
-              "Have: \(formatQuantity(item.quantityPurchased, unit: MeasurementUnitFormatter.displayName(for: item.quantityPurchased, unit: item.measurementUnit)))"
-            )
-            .font(.caption)
-            .foregroundColor(.green)
-          }
-        }
-
-        Spacer()
-
-        // Status menu button
-        Menu {
-          Button {
-            onMarkAsAcquired()
-          } label: {
-            Label(
-              "Mark as Acquired",
-              systemImage: item.status == .acquired ? "checkmark.circle.fill" : "checkmark.circle")
-          }
-
-          Button {
-            onMarkAsAlreadyOwned()
-          } label: {
-            Label(
-              "Mark as Already Owned",
-              systemImage: item.status == .alreadyOwned ? "checkmark.circle.fill" : "house.fill")
-          }
-
-          Button {
-            onMarkAsNeeds()
-          } label: {
-            Label(
-              "Mark as Needs",
-              systemImage: item.status == .needs ? "checkmark.circle.fill" : "cart.fill")
-          }
-
-          Button {
-            onMarkAsUnavailable()
-          } label: {
-            Label(
-              "Mark as Unavailable",
-              systemImage: item.status == .unavailable ? "checkmark.circle.fill" : "xmark.circle")
-          }
-
-          Divider()
-
-          Button {
-            onEditQuantityNeeded()
-          } label: {
-            Label("Edit Quantity Needed", systemImage: "pencil")
-          }
+      case .unavailable:
+        Button {
+          onMarkAsNeeds()
         } label: {
-          Image(systemName: "ellipsis.circle")
+          Image(systemName: "arrow.uturn.backward")
             .font(.title3)
-            .foregroundColor(.secondary)
+            .foregroundColor(.red)
         }
-      }
-      .padding()
-      .background(Color(.systemGray6))
-      .cornerRadius(8)
+        .buttonStyle(.plain)
+        .disabled(isUpdating)
 
-      // Quantity purchased input (shown when "Mark as Needs" is clicked)
-      if showingQuantityInput {
-        quantityPurchasedInputSection
-      }
-
-      // Quantity needed edit (shown when "Edit Quantity Needed" is clicked)
-      if showingEditQuantityNeeded {
-        quantityNeededEditSection
-      }
-    }
-    .animation(.easeInOut(duration: 0.2), value: showingQuantityInput)
-    .animation(.easeInOut(duration: 0.2), value: showingEditQuantityNeeded)
-  }
-
-  private var quantityPurchasedInputSection: some View {
-    VStack(spacing: 12) {
-      Divider()
-
-      VStack(alignment: .leading, spacing: 8) {
-        Text("Quantity Purchased")
-          .font(.subheadline)
+        Text(displayText)
+          .font(.body)
           .fontWeight(.medium)
-
-        HStack(spacing: 12) {
-          TextField("0", text: $quantityInputText)
-            .keyboardType(.decimalPad)
-            .textFieldStyle(.roundedBorder)
-            .onChange(of: quantityInputText) { _, newValue in
-              // Filter to only allow numbers and a single decimal point
-              var filtered = newValue.filter { $0.isNumber || $0 == "." }
-              // Ensure only one decimal point
-              let parts = filtered.split(separator: ".", omittingEmptySubsequences: false)
-              if parts.count > 2 {
-                filtered = parts[0] + "." + parts.dropFirst().joined()
-              }
-              if filtered != newValue {
-                quantityInputText = filtered
-              }
-            }
-
-          if !item.measurementUnit.name.isEmpty {
-            Text(item.measurementUnit.name)
-              .font(.subheadline)
-              .foregroundColor(.secondary)
-          }
-        }
-
-        HStack(spacing: 12) {
-          Button {
-            onQuantityPurchasedCancel()
-          } label: {
-            Text("Cancel")
-              .frame(maxWidth: .infinity)
-              .padding(.vertical, 8)
-              .background(Color(.systemGray5))
-              .foregroundColor(.primary)
-              .cornerRadius(8)
-          }
-          .buttonStyle(.plain)
-
-          Button {
-            onQuantityPurchasedSubmit()
-          } label: {
-            Text("Save")
-              .frame(maxWidth: .infinity)
-              .padding(.vertical, 8)
-              .background(Color.orange)
-              .foregroundColor(.white)
-              .cornerRadius(8)
-          }
-          .buttonStyle(.plain)
-        }
+          .foregroundColor(.secondary)
+          .frame(maxWidth: .infinity, alignment: .leading)
       }
-      .padding()
     }
-    .background(Color(.systemGray5))
+    .padding()
+    .background(Color(.systemGray6))
     .cornerRadius(8)
-  }
-
-  private var quantityNeededEditSection: some View {
-    VStack(spacing: 12) {
-      Divider()
-
-      VStack(alignment: .leading, spacing: 8) {
-        Text("Edit Quantity Needed")
-          .font(.subheadline)
-          .fontWeight(.medium)
-
-        VStack(alignment: .leading, spacing: 8) {
-          HStack(spacing: 8) {
-            Text("Min:")
-              .font(.caption)
-              .foregroundColor(.secondary)
-              .frame(width: 40, alignment: .leading)
-
-            TextField("0", text: $quantityNeededMinText)
-              .keyboardType(.decimalPad)
-              .textFieldStyle(.roundedBorder)
-              .onChange(of: quantityNeededMinText) { _, newValue in
-                var filtered = newValue.filter { $0.isNumber || $0 == "." }
-                let parts = filtered.split(separator: ".", omittingEmptySubsequences: false)
-                if parts.count > 2 {
-                  filtered = parts[0] + "." + parts.dropFirst().joined()
-                }
-                if filtered != newValue {
-                  quantityNeededMinText = filtered
-                }
-              }
-
-            if !item.measurementUnit.name.isEmpty {
-              Text(item.measurementUnit.name)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            }
-          }
-
-          HStack(spacing: 8) {
-            Text("Max:")
-              .font(.caption)
-              .foregroundColor(.secondary)
-              .frame(width: 40, alignment: .leading)
-
-            TextField("Optional", text: $quantityNeededMaxText)
-              .keyboardType(.decimalPad)
-              .textFieldStyle(.roundedBorder)
-              .onChange(of: quantityNeededMaxText) { _, newValue in
-                var filtered = newValue.filter { $0.isNumber || $0 == "." }
-                let parts = filtered.split(separator: ".", omittingEmptySubsequences: false)
-                if parts.count > 2 {
-                  filtered = parts[0] + "." + parts.dropFirst().joined()
-                }
-                if filtered != newValue {
-                  quantityNeededMaxText = filtered
-                }
-              }
-
-            if !item.measurementUnit.name.isEmpty {
-              Text(item.measurementUnit.name)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            }
-          }
-        }
-
-        HStack(spacing: 12) {
-          Button {
-            onQuantityNeededCancel()
-          } label: {
-            Text("Cancel")
-              .frame(maxWidth: .infinity)
-              .padding(.vertical, 8)
-              .background(Color(.systemGray5))
-              .foregroundColor(.primary)
-              .cornerRadius(8)
-          }
-          .buttonStyle(.plain)
-
-          Button {
-            onQuantityNeededSubmit()
-          } label: {
-            Text("Save")
-              .frame(maxWidth: .infinity)
-              .padding(.vertical, 8)
-              .background(Color.blue)
-              .foregroundColor(.white)
-              .cornerRadius(8)
-          }
-          .buttonStyle(.plain)
-        }
-      }
-      .padding()
-    }
-    .background(Color(.systemGray5))
-    .cornerRadius(8)
-  }
-
-  private func formatQuantityNeeded(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
-    let unitName = MeasurementUnitFormatter.displayName(
-      for: quantity.min, unit: item.measurementUnit)
-    let unit = unitName.isEmpty ? "" : " \(unitName)"
-    if quantity.hasMax && quantity.min != quantity.max {
-      return "\(formatNumber(quantity.min)) - \(formatNumber(quantity.max))\(unit) needed"
-    } else {
-      return "\(formatNumber(quantity.min))\(unit) needed"
-    }
-  }
-
-  private func formatNumber(_ value: Float) -> String {
-    value.truncatingRemainder(dividingBy: 1) == 0
-      ? String(format: "%.0f", value) : String(format: "%g", value)
-  }
-
-  private func formatQuantity(_ quantity: Float, unit: String) -> String {
-    let unitText = unit.isEmpty ? "" : " \(unit)"
-    return "\(formatNumber(quantity))\(unitText)"
   }
 }
 
-// Make MealPlanGroceryListItem Identifiable
+// MARK: - Format Helpers
+
+private func formatIngredientWithQuantity(
+  name: String,
+  quantityNeeded: Common_Float32RangeWithOptionalMax?,
+  unit: Mealplanning_ValidMeasurementUnit
+) -> String {
+  guard let q = quantityNeeded else { return name }
+  let unitName = MeasurementUnitFormatter.displayName(for: q.min, unit: unit)
+  let unitSuffix = unitName.isEmpty ? "" : " \(unitName)"
+  let quantityStr: String
+  if q.hasMax && q.min != q.max {
+    quantityStr = "\(formatNumber(q.min))–\(formatNumber(q.max))\(unitSuffix)"
+  } else {
+    quantityStr = "\(formatNumber(q.min))\(unitSuffix)"
+  }
+  return "\(name) (\(quantityStr))"
+}
+
+private func formatNumber(_ value: Float) -> String {
+  value.truncatingRemainder(dividingBy: 1) == 0
+    ? String(format: "%.0f", value) : String(format: "%g", value)
+}
+
+// MARK: - MealPlanGroceryListItem Identifiable
+
 extension Mealplanning_MealPlanGroceryListItem: Identifiable {
-  // Already has id property, so this extension just makes it conform to Identifiable
+  // Already has id property
 }
 
 #Preview {
@@ -866,7 +356,6 @@ extension Mealplanning_MealPlanGroceryListItem: Identifiable {
   authManager.userID = "user123"
   authManager.accountID = "account123"
 
-  // Create a sample meal plan and items
   var mealPlan = Mealplanning_MealPlan()
   mealPlan.id = "mealplan123"
   mealPlan.notes = "Sample Meal Plan"
@@ -882,7 +371,7 @@ extension Mealplanning_MealPlanGroceryListItem: Identifiable {
   item.quantityNeeded = quantity
   item.status = .needs
 
-  return NavigationView {
+  return NavigationStack {
     GroceryListView(
       mealPlan: mealPlan,
       items: [item],
