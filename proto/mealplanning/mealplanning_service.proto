@@ -185,6 +185,7 @@ service MealPlanningService {
   rpc SearchValidMeasurementUnitsByIngredient(SearchValidMeasurementUnitsByIngredientRequest) returns (SearchValidMeasurementUnitsByIngredientResponse);
   rpc UpdateMealPlan(UpdateMealPlanRequest) returns (UpdateMealPlanResponse);
   rpc UpdateMealPlanEvent(UpdateMealPlanEventRequest) returns (UpdateMealPlanEventResponse);
+  rpc SwapMealPlanEvents(SwapMealPlanEventsRequest) returns (SwapMealPlanEventsResponse);
   rpc UpdateMealPlanGroceryListItem(UpdateMealPlanGroceryListItemRequest) returns (UpdateMealPlanGroceryListItemResponse);
   rpc UpdateMealPlanOption(UpdateMealPlanOptionRequest) returns (UpdateMealPlanOptionResponse);
   rpc UpdateMealPlanOptionVote(UpdateMealPlanOptionVoteRequest) returns (UpdateMealPlanOptionVoteResponse);

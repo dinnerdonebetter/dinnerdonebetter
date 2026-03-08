@@ -50,6 +50,7 @@ type (
 		CreateMealPlanEvent(ctx context.Context, mealPlanID string, input *types.MealPlanEventCreationRequestInput) (*types.MealPlanEvent, error)
 		ReadMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error)
 		UpdateMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string, input *types.MealPlanEventUpdateRequestInput) error
+		SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPlanEventIDA, mealPlanEventIDB string) error
 		ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error
 
 		ListMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanOption], error)
@@ -796,6 +797,28 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventUpdatedServiceEventType, map[string]any{
 		mealplanningkeys.MealPlanIDKey:      mealPlanID,
 		mealplanningkeys.MealPlanEventIDKey: mealPlanEventID,
+	}))
+
+	return nil
+}
+
+func (m *mealPlanningManager) SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPlanEventIDA, mealPlanEventIDB string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+		mealplanningkeys.MealPlanIDKey:      mealPlanID,
+		mealplanningkeys.MealPlanEventIDKey: mealPlanEventIDA + "," + mealPlanEventIDB,
+	})
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanEventIDKey, mealPlanEventIDA+","+mealPlanEventIDB)
+
+	if err := m.db.SwapMealPlanEvents(ctx, mealPlanID, mealPlanEventIDA, mealPlanEventIDB); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "swapping meal plan events")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventUpdatedServiceEventType, map[string]any{
+		mealplanningkeys.MealPlanIDKey: mealPlanID,
 	}))
 
 	return nil

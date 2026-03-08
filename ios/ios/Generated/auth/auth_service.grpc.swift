@@ -236,6 +236,54 @@ internal enum Auth_AuthService {
                 method: "UpdatePassword"
             )
         }
+        /// Namespace for "BeginPasskeyRegistration" metadata.
+        internal enum BeginPasskeyRegistration {
+            /// Request type for "BeginPasskeyRegistration".
+            internal typealias Input = Auth_BeginPasskeyRegistrationRequest
+            /// Response type for "BeginPasskeyRegistration".
+            internal typealias Output = Auth_BeginPasskeyRegistrationResponse
+            /// Descriptor for "BeginPasskeyRegistration".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "BeginPasskeyRegistration"
+            )
+        }
+        /// Namespace for "FinishPasskeyRegistration" metadata.
+        internal enum FinishPasskeyRegistration {
+            /// Request type for "FinishPasskeyRegistration".
+            internal typealias Input = Auth_FinishPasskeyRegistrationRequest
+            /// Response type for "FinishPasskeyRegistration".
+            internal typealias Output = Auth_FinishPasskeyRegistrationResponse
+            /// Descriptor for "FinishPasskeyRegistration".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "FinishPasskeyRegistration"
+            )
+        }
+        /// Namespace for "BeginPasskeyAuthentication" metadata.
+        internal enum BeginPasskeyAuthentication {
+            /// Request type for "BeginPasskeyAuthentication".
+            internal typealias Input = Auth_BeginPasskeyAuthenticationRequest
+            /// Response type for "BeginPasskeyAuthentication".
+            internal typealias Output = Auth_BeginPasskeyAuthenticationResponse
+            /// Descriptor for "BeginPasskeyAuthentication".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "BeginPasskeyAuthentication"
+            )
+        }
+        /// Namespace for "FinishPasskeyAuthentication" metadata.
+        internal enum FinishPasskeyAuthentication {
+            /// Request type for "FinishPasskeyAuthentication".
+            internal typealias Input = Auth_FinishPasskeyAuthenticationRequest
+            /// Response type for "FinishPasskeyAuthentication".
+            internal typealias Output = Auth_LoginForTokenResponse
+            /// Descriptor for "FinishPasskeyAuthentication".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "FinishPasskeyAuthentication"
+            )
+        }
         /// Descriptors for all methods in the "auth.AuthService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
             EvaluateBooleanFeatureFlag.descriptor,
@@ -255,7 +303,11 @@ internal enum Auth_AuthService {
             RequestUsernameReminder.descriptor,
             VerifyEmailAddress.descriptor,
             VerifyTOTPSecret.descriptor,
-            UpdatePassword.descriptor
+            UpdatePassword.descriptor,
+            BeginPasskeyRegistration.descriptor,
+            FinishPasskeyRegistration.descriptor,
+            BeginPasskeyAuthentication.descriptor,
+            FinishPasskeyAuthentication.descriptor
         ]
     }
 }
@@ -615,6 +667,82 @@ extension Auth_AuthService {
             deserializer: some GRPCCore.MessageDeserializer<Auth_UpdatePasswordResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_UpdatePasswordResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "BeginPasskeyRegistration" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_BeginPasskeyRegistrationRequest` message.
+        ///   - serializer: A serializer for `Auth_BeginPasskeyRegistrationRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_BeginPasskeyRegistrationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func beginPasskeyRegistration<Result>(
+            request: GRPCCore.ClientRequest<Auth_BeginPasskeyRegistrationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_BeginPasskeyRegistrationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_BeginPasskeyRegistrationResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_BeginPasskeyRegistrationResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "FinishPasskeyRegistration" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_FinishPasskeyRegistrationRequest` message.
+        ///   - serializer: A serializer for `Auth_FinishPasskeyRegistrationRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_FinishPasskeyRegistrationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func finishPasskeyRegistration<Result>(
+            request: GRPCCore.ClientRequest<Auth_FinishPasskeyRegistrationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_FinishPasskeyRegistrationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_FinishPasskeyRegistrationResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_FinishPasskeyRegistrationResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "BeginPasskeyAuthentication" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_BeginPasskeyAuthenticationRequest` message.
+        ///   - serializer: A serializer for `Auth_BeginPasskeyAuthenticationRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_BeginPasskeyAuthenticationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func beginPasskeyAuthentication<Result>(
+            request: GRPCCore.ClientRequest<Auth_BeginPasskeyAuthenticationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_BeginPasskeyAuthenticationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_BeginPasskeyAuthenticationResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_BeginPasskeyAuthenticationResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "FinishPasskeyAuthentication" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_FinishPasskeyAuthenticationRequest` message.
+        ///   - serializer: A serializer for `Auth_FinishPasskeyAuthenticationRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_LoginForTokenResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func finishPasskeyAuthentication<Result>(
+            request: GRPCCore.ClientRequest<Auth_FinishPasskeyAuthenticationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_FinishPasskeyAuthenticationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_LoginForTokenResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_LoginForTokenResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
     }
 
@@ -1173,6 +1301,126 @@ extension Auth_AuthService {
                 onResponse: handleResponse
             )
         }
+
+        /// Call the "BeginPasskeyRegistration" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_BeginPasskeyRegistrationRequest` message.
+        ///   - serializer: A serializer for `Auth_BeginPasskeyRegistrationRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_BeginPasskeyRegistrationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func beginPasskeyRegistration<Result>(
+            request: GRPCCore.ClientRequest<Auth_BeginPasskeyRegistrationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_BeginPasskeyRegistrationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_BeginPasskeyRegistrationResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_BeginPasskeyRegistrationResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.BeginPasskeyRegistration.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "FinishPasskeyRegistration" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_FinishPasskeyRegistrationRequest` message.
+        ///   - serializer: A serializer for `Auth_FinishPasskeyRegistrationRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_FinishPasskeyRegistrationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func finishPasskeyRegistration<Result>(
+            request: GRPCCore.ClientRequest<Auth_FinishPasskeyRegistrationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_FinishPasskeyRegistrationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_FinishPasskeyRegistrationResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_FinishPasskeyRegistrationResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.FinishPasskeyRegistration.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "BeginPasskeyAuthentication" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_BeginPasskeyAuthenticationRequest` message.
+        ///   - serializer: A serializer for `Auth_BeginPasskeyAuthenticationRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_BeginPasskeyAuthenticationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func beginPasskeyAuthentication<Result>(
+            request: GRPCCore.ClientRequest<Auth_BeginPasskeyAuthenticationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_BeginPasskeyAuthenticationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_BeginPasskeyAuthenticationResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_BeginPasskeyAuthenticationResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.BeginPasskeyAuthentication.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "FinishPasskeyAuthentication" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_FinishPasskeyAuthenticationRequest` message.
+        ///   - serializer: A serializer for `Auth_FinishPasskeyAuthenticationRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_LoginForTokenResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func finishPasskeyAuthentication<Result>(
+            request: GRPCCore.ClientRequest<Auth_FinishPasskeyAuthenticationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_FinishPasskeyAuthenticationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_LoginForTokenResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_LoginForTokenResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.FinishPasskeyAuthentication.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
     }
 }
 
@@ -1624,6 +1872,106 @@ extension Auth_AuthService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Auth_UpdatePasswordRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_UpdatePasswordResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "BeginPasskeyRegistration" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_BeginPasskeyRegistrationRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func beginPasskeyRegistration<Result>(
+        request: GRPCCore.ClientRequest<Auth_BeginPasskeyRegistrationRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_BeginPasskeyRegistrationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.beginPasskeyRegistration(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_BeginPasskeyRegistrationRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_BeginPasskeyRegistrationResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "FinishPasskeyRegistration" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_FinishPasskeyRegistrationRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func finishPasskeyRegistration<Result>(
+        request: GRPCCore.ClientRequest<Auth_FinishPasskeyRegistrationRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_FinishPasskeyRegistrationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.finishPasskeyRegistration(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_FinishPasskeyRegistrationRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_FinishPasskeyRegistrationResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "BeginPasskeyAuthentication" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_BeginPasskeyAuthenticationRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func beginPasskeyAuthentication<Result>(
+        request: GRPCCore.ClientRequest<Auth_BeginPasskeyAuthenticationRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_BeginPasskeyAuthenticationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.beginPasskeyAuthentication(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_BeginPasskeyAuthenticationRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_BeginPasskeyAuthenticationResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "FinishPasskeyAuthentication" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_FinishPasskeyAuthenticationRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func finishPasskeyAuthentication<Result>(
+        request: GRPCCore.ClientRequest<Auth_FinishPasskeyAuthenticationRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_LoginForTokenResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.finishPasskeyAuthentication(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_FinishPasskeyAuthenticationRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_LoginForTokenResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -2149,6 +2497,122 @@ extension Auth_AuthService.ClientProtocol {
             metadata: metadata
         )
         return try await self.updatePassword(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "BeginPasskeyRegistration" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func beginPasskeyRegistration<Result>(
+        _ message: Auth_BeginPasskeyRegistrationRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_BeginPasskeyRegistrationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_BeginPasskeyRegistrationRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.beginPasskeyRegistration(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "FinishPasskeyRegistration" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func finishPasskeyRegistration<Result>(
+        _ message: Auth_FinishPasskeyRegistrationRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_FinishPasskeyRegistrationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_FinishPasskeyRegistrationRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.finishPasskeyRegistration(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "BeginPasskeyAuthentication" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func beginPasskeyAuthentication<Result>(
+        _ message: Auth_BeginPasskeyAuthenticationRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_BeginPasskeyAuthenticationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_BeginPasskeyAuthenticationRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.beginPasskeyAuthentication(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "FinishPasskeyAuthentication" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func finishPasskeyAuthentication<Result>(
+        _ message: Auth_FinishPasskeyAuthenticationRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_LoginForTokenResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_FinishPasskeyAuthenticationRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.finishPasskeyAuthentication(
             request: request,
             options: options,
             onResponse: handleResponse

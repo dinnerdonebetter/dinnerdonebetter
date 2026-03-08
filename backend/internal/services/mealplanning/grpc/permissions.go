@@ -189,6 +189,7 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_GetMealPlanEvent_FullMethodName:     {authorization.ReadMealPlanEventsPermission},
 		mealplanningsvc.MealPlanningService_GetMealPlanEvents_FullMethodName:    {authorization.ReadMealPlanEventsPermission},
 		mealplanningsvc.MealPlanningService_UpdateMealPlanEvent_FullMethodName:  {authorization.UpdateMealPlanEventsPermission},
+		mealplanningsvc.MealPlanningService_SwapMealPlanEvents_FullMethodName:   {authorization.UpdateMealPlanEventsPermission},
 		mealplanningsvc.MealPlanningService_ArchiveMealPlanEvent_FullMethodName: {authorization.ArchiveMealPlanEventsPermission},
 
 		// MealPlanTasks

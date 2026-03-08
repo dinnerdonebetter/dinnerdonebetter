@@ -14635,6 +14635,43 @@ public struct Mealplanning_UpdateMealPlanEventResponse: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
+public struct Mealplanning_SwapMealPlanEventsRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var mealPlanID: String = String()
+
+  public var mealPlanEventIDA: String = String()
+
+  public var mealPlanEventIDB: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Mealplanning_SwapMealPlanEventsResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+}
+
 public struct Mealplanning_UpdateMealPlanGroceryListItemRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -37294,6 +37331,80 @@ extension Mealplanning_UpdateMealPlanEventResponse: SwiftProtobuf.Message, Swift
       }
       if !storagesAreEqual {return false}
     }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_SwapMealPlanEventsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SwapMealPlanEventsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id_a\0\u{3}meal_plan_event_id_b\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.mealPlanID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.mealPlanEventIDA) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.mealPlanEventIDB) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.mealPlanID.isEmpty {
+      try visitor.visitSingularStringField(value: self.mealPlanID, fieldNumber: 1)
+    }
+    if !self.mealPlanEventIDA.isEmpty {
+      try visitor.visitSingularStringField(value: self.mealPlanEventIDA, fieldNumber: 2)
+    }
+    if !self.mealPlanEventIDB.isEmpty {
+      try visitor.visitSingularStringField(value: self.mealPlanEventIDB, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_SwapMealPlanEventsRequest, rhs: Mealplanning_SwapMealPlanEventsRequest) -> Bool {
+    if lhs.mealPlanID != rhs.mealPlanID {return false}
+    if lhs.mealPlanEventIDA != rhs.mealPlanEventIDA {return false}
+    if lhs.mealPlanEventIDB != rhs.mealPlanEventIDB {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_SwapMealPlanEventsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SwapMealPlanEventsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_SwapMealPlanEventsResponse, rhs: Mealplanning_SwapMealPlanEventsResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

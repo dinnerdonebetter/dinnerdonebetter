@@ -12,13 +12,19 @@ struct MealPlanDetailView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(UserSettingsService.self) private var userSettingsService
   @Environment(\.dismiss) private var dismiss
-  let mealPlan: Mealplanning_MealPlan
+  @State var mealPlan: Mealplanning_MealPlan
   let groceryListItems: [Mealplanning_MealPlanGroceryListItem]?
   @State private var taskCount: Int?
   @State private var groceryListItemCount: Int?
   @State private var showArchiveConfirmation = false
   @State private var isArchiving = false
   @State private var archiveError: String?
+  @State private var moveSwapSheetEvent: IdentifiableMealPlanEvent?
+
+  init(mealPlan: Mealplanning_MealPlan, groceryListItems: [Mealplanning_MealPlanGroceryListItem]?) {
+    _mealPlan = State(initialValue: mealPlan)
+    self.groceryListItems = groceryListItems
+  }
 
   var body: some View {
     ScrollView {
@@ -77,6 +83,35 @@ struct MealPlanDetailView: View {
     .task {
       await loadTaskCount()
       await loadGroceryListItemCount()
+    }
+    .sheet(item: $moveSwapSheetEvent) { identifiable in
+      MoveSwapEventSheet(
+        mealPlan: mealPlan,
+        event: identifiable.event,
+        onSuccess: { await refetchMealPlan() }
+      )
+      .environment(authManager)
+    }
+  }
+
+  private func refetchMealPlan() async {
+    do {
+      guard let clientManager = try? authManager.getClientManager() else { return }
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else { return }
+
+      var request = Mealplanning_GetMealPlanRequest()
+      request.mealPlanID = mealPlan.id
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+      let response = try await clientManager.client.mealPlanning.getMealPlan(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      mealPlan = response.result
+    } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
     }
   }
 
@@ -278,7 +313,11 @@ struct MealPlanDetailView: View {
           .fontWeight(.bold)
 
         ForEach(upcomingEvents, id: \.id) { event in
-          EventCard(event: event)
+          EventCard(
+            event: event,
+            canMoveOrSwap: mealPlan.status == .finalized,
+            onMoveOrSwap: { moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event) }
+          )
         }
       }
 
@@ -289,8 +328,12 @@ struct MealPlanDetailView: View {
           .foregroundColor(.secondary)
 
         ForEach(pastEvents, id: \.id) { event in
-          EventCard(event: event)
-            .opacity(0.7)
+          EventCard(
+            event: event,
+            canMoveOrSwap: mealPlan.status == .finalized,
+            onMoveOrSwap: { moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event) }
+          )
+          .opacity(0.7)
         }
       }
     }
@@ -380,10 +423,19 @@ struct MealPlanDetailView: View {
   }
 }
 
+// MARK: - Identifiable Meal Plan Event
+
+private struct IdentifiableMealPlanEvent: Identifiable {
+  let event: Mealplanning_MealPlanEvent
+  var id: String { event.id }
+}
+
 // MARK: - Event Card
 
 struct EventCard: View {
   let event: Mealplanning_MealPlanEvent
+  var canMoveOrSwap: Bool = false
+  var onMoveOrSwap: (() -> Void)?
 
   private func eventTimeRange(event: Mealplanning_MealPlanEvent) -> some View {
     let startDate = HomeViewModel.timestampToDate(event.startsAt)
@@ -408,6 +460,16 @@ struct EventCard: View {
         }
 
         Spacer()
+
+        if canMoveOrSwap, let onMoveOrSwap = onMoveOrSwap {
+          Button {
+            onMoveOrSwap()
+          } label: {
+            Image(systemName: "calendar.badge.clock")
+              .font(.body)
+              .foregroundColor(.secondary)
+          }
+        }
       }
 
       // Selected meals

@@ -105,6 +105,7 @@ type (
 		MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error)
 		CreateMealPlanEvent(ctx context.Context, input *MealPlanEventDatabaseCreationInput) (*MealPlanEvent, error)
 		UpdateMealPlanEvent(ctx context.Context, updated *MealPlanEvent) error
+		SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPlanEventIDA, mealPlanEventIDB string) error
 		ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error
 	}
 

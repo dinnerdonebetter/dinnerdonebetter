@@ -190,6 +190,13 @@ func (m *MockMealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealP
 	return returnValues.Error(0)
 }
 
+// SwapMealPlanEvents is a mock method.
+func (m *MockMealPlanningManager) SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPlanEventIDA, mealPlanEventIDB string) error {
+	returnValues := m.Called(ctx, mealPlanID, mealPlanEventIDA, mealPlanEventIDB)
+
+	return returnValues.Error(0)
+}
+
 // ArchiveMealPlanEvent is a mock method.
 func (m *MockMealPlanningManager) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
 	returnValues := m.Called(ctx, mealPlanID, mealPlanEventID)
