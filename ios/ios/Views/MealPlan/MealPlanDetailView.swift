@@ -33,14 +33,14 @@ struct MealPlanDetailView: View {
         // Events
         eventsSection
 
+        // Tasks Link (if finalized and tasks created) - matches home page order (prep tasks above grocery)
+        if mealPlan.status == .finalized && mealPlan.tasksCreated {
+          tasksSection
+        }
+
         // Grocery List Link (if finalized and has items)
         if mealPlan.status == .finalized {
           groceryListSection
-        }
-
-        // Tasks Link (if finalized and tasks created)
-        if mealPlan.status == .finalized && mealPlan.tasksCreated {
-          tasksSection
         }
       }
       .dsScreenPadding()
