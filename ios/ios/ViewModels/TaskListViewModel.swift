@@ -30,16 +30,24 @@ class TaskListViewModel {
   var isUpdating = false
   var errorMessage: String?
 
+  /// Temperature display unit from user_temperature_unit setting. Reads from UserSettingsService.
+  var temperatureUnit: String {
+    userSettingsService.value(for: "user_temperature_unit", default: "fahrenheit")
+  }
+
   private let authManager: AuthenticationManager
+  private let userSettingsService: UserSettingsService
 
   init(
     mealPlan: Mealplanning_MealPlan,
     tasks: [Mealplanning_MealPlanTask],
-    authManager: AuthenticationManager
+    authManager: AuthenticationManager,
+    userSettingsService: UserSettingsService
   ) {
     self.mealPlan = mealPlan
     self.tasks = tasks
     self.authManager = authManager
+    self.userSettingsService = userSettingsService
   }
 
   func loadTasks() async {

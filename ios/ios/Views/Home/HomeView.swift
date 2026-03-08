@@ -11,6 +11,7 @@ import SwiftUI
 
 struct HomeView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(UserSettingsService.self) private var userSettingsService
   @State private var viewModel: HomeViewModel?
 
   var body: some View {
@@ -303,7 +304,8 @@ struct HomeView: View {
           destination: TaskListView(
             mealPlan: mealPlan,
             tasks: [],
-            authManager: viewModel.authManager
+            authManager: viewModel.authManager,
+            userSettingsService: userSettingsService
           )
         ) {
           InfoButton(icon: "checklist", text: summary.text, color: summary.color)
@@ -396,7 +398,8 @@ struct HomeView: View {
             destination: TaskListView(
               mealPlan: mealPlan,
               tasks: [],
-              authManager: viewModel.authManager
+              authManager: viewModel.authManager,
+              userSettingsService: userSettingsService
             )
           ) {
             InfoButton(icon: "checklist", text: summary.text, color: summary.color)

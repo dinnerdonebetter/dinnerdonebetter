@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MealPlanDetailView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(UserSettingsService.self) private var userSettingsService
   @Environment(\.dismiss) private var dismiss
   let mealPlan: Mealplanning_MealPlan
   let groceryListItems: [Mealplanning_MealPlanGroceryListItem]?
@@ -346,7 +347,8 @@ struct MealPlanDetailView: View {
           destination: TaskListView(
             mealPlan: mealPlan,
             tasks: [],  // Always start with empty array, TaskListView will fetch fresh data
-            authManager: authManager
+            authManager: authManager,
+            userSettingsService: userSettingsService
           )
         ) {
           tasksCardContent(count: count)

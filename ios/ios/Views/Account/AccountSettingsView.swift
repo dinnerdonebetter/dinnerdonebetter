@@ -124,6 +124,14 @@ struct AccountSettingsView: View {
       }
 
       DSListRowLink(
+        title: "Preferences",
+        subtitle: "Configure your preferences",
+        icon: "slider.horizontal.3",
+        style: .card,
+        destination: ServiceSettingsView()
+      )
+
+      DSListRowLink(
         title: "Profile",
         subtitle: "Photo, name, and account details",
         icon: "person.crop.circle",

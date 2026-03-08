@@ -13,6 +13,7 @@ struct IOSApp: App {
   @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
   @State private var eventReporterService = EventReporterService()
   @State private var authManager = AuthenticationManager()
+  @State private var userSettingsService = UserSettingsService()
   @State private var deepLinkHandler = DeepLinkHandler()
 
   init() {
@@ -29,10 +30,19 @@ struct IOSApp: App {
       ContentView()
         .environment(eventReporterService)
         .environment(authManager)
+        .environment(userSettingsService)
         .environment(deepLinkHandler)
         .onAppear {
+          userSettingsService.configure(authManager: authManager)
           DeviceTokenRegistrationService.shared.configure(authManager: authManager)
           Task { await authManager.logInToRevenueCatIfNeeded() }
+        }
+        .task(id: authManager.isAuthenticated) {
+          if authManager.isAuthenticated {
+            await userSettingsService.load()
+          } else {
+            userSettingsService.clear()
+          }
         }
         .onOpenURL { url in
           print("Received Universal Link: \(url)")
