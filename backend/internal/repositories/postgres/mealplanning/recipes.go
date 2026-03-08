@@ -13,6 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -31,7 +32,7 @@ func (q *repository) RecipeExists(ctx context.Context, recipeID string) (exists 
 	defer span.End()
 
 	if recipeID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
@@ -50,7 +51,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 	defer span.End()
 
 	if recipeID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
@@ -492,7 +493,7 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -896,7 +897,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.RecipeIDKey, input.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, input.ID)
@@ -1169,7 +1170,7 @@ func (q *repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Rec
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 
 	logger := q.logger.WithValue(mealplanningkeys.RecipeIDKey, updated.ID)
@@ -1208,7 +1209,7 @@ func (q *repository) UpdateRecipeStatus(ctx context.Context, recipeID, newStatus
 	logger := q.logger.WithSpan(span)
 
 	if recipeID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
@@ -1231,7 +1232,7 @@ func (q *repository) MarkRecipeAsIndexed(ctx context.Context, recipeID string) e
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
@@ -1374,13 +1375,13 @@ func (q *repository) ArchiveRecipe(ctx context.Context, recipeID, userID string)
 	defer span.End()
 
 	if recipeID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -1406,13 +1407,13 @@ func (q *repository) AddRecipeImage(ctx context.Context, recipeID, uploadedMedia
 	defer span.End()
 
 	if recipeID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	if uploadedMediaID == "" {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 	if uploadedByUser == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)

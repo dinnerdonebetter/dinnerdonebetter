@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -25,7 +26,7 @@ func (q *repository) GetRecipeListItems(ctx context.Context, recipeListID string
 	logger := q.logger.Clone()
 
 	if recipeListID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeListIDKey, recipeListID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeListIDKey, recipeListID)
@@ -111,7 +112,7 @@ func (q *repository) CreateRecipeListItem(ctx context.Context, input *types.Reci
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeListItemIDKey, input.ID)
 	logger := q.logger.WithValue(mealplanningkeys.RecipeListItemIDKey, input.ID)
@@ -144,7 +145,7 @@ func (q *repository) UpdateRecipeListItem(ctx context.Context, updated *types.Re
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.RecipeListItemIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeListItemIDKey, updated.ID)
@@ -176,13 +177,13 @@ func (q *repository) ArchiveRecipeListItem(ctx context.Context, recipeListItemID
 	logger := q.logger.Clone()
 
 	if recipeListID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeListIDKey, recipeListID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeListIDKey, recipeListID)
 
 	if recipeListItemID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeListItemIDKey, recipeListItemID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeListItemIDKey, recipeListItemID)

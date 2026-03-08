@@ -10,6 +10,7 @@ import (
 	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -32,7 +33,7 @@ func (r *repository) GetIssueReport(ctx context.Context, issueReportID string) (
 	logger := r.logger.Clone()
 
 	if issueReportID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(issuereportkeys.IssueReportIDKey, issueReportID)
 	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, issueReportID)
@@ -127,7 +128,7 @@ func (r *repository) GetIssueReportsForAccount(ctx context.Context, accountID st
 	logger := r.logger.Clone()
 
 	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
@@ -195,7 +196,7 @@ func (r *repository) CreateIssueReport(ctx context.Context, input *types.IssueRe
 	logger := r.logger.Clone()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, input.BelongsToAccount)
 	logger = logger.WithValue(identitykeys.AccountIDKey, input.BelongsToAccount)
@@ -259,7 +260,7 @@ func (r *repository) UpdateIssueReport(ctx context.Context, issueReport *types.I
 	logger := r.logger.Clone()
 
 	if issueReport == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger = logger.WithValue(issuereportkeys.IssueReportIDKey, issueReport.ID)
 	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, issueReport.ID)
@@ -311,7 +312,7 @@ func (r *repository) GetIssueReportsForTable(ctx context.Context, tableName stri
 	logger := r.logger.Clone()
 
 	if tableName == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue("relevant_table", tableName)
 	tracing.AttachToSpan(span, "relevant_table", tableName)
@@ -379,13 +380,13 @@ func (r *repository) GetIssueReportsForRecord(ctx context.Context, tableName, re
 	logger := r.logger.Clone()
 
 	if tableName == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue("relevant_table", tableName)
 	tracing.AttachToSpan(span, "relevant_table", tableName)
 
 	if recordID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue("relevant_record_id", recordID)
 	tracing.AttachToSpan(span, "relevant_record_id", recordID)
@@ -452,7 +453,7 @@ func (r *repository) ArchiveIssueReport(ctx context.Context, issueReportID strin
 	defer span.End()
 
 	if issueReportID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, issuereportkeys.IssueReportIDKey, issueReportID)
 

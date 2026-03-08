@@ -9,6 +9,7 @@ import (
 	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -24,7 +25,7 @@ func (r *repository) CreateSubscription(ctx context.Context, input *payments.Sub
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	logger := r.logger.Clone()
@@ -64,7 +65,7 @@ func (r *repository) GetSubscription(ctx context.Context, id string) (*payments.
 
 	logger := r.logger.Clone()
 	if id == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, id)
 	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, id)
@@ -99,7 +100,7 @@ func (r *repository) GetSubscriptionsForAccount(ctx context.Context, accountID s
 	defer span.End()
 
 	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 
 	logger := r.logger.Clone()
@@ -133,7 +134,7 @@ func (r *repository) UpdateSubscription(ctx context.Context, sub *payments.Subsc
 	defer span.End()
 
 	if sub == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 
 	logger := r.logger.Clone()
@@ -172,7 +173,7 @@ func (r *repository) UpdateSubscriptionStatus(ctx context.Context, id, status st
 
 	logger := r.logger.Clone()
 	if id == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, id)
 	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, id)
@@ -206,7 +207,7 @@ func (r *repository) ArchiveSubscription(ctx context.Context, id string) error {
 
 	logger := r.logger.Clone()
 	if id == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, id)
 	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, id)

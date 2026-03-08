@@ -2,14 +2,14 @@ package grpc
 
 import (
 	"context"
-	"errors"
 
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	issuereportssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -23,18 +23,18 @@ func (s *serviceImpl) CreateIssueReport(ctx context.Context, request *issuerepor
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID).WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	input := converters.ConvertGRPCIssueReportCreationRequestInputToIssueReportDatabaseCreationInput(request.Input, sessionContextData.Requester.UserID, sessionContextData.GetActiveAccountID())
 	if err = input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate issue report creation request")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate issue report creation request")
 	}
 
 	created, err := s.issueReportsManager.CreateIssueReport(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create issue report")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create issue report")
 	}
 
 	x := &issuereportssvc.CreateIssueReportResponse{
@@ -56,18 +56,18 @@ func (s *serviceImpl) GetIssueReport(ctx context.Context, request *issuereportss
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	issueReport, err := s.issueReportsManager.GetIssueReport(ctx, request.IssueReportId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue report")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue report")
 	}
 
 	// Verify the issue report belongs to the user's account
 	if issueReport.BelongsToAccount != sessionContextData.GetActiveAccountID() {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("permission denied"), logger, span, codes.PermissionDenied, "issue report does not belong to account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("permission denied"), logger, span, codes.PermissionDenied, "issue report does not belong to account")
 	}
 
 	x := &issuereportssvc.GetIssueReportResponse{
@@ -89,7 +89,7 @@ func (s *serviceImpl) GetIssueReports(ctx context.Context, request *issuereports
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
@@ -97,7 +97,7 @@ func (s *serviceImpl) GetIssueReports(ctx context.Context, request *issuereports
 
 	issueReports, err := s.issueReportsManager.GetIssueReports(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports")
 	}
 
 	x := &issuereportssvc.GetIssueReportsResponse{
@@ -123,7 +123,7 @@ func (s *serviceImpl) GetIssueReportsForAccount(ctx context.Context, request *is
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
@@ -131,7 +131,7 @@ func (s *serviceImpl) GetIssueReportsForAccount(ctx context.Context, request *is
 
 	issueReports, err := s.issueReportsManager.GetIssueReportsForAccount(ctx, sessionContextData.ActiveAccountID, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports for account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports for account")
 	}
 
 	x := &issuereportssvc.GetIssueReportsForAccountResponse{
@@ -157,7 +157,7 @@ func (s *serviceImpl) GetIssueReportsForTable(ctx context.Context, request *issu
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
@@ -165,7 +165,7 @@ func (s *serviceImpl) GetIssueReportsForTable(ctx context.Context, request *issu
 
 	issueReports, err := s.issueReportsManager.GetIssueReportsForTable(ctx, request.TableName, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports for table")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports for table")
 	}
 
 	x := &issuereportssvc.GetIssueReportsForTableResponse{
@@ -191,7 +191,7 @@ func (s *serviceImpl) GetIssueReportsForRecord(ctx context.Context, request *iss
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
@@ -199,7 +199,7 @@ func (s *serviceImpl) GetIssueReportsForRecord(ctx context.Context, request *iss
 
 	issueReports, err := s.issueReportsManager.GetIssueReportsForRecord(ctx, request.TableName, request.RecordId, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports for record")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports for record")
 	}
 
 	x := &issuereportssvc.GetIssueReportsForRecordResponse{
@@ -225,31 +225,31 @@ func (s *serviceImpl) UpdateIssueReport(ctx context.Context, request *issuerepor
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	// Fetch the existing issue report
 	issueReport, err := s.issueReportsManager.GetIssueReport(ctx, request.IssueReportId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue report")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue report")
 	}
 
 	// Verify the issue report belongs to the user's account
 	if issueReport.BelongsToAccount != sessionContextData.GetActiveAccountID() {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("permission denied"), logger, span, codes.PermissionDenied, "issue report does not belong to account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("permission denied"), logger, span, codes.PermissionDenied, "issue report does not belong to account")
 	}
 
 	// Apply updates
 	updateInput := converters.ConvertGRPCIssueReportUpdateRequestInputToIssueReportUpdateRequestInput(request.Input)
 	if err = updateInput.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate issue report update request")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate issue report update request")
 	}
 
 	issueReport.Update(updateInput)
 
 	if err = s.issueReportsManager.UpdateIssueReport(ctx, issueReport); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update issue report")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update issue report")
 	}
 
 	x := &issuereportssvc.UpdateIssueReportResponse{
@@ -271,23 +271,23 @@ func (s *serviceImpl) ArchiveIssueReport(ctx context.Context, request *issuerepo
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	// Fetch the existing issue report to verify ownership
 	issueReport, err := s.issueReportsManager.GetIssueReport(ctx, request.IssueReportId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue report")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue report")
 	}
 
 	// Verify the issue report belongs to the user's account
 	if issueReport.BelongsToAccount != sessionContextData.GetActiveAccountID() {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("permission denied"), logger, span, codes.PermissionDenied, "issue report does not belong to account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("permission denied"), logger, span, codes.PermissionDenied, "issue report does not belong to account")
 	}
 
 	if err = s.issueReportsManager.ArchiveIssueReport(ctx, request.IssueReportId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive issue report")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive issue report")
 	}
 
 	x := &issuereportssvc.ArchiveIssueReportResponse{

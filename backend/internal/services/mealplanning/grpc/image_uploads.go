@@ -12,8 +12,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -30,20 +31,20 @@ func (s *serviceImpl) UploadMealImage(stream grpc.ClientStreamingServer[mealplan
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 	userID := sessionContextData.GetUserID()
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 
 	firstReq, err := stream.Recv()
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive first message")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive first message")
 	}
 
 	mealID := firstReq.GetMealId()
 	if mealID == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("meal_id is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("meal_id is required"),
 			logger, span, codes.InvalidArgument, "meal_id is required",
 		)
 	}
@@ -52,51 +53,51 @@ func (s *serviceImpl) UploadMealImage(stream grpc.ClientStreamingServer[mealplan
 	// Verify user owns the meal
 	meal, err := s.mealPlanningManager.ReadMeal(ctx, mealID)
 	if err != nil || meal == nil {
-		return observability.PrepareAndLogGRPCStatus(
+		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("meal not found or access denied: %w", err),
 			logger, span, codes.PermissionDenied, "meal not found or access denied",
 		)
 	}
 	if meal.CreatedByUser != userID {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("permission denied"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("permission denied"),
 			logger, span, codes.PermissionDenied, "permission denied",
 		)
 	}
 
 	upload := firstReq.GetUpload()
 	if upload == nil {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("first message must contain upload"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("first message must contain upload"),
 			logger, span, codes.InvalidArgument, "first message must contain upload",
 		)
 	}
 
 	metadata := upload.GetMetadata()
 	if metadata == nil {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("first message must contain metadata"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("first message must contain metadata"),
 			logger, span, codes.InvalidArgument, "first message must contain metadata",
 		)
 	}
 
 	if metadata.ObjectName == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("object_name is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("object_name is required"),
 			logger, span, codes.InvalidArgument, "object_name is required",
 		)
 	}
 
 	if metadata.ContentType == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("content_type is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("content_type is required"),
 			logger, span, codes.InvalidArgument, "content_type is required",
 		)
 	}
 
 	mimeType := metadata.ContentType
 	if !uploadedmedia.IsValidMimeType(mimeType) {
-		return observability.PrepareAndLogGRPCStatus(
+		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("unsupported content type: %s", mimeType),
 			logger, span, codes.InvalidArgument, "unsupported content type",
 		)
@@ -105,7 +106,7 @@ func (s *serviceImpl) UploadMealImage(stream grpc.ClientStreamingServer[mealplan
 	var fileData bytes.Buffer
 	if chunk := upload.GetChunk(); len(chunk) > 0 {
 		if _, err = fileData.Write(chunk); err != nil {
-			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
 		}
 	}
 
@@ -117,7 +118,7 @@ func (s *serviceImpl) UploadMealImage(stream grpc.ClientStreamingServer[mealplan
 			break
 		}
 		if recvErr != nil {
-			return observability.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
 		}
 
 		u := req.GetUpload()
@@ -132,22 +133,22 @@ func (s *serviceImpl) UploadMealImage(stream grpc.ClientStreamingServer[mealplan
 
 		chunkSize := int64(len(chunk))
 		if totalSize+chunkSize > maxImageUploadSize {
-			return observability.PrepareAndLogGRPCStatus(
+			return errorsgrpc.PrepareAndLogGRPCStatus(
 				fmt.Errorf("file size exceeds maximum allowed size of %d bytes", maxImageUploadSize),
 				logger, span, codes.InvalidArgument, "file too large",
 			)
 		}
 
 		if _, err = fileData.Write(chunk); err != nil {
-			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
 		}
 
 		totalSize += chunkSize
 	}
 
 	if totalSize == 0 {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("no file data received"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("no file data received"),
 			logger, span, codes.InvalidArgument, "no file data received",
 		)
 	}
@@ -156,7 +157,7 @@ func (s *serviceImpl) UploadMealImage(stream grpc.ClientStreamingServer[mealplan
 	storagePath := filepath.Join("meals", mealID, fileID, metadata.ObjectName)
 
 	if err = s.uploadManager.SaveFile(ctx, storagePath, fileData.Bytes()); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
 	}
 
 	uploadedMediaInput := &uploadedmedia.UploadedMediaDatabaseCreationInput{
@@ -167,16 +168,16 @@ func (s *serviceImpl) UploadMealImage(stream grpc.ClientStreamingServer[mealplan
 	}
 
 	if err = uploadedMediaInput.ValidateWithContext(ctx); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
 	}
 
 	created, err := s.uploadedMediaManager.CreateUploadedMedia(ctx, uploadedMediaInput)
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
 	}
 
 	if err = s.mealPlanningManager.AddMealImage(ctx, mealID, created.ID, userID); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add meal image")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add meal image")
 	}
 
 	uploadedMediaID := created.ID
@@ -188,7 +189,7 @@ func (s *serviceImpl) UploadMealImage(stream grpc.ClientStreamingServer[mealplan
 	}
 
 	if err = stream.SendAndClose(response); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
 	}
 
 	logger.Info("meal image uploaded successfully")
@@ -204,19 +205,19 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 	userID := sessionContextData.GetUserID()
 
 	firstReq, err := stream.Recv()
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive first message")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive first message")
 	}
 
 	recipeID := firstReq.GetRecipeId()
 	if recipeID == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("recipe_id is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("recipe_id is required"),
 			logger, span, codes.InvalidArgument, "recipe_id is required",
 		)
 	}
@@ -225,51 +226,51 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 	// Verify user owns the recipe
 	recipe, err := s.recipeManager.ReadRecipe(ctx, recipeID)
 	if err != nil || recipe == nil {
-		return observability.PrepareAndLogGRPCStatus(
+		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("recipe not found or access denied: %w", err),
 			logger, span, codes.PermissionDenied, "recipe not found or access denied",
 		)
 	}
 	if recipe.CreatedByUser != userID {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("permission denied"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("permission denied"),
 			logger, span, codes.PermissionDenied, "permission denied",
 		)
 	}
 
 	upload := firstReq.GetUpload()
 	if upload == nil {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("first message must contain upload"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("first message must contain upload"),
 			logger, span, codes.InvalidArgument, "first message must contain upload",
 		)
 	}
 
 	metadata := upload.GetMetadata()
 	if metadata == nil {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("first message must contain metadata"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("first message must contain metadata"),
 			logger, span, codes.InvalidArgument, "first message must contain metadata",
 		)
 	}
 
 	if metadata.ObjectName == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("object_name is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("object_name is required"),
 			logger, span, codes.InvalidArgument, "object_name is required",
 		)
 	}
 
 	if metadata.ContentType == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("content_type is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("content_type is required"),
 			logger, span, codes.InvalidArgument, "content_type is required",
 		)
 	}
 
 	mimeType := metadata.ContentType
 	if !uploadedmedia.IsValidMimeType(mimeType) {
-		return observability.PrepareAndLogGRPCStatus(
+		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("unsupported content type: %s", mimeType),
 			logger, span, codes.InvalidArgument, "unsupported content type",
 		)
@@ -278,7 +279,7 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 	var fileData bytes.Buffer
 	if chunk := upload.GetChunk(); len(chunk) > 0 {
 		if _, err = fileData.Write(chunk); err != nil {
-			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
 		}
 	}
 
@@ -290,7 +291,7 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 			break
 		}
 		if recvErr != nil {
-			return observability.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
 		}
 
 		u := req.GetUpload()
@@ -305,22 +306,22 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 
 		chunkSize := int64(len(chunk))
 		if totalSize+chunkSize > maxImageUploadSize {
-			return observability.PrepareAndLogGRPCStatus(
+			return errorsgrpc.PrepareAndLogGRPCStatus(
 				fmt.Errorf("file size exceeds maximum allowed size of %d bytes", maxImageUploadSize),
 				logger, span, codes.InvalidArgument, "file too large",
 			)
 		}
 
 		if _, err = fileData.Write(chunk); err != nil {
-			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
 		}
 
 		totalSize += chunkSize
 	}
 
 	if totalSize == 0 {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("no file data received"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("no file data received"),
 			logger, span, codes.InvalidArgument, "no file data received",
 		)
 	}
@@ -329,7 +330,7 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 	storagePath := filepath.Join("recipes", recipeID, fileID, metadata.ObjectName)
 
 	if err = s.uploadManager.SaveFile(ctx, storagePath, fileData.Bytes()); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
 	}
 
 	uploadedMediaInput := &uploadedmedia.UploadedMediaDatabaseCreationInput{
@@ -340,16 +341,16 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 	}
 
 	if err = uploadedMediaInput.ValidateWithContext(ctx); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
 	}
 
 	created, err := s.uploadedMediaManager.CreateUploadedMedia(ctx, uploadedMediaInput)
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
 	}
 
 	if err = s.recipeManager.AddRecipeImage(ctx, recipeID, created.ID, userID); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add recipe image")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add recipe image")
 	}
 
 	uploadedMediaID := created.ID
@@ -361,7 +362,7 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 	}
 
 	if err = stream.SendAndClose(response); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
 	}
 
 	logger.Info("recipe image uploaded successfully")

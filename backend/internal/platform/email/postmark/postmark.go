@@ -2,13 +2,13 @@ package postmark
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -24,11 +24,11 @@ var (
 	_ email.Emailer = (*Emailer)(nil)
 
 	// ErrNilConfig indicates a nil config was provided.
-	ErrNilConfig = errors.New("postmark config is nil")
+	ErrNilConfig = platformerrors.New("postmark config is nil")
 	// ErrEmptyServerToken indicates an empty server token was provided.
-	ErrEmptyServerToken = errors.New("empty Postmark server token")
+	ErrEmptyServerToken = platformerrors.New("empty Postmark server token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
-	ErrNilHTTPClient = errors.New("nil HTTP client")
+	ErrNilHTTPClient = platformerrors.New("nil HTTP client")
 )
 
 type (

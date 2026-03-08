@@ -7,9 +7,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	"github.com/stretchr/testify/assert"
@@ -54,7 +54,7 @@ func TestCreateProduct(T *testing.T) {
 		actual, err := c.CreateProduct(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrNilInputProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrNilInputProvided)
 	})
 }
 
@@ -69,7 +69,7 @@ func TestGetProduct(T *testing.T) {
 		actual, err := c.GetProduct(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -84,7 +84,7 @@ func TestGetProductByExternalID(T *testing.T) {
 		actual, err := c.GetProductByExternalID(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -98,7 +98,7 @@ func TestUpdateProduct(T *testing.T) {
 
 		err := c.UpdateProduct(ctx, nil)
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrNilInputProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrNilInputProvided)
 	})
 }
 
@@ -112,7 +112,7 @@ func TestArchiveProduct(T *testing.T) {
 
 		err := c.ArchiveProduct(ctx, "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -127,7 +127,7 @@ func TestProductExists(T *testing.T) {
 		exists, err := c.ProductExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, exists)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 

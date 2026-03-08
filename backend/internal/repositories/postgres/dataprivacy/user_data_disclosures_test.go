@@ -6,8 +6,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +27,7 @@ func TestCreateUserDataDisclosure(T *testing.T) {
 		actual, err := c.CreateUserDataDisclosure(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrNilInputProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrNilInputProvided)
 	})
 
 	T.Run("with empty ID", func(t *testing.T) {
@@ -43,7 +43,7 @@ func TestCreateUserDataDisclosure(T *testing.T) {
 		actual, err := c.CreateUserDataDisclosure(ctx, input)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -58,7 +58,7 @@ func TestGetUserDataDisclosure(T *testing.T) {
 		actual, err := c.GetUserDataDisclosure(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -73,7 +73,7 @@ func TestGetUserDataDisclosuresForUser(T *testing.T) {
 		actual, err := c.GetUserDataDisclosuresForUser(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -87,7 +87,7 @@ func TestMarkUserDataDisclosureCompleted(T *testing.T) {
 
 		err := c.MarkUserDataDisclosureCompleted(ctx, "", identifiers.New())
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 
 	T.Run("with empty report ID", func(t *testing.T) {
@@ -97,7 +97,7 @@ func TestMarkUserDataDisclosureCompleted(T *testing.T) {
 
 		err := c.MarkUserDataDisclosureCompleted(ctx, identifiers.New(), "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -111,7 +111,7 @@ func TestMarkUserDataDisclosureFailed(T *testing.T) {
 
 		err := c.MarkUserDataDisclosureFailed(ctx, "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -125,7 +125,7 @@ func TestArchiveUserDataDisclosure(T *testing.T) {
 
 		err := c.ArchiveUserDataDisclosure(ctx, "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 

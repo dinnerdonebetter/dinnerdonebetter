@@ -9,6 +9,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -27,7 +28,7 @@ func (q *repository) ValidVesselExists(ctx context.Context, validVesselID string
 	logger := q.logger.Clone()
 
 	if validVesselID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
@@ -48,7 +49,7 @@ func (q *repository) GetValidVessel(ctx context.Context, validVesselID string) (
 	logger := q.logger.Clone()
 
 	if validVesselID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
@@ -152,7 +153,7 @@ func (q *repository) SearchForValidVessels(ctx context.Context, query string, fi
 	logger := q.logger.Clone()
 
 	if query == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(platformkeys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, query)
@@ -378,7 +379,7 @@ func (q *repository) CreateValidVessel(ctx context.Context, input *types.ValidVe
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.ValidVesselIDKey, input.ID)
 
@@ -437,13 +438,13 @@ func (q *repository) UpdateValidVessel(ctx context.Context, updated *types.Valid
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.ValidVesselIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, updated.ID)
 
 	if updated.CapacityUnit == nil {
-		return fmt.Errorf("capacity unit: %w", database.ErrNilInputProvided)
+		return fmt.Errorf("capacity unit: %w", platformerrors.ErrNilInputProvided)
 	}
 
 	if _, err := q.generatedQuerier.UpdateValidVessel(ctx, q.writeDB, &generated.UpdateValidVesselParams{
@@ -479,7 +480,7 @@ func (q *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID
 	logger := q.logger.Clone()
 
 	if validVesselID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
@@ -501,7 +502,7 @@ func (q *repository) ArchiveValidVessel(ctx context.Context, validVesselID strin
 	logger := q.logger.Clone()
 
 	if validVesselID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)

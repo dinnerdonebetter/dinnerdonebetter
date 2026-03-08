@@ -2,12 +2,13 @@ package authentication
 
 import (
 	"context"
-	"errors"
+
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 )
 
 var (
 	// ErrPasswordDoesNotMatch indicates that a provided passwords does not match.
-	ErrPasswordDoesNotMatch = errors.New("password does not match")
+	ErrPasswordDoesNotMatch = platformerrors.New("password does not match")
 )
 
 type (

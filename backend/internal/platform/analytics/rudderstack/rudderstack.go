@@ -2,10 +2,10 @@ package rudderstack
 
 import (
 	"context"
-	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -18,11 +18,11 @@ const (
 
 var (
 	// ErrNilConfig indicates a nil config was provided.
-	ErrNilConfig = errors.New("nil config")
+	ErrNilConfig = platformerrors.New("nil config")
 	// ErrEmptyAPIToken indicates an empty API token was provided.
-	ErrEmptyAPIToken = errors.New("empty Rudderstack API token")
+	ErrEmptyAPIToken = platformerrors.New("empty Rudderstack API token")
 	// ErrEmptyDataPlaneURL indicates an empty data plane URL was provided.
-	ErrEmptyDataPlaneURL = errors.New("empty data plane URL")
+	ErrEmptyDataPlaneURL = platformerrors.New("empty data plane URL")
 )
 
 type (

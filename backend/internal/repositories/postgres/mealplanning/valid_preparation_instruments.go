@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -24,7 +25,7 @@ func (q *repository) ValidPreparationInstrumentExists(ctx context.Context, valid
 	defer span.End()
 
 	if validPreparationInstrumentID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
@@ -42,7 +43,7 @@ func (q *repository) GetValidPreparationInstrument(ctx context.Context, validPre
 	defer span.End()
 
 	if validPreparationInstrumentID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
@@ -215,7 +216,7 @@ func (q *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 	logger := q.logger.Clone()
 
 	if preparationID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, preparationID)
 
@@ -322,7 +323,7 @@ func (q *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 	logger := q.logger.Clone()
 
 	if instrumentID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, instrumentID)
 
@@ -501,7 +502,7 @@ func (q *repository) CreateValidPreparationInstrument(ctx context.Context, input
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, input.ID)
 	logger := q.logger.WithValue(mealplanningkeys.ValidPreparationInstrumentIDKey, input.ID)
@@ -553,7 +554,7 @@ func (q *repository) UpdateValidPreparationInstrument(ctx context.Context, updat
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 
 	logger := q.logger.WithValue(mealplanningkeys.ValidPreparationInstrumentIDKey, updated.ID)
@@ -579,7 +580,7 @@ func (q *repository) ArchiveValidPreparationInstrument(ctx context.Context, vali
 	defer span.End()
 
 	if validPreparationInstrumentID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)

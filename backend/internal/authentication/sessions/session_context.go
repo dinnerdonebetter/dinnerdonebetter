@@ -3,10 +3,10 @@ package sessions
 import (
 	"context"
 	"encoding/gob"
-	"errors"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
@@ -18,7 +18,7 @@ func init() {
 
 var (
 	// ErrNoSessionContextDataAvailable indicates no ContextData was attached to the request.
-	ErrNoSessionContextDataAvailable = errors.New("no ContextData attached to session context data")
+	ErrNoSessionContextDataAvailable = platformerrors.New("no ContextData attached to session context data")
 )
 
 // FetchContextDataFromRequest fetches a ContextData from a request.

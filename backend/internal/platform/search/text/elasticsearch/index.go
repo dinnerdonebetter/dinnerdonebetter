@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -18,7 +18,7 @@ import (
 
 var (
 	// ErrEmptyQueryProvided indicates an empty query was provided as input.
-	ErrEmptyQueryProvided = errors.New("empty search query provided")
+	ErrEmptyQueryProvided = platformerrors.New("empty search query provided")
 )
 
 // Index implements our IndexManager interface.
@@ -59,7 +59,7 @@ func (sm *indexManager[T]) Index(ctx context.Context, id string, value any) erro
 
 	if res.StatusCode != http.StatusCreated && res.StatusCode != http.StatusOK {
 		sm.circuitBreaker.Failed()
-		return observability.PrepareError(errors.New(res.String()), span, "indexing value")
+		return observability.PrepareError(platformerrors.New(res.String()), span, "indexing value")
 	}
 
 	sm.circuitBreaker.Succeeded()
@@ -120,7 +120,7 @@ func (sm *indexManager[T]) search(ctx context.Context, query string) (results []
 			return nil, observability.PrepareError(err, span, "invalid response from elasticsearch")
 		}
 
-		err = errors.New(strings.Join(res.Warnings(), ", "))
+		err = platformerrors.New(strings.Join(res.Warnings(), ", "))
 		sm.circuitBreaker.Failed()
 		return nil, observability.PrepareError(err, span, "querying elasticsearch")
 	}
@@ -151,7 +151,7 @@ func (sm *indexManager[T]) Search(ctx context.Context, query string) (ids []*T, 
 
 // Wipe implements our IndexManager interface.
 func (sm *indexManager[T]) Wipe(_ context.Context) (err error) {
-	return errors.New("unimplemented")
+	return platformerrors.New("unimplemented")
 }
 
 // Delete implements our IndexManager interface.

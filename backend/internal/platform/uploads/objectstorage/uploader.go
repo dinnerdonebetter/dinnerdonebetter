@@ -2,10 +2,10 @@ package objectstorage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -26,7 +26,7 @@ const (
 
 var (
 	// ErrNilConfig denotes that the provided configuration is nil.
-	ErrNilConfig = errors.New("nil config provided")
+	ErrNilConfig = platformerrors.New("nil config provided")
 )
 
 type (

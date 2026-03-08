@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -26,13 +27,13 @@ func (q *repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipeP
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipePrepTaskID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
@@ -58,13 +59,13 @@ func (q *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrep
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipePrepTaskID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
@@ -128,7 +129,7 @@ func (q *repository) createRecipePrepTask(ctx context.Context, querier database.
 	logger := q.logger.Clone()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, input.ID)
 	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, input.ID)
@@ -196,7 +197,7 @@ func (q *repository) CreateRecipePrepTask(ctx context.Context, input *mealplanni
 	logger := q.logger.Clone()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, input.ID)
 
@@ -227,7 +228,7 @@ func (q *repository) createRecipePrepTaskStep(ctx context.Context, querier datab
 	logger := q.logger.Clone()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, input.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, input.BelongsToRecipePrepTask)
@@ -263,7 +264,7 @@ func (q *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID s
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
@@ -336,7 +337,7 @@ func (q *repository) GetRecipePrepTasks(ctx context.Context, recipeID string, fi
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
@@ -375,7 +376,7 @@ func (q *repository) UpdateRecipePrepTask(ctx context.Context, updated *mealplan
 
 	logger := q.logger.Clone()
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, updated.ID)
 
@@ -409,13 +410,13 @@ func (q *repository) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipe
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipePrepTaskID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipePrepTaskIDKey, recipePrepTaskID)

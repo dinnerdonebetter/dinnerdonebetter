@@ -12,8 +12,8 @@ import (
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
@@ -63,7 +63,7 @@ func (s *serviceImpl) AggregateUserDataReport(ctx context.Context, _ *dataprivac
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	userID := sessionContextData.Requester.UserID
@@ -80,17 +80,17 @@ func (s *serviceImpl) AggregateUserDataReport(ctx context.Context, _ *dataprivac
 	// Fetch all user data
 	collection, err := s.dataPrivacyManager.FetchUserDataCollection(ctx, userID)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching user data collection")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching user data collection")
 	}
 
 	// Marshal and save to object storage
 	collectionBytes, err := json.Marshal(collection)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "marshaling user data collection")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "marshaling user data collection")
 	}
 
 	if err = s.uploadManager.SaveFile(ctx, fmt.Sprintf("%s.json", reportID), collectionBytes); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "saving user data report")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "saving user data report")
 	}
 
 	logger.Info("user data aggregation complete")
@@ -110,7 +110,7 @@ func (s *serviceImpl) DestroyAllUserData(ctx context.Context, _ *dataprivacysvc.
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	userID := sessionContextData.Requester.UserID
@@ -120,7 +120,7 @@ func (s *serviceImpl) DestroyAllUserData(ctx context.Context, _ *dataprivacysvc.
 	logger.Info("destroying all user data")
 
 	if err = s.dataPrivacyManager.DeleteUser(ctx, userID); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "deleting user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "deleting user")
 	}
 
 	logger.Info("user data destroyed successfully")
@@ -147,13 +147,13 @@ func (s *serviceImpl) FetchUserDataReport(ctx context.Context, request *datapriv
 	// Read the report from object storage
 	reportBytes, err := s.uploadManager.ReadFile(ctx, fmt.Sprintf("%s.json", reportID))
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.NotFound, "reading report from storage")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.NotFound, "reading report from storage")
 	}
 
 	// Unmarshal the report
 	var collection dataprivacy.UserDataCollection
 	if err = json.Unmarshal(reportBytes, &collection); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "unmarshaling report")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "unmarshaling report")
 	}
 
 	logger.Info("user data report fetched successfully")

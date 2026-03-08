@@ -2,10 +2,10 @@ package segment
 
 import (
 	"context"
-	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -18,7 +18,7 @@ const (
 
 var (
 	// ErrEmptyAPIToken indicates an empty API token was provided.
-	ErrEmptyAPIToken = errors.New("empty Segment API token")
+	ErrEmptyAPIToken = platformerrors.New("empty Segment API token")
 )
 
 type (

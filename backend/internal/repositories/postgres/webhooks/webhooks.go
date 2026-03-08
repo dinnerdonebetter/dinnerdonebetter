@@ -11,6 +11,7 @@ import (
 	webhookkeys "github.com/dinnerdonebetter/backend/internal/domain/webhooks/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -35,13 +36,13 @@ func (r *repository) WebhookExists(ctx context.Context, webhookID, accountID str
 	logger := r.logger.Clone()
 
 	if webhookID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(webhookkeys.WebhookIDKey, webhookID)
 	tracing.AttachToSpan(span, webhookkeys.WebhookIDKey, webhookID)
 
 	if accountID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
@@ -65,13 +66,13 @@ func (r *repository) GetWebhook(ctx context.Context, webhookID, accountID string
 	logger := r.logger.Clone()
 
 	if webhookID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(webhookkeys.WebhookIDKey, webhookID)
 	tracing.AttachToSpan(span, webhookkeys.WebhookIDKey, webhookID)
 
 	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
@@ -128,7 +129,7 @@ func (r *repository) GetWebhooks(ctx context.Context, accountID string, filter *
 	logger := r.logger.Clone()
 
 	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
@@ -198,7 +199,7 @@ func (r *repository) GetWebhooksForAccountAndEvent(ctx context.Context, accountI
 	logger := r.logger.Clone()
 
 	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
@@ -238,7 +239,7 @@ func (r *repository) CreateWebhook(ctx context.Context, input *types.WebhookData
 	logger := r.logger.Clone()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, input.BelongsToAccount)
 	logger = logger.WithValue(identitykeys.AccountIDKey, input.BelongsToAccount)
@@ -315,12 +316,12 @@ func (r *repository) createWebhookTriggerConfig(ctx context.Context, querier dat
 	logger := r.logger.Clone()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, webhookkeys.WebhookIDKey, input.BelongsToWebhook)
 
 	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
@@ -358,12 +359,12 @@ func (r *repository) ArchiveWebhook(ctx context.Context, webhookID, accountID st
 	defer span.End()
 
 	if webhookID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, webhookkeys.WebhookIDKey, webhookID)
 
 	if accountID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
@@ -414,12 +415,12 @@ func (r *repository) AddWebhookTriggerConfig(ctx context.Context, accountID stri
 	defer span.End()
 
 	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, webhookkeys.WebhookIDKey, input.BelongsToWebhook)
 
@@ -453,12 +454,12 @@ func (r *repository) ArchiveWebhookTriggerConfig(ctx context.Context, webhookID,
 	defer span.End()
 
 	if webhookID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, webhookkeys.WebhookIDKey, webhookID)
 
 	if configID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, webhookkeys.WebhookTriggerEventIDKey, configID)
 
@@ -505,7 +506,7 @@ func (r *repository) CreateWebhookTriggerEvent(ctx context.Context, input *types
 	logger := r.logger.Clone()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	if err := r.generatedQuerier.CreateWebhookTriggerEvent(ctx, r.writeDB, &generated.CreateWebhookTriggerEventParams{
@@ -610,7 +611,7 @@ func (r *repository) UpdateWebhookTriggerEvent(ctx context.Context, id string, i
 	defer span.End()
 
 	if input == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 
 	rowsAffected, err := r.generatedQuerier.UpdateWebhookTriggerEvent(ctx, r.writeDB, &generated.UpdateWebhookTriggerEventParams{
@@ -643,7 +644,7 @@ func (r *repository) ArchiveWebhookTriggerEvent(ctx context.Context, id string) 
 	defer span.End()
 
 	if id == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	rowsAffected, err := r.generatedQuerier.ArchiveWebhookTriggerEvent(ctx, r.writeDB, id)

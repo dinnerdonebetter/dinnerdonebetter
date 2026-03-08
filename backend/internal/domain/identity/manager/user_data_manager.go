@@ -19,6 +19,7 @@ import (
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
@@ -45,15 +46,12 @@ const (
 )
 
 var (
-
 	// ErrInvalidIDProvided indicates a required ID was passed in empty.
-	ErrInvalidIDProvided = errors.New("required ID was empty")
-
+	ErrInvalidIDProvided = platformerrors.New("required ID was empty")
 	// ErrNilInputProvided indicates that a required parameter was nil.
-	ErrNilInputProvided = errors.New("nil input provided")
-
+	ErrNilInputProvided = platformerrors.New("nil input provided")
 	// ErrEmptyInputProvided indicates that the required input was empty.
-	ErrEmptyInputProvided = errors.New("empty input provided")
+	ErrEmptyInputProvided = platformerrors.New("empty input provided")
 )
 
 type (
@@ -680,7 +678,7 @@ func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchSer
 	defer span.End()
 
 	if query == "" {
-		return nil, errors.New("query cannot be empty")
+		return nil, platformerrors.New("query cannot be empty")
 	}
 
 	if filter == nil {

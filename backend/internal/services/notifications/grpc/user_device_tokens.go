@@ -11,8 +11,9 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
@@ -27,11 +28,11 @@ func (s *serviceImpl) RegisterDeviceToken(ctx context.Context, request *notifica
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
 	if request == nil || request.Input == nil {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("input required"), logger, span, codes.InvalidArgument, "input required")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("input required"), logger, span, codes.InvalidArgument, "input required")
 	}
 
 	input := &notifications.UserDeviceTokenDatabaseCreationInput{
@@ -46,7 +47,7 @@ func (s *serviceImpl) RegisterDeviceToken(ctx context.Context, request *notifica
 
 	created, err := s.notificationsManager.CreateUserDeviceToken(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "registering device token")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "registering device token")
 	}
 
 	x := &notificationssvc.RegisterDeviceTokenResponse{
@@ -67,15 +68,15 @@ func (s *serviceImpl) GetUserDeviceToken(ctx context.Context, request *notificat
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
 	token, err := s.notificationsManager.GetUserDeviceToken(ctx, sessionContextData.GetUserID(), request.UserDeviceTokenId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.NotFound, "device token not found")
+			return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.NotFound, "device token not found")
 		}
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching device token")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching device token")
 	}
 
 	x := &notificationssvc.GetUserDeviceTokenResponse{
@@ -96,7 +97,7 @@ func (s *serviceImpl) GetUserDeviceTokens(ctx context.Context, request *notifica
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -109,7 +110,7 @@ func (s *serviceImpl) GetUserDeviceTokens(ctx context.Context, request *notifica
 
 	tokens, err := s.notificationsManager.GetUserDeviceTokens(ctx, sessionContextData.GetUserID(), filter, platformFilter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching device tokens")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching device tokens")
 	}
 
 	x := &notificationssvc.GetUserDeviceTokensResponse{
@@ -133,14 +134,14 @@ func (s *serviceImpl) ArchiveUserDeviceToken(ctx context.Context, request *notif
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
 	if err = s.notificationsManager.ArchiveUserDeviceToken(ctx, sessionContextData.GetUserID(), request.UserDeviceTokenId); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.NotFound, "device token not found")
+			return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.NotFound, "device token not found")
 		}
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving device token")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving device token")
 	}
 
 	x := &notificationssvc.ArchiveUserDeviceTokenResponse{

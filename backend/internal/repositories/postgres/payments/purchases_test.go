@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	"github.com/stretchr/testify/assert"
@@ -25,7 +25,7 @@ func TestCreatePurchase(T *testing.T) {
 		actual, err := c.CreatePurchase(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrNilInputProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrNilInputProvided)
 	})
 }
 
@@ -40,7 +40,7 @@ func TestGetPurchase(T *testing.T) {
 		actual, err := c.GetPurchase(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -55,7 +55,7 @@ func TestGetPurchasesForAccount(T *testing.T) {
 		actual, err := c.GetPurchasesForAccount(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 

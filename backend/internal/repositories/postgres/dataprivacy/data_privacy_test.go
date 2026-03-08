@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	"github.com/stretchr/testify/assert"
@@ -25,7 +25,7 @@ func TestFetchUserDataCollection(T *testing.T) {
 		actual, err := c.FetchUserDataCollection(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -39,7 +39,7 @@ func TestDeleteUser(T *testing.T) {
 
 		err := c.DeleteUser(ctx, "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 

@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	"github.com/stretchr/testify/assert"
@@ -24,7 +24,7 @@ func TestCreateQueueTestMessage(T *testing.T) {
 
 		err := c.CreateQueueTestMessage(ctx, "", "test-queue")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 
 	T.Run("with empty queue name", func(t *testing.T) {
@@ -34,7 +34,7 @@ func TestCreateQueueTestMessage(T *testing.T) {
 
 		err := c.CreateQueueTestMessage(ctx, identifiers.New(), "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -48,7 +48,7 @@ func TestAcknowledgeQueueTestMessage(T *testing.T) {
 
 		err := c.AcknowledgeQueueTestMessage(ctx, "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -63,7 +63,7 @@ func TestGetQueueTestMessage(T *testing.T) {
 		actual, err := c.GetQueueTestMessage(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -77,7 +77,7 @@ func TestPruneQueueTestMessages(T *testing.T) {
 
 		err := c.PruneQueueTestMessages(ctx, "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 

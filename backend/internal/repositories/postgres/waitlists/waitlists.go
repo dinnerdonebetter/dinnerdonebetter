@@ -10,6 +10,7 @@ import (
 	waitlistkeys "github.com/dinnerdonebetter/backend/internal/domain/waitlists/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -33,7 +34,7 @@ func (r *Repository) WaitlistIsNotExpired(ctx context.Context, waitlistID string
 	logger := r.logger.Clone()
 
 	if waitlistID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
 	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
@@ -63,7 +64,7 @@ func (r *Repository) GetWaitlist(ctx context.Context, waitlistID string) (*types
 	logger := r.logger.Clone()
 
 	if waitlistID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
 	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
@@ -208,7 +209,7 @@ func (r *Repository) CreateWaitlist(ctx context.Context, input *types.WaitlistDa
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	logger := r.logger.WithValue(waitlistkeys.WaitlistIDKey, input.ID)
@@ -250,7 +251,7 @@ func (r *Repository) UpdateWaitlist(ctx context.Context, updated *types.Waitlist
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := r.logger.WithValue(waitlistkeys.WaitlistIDKey, updated.ID)
 	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, updated.ID)
@@ -282,7 +283,7 @@ func (r *Repository) ArchiveWaitlist(ctx context.Context, waitlistID string) err
 	defer span.End()
 
 	if waitlistID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := r.logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
 	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
@@ -317,13 +318,13 @@ func (r *Repository) GetWaitlistSignup(ctx context.Context, waitlistSignupID, wa
 	logger := r.logger.Clone()
 
 	if waitlistSignupID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)
 	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)
 
 	if waitlistID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
 	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
@@ -358,7 +359,7 @@ func (r *Repository) GetWaitlistSignupsForWaitlist(ctx context.Context, waitlist
 	logger := r.logger.Clone()
 
 	if waitlistID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(waitlistkeys.WaitlistIDKey, waitlistID)
 	tracing.AttachToSpan(span, waitlistkeys.WaitlistIDKey, waitlistID)
@@ -424,7 +425,7 @@ func (r *Repository) GetWaitlistSignupsForUser(ctx context.Context, userID strin
 	logger := r.logger.Clone()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -486,7 +487,7 @@ func (r *Repository) CreateWaitlistSignup(ctx context.Context, input *types.Wait
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	logger := r.logger.WithValue(waitlistkeys.WaitlistSignupIDKey, input.ID)
@@ -531,7 +532,7 @@ func (r *Repository) UpdateWaitlistSignup(ctx context.Context, updated *types.Wa
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := r.logger.WithValue(waitlistkeys.WaitlistSignupIDKey, updated.ID)
 	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, updated.ID)
@@ -562,7 +563,7 @@ func (r *Repository) ArchiveWaitlistSignup(ctx context.Context, waitlistSignupID
 	defer span.End()
 
 	if waitlistSignupID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := r.logger.WithValue(waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)
 	tracing.AttachToSpan(span, waitlistkeys.WaitlistSignupIDKey, waitlistSignupID)

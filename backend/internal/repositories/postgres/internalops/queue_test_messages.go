@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops/generated"
 )
@@ -14,7 +14,7 @@ func (q *repository) CreateQueueTestMessage(ctx context.Context, id, queueName s
 	defer span.End()
 
 	if id == "" || queueName == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	if err := q.generatedQuerier.CreateQueueTestMessage(ctx, q.writeDB, &generated.CreateQueueTestMessageParams{
@@ -32,7 +32,7 @@ func (q *repository) AcknowledgeQueueTestMessage(ctx context.Context, id string)
 	defer span.End()
 
 	if id == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	if err := q.generatedQuerier.AcknowledgeQueueTestMessage(ctx, q.writeDB, id); err != nil {
@@ -47,7 +47,7 @@ func (q *repository) GetQueueTestMessage(ctx context.Context, id string) (*inter
 	defer span.End()
 
 	if id == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 
 	row, err := q.generatedQuerier.GetQueueTestMessage(ctx, q.readDB, id)
@@ -73,7 +73,7 @@ func (q *repository) PruneQueueTestMessages(ctx context.Context, queueName strin
 	defer span.End()
 
 	if queueName == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	if err := q.generatedQuerier.PruneQueueTestMessages(ctx, q.writeDB, queueName); err != nil {

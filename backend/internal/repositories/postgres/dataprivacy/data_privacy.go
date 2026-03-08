@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
@@ -19,7 +19,7 @@ func (r *repository) FetchUserDataCollection(ctx context.Context, userID string)
 	defer span.End()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 
 	logger := r.logger.WithValue("user_id", userID)
@@ -213,7 +213,7 @@ func (r *repository) DeleteUser(ctx context.Context, userID string) error {
 	defer span.End()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	logger := r.logger.WithValue("user_id", userID)

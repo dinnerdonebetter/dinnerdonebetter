@@ -10,6 +10,7 @@ import (
 	notificationkeys "github.com/dinnerdonebetter/backend/internal/domain/notifications/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -32,13 +33,13 @@ func (q *Repository) UserDeviceTokenExists(ctx context.Context, userID, tokenID 
 	logger := q.logger.Clone()
 
 	if userID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if tokenID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(notificationkeys.UserDeviceTokenIDKey, tokenID)
 	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, tokenID)
@@ -62,13 +63,13 @@ func (q *Repository) GetUserDeviceToken(ctx context.Context, userID, tokenID str
 	logger := q.logger.Clone()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if tokenID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(notificationkeys.UserDeviceTokenIDKey, tokenID)
 	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, tokenID)
@@ -105,7 +106,7 @@ func (q *Repository) GetUserDeviceTokens(ctx context.Context, userID string, fil
 	logger := q.logger.Clone()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -183,7 +184,7 @@ func (q *Repository) UpsertUserDeviceToken(ctx context.Context, input *types.Use
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, input.ID)
 	logger := q.logger.WithValue(notificationkeys.UserDeviceTokenIDKey, input.ID)
@@ -227,7 +228,7 @@ func (q *Repository) UpdateUserDeviceToken(ctx context.Context, updated *types.U
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(notificationkeys.UserDeviceTokenIDKey, updated.ID)
 	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, updated.ID)
@@ -271,10 +272,10 @@ func (q *Repository) ArchiveUserDeviceToken(ctx context.Context, userID, tokenID
 	defer span.End()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	if tokenID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(notificationkeys.UserDeviceTokenIDKey, tokenID)
 	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, tokenID)

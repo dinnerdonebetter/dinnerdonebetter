@@ -3,14 +3,15 @@ package database
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"io"
 	"time"
+
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 )
 
 var (
 	// ErrDatabaseNotReady indicates the given database is not ready.
-	ErrDatabaseNotReady = errors.New("database is not ready yet")
+	ErrDatabaseNotReady = platformerrors.New("database is not ready yet")
 )
 
 type (

@@ -9,6 +9,7 @@ import (
 	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -69,7 +70,7 @@ func (q *repository) CreateComment(ctx context.Context, input *types.CommentData
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, "comment_id", input.ID)
 	logger := q.logger.WithValue("comment_id", input.ID)
@@ -134,7 +135,7 @@ func (q *repository) GetComment(ctx context.Context, id string) (*types.Comment,
 	logger := q.logger.Clone()
 
 	if id == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(commentskeys.CommentIDKey, id)
 	tracing.AttachToSpan(span, commentskeys.CommentIDKey, id)
@@ -155,7 +156,7 @@ func (q *repository) GetCommentsForReference(ctx context.Context, targetType, re
 	logger := q.logger.Clone()
 
 	if targetType == "" || referencedID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue("target_type", targetType).WithValue("referenced_id", referencedID)
 	tracing.AttachToSpan(span, "target_type", targetType)
@@ -209,7 +210,7 @@ func (q *repository) UpdateComment(ctx context.Context, id, belongsToUser, conte
 	defer span.End()
 
 	if id == "" || belongsToUser == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(commentskeys.CommentIDKey, id)
 	tracing.AttachToSpan(span, commentskeys.CommentIDKey, id)
@@ -257,7 +258,7 @@ func (q *repository) ArchiveComment(ctx context.Context, id string) error {
 	defer span.End()
 
 	if id == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(commentskeys.CommentIDKey, id)
 	tracing.AttachToSpan(span, commentskeys.CommentIDKey, id)
@@ -306,7 +307,7 @@ func (q *repository) ArchiveCommentsForReference(ctx context.Context, targetType
 	defer span.End()
 
 	if targetType == "" || referencedID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue("target_type", targetType).WithValue("referenced_id", referencedID)
 	tracing.AttachToSpan(span, "target_type", targetType)

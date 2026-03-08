@@ -14,8 +14,9 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -35,20 +36,20 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 	// Verify authentication
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	// Receive first message which should contain metadata
 	firstReq, err := stream.Recv()
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive metadata")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive metadata")
 	}
 
 	metadata := firstReq.GetMetadata()
 	if metadata == nil {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("first message must contain metadata"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("first message must contain metadata"),
 			logger,
 			span,
 			codes.InvalidArgument,
@@ -62,8 +63,8 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 
 	// Validate metadata
 	if metadata.ObjectName == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("object_name is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("object_name is required"),
 			logger,
 			span,
 			codes.InvalidArgument,
@@ -72,8 +73,8 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 	}
 
 	if metadata.ContentType == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("content_type is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("content_type is required"),
 			logger,
 			span,
 			codes.InvalidArgument,
@@ -84,7 +85,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 	// Determine MIME type from content type
 	mimeType := metadata.ContentType
 	if !uploadedmedia.IsValidMimeType(mimeType) {
-		return observability.PrepareAndLogGRPCStatus(
+		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("unsupported content type: %s", mimeType),
 			logger,
 			span,
@@ -104,7 +105,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 			break
 		}
 		if recvErr != nil {
-			return observability.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
 		}
 
 		chunk := req.GetChunk()
@@ -114,7 +115,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 
 		chunkSize := int64(len(chunk))
 		if totalSize+chunkSize > maxUploadSize {
-			return observability.PrepareAndLogGRPCStatus(
+			return errorsgrpc.PrepareAndLogGRPCStatus(
 				fmt.Errorf("file size exceeds maximum allowed size of %d bytes", maxUploadSize),
 				logger,
 				span,
@@ -124,15 +125,15 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 		}
 
 		if _, err = fileData.Write(chunk); err != nil {
-			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
 		}
 
 		totalSize += chunkSize
 	}
 
 	if totalSize == 0 {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("no file data received"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("no file data received"),
 			logger,
 			span,
 			codes.InvalidArgument,
@@ -154,7 +155,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 
 	// Save file using upload manager
 	if err = s.uploadManager.SaveFile(ctx, storagePath, fileData.Bytes()); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
 	}
 
 	// Create database record
@@ -166,12 +167,12 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 	}
 
 	if err = uploadedMediaInput.ValidateWithContext(ctx); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
 	}
 
 	created, err := s.uploadedMediaManager.CreateUploadedMedia(ctx, uploadedMediaInput)
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
 	}
 
 	logger = logger.WithValue(uploadedmediakeys.UploadedMediaIDKey, created.ID)
@@ -183,7 +184,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 	}
 
 	if err = stream.SendAndClose(response); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
 	}
 
 	logger.Info("file uploaded successfully")
@@ -199,18 +200,18 @@ func (s *serviceImpl) CreateUploadedMedia(ctx context.Context, request *uploaded
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	input := converters.ConvertGRPCUploadedMediaCreationRequestInputToUploadedMediaDatabaseCreationInput(request.Input, sessionContextData.Requester.UserID)
 	if err = input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media creation request")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media creation request")
 	}
 
 	created, err := s.uploadedMediaManager.CreateUploadedMedia(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media")
 	}
 
 	x := &uploadedmediasvc.CreateUploadedMediaResponse{
@@ -232,18 +233,18 @@ func (s *serviceImpl) GetUploadedMedia(ctx context.Context, request *uploadedmed
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	uploadedMedia, err := s.uploadedMediaManager.GetUploadedMedia(ctx, request.UploadedMediaId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
 	}
 
 	// Verify the uploaded media belongs to the user
 	if uploadedMedia.CreatedByUser != sessionContextData.Requester.UserID {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("permission denied"), logger, span, codes.PermissionDenied, "uploaded media does not belong to user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("permission denied"), logger, span, codes.PermissionDenied, "uploaded media does not belong to user")
 	}
 
 	x := &uploadedmediasvc.GetUploadedMediaResponse{
@@ -265,17 +266,17 @@ func (s *serviceImpl) GetUploadedMediaWithIDs(ctx context.Context, request *uplo
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	if len(request.Ids) == 0 {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("no IDs provided"), logger, span, codes.InvalidArgument, "no IDs provided")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("no IDs provided"), logger, span, codes.InvalidArgument, "no IDs provided")
 	}
 
 	uploadedMediaList, err := s.uploadedMediaManager.GetUploadedMediaWithIDs(ctx, request.Ids)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
 	}
 
 	x := &uploadedmediasvc.GetUploadedMediaWithIDsResponse{
@@ -303,19 +304,19 @@ func (s *serviceImpl) GetUploadedMediaForUser(ctx context.Context, request *uplo
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 
 	// Verify the user is requesting their own media
 	if request.UserId != sessionContextData.Requester.UserID {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("permission denied"), logger, span, codes.PermissionDenied, "cannot access other user's media")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("permission denied"), logger, span, codes.PermissionDenied, "cannot access other user's media")
 	}
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
 	uploadedMediaList, err := s.uploadedMediaManager.GetUploadedMediaForUser(ctx, request.UserId, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media for user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media for user")
 	}
 
 	x := &uploadedmediasvc.GetUploadedMediaForUserResponse{
@@ -341,31 +342,31 @@ func (s *serviceImpl) UpdateUploadedMedia(ctx context.Context, request *uploaded
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	// Fetch the existing uploaded media
 	uploadedMedia, err := s.uploadedMediaManager.GetUploadedMedia(ctx, request.UploadedMediaId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
 	}
 
 	// Verify the uploaded media belongs to the user
 	if uploadedMedia.CreatedByUser != sessionContextData.Requester.UserID {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("permission denied"), logger, span, codes.PermissionDenied, "uploaded media does not belong to user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("permission denied"), logger, span, codes.PermissionDenied, "uploaded media does not belong to user")
 	}
 
 	// Apply updates
 	updateInput := converters.ConvertGRPCUploadedMediaUpdateRequestInputToUploadedMediaUpdateRequestInput(request.Input)
 	if err = updateInput.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media update request")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media update request")
 	}
 
 	uploadedMedia.Update(updateInput)
 
 	if err = s.uploadedMediaManager.UpdateUploadedMedia(ctx, uploadedMedia); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update uploaded media")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update uploaded media")
 	}
 
 	x := &uploadedmediasvc.UpdateUploadedMediaResponse{
@@ -387,23 +388,23 @@ func (s *serviceImpl) ArchiveUploadedMedia(ctx context.Context, request *uploade
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.Requester.UserID)
 
 	// Fetch the existing uploaded media to verify ownership
 	uploadedMedia, err := s.uploadedMediaManager.GetUploadedMedia(ctx, request.UploadedMediaId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
 	}
 
 	// Verify the uploaded media belongs to the user
 	if uploadedMedia.CreatedByUser != sessionContextData.Requester.UserID {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("permission denied"), logger, span, codes.PermissionDenied, "uploaded media does not belong to user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("permission denied"), logger, span, codes.PermissionDenied, "uploaded media does not belong to user")
 	}
 
 	if err = s.uploadedMediaManager.ArchiveUploadedMedia(ctx, request.UploadedMediaId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive uploaded media")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive uploaded media")
 	}
 
 	x := &uploadedmediasvc.ArchiveUploadedMediaResponse{

@@ -10,6 +10,7 @@ import (
 	uploadedmediakeys "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -32,7 +33,7 @@ func (r *repository) GetUploadedMedia(ctx context.Context, uploadedMediaID strin
 	logger := r.logger.Clone()
 
 	if uploadedMediaID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(uploadedmediakeys.UploadedMediaIDKey, uploadedMediaID)
 	tracing.AttachToSpan(span, uploadedmediakeys.UploadedMediaIDKey, uploadedMediaID)
@@ -63,7 +64,7 @@ func (r *repository) GetUploadedMediaWithIDs(ctx context.Context, ids []string) 
 	logger := r.logger.Clone()
 
 	if len(ids) == 0 {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	logger = logger.WithValue("ids", ids)
 	tracing.AttachToSpan(span, "id_count", len(ids))
@@ -97,7 +98,7 @@ func (r *repository) GetUploadedMediaForUser(ctx context.Context, userID string,
 	logger := r.logger.Clone()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -162,7 +163,7 @@ func (r *repository) CreateUploadedMedia(ctx context.Context, input *types.Uploa
 	logger := r.logger.Clone()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, input.CreatedByUser)
 	logger = logger.WithValue(identitykeys.UserIDKey, input.CreatedByUser)
@@ -221,7 +222,7 @@ func (r *repository) UpdateUploadedMedia(ctx context.Context, uploadedMedia *typ
 	logger := r.logger.Clone()
 
 	if uploadedMedia == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger = logger.WithValue(uploadedmediakeys.UploadedMediaIDKey, uploadedMedia.ID)
 	tracing.AttachToSpan(span, uploadedmediakeys.UploadedMediaIDKey, uploadedMedia.ID)
@@ -274,7 +275,7 @@ func (r *repository) ArchiveUploadedMedia(ctx context.Context, uploadedMediaID s
 	logger := r.logger.Clone()
 
 	if uploadedMediaID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(uploadedmediakeys.UploadedMediaIDKey, uploadedMediaID)
 	tracing.AttachToSpan(span, uploadedmediakeys.UploadedMediaIDKey, uploadedMediaID)

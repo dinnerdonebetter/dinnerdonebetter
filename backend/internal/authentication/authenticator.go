@@ -2,12 +2,13 @@ package authentication
 
 import (
 	"context"
-	"errors"
+
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 )
 
 var (
 	// ErrInvalidTOTPToken indicates that a provided two-factor code is invalid.
-	ErrInvalidTOTPToken = errors.New("invalid two factor code")
+	ErrInvalidTOTPToken = platformerrors.New("invalid two factor code")
 )
 
 type (

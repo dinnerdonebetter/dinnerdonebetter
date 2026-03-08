@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -26,7 +27,7 @@ func (q *repository) ValidPrepTaskConfigExists(ctx context.Context, validPrepTas
 	logger := q.logger.Clone()
 
 	if validPrepTaskConfigID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
@@ -47,7 +48,7 @@ func (q *repository) GetValidPrepTaskConfig(ctx context.Context, validPrepTaskCo
 	logger := q.logger.Clone()
 
 	if validPrepTaskConfigID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
@@ -303,7 +304,7 @@ func (q *repository) GetValidPrepTaskConfigsForPreparation(ctx context.Context, 
 	logger := q.logger.Clone()
 
 	if preparationID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, preparationID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, preparationID)
@@ -453,7 +454,7 @@ func (q *repository) GetValidPrepTaskConfigsForIngredient(ctx context.Context, i
 	logger := q.logger.Clone()
 
 	if ingredientID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, ingredientID)
@@ -603,13 +604,13 @@ func (q *repository) GetValidPrepTaskConfigsForIngredientAndPreparation(ctx cont
 	logger := q.logger.Clone()
 
 	if ingredientID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, ingredientID)
 
 	if preparationID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, preparationID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, preparationID)
@@ -758,7 +759,7 @@ func (q *repository) CreateValidPrepTaskConfig(ctx context.Context, input *mealp
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, input.ID)
 	logger := q.logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, input.ID)
@@ -820,7 +821,7 @@ func (q *repository) UpdateValidPrepTaskConfig(ctx context.Context, updated *mea
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, updated.ID)
@@ -854,7 +855,7 @@ func (q *repository) ArchiveValidPrepTaskConfig(ctx context.Context, validPrepTa
 	logger := q.logger.Clone()
 
 	if validPrepTaskConfigID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)

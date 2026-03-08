@@ -3,9 +3,9 @@ package algolia
 import (
 	"context"
 	"encoding/json"
-	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -17,7 +17,7 @@ const (
 
 var (
 	// ErrEmptyQueryProvided indicates an empty query was provided as input.
-	ErrEmptyQueryProvided = errors.New("empty search query provided")
+	ErrEmptyQueryProvided = platformerrors.New("empty search query provided")
 )
 
 // Index implements our indexManager interface.

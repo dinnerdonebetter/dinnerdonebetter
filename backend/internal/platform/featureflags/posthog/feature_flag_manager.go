@@ -2,10 +2,10 @@ package posthog
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -23,8 +23,8 @@ const (
 )
 
 var (
-	ErrNilConfig          = errors.New("missing config")
-	ErrMissingCredentials = errors.New("missing PostHog credentials")
+	ErrNilConfig          = platformerrors.New("missing config")
+	ErrMissingCredentials = platformerrors.New("missing PostHog credentials")
 )
 
 type (

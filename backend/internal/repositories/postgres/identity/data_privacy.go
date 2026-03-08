@@ -5,7 +5,7 @@ import (
 	"database/sql"
 
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -16,7 +16,7 @@ func (r *repository) DeleteUser(ctx context.Context, userID string) error {
 	defer span.End()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)

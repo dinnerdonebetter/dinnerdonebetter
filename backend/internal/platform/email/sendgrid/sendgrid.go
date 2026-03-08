@@ -2,11 +2,11 @@ package sendgrid
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -23,11 +23,11 @@ const (
 var (
 	_ email.Emailer = (*Emailer)(nil)
 	// ErrNilConfig indicates a nil config was provided.
-	ErrNilConfig = errors.New("SendGrid config is nil")
+	ErrNilConfig = platformerrors.New("SendGrid config is nil")
 	// ErrEmptyAPIToken indicates an empty API token was provided.
-	ErrEmptyAPIToken = errors.New("empty Sendgrid API token")
+	ErrEmptyAPIToken = platformerrors.New("empty Sendgrid API token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
-	ErrNilHTTPClient = errors.New("nil HTTP client")
+	ErrNilHTTPClient = platformerrors.New("nil HTTP client")
 )
 
 type (
@@ -71,7 +71,7 @@ func NewSendGridEmailer(cfg *Config, logger logging.Logger, tracerProvider traci
 }
 
 // ErrSendgridAPIResponse indicates an error occurred in SendGrid.
-var ErrSendgridAPIResponse = errors.New("sendgrid request error")
+var ErrSendgridAPIResponse = platformerrors.New("sendgrid request error")
 
 // SendEmail sends an email.
 func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMessage) error {

@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -23,7 +24,7 @@ func (q *repository) MealExistsInMealList(ctx context.Context, mealListID, mealI
 	defer span.End()
 
 	if mealListID == "" || mealID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.MealListIDKey, mealListID).WithValue(mealplanningkeys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealListIDKey, mealListID)
@@ -47,7 +48,7 @@ func (q *repository) GetMealListItems(ctx context.Context, mealListID string, fi
 	logger := q.logger.Clone()
 
 	if mealListID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealListIDKey, mealListID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealListIDKey, mealListID)
@@ -133,7 +134,7 @@ func (q *repository) CreateMealListItem(ctx context.Context, input *types.MealLi
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.MealListItemIDKey, input.ID)
 	logger := q.logger.WithValue(mealplanningkeys.MealListItemIDKey, input.ID)
@@ -166,7 +167,7 @@ func (q *repository) UpdateMealListItem(ctx context.Context, updated *types.Meal
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.MealListItemIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealListItemIDKey, updated.ID)
@@ -198,13 +199,13 @@ func (q *repository) ArchiveMealListItem(ctx context.Context, mealListItemID, me
 	logger := q.logger.Clone()
 
 	if mealListID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealListIDKey, mealListID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealListIDKey, mealListID)
 
 	if mealListItemID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealListItemIDKey, mealListItemID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealListItemIDKey, mealListItemID)

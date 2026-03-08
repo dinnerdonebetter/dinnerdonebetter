@@ -5,8 +5,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	"github.com/stretchr/testify/assert"
@@ -26,7 +26,7 @@ func TestCreatePaymentTransaction(T *testing.T) {
 		actual, err := c.CreatePaymentTransaction(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrNilInputProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrNilInputProvided)
 	})
 }
 
@@ -41,7 +41,7 @@ func TestGetPaymentTransactionsForAccount(T *testing.T) {
 		actual, err := c.GetPaymentTransactionsForAccount(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 

@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
 	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
@@ -10,6 +9,8 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	commentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	converters "github.com/dinnerdonebetter/backend/internal/services/comments/grpc/converters"
@@ -27,7 +28,7 @@ func (s *serviceImpl) AddCommentToRecipe(ctx context.Context, request *commentss
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	input := converters.ConvertProtoCommentCreationRequestInputToDomain(
@@ -37,12 +38,12 @@ func (s *serviceImpl) AddCommentToRecipe(ctx context.Context, request *commentss
 		sessionContextData.GetUserID(),
 	)
 	if input == nil {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
 	}
 
 	comment, err := s.commentsManager.CreateComment(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
 	}
 
 	return &commentssvc.AddCommentToRecipeResponse{
@@ -63,7 +64,7 @@ func (s *serviceImpl) AddCommentToMeal(ctx context.Context, request *commentssvc
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	input := converters.ConvertProtoCommentCreationRequestInputToDomain(
@@ -73,12 +74,12 @@ func (s *serviceImpl) AddCommentToMeal(ctx context.Context, request *commentssvc
 		sessionContextData.GetUserID(),
 	)
 	if input == nil {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
 	}
 
 	comment, err := s.commentsManager.CreateComment(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
 	}
 
 	return &commentssvc.AddCommentToMealResponse{
@@ -99,11 +100,11 @@ func (s *serviceImpl) AddCommentToMealPlan(ctx context.Context, request *comment
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	if _, err = s.mealPlanningManager.ReadMealPlan(ctx, request.MealPlanId, sessionContextData.GetActiveAccountID()); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "validating meal plan access")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "validating meal plan access")
 	}
 
 	input := converters.ConvertProtoCommentCreationRequestInputToDomain(
@@ -113,12 +114,12 @@ func (s *serviceImpl) AddCommentToMealPlan(ctx context.Context, request *comment
 		sessionContextData.GetUserID(),
 	)
 	if input == nil {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
 	}
 
 	comment, err := s.commentsManager.CreateComment(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
 	}
 
 	return &commentssvc.AddCommentToMealPlanResponse{
@@ -134,7 +135,7 @@ func (s *serviceImpl) CreateComment(ctx context.Context, request *commentssvc.Cr
 	defer span.End()
 
 	if request.Input == nil {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("input is required"), s.logger, span, codes.InvalidArgument, "input is required")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("input is required"), s.logger, span, codes.InvalidArgument, "input is required")
 	}
 
 	logger := observability.ObserveValues(map[string]any{
@@ -144,7 +145,7 @@ func (s *serviceImpl) CreateComment(ctx context.Context, request *commentssvc.Cr
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	input := converters.ConvertProtoCommentCreationRequestInputToDomain(
@@ -154,10 +155,10 @@ func (s *serviceImpl) CreateComment(ctx context.Context, request *commentssvc.Cr
 		sessionContextData.GetUserID(),
 	)
 	if input == nil {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
 	}
 	if input.TargetType == "" || input.ReferencedID == "" {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("target_type and referenced_id are required"), logger, span, codes.InvalidArgument, "target_type and referenced_id are required")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("target_type and referenced_id are required"), logger, span, codes.InvalidArgument, "target_type and referenced_id are required")
 	}
 
 	switch input.TargetType {
@@ -165,15 +166,15 @@ func (s *serviceImpl) CreateComment(ctx context.Context, request *commentssvc.Cr
 		// no access check
 	case comments.CommentTargetTypeMealPlans:
 		if _, err = s.mealPlanningManager.ReadMealPlan(ctx, input.ReferencedID, sessionContextData.GetActiveAccountID()); err != nil {
-			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "validating meal plan access")
+			return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "validating meal plan access")
 		}
 	default:
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("invalid target type"), logger, span, codes.InvalidArgument, "invalid target type")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("invalid target type"), logger, span, codes.InvalidArgument, "invalid target type")
 	}
 
 	comment, err := s.commentsManager.CreateComment(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
 	}
 
 	return &commentssvc.CreateCommentResponse{
@@ -195,7 +196,7 @@ func (s *serviceImpl) GetCommentsForReference(ctx context.Context, request *comm
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	switch request.TargetType {
@@ -203,10 +204,10 @@ func (s *serviceImpl) GetCommentsForReference(ctx context.Context, request *comm
 		// no access check
 	case comments.CommentTargetTypeMealPlans:
 		if _, err = s.mealPlanningManager.ReadMealPlan(ctx, request.ReferencedId, sessionContextData.GetActiveAccountID()); err != nil {
-			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "validating meal plan access")
+			return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "validating meal plan access")
 		}
 	default:
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("invalid target type"), logger, span, codes.InvalidArgument, "invalid target type")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("invalid target type"), logger, span, codes.InvalidArgument, "invalid target type")
 	}
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -214,7 +215,7 @@ func (s *serviceImpl) GetCommentsForReference(ctx context.Context, request *comm
 
 	result, err := s.commentsManager.GetCommentsForReference(ctx, request.TargetType, request.ReferencedId, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching comments")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching comments")
 	}
 
 	x := &commentssvc.GetCommentsForReferenceResponse{
@@ -240,30 +241,30 @@ func (s *serviceImpl) UpdateComment(ctx context.Context, request *commentssvc.Up
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	comment, err := s.commentsManager.GetComment(ctx, request.CommentId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching comment")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching comment")
 	}
 
 	if comment.BelongsToUser != sessionContextData.GetUserID() {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("comment does not belong to user"), logger, span, codes.PermissionDenied, "comment does not belong to user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("comment does not belong to user"), logger, span, codes.PermissionDenied, "comment does not belong to user")
 	}
 
 	updateInput := converters.ConvertProtoCommentUpdateRequestInputToDomain(request.Input)
 	if updateInput == nil {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("input is required"), logger, span, codes.InvalidArgument, "input is required")
 	}
 
 	if err = s.commentsManager.UpdateComment(ctx, request.CommentId, sessionContextData.GetUserID(), updateInput); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating comment")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating comment")
 	}
 
 	updated, err := s.commentsManager.GetComment(ctx, request.CommentId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching updated comment")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching updated comment")
 	}
 
 	return &commentssvc.UpdateCommentResponse{
@@ -284,20 +285,20 @@ func (s *serviceImpl) ArchiveComment(ctx context.Context, request *commentssvc.A
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	comment, err := s.commentsManager.GetComment(ctx, request.CommentId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching comment")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching comment")
 	}
 
 	if comment.BelongsToUser != sessionContextData.GetUserID() {
-		return nil, observability.PrepareAndLogGRPCStatus(errors.New("comment does not belong to user"), logger, span, codes.PermissionDenied, "comment does not belong to user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("comment does not belong to user"), logger, span, codes.PermissionDenied, "comment does not belong to user")
 	}
 
 	if err = s.commentsManager.ArchiveComment(ctx, request.CommentId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving comment")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving comment")
 	}
 
 	return &commentssvc.ArchiveCommentResponse{

@@ -2,12 +2,12 @@ package launchdarkly
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -26,9 +26,9 @@ const (
 )
 
 var (
-	ErrMissingHTTPClient = errors.New("missing HTTP client")
-	ErrNilConfig         = errors.New("missing config")
-	ErrMissingSDKKey     = errors.New("missing SDK key")
+	ErrMissingHTTPClient = platformerrors.New("missing HTTP client")
+	ErrNilConfig         = platformerrors.New("missing config")
+	ErrMissingSDKKey     = platformerrors.New("missing SDK key")
 )
 
 type (

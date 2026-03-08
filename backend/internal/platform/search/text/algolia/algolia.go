@@ -1,10 +1,10 @@
 package algolia
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
@@ -15,7 +15,7 @@ import (
 var (
 	_ textsearch.Index[any] = (*indexManager[any])(nil)
 
-	ErrNilConfig = errors.New("nil config provided")
+	ErrNilConfig = platformerrors.New("nil config provided")
 )
 
 type (

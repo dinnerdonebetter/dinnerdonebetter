@@ -10,6 +10,7 @@ import (
 	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -32,7 +33,7 @@ func (q *repository) GetOAuth2ClientByClientID(ctx context.Context, clientID str
 	logger := q.logger.Clone()
 
 	if clientID == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(oauthkeys.OAuth2ClientClientIDKey, clientID)
 	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientClientIDKey, clientID)
@@ -63,7 +64,7 @@ func (q *repository) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID s
 	logger := q.logger.Clone()
 
 	if clientID == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(oauthkeys.OAuth2ClientClientIDKey, clientID)
 	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientClientIDKey, clientID)
@@ -147,7 +148,7 @@ func (q *repository) CreateOAuth2Client(ctx context.Context, input *types.OAuth2
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	logger := q.logger.WithValues(map[string]any{
@@ -205,7 +206,7 @@ func (q *repository) ArchiveOAuth2Client(ctx context.Context, clientID string) e
 	defer span.End()
 
 	if clientID == "" {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, oauthkeys.OAuth2ClientClientIDKey, clientID)
 	logger := q.logger.WithValue(oauthkeys.OAuth2ClientIDKey, clientID)

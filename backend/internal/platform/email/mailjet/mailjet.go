@@ -2,11 +2,11 @@ package mailjet
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -22,13 +22,13 @@ var (
 	_ email.Emailer = (*Emailer)(nil)
 
 	// ErrNilConfig indicates a nil config was provided.
-	ErrNilConfig = errors.New("mailjet config is nil")
+	ErrNilConfig = platformerrors.New("mailjet config is nil")
 	// ErrEmptySecretKey indicates an empty domain was provided.
-	ErrEmptySecretKey = errors.New("empty domain")
+	ErrEmptySecretKey = platformerrors.New("empty domain")
 	// ErrEmptyPrivateAPIKey indicates an empty API token was provided.
-	ErrEmptyPrivateAPIKey = errors.New("empty Mailjet API token")
+	ErrEmptyPrivateAPIKey = platformerrors.New("empty Mailjet API token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
-	ErrNilHTTPClient = errors.New("nil HTTP client")
+	ErrNilHTTPClient = platformerrors.New("nil HTTP client")
 )
 
 type (

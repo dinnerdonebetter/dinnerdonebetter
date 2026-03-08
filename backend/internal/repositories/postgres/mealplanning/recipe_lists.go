@@ -9,6 +9,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -103,7 +104,7 @@ func (q *repository) CreateRecipeList(ctx context.Context, input *types.RecipeLi
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeListIDKey, input.ID)
 	logger := q.logger.WithValue(mealplanningkeys.RecipeListIDKey, input.ID)
@@ -136,7 +137,7 @@ func (q *repository) UpdateRecipeList(ctx context.Context, updated *types.Recipe
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.RecipeListIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeListIDKey, updated.ID)
@@ -168,13 +169,13 @@ func (q *repository) ArchiveRecipeList(ctx context.Context, recipeListID, userID
 	logger := q.logger.Clone()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if recipeListID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeListIDKey, recipeListID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeListIDKey, recipeListID)
