@@ -68,6 +68,8 @@ func ProvideAuthInterceptor(
 		// TODO: configure this elsewhere
 		unauthenticatedRoutes: []string{
 			"/auth.AuthService/AdminLoginForToken",
+			"/auth.AuthService/BeginPasskeyAuthentication",
+			"/auth.AuthService/FinishPasskeyAuthentication",
 			"/identity.IdentityService/CreateUser",
 			"/auth.AuthService/VerifyTOTPSecret",
 			"/auth.AuthService/LoginForToken",

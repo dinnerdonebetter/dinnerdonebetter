@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 	phttp "github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/platform/version"
+	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/passkey"
 
 	ghttp "maragu.dev/gomponents/http"
 )
@@ -36,6 +37,9 @@ func (s *ConsumerFrontendServer) setupRoutes(router routing.Router) {
 	// Auth (public)
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))
+	passkeyHandlers := passkey.NewHandlers(s.tracer, s.logger, s.encoder, s.cookieManager, &s.config.Cookies, s.buildUnauthedGRPCClient)
+	router.Post("/auth/passkey/authentication/options", passkeyHandlers.AuthOptionsHandler)
+	router.Post("/auth/passkey/authentication/verify", passkeyHandlers.AuthVerifyHandler)
 	router.Get("/verify_email_address", ghttp.Adapt(s.VerifyEmailAddressPage))
 	router.Get("/forgot_password", ghttp.Adapt(s.ForgotPasswordPage))
 	router.Post("/forgot_password/submit", ghttp.Adapt(s.ForgotPasswordSubmission))

@@ -152,7 +152,11 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	authServiceServer := grpc2.NewAuthService(logger, tracerProvider, identityDataManager, authManagerInterface, authenticationManager, featureFlagManager)
+	service, err := grpc2.ProvidePasskeyService(identityDataManager, identityRepository)
+	if err != nil {
+		return nil, err
+	}
+	authServiceServer := grpc2.NewAuthService(logger, tracerProvider, identityDataManager, authManagerInterface, authenticationManager, featureFlagManager, service)
 	v := sessions.ProvideContextDataFetcherFromContext()
 	issuereportsRepository := issue_reports.ProvideIssueReportsRepository(logger, tracerProvider, repository, client)
 	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)

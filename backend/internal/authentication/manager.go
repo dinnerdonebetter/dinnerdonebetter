@@ -27,6 +27,7 @@ const (
 type (
 	Manager interface {
 		ProcessLogin(ctx context.Context, adminOnly bool, loginData *auth.UserLoginInput) (*auth.TokenResponse, error)
+		ProcessPasskeyLogin(ctx context.Context, userID, desiredAccountID string) (*auth.TokenResponse, error)
 		ExchangeTokenForUser(ctx context.Context, refreshToken, desiredAccountID string) (*auth.TokenResponse, error)
 	}
 
@@ -172,6 +173,74 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 			return nil, observability.PrepareError(errors.New("user does not have access to account"), span, "user does not have access to the desired account")
 		}
 		accountID = loginData.DesiredAccountID
+	} else {
+		var defaultAccountID string
+		defaultAccountID, err = m.userAuthDataManager.GetDefaultAccountIDForUser(ctx, user.ID)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "validating input")
+		}
+		accountID = defaultAccountID
+	}
+
+	dcm := &audit.DataChangeMessage{
+		EventType: identity.UserLoggedInServiceEventType,
+		AccountID: accountID,
+		UserID:    user.ID,
+	}
+
+	if err = m.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		return nil, observability.PrepareError(err, span, "publishing data change")
+	}
+
+	response := &auth.TokenResponse{
+		UserID:     user.ID,
+		AccountID:  accountID,
+		ExpiresUTC: time.Now().Add(m.maxAccessTokenLifetime).UTC(),
+	}
+
+	response.AccessToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxAccessTokenLifetime, accountID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "creating access token")
+	}
+
+	response.RefreshToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxRefreshTokenLifetime, accountID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "creating refresh token")
+	}
+
+	return response, nil
+}
+
+// ProcessPasskeyLogin issues tokens for a user authenticated via passkey.
+func (m *manager) ProcessPasskeyLogin(ctx context.Context, userID, desiredAccountID string) (*auth.TokenResponse, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+
+	user, err := m.userAuthDataManager.GetUser(ctx, userID)
+	if err != nil || user == nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, observability.PrepareError(err, span, "user does not exist")
+		}
+		return nil, observability.PrepareError(err, span, "fetching user")
+	}
+
+	if user.IsBanned() {
+		return nil, observability.PrepareError(errors.New("user is banned"), span, "user is banned")
+	}
+
+	var accountID string
+	if desiredAccountID != "" {
+		var isMember bool
+		isMember, err = m.userAuthDataManager.UserIsMemberOfAccount(ctx, user.ID, desiredAccountID)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "validating account membership")
+		}
+		if !isMember {
+			return nil, observability.PrepareError(errors.New("user does not have access to account"), span, "user does not have access to the desired account")
+		}
+		accountID = desiredAccountID
 	} else {
 		var defaultAccountID string
 		defaultAccountID, err = m.userAuthDataManager.GetDefaultAccountIDForUser(ctx, user.ID)

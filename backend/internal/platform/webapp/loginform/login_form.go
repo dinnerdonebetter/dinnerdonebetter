@@ -100,6 +100,27 @@ func Form(props *Props, cfg Config, palette *design.Palette) g.Node {
 
 				submitButton(cfg.SubmitButtonText),
 
+				ghtml.Div(
+					ghtml.Class("relative my-4"),
+					ghtml.Div(ghtml.Class("absolute inset-0 flex items-center"),
+						ghtml.Div(ghtml.Class("w-full border-t border-gray-300")),
+					),
+					ghtml.Div(ghtml.Class("relative flex justify-center text-sm"),
+						ghtml.Span(ghtml.Class("px-2 bg-white text-gray-500"), g.Text("or")),
+					),
+				),
+
+				ghtml.Div(
+					ghtml.Class("mt-4"),
+					ghtml.Button(
+						ghtml.Type("button"),
+						ghtml.ID("passkey-sign-in-btn"),
+						ghtml.Class("w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2"),
+						g.Text("Sign in with passkey"),
+					),
+				),
+				ghtml.Script(ghtml.Type("text/javascript"), g.Raw(passkeyScript)),
+
 				g.If(props.GeneralError != "", ghtml.Div(
 					ghtml.Class(fmt.Sprintf("mt-2 text-sm %s", design.TextColor(palette.Warning))),
 					g.Text(props.GeneralError),
@@ -108,6 +129,82 @@ func Form(props *Props, cfg Config, palette *design.Palette) g.Node {
 		),
 	)
 }
+
+// passkeyScript is the JavaScript for the passkey sign-in flow.
+// #nosec G101 -- JavaScript source for passkey flow, not credentials
+const passkeyScript = `
+(function() {
+	if (!window.PublicKeyCredential) return;
+	var btn = document.getElementById('passkey-sign-in-btn');
+	if (!btn) return;
+	function b64enc(buf) {
+		var b = new Uint8Array(buf);
+		var s = '';
+		for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+		return btoa(s).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+	}
+	function b64dec(s) {
+		s = (s + '==='.slice((s.length + 3) % 4)).replace(/-/g,'+').replace(/_/g,'/');
+		return Uint8Array.from(atob(s), function(c){return c.charCodeAt(0);});
+	}
+	btn.onclick = function() {
+		var usernameEl = document.getElementById('username');
+		var username = usernameEl ? usernameEl.value.trim() : '';
+		btn.disabled = true;
+		fetch('/auth/passkey/authentication/options', {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({username: username})
+		}).then(function(r) {
+			if (!r.ok) throw new Error('Failed to get options');
+			return r.json();
+		}).then(function(opts) {
+			var raw = atob(opts.publicKeyCredentialRequestOptions);
+			var obj = JSON.parse(raw);
+			var pk = obj.publicKey || obj;
+			if (typeof pk.challenge === 'string') pk.challenge = b64dec(pk.challenge).buffer;
+			if (pk.allowCredentials) {
+				pk.allowCredentials = pk.allowCredentials.map(function(c) {
+					return {id: c.id, type: c.type || 'public-key', transports: c.transports};
+				});
+			}
+			return navigator.credentials.get({publicKey: pk}).then(function(cred) {
+				return {cred: cred, opts: opts, username: username};
+			});
+		}).then(function(data) {
+			var cred = data.cred;
+			if (!cred) throw new Error('No credential');
+			var r = cred.response;
+			var assertion = {
+				id: cred.id,
+				rawId: b64enc(cred.rawId),
+				type: cred.type,
+				response: {
+					clientDataJSON: b64enc(r.clientDataJSON),
+					authenticatorData: b64enc(r.authenticatorData),
+					signature: b64enc(r.signature),
+					userHandle: r.userHandle ? b64enc(r.userHandle) : null
+				}
+			};
+			return fetch('/auth/passkey/authentication/verify', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({
+					assertionResponse: assertion,
+					challenge: data.opts.challenge,
+					username: data.username
+				})
+			});
+		}).then(function(r) {
+			if (!r.ok) throw new Error('Verification failed');
+			window.location.href = '/';
+		}).catch(function(err) {
+			btn.disabled = false;
+			alert(err.message || 'Passkey sign-in failed');
+		});
+	};
+})();
+`
 
 func usernameInput(label, fieldName, content string, palette *design.Palette) g.Node {
 	return ghtml.Input(

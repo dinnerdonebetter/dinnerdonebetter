@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 	phttp "github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/platform/version"
+	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/passkey"
 
 	ghttp "maragu.dev/gomponents/http"
 )
@@ -205,6 +206,9 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))
+	passkeyHandlers := passkey.NewHandlers(s.tracer, s.logger, s.encoder, s.cookieManager, &s.config.Cookies, s.buildUnauthedGRPCClient)
+	router.Post("/auth/passkey/authentication/options", passkeyHandlers.AuthOptionsHandler)
+	router.Post("/auth/passkey/authentication/verify", passkeyHandlers.AuthVerifyHandler)
 
 	// static files - NOTE: this must be registered last
 	router.Get("/*", phttp.RootLevelAssetsHandler(assetsDir))

@@ -32,5 +32,7 @@ func ProvideMethodPermissions() AuthMethodPermissions {
 		authsvc.AuthService_RequestEmailVerificationEmail_FullMethodName: noPerms,
 		authsvc.AuthService_RequestUsernameReminder_FullMethodName:       noPerms,
 		authsvc.AuthService_VerifyEmailAddress_FullMethodName:            noPerms,
+		authsvc.AuthService_BeginPasskeyRegistration_FullMethodName:      noPerms,
+		authsvc.AuthService_FinishPasskeyRegistration_FullMethodName:     noPerms,
 	}
 }

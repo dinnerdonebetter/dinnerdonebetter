@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/consumer/components"
@@ -51,13 +52,7 @@ func (s *ConsumerFrontendServer) LoginSubmission(res http.ResponseWriter, req *h
 		}), nil
 	}
 
-	var unauthedClient client.Client
-	var err error
-	if s.developingLocally {
-		unauthedClient, err = client.BuildUnauthenticatedGRPCClient(s.config.APIServiceConnection.GRPCAPIServerURL)
-	} else {
-		unauthedClient, err = client.BuildTLSGRPCClient(s.config.APIServiceConnection.GRPCAPIServerURL)
-	}
+	unauthedClient, err := s.buildUnauthedGRPCClient(ctx)
 	if err != nil {
 		return s.componentRenderer.LoginForm(&components.LoginFormProps{
 			GeneralError: err.Error(),
@@ -90,4 +85,12 @@ func (s *ConsumerFrontendServer) LoginSubmission(res http.ResponseWriter, req *h
 	res.WriteHeader(http.StatusOK)
 
 	return g.El("div"), nil
+}
+
+// buildUnauthedGRPCClient builds an unauthenticated gRPC client for auth calls.
+func (s *ConsumerFrontendServer) buildUnauthedGRPCClient(_ context.Context) (client.Client, error) {
+	if s.developingLocally {
+		return client.BuildUnauthenticatedGRPCClient(s.config.APIServiceConnection.GRPCAPIServerURL)
+	}
+	return client.BuildTLSGRPCClient(s.config.APIServiceConnection.GRPCAPIServerURL)
 }

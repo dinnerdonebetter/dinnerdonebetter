@@ -22,6 +22,12 @@ func (m *Manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 	return args.Get(0).(*auth.TokenResponse), args.Error(1)
 }
 
+// ProcessPasskeyLogin is a mock method.
+func (m *Manager) ProcessPasskeyLogin(ctx context.Context, userID, desiredAccountID string) (*auth.TokenResponse, error) {
+	args := m.Called(ctx, userID, desiredAccountID)
+	return args.Get(0).(*auth.TokenResponse), args.Error(1)
+}
+
 // ExchangeTokenForUser is a mock method.
 func (m *Manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desiredAccountID string) (*auth.TokenResponse, error) {
 	args := m.Called(ctx, refreshToken)
