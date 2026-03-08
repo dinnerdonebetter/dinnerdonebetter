@@ -209,7 +209,7 @@ struct MealPlanDetailView: View {
       }
 
       // Time range on second line
-      Text(HomeView.formatMealPlanTimeRange(mealPlan))
+      Text(MealPlanningHomeHelpers.formatMealPlanTimeRange(mealPlan))
         .font(.subheadline)
         .foregroundColor(.secondary)
     }

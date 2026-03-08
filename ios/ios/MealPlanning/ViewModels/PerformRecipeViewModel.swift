@@ -380,7 +380,7 @@ class PerformRecipeViewModel {
   /// Use when the user has already made this recipe ahead of time (e.g., garlic confit on Sunday).
   func markAssociatedRecipeAsCompleted(associatedRecipe: Mealplanning_Recipe) {
     let recipeName = associatedRecipe.name.isEmpty ? "Unnamed" : associatedRecipe.name
-    for (index, step) in associatedRecipe.steps.enumerated() {
+    for step in associatedRecipe.steps {
       let currentStepKey = stepKey(recipeID: associatedRecipe.id, stepID: step.id)
       completedSteps.insert(currentStepKey)
 

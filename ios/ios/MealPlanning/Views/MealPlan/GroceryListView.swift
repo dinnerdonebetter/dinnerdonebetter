@@ -114,7 +114,7 @@ struct GroceryListView: View {
 
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
-      Text(HomeView.formatMealPlanTimeRange(viewModel.mealPlan))
+      Text(MealPlanningHomeHelpers.formatMealPlanTimeRange(viewModel.mealPlan))
         .font(DSTheme.Typography.body)
         .foregroundColor(DSTheme.Colors.textSecondary)
 
