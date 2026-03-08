@@ -99,7 +99,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ValidIngredientPreparationID:     &submergeInstantRamenVIP.ID,
 				ValidIngredientMeasurementUnitID: &instantRamenUnitVIMU.ID,
-				Name:                             "1 individual package instant ramen (noodles only)",
+				Name:                             "package instant ramen (noodles only)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},

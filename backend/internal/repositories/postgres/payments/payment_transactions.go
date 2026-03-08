@@ -23,6 +23,10 @@ func (r *repository) CreatePaymentTransaction(ctx context.Context, input *paymen
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if input == nil {
+		return nil, database.ErrNilInputProvided
+	}
+
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.PaymentTransactionIDKey, input.ID)
 	tracing.AttachToSpan(span, paymentskeys.PaymentTransactionIDKey, input.ID)
@@ -68,6 +72,10 @@ func (r *repository) CreatePaymentTransaction(ctx context.Context, input *paymen
 func (r *repository) GetPaymentTransactionsForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.PaymentTransaction], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if accountID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
 
 	logger := r.logger.Clone()
 	if filter == nil {

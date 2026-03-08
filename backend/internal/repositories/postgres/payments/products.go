@@ -22,6 +22,10 @@ func (r *repository) CreateProduct(ctx context.Context, input *payments.ProductD
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if input == nil {
+		return nil, database.ErrNilInputProvided
+	}
+
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.ProductIDKey, input.ID)
 	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, input.ID)
@@ -123,6 +127,10 @@ func (r *repository) GetProducts(ctx context.Context, filter *filtering.QueryFil
 func (r *repository) UpdateProduct(ctx context.Context, product *payments.Product) error {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if product == nil {
+		return database.ErrNilInputProvided
+	}
 
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.ProductIDKey, product.ID)

@@ -23,6 +23,10 @@ func (r *repository) CreateSubscription(ctx context.Context, input *payments.Sub
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if input == nil {
+		return nil, database.ErrNilInputProvided
+	}
+
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, input.ID)
 	tracing.AttachToSpan(span, paymentskeys.SubscriptionIDKey, input.ID)
@@ -94,6 +98,10 @@ func (r *repository) GetSubscriptionsForAccount(ctx context.Context, accountID s
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if accountID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
+
 	logger := r.logger.Clone()
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -123,6 +131,10 @@ func (r *repository) GetSubscriptionsForAccount(ctx context.Context, accountID s
 func (r *repository) UpdateSubscription(ctx context.Context, sub *payments.Subscription) error {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if sub == nil {
+		return database.ErrNilInputProvided
+	}
 
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.SubscriptionIDKey, sub.ID)

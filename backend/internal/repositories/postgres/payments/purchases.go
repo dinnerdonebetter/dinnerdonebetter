@@ -22,6 +22,10 @@ func (r *repository) CreatePurchase(ctx context.Context, input *payments.Purchas
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if input == nil {
+		return nil, database.ErrNilInputProvided
+	}
+
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.PurchaseIDKey, input.ID)
 	tracing.AttachToSpan(span, paymentskeys.PurchaseIDKey, input.ID)
@@ -75,6 +79,10 @@ func (r *repository) GetPurchase(ctx context.Context, id string) (*payments.Purc
 func (r *repository) GetPurchasesForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.Purchase], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if accountID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
 
 	logger := r.logger.Clone()
 	if filter == nil {

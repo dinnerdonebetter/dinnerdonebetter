@@ -1,16 +1,20 @@
 package dataprivacy
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
@@ -24,11 +28,7 @@ import (
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
-const (
-	exampleQuantity = 3
-)
-
-func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, *pgcontainers.PostgresContainer) {
+func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, identity.Repository, *pgcontainers.PostgresContainer) {
 	t.Helper()
 
 	ctx := t.Context()
@@ -40,7 +40,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, *p
 	require.NoError(t, err)
 
 	auditLogEntryRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
-	identityRepo := identity.ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
+	identityRepo := identityrepo.ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
 	issueReportsRepo := issue_reports.ProvideIssueReportsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
 	mealPlanningRepo := mealplanning.ProvideMealPlanningRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, identityRepo, pgc)
 	notificationsRepo := notifications.ProvideNotificationsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, config, pgc)
@@ -64,7 +64,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, *p
 		pgc,
 	)
 
-	return c.(*repository), auditLogEntryRepo, container
+	return c.(*repository), auditLogEntryRepo, identityRepo, container
 }
 
 func buildInertClientForTest(t *testing.T) *repository {
@@ -86,4 +86,20 @@ func buildInertClientForTest(t *testing.T) *repository {
 	)
 
 	return c.(*repository)
+}
+
+func createUserForTest(t *testing.T, ctx context.Context, exampleUser *identity.User, identityRepo identity.Repository) *identity.User {
+	t.Helper()
+
+	if exampleUser == nil {
+		exampleUser = fakes.BuildFakeUser()
+	}
+	exampleUser.TwoFactorSecretVerifiedAt = nil
+	dbInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
+
+	created, err := identityRepo.CreateUser(ctx, dbInput)
+	require.NoError(t, err)
+	require.NotNil(t, created)
+
+	return created
 }
