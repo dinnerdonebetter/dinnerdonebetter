@@ -33,6 +33,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	// Get measurement units
 	ounceMeasurement := enums.MeasurementUnits["ounce"]
 	cupMeasurement := enums.MeasurementUnits["cup"]
+	gramMeasurement := enums.MeasurementUnits["gram"]
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
@@ -72,7 +73,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	instantRamenUnitVIMU := enums.IngredientMeasurementUnits[instantRamen.ID][unitMeasurement.ID]
 	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
 	peanutButterTablespoonVIMU := enums.IngredientMeasurementUnits[peanutButter.ID][tablespoonMeasurement.ID]
-	butterTablespoonVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
+	butterGramVIMU := enums.IngredientMeasurementUnits[butter.ID][gramMeasurement.ID]
 	parmesanTablespoonVIMU := enums.IngredientMeasurementUnits[parmesan.ID][tablespoonMeasurement.ID]
 	soySauceTeaspoonVIMU := enums.IngredientMeasurementUnits[soySauce.ID][teaspoonMeasurement.ID]
 
@@ -408,10 +409,10 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			},
 			{
 				ValidIngredientPreparationID:     &addButterVIP.ID,
-				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &butterGramVIMU.ID,
 				Name:                             "unsalted butter",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 14,
 				},
 			},
 			{

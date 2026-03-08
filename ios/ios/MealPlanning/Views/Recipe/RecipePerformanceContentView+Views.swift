@@ -58,24 +58,31 @@ struct StepCardView: View {
     // Use overrides for merged steps, otherwise use viewModel
     let isCompleted: Bool
     let canCheck: Bool
-    let prerequisites: [Int]
+    let prerequisiteStepKeys: [String]
     let isTimerActive: Bool
 
     if let overrideCompleted = isCompletedOverride, let overrideCanCheck = canCheckOverride {
       isCompleted = overrideCompleted
       canCheck = overrideCanCheck
-      prerequisites = []
+      prerequisiteStepKeys = []
       isTimerActive = timerElapsedSeconds != nil
     } else {
       isCompleted = viewModel.isStepCompleted(recipeID: recipeID, stepID: step.id)
       let canCheckStep = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
       isTimerActive = viewModel.isStepTimerActive(recipeID: recipeID, stepID: step.id)
       canCheck = canCheckStep || isTimerActive  // Allow tap to cancel when timer active
-      prerequisites = []
+      prerequisiteStepKeys = viewModel.getPrerequisiteStepKeys(recipeID: recipeID, stepID: step.id)
     }
 
-    let hasPrerequisites = !prerequisites.isEmpty
-    let allPrerequisitesCompleted = prerequisites.allSatisfy { viewModel.isStepCompleted($0) }
+    let hasPrerequisites = !prerequisiteStepKeys.isEmpty
+    let allPrerequisitesCompleted = prerequisiteStepKeys.allSatisfy { stepKey in
+      let parts = stepKey.split(separator: ":", maxSplits: 1)
+      guard parts.count == 2,
+        let rid = String(parts[0]) as String?,
+        let sid = String(parts[1]) as String?
+      else { return true }
+      return viewModel.isStepCompleted(recipeID: rid, stepID: sid)
+    }
     let completionConditions = step.completionConditions
     let hasCompletionConditions = !completionConditions.isEmpty
     let canSkipTimer =
@@ -164,7 +171,7 @@ struct StepCardView: View {
                 .font(.caption)
                 .foregroundColor(.orange)
               Text(
-                "Complete steps \(prerequisites.map { String($0 + 1) }.joined(separator: ", ")) first"
+                "Complete \(prerequisiteStepKeys.compactMap { viewModel.getStepDisplayLabelForStepKey($0) }.joined(separator: ", ")) first"
               )
               .font(.caption)
               .foregroundColor(.orange)
@@ -479,12 +486,14 @@ struct StepDetailsView: View {
 
     StepItemsSectionView(
       title: "Ingredients",
+      recipeID: recipeID,
       items: regular.map { ingredient in
         let isProduct = ingredient.hasRecipeStepProductID
         let productID = isProduct ? ingredient.recipeStepProductID : nil
-        let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
+        let displayInfo = productID.flatMap { viewModel.getStepDisplayInfoForProductID($0) }
         let prerequisiteCompleted =
-          prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
+          displayInfo.map { viewModel.isStepCompleted(recipeID: recipeID, stepID: $0.stepID) }
+          ?? true
         let ingredientKey =
           ingredient.hasIngredient
           ? "\(ingredient.ingredient.id)|\(ingredient.hasMeasurementUnit ? ingredient.measurementUnit.id : "")"
@@ -495,7 +504,8 @@ struct StepDetailsView: View {
           name: formatStepIngredientDisplay(
             ingredient, scale: scale, breakdownSuffix: breakdownSuffix),
           isProduct: isProduct,
-          prerequisiteStepIndex: prerequisiteStepIndex,
+          prerequisiteStepLabel: displayInfo?.label,
+          prerequisiteStepID: displayInfo?.stepID,
           prerequisiteCompleted: prerequisiteCompleted
         )
       },
@@ -510,6 +520,7 @@ struct StepDetailsView: View {
     let data = instrumentVesselSectionData()
     StepItemsSectionView(
       title: "Equipment",
+      recipeID: recipeID,
       items: data.items,
       instrumentOptionGroups: data.instrumentOptionGroups,
       vesselOptionGroups: data.vesselOptionGroups,
@@ -545,14 +556,15 @@ struct StepDetailsView: View {
     let mappedInstruments: [StepItem] = regularInstruments.map { instrument in
       let isProduct = instrument.hasRecipeStepProductID
       let productID = isProduct ? instrument.recipeStepProductID : nil
-      let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
+      let displayInfo = productID.flatMap { viewModel.getStepDisplayInfoForProductID($0) }
       let prerequisiteCompleted =
-        prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
+        displayInfo.map { viewModel.isStepCompleted(recipeID: recipeID, stepID: $0.stepID) } ?? true
 
       return StepItem(
         name: instrument.name,
         isProduct: isProduct,
-        prerequisiteStepIndex: prerequisiteStepIndex,
+        prerequisiteStepLabel: displayInfo?.label,
+        prerequisiteStepID: displayInfo?.stepID,
         prerequisiteCompleted: prerequisiteCompleted
       )
     }
@@ -560,14 +572,15 @@ struct StepDetailsView: View {
     let mappedVessels: [StepItem] = regularVessels.map { vessel in
       let isProduct = vessel.hasRecipeStepProductID
       let productID = isProduct ? vessel.recipeStepProductID : nil
-      let prerequisiteStepIndex = productID.flatMap { viewModel.getStepIndexForProductID($0) }
+      let displayInfo = productID.flatMap { viewModel.getStepDisplayInfoForProductID($0) }
       let prerequisiteCompleted =
-        prerequisiteStepIndex.map { viewModel.isStepCompleted($0) } ?? true
+        displayInfo.map { viewModel.isStepCompleted(recipeID: recipeID, stepID: $0.stepID) } ?? true
 
       return StepItem(
         name: vessel.name,
         isProduct: isProduct,
-        prerequisiteStepIndex: prerequisiteStepIndex,
+        prerequisiteStepLabel: displayInfo?.label,
+        prerequisiteStepID: displayInfo?.stepID,
         prerequisiteCompleted: prerequisiteCompleted
       )
     }
@@ -971,8 +984,10 @@ struct StepDetailsView: View {
 
 struct StepItemsSectionView: View {
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+  @Environment(AuthenticationManager.self) private var authManager
 
   let title: String
+  let recipeID: String
   let items: [StepItem]
   var ingredientOptionGroups: [OptionGroupAggregate] = []
   var instrumentOptionGroups: [InstrumentOptionGroupAggregate] = []
@@ -1032,10 +1047,26 @@ struct StepItemsSectionView: View {
           (item.isProduct && !item.prerequisiteCompleted) ? .orange : .secondary
         )
         .lineLimit(2)
-      if let prerequisiteStepIndex = item.prerequisiteStepIndex {
-        Text("(from step \(prerequisiteStepIndex + 1))")
-          .font(.caption2)
-          .foregroundColor(.secondary)
+      if let label = item.prerequisiteStepLabel {
+        let referenceText = "(from \(label))"
+        if let stepID = item.prerequisiteStepID {
+          NavigationLink {
+            PerformRecipeView(
+              recipeID: recipeID,
+              highlightedStepIDs: [stepID]
+            )
+            .environment(authManager)
+          } label: {
+            Text(referenceText)
+              .font(.caption2)
+              .foregroundColor(.secondary)
+          }
+          .buttonStyle(.plain)
+        } else {
+          Text(referenceText)
+            .font(.caption2)
+            .foregroundColor(.secondary)
+        }
       }
     }
   }
