@@ -28,7 +28,7 @@ import (
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
-func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, identity.Repository, *pgcontainers.PostgresContainer) {
+func buildDatabaseClientForTest(t *testing.T) (repo *repository, auditRepo audit.Repository, idRepo identity.Repository, pgContainer *pgcontainers.PostgresContainer) {
 	t.Helper()
 
 	ctx := t.Context()

@@ -167,15 +167,6 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				},
 				OptionIndex: 0,
 			},
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				Name:                            "noodles in water",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
-				},
-				OptionIndex: 1,
-			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{

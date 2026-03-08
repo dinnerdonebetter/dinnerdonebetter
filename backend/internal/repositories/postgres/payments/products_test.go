@@ -221,7 +221,6 @@ func TestQuerier_Integration_Products_GetProducts(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	createdProducts := make([]*payments.Product, 0, exampleQuantity)
 	for i := 0; i < exampleQuantity; i++ {
 		product := fakes.BuildFakeProduct()
 		product.Name = fmt.Sprintf("Product %d", i)
@@ -235,7 +234,7 @@ func TestQuerier_Integration_Products_GetProducts(t *testing.T) {
 			BillingIntervalMonths: product.BillingIntervalMonths,
 			ExternalProductID:     product.ExternalProductID,
 		}
-		createdProducts = append(createdProducts, createProductForTest(t, ctx, input, dbc))
+		createProductForTest(t, ctx, input, dbc)
 	}
 
 	result, err := dbc.GetProducts(ctx, &filtering.QueryFilter{MaxResponseSize: ptr(uint8(10))})
