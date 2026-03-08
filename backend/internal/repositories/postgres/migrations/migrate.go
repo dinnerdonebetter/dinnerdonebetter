@@ -56,13 +56,9 @@ func (m *Migrator) Migrate(ctx context.Context, db *sql.DB) error {
 		{Version: 11, Description: "payments tables", Script: fetchMigration("00011_payments")},
 		{Version: 12, Description: "comments table", Script: fetchMigration("00012_comments")},
 		{Version: 13, Description: "data privacy tables", Script: fetchMigration("00013_dataprivacy")},
-		{Version: 14, Description: "meal planning tables", Script: fetchMigration("00014_mealplanning")},
-		{Version: 15, Description: "queue test messages tables", Script: fetchMigration("00015_internalops")},
-		{Version: 16, Description: "user device tokens table", Script: fetchMigration("00016_user_device_tokens")},
-		{Version: 17, Description: "meal plan tasks notification_sent_at column", Script: fetchMigration("00017_meal_plan_tasks_notification_sent_at")},
-		{Version: 18, Description: "uploaded media tables", Script: fetchMigration("00018_uploaded_media_bridge_tables")},
-		{Version: 20, Description: "prevent duplicate meals in lists and meal plan options", Script: fetchMigration("00020_prevent_duplicate_meals")},
-		{Version: 21, Description: "temperature setting", Script: fetchMigration("00021_user_temperature_unit_setting")},
+		{Version: 14, Description: "queue test messages tables", Script: fetchMigration("00014_internalops")},
+		{Version: 15, Description: "user device tokens table", Script: fetchMigration("00015_user_device_tokens")},
+		{Version: 16, Description: "meal planning tables", Script: fetchMigration("00016_mealplanning")},
 	}
 
 	if err := darwin.New(darwin.NewGenericDriver(db, darwin.PostgresDialect{}), migrations, nil).Migrate(); err != nil {

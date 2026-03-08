@@ -730,6 +730,7 @@ CREATE TABLE IF NOT EXISTS meal_plan_tasks (
     creation_explanation TEXT DEFAULT ''::TEXT NOT NULL,
     status_explanation TEXT DEFAULT ''::TEXT NOT NULL,
     status prep_step_status DEFAULT 'unfinished'::prep_step_status NOT NULL,
+    notification_sent_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
     assigned_to_user TEXT REFERENCES users("id") ON DELETE CASCADE,
@@ -775,6 +776,37 @@ CREATE TABLE IF NOT EXISTS recipe_list_items (
     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     "belongs_to_recipe_list" TEXT NOT NULL REFERENCES recipe_lists("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS recipe_images (
+    id TEXT NOT NULL PRIMARY KEY,
+    belongs_to_recipe TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+    uploaded_media_id TEXT NOT NULL REFERENCES uploaded_media(id) ON DELETE CASCADE,
+    uploaded_by_user TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    archived_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS meal_images (
+    id TEXT NOT NULL PRIMARY KEY,
+    belongs_to_meal TEXT NOT NULL REFERENCES meals(id) ON DELETE CASCADE,
+    uploaded_media_id TEXT NOT NULL REFERENCES uploaded_media(id) ON DELETE CASCADE,
+    uploaded_by_user TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    archived_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Add user_temperature_unit service setting (celsius vs fahrenheit, default fahrenheit)
+INSERT INTO service_settings (id, name, type, description, default_value, enumeration, admins_only)
+VALUES (
+   'd6me6i4n9qd3gcf5j1p0',
+   'user_temperature_unit',
+   'user',
+   'Preferred unit for displaying temperatures (e.g. oven, storage)',
+   'fahrenheit',
+   'celsius|fahrenheit',
+   false
+);
+
 
 -- =============================================================================
 -- INDEXES FOR MEAL PLANNING TABLES
@@ -1026,3 +1058,14 @@ CREATE INDEX idx_valid_prep_task_configs_combo ON valid_prep_task_configs (valid
 CREATE INDEX idx_valid_prep_task_configs_container_type ON valid_prep_task_configs (storage_container_type) WHERE archived_at IS NULL;
 CREATE INDEX idx_valid_prep_task_configs_temp_range ON valid_prep_task_configs (minimum_storage_temperature_in_celsius, maximum_storage_temperature_in_celsius) WHERE archived_at IS NULL;
 CREATE INDEX idx_valid_prep_task_configs_archived_at ON valid_prep_task_configs (archived_at) WHERE archived_at IS NULL;
+
+-- Prevent duplicate meals in meal lists: one meal per list (non-archived).
+CREATE UNIQUE INDEX IF NOT EXISTS idx_meal_list_items_meal_list_meal_unique
+    ON meal_list_items (belongs_to_meal_list, meal_id)
+    WHERE archived_at IS NULL;
+
+-- Prevent duplicate meal options per event: one meal per event (non-archived).
+CREATE UNIQUE INDEX IF NOT EXISTS idx_meal_plan_options_event_meal_unique
+    ON meal_plan_options (belongs_to_meal_plan_event, meal_id)
+    WHERE archived_at IS NULL
+    AND belongs_to_meal_plan_event IS NOT NULL;
