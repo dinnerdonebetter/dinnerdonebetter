@@ -37,6 +37,7 @@ var validIngredientsColumns = []string{
 	"animal_derived",
 	pluralNameColumn,
 	"restrict_to_preparations",
+	"contaminates_equipment",
 	"minimum_ideal_storage_temperature_in_celsius",
 	"maximum_ideal_storage_temperature_in_celsius",
 	"storage_instructions",

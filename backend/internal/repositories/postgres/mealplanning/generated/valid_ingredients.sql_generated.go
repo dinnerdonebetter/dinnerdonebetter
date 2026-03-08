@@ -63,6 +63,7 @@ INSERT INTO valid_ingredients (
 	animal_derived,
 	plural_name,
 	restrict_to_preparations,
+	contaminates_equipment,
 	minimum_ideal_storage_temperature_in_celsius,
 	maximum_ideal_storage_temperature_in_celsius,
 	storage_instructions,
@@ -111,35 +112,37 @@ INSERT INTO valid_ingredients (
 	$31,
 	$32,
 	$33,
-	$34
+	$34,
+	$35
 )
 `
 
 type CreateValidIngredientParams struct {
-	Name                                    string
+	Slug                                    string
 	Description                             string
 	Warning                                 string
 	ShoppingSuggestions                     string
-	Slug                                    string
-	StorageInstructions                     string
 	ID                                      string
+	StorageInstructions                     string
 	PluralName                              string
 	IconPath                                string
+	Name                                    string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	ContainsSoy                             bool
-	ContainsDairy                           bool
+	AnimalDerived                           bool
+	ContainsPeanut                          bool
 	AnimalFlesh                             bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
-	AnimalDerived                           bool
 	ContainsShellfish                       bool
-	RestrictToPreparations                  bool
 	ContainsWheat                           bool
+	RestrictToPreparations                  bool
+	ContaminatesEquipment                   bool
+	ContainsSoy                             bool
 	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
 	ContainsGluten                          bool
+	ContainsDairy                           bool
 	ContainsAlcohol                         bool
 	ContainsEgg                             bool
 	IsStarch                                bool
@@ -174,6 +177,7 @@ func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *Creat
 		arg.AnimalDerived,
 		arg.PluralName,
 		arg.RestrictToPreparations,
+		arg.ContaminatesEquipment,
 		arg.MinimumIdealStorageTemperatureInCelsius,
 		arg.MaximumIdealStorageTemperatureInCelsius,
 		arg.StorageInstructions,
@@ -214,6 +218,7 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
+	valid_ingredients.contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
@@ -255,17 +260,18 @@ type GetRandomValidIngredientRow struct {
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	ContainsWheat                           bool
-	IsProtein                               bool
+	IsStarch                                bool
 	AnimalFlesh                             bool
 	RestrictToPreparations                  bool
+	ContaminatesEquipment                   bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
 	ContainsAlcohol                         bool
 	ContainsSoy                             bool
-	IsStarch                                bool
 	AnimalDerived                           bool
+	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
@@ -302,6 +308,7 @@ func (q *Queries) GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRa
 		&i.AnimalDerived,
 		&i.PluralName,
 		&i.RestrictToPreparations,
+		&i.ContaminatesEquipment,
 		&i.MinimumIdealStorageTemperatureInCelsius,
 		&i.MaximumIdealStorageTemperatureInCelsius,
 		&i.StorageInstructions,
@@ -346,6 +353,7 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
+	valid_ingredients.contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
@@ -387,17 +395,18 @@ type GetValidIngredientRow struct {
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	ContainsWheat                           bool
-	IsProtein                               bool
+	IsStarch                                bool
 	AnimalFlesh                             bool
 	RestrictToPreparations                  bool
+	ContaminatesEquipment                   bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
 	ContainsAlcohol                         bool
 	ContainsSoy                             bool
-	IsStarch                                bool
 	AnimalDerived                           bool
+	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
@@ -434,6 +443,7 @@ func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) (*
 		&i.AnimalDerived,
 		&i.PluralName,
 		&i.RestrictToPreparations,
+		&i.ContaminatesEquipment,
 		&i.MinimumIdealStorageTemperatureInCelsius,
 		&i.MaximumIdealStorageTemperatureInCelsius,
 		&i.StorageInstructions,
@@ -478,6 +488,7 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
+	valid_ingredients.contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
@@ -553,32 +564,33 @@ type GetValidIngredientsRow struct {
 	ArchivedAt                              sql.NullTime
 	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
+	StorageInstructions                     string
 	Slug                                    string
-	ShoppingSuggestions                     string
-	IconPath                                string
+	ID                                      string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	ID                                      string
-	StorageInstructions                     string
+	ShoppingSuggestions                     string
+	IconPath                                string
 	PluralName                              string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                           int64
 	TotalCount                              int64
 	IsLiquid                                sql.NullBool
-	ContainsShellfish                       bool
-	IsFruit                                 bool
+	ContaminatesEquipment                   bool
+	IsGrain                                 bool
 	AnimalDerived                           bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
-	ContainsAlcohol                         bool
 	ContainsSesame                          bool
+	ContainsAlcohol                         bool
+	ContainsShellfish                       bool
 	IsStarch                                bool
 	IsProtein                               bool
-	IsGrain                                 bool
 	RestrictToPreparations                  bool
+	IsFruit                                 bool
 	IsSalt                                  bool
 	IsFat                                   bool
 	IsAcid                                  bool
@@ -629,6 +641,7 @@ func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX, arg *GetVali
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
+			&i.ContaminatesEquipment,
 			&i.MinimumIdealStorageTemperatureInCelsius,
 			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
@@ -718,6 +731,7 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
+	valid_ingredients.contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
@@ -759,17 +773,18 @@ type GetValidIngredientsWithIDsRow struct {
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	ContainsWheat                           bool
-	IsProtein                               bool
+	IsStarch                                bool
 	AnimalFlesh                             bool
 	RestrictToPreparations                  bool
+	ContaminatesEquipment                   bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
 	ContainsAlcohol                         bool
 	ContainsSoy                             bool
-	IsStarch                                bool
 	AnimalDerived                           bool
+	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
@@ -812,6 +827,7 @@ func (q *Queries) GetValidIngredientsWithIDs(ctx context.Context, db DBTX, ids [
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
+			&i.ContaminatesEquipment,
 			&i.MinimumIdealStorageTemperatureInCelsius,
 			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
@@ -866,6 +882,7 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
+	valid_ingredients.contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
@@ -941,32 +958,33 @@ type SearchForValidIngredientsRow struct {
 	ArchivedAt                              sql.NullTime
 	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
+	StorageInstructions                     string
 	Slug                                    string
-	ShoppingSuggestions                     string
-	IconPath                                string
+	ID                                      string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	ID                                      string
-	StorageInstructions                     string
+	ShoppingSuggestions                     string
+	IconPath                                string
 	PluralName                              string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                           int64
 	TotalCount                              int64
 	IsLiquid                                sql.NullBool
-	ContainsShellfish                       bool
-	IsFruit                                 bool
+	ContaminatesEquipment                   bool
+	IsGrain                                 bool
 	AnimalDerived                           bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
-	ContainsAlcohol                         bool
 	ContainsSesame                          bool
+	ContainsAlcohol                         bool
+	ContainsShellfish                       bool
 	IsStarch                                bool
 	IsProtein                               bool
-	IsGrain                                 bool
 	RestrictToPreparations                  bool
+	IsFruit                                 bool
 	IsSalt                                  bool
 	IsFat                                   bool
 	IsAcid                                  bool
@@ -1018,6 +1036,7 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, arg *S
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
+			&i.ContaminatesEquipment,
 			&i.MinimumIdealStorageTemperatureInCelsius,
 			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
@@ -1074,6 +1093,7 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
+	valid_ingredients.contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
@@ -1128,17 +1148,18 @@ type SearchValidIngredientsByPreparationAndIngredientNameRow struct {
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	ContainsWheat                           bool
-	IsProtein                               bool
+	IsStarch                                bool
 	AnimalFlesh                             bool
 	RestrictToPreparations                  bool
+	ContaminatesEquipment                   bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
 	ContainsAlcohol                         bool
 	ContainsSoy                             bool
-	IsStarch                                bool
 	AnimalDerived                           bool
+	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
@@ -1181,6 +1202,7 @@ func (q *Queries) SearchValidIngredientsByPreparationAndIngredientName(ctx conte
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
+			&i.ContaminatesEquipment,
 			&i.MinimumIdealStorageTemperatureInCelsius,
 			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
@@ -1234,23 +1256,24 @@ UPDATE valid_ingredients SET
 	animal_derived = $17,
 	plural_name = $18,
 	restrict_to_preparations = $19,
-	minimum_ideal_storage_temperature_in_celsius = $20,
-	maximum_ideal_storage_temperature_in_celsius = $21,
-	storage_instructions = $22,
-	slug = $23,
-	contains_alcohol = $24,
-	shopping_suggestions = $25,
-	is_starch = $26,
-	is_protein = $27,
-	is_grain = $28,
-	is_fruit = $29,
-	is_salt = $30,
-	is_fat = $31,
-	is_acid = $32,
-	is_heat = $33,
+	contaminates_equipment = $20,
+	minimum_ideal_storage_temperature_in_celsius = $21,
+	maximum_ideal_storage_temperature_in_celsius = $22,
+	storage_instructions = $23,
+	slug = $24,
+	contains_alcohol = $25,
+	shopping_suggestions = $26,
+	is_starch = $27,
+	is_protein = $28,
+	is_grain = $29,
+	is_fruit = $30,
+	is_salt = $31,
+	is_fat = $32,
+	is_acid = $33,
+	is_heat = $34,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $34
+	AND id = $35
 `
 
 type UpdateValidIngredientParams struct {
@@ -1260,24 +1283,25 @@ type UpdateValidIngredientParams struct {
 	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
-	Name                                    string
 	PluralName                              string
+	Name                                    string
 	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	ContainsWheat                           bool
-	ContainsAlcohol                         bool
+	AnimalDerived                           bool
+	ContainsPeanut                          bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
-	AnimalDerived                           bool
 	ContainsSesame                          bool
-	RestrictToPreparations                  bool
 	ContainsShellfish                       bool
+	RestrictToPreparations                  bool
+	ContaminatesEquipment                   bool
+	ContainsWheat                           bool
 	ContainsSoy                             bool
 	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
 	AnimalFlesh                             bool
+	ContainsAlcohol                         bool
 	ContainsDairy                           bool
 	IsStarch                                bool
 	IsProtein                               bool
@@ -1311,6 +1335,7 @@ func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *Updat
 		arg.AnimalDerived,
 		arg.PluralName,
 		arg.RestrictToPreparations,
+		arg.ContaminatesEquipment,
 		arg.MinimumIdealStorageTemperatureInCelsius,
 		arg.MaximumIdealStorageTemperatureInCelsius,
 		arg.StorageInstructions,

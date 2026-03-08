@@ -94,6 +94,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 				ID:                  result.ID,
 				CreatedByUser:       result.CreatedByUser,
 				Source:              result.Source,
+				SourceISBN:          result.SourceIsbn,
 				Slug:                result.Slug,
 				YieldsComponentType: string(result.YieldsComponentType),
 				EstimatedPortions: types.Float32RangeWithOptionalMax{
@@ -452,6 +453,7 @@ func (q *repository) GetRecipes(ctx context.Context, status string, filter *filt
 			ID:                  result.ID,
 			CreatedByUser:       result.CreatedByUser,
 			Source:              result.Source,
+			SourceISBN:          result.SourceIsbn,
 			Slug:                result.Slug,
 			YieldsComponentType: string(result.YieldsComponentType),
 			EstimatedPortions: types.Float32RangeWithOptionalMax{
@@ -528,6 +530,7 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 			ID:                  result.ID,
 			CreatedByUser:       result.CreatedByUser,
 			Source:              result.Source,
+			SourceISBN:          result.SourceIsbn,
 			Slug:                result.Slug,
 			YieldsComponentType: string(result.YieldsComponentType),
 			EstimatedPortions: types.Float32RangeWithOptionalMax{
@@ -584,6 +587,7 @@ func (q *repository) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*me
 				ID:                  result.ID,
 				CreatedByUser:       result.CreatedByUser,
 				Source:              result.Source,
+				SourceISBN:          result.SourceIsbn,
 				Slug:                result.Slug,
 				YieldsComponentType: string(result.YieldsComponentType),
 				EstimatedPortions: types.Float32RangeWithOptionalMax{
@@ -743,6 +747,7 @@ func (q *repository) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 			ID:                  result.ID,
 			CreatedByUser:       result.CreatedByUser,
 			Source:              result.Source,
+			SourceISBN:          result.SourceIsbn,
 			Slug:                result.Slug,
 			YieldsComponentType: string(result.YieldsComponentType),
 			EstimatedPortions: types.Float32RangeWithOptionalMax{
@@ -813,6 +818,7 @@ func (q *repository) SearchForMealEligibleRecipes(ctx context.Context, recipeNam
 			ID:                  result.ID,
 			CreatedByUser:       result.CreatedByUser,
 			Source:              result.Source,
+			SourceISBN:          result.SourceIsbn,
 			Slug:                result.Slug,
 			YieldsComponentType: string(result.YieldsComponentType),
 			EstimatedPortions: types.Float32RangeWithOptionalMax{
@@ -915,6 +921,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		ID:                   input.ID,
 		Slug:                 input.Slug,
 		Source:               input.Source,
+		SourceIsbn:           input.SourceISBN,
 		Description:          input.Description,
 		CreatedByUser:        input.CreatedByUser,
 		Name:                 input.Name,
@@ -935,6 +942,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		Name:               input.Name,
 		Slug:               input.Slug,
 		Source:             input.Source,
+		SourceISBN:         input.SourceISBN,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		CreatedByUser:      input.CreatedByUser,
@@ -1172,6 +1180,7 @@ func (q *repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Rec
 		Name:                 updated.Name,
 		Slug:                 updated.Slug,
 		Source:               updated.Source,
+		SourceIsbn:           updated.SourceISBN,
 		Description:          updated.Description,
 		InspiredByRecipeID:   database.NullStringFromStringPointer(updated.InspiredByRecipeID),
 		MinEstimatedPortions: database.StringFromFloat32(updated.EstimatedPortions.Min),

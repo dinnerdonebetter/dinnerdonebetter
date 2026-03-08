@@ -85,7 +85,8 @@ WHERE %s.%s = sqlc.arg(%s)
 	%s
 FROM %s
 WHERE %s.%s IS NULL
-	AND %s.%s = sqlc.arg(user_id)%s
+	AND %s.%s = sqlc.arg(user_id)
+	%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
 					buildFilterCountSelect(

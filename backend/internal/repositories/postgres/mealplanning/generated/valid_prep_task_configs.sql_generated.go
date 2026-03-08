@@ -145,6 +145,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -229,6 +230,7 @@ type GetValidPrepTaskConfigRow struct {
 	ValidPreparationMinimumIngredientCount                 int32
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientContainsSesame                          bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientAnimalFlesh                             bool
@@ -308,6 +310,7 @@ func (q *Queries) GetValidPrepTaskConfig(ctx context.Context, db DBTX, id string
 		&i.ValidIngredientAnimalDerived,
 		&i.ValidIngredientPluralName,
 		&i.ValidIngredientRestrictToPreparations,
+		&i.ValidIngredientContaminatesEquipment,
 		&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 		&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 		&i.ValidIngredientStorageInstructions,
@@ -387,6 +390,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -468,29 +472,29 @@ type GetValidPrepTaskConfigsParams struct {
 }
 
 type GetValidPrepTaskConfigsRow struct {
-	ValidPreparationCreatedAt                              time.Time
 	ValidIngredientCreatedAt                               time.Time
+	ValidPreparationCreatedAt                              time.Time
 	ValidPrepTaskConfigCreatedAt                           time.Time
 	ValidPrepTaskConfigArchivedAt                          sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
 	ValidPreparationLastUpdatedAt                          sql.NullTime
 	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPrepTaskConfigLastUpdatedAt                       sql.NullTime
 	ValidPrepTaskConfigNotes                               string
 	ValidPreparationDescription                            string
 	ValidIngredientSlug                                    string
-	ValidPrepTaskConfigID                                  string
+	ValidPreparationID                                     string
 	ValidIngredientStorageInstructions                     string
 	ValidPreparationSlug                                   string
 	ValidPrepTaskConfigSource                              string
 	ValidPreparationPastTense                              string
 	ValidIngredientIconPath                                string
 	ValidIngredientShoppingSuggestions                     string
-	ValidPreparationID                                     string
 	ValidPreparationName                                   string
+	ValidPrepTaskConfigID                                  string
 	ValidPreparationIconPath                               string
 	ValidIngredientPluralName                              string
 	ValidIngredientID                                      string
@@ -514,7 +518,8 @@ type GetValidPrepTaskConfigsRow struct {
 	ValidPreparationMinimumIngredientCount                 int32
 	ValidPrepTaskConfigMinimumStorageDurationInSeconds     int32
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientContainsAlcohol                         bool
@@ -527,8 +532,8 @@ type GetValidPrepTaskConfigsRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
@@ -608,6 +613,7 @@ func (q *Queries) GetValidPrepTaskConfigs(ctx context.Context, db DBTX, arg *Get
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,
@@ -699,6 +705,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -782,29 +789,29 @@ type GetValidPrepTaskConfigsForIngredientParams struct {
 }
 
 type GetValidPrepTaskConfigsForIngredientRow struct {
-	ValidPreparationCreatedAt                              time.Time
 	ValidIngredientCreatedAt                               time.Time
+	ValidPreparationCreatedAt                              time.Time
 	ValidPrepTaskConfigCreatedAt                           time.Time
 	ValidPrepTaskConfigArchivedAt                          sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
 	ValidPreparationLastUpdatedAt                          sql.NullTime
 	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPrepTaskConfigLastUpdatedAt                       sql.NullTime
 	ValidPrepTaskConfigNotes                               string
 	ValidPreparationDescription                            string
 	ValidIngredientSlug                                    string
-	ValidPrepTaskConfigID                                  string
+	ValidPreparationID                                     string
 	ValidIngredientStorageInstructions                     string
 	ValidPreparationSlug                                   string
 	ValidPrepTaskConfigSource                              string
 	ValidPreparationPastTense                              string
 	ValidIngredientIconPath                                string
 	ValidIngredientShoppingSuggestions                     string
-	ValidPreparationID                                     string
 	ValidPreparationName                                   string
+	ValidPrepTaskConfigID                                  string
 	ValidPreparationIconPath                               string
 	ValidIngredientPluralName                              string
 	ValidIngredientID                                      string
@@ -828,7 +835,8 @@ type GetValidPrepTaskConfigsForIngredientRow struct {
 	ValidPreparationMinimumIngredientCount                 int32
 	ValidPrepTaskConfigMinimumStorageDurationInSeconds     int32
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientContainsAlcohol                         bool
@@ -841,8 +849,8 @@ type GetValidPrepTaskConfigsForIngredientRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
@@ -923,6 +931,7 @@ func (q *Queries) GetValidPrepTaskConfigsForIngredient(ctx context.Context, db D
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,
@@ -1014,6 +1023,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -1099,29 +1109,29 @@ type GetValidPrepTaskConfigsForIngredientAndPreparationParams struct {
 }
 
 type GetValidPrepTaskConfigsForIngredientAndPreparationRow struct {
-	ValidPreparationCreatedAt                              time.Time
 	ValidIngredientCreatedAt                               time.Time
+	ValidPreparationCreatedAt                              time.Time
 	ValidPrepTaskConfigCreatedAt                           time.Time
 	ValidPrepTaskConfigArchivedAt                          sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
 	ValidPreparationLastUpdatedAt                          sql.NullTime
 	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPrepTaskConfigLastUpdatedAt                       sql.NullTime
 	ValidPrepTaskConfigNotes                               string
 	ValidPreparationDescription                            string
 	ValidIngredientSlug                                    string
-	ValidPrepTaskConfigID                                  string
+	ValidPreparationID                                     string
 	ValidIngredientStorageInstructions                     string
 	ValidPreparationSlug                                   string
 	ValidPrepTaskConfigSource                              string
 	ValidPreparationPastTense                              string
 	ValidIngredientIconPath                                string
 	ValidIngredientShoppingSuggestions                     string
-	ValidPreparationID                                     string
 	ValidPreparationName                                   string
+	ValidPrepTaskConfigID                                  string
 	ValidPreparationIconPath                               string
 	ValidIngredientPluralName                              string
 	ValidIngredientID                                      string
@@ -1145,7 +1155,8 @@ type GetValidPrepTaskConfigsForIngredientAndPreparationRow struct {
 	ValidPreparationMinimumIngredientCount                 int32
 	ValidPrepTaskConfigMinimumStorageDurationInSeconds     int32
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientContainsAlcohol                         bool
@@ -1158,8 +1169,8 @@ type GetValidPrepTaskConfigsForIngredientAndPreparationRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
@@ -1241,6 +1252,7 @@ func (q *Queries) GetValidPrepTaskConfigsForIngredientAndPreparation(ctx context
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,
@@ -1332,6 +1344,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -1415,29 +1428,29 @@ type GetValidPrepTaskConfigsForPreparationParams struct {
 }
 
 type GetValidPrepTaskConfigsForPreparationRow struct {
-	ValidPreparationCreatedAt                              time.Time
 	ValidIngredientCreatedAt                               time.Time
+	ValidPreparationCreatedAt                              time.Time
 	ValidPrepTaskConfigCreatedAt                           time.Time
 	ValidPrepTaskConfigArchivedAt                          sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
 	ValidPreparationLastUpdatedAt                          sql.NullTime
 	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPrepTaskConfigLastUpdatedAt                       sql.NullTime
 	ValidPrepTaskConfigNotes                               string
 	ValidPreparationDescription                            string
 	ValidIngredientSlug                                    string
-	ValidPrepTaskConfigID                                  string
+	ValidPreparationID                                     string
 	ValidIngredientStorageInstructions                     string
 	ValidPreparationSlug                                   string
 	ValidPrepTaskConfigSource                              string
 	ValidPreparationPastTense                              string
 	ValidIngredientIconPath                                string
 	ValidIngredientShoppingSuggestions                     string
-	ValidPreparationID                                     string
 	ValidPreparationName                                   string
+	ValidPrepTaskConfigID                                  string
 	ValidPreparationIconPath                               string
 	ValidIngredientPluralName                              string
 	ValidIngredientID                                      string
@@ -1461,7 +1474,8 @@ type GetValidPrepTaskConfigsForPreparationRow struct {
 	ValidPreparationMinimumIngredientCount                 int32
 	ValidPrepTaskConfigMinimumStorageDurationInSeconds     int32
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientContainsAlcohol                         bool
@@ -1474,8 +1488,8 @@ type GetValidPrepTaskConfigsForPreparationRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
@@ -1556,6 +1570,7 @@ func (q *Queries) GetValidPrepTaskConfigsForPreparation(ctx context.Context, db 
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,

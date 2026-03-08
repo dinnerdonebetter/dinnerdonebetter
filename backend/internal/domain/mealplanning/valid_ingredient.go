@@ -54,6 +54,7 @@ type (
 		ContainsSoy                 bool                       `json:"containsSoy"`
 		AnimalDerived               bool                       `json:"animalDerived"`
 		RestrictToPreparations      bool                       `json:"restrictToPreparations"`
+		ContaminatesEquipment       bool                       `json:"contaminatesEquipment"`
 		ContainsSesame              bool                       `json:"containsSesame"`
 		ContainsFish                bool                       `json:"containsFish"`
 		ContainsGluten              bool                       `json:"containsGluten"`
@@ -96,6 +97,7 @@ type (
 		ContainsSoy                 *bool
 		AnimalDerived               *bool
 		RestrictToPreparations      *bool
+		ContaminatesEquipment       *bool
 		ContainsSesame              *bool
 		ContainsFish                *bool
 		ContainsGluten              *bool
@@ -134,6 +136,7 @@ type (
 		ContainsPeanut              bool                       `json:"containsPeanut"`
 		AnimalDerived               bool                       `json:"animalDerived"`
 		RestrictToPreparations      bool                       `json:"restrictToPreparations"`
+		ContaminatesEquipment       bool                       `json:"contaminatesEquipment"`
 		ContainsDairy               bool                       `json:"containsDairy"`
 		ContainsSesame              bool                       `json:"containsSesame"`
 		ContainsTreeNut             bool                       `json:"containsTreeNut"`
@@ -173,6 +176,7 @@ type (
 		ContainsPeanut              bool                       `json:"-"`
 		AnimalDerived               bool                       `json:"-"`
 		RestrictToPreparations      bool                       `json:"-"`
+		ContaminatesEquipment       bool                       `json:"-"`
 		ContainsDairy               bool                       `json:"-"`
 		ContainsSesame              bool                       `json:"-"`
 		ContainsTreeNut             bool                       `json:"-"`
@@ -212,6 +216,7 @@ type (
 		PluralName                  *string                    `json:"pluralName,omitempty"`
 		AnimalDerived               *bool                      `json:"animalDerived,omitempty"`
 		RestrictToPreparations      *bool                      `json:"restrictToPreparations,omitempty"`
+		ContaminatesEquipment       *bool                      `json:"contaminatesEquipment,omitempty"`
 		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
 		StorageInstructions         *string                    `json:"storageInstructions,omitempty"`
 		Slug                        *string                    `json:"slug,omitempty"`
@@ -332,6 +337,10 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 
 	if input.RestrictToPreparations != nil && *input.RestrictToPreparations != x.RestrictToPreparations {
 		x.RestrictToPreparations = *input.RestrictToPreparations
+	}
+
+	if input.ContaminatesEquipment != nil && *input.ContaminatesEquipment != x.ContaminatesEquipment {
+		x.ContaminatesEquipment = *input.ContaminatesEquipment
 	}
 
 	if input.StorageTemperatureInCelsius.Min != nil && input.StorageTemperatureInCelsius.Min != x.StorageTemperatureInCelsius.Min {

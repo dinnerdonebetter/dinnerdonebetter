@@ -28,6 +28,7 @@ func ConvertValidIngredientToValidIngredientUpdateRequestInput(x *mealplanning.V
 		PluralName:             &x.PluralName,
 		AnimalDerived:          &x.AnimalDerived,
 		RestrictToPreparations: &x.RestrictToPreparations,
+		ContaminatesEquipment:  &x.ContaminatesEquipment,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
@@ -72,6 +73,7 @@ func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreation
 		PluralName:             x.PluralName,
 		AnimalDerived:          x.AnimalDerived,
 		RestrictToPreparations: x.RestrictToPreparations,
+		ContaminatesEquipment:  x.ContaminatesEquipment,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
@@ -115,6 +117,7 @@ func ConvertValidIngredientToValidIngredientCreationRequestInput(x *mealplanning
 		PluralName:             x.PluralName,
 		AnimalDerived:          x.AnimalDerived,
 		RestrictToPreparations: x.RestrictToPreparations,
+		ContaminatesEquipment:  x.ContaminatesEquipment,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
@@ -157,6 +160,7 @@ func ConvertValidIngredientToValidIngredientDatabaseCreationInput(x *mealplannin
 		PluralName:             x.PluralName,
 		AnimalDerived:          x.AnimalDerived,
 		RestrictToPreparations: x.RestrictToPreparations,
+		ContaminatesEquipment:  x.ContaminatesEquipment,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,

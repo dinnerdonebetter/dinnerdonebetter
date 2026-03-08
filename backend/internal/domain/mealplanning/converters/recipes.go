@@ -12,6 +12,7 @@ func ConvertRecipeToRecipeUpdateRequestInput(input *mealplanning.Recipe) *mealpl
 		Name:                &input.Name,
 		Slug:                &input.Slug,
 		Source:              &input.Source,
+		SourceISBN:          &input.SourceISBN,
 		Description:         &input.Description,
 		InspiredByRecipeID:  input.InspiredByRecipeID,
 		YieldsComponentType: &input.YieldsComponentType,
@@ -35,6 +36,7 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *mealp
 		Name:               input.Name,
 		Slug:               input.Slug,
 		Source:             input.Source,
+		SourceISBN:         input.SourceISBN,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		EstimatedPortions: types.Float32RangeWithOptionalMax{
@@ -90,6 +92,7 @@ func ConvertRecipeToRecipeCreationRequestInput(input *mealplanning.Recipe) *meal
 		Name:               input.Name,
 		Slug:               input.Slug,
 		Source:             input.Source,
+		SourceISBN:         input.SourceISBN,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		EstimatedPortions: types.Float32RangeWithOptionalMax{
@@ -123,6 +126,7 @@ func ConvertRecipeToRecipeDatabaseCreationInput(input *mealplanning.Recipe) *mea
 		Name:               input.Name,
 		Slug:               input.Slug,
 		Source:             input.Source,
+		SourceISBN:         input.SourceISBN,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		CreatedByUser:      input.CreatedByUser,

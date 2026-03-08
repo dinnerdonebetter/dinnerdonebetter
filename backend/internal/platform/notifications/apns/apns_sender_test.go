@@ -137,23 +137,23 @@ func TestSender_Send_rejectsInvalidDeviceToken(t *testing.T) {
 		t.Parallel()
 		// Simulates decrypted garbage (e.g. wrong key or corrupted data)
 		invalidToken := "x\x89\xbf\x1f\xa0\x93\x12\xf5"
-		err = sender.Send(ctx, invalidToken, "title", "body", nil)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid device token format")
+		sendErr := sender.Send(ctx, invalidToken, "title", "body", nil)
+		require.Error(t, sendErr)
+		assert.Contains(t, sendErr.Error(), "invalid device token format")
 	})
 
 	t.Run("rejects token with control characters", func(t *testing.T) {
 		t.Parallel()
 		invalidToken := "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef12345\t"
-		err = sender.Send(ctx, invalidToken, "title", "body", nil)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid device token format")
+		sendErr := sender.Send(ctx, invalidToken, "title", "body", nil)
+		require.Error(t, sendErr)
+		assert.Contains(t, sendErr.Error(), "invalid device token format")
 	})
 
 	t.Run("rejects too short token", func(t *testing.T) {
 		t.Parallel()
-		err = sender.Send(ctx, "abc123", "title", "body", nil)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid device token format")
+		sendErr := sender.Send(ctx, "abc123", "title", "body", nil)
+		require.Error(t, sendErr)
+		assert.Contains(t, sendErr.Error(), "invalid device token format")
 	})
 }
