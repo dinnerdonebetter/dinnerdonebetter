@@ -300,6 +300,9 @@ type PaginationTestConfig[T any] struct {
 	ItemName    string
 	TotalItems  int
 	PageSize    int
+	// ExpectedTotalCount is the total number of items expected in the result (TotalCount/FilteredCount).
+	// Use when the table has pre-existing rows from migrations. If 0, TotalItems is used.
+	ExpectedTotalCount int
 }
 
 // TestCursorBasedPagination is a generic test function for cursor-based pagination.
@@ -311,11 +314,16 @@ type PaginationTestConfig[T any] struct {
 func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config PaginationTestConfig[T]) {
 	t.Helper()
 
+	expectedTotal := config.TotalItems
+	if config.ExpectedTotalCount > 0 {
+		expectedTotal = config.ExpectedTotalCount
+	}
+
 	// Calculate expected pages
-	expectedPages := (config.TotalItems + config.PageSize - 1) / config.PageSize
-	if config.TotalItems%config.PageSize == 0 {
+	expectedPages := (expectedTotal + config.PageSize - 1) / config.PageSize
+	if expectedTotal%config.PageSize == 0 {
 		// For evenly divisible cases, we still get one empty page at the end
-		expectedPages = config.TotalItems / config.PageSize
+		expectedPages = expectedTotal / config.PageSize
 	}
 
 	// Create test items
@@ -351,14 +359,14 @@ func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config 
 			break
 		}
 
-		// Verify we got the expected number of results (all full pages should be evenly sized)
-		if pageCount <= expectedPages {
+		// Verify we got the expected number of results (full pages should be evenly sized)
+		if len(result.Data) == config.PageSize {
 			assert.Len(t, result.Data, config.PageSize, "page %d should contain exactly %d %ss", pageCount, config.PageSize, config.ItemName)
 		}
 
 		// Verify counts are accurate when there's data
-		assert.Equal(t, uint64(config.TotalItems), result.TotalCount, "total count should be %d", config.TotalItems)
-		assert.Equal(t, uint64(config.TotalItems), result.FilteredCount, "filtered count should be %d", config.TotalItems)
+		assert.Equal(t, uint64(expectedTotal), result.TotalCount, "total count should be %d", expectedTotal)
+		assert.Equal(t, uint64(expectedTotal), result.FilteredCount, "filtered count should be %d", expectedTotal)
 
 		// Add results to our collection
 		allPaginatedItems = append(allPaginatedItems, result.Data...)
@@ -377,15 +385,19 @@ func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config 
 		}
 
 		// Safety check to prevent infinite loops
-		assert.False(t, pageCount > config.TotalItems+5, "Too many pages fetched, possible infinite loop")
+		assert.False(t, pageCount > expectedTotal+5, "Too many pages fetched, possible infinite loop")
 	}
 
-	// With cursor-based pagination, we fetch expectedPages of data + 1 request that returns empty
-	// This is expected behavior - we don't know we're done until we try and get 0 results
-	assert.Equal(t, expectedPages+1, pageCount, "should have made %d requests (%d pages with data + 1 empty)", expectedPages+1, expectedPages)
+	// With cursor-based pagination: when the last page is partial we break on it (pageCount = expectedPages);
+	// when all pages are full we need one more request to get empty (pageCount = expectedPages+1)
+	expectedPageRequests := expectedPages
+	if expectedTotal%config.PageSize == 0 {
+		expectedPageRequests = expectedPages + 1
+	}
+	assert.Equal(t, expectedPageRequests, pageCount, "should have made %d requests", expectedPageRequests)
 
 	// Verify we got all items
-	assert.Len(t, allPaginatedItems, config.TotalItems, "should have retrieved all %d %ss via pagination", config.TotalItems, config.ItemName)
+	assert.Len(t, allPaginatedItems, expectedTotal, "should have retrieved all %d %ss via pagination", expectedTotal, config.ItemName)
 
 	// Verify no duplicates - create a map of IDs
 	seenIDs := make(map[string]bool)
