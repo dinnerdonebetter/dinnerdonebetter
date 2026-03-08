@@ -19,6 +19,7 @@ import (
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -85,12 +86,14 @@ func BuildRegistrationFuncs(
 func BuildUnaryServerInterceptors(authInterceptor *interceptors.AuthInterceptor) []grpc.UnaryServerInterceptor {
 	return []grpc.UnaryServerInterceptor{
 		authInterceptor.UnaryServerInterceptor(),
+		errorsgrpc.UnaryErrorEncodingInterceptor(),
 	}
 }
 
 func BuildStreamServerInterceptors(authInterceptor *interceptors.AuthInterceptor) []grpc.StreamServerInterceptor {
 	return []grpc.StreamServerInterceptor{
 		authInterceptor.StreamServerInterceptor(),
+		errorsgrpc.StreamErrorEncodingInterceptor(),
 	}
 }
 

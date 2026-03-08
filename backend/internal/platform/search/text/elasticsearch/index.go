@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -27,7 +27,7 @@ func (sm *indexManager[T]) Index(ctx context.Context, id string, value any) erro
 	defer span.End()
 
 	if sm.circuitBreaker.CannotProceed() {
-		return internalerrors.ErrCircuitBroken
+		return circuitbreaking.ErrCircuitBroken
 	}
 
 	logger := sm.logger.WithValue("id", id).WithValue("value", value)
@@ -72,7 +72,7 @@ func (sm *indexManager[T]) search(ctx context.Context, query string) (results []
 	defer span.End()
 
 	if sm.circuitBreaker.CannotProceed() {
-		return nil, internalerrors.ErrCircuitBroken
+		return nil, circuitbreaking.ErrCircuitBroken
 	}
 
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
@@ -160,7 +160,7 @@ func (sm *indexManager[T]) Delete(ctx context.Context, id string) error {
 	defer span.End()
 
 	if sm.circuitBreaker.CannotProceed() {
-		return internalerrors.ErrCircuitBroken
+		return circuitbreaking.ErrCircuitBroken
 	}
 
 	logger := sm.logger.WithValue("id", id)

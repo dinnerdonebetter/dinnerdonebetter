@@ -119,6 +119,16 @@ require (
 )
 
 require (
+	github.com/cockroachdb/errors v1.12.0 // indirect
+	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
+	github.com/cockroachdb/redact v1.1.5 // indirect
+	github.com/getsentry/sentry-go v0.27.0 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
+	github.com/kr/text v0.2.0 // indirect
+	github.com/rogpeppe/go-internal v1.14.1 // indirect
+)
+
+require (
 	github.com/anthropics/anthropic-sdk-go v1.21.0 // indirect
 	github.com/mozilla-ai/any-llm-go v0.8.0
 	github.com/openai/openai-go v1.12.0 // indirect

@@ -5,12 +5,16 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 
 	circuit "github.com/rubyist/circuitbreaker"
 )
+
+// ErrCircuitBroken is returned when a circuit breaker has tripped.
+var ErrCircuitBroken = errors.New("service circuit broken")
 
 type CircuitBreaker interface {
 	Failed()

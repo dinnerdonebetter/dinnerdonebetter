@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -125,7 +124,7 @@ func (sm *indexManager[T]) ensureIndices(ctx context.Context) error {
 	defer span.End()
 
 	if sm.circuitBreaker.CannotProceed() {
-		return internalerrors.ErrCircuitBroken
+		return circuitbreaking.ErrCircuitBroken
 	}
 
 	res, err := esapi.IndicesExistsRequest{

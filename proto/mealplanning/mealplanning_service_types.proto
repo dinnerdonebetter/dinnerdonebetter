@@ -43,6 +43,7 @@ message ValidIngredientCreationRequestInput {
   bool is_fat = 30;
   bool is_acid = 31;
   bool is_heat = 32;
+  bool contaminates_equipment = 33;
 }
 
 message ValidIngredientGroupCreationRequestInput {
@@ -173,6 +174,7 @@ message ValidIngredientUpdateRequestInput {
   optional bool is_fat = 30;
   optional bool is_acid = 31;
   optional bool is_heat = 32;
+  optional bool contaminates_equipment = 33;
 }
 
 message ValidInstrumentCreationRequestInput {
@@ -1321,6 +1323,7 @@ message RecipeCreationRequestInput {
   optional string inspired_by_recipe_id = 1;
   string name = 2;
   string source = 3;
+  string source_isbn = 15;
   string description = 4;
   string plural_portion_name = 5;
   string portion_name = 6;
@@ -1616,6 +1619,7 @@ message RecipeUpdateRequestInput {
   optional string name = 1;
   optional string slug = 2;
   optional string source = 3;
+  optional string source_isbn = 12;
   optional string description = 4;
   optional string inspired_by_recipe_id = 5;
   optional common.Float32RangeWithOptionalMaxUpdateRequestInput estimated_portions = 7;

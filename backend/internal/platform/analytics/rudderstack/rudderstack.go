@@ -6,7 +6,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -73,7 +72,7 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return internalerrors.ErrCircuitBroken
+		return circuitbreaking.ErrCircuitBroken
 	}
 
 	t := rudderstack.NewTraits()
@@ -103,7 +102,7 @@ func (c *EventReporter) EventOccurred(ctx context.Context, event, userID string,
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return internalerrors.ErrCircuitBroken
+		return circuitbreaking.ErrCircuitBroken
 	}
 
 	p := rudderstack.NewProperties()

@@ -9,7 +9,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -109,7 +108,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
-		return false, internalerrors.ErrCircuitBroken
+		return false, circuitbreaking.ErrCircuitBroken
 	}
 
 	evalCtx := openfeature.NewEvaluationContext(userID, nil)
@@ -131,7 +130,7 @@ func (f *featureFlagManager) GetStringValue(ctx context.Context, userID, feature
 	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
-		return "", internalerrors.ErrCircuitBroken
+		return "", circuitbreaking.ErrCircuitBroken
 	}
 
 	evalCtx := openfeature.NewEvaluationContext(userID, nil)
@@ -153,7 +152,7 @@ func (f *featureFlagManager) GetInt64Value(ctx context.Context, userID, feature 
 	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
-		return 0, internalerrors.ErrCircuitBroken
+		return 0, circuitbreaking.ErrCircuitBroken
 	}
 
 	evalCtx := openfeature.NewEvaluationContext(userID, nil)

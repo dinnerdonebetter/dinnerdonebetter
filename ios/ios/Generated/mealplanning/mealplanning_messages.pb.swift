@@ -715,6 +715,11 @@ public struct Mealplanning_ValidIngredient: @unchecked Sendable {
     set {_uniqueStorage()._isHeat = newValue}
   }
 
+  public var contaminatesEquipment: Bool {
+    get {return _storage._contaminatesEquipment}
+    set {_uniqueStorage()._contaminatesEquipment = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1907,6 +1912,11 @@ public struct Mealplanning_Recipe: @unchecked Sendable {
   public var source: String {
     get {return _storage._source}
     set {_uniqueStorage()._source = newValue}
+  }
+
+  public var sourceIsbn: String {
+    get {return _storage._sourceIsbn}
+    set {_uniqueStorage()._sourceIsbn = newValue}
   }
 
   public var slug: String {
@@ -4113,7 +4123,7 @@ extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}storage_temperature_in_celsius\0\u{3}icon_path\0\u{1}warning\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}id\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_shellfish\0\u{3}is_liquid\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_soy\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}contains_dairy\0\u{3}contains_alcohol\0\u{3}animal_flesh\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}storage_temperature_in_celsius\0\u{3}icon_path\0\u{1}warning\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}id\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_shellfish\0\u{3}is_liquid\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_soy\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}contains_dairy\0\u{3}contains_alcohol\0\u{3}animal_flesh\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0\u{3}contaminates_equipment\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -4152,6 +4162,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
     var _isFat: Bool = false
     var _isAcid: Bool = false
     var _isHeat: Bool = false
+    var _contaminatesEquipment: Bool = false
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -4198,6 +4209,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
       _isFat = source._isFat
       _isAcid = source._isAcid
       _isHeat = source._isHeat
+      _contaminatesEquipment = source._contaminatesEquipment
     }
   }
 
@@ -4252,6 +4264,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
         case 34: try { try decoder.decodeSingularBoolField(value: &_storage._isFat) }()
         case 35: try { try decoder.decodeSingularBoolField(value: &_storage._isAcid) }()
         case 36: try { try decoder.decodeSingularBoolField(value: &_storage._isHeat) }()
+        case 37: try { try decoder.decodeSingularBoolField(value: &_storage._contaminatesEquipment) }()
         default: break
         }
       }
@@ -4372,6 +4385,9 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
       if _storage._isHeat != false {
         try visitor.visitSingularBoolField(value: _storage._isHeat, fieldNumber: 36)
       }
+      if _storage._contaminatesEquipment != false {
+        try visitor.visitSingularBoolField(value: _storage._contaminatesEquipment, fieldNumber: 37)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4417,6 +4433,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
         if _storage._isFat != rhs_storage._isFat {return false}
         if _storage._isAcid != rhs_storage._isAcid {return false}
         if _storage._isHeat != rhs_storage._isHeat {return false}
+        if _storage._contaminatesEquipment != rhs_storage._contaminatesEquipment {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -6016,7 +6033,7 @@ extension Mealplanning_UserIngredientPreference: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Recipe"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}inspired_by_recipe_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}estimated_portions\0\u{3}plural_portion_name\0\u{1}description\0\u{1}name\0\u{3}portion_name\0\u{1}id\0\u{3}created_by_user\0\u{1}source\0\u{1}slug\0\u{3}yields_component_type\0\u{3}prep_tasks\0\u{1}steps\0\u{1}media\0\u{2}\u{2}status\0\u{3}eligible_for_meals\0\u{3}associated_recipes\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}inspired_by_recipe_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}estimated_portions\0\u{3}plural_portion_name\0\u{1}description\0\u{1}name\0\u{3}portion_name\0\u{1}id\0\u{3}created_by_user\0\u{1}source\0\u{1}slug\0\u{3}yields_component_type\0\u{3}prep_tasks\0\u{1}steps\0\u{1}media\0\u{2}\u{2}status\0\u{3}eligible_for_meals\0\u{3}associated_recipes\0\u{3}source_isbn\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -6031,6 +6048,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     var _id: String = String()
     var _createdByUser: String = String()
     var _source: String = String()
+    var _sourceIsbn: String = String()
     var _slug: String = String()
     var _yieldsComponentType: Mealplanning_MealComponentType = .unspecified
     var _prepTasks: [Mealplanning_RecipePrepTask] = []
@@ -6061,6 +6079,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       _id = source._id
       _createdByUser = source._createdByUser
       _source = source._source
+      _sourceIsbn = source._sourceIsbn
       _slug = source._slug
       _yieldsComponentType = source._yieldsComponentType
       _prepTasks = source._prepTasks
@@ -6107,6 +6126,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         case 19: try { try decoder.decodeSingularStringField(value: &_storage._status) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._eligibleForMeals) }()
         case 21: try { try decoder.decodeRepeatedMessageField(value: &_storage._associatedRecipes) }()
+        case 22: try { try decoder.decodeSingularStringField(value: &_storage._sourceIsbn) }()
         default: break
         }
       }
@@ -6179,6 +6199,9 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       if !_storage._associatedRecipes.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._associatedRecipes, fieldNumber: 21)
       }
+      if !_storage._sourceIsbn.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._sourceIsbn, fieldNumber: 22)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6200,6 +6223,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         if _storage._id != rhs_storage._id {return false}
         if _storage._createdByUser != rhs_storage._createdByUser {return false}
         if _storage._source != rhs_storage._source {return false}
+        if _storage._sourceIsbn != rhs_storage._sourceIsbn {return false}
         if _storage._slug != rhs_storage._slug {return false}
         if _storage._yieldsComponentType != rhs_storage._yieldsComponentType {return false}
         if _storage._prepTasks != rhs_storage._prepTasks {return false}
