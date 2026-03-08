@@ -15,6 +15,14 @@ import SwiftUI
 enum CreateMealPlanWizardStep: Int, CaseIterable {
   case weekSelection = 1
   case mealAssignment = 2
+  case optionSelection = 3
+}
+
+// MARK: - Date Occupancy
+
+enum DateOccupancy {
+  case accepted  // finalized meal plan
+  case proposed  // awaiting votes
 }
 
 // MARK: - Create Meal Plan ViewModel (Wizard Mode)
@@ -51,6 +59,8 @@ class CreateMealPlanViewModel {
   var dayMealScales: [Date: Float] = [:]
 
   private let authManager: AuthenticationManager
+  private let acceptedOccupiedDates: Set<Date>
+  private let proposedOccupiedDates: Set<Date>
 
   private var calendar: Calendar {
     var cal = Calendar.current
@@ -58,8 +68,14 @@ class CreateMealPlanViewModel {
     return cal
   }
 
-  init(authManager: AuthenticationManager) {
+  init(
+    authManager: AuthenticationManager,
+    acceptedOccupiedDates: Set<Date> = [],
+    proposedOccupiedDates: Set<Date> = []
+  ) {
     self.authManager = authManager
+    self.acceptedOccupiedDates = acceptedOccupiedDates
+    self.proposedOccupiedDates = proposedOccupiedDates
   }
 
   // MARK: - Week and Date Helpers
@@ -84,9 +100,13 @@ class CreateMealPlanViewModel {
 
   /// Whether the user can plan dinner for this date. Past dates are not planable.
   /// If it's after 6PM, today is also not planable.
+  /// Dates occupied by accepted or proposed meal plans are not planable.
   func isDatePlanable(_ date: Date) -> Bool {
-    let now = Date()
     let dateNorm = calendar.startOfDay(for: date)
+    if acceptedOccupiedDates.contains(dateNorm) || proposedOccupiedDates.contains(dateNorm) {
+      return false
+    }
+    let now = Date()
     let todayStart = calendar.startOfDay(for: now)
 
     if dateNorm < todayStart {
@@ -98,6 +118,14 @@ class CreateMealPlanViewModel {
     // today
     let hour = calendar.component(.hour, from: now)
     return hour < 18
+  }
+
+  /// Occupancy status for UI coloring. Accepted checked first, then proposed.
+  func dateOccupancy(for date: Date) -> DateOccupancy? {
+    let dateNorm = calendar.startOfDay(for: date)
+    if acceptedOccupiedDates.contains(dateNorm) { return .accepted }
+    if proposedOccupiedDates.contains(dateNorm) { return .proposed }
+    return nil
   }
 
   func toggleDateSelection(_ date: Date) {
@@ -446,7 +474,8 @@ class CreateMealPlanViewModel {
       return true
     } catch let error as GRPCCore.RPCError {
       await authManager.invalidateCredentialsIfSessionError(error)
-      creationError = error.code == .alreadyExists
+      creationError =
+        error.code == .alreadyExists
         ? "One or more meals are already in this plan."
         : "Failed to create meal plan: \(error.localizedDescription)"
       isCreating = false
@@ -465,6 +494,11 @@ class CreateMealPlanViewModel {
     recipeOptionSelections = ingredientSelections
   }
 
+  /// Returns true if any recipe in this meal has ingredient option groups.
+  func mealHasIngredientOptions(_ meal: Mealplanning_Meal) -> Bool {
+    !collectRecipesWithOptions(from: [meal]).isEmpty
+  }
+
   func collectRecipesWithOptions(from meals: [Mealplanning_Meal]) -> Set<String> {
     var recipeIDsWithOptions: Set<String> = []
     var allRecipes: [Mealplanning_Recipe] = []
@@ -479,7 +513,7 @@ class CreateMealPlanViewModel {
       guard !recipe.steps.isEmpty else { continue }
       let hasOptions = recipe.steps.contains { step in
         var indexGroups: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
-        for ingredient in step.ingredients where ingredient.index != 0 {
+        for ingredient in step.ingredients {
           let index = ingredient.index
           if indexGroups[index] == nil { indexGroups[index] = [] }
           indexGroups[index]?.append(ingredient)
@@ -507,7 +541,7 @@ class CreateMealPlanViewModel {
     var defaults: [String: [UInt32: UInt32]] = [:]
     for step in recipe.steps {
       var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
-      for ingredient in step.ingredients where ingredient.index != 0 {
+      for ingredient in step.ingredients {
         if optionGroupsByIndex[ingredient.index] == nil {
           optionGroupsByIndex[ingredient.index] = []
         }

@@ -37,7 +37,7 @@ struct InteractiveIngredientOptionGroupView: View {
             selectedOptionIndex = option.optionIndex
           },
           label: {
-            HStack(spacing: 6) {
+            HStack(alignment: .top, spacing: 6) {
               Image(
                 systemName: selectedOptionIndex == option.optionIndex
                   && selectedOptionIndex != UInt32.max
@@ -54,9 +54,16 @@ struct InteractiveIngredientOptionGroupView: View {
                   .foregroundColor(.secondary)
               }
 
-              Text(option.ingredient.name)
-                .font(.caption)
-                .foregroundColor(.secondary)
+              VStack(alignment: .leading, spacing: 2) {
+                Text(option.ingredient.name)
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+                if !option.aggregated.quantityNotes.isEmpty {
+                  Text(option.aggregated.quantityNotes)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                }
+              }
             }
             .padding(.leading, 16)
             .padding(.horizontal)

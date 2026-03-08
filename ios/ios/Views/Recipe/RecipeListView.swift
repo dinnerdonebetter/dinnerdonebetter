@@ -73,6 +73,39 @@ struct RecipeListView: View {
       }
       .navigationTitle("Recipes")
       .navigationBarTitleDisplayMode(.large)
+      .toolbar {
+        if let viewModel = viewModel, viewModel.isServiceAdmin {
+          ToolbarItem(placement: .primaryAction) {
+            HStack(spacing: DSTheme.Spacing.sm) {
+              Text("Submitted")
+                .font(DSTheme.Typography.caption)
+                .foregroundColor(
+                  viewModel.recipeStatusFilter == "submitted"
+                    ? DSTheme.Colors.textPrimary
+                    : DSTheme.Colors.textSecondary
+                )
+              Toggle(
+                "",
+                isOn: Binding(
+                  get: { viewModel.recipeStatusFilter == "approved" },
+                  set: {
+                    viewModel.setRecipeStatusFilter($0 ? "approved" : "submitted")
+                    Task { await viewModel.loadRecipes() }
+                  }
+                )
+              )
+              .labelsHidden()
+              Text("Approved")
+                .font(DSTheme.Typography.caption)
+                .foregroundColor(
+                  viewModel.recipeStatusFilter == "approved"
+                    ? DSTheme.Colors.textPrimary
+                    : DSTheme.Colors.textSecondary
+                )
+            }
+          }
+        }
+      }
       .searchable(text: $searchQuery, prompt: "Search recipes...")
       .onChange(of: searchQuery) { _, newValue in
         if let viewModel = viewModel {
@@ -92,6 +125,7 @@ struct RecipeListView: View {
         }
         if let viewModel = viewModel {
           Task {
+            await viewModel.loadCurrentUserForAdminCheck()
             await viewModel.loadRecipes()
           }
         }

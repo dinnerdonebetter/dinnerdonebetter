@@ -68,11 +68,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	submergeSaucepanVPV := enums.PreparationVessels[submergePrep.ID][saucepan.ID]
 
 	// Boil preparation bridges
-	boilMacaroniVIP := enums.IngredientPreparations[boilPrep.ID][elbowMacaroni.ID]
 	boilWoodenSpoonVPI := enums.PreparationInstruments[boilPrep.ID][woodenSpoon.ID]
-
-	// Rest preparation bridges
-	restMacaroniVIP := enums.IngredientPreparations[restPrep.ID][elbowMacaroni.ID]
 
 	// Mix preparation bridges
 	mixEvaporatedMilkVIP := enums.IngredientPreparations[mixPrep.ID][evaporatedMilk.ID]
@@ -83,23 +79,13 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	mixMediumBowlVPV := enums.PreparationVessels[mixPrep.ID][mediumBowl.ID]
 
 	// Toss preparation bridges
-	tossCheddarVIP := enums.IngredientPreparations[tossPrep.ID][cheddarCheese.ID]
-	tossAmericanVIP := enums.IngredientPreparations[tossPrep.ID][americanCheese.ID]
 	tossCornstarchVIP := enums.IngredientPreparations[tossPrep.ID][cornstarch.ID]
 	tossLargeBowlVPV := enums.PreparationVessels[tossPrep.ID][largeBowl.ID]
 
 	// Drain preparation bridges
-	drainMacaroniVIP := enums.IngredientPreparations[drainPrep.ID][elbowMacaroni.ID]
 	drainColanderVPV := enums.PreparationVessels[drainPrep.ID][colander.ID]
 
-	// Stir preparation bridges
-	stirMacaroniVIP := enums.IngredientPreparations[stirPrep.ID][elbowMacaroni.ID]
-	stirButterVIP := enums.IngredientPreparations[stirPrep.ID][butter.ID]
-
 	// Cook preparation bridges
-	cookMacaroniVIP := enums.IngredientPreparations[cookPrep.ID][elbowMacaroni.ID]
-	cookCheddarVIP := enums.IngredientPreparations[cookPrep.ID][cheddarCheese.ID]
-	cookEvaporatedMilkVIP := enums.IngredientPreparations[cookPrep.ID][evaporatedMilk.ID]
 	cookWoodenSpoonVPI := enums.PreparationInstruments[cookPrep.ID][woodenSpoon.ID]
 
 	// Season preparation bridges
@@ -198,11 +184,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		ExplicitInstructions: "Bring to a boil over high heat, stirring occasionally to keep the pasta from sticking.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &boilMacaroniVIP.ID,
-				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
-				Name:                             "macaroni in salted water",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "macaroni in salted water",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -341,11 +325,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &restMacaroniVIP.ID,
-				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
-				Name:                             "covered macaroni off heat",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "covered macaroni off heat",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -550,7 +532,6 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &tossCheddarVIP.ID,
 				Name:                            "grated cheddar cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -559,7 +540,6 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &tossAmericanVIP.ID,
 				Name:                            "American cheese, cut into 1/2-inch cubes",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 8,
@@ -603,11 +583,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		ExplicitInstructions: "When the pasta is cooked, drain it.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &drainMacaroniVIP.ID,
-				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
-				Name:                             "al dente macaroni",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "al dente macaroni",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -729,11 +707,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		ExplicitInstructions: "Add the butter and stir until melted.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &stirMacaroniVIP.ID,
-				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
-				Name:                             "macaroni in saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "macaroni in saucepan",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -741,7 +717,6 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &stirButterVIP.ID,
 				Name:                            "butter, cut into 4 chunks",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 8, // 8 tablespoons = 1 stick
@@ -791,11 +766,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		ExplicitInstructions: "Add the milk mixture and cheese mixture and cook, stirring constantly, until the cheese is completely melted and the mixture is hot and creamy.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](12),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &cookMacaroniVIP.ID,
-				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
-				Name:                             "buttered macaroni",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "buttered macaroni",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -803,7 +776,6 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &cookEvaporatedMilkVIP.ID,
 				Name:                            "milk mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -812,7 +784,6 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &cookCheddarVIP.ID,
 				Name:                            "cheese mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,

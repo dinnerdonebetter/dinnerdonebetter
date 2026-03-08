@@ -66,7 +66,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	trimChefsKnifeVPI := enums.PreparationInstruments[trimPrep.ID][chefsKnife.ID]
 
 	// Halve
-	halveBrusselsSproutsVIP := enums.IngredientPreparations[halvePrep.ID][brusselsSprouts.ID]
 	halveChefsKnifeVPI := enums.PreparationInstruments[halvePrep.ID][chefsKnife.ID]
 
 	// Slice
@@ -75,10 +74,8 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	sliceCuttingBoardVPV := enums.PreparationVessels[slicePrep.ID][cuttingBoard.ID]
 
 	// Toss
-	tossBrusselsSproutsVIP := enums.IngredientPreparations[tossPrep.ID][brusselsSprouts.ID]
 	tossOliveOilVIP := enums.IngredientPreparations[tossPrep.ID][oliveOil.ID]
 	tossSaltVIP := enums.IngredientPreparations[tossPrep.ID][salt.ID]
-	tossShallotsVIP := enums.IngredientPreparations[tossPrep.ID][shallots.ID]
 	tossLargeBowlVPV := enums.PreparationVessels[tossPrep.ID][largeBowl.ID]
 	tossBareHandsVPI := enums.PreparationInstruments[tossPrep.ID][bareHands.ID]
 
@@ -87,39 +84,23 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	preheatBakingSheetVPV := enums.PreparationVessels[preheatPrep.ID][bakingSheet.ID]
 
 	// Remove
-	removeBakingSheetVPV := enums.PreparationVessels[removePrep.ID][bakingSheet.ID]
 	removeOvenMittVPI := enums.PreparationInstruments[removePrep.ID][ovenMitt.ID]
 
 	// Place
-	placeBrusselsSproutsVIP := enums.IngredientPreparations[placePrep.ID][brusselsSprouts.ID]
-	placeBakingSheetVPV := enums.PreparationVessels[placePrep.ID][bakingSheet.ID]
 	placeTongsVPI := enums.PreparationInstruments[placePrep.ID][tongs.ID]
 	placeOvenMittVPI := enums.PreparationInstruments[placePrep.ID][ovenMitt.ID]
 
-	// Return
-	returnBakingSheetVPV := enums.PreparationVessels[returnPrep.ID][bakingSheet.ID]
-	returnOvenVPV := enums.PreparationVessels[returnPrep.ID][oven.ID]
+	// Roast (no bridge vars needed for product refs)
 
-	// Roast
-	roastBrusselsSproutsVIP := enums.IngredientPreparations[roastPrep.ID][brusselsSprouts.ID]
-	roastBakingSheetVPV := enums.PreparationVessels[roastPrep.ID][bakingSheet.ID]
+	// Stir (no bridge vars needed for product refs)
 
-	// Stir
-	stirBrusselsSproutsVIP := enums.IngredientPreparations[stirPrep.ID][brusselsSprouts.ID]
-	stirShallotsVIP := enums.IngredientPreparations[stirPrep.ID][shallots.ID]
-	stirBakingSheetVPV := enums.PreparationVessels[stirPrep.ID][bakingSheet.ID]
-
-	// Rotate
-	rotateBakingSheetVPV := enums.PreparationVessels[rotatePrep.ID][bakingSheet.ID]
+	// Rotate (no bridge vars needed for product refs)
 
 	// Drizzle
 	drizzleBalsamicVinegarVIP := enums.IngredientPreparations[drizzlePrep.ID][balsamicVinegar.ID]
-	drizzleBrusselsSproutsVIP := enums.IngredientPreparations[drizzlePrep.ID][brusselsSprouts.ID]
-	drizzleBakingSheetVPV := enums.PreparationVessels[drizzlePrep.ID][bakingSheet.ID]
 	drizzleBareHandsVPI := enums.PreparationInstruments[drizzlePrep.ID][bareHands.ID]
 
 	// Season
-	seasonBrusselsSproutsVIP := enums.IngredientPreparations[seasonPrep.ID][brusselsSprouts.ID]
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
 	seasonBareHandsVPI := enums.PreparationInstruments[seasonPrep.ID][bareHands.ID]
 
@@ -226,7 +207,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &halveBrusselsSproutsVIP.ID,
 				Name:                            "trimmed Brussels sprouts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -300,7 +280,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &tossBrusselsSproutsVIP.ID,
 				Name:                            "halved Brussels sprouts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -380,7 +359,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &removeBakingSheetVPV.ID,
 				Name:                            "preheated baking sheets at 500°F",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 2,
@@ -408,7 +386,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &placeBrusselsSproutsVIP.ID,
 				Name:                            "tossed Brussels sprouts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -435,7 +412,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &placeBakingSheetVPV.ID,
 				Name:                            "baking sheets removed from oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 2,
@@ -472,7 +448,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &returnBakingSheetVPV.ID,
 				Name:                            "baking sheets with Brussels sprouts",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -481,7 +456,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &returnOvenVPV.ID,
 				Name:                            "preheated oven at 500°F",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -512,7 +486,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &roastBrusselsSproutsVIP.ID,
 				Name:                            "Brussels sprouts on baking sheets",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -523,7 +496,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &roastBakingSheetVPV.ID,
 				Name:                            "baking sheet with Brussels sprouts in oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -607,7 +579,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &tossShallotsVIP.ID,
 				Name:                            "sliced shallots",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 8,
@@ -679,7 +650,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &stirShallotsVIP.ID,
 				Name:                            "tossed shallots",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 8,
@@ -688,7 +658,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &stirBrusselsSproutsVIP.ID,
 				Name:                            "partially roasted Brussels sprouts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -699,7 +668,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &stirBakingSheetVPV.ID,
 				Name:                            "baking sheets with partially roasted Brussels sprouts in oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -736,7 +704,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &rotateBakingSheetVPV.ID,
 				Name:                            "baking sheets with Brussels sprouts and shallots in oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -769,7 +736,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &roastBrusselsSproutsVIP.ID,
 				Name:                            "Brussels sprouts and shallots combined",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -780,7 +746,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &roastBakingSheetVPV.ID,
 				Name:                            "rotated baking sheets with Brussels sprouts and shallots in oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -825,7 +790,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &drizzleBrusselsSproutsVIP.ID,
 				Name:                            "roasted Brussels sprouts and shallots",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -853,7 +817,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &drizzleBakingSheetVPV.ID,
 				Name:                            "baking sheet with roasted Brussels sprouts and shallots",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -883,7 +846,6 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &seasonBrusselsSproutsVIP.ID,
 				Name:                            "balsamic-glazed Brussels sprouts and shallots",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,

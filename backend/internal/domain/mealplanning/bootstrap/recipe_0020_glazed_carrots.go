@@ -112,7 +112,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 	appleCiderCupVIMU := enums.IngredientMeasurementUnits[appleCider.ID][cupMeasurement.ID]
 	chickenStockCupVIMU := enums.IngredientMeasurementUnits[chickenStock.ID][cupMeasurement.ID]
 	honeyTablespoonVIMU := enums.IngredientMeasurementUnits[honey.ID][tablespoonMeasurement.ID]
-	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
+	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	appleCiderVinegarTeaspoonVIMU := enums.IngredientMeasurementUnits[appleCiderVinegar.ID][teaspoonMeasurement.ID]
 	parsleyTablespoonVIMU := enums.IngredientMeasurementUnits[parsley.ID][tablespoonMeasurement.ID]
 	chivesTablespoonVIMU := enums.IngredientMeasurementUnits[chives.ID][tablespoonMeasurement.ID]
@@ -456,7 +456,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 			{
 				ValidIngredientPreparationID:     &addChickenStockVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenStockCupVIMU.ID,
-				Name:                             "homemade chicken stock or store-bought low-sodium chicken broth",
+				Name:                             "chicken stock",
 				QuantityNotes:                    "about 120ml",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -473,11 +473,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 			},
 			{
 				ValidIngredientPreparationID:     &addSaltVIP.ID,
-				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
 				QuantityNotes:                    "to taste",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 6, // ~1 teaspoon
 				},
 				Optional: true,
 			},

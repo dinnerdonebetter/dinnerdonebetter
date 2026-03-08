@@ -101,11 +101,8 @@ class GroceryListViewModel {
         quantityNeeded.min = min
         if let max = quantityNeededMax {
           quantityNeeded.max = max
-        } else if item.quantityNeeded.hasMax {
-          // Preserve existing max if not provided
-          quantityNeeded.max = item.quantityNeeded.max
         }
-        // If max is not provided and item didn't have max, don't set it (leave it unset)
+        // When max is nil, we omit it so backend clears max (single-value edit)
         updateInput.quantityNeeded = quantityNeeded
       }
 
@@ -114,10 +111,12 @@ class GroceryListViewModel {
         updateInput.quantityPurchased = purchased
       }
 
-      try await updateGroceryListItem(itemID: item.id, input: updateInput)
+      let updated = try await updateGroceryListItem(itemID: item.id, input: updateInput)
 
-      // Reload items to get updated data
-      await loadItems()
+      // Optimistically update local state instead of full reload
+      if let index = items.firstIndex(where: { $0.id == item.id }) {
+        items[index] = updated
+      }
     } catch {
       await authManager.invalidateCredentialsIfSessionError(error)
       errorMessage = "Failed to update item: \(error.localizedDescription)"
@@ -168,7 +167,7 @@ class GroceryListViewModel {
   private func updateGroceryListItem(
     itemID: String,
     input: Mealplanning_MealPlanGroceryListItemUpdateRequestInput
-  ) async throws {
+  ) async throws -> Mealplanning_MealPlanGroceryListItem {
     guard let clientManager = try? authManager.getClientManager() else {
       throw NSError(
         domain: "GroceryListViewModel", code: 1,
@@ -188,11 +187,12 @@ class GroceryListViewModel {
     request.mealPlanGroceryListItemID = itemID
     request.input = input
 
-    _ = try await clientManager.client.mealPlanning.updateMealPlanGroceryListItem(
+    let response = try await clientManager.client.mealPlanning.updateMealPlanGroceryListItem(
       request,
       metadata: metadata,
       options: clientManager.defaultCallOptions
     )
+    return response.updated
   }
 
   // Computed properties for filtering
@@ -216,5 +216,10 @@ class GroceryListViewModel {
 
   var unavailableItems: [Mealplanning_MealPlanGroceryListItem] {
     items.filter { $0.status == .unavailable }
+  }
+
+  /// Combined acquired + already owned for the "Have" section.
+  var haveItems: [Mealplanning_MealPlanGroceryListItem] {
+    items.filter { $0.status == .acquired || $0.status == .alreadyOwned }
   }
 }

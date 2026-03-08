@@ -32,6 +32,16 @@ struct StepCardView: View {
   var onToggleOverride: (() -> Void)?
   /// For merged meal steps: ingredient key -> "2g from Recipe A, 3g from Recipe B"
   var ingredientBreakdownBySource: [String: String]?
+  /// When set, show elapsed timer (for merged steps where parent computes from multiple sources)
+  var timerElapsedSeconds: TimeInterval?
+  var timerDurationSeconds: UInt32?
+  /// When set, call to skip timer (for merged steps - skips all sources with active timers)
+  var onSkipTimerOverride: (() -> Void)?
+  /// When set, whether skip is allowed (for merged steps - any source can skip)
+  var canSkipTimerOverride: Bool?
+  /// When set, min/max for range display (for merged steps)
+  var timerMinSeconds: UInt32?
+  var timerMaxSeconds: UInt32?
 
   @State private var showCompletionConditionsHint = false
 
@@ -49,14 +59,18 @@ struct StepCardView: View {
     let isCompleted: Bool
     let canCheck: Bool
     let prerequisites: [Int]
+    let isTimerActive: Bool
 
     if let overrideCompleted = isCompletedOverride, let overrideCanCheck = canCheckOverride {
       isCompleted = overrideCompleted
       canCheck = overrideCanCheck
       prerequisites = []
+      isTimerActive = timerElapsedSeconds != nil
     } else {
       isCompleted = viewModel.isStepCompleted(recipeID: recipeID, stepID: step.id)
-      canCheck = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
+      let canCheckStep = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
+      isTimerActive = viewModel.isStepTimerActive(recipeID: recipeID, stepID: step.id)
+      canCheck = canCheckStep || isTimerActive  // Allow tap to cancel when timer active
       prerequisites = []
     }
 
@@ -64,6 +78,13 @@ struct StepCardView: View {
     let allPrerequisitesCompleted = prerequisites.allSatisfy { viewModel.isStepCompleted($0) }
     let completionConditions = step.completionConditions
     let hasCompletionConditions = !completionConditions.isEmpty
+    let canSkipTimer =
+      isTimerActive
+      ? (canSkipTimerOverride
+        ?? viewModel.canSkipStepTimer(
+          recipeID: recipeID, stepID: step.id))
+      : false
+    let timerIconColor: Color = canSkipTimer ? .green : .orange
 
     return VStack(alignment: .leading, spacing: 12) {
       // Step header with checkbox
@@ -89,13 +110,19 @@ struct StepCardView: View {
             }
           },
           label: {
-            Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
-              .font(.title2)
-              .foregroundColor(
-                canCheck
-                  ? (isCompleted ? .green : (isAssociatedRecipeStep ? .purple : .blue))
-                  : .gray
-              )
+            Image(
+              systemName: isTimerActive
+                ? "clock.fill"
+                : (isCompleted ? "checkmark.circle.fill" : "circle")
+            )
+            .font(.title2)
+            .foregroundColor(
+              canCheck
+                ? (isTimerActive
+                  ? timerIconColor
+                  : (isCompleted ? .green : (isAssociatedRecipeStep ? .purple : .blue)))
+                : .gray
+            )
           }
         )
 
@@ -113,7 +140,10 @@ struct StepCardView: View {
                 .foregroundColor(.secondary)
             }
 
-            if let stepTime = RecipeTimeEstimation.formatStepTime(step.estimatedTimeInSeconds) {
+            if !isTimerActive,
+              let stepTime = RecipeTimeEstimation.formatStepTime(
+                step.estimatedTimeInSeconds)
+            {
               Label(stepTime, systemImage: "clock")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -162,6 +192,33 @@ struct StepCardView: View {
         )
       }
 
+      if isTimerActive {
+        let elapsed =
+          timerElapsedSeconds ?? viewModel.stepTimerElapsedSeconds(
+            recipeID: recipeID, stepID: step.id) ?? 0
+        let minSec =
+          timerMinSeconds
+          ?? viewModel.stepTimerMinSeconds(
+            recipeID: recipeID, stepID: step.id)
+        let maxSec =
+          timerMaxSeconds
+          ?? viewModel.stepTimerMaxSeconds(
+            recipeID: recipeID, stepID: step.id)
+        stepTimerSection(
+          elapsed: elapsed,
+          minSeconds: minSec,
+          maxSeconds: maxSec,
+          canSkip: canSkipTimer,
+          onSkip: {
+            if let onSkip = onSkipTimerOverride {
+              onSkip()
+            } else {
+              viewModel.skipStepTimer(recipeID: recipeID, stepID: step.id)
+            }
+          }
+        )
+      }
+
       if hasCompletionConditions {
         completionConditionsSection(
           completionConditions: completionConditions,
@@ -173,25 +230,90 @@ struct StepCardView: View {
     .background(
       isAssociatedRecipeStep
         ? Color.purple.opacity(0.05)
-        : (isCompleted ? Color(.systemGray6) : Color(.systemBackground))
+        : (isTimerActive
+          ? (canSkipTimer ? Color.green.opacity(0.08) : Color.orange.opacity(0.08))
+          : (isCompleted ? Color(.systemGray6) : Color(.systemBackground)))
     )
     .cornerRadius(12)
     .overlay(
       RoundedRectangle(cornerRadius: 12)
         .stroke(
-          stepBorderColor(isCompleted: isCompleted),
+          stepBorderColor(
+            isCompleted: isCompleted,
+            isTimerActive: isTimerActive,
+            canSkipTimer: canSkipTimer
+          ),
           lineWidth: isHighlighted && highlightedStepIDs != nil ? 2.5 : 2
         )
     )
     .opacity(isDimmed ? 0.4 : 1.0)
   }
 
-  private func stepBorderColor(isCompleted: Bool) -> Color {
+  private func stepTimerSection(
+    elapsed: TimeInterval,
+    minSeconds: UInt32?,
+    maxSeconds: UInt32?,
+    canSkip: Bool,
+    onSkip: @escaping () -> Void
+  ) -> some View {
+    let displayText: String = {
+      guard let min = minSeconds else {
+        return RecipeTimeEstimation.formatElapsed(
+          elapsedSeconds: elapsed, totalSeconds: maxSeconds ?? 0)
+      }
+      return RecipeTimeEstimation.formatElapsedWithRange(
+        elapsedSeconds: elapsed, minSeconds: min, maxSeconds: maxSeconds)
+    }()
+    let timerColor: Color = canSkip ? .green : .orange
+    return HStack(spacing: 12) {
+      HStack(spacing: 8) {
+        Image(systemName: "clock.fill")
+          .font(.title3)
+          .foregroundColor(timerColor)
+        Text(displayText)
+          .font(.title3)
+          .fontWeight(.semibold)
+          .foregroundColor(timerColor)
+          .monospacedDigit()
+      }
+      .padding(.horizontal, 12)
+      .padding(.vertical, 8)
+      .background(timerColor.opacity(0.15))
+      .cornerRadius(8)
+
+      Spacer()
+
+      Button {
+        if canSkip { onSkip() }
+      } label: {
+        Text(canSkip ? "Proceed" : "Skip Timer")
+          .font(.subheadline)
+          .fontWeight(.semibold)
+          .foregroundColor(.white)
+          .padding(.horizontal, 16)
+          .padding(.vertical, 10)
+          .background(canSkip ? Color.green : Color.red)
+          .cornerRadius(8)
+      }
+      .buttonStyle(.plain)
+      .allowsHitTesting(canSkip)
+    }
+    .padding(.leading, 44)
+  }
+
+  private func stepBorderColor(
+    isCompleted: Bool,
+    isTimerActive: Bool,
+    canSkipTimer: Bool
+  ) -> Color {
     if isHighlighted && highlightedStepIDs != nil {
       return .blue.opacity(0.6)
     }
     if isAssociatedRecipeStep {
       return Color.purple.opacity(0.2)
+    }
+    if isTimerActive {
+      return canSkipTimer ? Color.green.opacity(0.4) : Color.orange.opacity(0.4)
     }
     if isCompleted {
       return Color.green.opacity(0.3)
@@ -475,21 +597,16 @@ struct StepDetailsView: View {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
 
     for ingredient in ingredients {
-      // Index 0 typically means not in an option group
-      if ingredient.index != 0 {
-        let index = ingredient.index
-        let hasOptions = ingredients.contains { other in
-          other.id != ingredient.id && other.index != 0 && other.index == index
-        }
+      let index = ingredient.index
+      let hasOptions = ingredients.contains { other in
+        other.id != ingredient.id && other.index == index
+      }
 
-        if hasOptions {
-          if optionGroupsByIndex[index] == nil {
-            optionGroupsByIndex[index] = []
-          }
-          optionGroupsByIndex[index]?.append(ingredient)
-        } else {
-          regular.append(ingredient)
+      if hasOptions {
+        if optionGroupsByIndex[index] == nil {
+          optionGroupsByIndex[index] = []
         }
+        optionGroupsByIndex[index]?.append(ingredient)
       } else {
         regular.append(ingredient)
       }
@@ -937,16 +1054,23 @@ struct OptionGroupView: View {
       let option = group.options.first
     {
       // Selected option - show like a regular ingredient (no indentation, no "one of:" label)
-      HStack(spacing: 6) {
+      HStack(alignment: .top, spacing: 6) {
         if let quantityText = option.aggregated.quantityText(scale: scale) {
           Text(quantityText)
             .font(.caption)
             .foregroundColor(.secondary)
         }
 
-        Text(option.ingredient.name)
-          .font(.caption)
-          .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 2) {
+          Text(option.ingredient.name)
+            .font(.caption)
+            .foregroundColor(.secondary)
+          if !option.aggregated.quantityNotes.isEmpty {
+            Text(option.aggregated.quantityNotes)
+              .font(.caption2)
+              .foregroundColor(.secondary)
+          }
+        }
       }
     } else {
       // No selection - show all options with "one of:" label (indented)
@@ -957,16 +1081,23 @@ struct OptionGroupView: View {
           .padding(.leading, 16)
 
         ForEach(group.options) { option in
-          HStack(spacing: 6) {
+          HStack(alignment: .top, spacing: 6) {
             if let quantityText = option.aggregated.quantityText(scale: scale) {
               Text(quantityText)
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
 
-            Text(option.ingredient.name)
-              .font(.caption)
-              .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 2) {
+              Text(option.ingredient.name)
+                .font(.caption)
+                .foregroundColor(.secondary)
+              if !option.aggregated.quantityNotes.isEmpty {
+                Text(option.aggregated.quantityNotes)
+                  .font(.caption2)
+                  .foregroundColor(.secondary)
+              }
+            }
           }
           .padding(.leading, 16)
         }

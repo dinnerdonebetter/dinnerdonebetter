@@ -123,47 +123,30 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 	mixFlourVIP := getVIP("mix", "flour")
 	mixBakingPowderVIP := getVIP("mix", "baking powder")
 	mixSaltVIP := getVIP("mix", "salt")
-	mixLardVIP := getVIP("mix", "lard")
 	mixMediumBowlVPV := getVPV("mix", "medium bowl")
 	mixWhiskVPI := getVPI("mix", "whisk")
 	mixPastryBlenderVPI := getVPI("mix", "pastry blender")
 
 	addLardVIP := getVIP("add", "lard")
-	addMediumBowlVPV := getVPV("add", "medium bowl")
 
 	heatWaterVIP := getVIP("heat", "water")
 	heatSmallSaucepanVPV := getVPV("heat", "small saucepan")
 
-	stirMediumBowlVPV := getVPV("stir", "medium bowl")
 	stirForkVPI := getVPI("stir", "fork")
 
-	kneadFlourVIP := getVIP("knead", "flour")
 	kneadCountertopVPV := getVPV("knead", "countertop")
 	kneadBareHandsVPI := getVPI("knead", "bare hands")
 
-	divideFlourVIP := getVIP("divide", "flour")
-	divideCountertopVPV := getVPV("divide", "countertop")
 	divideBareHandsVPI := getVPI("divide", "bare hands")
 
-	formFlourVIP := getVIP("form", "flour")
-	formCountertopVPV := getVPV("form", "countertop")
 	formBareHandsVPI := getVPI("form", "bare hands")
-
-	restFlourVIP := getVIP("rest", "flour")
-	restCountertopVPV := getVPV("rest", "countertop")
 
 	coverKitchenTowelVPV := getVPV("cover", "kitchen towel")
 
 	preheatCastIronSkilletVPV := getVPV("preheat", "cast iron skillet")
 
-	rollFlourVIP := getVIP("roll", "flour")
-	rollCountertopVPV := getVPV("roll", "countertop")
 	rollRollingPinVPI := getVPI("roll", "rolling pin")
 
-	cookFlourVIP := getVIP("cook", "flour")
-	cookCastIronSkilletVPV := getVPV("cook", "cast iron skillet")
-
-	transferFlourVIP := getVIP("transfer", "flour")
 	transferKitchenTowelVPV := getVPV("transfer", "kitchen towel")
 
 	// Measurement unit bridges
@@ -255,7 +238,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        vpvID(addMediumBowlVPV),
 				Name:                            "bowl with dry ingredients",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
@@ -285,7 +267,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    vipID(mixLardVIP),
 				Name:                            "dry ingredients with fat",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
@@ -301,7 +282,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        vpvID(mixMediumBowlVPV),
 				Name:                            "bowl with dry ingredients and fat",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
@@ -381,7 +361,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        vpvID(addMediumBowlVPV),
 				Name:                            "bowl with flour-fat mixture",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
@@ -426,7 +405,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        vpvID(stirMediumBowlVPV),
 				Name:                            "bowl with flour mixture and water",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
@@ -451,7 +429,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    vipID(kneadFlourVIP),
 				Name:                            "shaggy dough",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
@@ -495,7 +472,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    vipID(divideFlourVIP),
 				Name:                            "kneaded dough ball",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
@@ -511,7 +487,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        vpvID(divideCountertopVPV),
 				Name:                            "countertop with dough",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
@@ -541,7 +516,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    vipID(formFlourVIP),
 				Name:                            "dough pieces",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 8},
 			},
@@ -557,7 +531,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        vpvID(formCountertopVPV),
 				Name:                            "countertop with dough pieces",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
@@ -632,7 +605,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    vipID(restFlourVIP),
 				Name:                            "covered dough balls",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 8},
 			},
@@ -641,7 +613,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        vpvID(restCountertopVPV),
 				Name:                            "countertop with covered dough",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
@@ -703,7 +674,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    vipID(rollFlourVIP),
 				Name:                            "rested dough balls",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 8},
 			},
@@ -719,7 +689,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        vpvID(rollCountertopVPV),
 				Name:                            "countertop with rested dough",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
@@ -751,7 +720,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    vipID(cookFlourVIP),
 				Name:                            "raw tortilla rounds",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 8},
 			},
@@ -760,7 +728,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        vpvID(cookCastIronSkilletVPV),
 				Name:                            "preheated skillet",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
@@ -785,7 +752,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    vipID(transferFlourVIP),
 				Name:                            "cooked tortillas",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 8},
 			},

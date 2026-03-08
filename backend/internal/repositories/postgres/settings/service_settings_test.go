@@ -77,12 +77,19 @@ func TestQuerier_Integration_ServiceSettings(t *testing.T) {
 	serviceSettings, err := dbc.GetServiceSettings(ctx, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, serviceSettings.Data)
-	assert.Equal(t, len(createdServiceSettings), len(serviceSettings.Data))
+	assert.Equal(t, len(createdServiceSettings)+migratedServiceSettingsCount, len(serviceSettings.Data))
 
-	// fetch via name search
+	// fetch via name search (returns only settings matching the name, not migrated ones)
 	byName, err := dbc.SearchForServiceSettings(ctx, exampleServiceSetting.Name, nil)
 	assert.NoError(t, err)
-	assert.Equal(t, serviceSettings.Data, byName.Data)
+	assert.Len(t, byName.Data, len(createdServiceSettings))
+	createdIDs := make(map[string]bool)
+	for _, s := range createdServiceSettings {
+		createdIDs[s.ID] = true
+	}
+	for _, s := range byName.Data {
+		assert.True(t, createdIDs[s.ID], "search result should only contain created settings")
+	}
 
 	// delete
 	for _, serviceSetting := range createdServiceSettings {
@@ -194,9 +201,10 @@ func TestQuerier_Integration_ServiceSettings_CursorBasedPagination(t *testing.T)
 
 	// Use the generic pagination test helper
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ServiceSetting]{
-		TotalItems: 9,
-		PageSize:   3,
-		ItemName:   "service setting",
+		TotalItems:         9,
+		ExpectedTotalCount: 9 + migratedServiceSettingsCount,
+		PageSize:           3,
+		ItemName:           "service setting",
 		CreateItem: func(ctx context.Context, i int) *types.ServiceSetting {
 			serviceSetting := fakes.BuildFakeServiceSetting()
 			serviceSetting.Name = fmt.Sprintf("Service Setting %02d", i)

@@ -5,6 +5,19 @@ func To[T any](x T) *T {
 	return &x
 }
 
+// ToSlice returns the value of a pointer for every element in a slice.
+func ToSlice[T any](x []T) []*T {
+	if x == nil {
+		return []*T{}
+	}
+
+	y := make([]*T, len(x))
+	for i := range x {
+		y[i] = To(x[i])
+	}
+	return y
+}
+
 // Dereference returns the value of a pointer.
 func Dereference[T any](x *T) T {
 	if x == nil {

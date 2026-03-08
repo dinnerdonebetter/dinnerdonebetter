@@ -10,7 +10,6 @@ import SwiftUI
 
 struct MealAssignmentStepView: View {
   @Bindable var viewModel: CreateMealPlanViewModel
-  @Binding var recipesForOptionSelection: [Mealplanning_Recipe]?
   let onDismiss: () -> Void
   @FocusState private var isSearchFocused: Bool
   @State private var displayedSearchError: String?
@@ -92,6 +91,15 @@ struct MealAssignmentStepView: View {
 
         if let meal = viewModel.mealForDate(date) {
           selectedMealCard(meal: meal, date: date)
+          if viewModel.mealHasIngredientOptions(meal) {
+            HStack(spacing: 6) {
+              Image(systemName: "list.bullet.rectangle")
+                .font(.caption)
+              Text("Has ingredient options to choose")
+                .font(.caption)
+            }
+            .foregroundColor(.secondary)
+          }
         }
 
         if !viewModel.filteredSearchResults(for: date).isEmpty {
@@ -241,6 +249,33 @@ struct MealAssignmentStepView: View {
           .cornerRadius(10)
         }
       } else {
+        lastDayButton
+      }
+    }
+  }
+
+  private var lastDayButton: some View {
+    let recipesWithOptions = viewModel.collectRecipesWithOptions(
+      from: viewModel.allSelectedMeals)
+    let hasOptions = !recipesWithOptions.isEmpty
+
+    return Group {
+      if hasOptions {
+        Button {
+          viewModel.wizardStep = .optionSelection
+        } label: {
+          HStack(spacing: 6) {
+            Text("Choose Ingredient Options")
+            Image(systemName: "chevron.right")
+          }
+          .font(.subheadline.weight(.semibold))
+          .frame(maxWidth: .infinity)
+          .padding()
+          .background(Color.blue)
+          .foregroundColor(.white)
+          .cornerRadius(10)
+        }
+      } else {
         createButton
       }
     }
@@ -249,19 +284,11 @@ struct MealAssignmentStepView: View {
   private var createButton: some View {
     Button(
       action: {
-        let allRecipes = viewModel.getAllRecipes(from: viewModel.allSelectedMeals)
-        let recipesWithOptions = viewModel.collectRecipesWithOptions(
-          from: viewModel.allSelectedMeals)
-
-        if !recipesWithOptions.isEmpty {
-          recipesForOptionSelection = allRecipes
-        } else {
-          Task {
-            let success = await viewModel.createMealPlan()
-            if success {
-              NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
-              onDismiss()
-            }
+        Task {
+          let success = await viewModel.createMealPlan()
+          if success {
+            NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
+            onDismiss()
           }
         }
       },

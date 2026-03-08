@@ -7,12 +7,19 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/numbers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/shopspring/decimal"
 )
+
+// groceryListExcludedIngredientSlugs contains ingredient slugs that should not appear on grocery lists
+// (e.g. water, which is assumed to be available from the tap).
+var groceryListExcludedIngredientSlugs = map[string]struct{}{
+	"water": {},
+}
 
 // GroceryListCreator creates meal plan grocery lists for a given meal plan.
 type GroceryListCreator interface {
@@ -46,7 +53,10 @@ func (g *groceryListCreator) processRecipeIngredients(
 	for _, step := range recipe.Steps {
 		logger = logger.WithValue(mealplanningkeys.RecipeStepIDKey, step.ID)
 		for _, ingredient := range step.Ingredients {
-			if ingredient.Ingredient == nil {
+			if ingredient.Ingredient == nil || (ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "") {
+				continue
+			}
+			if _, excluded := groceryListExcludedIngredientSlugs[ingredient.Ingredient.Slug]; excluded {
 				continue
 			}
 
@@ -81,6 +91,37 @@ func (g *groceryListCreator) processRecipeIngredients(
 					continue
 				}
 
+				// Aggregate with existing item if same ingredient+unit (e.g. vegetable oil in step 6 and step 7)
+				aggregationKey := fmt.Sprintf("%s:%s", ingredient.Ingredient.ID, ingredient.MeasurementUnit.ID)
+				if existing, ok := aggregatedInputs[aggregationKey]; ok {
+					existing.QuantityNeeded.Min += minQty
+					if existing.QuantityNeeded.Max != nil && maxQty != nil {
+						*existing.QuantityNeeded.Max += *maxQty
+					} else if maxQty != nil {
+						existing.QuantityNeeded.Max = maxQty
+					}
+					continue
+				}
+				// Check optionInputs for same ingredient+unit within this option
+				var merged bool
+				for _, existing := range *optionInputs {
+					if existing.ValidIngredientID == ingredient.Ingredient.ID &&
+						existing.ValidMeasurementUnitID == ingredient.MeasurementUnit.ID &&
+						existing.BelongsToMealPlanOption != nil && *existing.BelongsToMealPlanOption == optionID {
+						existing.QuantityNeeded.Min += minQty
+						if existing.QuantityNeeded.Max != nil && maxQty != nil {
+							*existing.QuantityNeeded.Max += *maxQty
+						} else if maxQty != nil {
+							existing.QuantityNeeded.Max = maxQty
+						}
+						merged = true
+						break
+					}
+				}
+				if merged {
+					continue
+				}
+
 				// Create grocery list item for the selected option with recipe context
 				ingredientIndex := ingredient.Index
 				optionIndex := ingredient.OptionIndex
@@ -101,9 +142,11 @@ func (g *groceryListCreator) processRecipeIngredients(
 					},
 				})
 			} else {
-				// This ingredient is not part of an option group - aggregate as before
-				if existing, ok := aggregatedInputs[ingredient.Ingredient.ID]; !ok {
-					aggregatedInputs[ingredient.Ingredient.ID] = &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
+				// This ingredient is not part of an option group - aggregate by (ingredient, unit)
+				// Same ingredient with different units (e.g., salt in tsp vs grams) becomes separate line items
+				aggregationKey := fmt.Sprintf("%s:%s", ingredient.Ingredient.ID, ingredient.MeasurementUnit.ID)
+				if existing, ok := aggregatedInputs[aggregationKey]; !ok {
+					aggregatedInputs[aggregationKey] = &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 						BelongsToMealPlanOption: &optionID,
 						RecipeID:                &recipe.ID,
 						RecipeStepID:            &step.ID,
@@ -118,16 +161,12 @@ func (g *groceryListCreator) processRecipeIngredients(
 						},
 					}
 				} else {
-					if existing.ValidMeasurementUnitID == ingredient.MeasurementUnit.ID {
-						existing.QuantityNeeded.Min += minQty
+					existing.QuantityNeeded.Min += minQty
 
-						if existing.QuantityNeeded.Max != nil && maxQty != nil {
-							*existing.QuantityNeeded.Max += *maxQty
-						} else if maxQty != nil {
-							existing.QuantityNeeded.Max = maxQty
-						}
-					} else {
-						logger.Error("creating grocery list", fmt.Errorf("mismatched measurement units: %s and %s", existing.ValidMeasurementUnitID, ingredient.MeasurementUnit.ID))
+					if existing.QuantityNeeded.Max != nil && maxQty != nil {
+						*existing.QuantityNeeded.Max += *maxQty
+					} else if maxQty != nil {
+						existing.QuantityNeeded.Max = maxQty
 					}
 				}
 			}
@@ -254,6 +293,15 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 		dbInputs = append(dbInputs, i)
 	}
 	dbInputs = append(dbInputs, optionInputs...)
+
+	// Round quantities to the nearest tenth for cleaner grocery list display
+	for _, item := range dbInputs {
+		item.QuantityNeeded.Min = numbers.RoundToDecimalPlaces(item.QuantityNeeded.Min, 1)
+		if item.QuantityNeeded.Max != nil {
+			rounded := numbers.RoundToDecimalPlaces(*item.QuantityNeeded.Max, 1)
+			item.QuantityNeeded.Max = &rounded
+		}
+	}
 
 	return dbInputs, nil
 }

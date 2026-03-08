@@ -33,7 +33,9 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	whiteWine := enums.Ingredients["dry white wine"]
 	chickenStock := enums.Ingredients["chicken stock"]
 	basil := enums.Ingredients["basil"]
+	driedBasil := enums.Ingredients["dried basil"]
 	oregano := enums.Ingredients["oregano"]
+	freshOregano := enums.Ingredients["fresh oregano"]
 	heavyCream := enums.Ingredients["heavy cream"]
 	creamCheese := enums.Ingredients["cream cheese"]
 	spinach := enums.Ingredients["spinach"]
@@ -81,7 +83,9 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	addWineVIP := enums.IngredientPreparations[addPrep.ID][whiteWine.ID]
 	addStockVIP := enums.IngredientPreparations[addPrep.ID][chickenStock.ID]
 	addBasilVIP := enums.IngredientPreparations[addPrep.ID][basil.ID]
+	addDriedBasilVIP := enums.IngredientPreparations[addPrep.ID][driedBasil.ID]
 	addOreganoVIP := enums.IngredientPreparations[addPrep.ID][oregano.ID]
+	addFreshOreganoVIP := enums.IngredientPreparations[addPrep.ID][freshOregano.ID]
 	addCreamVIP := enums.IngredientPreparations[addPrep.ID][heavyCream.ID]
 	addCreamCheeseVIP := enums.IngredientPreparations[addPrep.ID][creamCheese.ID]
 	addSpinachVIP := enums.IngredientPreparations[addPrep.ID][spinach.ID]
@@ -111,8 +115,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	garlicCloveVIMU := enums.IngredientMeasurementUnits[garlic.ID][cloveMeasurement.ID]
 	wineCupVIMU := enums.IngredientMeasurementUnits[whiteWine.ID][cupMeasurement.ID]
 	stockCupVIMU := enums.IngredientMeasurementUnits[chickenStock.ID][cupMeasurement.ID]
-	basilTeaspoonVIMU := enums.IngredientMeasurementUnits[basil.ID][teaspoonMeasurement.ID]
+	basilTablespoonVIMU := enums.IngredientMeasurementUnits[basil.ID][tablespoonMeasurement.ID]
+	driedBasilTeaspoonVIMU := enums.IngredientMeasurementUnits[driedBasil.ID][teaspoonMeasurement.ID]
 	oreganoTeaspoonVIMU := enums.IngredientMeasurementUnits[oregano.ID][teaspoonMeasurement.ID]
+	freshOreganoTeaspoonVIMU := enums.IngredientMeasurementUnits[freshOregano.ID][teaspoonMeasurement.ID]
 	creamCupVIMU := enums.IngredientMeasurementUnits[heavyCream.ID][cupMeasurement.ID]
 	creamCheeseOunceVIMU := enums.IngredientMeasurementUnits[creamCheese.ID][ounceMeasurement.ID]
 	spinachCupVIMU := enums.IngredientMeasurementUnits[spinach.ID][cupMeasurement.ID]
@@ -634,20 +640,44 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				},
 			},
 			{
-				ValidIngredientPreparationID:     &addBasilVIP.ID,
-				ValidIngredientMeasurementUnitID: &basilTeaspoonVIMU.ID,
-				Name:                             "dried basil (or 1 tablespoon chopped fresh)",
+				ValidIngredientPreparationID:     &addDriedBasilVIP.ID,
+				ValidIngredientMeasurementUnitID: &driedBasilTeaspoonVIMU.ID,
+				Name:                             "dried basil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
+				Index:       pointer.To[uint16](3),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &addBasilVIP.ID,
+				ValidIngredientMeasurementUnitID: &basilTablespoonVIMU.ID,
+				Name:                             "fresh basil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](3),
+				OptionIndex: 1,
 			},
 			{
 				ValidIngredientPreparationID:     &addOreganoVIP.ID,
 				ValidIngredientMeasurementUnitID: &oreganoTeaspoonVIMU.ID,
-				Name:                             "dried oregano (or 1 teaspoon chopped fresh)",
+				Name:                             "dried oregano",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
+				Index:       pointer.To[uint16](4),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &addFreshOreganoVIP.ID,
+				ValidIngredientMeasurementUnitID: &freshOreganoTeaspoonVIMU.ID,
+				Name:                             "fresh oregano",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](4),
+				OptionIndex: 1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{

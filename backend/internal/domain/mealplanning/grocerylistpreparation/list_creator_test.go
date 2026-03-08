@@ -1278,4 +1278,98 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.True(t, ok, "salt item should exist and be aggregated")
 		assert.Equal(t, float32(15), saltItem.QuantityNeeded.Min, "salt should be aggregated from main recipe (10) and associated recipe (5)")
 	})
+
+	T.Run("rounds quantities to nearest tenth", func(t *testing.T) {
+		t.Parallel()
+
+		listGenerator := &groceryListCreator{
+			logger: logging.NewNoopLogger(),
+			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+		}
+
+		carrot := fakes.BuildFakeValidIngredient()
+		thyme := fakes.BuildFakeValidIngredient()
+		pounds := fakes.BuildFakeValidMeasurementUnit()
+		sprigs := fakes.BuildFakeValidMeasurementUnit()
+
+		optionID := fakes.BuildFakeID()
+		recipeID := fakes.BuildFakeID()
+		stepID := fakes.BuildFakeID()
+
+		expectedMealPlan := &mealplanning.MealPlan{
+			ID: fakes.BuildFakeID(),
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        optionID,
+							Chosen:    true,
+							MealScale: 1.34, // Scale that produces fractional totals
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 1.0,
+										Recipe: mealplanning.Recipe{
+											ID: recipeID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: stepID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														{
+															Ingredient: carrot,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: new(float32(3.01)),
+																Min: 3.01,
+															},
+															MeasurementUnit: *pounds,
+															Index:           0,
+															OptionIndex:     0,
+														},
+														{
+															Ingredient: thyme,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: new(float32(1.5)),
+																Min: 1.5,
+															},
+															MeasurementUnit: *sprigs,
+															Index:           1,
+															OptionIndex:     0,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		ctx := t.Context()
+
+		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
+		assert.NoError(t, err)
+
+		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
+		for i := range actual {
+			actualMap[actual[i].ValidIngredientID] = actual[i]
+		}
+
+		// 3.01 * 1.34 = 4.0334 -> should round to 4.0
+		carrotItem, ok := actualMap[carrot.ID]
+		assert.True(t, ok, "carrot item should exist")
+		assert.Equal(t, float32(4.0), carrotItem.QuantityNeeded.Min, "carrot quantity should be rounded to nearest tenth")
+		assert.NotNil(t, carrotItem.QuantityNeeded.Max)
+		assert.Equal(t, float32(4.0), *carrotItem.QuantityNeeded.Max)
+
+		// 1.5 * 1.34 = 2.01 -> should round to 2.0
+		thymeItem, ok := actualMap[thyme.ID]
+		assert.True(t, ok, "thyme item should exist")
+		assert.Equal(t, float32(2.0), thymeItem.QuantityNeeded.Min, "thyme quantity should be rounded to nearest tenth")
+		assert.NotNil(t, thymeItem.QuantityNeeded.Max)
+		assert.Equal(t, float32(2.0), *thymeItem.QuantityNeeded.Max)
+	})
 }

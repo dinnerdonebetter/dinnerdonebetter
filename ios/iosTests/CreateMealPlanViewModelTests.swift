@@ -289,6 +289,140 @@ struct CreationTests {
   }
 }
 
+// MARK: - Occupied Dates Tests
+
+struct OccupiedDatesTests {
+  @Test("isDatePlanable returns false when date is in acceptedOccupiedDates")
+  @MainActor
+  func testIsDatePlanableFalseWhenAcceptedOccupied() async {
+    let authManager = createMockAuthenticationManagerForMealPlan()
+    let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()
+    let date = viewModel.displayedWeekDays[0]
+    var cal = Calendar.current
+    let occupiedDate = cal.startOfDay(for: date)
+
+    let vm = CreateMealPlanViewModel(
+      authManager: authManager,
+      acceptedOccupiedDates: [occupiedDate],
+      proposedOccupiedDates: []
+    )
+    vm.goToNextWeek()
+
+    #expect(vm.isDatePlanable(date) == false)
+  }
+
+  @Test("isDatePlanable returns false when date is in proposedOccupiedDates")
+  @MainActor
+  func testIsDatePlanableFalseWhenProposedOccupied() async {
+    let authManager = createMockAuthenticationManagerForMealPlan()
+    let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()
+    let date = viewModel.displayedWeekDays[0]
+    var cal = Calendar.current
+    let occupiedDate = cal.startOfDay(for: date)
+
+    let vm = CreateMealPlanViewModel(
+      authManager: authManager,
+      acceptedOccupiedDates: [],
+      proposedOccupiedDates: [occupiedDate]
+    )
+    vm.goToNextWeek()
+
+    #expect(vm.isDatePlanable(date) == false)
+  }
+
+  @Test("isDatePlanable returns true when date not occupied and not past")
+  @MainActor
+  func testIsDatePlanableTrueWhenNotOccupied() async {
+    let authManager = createMockAuthenticationManagerForMealPlan()
+    let viewModel = CreateMealPlanViewModel(
+      authManager: authManager,
+      acceptedOccupiedDates: [],
+      proposedOccupiedDates: []
+    )
+    viewModel.goToNextWeek()
+    let date = viewModel.displayedWeekDays[0]
+
+    #expect(viewModel.isDatePlanable(date) == true)
+  }
+
+  @Test("dateOccupancy returns accepted when date is in acceptedOccupiedDates")
+  @MainActor
+  func testDateOccupancyAccepted() async {
+    let authManager = createMockAuthenticationManagerForMealPlan()
+    let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()
+    let date = viewModel.displayedWeekDays[0]
+    var cal = Calendar.current
+    let occupiedDate = cal.startOfDay(for: date)
+
+    let vm = CreateMealPlanViewModel(
+      authManager: authManager,
+      acceptedOccupiedDates: [occupiedDate],
+      proposedOccupiedDates: []
+    )
+    vm.goToNextWeek()
+
+    #expect(vm.dateOccupancy(for: date) == .accepted)
+  }
+
+  @Test("dateOccupancy returns proposed when date is in proposedOccupiedDates")
+  @MainActor
+  func testDateOccupancyProposed() async {
+    let authManager = createMockAuthenticationManagerForMealPlan()
+    let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()
+    let date = viewModel.displayedWeekDays[0]
+    var cal = Calendar.current
+    let occupiedDate = cal.startOfDay(for: date)
+
+    let vm = CreateMealPlanViewModel(
+      authManager: authManager,
+      acceptedOccupiedDates: [],
+      proposedOccupiedDates: [occupiedDate]
+    )
+    vm.goToNextWeek()
+
+    #expect(vm.dateOccupancy(for: date) == .proposed)
+  }
+
+  @Test("dateOccupancy returns nil when date is not occupied")
+  @MainActor
+  func testDateOccupancyNilWhenNotOccupied() async {
+    let authManager = createMockAuthenticationManagerForMealPlan()
+    let viewModel = CreateMealPlanViewModel(
+      authManager: authManager,
+      acceptedOccupiedDates: [],
+      proposedOccupiedDates: []
+    )
+    viewModel.goToNextWeek()
+    let date = viewModel.displayedWeekDays[0]
+
+    #expect(viewModel.dateOccupancy(for: date) == nil)
+  }
+
+  @Test("dateOccupancy returns accepted when date in both accepted and proposed")
+  @MainActor
+  func testDateOccupancyAcceptedTakesPrecedence() async {
+    let authManager = createMockAuthenticationManagerForMealPlan()
+    let viewModel = CreateMealPlanViewModel(authManager: authManager)
+    viewModel.goToNextWeek()
+    let date = viewModel.displayedWeekDays[0]
+    var cal = Calendar.current
+    let occupiedDate = cal.startOfDay(for: date)
+
+    let vm = CreateMealPlanViewModel(
+      authManager: authManager,
+      acceptedOccupiedDates: [occupiedDate],
+      proposedOccupiedDates: [occupiedDate]
+    )
+    vm.goToNextWeek()
+
+    #expect(vm.dateOccupancy(for: date) == .accepted)
+  }
+}
+
 // MARK: - Week Navigation Tests
 
 struct WeekNavigationTests {

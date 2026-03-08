@@ -46,7 +46,6 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	ounceMeasurement := enums.MeasurementUnits["ounce"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
-	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	trayMeasurement := enums.MeasurementUnits["tray"]
 	cupMeasurement := enums.MeasurementUnits["cup"]
 
@@ -150,9 +149,9 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	butterTablespoonVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
 	almondsOunceVIMU := enums.IngredientMeasurementUnits[sliveredAlmonds.ID][ounceMeasurement.ID]
 	garlicUnitVIMU := enums.IngredientMeasurementUnits[garlic.ID][unitMeasurement.ID]
-	shallotUnitVIMU := enums.IngredientMeasurementUnits[shallot.ID][unitMeasurement.ID]
+	shallotGramVIMU := enums.IngredientMeasurementUnits[shallot.ID][gramMeasurement.ID]
 	lemonTablespoonVIMU := enums.IngredientMeasurementUnits[lemon.ID][tablespoonMeasurement.ID]
-	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
+	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	waterTablespoonVIMU := enums.IngredientMeasurementUnits[water.ID][tablespoonMeasurement.ID]
 	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
 	iceCubesTrayVIMU := enums.IngredientMeasurementUnits[iceCubes.ID][trayMeasurement.ID]
@@ -228,11 +227,11 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			},
 			{
 				ValidIngredientPreparationID:     &boilSaltVIP.ID,
-				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				QuantityNotes:                    "generously salted",
+				QuantityNotes:                    "generously salted (about 2 tsp)",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 12,
 				},
 			},
 		},
@@ -721,11 +720,11 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			},
 			{
 				ValidIngredientPreparationID:     &cookShallotVIP.ID,
-				ValidIngredientMeasurementUnitID: &shallotUnitVIMU.ID,
+				ValidIngredientMeasurementUnitID: &shallotGramVIMU.ID,
 				Name:                             "shallot, thinly sliced",
-				QuantityNotes:                    "1 medium",
+				QuantityNotes:                    "1 medium (about 30g)",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 30,
 				},
 			},
 		},
@@ -966,11 +965,11 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			},
 			{
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
-				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
 				QuantityNotes:                    "to taste",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 0.25,
+					Min: 1.5,
 				},
 			},
 			{

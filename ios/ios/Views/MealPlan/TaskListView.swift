@@ -15,13 +15,15 @@ struct TaskListView: View {
   init(
     mealPlan: Mealplanning_MealPlan,
     tasks: [Mealplanning_MealPlanTask],
-    authManager: AuthenticationManager
+    authManager: AuthenticationManager,
+    userSettingsService: UserSettingsService
   ) {
     _viewModel = State(
       initialValue: TaskListViewModel(
         mealPlan: mealPlan,
         tasks: tasks,
-        authManager: authManager
+        authManager: authManager,
+        userSettingsService: userSettingsService
       )
     )
   }
@@ -514,7 +516,8 @@ struct TaskRow: View {
   private func storagePill(prepTask: Mealplanning_RecipePrepTask) -> some View {
     let hasExplicit = !prepTask.explicitStorageInstructions.isEmpty
     let hasType = !prepTask.storageType.isEmpty
-    let temp = formatStorageTemperature(prepTask.storageTemperatureInCelsius)
+    let temp = formatStorageTemperature(
+      prepTask.storageTemperatureInCelsius, unit: viewModel.temperatureUnit)
 
     if hasExplicit || hasType || !temp.isEmpty {
       VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
@@ -584,19 +587,39 @@ struct TaskRow: View {
     }
   }
 
-  private func formatStorageTemperature(_ range: Common_OptionalFloat32Range) -> String {
+  private func formatStorageTemperature(_ range: Common_OptionalFloat32Range, unit: String)
+    -> String
+  {
     let hasMin = range.hasMin
     let hasMax = range.hasMax
+    let useFahrenheit = unit == "fahrenheit"
+
+    func formatCelsius(_ c: Float) -> String {
+      if useFahrenheit {
+        let f = (c * 9 / 5) + 32
+        return "\(Int(f.rounded()))°F"
+      }
+      return "\(Int(c.rounded()))°C"
+    }
+
     if hasMin && hasMax {
-      let minVal = Int(range.min.rounded())
-      let maxVal = Int(range.max.rounded())
-      return minVal == maxVal ? "\(minVal)°C" : "\(minVal)–\(maxVal)°C"
+      let minVal = range.min
+      let maxVal = range.max
+      if minVal == maxVal {
+        return formatCelsius(minVal)
+      }
+      if useFahrenheit {
+        let minF = (minVal * 9 / 5) + 32
+        let maxF = (maxVal * 9 / 5) + 32
+        return "\(Int(minF.rounded()))–\(Int(maxF.rounded()))°F"
+      }
+      return "\(Int(minVal.rounded()))–\(Int(maxVal.rounded()))°C"
     }
     if hasMax {
-      return "below \(Int(range.max.rounded()))°C"
+      return "below \(formatCelsius(range.max))"
     }
     if hasMin {
-      return "above \(Int(range.min.rounded()))°C"
+      return "above \(formatCelsius(range.min))"
     }
     return ""
   }
@@ -948,12 +971,17 @@ struct TaskCountdownTimer: View {
   task2.creationExplanation = "Chop vegetables"
   task2.status = .finished
 
+  let userSettingsService = UserSettingsService()
+  userSettingsService.configure(authManager: authManager)
+
   return NavigationView {
     TaskListView(
       mealPlan: mealPlan,
       tasks: [task1, task2],
-      authManager: authManager
+      authManager: authManager,
+      userSettingsService: userSettingsService
     )
   }
   .environment(authManager)
+  .environment(userSettingsService)
 }

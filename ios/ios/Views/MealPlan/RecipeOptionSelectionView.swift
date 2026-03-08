@@ -8,142 +8,70 @@
 import SwiftProtobuf
 import SwiftUI
 
-struct RecipeOptionSelectionView: View {
-  @Binding var isPresented: Bool
-  @State private var selections: [String: [String: [UInt32: UInt32]]] = [:]  // recipeID -> (stepID -> (ingredientIndex -> selectedOptionIndex))
-
+/// Reusable content for selecting recipe ingredient options. Used both in the sheet flow and wizard step.
+struct RecipeOptionSelectionContent: View {
   let recipes: [Mealplanning_Recipe]
-  let onSave: ([String: [String: [UInt32: UInt32]]]) -> Void
+  @Binding var selections: [String: [String: [UInt32: UInt32]]]
+
+  private var recipesWithOptions: [Mealplanning_Recipe] {
+    recipes.filter { recipe in
+      var hasOptions = false
+      for step in recipe.steps {
+        let (_, groups) = groupIngredientsForSelection(
+          step.ingredients, stepID: step.id, recipeID: recipe.id)
+        if !groups.isEmpty {
+          hasOptions = true
+          break
+        }
+      }
+      if !hasOptions {
+        for associatedRecipe in recipe.associatedRecipes {
+          for step in associatedRecipe.steps {
+            let (_, groups) = groupIngredientsForSelection(
+              step.ingredients, stepID: step.id, recipeID: associatedRecipe.id)
+            if !groups.isEmpty {
+              hasOptions = true
+              break
+            }
+          }
+          if hasOptions { break }
+        }
+      }
+      return hasOptions
+    }
+  }
 
   var body: some View {
-    NavigationView {
-      ScrollView {
-        VStack(alignment: .leading, spacing: 20) {
-          Text("Select Recipe Options")
-            .font(.headline)
+    ScrollView {
+      VStack(alignment: .leading, spacing: 20) {
+        if recipes.isEmpty {
+          Text("No recipes provided")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
             .padding(.horizontal)
-
-          Text(
-            "Choose your preferred options for each recipe. You can skip this step to use the default options."
-          )
-          .font(.subheadline)
-          .foregroundColor(.secondary)
-          .padding(.horizontal)
-
-          if recipes.isEmpty {
-            Text("No recipes provided")
+        } else if recipesWithOptions.isEmpty {
+          VStack(alignment: .leading, spacing: 8) {
+            Image(systemName: "info.circle")
+              .foregroundColor(.secondary)
+            Text("No selectable options found in these recipes")
               .font(.subheadline)
               .foregroundColor(.secondary)
-              .padding(.horizontal)
-          } else {
-            let sectionsWithOptions = recipes.filter { recipe in
-              var hasOptions = false
-              for step in recipe.steps {
-                let (_, groups) = groupIngredientsForSelection(
-                  step.ingredients, stepID: step.id, recipeID: recipe.id)
-                if !groups.isEmpty {
-                  hasOptions = true
-                  break
-                }
-              }
-              if !hasOptions {
-                for associatedRecipe in recipe.associatedRecipes {
-                  for step in associatedRecipe.steps {
-                    let (_, groups) = groupIngredientsForSelection(
-                      step.ingredients, stepID: step.id, recipeID: associatedRecipe.id)
-                    if !groups.isEmpty {
-                      hasOptions = true
-                      break
-                    }
-                  }
-                  if hasOptions { break }
-                }
-              }
-              return hasOptions
-            }
-
-            if sectionsWithOptions.isEmpty {
-              VStack(alignment: .leading, spacing: 8) {
-                Image(systemName: "info.circle")
-                  .foregroundColor(.secondary)
-                Text("No selectable options found in these recipes")
-                  .font(.subheadline)
-                  .foregroundColor(.secondary)
-                Text("All recipes will use their default options")
-                  .font(.caption)
-                  .foregroundColor(.secondary)
-              }
-              .padding()
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .background(Color(.systemGray6))
-              .cornerRadius(8)
-              .padding(.horizontal)
-            } else {
-              ForEach(recipes, id: \.id) { recipe in
-                recipeOptionSection(recipe: recipe)
-              }
-            }
+            Text("All recipes will use their default options")
+              .font(.caption)
+              .foregroundColor(.secondary)
           }
-        }
-        .padding(.vertical)
-      }
-      .navigationTitle("Recipe Options")
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .cancellationAction) {
-          Button("Skip") {
-            // Use defaults (optionIndex: 0)
-            onSave([:])
-            isPresented = false
-          }
-        }
-        ToolbarItem(placement: .confirmationAction) {
-          Button("Save") {
-            onSave(selections)
-            isPresented = false
+          .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .background(Color(.systemGray6))
+          .cornerRadius(8)
+          .padding(.horizontal)
+        } else {
+          ForEach(recipes, id: \.id) { recipe in
+            recipeOptionSection(recipe: recipe)
           }
         }
       }
-    }
-    .onAppear {
-      print("🔍 RecipeOptionSelectionView.onAppear called")
-      print("  recipes parameter has \(recipes.count) recipe(s)")
-      if recipes.isEmpty {
-        print("  ⚠️ WARNING: recipes array is empty!")
-      } else {
-        for (index, recipe) in recipes.enumerated() {
-          print("  📝 Recipe \(index + 1): '\(recipe.name)' (ID: \(recipe.id))")
-          print("    Steps: \(recipe.steps.count)")
-          if recipe.steps.isEmpty {
-            print("    ⚠️ WARNING: Recipe has no steps!")
-          }
-          for (stepIndex, step) in recipe.steps.enumerated() {
-            print(
-              "    Step \(stepIndex + 1) (ID: \(step.id)): \(step.ingredients.count) ingredients")
-            if step.ingredients.isEmpty {
-              print("      ⚠️ Step has no ingredients")
-            } else {
-              // Show ingredient indices for debugging
-              let indices = step.ingredients.map {
-                "index:\($0.index), optionIndex:\($0.optionIndex)"
-              }
-              print("      Ingredient indices: \(indices.joined(separator: ", "))")
-            }
-            let (_, groups) = groupIngredientsForSelection(
-              step.ingredients, stepID: step.id, recipeID: recipe.id)
-            print("      Option groups found: \(groups.count)")
-            for group in groups {
-              print("        Group index \(group.index): \(group.options.count) options")
-              for option in group.options {
-                print("          Option \(option.optionIndex): \(option.ingredient.name)")
-              }
-            }
-          }
-          if !recipe.associatedRecipes.isEmpty {
-            print("    Associated recipes: \(recipe.associatedRecipes.count)")
-          }
-        }
-      }
+      .padding(.vertical)
     }
   }
 
@@ -243,13 +171,14 @@ struct RecipeOptionSelectionView: View {
                   ?? (group.options.first?.optionIndex ?? 0)
               },
               set: { newValue in
-                if selections[recipe.id] == nil {
-                  selections[recipe.id] = [:]
-                }
-                if selections[recipe.id]?[step.id] == nil {
-                  selections[recipe.id]?[step.id] = [:]
-                }
-                selections[recipe.id]?[step.id]?[group.index] = newValue
+                var copy = selections
+                copy[recipe.id] = copy[recipe.id] ?? [:]
+                var stepSelections = copy[recipe.id] ?? [:]
+                var groupSelections = stepSelections[step.id] ?? [:]
+                groupSelections[group.index] = newValue
+                stepSelections[step.id] = groupSelections
+                copy[recipe.id] = stepSelections
+                selections = copy
               }
             )
           )
@@ -292,21 +221,16 @@ struct RecipeOptionSelectionView: View {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
 
     for ingredient in ingredients {
-      // Index 0 typically means not in an option group
-      if ingredient.index != 0 {
-        let index = ingredient.index
-        let hasOptions = ingredients.contains { other in
-          other.id != ingredient.id && other.index != 0 && other.index == index
-        }
+      let index = ingredient.index
+      let hasOptions = ingredients.contains { other in
+        other.id != ingredient.id && other.index == index
+      }
 
-        if hasOptions {
-          if optionGroupsByIndex[index] == nil {
-            optionGroupsByIndex[index] = []
-          }
-          optionGroupsByIndex[index]?.append(ingredient)
-        } else {
-          regular.append(ingredient)
+      if hasOptions {
+        if optionGroupsByIndex[index] == nil {
+          optionGroupsByIndex[index] = []
         }
+        optionGroupsByIndex[index]?.append(ingredient)
       } else {
         regular.append(ingredient)
       }

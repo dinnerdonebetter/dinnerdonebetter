@@ -131,13 +131,58 @@ struct WeekSelectionStepView: View {
     return min(6, max(0, index))
   }
 
+  private struct DayChipStyle {
+    let backgroundColor: Color
+    let foregroundColor: Color
+    let strokeColor: Color
+    let opacity: Double
+  }
+
+  private func dayChipStyle(isPlanable: Bool, isSelected: Bool, occupancy: DateOccupancy?)
+    -> DayChipStyle
+  {
+    if isSelected {
+      return DayChipStyle(
+        backgroundColor: Color.blue.opacity(0.2),
+        foregroundColor: .blue,
+        strokeColor: .blue,
+        opacity: 1
+      )
+    }
+    switch occupancy {
+    case .accepted:
+      return DayChipStyle(
+        backgroundColor: Color.red.opacity(0.2),
+        foregroundColor: .red,
+        strokeColor: .red.opacity(0.6),
+        opacity: 1
+      )
+    case .proposed:
+      return DayChipStyle(
+        backgroundColor: Color.yellow.opacity(0.3),
+        foregroundColor: .orange,
+        strokeColor: Color.clear,
+        opacity: 1
+      )
+    case .none:
+      return DayChipStyle(
+        backgroundColor: Color(.systemGray6),
+        foregroundColor: isPlanable ? .primary : .secondary,
+        strokeColor: Color.clear,
+        opacity: isPlanable ? 1 : 0.5
+      )
+    }
+  }
+
   private func dayChip(date: Date) -> some View {
     let isPlanable = viewModel.isDatePlanable(date)
     let isSelected = viewModel.isDateSelected(date)
+    let occupancy = viewModel.dateOccupancy(for: date)
     // Allow tap when planable (select/deselect) or when selected (deselect only, e.g. after 6PM)
     let isInteractive = isPlanable || isSelected
     let label = compactWeekdayLabel(for: date)
     let dayNum = shortDateFormatter.string(from: date)
+    let style = dayChipStyle(isPlanable: isPlanable, isSelected: isSelected, occupancy: occupancy)
 
     return Button(
       action: {
@@ -154,13 +199,13 @@ struct WeekSelectionStepView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
-        .background(isSelected ? Color.blue.opacity(0.2) : Color(.systemGray6))
-        .foregroundColor(isPlanable ? (isSelected ? .blue : .primary) : .secondary)
-        .opacity(isPlanable ? 1 : 0.5)
+        .background(style.backgroundColor)
+        .foregroundColor(style.foregroundColor)
+        .opacity(style.opacity)
         .cornerRadius(8)
         .overlay(
           RoundedRectangle(cornerRadius: 8)
-            .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+            .stroke(style.strokeColor, lineWidth: 2)
         )
       }
     )

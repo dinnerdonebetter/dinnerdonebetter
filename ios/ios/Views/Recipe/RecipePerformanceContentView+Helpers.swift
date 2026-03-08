@@ -325,6 +325,10 @@ func formatStepIngredientDisplay(
     result = ingredient.name
   }
 
+  if !ingredient.quantityNotes.isEmpty {
+    result += " (\(ingredient.quantityNotes))"
+  }
+
   if let suffix = breakdownSuffix, !suffix.isEmpty {
     result += " (\(suffix))"
   }
@@ -905,27 +909,18 @@ extension RecipePerformanceContentView {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
 
     for ingredient in ingredients {
-      // Check if this ingredient is part of an option group
-      // Index 0 typically means not in an option group
-      if ingredient.index != 0 {
-        let index = ingredient.index
-        // Check if there are other ingredients with the same index
-        let hasOptions = ingredients.contains { other in
-          other.id != ingredient.id && other.index != 0 && other.index == index
-        }
+      let index = ingredient.index
+      // Check if there are other ingredients with the same index (option group)
+      let hasOptions = ingredients.contains { other in
+        other.id != ingredient.id && other.index == index
+      }
 
-        if hasOptions {
-          // This is part of an option group
-          if optionGroupsByIndex[index] == nil {
-            optionGroupsByIndex[index] = []
-          }
-          optionGroupsByIndex[index]?.append(ingredient)
-        } else {
-          // Single ingredient with an index but no alternatives - treat as regular
-          regular.append(ingredient)
+      if hasOptions {
+        if optionGroupsByIndex[index] == nil {
+          optionGroupsByIndex[index] = []
         }
+        optionGroupsByIndex[index]?.append(ingredient)
       } else {
-        // Index 0 means it's a regular ingredient
         regular.append(ingredient)
       }
     }

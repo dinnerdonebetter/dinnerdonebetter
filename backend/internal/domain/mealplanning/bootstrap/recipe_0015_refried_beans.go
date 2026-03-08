@@ -32,7 +32,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	pintoBeans := enums.Ingredients["pinto beans"]
 	water := enums.Ingredients["water"]
 	epazote := enums.Ingredients["epazote"]
-	whiteOnion := enums.Ingredients["onion"]
+	whiteOnion := enums.Ingredients["white onion"]
 	garlic := enums.Ingredients["garlic"]
 	salt := enums.Ingredients["salt"]
 	lard := enums.Ingredients["lard"]
@@ -64,7 +64,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	halveCuttingBoardVPV := enums.PreparationVessels[halvePrep.ID][cuttingBoard.ID]
 
 	// Mince
-	minceWhiteOnionVIP := enums.IngredientPreparations[mincePrep.ID][whiteOnion.ID]
 	minceChefsKnifeVPI := enums.PreparationInstruments[mincePrep.ID][chefsKnife.ID]
 	minceCuttingBoardVPV := enums.PreparationVessels[mincePrep.ID][cuttingBoard.ID]
 
@@ -79,67 +78,29 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Add
 	addEpazoteVIP := enums.IngredientPreparations[addPrep.ID][epazote.ID]
-	addWhiteOnionVIP := enums.IngredientPreparations[addPrep.ID][whiteOnion.ID]
-	addGarlicVIP := enums.IngredientPreparations[addPrep.ID][garlic.ID]
-	addWaterVIP := enums.IngredientPreparations[addPrep.ID][water.ID]
-	addLargePotVPV := enums.PreparationVessels[addPrep.ID][largePot.ID]
-
-	// Boil
-	boilLargePotVPV := enums.PreparationVessels[boilPrep.ID][largePot.ID]
-
-	// Reduce
-	reduceLargePotVPV := enums.PreparationVessels[reducePrep.ID][largePot.ID]
-
-	// Simmer
-	simmerPintoBeansVIP := enums.IngredientPreparations[simmerPrep.ID][pintoBeans.ID]
-	simmerLargePotVPV := enums.PreparationVessels[simmerPrep.ID][largePot.ID]
 
 	// Season
-	seasonPintoBeansVIP := enums.IngredientPreparations[seasonPrep.ID][pintoBeans.ID]
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
-	seasonLargePotVPV := enums.PreparationVessels[seasonPrep.ID][largePot.ID]
-	seasonLargeSkilletVPV := enums.PreparationVessels[seasonPrep.ID][largeSkillet.ID]
 
 	// Drain
-	drainPintoBeansVIP := enums.IngredientPreparations[drainPrep.ID][pintoBeans.ID]
-	drainLargePotVPV := enums.PreparationVessels[drainPrep.ID][largePot.ID]
 	drainLargeBowlVPV := enums.PreparationVessels[drainPrep.ID][largeBowl.ID]
 
 	// Reserve (not used in this recipe, but bridge table entry exists)
 
 	// Measure
-	measurePintoBeansVIP := enums.IngredientPreparations[measurePrep.ID][pintoBeans.ID]
 	measureLargeBowlVPV := enums.PreparationVessels[measurePrep.ID][largeBowl.ID]
 
 	// Discard
 	discardEpazoteVIP := enums.IngredientPreparations[discardPrep.ID][epazote.ID]
 	discardWhiteOnionVIP := enums.IngredientPreparations[discardPrep.ID][whiteOnion.ID]
 	discardGarlicVIP := enums.IngredientPreparations[discardPrep.ID][garlic.ID]
-	discardLargePotVPV := enums.PreparationVessels[discardPrep.ID][largePot.ID]
 
 	// Heat
 	heatLardVIP := enums.IngredientPreparations[heatPrep.ID][lard.ID]
 	heatLargeSkilletVPV := enums.PreparationVessels[heatPrep.ID][largeSkillet.ID]
 
-	// Sauté
-	sautWhiteOnionVIP := enums.IngredientPreparations[sautPrep.ID][whiteOnion.ID]
-	sautPintoBeansVIP := enums.IngredientPreparations[sautPrep.ID][pintoBeans.ID]
-	sautLargeSkilletVPV := enums.PreparationVessels[sautPrep.ID][largeSkillet.ID]
-
-	// Stir
-	stirPintoBeansVIP := enums.IngredientPreparations[stirPrep.ID][pintoBeans.ID]
-	stirWhiteOnionVIP := enums.IngredientPreparations[stirPrep.ID][whiteOnion.ID]
-	stirLargeSkilletVPV := enums.PreparationVessels[stirPrep.ID][largeSkillet.ID]
-
 	// Smash
-	smashPintoBeansVIP := enums.IngredientPreparations[smashPrep.ID][pintoBeans.ID]
-	smashLargeSkilletVPV := enums.PreparationVessels[smashPrep.ID][largeSkillet.ID]
 	smashPotatoMasherVPI := enums.PreparationInstruments[smashPrep.ID][potatoMasher.ID]
-
-	// Dilute
-	dilutePintoBeansVIP := enums.IngredientPreparations[dilutePrep.ID][pintoBeans.ID]
-	diluteWaterVIP := enums.IngredientPreparations[dilutePrep.ID][water.ID]
-	diluteLargeSkilletVPV := enums.PreparationVessels[dilutePrep.ID][largeSkillet.ID]
 
 	// Measurement unit bridges
 	pintoBeansPoundVIMU := enums.IngredientMeasurementUnits[pintoBeans.ID][poundMeasurement.ID]
@@ -307,7 +268,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &addWhiteOnionVIP.ID,
 				Name:                            "onion half (left whole)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -317,7 +277,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &addGarlicVIP.ID,
 				Name:                            "peeled garlic cloves",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
@@ -329,7 +288,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &addLargePotVPV.ID,
 				Name:                            "large pot with beans covered with water",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -360,7 +318,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &boilLargePotVPV.ID,
 				Name:                            "beans with aromatics in pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -390,7 +347,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &reduceLargePotVPV.ID,
 				Name:                            "boiling beans with aromatics",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -433,7 +389,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidIngredientPreparationID:    &simmerPintoBeansVIP.ID,
 				Name:                            "beans ready to simmer",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -445,7 +400,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &simmerLargePotVPV.ID,
 				Name:                            "beans ready to simmer",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -493,7 +447,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &seasonPintoBeansVIP.ID,
 				Name:                            "very tender cooked beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -514,7 +467,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &seasonLargePotVPV.ID,
 				Name:                            "pot with cooked beans and cooking liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -545,7 +497,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &drainPintoBeansVIP.ID,
 				Name:                            "seasoned cooked beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -557,7 +508,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &drainLargePotVPV.ID,
 				Name:                            "pot with cooked beans and cooking liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -607,7 +557,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &measurePintoBeansVIP.ID,
 				Name:                            "drained cooked beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -677,7 +626,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &discardLargePotVPV.ID,
 				Name:                            "pot with cooked beans and cooking liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -706,7 +654,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &minceWhiteOnionVIP.ID,
 				Name:                            "onion half",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -808,7 +755,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &sautWhiteOnionVIP.ID,
 				Name:                            "minced white onion",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -820,7 +766,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &sautLargeSkilletVPV.ID,
 				Name:                            "heated fat in skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -859,7 +804,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &stirPintoBeansVIP.ID,
 				Name:                            "3 cups of cooked beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -869,7 +813,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &stirWhiteOnionVIP.ID,
 				Name:                            "cooked minced onion",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -881,7 +824,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &stirLargeSkilletVPV.ID,
 				Name:                            "heated fat in skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -922,7 +864,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &sautPintoBeansVIP.ID,
 				Name:                            "beans and onion in skillet",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -933,7 +874,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &sautLargeSkilletVPV.ID,
 				Name:                            "heated fat in skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -971,7 +911,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidIngredientPreparationID:    &addWaterVIP.ID,
 				Name:                            "reserved bean-cooking liquid",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
@@ -1021,7 +960,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &smashPintoBeansVIP.ID,
 				Name:                            "beans with liquid in skillet",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -1043,7 +981,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &smashLargeSkilletVPV.ID,
 				Name:                            "skillet with beans and liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -1082,7 +1019,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &dilutePintoBeansVIP.ID,
 				Name:                            "mashed beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -1092,7 +1028,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidIngredientPreparationID:    &diluteWaterVIP.ID,
 				Name:                            "reserved bean-cooking liquid",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
@@ -1104,7 +1039,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &diluteLargeSkilletVPV.ID,
 				Name:                            "skillet with mashed beans",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -1151,7 +1085,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &seasonPintoBeansVIP.ID,
 				Name:                            "refried beans at desired consistency",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
@@ -1172,7 +1105,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &seasonLargeSkilletVPV.ID,
 				Name:                            "skillet with refried beans at desired consistency",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,

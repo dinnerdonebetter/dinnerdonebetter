@@ -27,6 +27,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	wholePeppercorns := enums.Ingredients["whole black peppercorns"]
 	bakingPowder := enums.Ingredients["baking powder"]
 	vegetableOil := enums.Ingredients["vegetable oil"]
+	canolaOil := enums.Ingredients["canola oil"]
 
 	// Get measurement units
 	gramMeasurement := enums.MeasurementUnits["gram"]
@@ -85,12 +86,15 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
 
 	// Heat preparation bridges
-	heatOilVIP := enums.IngredientPreparations[heatPrep.ID][vegetableOil.ID]
-	oilTablespoonVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][tablespoonMeasurement.ID]
+	heatVegetableOilVIP := enums.IngredientPreparations[heatPrep.ID][vegetableOil.ID]
+	heatCanolaOilVIP := enums.IngredientPreparations[heatPrep.ID][canolaOil.ID]
+	vegetableOilTablespoonVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][tablespoonMeasurement.ID]
+	canolaOilTablespoonVIMU := enums.IngredientMeasurementUnits[canolaOil.ID][tablespoonMeasurement.ID]
 	heatSkilletVPV := enums.PreparationVessels[heatPrep.ID][stainlessSteelSkillet.ID]
 
 	// Rub preparation bridges
-	rubOilVIP := enums.IngredientPreparations[rubPrep.ID][vegetableOil.ID]
+	rubVegetableOilVIP := enums.IngredientPreparations[rubPrep.ID][vegetableOil.ID]
+	rubCanolaOilVIP := enums.IngredientPreparations[rubPrep.ID][canolaOil.ID]
 	rubBareHandsVPI := enums.PreparationInstruments[rubPrep.ID][bareHands.ID]
 
 	// Pan-sear preparation bridges
@@ -383,12 +387,24 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "In a 10- or 12-inch stainless steel skillet, heat the oil over medium-high heat until shimmering.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &heatOilVIP.ID,
-				ValidIngredientMeasurementUnitID: &oilTablespoonVIMU.ID,
-				Name:                             "neutral-flavored oil (vegetable or canola)",
+				ValidIngredientPreparationID:     &heatVegetableOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
+				Name:                             "vegetable oil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &heatCanolaOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &canolaOilTablespoonVIMU.ID,
+				Name:                             "canola oil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -438,12 +454,24 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				},
 			},
 			{
-				ValidIngredientPreparationID:     &rubOilVIP.ID,
-				ValidIngredientMeasurementUnitID: &oilTablespoonVIMU.ID,
+				ValidIngredientPreparationID:     &rubVegetableOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
+				Name:                             "vegetable oil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+				Index:       pointer.To[uint16](1),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &rubCanolaOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &canolaOilTablespoonVIMU.ID,
 				Name:                             "canola oil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
+				Index:       pointer.To[uint16](1),
+				OptionIndex: 1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{

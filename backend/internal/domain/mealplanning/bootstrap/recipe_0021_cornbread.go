@@ -34,6 +34,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 	eggs := enums.Ingredients["eggs"]
 
 	// Get measurement units
+	gramMeasurement := enums.MeasurementUnits["gram"]
 	cupMeasurement := enums.MeasurementUnits["cup"]
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
@@ -111,10 +112,10 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 	sugarCupVIMU := enums.IngredientMeasurementUnits[sugar.ID][cupMeasurement.ID]
 	bakingPowderTeaspoonVIMU := enums.IngredientMeasurementUnits[bakingPowder.ID][teaspoonMeasurement.ID]
 	bakingSodaTeaspoonVIMU := enums.IngredientMeasurementUnits[bakingSoda.ID][teaspoonMeasurement.ID]
-	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
+	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	milkCupVIMU := enums.IngredientMeasurementUnits[milk.ID][cupMeasurement.ID]
 	butterTablespoonVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
-	vegetableOilCupVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][cupMeasurement.ID]
+	vegetableOilGramVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][gramMeasurement.ID]
 	eggsUnitVIMU := enums.IngredientMeasurementUnits[eggs.ID][unitMeasurement.ID]
 
 	// ==================== RECIPE STEPS ====================
@@ -345,10 +346,10 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			},
 			{
 				ValidIngredientPreparationID:     &mixSaltVIP.ID,
-				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "table salt",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 0.75,
+					Min: 4.5, // about 3/4 tsp
 				},
 			},
 		},
@@ -414,11 +415,10 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			},
 			{
 				ValidIngredientPreparationID:     &mixVegetableOilVIP.ID,
-				ValidIngredientMeasurementUnitID: &vegetableOilCupVIMU.ID,
+				ValidIngredientMeasurementUnitID: &vegetableOilGramVIMU.ID,
 				Name:                             "vegetable oil",
-				QuantityNotes:                    "50g",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 0.25,
+					Min: 56, // 1/4 cup
 				},
 			},
 			{

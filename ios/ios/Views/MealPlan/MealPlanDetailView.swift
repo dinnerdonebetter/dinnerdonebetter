@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MealPlanDetailView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(UserSettingsService.self) private var userSettingsService
   @Environment(\.dismiss) private var dismiss
   let mealPlan: Mealplanning_MealPlan
   let groceryListItems: [Mealplanning_MealPlanGroceryListItem]?
@@ -33,14 +34,14 @@ struct MealPlanDetailView: View {
         // Events
         eventsSection
 
+        // Tasks Link (if finalized and tasks created) - matches home page order (prep tasks above grocery)
+        if mealPlan.status == .finalized && mealPlan.tasksCreated {
+          tasksSection
+        }
+
         // Grocery List Link (if finalized and has items)
         if mealPlan.status == .finalized {
           groceryListSection
-        }
-
-        // Tasks Link (if finalized and tasks created)
-        if mealPlan.status == .finalized && mealPlan.tasksCreated {
-          tasksSection
         }
       }
       .dsScreenPadding()
@@ -346,7 +347,8 @@ struct MealPlanDetailView: View {
           destination: TaskListView(
             mealPlan: mealPlan,
             tasks: [],  // Always start with empty array, TaskListView will fetch fresh data
-            authManager: authManager
+            authManager: authManager,
+            userSettingsService: userSettingsService
           )
         ) {
           tasksCardContent(count: count)
@@ -363,7 +365,7 @@ struct MealPlanDetailView: View {
     HStack {
       Image(systemName: "checklist")
         .foregroundColor(.blue)
-      Text("View Tasks (\(count))")
+      Text("Prep Tasks (\(count))")
         .font(.headline)
       Spacer()
       if count > 0 {
@@ -418,7 +420,11 @@ struct EventCard: View {
 
           ForEach(event.options.filter { $0.chosen }, id: \.id) { option in
             NavigationLink(
-              destination: MealDetailView(mealID: option.meal.id, isFromMealPlan: true)
+              destination: MealDetailView(
+                mealID: option.meal.id,
+                isFromMealPlan: true,
+                mealPlanScale: option.mealScale > 0 ? option.mealScale : 1.0
+              )
             ) {
               MealOptionCard(option: option, isChosen: true)
             }

@@ -19,13 +19,14 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	mincePrep := enums.Preparations["mince"]
 
 	// Get ingredients
-	pasta := enums.Ingredients["pasta"]
+	spaghetti := enums.Ingredients["spaghetti"]
 	butter := enums.Ingredients["butter"]
 	garlic := enums.Ingredients["garlic"]
 	salt := enums.Ingredients["salt"]
 	gochujangPaste := enums.Ingredients["gochujang paste"]
 	honey := enums.Ingredients["honey"]
-	vinegar := enums.Ingredients["vinegar"]
+	sherryVinegar := enums.Ingredients["sherry vinegar"]
+	riceVinegar := enums.Ingredients["rice vinegar"]
 	water := enums.Ingredients["water"]
 
 	// Get measurement units
@@ -48,16 +49,16 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	cuttingBoard := enums.Vessels["cutting board"]
 
 	// Get bridge table entries
-	boilPastaVIP := enums.IngredientPreparations[boilPrep.ID][pasta.ID]
+	boilSpaghettiVIP := enums.IngredientPreparations[boilPrep.ID][spaghetti.ID]
 	boilWaterVIP := enums.IngredientPreparations[boilPrep.ID][water.ID]
 	boilSaltVIP := enums.IngredientPreparations[boilPrep.ID][salt.ID]
 	boilPotVPV := enums.PreparationVessels[boilPrep.ID][pot.ID]
 	boilWoodenSpoonVPI := enums.PreparationInstruments[boilPrep.ID][woodenSpoon.ID]
 
-	addPastaVIP := enums.IngredientPreparations[addPrep.ID][pasta.ID]
+	addSpaghettiVIP := enums.IngredientPreparations[addPrep.ID][spaghetti.ID]
 	addPotVPV := enums.PreparationVessels[addPrep.ID][pot.ID]
 
-	drainPastaVIP := enums.IngredientPreparations[drainPrep.ID][pasta.ID]
+	drainSpaghettiVIP := enums.IngredientPreparations[drainPrep.ID][spaghetti.ID]
 	drainColanderVPV := enums.PreparationVessels[drainPrep.ID][colander.ID]
 	drainPotVPV := enums.PreparationVessels[drainPrep.ID][pot.ID]
 	drainSmallBowlVPV := enums.PreparationVessels[drainPrep.ID][smallBowl.ID]
@@ -72,12 +73,13 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	addSkilletVPV := enums.PreparationVessels[addPrep.ID][skillet.ID]
 	addGochujangVIP := enums.IngredientPreparations[addPrep.ID][gochujangPaste.ID]
 	addHoneyVIP := enums.IngredientPreparations[addPrep.ID][honey.ID]
-	addVinegarVIP := enums.IngredientPreparations[addPrep.ID][vinegar.ID]
+	addSherryVinegarVIP := enums.IngredientPreparations[addPrep.ID][sherryVinegar.ID]
+	addRiceVinegarVIP := enums.IngredientPreparations[addPrep.ID][riceVinegar.ID]
 
 	reduceSpoonVPI := enums.PreparationInstruments[reducePrep.ID][spoon.ID]
 
 	stirSauceVIP := enums.IngredientPreparations[stirPrep.ID][gochujangPaste.ID]
-	stirPastaVIP := enums.IngredientPreparations[stirPrep.ID][pasta.ID]
+	stirSpaghettiVIP := enums.IngredientPreparations[stirPrep.ID][spaghetti.ID]
 	stirButterVIP := enums.IngredientPreparations[stirPrep.ID][butter.ID]
 	stirSaltVIP := enums.IngredientPreparations[stirPrep.ID][salt.ID]
 	stirPotVPV := enums.PreparationVessels[stirPrep.ID][pot.ID]
@@ -88,19 +90,20 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	minceCuttingBoardVPV := enums.PreparationVessels[mincePrep.ID][cuttingBoard.ID]
 
 	// Measurement unit bridges
-	pastaPoundVIMU := enums.IngredientMeasurementUnits[pasta.ID][poundMeasurement.ID]
+	spaghettiPoundVIMU := enums.IngredientMeasurementUnits[spaghetti.ID][poundMeasurement.ID]
 	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
 	garlicCloveVIMU := enums.IngredientMeasurementUnits[garlic.ID][cloveMeasurement.ID]
 	gochujangCupVIMU := enums.IngredientMeasurementUnits[gochujangPaste.ID][cupMeasurement.ID]
 	honeyCupVIMU := enums.IngredientMeasurementUnits[honey.ID][cupMeasurement.ID]
-	vinegarCupVIMU := enums.IngredientMeasurementUnits[vinegar.ID][cupMeasurement.ID]
+	sherryVinegarCupVIMU := enums.IngredientMeasurementUnits[sherryVinegar.ID][cupMeasurement.ID]
+	riceVinegarCupVIMU := enums.IngredientMeasurementUnits[riceVinegar.ID][cupMeasurement.ID]
 	butterTablespoonVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
 
 	// Ingredient states
 	tenderState := enums.IngredientStates["tender"]
 	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
 
-	// Step 0: Mince garlic (can be done while pasta water heats)
+	// Step 0: Mince garlic (can be done while spaghetti water heats)
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        mincePrep.ID,
 		Index:                0,
@@ -155,7 +158,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidIngredientPreparationID:     &boilWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
-				QuantityNotes:                    "enough to cover pasta",
+				QuantityNotes:                    "enough to cover spaghetti",
 				Name:                             "water",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
@@ -204,8 +207,8 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		ExplicitInstructions: "Add the spaghetti to the boiling water.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &addPastaVIP.ID,
-				ValidIngredientMeasurementUnitID: &pastaPoundVIMU.ID,
+				ValidIngredientPreparationID:     &addSpaghettiVIP.ID,
+				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "spaghetti or other long pasta",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -225,7 +228,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "pasta in salted water",
+				Name:              "spaghetti in salted water",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
@@ -250,8 +253,8 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &boilPastaVIP.ID,
-				ValidIngredientMeasurementUnitID: &pastaPoundVIMU.ID,
+				ValidIngredientPreparationID:     &boilSpaghettiVIP.ID,
+				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "pasta in salted water",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -280,14 +283,14 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
 				IngredientStateID: tenderState.ID,
-				Notes:             "pasta should be al dente",
+				Notes:             "spaghetti should be al dente",
 				Ingredients:       []uint64{0},
 				Optional:          false,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "cooked al dente pasta",
+				Name:              "cooked al dente spaghetti",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
@@ -312,8 +315,8 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &drainPastaVIP.ID,
-				ValidIngredientMeasurementUnitID: &pastaPoundVIMU.ID,
+				ValidIngredientPreparationID:     &drainSpaghettiVIP.ID,
+				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "cooked al dente pasta",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -325,7 +328,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &drainPotVPV.ID,
-				Name:                            "large pot with pasta and cooking water",
+				Name:                            "large pot with spaghetti and cooking water",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -410,7 +413,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 	}
 
-	// Step 6: Melt butter in skillet (while pasta cooks)
+	// Step 6: Melt butter in skillet (while spaghetti cooks)
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        meltPrep.ID,
 		Index:                6,
@@ -574,12 +577,24 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				},
 			},
 			{
-				ValidIngredientPreparationID:     &addVinegarVIP.ID,
-				ValidIngredientMeasurementUnitID: &vinegarCupVIMU.ID,
-				Name:                             "sherry vinegar or rice vinegar",
+				ValidIngredientPreparationID:     &addSherryVinegarVIP.ID,
+				ValidIngredientMeasurementUnitID: &sherryVinegarCupVIMU.ID,
+				Name:                             "sherry vinegar",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
+				Index:       pointer.To[uint16](4),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &addRiceVinegarVIP.ID,
+				ValidIngredientMeasurementUnitID: &riceVinegarCupVIMU.ID,
+				Name:                             "rice vinegar",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.25,
+				},
+				Index:       pointer.To[uint16](4),
+				OptionIndex: 1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
@@ -731,13 +746,13 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        stirPrep.ID,
 		Index:                11,
-		ExplicitInstructions: "Transfer the sauce to the pot with the spaghetti and add the remaining 2 tablespoons butter. Vigorously stir until the butter melts. Add splashes of the pasta cooking water, as needed, to thin out the sauce. Taste and season with salt and pepper. Top with the cilantro or scallions (if using) and serve immediately.",
+		ExplicitInstructions: "Transfer the sauce to the pot with the spaghetti and add the remaining 2 tablespoons butter. Vigorously stir until the butter melts. Add splashes of the spaghetti cooking water, as needed, to thin out the sauce. Taste and season with salt and pepper. Top with the cilantro or scallions (if using) and serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &stirPastaVIP.ID,
-				ValidIngredientMeasurementUnitID: &pastaPoundVIMU.ID,
+				ValidIngredientPreparationID:     &stirSpaghettiVIP.ID,
+				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "spaghetti in pot",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -763,7 +778,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				Name:                            "reserved pasta water",
+				Name:                            "reserved spaghetti cooking water",
 				QuantityNotes:                   "splashes as needed to thin sauce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0,
@@ -802,14 +817,14 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
 				IngredientStateID: desiredConsistencyState.ID,
-				Notes:             "butter should be melted and sauce should coat the pasta",
+				Notes:             "butter should be melted and sauce should coat the spaghetti",
 				Ingredients:       []uint64{2},
 				Optional:          false,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "gochujang butter pasta",
+				Name:              "gochujang butter spaghetti",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,

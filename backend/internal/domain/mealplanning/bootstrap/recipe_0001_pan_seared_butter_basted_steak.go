@@ -23,6 +23,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	salt := enums.Ingredients["salt"]
 	wholePeppercorns := enums.Ingredients["whole black peppercorns"]
 	vegetableOil := enums.Ingredients["vegetable oil"]
+	canolaOil := enums.Ingredients["canola oil"]
 	butter := enums.Ingredients["butter"]
 	thyme := enums.Ingredients["thyme"]
 	rosemary := enums.Ingredients["rosemary"]
@@ -85,8 +86,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	restSheetPanVPV := enums.PreparationVessels[restPrep.ID][sheetPan.ID]
 
 	// Heat preparation bridges
-	heatOilVIP := enums.IngredientPreparations[heatPrep.ID][vegetableOil.ID]
-	oilMilliliterVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][milliliterMeasurement.ID]
+	heatVegetableOilVIP := enums.IngredientPreparations[heatPrep.ID][vegetableOil.ID]
+	heatCanolaOilVIP := enums.IngredientPreparations[heatPrep.ID][canolaOil.ID]
+	vegetableOilMilliliterVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][milliliterMeasurement.ID]
+	canolaOilMilliliterVIMU := enums.IngredientMeasurementUnits[canolaOil.ID][milliliterMeasurement.ID]
 	heatSkilletVPV := enums.PreparationVessels[heatPrep.ID][castIronSkillet.ID]
 	heatStovetopVPI := enums.PreparationInstruments[heatPrep.ID][stovetop.ID]
 
@@ -385,12 +388,24 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     &heatOilVIP.ID,
-				ValidIngredientMeasurementUnitID: &oilMilliliterVIMU.ID,
-				Name:                             "vegetable or canola oil",
+				ValidIngredientPreparationID:     &heatVegetableOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &vegetableOilMilliliterVIMU.ID,
+				Name:                             "vegetable oil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 60, // 1/4 cup = 60 ml
 				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 0,
+			},
+			{
+				ValidIngredientPreparationID:     &heatCanolaOilVIP.ID,
+				ValidIngredientMeasurementUnitID: &canolaOilMilliliterVIMU.ID,
+				Name:                             "canola oil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 60, // 1/4 cup = 60 ml
+				},
+				Index:       pointer.To[uint16](0),
+				OptionIndex: 1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
@@ -434,7 +449,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				IngredientStateID: smokingState.ID,
 				Notes:             "Oil should be just beginning to smoke",
-				Ingredients:       []uint64{0}, // Index of the oil ingredient in the step
+				Ingredients:       []uint64{0, 1}, // Indices of the oil options in the step
 				Optional:          false,
 			},
 		},

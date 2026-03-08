@@ -5,7 +5,6 @@
 //  Created by Auto on 12/8/25.
 //
 
-import PhotosUI
 import SwiftProtobuf
 import SwiftUI
 
@@ -62,16 +61,18 @@ struct MealDetailView: View {
   @State private var customUpNextOrder: [String] = []
   @State private var customForLaterOrder: [String] = []
   @State private var isDAGSectionExpanded = false
-  @State private var uploadMealImageViewModel: UploadMealImageViewModel?
-  @State private var selectedMealImageItem: PhotosPickerItem?
-
+  @State private var mealTimerTick: Int = 0
+  @State private var mealTimerRefresh: Timer?
   let mealID: String
   /// When true, scale editing is hidden because the scale is set by the meal plan.
   let isFromMealPlan: Bool
+  /// When viewing from meal plan, the plan's scale for this meal (e.g. 4.0 for 4x). Used to display scaled portions.
+  let mealPlanScale: Float?
 
-  init(mealID: String, isFromMealPlan: Bool = false) {
+  init(mealID: String, isFromMealPlan: Bool = false, mealPlanScale: Float? = nil) {
     self.mealID = mealID
     self.isFromMealPlan = isFromMealPlan
+    self.mealPlanScale = mealPlanScale
   }
 
   var body: some View {
@@ -89,14 +90,18 @@ struct MealDetailView: View {
                   // Overall Info Section
                   overallInfoSection(meal: meal)
 
-                  // DAG section (meal-level step dependencies)
+                  // Equipment, Ingredients & Graph (collapsibles with uniform spacing)
                   if !meal.components.isEmpty {
-                    mealDAGSection(viewModel: viewModel)
+                    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+                      aggregatedInstrumentsVesselsSection
+                      aggregatedIngredientsSection
+                      mealDAGSection(viewModel: viewModel)
+                    }
                   }
 
-                  // Aggregated Ingredients & Instruments/Vessels (consolidated from all recipes)
+                  // Keep screen awake (before wash hands)
                   if !meal.components.isEmpty {
-                    aggregatedListsSection
+                    KeepScreenAwakeButton(inline: true)
                   }
 
                   if !meal.components.isEmpty && !mealWashHandsCompleted {
@@ -104,9 +109,14 @@ struct MealDetailView: View {
                   }
 
                   if !meal.components.isEmpty {
+                    madeAheadSection(meal: meal)
+                  }
+
+                  if !meal.components.isEmpty {
                     mealFlowModeSection
                     if mealFlowMode == .unified {
                       unifiedMealStepsSection(meal: meal)
+                        .id(mealTimerTick)
                     } else {
                       componentsSection(meal: meal)
                     }
@@ -132,9 +142,10 @@ struct MealDetailView: View {
       if viewModel == nil {
         viewModel = MealDetailViewModel(mealID: mealID, authManager: authManager)
       }
-      if uploadMealImageViewModel == nil {
-        uploadMealImageViewModel = UploadMealImageViewModel(
-          mealID: mealID, authManager: authManager)
+      // When viewing from meal plan, apply the plan's scale so portions and ingredients reflect it
+      if isFromMealPlan, let scale = mealPlanScale, scale > 0 {
+        mealScale = scale
+        mealScaleText = String(format: "%.2f", mealScale)
       }
       if let viewModel = viewModel {
         Task {
@@ -151,92 +162,25 @@ struct MealDetailView: View {
           }
         }
       }
+      if hasActiveMealStepTimers {
+        startMealTimerRefresh()
+      }
+    }
+    .onChange(of: hasActiveMealStepTimers) { _, hasActive in
+      if hasActive {
+        startMealTimerRefresh()
+      } else {
+        stopMealTimerRefresh()
+      }
+    }
+    .onDisappear {
+      stopMealTimerRefresh()
     }
     .onChange(of: viewModel?.meal?.id) { _, _ in
       if let meal = viewModel?.meal {
         ensureComponentDataLoaded(for: meal)
         loadStepOrderFromUserDefaults(mealID: meal.id)
       }
-    }
-    .onChange(of: selectedMealImageItem) { _, newItem in
-      guard let item = newItem, let uploadVM = uploadMealImageViewModel else { return }
-      Task {
-        await loadAndUploadMealImage(item: item, viewModel: uploadVM)
-      }
-    }
-    .onChange(of: uploadMealImageViewModel?.didSucceed) { _, didSucceed in
-      if didSucceed == true {
-        selectedMealImageItem = nil
-        Task {
-          await viewModel?.loadMeal()
-        }
-      }
-    }
-  }
-
-  private func mealImageUploadSection(uploadVM: UploadMealImageViewModel) -> some View {
-    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      PhotosPicker(
-        selection: $selectedMealImageItem,
-        matching: .images,
-        photoLibrary: .shared()
-      ) {
-        HStack(spacing: DSTheme.Spacing.md) {
-          Image(systemName: "photo.badge.plus")
-            .font(.system(size: DSTheme.IconSize.lg))
-            .foregroundColor(DSTheme.Colors.primary)
-          Text("Add Meal Photo")
-            .font(DSTheme.Typography.label)
-            .foregroundColor(DSTheme.Colors.textPrimary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(DSTheme.Spacing.md)
-        .background(DSTheme.Colors.cardBackground)
-        .cornerRadius(DSTheme.Radius.md)
-      }
-      .disabled(uploadVM.isUploading)
-
-      if uploadVM.isUploading {
-        ProgressView("Uploading...")
-          .font(DSTheme.Typography.caption)
-      }
-
-      if let error = uploadVM.errorMessage {
-        Text(error)
-          .font(DSTheme.Typography.caption)
-          .foregroundColor(DSTheme.Colors.error)
-      }
-
-      if uploadVM.didSucceed {
-        HStack(spacing: DSTheme.Spacing.sm) {
-          Image(systemName: "checkmark.circle.fill")
-            .foregroundColor(DSTheme.Colors.success)
-          Text("Photo added successfully")
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.success)
-        }
-      }
-    }
-  }
-
-  private func loadAndUploadMealImage(item: PhotosPickerItem, viewModel: UploadMealImageViewModel)
-    async
-  {
-    do {
-      guard let data = try await item.loadTransferable(type: Data.self) else {
-        viewModel.errorMessage = "Failed to load image data"
-        return
-      }
-      let prepared = ImagePreparationHelper.prepareImageForUpload(data: data)
-      let objectName = UUID().uuidString + "." + prepared.fileExtension
-      await viewModel.uploadMealImage(
-        imageData: prepared.data,
-        contentType: prepared.contentType,
-        objectName: objectName
-      )
-      selectedMealImageItem = nil
-    } catch {
-      viewModel.errorMessage = "Failed to load image: \(error.localizedDescription)"
     }
   }
 
@@ -251,23 +195,17 @@ struct MealDetailView: View {
           .foregroundColor(DSTheme.Colors.textSecondary)
       }
 
-      // Estimated portions
+      // Estimated portions (scaled by meal scale when applicable, e.g. from meal plan)
       if meal.hasEstimatedPortions {
         HStack(spacing: DSTheme.Spacing.sm) {
           Image(systemName: "person.2")
             .foregroundColor(DSTheme.Colors.textSecondary)
-          Text("Estimated Portions: \(PortionsFormatter.format(meal.estimatedPortions))")
-            .font(DSTheme.Typography.body)
-            .foregroundColor(DSTheme.Colors.textSecondary)
+          Text(
+            "Estimated Portions: \(PortionsFormatter.formatScaled(meal.estimatedPortions, scale: mealScale))"
+          )
+          .font(DSTheme.Typography.body)
+          .foregroundColor(DSTheme.Colors.textSecondary)
         }
-      }
-
-      // Meal Image Upload
-      Divider()
-        .padding(.vertical, DSTheme.Spacing.xs)
-
-      if let uploadVM = uploadMealImageViewModel {
-        mealImageUploadSection(uploadVM: uploadVM)
       }
 
       // Meal Scale Control (hidden when viewing from meal plan – scale is set by the plan)
@@ -354,7 +292,7 @@ struct MealDetailView: View {
         },
         label: {
           HStack {
-            Text("DAG")
+            Text("Meal Graph")
               .font(DSTheme.Typography.title3)
               .foregroundColor(DSTheme.Colors.textPrimary)
             Spacer()
@@ -465,16 +403,6 @@ struct MealDetailView: View {
     }
   }
 
-  private var aggregatedListsSection: some View {
-    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      // Instruments & Vessels
-      aggregatedInstrumentsVesselsSection
-
-      // Ingredients
-      aggregatedIngredientsSection
-    }
-  }
-
   private var mealWashHandsSection: some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       HStack(alignment: .top, spacing: DSTheme.Spacing.md) {
@@ -495,14 +423,18 @@ struct MealDetailView: View {
         .buttonStyle(.plain)
 
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-          Text("🧼 Wash your hands")
-            .font(DSTheme.Typography.title3)
-            .foregroundColor(
-              mealWashHandsCompleted
-                ? DSTheme.Colors.textSecondary
-                : DSTheme.Colors.textPrimary
-            )
-            .italic(mealWashHandsCompleted)
+          HStack(spacing: DSTheme.Spacing.sm) {
+            Image(systemName: "hands.sparkles")
+              .font(DSTheme.Typography.title3)
+            Text("Wash your hands")
+              .font(DSTheme.Typography.title3)
+          }
+          .foregroundColor(
+            mealWashHandsCompleted
+              ? DSTheme.Colors.textSecondary
+              : DSTheme.Colors.textPrimary
+          )
+          .italic(mealWashHandsCompleted)
 
           Text("Complete this once to unlock all component steps.")
             .font(DSTheme.Typography.caption)
@@ -543,6 +475,98 @@ struct MealDetailView: View {
       }
       .pickerStyle(.segmented)
     }
+  }
+
+  private func madeAheadSection(meal: Mealplanning_Meal) -> some View {
+    let uniqueAssociated = uniqueAssociatedRecipesFromLoaded
+    guard !uniqueAssociated.isEmpty else {
+      return AnyView(EmptyView())
+    }
+
+    return AnyView(
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+        Text("Made Ahead")
+          .font(DSTheme.Typography.title2)
+
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+          ForEach(uniqueAssociated, id: \.id) { associatedRecipe in
+            madeAheadRow(associatedRecipe: associatedRecipe)
+          }
+        }
+      }
+    )
+  }
+
+  private var uniqueAssociatedRecipesFromLoaded: [Mealplanning_Recipe] {
+    var byID: [String: Mealplanning_Recipe] = [:]
+    for (_, recipeData) in loadedRecipes {
+      for assoc in recipeData.recipe.associatedRecipes {
+        byID[assoc.id] = assoc
+      }
+    }
+    return Array(byID.values).sorted {
+      ($0.name.isEmpty ? "Unnamed" : $0.name) < ($1.name.isEmpty ? "Unnamed" : $1.name)
+    }
+  }
+
+  private func madeAheadRow(associatedRecipe: Mealplanning_Recipe) -> some View {
+    let allComplete = isAssociatedRecipeFullyComplete(associatedRecipe)
+    return HStack {
+      Text(associatedRecipe.name.isEmpty ? "Unnamed Recipe" : associatedRecipe.name)
+        .font(DSTheme.Typography.body)
+        .foregroundColor(DSTheme.Colors.textPrimary)
+
+      Spacer()
+
+      Button(
+        action: {
+          UIImpactFeedbackGenerator(style: .light).impactOccurred()
+          markAssociatedRecipeAsMadeInAllComponents(associatedRecipe: associatedRecipe)
+        },
+        label: {
+          HStack(spacing: DSTheme.Spacing.xs) {
+            Image(systemName: allComplete ? "checkmark.circle.fill" : "checkmark.circle")
+              .foregroundColor(allComplete ? .green : DSTheme.Colors.primary)
+            Text("I made this")
+              .font(DSTheme.Typography.label)
+              .foregroundColor(allComplete ? .green : DSTheme.Colors.primary)
+          }
+        }
+      )
+      .buttonStyle(.plain)
+      .disabled(allComplete)
+    }
+    .padding(DSTheme.Spacing.md)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.md)
+  }
+
+  private func isAssociatedRecipeFullyComplete(_ associatedRecipe: Mealplanning_Recipe) -> Bool {
+    for (componentID, recipeData) in loadedRecipes {
+      guard recipeData.recipe.associatedRecipes.contains(where: { $0.id == associatedRecipe.id })
+      else {
+        continue
+      }
+      guard let vm = componentViewModels[componentID] else { continue }
+      if associatedRecipe.steps.allSatisfy({
+        vm.isStepCompleted(recipeID: associatedRecipe.id, stepID: $0.id)
+      }) {
+        return true
+      }
+    }
+    return false
+  }
+
+  private func markAssociatedRecipeAsMadeInAllComponents(associatedRecipe: Mealplanning_Recipe) {
+    for (componentID, recipeData) in loadedRecipes {
+      guard recipeData.recipe.associatedRecipes.contains(where: { $0.id == associatedRecipe.id })
+      else {
+        continue
+      }
+      componentViewModels[componentID]?.markAssociatedRecipeAsCompleted(
+        associatedRecipe: associatedRecipe)
+    }
+    mealTimerTick += 1
   }
 
   private var aggregatedInstrumentsVesselsSection: some View {
@@ -706,6 +730,7 @@ struct MealDetailView: View {
       focusedGroups: focusedGroups,
       allStepsTitle: "All Steps",
       emptyMessage: "Loading component steps...",
+      showStepsOverlay: !mealWashHandsCompleted,
       onReorder: { groupId, source, destination in
         let items = groupId == "Up Next" ? orderedUpNext : orderedForLater
         var mutable = items
@@ -760,9 +785,17 @@ struct MealDetailView: View {
               }
               : nil,
             canCheckOverride: item.isMerged
-              ? item.sources.allSatisfy { source in
+              ? (item.sources.allSatisfy { source in
                 source.viewModel.canCheckStep(recipeID: source.recipeID, stepID: source.step.id)
               }
+                || item.sources.contains { source in
+                  source.viewModel.isStepTimerActive(
+                    recipeID: source.recipeID, stepID: source.step.id)
+                }
+                || item.sources.allSatisfy { source in
+                  source.viewModel.isStepCompleted(
+                    recipeID: source.recipeID, stepID: source.step.id)
+                })
               : nil,
             onToggleOverride: item.isMerged
               ? {
@@ -771,11 +804,56 @@ struct MealDetailView: View {
                 }
               }
               : nil,
-            ingredientBreakdownBySource: item.ingredientBreakdownBySource
+            ingredientBreakdownBySource: item.ingredientBreakdownBySource,
+            timerElapsedSeconds: item.isMerged
+              ? mergedStepTimerElapsed(sources: item.sources)
+              : nil,
+            timerDurationSeconds: item.isMerged
+              ? mergedStepTimerDuration(sources: item.sources)
+              : nil,
+            onSkipTimerOverride: item.isMerged
+              ? {
+                for source in item.sources {
+                  source.viewModel.skipStepTimer(
+                    recipeID: source.recipeID, stepID: source.step.id)
+                }
+              }
+              : nil,
+            canSkipTimerOverride: item.isMerged
+              ? item.sources.contains { source in
+                source.viewModel.canSkipStepTimer(
+                  recipeID: source.recipeID, stepID: source.step.id)
+              }
+              : nil,
+            timerMinSeconds: item.isMerged
+              ? mergedStepTimerMin(sources: item.sources)
+              : nil,
+            timerMaxSeconds: item.isMerged
+              ? mergedStepTimerMax(sources: item.sources)
+              : nil
           )
         }
       }
     )
+  }
+
+  private var hasActiveMealStepTimers: Bool {
+    componentViewModels.values.contains { $0.hasActiveStepTimers }
+  }
+
+  private func startMealTimerRefresh() {
+    guard mealTimerRefresh == nil else { return }
+    mealTimerRefresh = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+      mealTimerTick += 1
+    }
+    if let timer = mealTimerRefresh {
+      RunLoop.main.add(timer, forMode: .common)
+    }
+  }
+
+  private func stopMealTimerRefresh() {
+    mealTimerRefresh?.invalidate()
+    mealTimerRefresh = nil
   }
 
   private func formatUnifiedStepTitle(step: Mealplanning_RecipeStep, index: Int) -> String {
@@ -783,6 +861,82 @@ struct MealDetailView: View {
       return step.preparation.name
     }
     return "Step \(index + 1)"
+  }
+
+  private func mergedStepTimerElapsed(sources: [UnifiedMealStepSource]) -> TimeInterval? {
+    var best: (elapsed: TimeInterval, duration: UInt32)?
+    for source in sources {
+      guard source.viewModel.isStepTimerActive(recipeID: source.recipeID, stepID: source.step.id),
+        let elapsed = source.viewModel.stepTimerElapsedSeconds(
+          recipeID: source.recipeID, stepID: source.step.id),
+        let duration = source.viewModel.stepTimerDurationSeconds(
+          recipeID: source.recipeID, stepID: source.step.id)
+      else { continue }
+      let remaining = Double(duration) - elapsed
+      if best.map({ remaining > Double($0.duration) - $0.elapsed }) ?? true {
+        best = (elapsed, duration)
+      }
+    }
+    return best?.elapsed
+  }
+
+  private func mergedStepTimerDuration(sources: [UnifiedMealStepSource]) -> UInt32? {
+    var best: (elapsed: TimeInterval, duration: UInt32)?
+    for source in sources {
+      guard source.viewModel.isStepTimerActive(recipeID: source.recipeID, stepID: source.step.id),
+        let elapsed = source.viewModel.stepTimerElapsedSeconds(
+          recipeID: source.recipeID, stepID: source.step.id),
+        let duration = source.viewModel.stepTimerDurationSeconds(
+          recipeID: source.recipeID, stepID: source.step.id)
+      else { continue }
+      let remaining = Double(duration) - elapsed
+      if best.map({ remaining > Double($0.duration) - $0.elapsed }) ?? true {
+        best = (elapsed, duration)
+      }
+    }
+    return best?.duration
+  }
+
+  private func mergedStepTimerMin(sources: [UnifiedMealStepSource]) -> UInt32? {
+    var best: (elapsed: TimeInterval, duration: UInt32)?
+    var bestSource: UnifiedMealStepSource?
+    for source in sources {
+      guard source.viewModel.isStepTimerActive(recipeID: source.recipeID, stepID: source.step.id),
+        let elapsed = source.viewModel.stepTimerElapsedSeconds(
+          recipeID: source.recipeID, stepID: source.step.id),
+        let duration = source.viewModel.stepTimerDurationSeconds(
+          recipeID: source.recipeID, stepID: source.step.id)
+      else { continue }
+      let remaining = Double(duration) - elapsed
+      if best.map({ remaining > Double($0.duration) - $0.elapsed }) ?? true {
+        best = (elapsed, duration)
+        bestSource = source
+      }
+    }
+    return bestSource.flatMap {
+      $0.viewModel.stepTimerMinSeconds(recipeID: $0.recipeID, stepID: $0.step.id)
+    }
+  }
+
+  private func mergedStepTimerMax(sources: [UnifiedMealStepSource]) -> UInt32? {
+    var best: (elapsed: TimeInterval, duration: UInt32)?
+    var bestSource: UnifiedMealStepSource?
+    for source in sources {
+      guard source.viewModel.isStepTimerActive(recipeID: source.recipeID, stepID: source.step.id),
+        let elapsed = source.viewModel.stepTimerElapsedSeconds(
+          recipeID: source.recipeID, stepID: source.step.id),
+        let duration = source.viewModel.stepTimerDurationSeconds(
+          recipeID: source.recipeID, stepID: source.step.id)
+      else { continue }
+      let remaining = Double(duration) - elapsed
+      if best.map({ remaining > Double($0.duration) - $0.elapsed }) ?? true {
+        best = (elapsed, duration)
+        bestSource = source
+      }
+    }
+    return bestSource.flatMap {
+      $0.viewModel.stepTimerMaxSeconds(recipeID: $0.recipeID, stepID: $0.step.id)
+    }
   }
 
   private func componentTagStyle(for componentIndex: Int) -> (background: Color, foreground: Color)
@@ -826,6 +980,7 @@ struct MealDetailView: View {
       print("🧼   set washHands=\(isCompleted) on viewModel for recipe \(recipeID.suffix(6))")
       if !isCompleted {
         viewModel.completedSteps.removeAll()
+        viewModel.stepTimerStartTimes.removeAll()
         viewModel.clearStepCompletionConditionProgress()
       }
     }

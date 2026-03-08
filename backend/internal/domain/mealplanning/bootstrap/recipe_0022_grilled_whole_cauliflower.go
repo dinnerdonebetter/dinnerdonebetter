@@ -69,7 +69,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	charcoal := enums.Ingredients["charcoal briquettes"]
 
 	// Measurement units
-	cupMeasurement := enums.MeasurementUnits["cup"]
+	gramMeasurement := enums.MeasurementUnits["gram"]
 	literMeasurement := enums.MeasurementUnits["liter"]
 	poundMeasurement := enums.MeasurementUnits["pound"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
@@ -99,14 +99,11 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	trimCauliflowerVIP := enums.IngredientPreparations[trimPrep.ID][cauliflower.ID]
 	trimKnifeVPI := enums.PreparationInstruments[trimPrep.ID][knife.ID]
 
-	sliceCauliflowerVIP := enums.IngredientPreparations[slicePrep.ID][cauliflower.ID]
 	sliceKnifeVPI := enums.PreparationInstruments[slicePrep.ID][knife.ID]
 
 	addWaterVIP := enums.IngredientPreparations[addPrep.ID][water.ID]
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 	addPotVPV := enums.PreparationVessels[addPrep.ID][pot.ID]
-
-	submergeCauliflowerVIP := enums.IngredientPreparations[submergePrep.ID][cauliflower.ID]
 
 	brineCauliflowerVIP := enums.IngredientPreparations[brinePrep.ID][cauliflower.ID]
 
@@ -141,7 +138,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	// Measurement unit bridges
 	cauliflowerPoundVIMU := enums.IngredientMeasurementUnits[cauliflower.ID][poundMeasurement.ID]
 	waterLiterVIMU := enums.IngredientMeasurementUnits[water.ID][literMeasurement.ID]
-	saltCupVIMU := enums.IngredientMeasurementUnits[salt.ID][cupMeasurement.ID]
+	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	togarashiTeaspoonVIMU := enums.IngredientMeasurementUnits[togarashi.ID][teaspoonMeasurement.ID]
 
 	// === GRILLED CAULIFLOWER STEPS ===
@@ -160,7 +157,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		PreparationID:        slicePrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Using a sharp knife, slice the stem off of each head so that the cauliflower sits evenly on a flat surface. Do not cut out the core.",
-		Ingredients:          []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](0), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(sliceCauliflowerVIP), Name: "trimmed cauliflower heads", Quantity: types.Float32RangeWithOptionalMax{Min: 4}}},
+		Ingredients:          []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](0), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "trimmed cauliflower heads", Quantity: types.Float32RangeWithOptionalMax{Min: 4}}},
 		Instruments:          []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(sliceKnifeVPI), Name: "sharp knife", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
 		Products:             []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "prepared cauliflower heads", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &poundMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)}}},
 	}
@@ -172,7 +169,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		ExplicitInstructions: "In a large container (8-quart) or large stock pot, add water and salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ValidIngredientPreparationID: vipID(addWaterVIP), ValidIngredientMeasurementUnitID: vimuID(waterLiterVIMU), Name: "water", QuantityNotes: "3 quarts (2.84L)", Quantity: types.Float32RangeWithOptionalMax{Min: 2.84}},
-			{ValidIngredientPreparationID: vipID(addSaltVIP), ValidIngredientMeasurementUnitID: vimuID(saltCupVIMU), Name: "kosher salt", QuantityNotes: "3/4 cup plus 2 tablespoons (126g)", Quantity: types.Float32RangeWithOptionalMax{Min: 0.875}},
+			{ValidIngredientPreparationID: vipID(addSaltVIP), ValidIngredientMeasurementUnitID: vimuID(saltGramVIMU), Name: "kosher salt", QuantityNotes: "3/4 cup plus 2 tablespoons", Quantity: types.Float32RangeWithOptionalMax{Min: 126}},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(addPotVPV), Name: "8-quart pot", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -199,7 +196,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	gc4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: submergePrep.ID, Index: 4, ExplicitInstructions: "Place the cauliflower in the saltwater brine, core side up, making sure that the cauliflower is submerged.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
-			{ProductOfRecipeStepIndex: pointer.To[uint64](1), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(submergeCauliflowerVIP), Name: "prepared cauliflower heads", Quantity: types.Float32RangeWithOptionalMax{Min: 4}},
+			{ProductOfRecipeStepIndex: pointer.To[uint64](1), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "prepared cauliflower heads", Quantity: types.Float32RangeWithOptionalMax{Min: 4}},
 			{ProductOfRecipeStepIndex: pointer.To[uint64](3), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "saltwater brine", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](3), ProductOfRecipeStepProductIndex: pointer.To[uint64](1), Name: "8-quart pot", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},

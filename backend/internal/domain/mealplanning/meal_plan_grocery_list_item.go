@@ -154,8 +154,11 @@ func (x *MealPlanGroceryListItem) Update(input *MealPlanGroceryListItemUpdateReq
 		x.QuantityNeeded.Min = *input.QuantityNeeded.Min
 	}
 
-	if input.QuantityNeeded.Max != nil && x.QuantityNeeded.Max != nil && *input.QuantityNeeded.Max != *x.QuantityNeeded.Max {
+	if input.QuantityNeeded.Max != nil {
 		x.QuantityNeeded.Max = input.QuantityNeeded.Max
+	} else if input.QuantityNeeded.Min != nil {
+		// User sent quantity update with only min (single-value edit) — clear max
+		x.QuantityNeeded.Max = nil
 	}
 
 	// was nil and now will not be nil

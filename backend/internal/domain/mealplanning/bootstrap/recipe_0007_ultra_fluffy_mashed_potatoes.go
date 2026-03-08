@@ -37,7 +37,6 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Get measurement units
 	poundMeasurement := enums.MeasurementUnits["pound"]
 	cupMeasurement := enums.MeasurementUnits["cup"]
-	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	gramMeasurement := enums.MeasurementUnits["gram"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
 
@@ -128,7 +127,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	potatoPoundVIMU := enums.IngredientMeasurementUnits[potato.ID][poundMeasurement.ID]
 	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	milkCupVIMU := enums.IngredientMeasurementUnits[milk.ID][cupMeasurement.ID]
-	butterTablespoonVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
+	butterGramVIMU := enums.IngredientMeasurementUnits[butter.ID][gramMeasurement.ID]
 	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
 
 	// Step 0: Grind whole black peppercorns
@@ -747,10 +746,10 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &sliceButterVIP.ID,
-				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &butterGramVIMU.ID,
 				Name:                             "unsalted butter, room temperature",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 6, // 6 tablespoons
+					Min: 84, // 6 tablespoons (14g each)
 				},
 			},
 		},
@@ -777,9 +776,9 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Name:              "butter pats (1/2-inch)",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
-				MeasurementUnitID: &tablespoonMeasurement.ID,
+				MeasurementUnitID: &gramMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](6),
+					Min: pointer.To[float32](84),
 				},
 			},
 		},
@@ -804,7 +803,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				Name:                            "butter pats (1/2-inch)",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 6, // 6 tablespoons
+					Min: 84, // 6 tablespoons (14g each)
 				},
 			},
 		},

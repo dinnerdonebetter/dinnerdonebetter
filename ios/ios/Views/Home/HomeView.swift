@@ -11,6 +11,7 @@ import SwiftUI
 
 struct HomeView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(UserSettingsService.self) private var userSettingsService
   @State private var viewModel: HomeViewModel?
 
   var body: some View {
@@ -82,7 +83,7 @@ struct HomeView: View {
                 VStack(spacing: DSTheme.Spacing.lg) {
                   Divider()
 
-                  createMealPlanSection
+                  createMealPlanSection(viewModel: viewModel)
 
                   quickAccessRow
                 }
@@ -155,8 +156,13 @@ struct HomeView: View {
   }
 
   // MARK: - Create Meal Plan CTA
-  private var createMealPlanSection: some View {
-    NavigationLink(destination: CreateMealPlanWizardView()) {
+  private func createMealPlanSection(viewModel: HomeViewModel) -> some View {
+    NavigationLink(
+      destination: CreateMealPlanWizardView(
+        acceptedOccupiedDates: viewModel.acceptedOccupiedDates,
+        proposedOccupiedDates: viewModel.proposedOccupiedDates
+      )
+    ) {
       HStack(spacing: DSTheme.Spacing.md) {
         ZStack {
           Circle()
@@ -298,7 +304,8 @@ struct HomeView: View {
           destination: TaskListView(
             mealPlan: mealPlan,
             tasks: [],
-            authManager: viewModel.authManager
+            authManager: viewModel.authManager,
+            userSettingsService: userSettingsService
           )
         ) {
           InfoButton(icon: "checklist", text: summary.text, color: summary.color)
@@ -321,7 +328,7 @@ struct HomeView: View {
           InfoButton(
             icon: "cart.fill",
             text: neededCount > 0
-              ? "\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed"
+              ? "Grocery List (\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed)"
               : "All ingredients acquired",
             color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
           )
@@ -391,7 +398,8 @@ struct HomeView: View {
             destination: TaskListView(
               mealPlan: mealPlan,
               tasks: [],
-              authManager: viewModel.authManager
+              authManager: viewModel.authManager,
+              userSettingsService: userSettingsService
             )
           ) {
             InfoButton(icon: "checklist", text: summary.text, color: summary.color)
@@ -415,7 +423,7 @@ struct HomeView: View {
             InfoButton(
               icon: "cart.fill",
               text: neededCount > 0
-                ? "\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed"
+                ? "Grocery List (\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed)"
                 : "All ingredients acquired",
               color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
             )
@@ -485,7 +493,7 @@ struct HomeView: View {
 
     if readyCount > 0 {
       return (
-        "\(readyCount) task\(readyCount == 1 ? "" : "s") ready now",
+        "Prep Tasks (\(readyCount) ready)",
         DSTheme.Colors.warning
       )
     }
@@ -573,25 +581,116 @@ struct HomeView: View {
     }
   }
 
-  static func mealPlanDisplayTitle(_ mealPlan: Mealplanning_MealPlan, fallback: String) -> String {
-    let title = mealPlan.notes.trimmingCharacters(in: .whitespacesAndNewlines)
-    guard !title.isEmpty else {
-      return fallback
+  /// Compact date range for subtitle when title already conveys meal info (e.g. "Mar 12–14" or "Tue, Thu 7:00 PM").
+  static func formatMealPlanTimeRangeCompact(_ mealPlan: Mealplanning_MealPlan) -> String {
+    guard !mealPlan.events.isEmpty else {
+      return ""
     }
 
-    guard mealPlan.events.count == 1, title.hasPrefix("Meal Plan for ") else {
+    let eventDates = mealPlan.events.map { HomeViewModel.timestampToDate($0.startsAt) }.sorted()
+    let earliestStart = eventDates.first ?? Date()
+    let latestEnd = mealPlan.events.map { HomeViewModel.timestampToDate($0.endsAt) }.max() ?? Date()
+
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "MMM d"
+
+    let calendar = Calendar.current
+    if calendar.isDate(earliestStart, inSameDayAs: latestEnd) {
+      let timeFormatter = DateFormatter()
+      timeFormatter.dateStyle = .none
+      timeFormatter.timeStyle = .short
+      return
+        "\(dateFormatter.string(from: earliestStart)) • \(timeFormatter.string(from: earliestStart))"
+    }
+
+    if eventDates.count <= 3 {
+      let weekdayFormatter = DateFormatter()
+      weekdayFormatter.dateFormat = "EEE"
+      let timeFormatter = DateFormatter()
+      timeFormatter.dateStyle = .none
+      timeFormatter.timeStyle = .short
+      let parts = eventDates.map {
+        "\(weekdayFormatter.string(from: $0)) \(timeFormatter.string(from: $0))"
+      }
+      return parts.joined(separator: ", ")
+    }
+
+    let startString = dateFormatter.string(from: earliestStart)
+    let endString = dateFormatter.string(from: latestEnd)
+    return "\(startString)–\(endString)"
+  }
+
+  /// Display names from chosen meal options (meal name or recipe names).
+  static func chosenMealDisplayNames(from mealPlan: Mealplanning_MealPlan) -> [String] {
+    mealPlan.events.compactMap { event in
+      guard let chosen = event.options.first(where: { $0.chosen }) else { return nil }
+      let meal = chosen.meal
+      if !meal.name.isEmpty {
+        return meal.name
+      }
+      let recipeNames = meal.components.compactMap { comp -> String? in
+        comp.recipe.name.isEmpty ? nil : comp.recipe.name
+      }
+      return recipeNames.isEmpty ? nil : recipeNames.joined(separator: ", ")
+    }
+  }
+
+  /// Whether notes is the auto-generated default from the wizard.
+  static func isDefaultMealPlanTitle(_ notes: String, mealPlan: Mealplanning_MealPlan) -> Bool {
+    let trimmed = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else { return true }
+
+    let dateRange = formatMealPlanTimeRange(mealPlan)
+    guard !dateRange.isEmpty else { return false }
+
+    if trimmed == "Dinners \(dateRange)" {
+      return true
+    }
+
+    if mealPlan.events.count == 1, trimmed.hasPrefix("Meal Plan for ") {
+      let startDate =
+        mealPlan.events.map { HomeViewModel.timestampToDate($0.startsAt) }.min() ?? Date()
+      let formatter = DateFormatter()
+      formatter.dateStyle = .medium
+      formatter.timeStyle = .none
+      return trimmed == "Meal Plan for \(formatter.string(from: startDate))"
+    }
+
+    return false
+  }
+
+  static func mealPlanDisplayTitle(_ mealPlan: Mealplanning_MealPlan, fallback: String) -> String {
+    let title = mealPlan.notes.trimmingCharacters(in: .whitespacesAndNewlines)
+
+    if !title.isEmpty && !Self.isDefaultMealPlanTitle(title, mealPlan: mealPlan) {
       return title
     }
 
-    let startDate =
-      mealPlan.events
-      .map { HomeViewModel.timestampToDate($0.startsAt) }
-      .min() ?? Date()
-    let formatter = DateFormatter()
-    formatter.dateStyle = .medium
-    formatter.timeStyle = .none
+    let names = Self.chosenMealDisplayNames(from: mealPlan)
+    if !names.isEmpty {
+      return names.joined(separator: " & ")
+    }
 
-    return "Meal Plan for \(formatter.string(from: startDate))"
+    guard !mealPlan.events.isEmpty else {
+      return fallback
+    }
+
+    let earliestStart =
+      mealPlan.events.map { HomeViewModel.timestampToDate($0.startsAt) }.min() ?? Date()
+    let latestEnd = mealPlan.events.map { HomeViewModel.timestampToDate($0.endsAt) }.max() ?? Date()
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "MMM d"
+    let calendar = Calendar.current
+    let compactRange: String
+    if calendar.isDate(earliestStart, inSameDayAs: latestEnd) {
+      compactRange = dateFormatter.string(from: earliestStart)
+    } else {
+      compactRange =
+        "\(dateFormatter.string(from: earliestStart))–\(dateFormatter.string(from: latestEnd))"
+    }
+    let eventCount = mealPlan.events.count
+    let mealType = eventCount == 1 ? "dinner" : "\(eventCount) dinners"
+    return "\(mealType.capitalized) • \(compactRange)"
   }
 }
 
@@ -719,6 +818,17 @@ struct PendingVoteCardContent: View {
 struct UpcomingMealCardContent: View {
   let mealPlan: Mealplanning_MealPlan
 
+  private var usesDerivedTitle: Bool {
+    let notes = mealPlan.notes.trimmingCharacters(in: .whitespacesAndNewlines)
+    return notes.isEmpty || HomeView.isDefaultMealPlanTitle(notes, mealPlan: mealPlan)
+  }
+
+  private var subtitleText: String {
+    usesDerivedTitle
+      ? HomeView.formatMealPlanTimeRangeCompact(mealPlan)
+      : HomeView.formatMealPlanTimeRange(mealPlan)
+  }
+
   var body: some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       HStack {
@@ -727,9 +837,11 @@ struct UpcomingMealCardContent: View {
             .font(DSTheme.Typography.label)
             .foregroundColor(DSTheme.Colors.textPrimary)
 
-          Text(HomeView.formatMealPlanTimeRange(mealPlan))
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.textSecondary)
+          if !subtitleText.isEmpty {
+            Text(subtitleText)
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
         }
 
         Spacer()
@@ -749,13 +861,13 @@ struct UpcomingMealCardContent: View {
                 .fill(mealColor(for: event.mealName))
                 .frame(width: 8, height: 8)
 
-              Text(MealPlanningUtils.formatMealName(event.mealName))
+              Text(eventDisplayLabel(event))
                 .font(DSTheme.Typography.body)
                 .foregroundColor(DSTheme.Colors.textPrimary)
 
               Spacer()
 
-              Text(formatEventDate(event))
+              Text(formatEventDate(event, compact: mealPlan.status == .finalized))
                 .font(DSTheme.Typography.caption)
                 .foregroundColor(DSTheme.Colors.textSecondary)
             }
@@ -778,12 +890,38 @@ struct UpcomingMealCardContent: View {
     )
   }
 
-  private func formatEventDate(_ event: Mealplanning_MealPlanEvent) -> String {
+  private func eventDisplayLabel(_ event: Mealplanning_MealPlanEvent) -> String {
+    guard mealPlan.status == .finalized,
+      let chosen = event.options.first(where: { $0.chosen })
+    else {
+      return MealPlanningUtils.formatMealName(event.mealName)
+    }
+    let meal = chosen.meal
+    if !meal.name.isEmpty {
+      return meal.name
+    }
+    let recipeNames = meal.components.compactMap { comp -> String? in
+      comp.recipe.name.isEmpty ? nil : comp.recipe.name
+    }
+    if !recipeNames.isEmpty {
+      return recipeNames.joined(separator: ", ")
+    }
+    return MealPlanningUtils.formatMealName(event.mealName)
+  }
+
+  private func formatEventDate(_ event: Mealplanning_MealPlanEvent, compact: Bool) -> String {
+    let date = HomeViewModel.timestampToDate(event.startsAt)
+    if compact {
+      let weekdayFormatter = DateFormatter()
+      weekdayFormatter.dateFormat = "EEE"
+      let timeFormatter = DateFormatter()
+      timeFormatter.dateStyle = .none
+      timeFormatter.timeStyle = .short
+      return "\(weekdayFormatter.string(from: date)) \(timeFormatter.string(from: date))"
+    }
     let formatter = DateFormatter()
     formatter.dateStyle = .short
     formatter.timeStyle = .short
-
-    let date = HomeViewModel.timestampToDate(event.startsAt)
     return formatter.string(from: date)
   }
 
