@@ -52,6 +52,6 @@ func ToAPIError(err error) (code types.ErrorCode, msg string) {
 	default:
 		code = types.ErrTalkingToDatabase
 		msg = "an error occurred"
-		return
+		return code, msg
 	}
 }
