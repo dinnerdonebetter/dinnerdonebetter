@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	mealplanningnotifications "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 	msgqueuemock "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -67,5 +68,5 @@ func TestScheduler_ScheduleNotifications_publishesMobileNotificationRequest(t *t
 	assert.Equal(t, "Meal plan task", req.Title)
 	assert.Equal(t, "Chop onions for Dinner on Monday", req.Body)
 	assert.NotNil(t, req.Context)
-	assert.Equal(t, taskID, req.Context[notifications.MealPlanTaskIDContextKey])
+	assert.Equal(t, taskID, req.Context[mealplanningnotifications.MealPlanTaskIDContextKey])
 }
