@@ -107,7 +107,8 @@ SELECT
 	) AS total_count
 FROM user_data_disclosures
 WHERE user_data_disclosures.archived_at IS NULL
-	AND user_data_disclosures.belongs_to_user = $4AND user_data_disclosures.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND user_data_disclosures.belongs_to_user = $4
+	AND user_data_disclosures.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND user_data_disclosures.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND user_data_disclosures.id > COALESCE($5, '')
 ORDER BY user_data_disclosures.id ASC

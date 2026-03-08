@@ -118,6 +118,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -152,45 +153,46 @@ WHERE
 `
 
 type GetValidIngredientMeasurementUnitRow struct {
-	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientMeasurementUnitCreatedAt                time.Time
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidMeasurementUnitCreatedAt                          time.Time
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
 	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
 	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
 	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitDescription                        string
-	ValidIngredientName                                    string
-	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientIconPath                                string
 	ValidMeasurementUnitPluralName                         string
 	ValidIngredientPluralName                              string
-	ValidMeasurementUnitIconPath                           string
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
-	ValidIngredientID                                      string
-	ValidMeasurementUnitName                               string
 	ValidMeasurementUnitID                                 string
+	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitName                               string
+	ValidIngredientID                                      string
+	ValidMeasurementUnitDescription                        string
+	ValidIngredientWarning                                 string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidIngredientIconPath                                string
+	ValidIngredientDescription                             string
+	ValidIngredientName                                    string
+	ValidMeasurementUnitIconPath                           string
 	ValidIngredientMeasurementUnitNotes                    string
+	ValidIngredientMeasurementUnitID                       string
 	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientSlug                                    string
-	ValidIngredientMeasurementUnitID                       string
-	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientIsLiquid                                sql.NullBool
 	ValidMeasurementUnitVolumetric                         sql.NullBool
-	ValidIngredientContainsFish                            bool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsGluten                          bool
 	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsAlcohol                         bool
 	ValidIngredientContainsShellfish                       bool
@@ -253,6 +255,7 @@ func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX
 		&i.ValidIngredientAnimalDerived,
 		&i.ValidIngredientPluralName,
 		&i.ValidIngredientRestrictToPreparations,
+		&i.ValidIngredientContaminatesEquipment,
 		&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 		&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 		&i.ValidIngredientStorageInstructions,
@@ -318,6 +321,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -433,6 +437,7 @@ type GetValidIngredientMeasurementUnitsRow struct {
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientContainsGluten                          bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientAnimalFlesh                             bool
@@ -513,6 +518,7 @@ func (q *Queries) GetValidIngredientMeasurementUnits(ctx context.Context, db DBT
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,
@@ -590,6 +596,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -624,45 +631,46 @@ WHERE
 `
 
 type GetValidIngredientMeasurementUnitsByIDsRow struct {
-	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientMeasurementUnitCreatedAt                time.Time
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidMeasurementUnitCreatedAt                          time.Time
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
 	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
 	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
 	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitDescription                        string
-	ValidIngredientName                                    string
-	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientIconPath                                string
 	ValidMeasurementUnitPluralName                         string
 	ValidIngredientPluralName                              string
-	ValidMeasurementUnitIconPath                           string
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
-	ValidIngredientID                                      string
-	ValidMeasurementUnitName                               string
 	ValidMeasurementUnitID                                 string
+	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitName                               string
+	ValidIngredientID                                      string
+	ValidMeasurementUnitDescription                        string
+	ValidIngredientWarning                                 string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidIngredientIconPath                                string
+	ValidIngredientDescription                             string
+	ValidIngredientName                                    string
+	ValidMeasurementUnitIconPath                           string
 	ValidIngredientMeasurementUnitNotes                    string
+	ValidIngredientMeasurementUnitID                       string
 	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientSlug                                    string
-	ValidIngredientMeasurementUnitID                       string
-	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientIsLiquid                                sql.NullBool
 	ValidMeasurementUnitVolumetric                         sql.NullBool
-	ValidIngredientContainsFish                            bool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsGluten                          bool
 	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsAlcohol                         bool
 	ValidIngredientContainsShellfish                       bool
@@ -731,6 +739,7 @@ func (q *Queries) GetValidIngredientMeasurementUnitsByIDs(ctx context.Context, d
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,
@@ -806,6 +815,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -923,6 +933,7 @@ type GetValidIngredientMeasurementUnitsForIngredientRow struct {
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientContainsGluten                          bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientAnimalFlesh                             bool
@@ -1004,6 +1015,7 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,
@@ -1081,6 +1093,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -1198,6 +1211,7 @@ type GetValidIngredientMeasurementUnitsForMeasurementUnitRow struct {
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientContainsGluten                          bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientAnimalFlesh                             bool
@@ -1279,6 +1293,7 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
 
@@ -339,7 +340,7 @@ func footer(config *LayoutConfig) g.Node {
 				ghtml.Class("flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0"),
 				ghtml.P(
 					ghtml.Class(fmt.Sprintf("text-sm %s", design.TextColor(config.Palette.Text))),
-					g.Textf("© 2025 %s. All rights reserved.", config.AppName),
+					g.Textf("© %d %s. All rights reserved.", time.Now().Year(), config.AppName),
 				),
 				ghtml.Div(
 					ghtml.Class("flex space-x-4 text-sm"),

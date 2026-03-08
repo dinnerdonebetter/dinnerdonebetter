@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -27,7 +28,7 @@ func (q *repository) ValidIngredientExists(ctx context.Context, validIngredientI
 	logger := q.logger.Clone()
 
 	if validIngredientID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
@@ -48,7 +49,7 @@ func (q *repository) GetValidIngredient(ctx context.Context, validIngredientID s
 	logger := q.logger.Clone()
 
 	if validIngredientID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
@@ -84,6 +85,7 @@ func (q *repository) GetValidIngredient(ctx context.Context, validIngredientID s
 		ContainsSoy:            result.ContainsSoy,
 		AnimalDerived:          result.AnimalDerived,
 		RestrictToPreparations: result.RestrictToPreparations,
+		ContaminatesEquipment:  result.ContaminatesEquipment,
 		ContainsSesame:         result.ContainsSesame,
 		ContainsFish:           result.ContainsFish,
 		ContainsGluten:         result.ContainsGluten,
@@ -139,6 +141,7 @@ func (q *repository) GetRandomValidIngredient(ctx context.Context) (*mealplannin
 		ContainsSoy:            result.ContainsSoy,
 		AnimalDerived:          result.AnimalDerived,
 		RestrictToPreparations: result.RestrictToPreparations,
+		ContaminatesEquipment:  result.ContaminatesEquipment,
 		ContainsSesame:         result.ContainsSesame,
 		ContainsFish:           result.ContainsFish,
 		ContainsGluten:         result.ContainsGluten,
@@ -166,7 +169,7 @@ func (q *repository) SearchForValidIngredients(ctx context.Context, query string
 	logger := q.logger.Clone()
 
 	if query == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(platformkeys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, query)
@@ -219,6 +222,7 @@ func (q *repository) SearchForValidIngredients(ctx context.Context, query string
 			ContainsSoy:            result.ContainsSoy,
 			AnimalDerived:          result.AnimalDerived,
 			RestrictToPreparations: result.RestrictToPreparations,
+			ContaminatesEquipment:  result.ContaminatesEquipment,
 			ContainsSesame:         result.ContainsSesame,
 			ContainsFish:           result.ContainsFish,
 			ContainsGluten:         result.ContainsGluten,
@@ -255,13 +259,13 @@ func (q *repository) SearchForValidIngredientsForPreparation(ctx context.Context
 	logger := q.logger.Clone()
 
 	if preparationID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, preparationID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, preparationID)
 
 	if query == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(platformkeys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
@@ -309,6 +313,7 @@ func (q *repository) SearchForValidIngredientsForPreparation(ctx context.Context
 			ContainsSoy:            result.ContainsSoy,
 			AnimalDerived:          result.AnimalDerived,
 			RestrictToPreparations: result.RestrictToPreparations,
+			ContaminatesEquipment:  result.ContaminatesEquipment,
 			ContainsSesame:         result.ContainsSesame,
 			ContainsFish:           result.ContainsFish,
 			ContainsGluten:         result.ContainsGluten,
@@ -400,6 +405,7 @@ func (q *repository) GetValidIngredients(ctx context.Context, filter *filtering.
 			ContainsSoy:            result.ContainsSoy,
 			AnimalDerived:          result.AnimalDerived,
 			RestrictToPreparations: result.RestrictToPreparations,
+			ContaminatesEquipment:  result.ContaminatesEquipment,
 			ContainsSesame:         result.ContainsSesame,
 			ContainsFish:           result.ContainsFish,
 			ContainsGluten:         result.ContainsGluten,
@@ -438,7 +444,7 @@ func (q *repository) GetValidIngredientsWithIDs(ctx context.Context, ids []strin
 	logger := q.logger.Clone()
 
 	if ids == nil {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientsWithIDs(ctx, q.readDB, ids)
@@ -474,6 +480,7 @@ func (q *repository) GetValidIngredientsWithIDs(ctx context.Context, ids []strin
 			ContainsSoy:            result.ContainsSoy,
 			AnimalDerived:          result.AnimalDerived,
 			RestrictToPreparations: result.RestrictToPreparations,
+			ContaminatesEquipment:  result.ContaminatesEquipment,
 			ContainsSesame:         result.ContainsSesame,
 			ContainsFish:           result.ContainsFish,
 			ContainsGluten:         result.ContainsGluten,
@@ -515,7 +522,7 @@ func (q *repository) CreateValidIngredient(ctx context.Context, input *mealplann
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, input.ID)
 	logger := q.logger.WithValue(mealplanningkeys.ValidIngredientIDKey, input.ID)
@@ -542,6 +549,7 @@ func (q *repository) CreateValidIngredient(ctx context.Context, input *mealplann
 		AnimalDerived:                           input.AnimalDerived,
 		PluralName:                              input.PluralName,
 		RestrictToPreparations:                  input.RestrictToPreparations,
+		ContaminatesEquipment:                   input.ContaminatesEquipment,
 		MaximumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Max),
 		MinimumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Min),
 		StorageInstructions:                     input.StorageInstructions,
@@ -589,6 +597,7 @@ func (q *repository) CreateValidIngredient(ctx context.Context, input *mealplann
 		IsAcid:                 input.IsAcid,
 		IsHeat:                 input.IsHeat,
 		RestrictToPreparations: input.RestrictToPreparations,
+		ContaminatesEquipment:  input.ContaminatesEquipment,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Max: input.StorageTemperatureInCelsius.Max,
 			Min: input.StorageTemperatureInCelsius.Min,
@@ -612,7 +621,7 @@ func (q *repository) UpdateValidIngredient(ctx context.Context, updated *mealpla
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.ValidIngredientIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, updated.ID)
@@ -637,6 +646,7 @@ func (q *repository) UpdateValidIngredient(ctx context.Context, updated *mealpla
 		AnimalDerived:                           updated.AnimalDerived,
 		ContainsSesame:                          updated.ContainsSesame,
 		RestrictToPreparations:                  updated.RestrictToPreparations,
+		ContaminatesEquipment:                   updated.ContaminatesEquipment,
 		ContainsShellfish:                       updated.ContainsShellfish,
 		ContainsSoy:                             updated.ContainsSoy,
 		ContainsTreeNut:                         updated.ContainsTreeNut,
@@ -669,7 +679,7 @@ func (q *repository) MarkValidIngredientAsIndexed(ctx context.Context, validIngr
 	logger := q.logger.Clone()
 
 	if validIngredientID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
@@ -691,7 +701,7 @@ func (q *repository) ArchiveValidIngredient(ctx context.Context, validIngredient
 	logger := q.logger.Clone()
 
 	if validIngredientID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)

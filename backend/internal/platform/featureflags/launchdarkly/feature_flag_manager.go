@@ -2,14 +2,13 @@ package launchdarkly
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -27,9 +26,9 @@ const (
 )
 
 var (
-	ErrMissingHTTPClient = errors.New("missing HTTP client")
-	ErrNilConfig         = errors.New("missing config")
-	ErrMissingSDKKey     = errors.New("missing SDK key")
+	ErrMissingHTTPClient = platformerrors.New("missing HTTP client")
+	ErrNilConfig         = platformerrors.New("missing config")
+	ErrMissingSDKKey     = platformerrors.New("missing SDK key")
 )
 
 type (
@@ -109,7 +108,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
-		return false, internalerrors.ErrCircuitBroken
+		return false, circuitbreaking.ErrCircuitBroken
 	}
 
 	evalCtx := openfeature.NewEvaluationContext(userID, nil)
@@ -131,7 +130,7 @@ func (f *featureFlagManager) GetStringValue(ctx context.Context, userID, feature
 	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
-		return "", internalerrors.ErrCircuitBroken
+		return "", circuitbreaking.ErrCircuitBroken
 	}
 
 	evalCtx := openfeature.NewEvaluationContext(userID, nil)
@@ -153,7 +152,7 @@ func (f *featureFlagManager) GetInt64Value(ctx context.Context, userID, feature 
 	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
-		return 0, internalerrors.ErrCircuitBroken
+		return 0, circuitbreaking.ErrCircuitBroken
 	}
 
 	evalCtx := openfeature.NewEvaluationContext(userID, nil)

@@ -9,8 +9,8 @@ import (
 	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -58,7 +58,7 @@ func (m *commentsManager) CreateComment(ctx context.Context, input *comments.Com
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(identitykeys.UserIDKey, input.BelongsToUser)
 
@@ -107,7 +107,7 @@ func (m *commentsManager) UpdateComment(ctx context.Context, id, belongsToUser s
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(commentskeys.CommentIDKey, id).WithValue(identitykeys.UserIDKey, belongsToUser)
 	tracing.AttachToSpan(span, commentskeys.CommentIDKey, id)

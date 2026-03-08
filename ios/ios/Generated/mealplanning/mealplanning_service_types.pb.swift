@@ -189,6 +189,11 @@ public struct Mealplanning_ValidIngredientCreationRequestInput: @unchecked Senda
     set {_uniqueStorage()._isHeat = newValue}
   }
 
+  public var contaminatesEquipment: Bool {
+    get {return _storage._contaminatesEquipment}
+    set {_uniqueStorage()._contaminatesEquipment = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -978,6 +983,15 @@ public struct Mealplanning_ValidIngredientUpdateRequestInput: @unchecked Sendabl
   public var hasIsHeat: Bool {return _storage._isHeat != nil}
   /// Clears the value of `isHeat`. Subsequent reads from it will return its default value.
   public mutating func clearIsHeat() {_uniqueStorage()._isHeat = nil}
+
+  public var contaminatesEquipment: Bool {
+    get {return _storage._contaminatesEquipment ?? false}
+    set {_uniqueStorage()._contaminatesEquipment = newValue}
+  }
+  /// Returns true if `contaminatesEquipment` has been explicitly set.
+  public var hasContaminatesEquipment: Bool {return _storage._contaminatesEquipment != nil}
+  /// Clears the value of `contaminatesEquipment`. Subsequent reads from it will return its default value.
+  public mutating func clearContaminatesEquipment() {_uniqueStorage()._contaminatesEquipment = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -6912,6 +6926,8 @@ public struct Mealplanning_RecipeCreationRequestInput: Sendable {
 
   public var source: String = String()
 
+  public var sourceIsbn: String = String()
+
   public var description_p: String = String()
 
   public var pluralPortionName: String = String()
@@ -8656,6 +8672,15 @@ public struct Mealplanning_RecipeUpdateRequestInput: Sendable {
   /// Clears the value of `source`. Subsequent reads from it will return its default value.
   public mutating func clearSource() {self._source = nil}
 
+  public var sourceIsbn: String {
+    get {return _sourceIsbn ?? String()}
+    set {_sourceIsbn = newValue}
+  }
+  /// Returns true if `sourceIsbn` has been explicitly set.
+  public var hasSourceIsbn: Bool {return self._sourceIsbn != nil}
+  /// Clears the value of `sourceIsbn`. Subsequent reads from it will return its default value.
+  public mutating func clearSourceIsbn() {self._sourceIsbn = nil}
+
   public var description_p: String {
     get {return _description_p ?? String()}
     set {_description_p = newValue}
@@ -8726,6 +8751,7 @@ public struct Mealplanning_RecipeUpdateRequestInput: Sendable {
   fileprivate var _name: String? = nil
   fileprivate var _slug: String? = nil
   fileprivate var _source: String? = nil
+  fileprivate var _sourceIsbn: String? = nil
   fileprivate var _description_p: String? = nil
   fileprivate var _inspiredByRecipeID: String? = nil
   fileprivate var _estimatedPortions: Common_Float32RangeWithOptionalMaxUpdateRequestInput? = nil
@@ -15552,7 +15578,7 @@ fileprivate let _protobuf_package = "mealplanning"
 
 extension Mealplanning_ValidIngredientCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}storage_temperature_in_celsius\0\u{1}warning\0\u{3}icon_path\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_fish\0\u{3}contains_shellfish\0\u{3}animal_flesh\0\u{3}contains_egg\0\u{3}is_liquid\0\u{3}contains_soy\0\u{3}contains_peanut\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_dairy\0\u{3}contains_sesame\0\u{3}contains_tree_nut\0\u{3}contains_wheat\0\u{3}contains_alcohol\0\u{3}contains_gluten\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}storage_temperature_in_celsius\0\u{1}warning\0\u{3}icon_path\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_fish\0\u{3}contains_shellfish\0\u{3}animal_flesh\0\u{3}contains_egg\0\u{3}is_liquid\0\u{3}contains_soy\0\u{3}contains_peanut\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_dairy\0\u{3}contains_sesame\0\u{3}contains_tree_nut\0\u{3}contains_wheat\0\u{3}contains_alcohol\0\u{3}contains_gluten\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0\u{3}contaminates_equipment\0")
 
   fileprivate class _StorageClass {
     var _storageTemperatureInCelsius: Common_OptionalFloat32Range? = nil
@@ -15587,6 +15613,7 @@ extension Mealplanning_ValidIngredientCreationRequestInput: SwiftProtobuf.Messag
     var _isFat: Bool = false
     var _isAcid: Bool = false
     var _isHeat: Bool = false
+    var _contaminatesEquipment: Bool = false
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -15629,6 +15656,7 @@ extension Mealplanning_ValidIngredientCreationRequestInput: SwiftProtobuf.Messag
       _isFat = source._isFat
       _isAcid = source._isAcid
       _isHeat = source._isHeat
+      _contaminatesEquipment = source._contaminatesEquipment
     }
   }
 
@@ -15679,6 +15707,7 @@ extension Mealplanning_ValidIngredientCreationRequestInput: SwiftProtobuf.Messag
         case 30: try { try decoder.decodeSingularBoolField(value: &_storage._isFat) }()
         case 31: try { try decoder.decodeSingularBoolField(value: &_storage._isAcid) }()
         case 32: try { try decoder.decodeSingularBoolField(value: &_storage._isHeat) }()
+        case 33: try { try decoder.decodeSingularBoolField(value: &_storage._contaminatesEquipment) }()
         default: break
         }
       }
@@ -15787,6 +15816,9 @@ extension Mealplanning_ValidIngredientCreationRequestInput: SwiftProtobuf.Messag
       if _storage._isHeat != false {
         try visitor.visitSingularBoolField(value: _storage._isHeat, fieldNumber: 32)
       }
+      if _storage._contaminatesEquipment != false {
+        try visitor.visitSingularBoolField(value: _storage._contaminatesEquipment, fieldNumber: 33)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -15828,6 +15860,7 @@ extension Mealplanning_ValidIngredientCreationRequestInput: SwiftProtobuf.Messag
         if _storage._isFat != rhs_storage._isFat {return false}
         if _storage._isAcid != rhs_storage._isAcid {return false}
         if _storage._isHeat != rhs_storage._isHeat {return false}
+        if _storage._contaminatesEquipment != rhs_storage._contaminatesEquipment {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -16476,7 +16509,7 @@ extension Mealplanning_ValidIngredientStateUpdateRequestInput: SwiftProtobuf.Mes
 
 extension Mealplanning_ValidIngredientUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0\u{1}warning\0\u{3}icon_path\0\u{3}contains_dairy\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_shellfish\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}animal_flesh\0\u{3}is_liquid\0\u{3}contains_soy\0\u{3}plural_name\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}storage_temperature_in_celsius\0\u{3}storage_instructions\0\u{1}slug\0\u{3}contains_alcohol\0\u{3}shopping_suggestions\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0\u{1}warning\0\u{3}icon_path\0\u{3}contains_dairy\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_shellfish\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}animal_flesh\0\u{3}is_liquid\0\u{3}contains_soy\0\u{3}plural_name\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}storage_temperature_in_celsius\0\u{3}storage_instructions\0\u{1}slug\0\u{3}contains_alcohol\0\u{3}shopping_suggestions\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0\u{3}contaminates_equipment\0")
 
   fileprivate class _StorageClass {
     var _name: String? = nil
@@ -16511,6 +16544,7 @@ extension Mealplanning_ValidIngredientUpdateRequestInput: SwiftProtobuf.Message,
     var _isFat: Bool? = nil
     var _isAcid: Bool? = nil
     var _isHeat: Bool? = nil
+    var _contaminatesEquipment: Bool? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -16553,6 +16587,7 @@ extension Mealplanning_ValidIngredientUpdateRequestInput: SwiftProtobuf.Message,
       _isFat = source._isFat
       _isAcid = source._isAcid
       _isHeat = source._isHeat
+      _contaminatesEquipment = source._contaminatesEquipment
     }
   }
 
@@ -16603,6 +16638,7 @@ extension Mealplanning_ValidIngredientUpdateRequestInput: SwiftProtobuf.Message,
         case 30: try { try decoder.decodeSingularBoolField(value: &_storage._isFat) }()
         case 31: try { try decoder.decodeSingularBoolField(value: &_storage._isAcid) }()
         case 32: try { try decoder.decodeSingularBoolField(value: &_storage._isHeat) }()
+        case 33: try { try decoder.decodeSingularBoolField(value: &_storage._contaminatesEquipment) }()
         default: break
         }
       }
@@ -16711,6 +16747,9 @@ extension Mealplanning_ValidIngredientUpdateRequestInput: SwiftProtobuf.Message,
       try { if let v = _storage._isHeat {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 32)
       } }()
+      try { if let v = _storage._contaminatesEquipment {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 33)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -16752,6 +16791,7 @@ extension Mealplanning_ValidIngredientUpdateRequestInput: SwiftProtobuf.Message,
         if _storage._isFat != rhs_storage._isFat {return false}
         if _storage._isAcid != rhs_storage._isAcid {return false}
         if _storage._isHeat != rhs_storage._isHeat {return false}
+        if _storage._contaminatesEquipment != rhs_storage._contaminatesEquipment {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -25759,7 +25799,7 @@ extension Mealplanning_UpdateUserIngredientPreferenceResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}inspired_by_recipe_id\0\u{1}name\0\u{1}source\0\u{1}description\0\u{3}plural_portion_name\0\u{3}portion_name\0\u{1}slug\0\u{3}yields_component_type\0\u{3}estimated_portions\0\u{3}prep_tasks\0\u{1}steps\0\u{3}also_create_meal\0\u{3}eligible_for_meals\0\u{1}media\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}inspired_by_recipe_id\0\u{1}name\0\u{1}source\0\u{1}description\0\u{3}plural_portion_name\0\u{3}portion_name\0\u{1}slug\0\u{3}yields_component_type\0\u{3}estimated_portions\0\u{3}prep_tasks\0\u{1}steps\0\u{3}also_create_meal\0\u{3}eligible_for_meals\0\u{1}media\0\u{3}source_isbn\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25781,6 +25821,7 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
       case 12: try { try decoder.decodeSingularBoolField(value: &self.alsoCreateMeal) }()
       case 13: try { try decoder.decodeSingularBoolField(value: &self.eligibleForMeals) }()
       case 14: try { try decoder.decodeRepeatedMessageField(value: &self.media) }()
+      case 15: try { try decoder.decodeSingularStringField(value: &self.sourceIsbn) }()
       default: break
       }
     }
@@ -25833,6 +25874,9 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
     if !self.media.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.media, fieldNumber: 14)
     }
+    if !self.sourceIsbn.isEmpty {
+      try visitor.visitSingularStringField(value: self.sourceIsbn, fieldNumber: 15)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -25840,6 +25884,7 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
     if lhs._inspiredByRecipeID != rhs._inspiredByRecipeID {return false}
     if lhs.name != rhs.name {return false}
     if lhs.source != rhs.source {return false}
+    if lhs.sourceIsbn != rhs.sourceIsbn {return false}
     if lhs.description_p != rhs.description_p {return false}
     if lhs.pluralPortionName != rhs.pluralPortionName {return false}
     if lhs.portionName != rhs.portionName {return false}
@@ -27748,7 +27793,7 @@ extension Mealplanning_RecipeStepVesselUpdateRequestInput: SwiftProtobuf.Message
 
 extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}slug\0\u{1}source\0\u{1}description\0\u{3}inspired_by_recipe_id\0\u{4}\u{2}estimated_portions\0\u{3}portion_name\0\u{3}plural_portion_name\0\u{3}eligible_for_meals\0\u{3}yields_component_type\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}slug\0\u{1}source\0\u{1}description\0\u{3}inspired_by_recipe_id\0\u{4}\u{2}estimated_portions\0\u{3}portion_name\0\u{3}plural_portion_name\0\u{3}eligible_for_meals\0\u{3}yields_component_type\0\u{3}source_isbn\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27766,6 +27811,7 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
       case 9: try { try decoder.decodeSingularStringField(value: &self._pluralPortionName) }()
       case 10: try { try decoder.decodeSingularBoolField(value: &self._eligibleForMeals) }()
       case 11: try { try decoder.decodeSingularEnumField(value: &self._yieldsComponentType) }()
+      case 12: try { try decoder.decodeSingularStringField(value: &self._sourceIsbn) }()
       default: break
       }
     }
@@ -27806,6 +27852,9 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
     try { if let v = self._yieldsComponentType {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 11)
     } }()
+    try { if let v = self._sourceIsbn {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 12)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -27813,6 +27862,7 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
     if lhs._name != rhs._name {return false}
     if lhs._slug != rhs._slug {return false}
     if lhs._source != rhs._source {return false}
+    if lhs._sourceIsbn != rhs._sourceIsbn {return false}
     if lhs._description_p != rhs._description_p {return false}
     if lhs._inspiredByRecipeID != rhs._inspiredByRecipeID {return false}
     if lhs._estimatedPortions != rhs._estimatedPortions {return false}

@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -26,7 +27,7 @@ func (q *repository) ValidIngredientPreparationExists(ctx context.Context, valid
 	logger := q.logger.Clone()
 
 	if validIngredientPreparationID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
@@ -47,7 +48,7 @@ func (q *repository) GetValidIngredientPreparation(ctx context.Context, validIng
 	logger := q.logger.Clone()
 
 	if validIngredientPreparationID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
@@ -275,7 +276,7 @@ func (q *repository) GetValidIngredientPreparationsForPreparation(ctx context.Co
 	logger := q.logger.Clone()
 
 	if preparationID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, preparationID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, preparationID)
@@ -410,7 +411,7 @@ func (q *repository) GetValidIngredientPreparationsForIngredient(ctx context.Con
 	logger := q.logger.Clone()
 
 	if ingredientID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, ingredientID)
@@ -644,7 +645,7 @@ func (q *repository) CreateValidIngredientPreparation(ctx context.Context, input
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, input.ID)
 	logger := q.logger.WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, input.ID)
@@ -694,7 +695,7 @@ func (q *repository) UpdateValidIngredientPreparation(ctx context.Context, updat
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, updated.ID)
@@ -721,7 +722,7 @@ func (q *repository) ArchiveValidIngredientPreparation(ctx context.Context, vali
 	logger := q.logger.Clone()
 
 	if validIngredientPreparationID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)

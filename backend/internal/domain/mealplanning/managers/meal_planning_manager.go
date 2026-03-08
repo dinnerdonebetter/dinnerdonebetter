@@ -11,8 +11,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -183,7 +183,7 @@ func (m *mealPlanningManager) CreateMeal(ctx context.Context, creatorID string, 
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existing, err := m.db.FindMealWithSameComponents(ctx, creatorID, input)
@@ -336,10 +336,10 @@ func (m *mealPlanningManager) CreateMealList(ctx context.Context, userID string,
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 	if userID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -391,13 +391,13 @@ func (m *mealPlanningManager) UpdateMealList(ctx context.Context, mealListID, us
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 	if mealListID == "" || userID == "" {
-		return internalerrors.ErrEmptyInputParameter
+		return platformerrors.ErrEmptyInputParameter
 	}
 	if input.Name == nil || input.Description == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	updated := &types.MealList{
@@ -420,7 +420,7 @@ func (m *mealPlanningManager) ArchiveMealList(ctx context.Context, mealListID, u
 	logger := m.logger.WithSpan(span)
 
 	if mealListID == "" || userID == "" {
-		return internalerrors.ErrEmptyInputParameter
+		return platformerrors.ErrEmptyInputParameter
 	}
 
 	if err := m.db.ArchiveMealList(ctx, mealListID, userID); err != nil {
@@ -437,7 +437,7 @@ func (m *mealPlanningManager) AddMealToMealList(ctx context.Context, mealListID,
 	logger := m.logger.WithSpan(span)
 
 	if mealListID == "" || mealID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	exists, err := m.db.MealExistsInMealList(ctx, mealListID, mealID)
@@ -477,13 +477,13 @@ func (m *mealPlanningManager) UpdateMealListItem(ctx context.Context, mealListIt
 	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 	if mealListItemID == "" || mealListID == "" || mealID == "" {
-		return internalerrors.ErrEmptyInputParameter
+		return platformerrors.ErrEmptyInputParameter
 	}
 	if input.Notes == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	updated := &types.MealListItem{
@@ -507,7 +507,7 @@ func (m *mealPlanningManager) RemoveMealFromMealList(ctx context.Context, mealLi
 	logger := m.logger.WithSpan(span)
 
 	if mealListID == "" || mealListItemID == "" {
-		return internalerrors.ErrEmptyInputParameter
+		return platformerrors.ErrEmptyInputParameter
 	}
 
 	if err := m.db.ArchiveMealListItem(ctx, mealListItemID, mealListID); err != nil {
@@ -524,7 +524,7 @@ func (m *mealPlanningManager) ListMealListItems(ctx context.Context, mealListID 
 	logger := m.logger.WithSpan(span)
 
 	if mealListID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	results, err := m.db.GetMealListItems(ctx, mealListID, filter)
@@ -559,15 +559,15 @@ func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, ownerID, creat
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if creatorID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	if ownerID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	convertedInput := converters.ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input)
@@ -617,7 +617,7 @@ func (m *mealPlanningManager) UpdateMealPlan(ctx context.Context, mealPlanID, ow
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -729,7 +729,7 @@ func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, mealPlanI
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	convertedInput := converters.ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(input)
@@ -773,7 +773,7 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -852,7 +852,7 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
@@ -886,11 +886,11 @@ func (m *mealPlanningManager) CreateMealPlanOptionWithEventID(ctx context.Contex
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if mealPlanEventID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
@@ -946,7 +946,7 @@ func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlan
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1033,7 +1033,7 @@ func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, cre
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVotesDatabaseCreationInput(input)
@@ -1085,7 +1085,7 @@ func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, meal
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1187,7 +1187,7 @@ func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *typ
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	convertedInput := converters.ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput(input)
@@ -1211,7 +1211,7 @@ func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, inpu
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.MealPlanTaskIDKey, input.MealPlanTaskID)
@@ -1248,7 +1248,7 @@ func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context,
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	convertedInput := converters.ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemDatabaseCreationInput(input)
@@ -1291,7 +1291,7 @@ func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context,
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1390,7 +1390,7 @@ func (m *mealPlanningManager) CreateMealPlanRecipeOptionSelection(ctx context.Co
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -1420,7 +1420,7 @@ func (m *mealPlanningManager) UpdateMealPlanRecipeOptionSelection(ctx context.Co
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1493,7 +1493,7 @@ func (m *mealPlanningManager) ListUserIngredientPreferences(ctx context.Context,
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if ownerID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(identitykeys.UserIDKey, ownerID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
@@ -1526,11 +1526,11 @@ func (m *mealPlanningManager) CreateUserIngredientPreference(ctx context.Context
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if ownerID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1566,7 +1566,7 @@ func (m *mealPlanningManager) UpdateUserIngredientPreference(ctx context.Context
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1680,7 +1680,7 @@ func (m *mealPlanningManager) UpdateAccountInstrumentOwnership(ctx context.Conte
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{

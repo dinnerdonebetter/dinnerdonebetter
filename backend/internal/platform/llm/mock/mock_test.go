@@ -1,7 +1,6 @@
 package mock
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/llm"
@@ -13,12 +12,12 @@ func TestProvider_Completion(t *testing.T) {
 	t.Parallel()
 
 	m := &Provider{}
-	m.On("Completion", context.Background(), llm.CompletionParams{
+	m.On("Completion", t.Context(), llm.CompletionParams{
 		Model:    "test",
 		Messages: []llm.Message{{Role: "user", Content: "hi"}},
 	}).Return(&llm.CompletionResult{Content: "mocked"}, nil)
 
-	ctx := context.Background()
+	ctx := t.Context()
 	result, err := m.Completion(ctx, llm.CompletionParams{
 		Model:    "test",
 		Messages: []llm.Message{{Role: "user", Content: "hi"}},

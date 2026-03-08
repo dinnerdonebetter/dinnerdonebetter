@@ -19,7 +19,7 @@ func TestRequestIDFunc(T *testing.T) {
 		t.Parallel()
 
 		expected := identifiers.New()
-		ctx := context.WithValue(context.Background(), chimiddleware.RequestIDKey, expected)
+		ctx := context.WithValue(t.Context(), chimiddleware.RequestIDKey, expected)
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/", http.NoBody)
 		require.NoError(t, err)

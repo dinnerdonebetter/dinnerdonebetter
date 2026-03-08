@@ -8,7 +8,7 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/settings/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -22,7 +22,7 @@ func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 
 	belongsToUser := sessionContextData.GetUserID()
@@ -30,12 +30,12 @@ func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 	input := converters.ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(request.Input, belongsToUser, belongsToAccount)
 
 	if err = input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid service setting configuration")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid service setting configuration")
 	}
 
 	created, err := s.settingsManager.CreateServiceSettingConfiguration(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create service setting")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create service setting")
 	}
 
 	x := &settingssvc.CreateServiceSettingConfigurationResponse{
@@ -56,13 +56,13 @@ func (s *serviceImpl) GetServiceSettingConfigurationByName(ctx context.Context, 
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	serviceSettingConfig, err := s.settingsManager.GetServiceSettingConfigurationForAccountByName(ctx, sessionContextData.ActiveAccountID, request.ServiceSettingConfigurationName)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configuration for account by name")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configuration for account by name")
 	}
 
 	x := &settingssvc.GetServiceSettingConfigurationByNameResponse{
@@ -83,7 +83,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Cont
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
@@ -91,7 +91,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Cont
 
 	serviceSettingConfigs, err := s.settingsManager.GetServiceSettingConfigurationsForAccount(ctx, sessionContextData.ActiveAccountID, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configurations for account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configurations for account")
 	}
 
 	x := &settingssvc.GetServiceSettingConfigurationsForAccountResponse{
@@ -116,14 +116,14 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForUser(ctx context.Context
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	serviceSettingConfigs, err := s.settingsManager.GetServiceSettingConfigurationsForUser(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configurations for user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configurations for user")
 	}
 
 	x := &settingssvc.GetServiceSettingConfigurationsForUserResponse{
@@ -148,13 +148,13 @@ func (s *serviceImpl) UpdateServiceSettingConfiguration(ctx context.Context, req
 
 	existing, err := s.settingsManager.GetServiceSettingConfiguration(ctx, request.ServiceSettingConfigurationId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configuration")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configuration")
 	}
 
 	existing.Update(converters.ConvertGRPCServiceSettingConfigurationUpdateRequestInputToServiceSettingConfigurationUpdateRequestInputTo(request.Input))
 
 	if err = s.settingsManager.UpdateServiceSettingConfiguration(ctx, existing); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update service setting configuration")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update service setting configuration")
 	}
 
 	x := &settingssvc.UpdateServiceSettingConfigurationResponse{
@@ -174,7 +174,7 @@ func (s *serviceImpl) ArchiveServiceSettingConfiguration(ctx context.Context, re
 	logger := s.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingConfigurationIDKey, request.ServiceSettingConfigurationId)
 
 	if err := s.settingsManager.ArchiveServiceSettingConfiguration(ctx, request.ServiceSettingConfigurationId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive service setting configuration")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive service setting configuration")
 	}
 
 	x := &settingssvc.ArchiveServiceSettingConfigurationResponse{

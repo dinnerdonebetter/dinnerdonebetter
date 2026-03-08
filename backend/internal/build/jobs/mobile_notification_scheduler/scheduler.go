@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningnotifications "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
@@ -118,12 +119,12 @@ func (s *Scheduler) buildMealPlanTaskNotificationRequest(ctx context.Context, ta
 	title, body := buildMealPlanTaskNotificationContent(notificationCtx)
 
 	return &notifications.MobileNotificationRequest{
-		RequestType:      notifications.MobileNotificationRequestTypeMealPlanTask,
+		RequestType:      mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask,
 		RecipientUserIDs: recipientUserIDs,
 		Title:            title,
 		Body:             body,
 		Context: map[string]string{
-			notifications.MealPlanTaskIDContextKey: taskID,
+			mealplanningnotifications.MealPlanTaskIDContextKey: taskID,
 		},
 	}, nil
 }

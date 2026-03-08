@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -67,6 +68,8 @@ func ProvideAuthInterceptor(
 		// TODO: configure this elsewhere
 		unauthenticatedRoutes: []string{
 			"/auth.AuthService/AdminLoginForToken",
+			"/auth.AuthService/BeginPasskeyAuthentication",
+			"/auth.AuthService/FinishPasskeyAuthentication",
 			"/identity.IdentityService/CreateUser",
 			"/auth.AuthService/VerifyTOTPSecret",
 			"/auth.AuthService/LoginForToken",
@@ -132,7 +135,7 @@ func (s *AuthInterceptor) extractSessionContextData(ctx context.Context, metaDat
 
 	authHeader := metaData.Get("authorization")
 	if len(authHeader) == 0 {
-		return nil, observability.PrepareAndLogGRPCStatus(status.Error(codes.Unauthenticated, "missing authorization header"), logger, span, codes.Unauthenticated, "missing authorization header")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(status.Error(codes.Unauthenticated, "missing authorization header"), logger, span, codes.Unauthenticated, "missing authorization header")
 	}
 
 	accessToken := strings.TrimPrefix(authHeader[0], tokenPrefix)

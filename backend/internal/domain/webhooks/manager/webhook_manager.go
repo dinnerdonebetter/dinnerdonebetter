@@ -9,8 +9,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	webhookkeys "github.com/dinnerdonebetter/backend/internal/domain/webhooks/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -65,7 +65,7 @@ func (m *webhookManager) CreateWebhook(ctx context.Context, userID, accountID st
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span)
 	if err := input.ValidateWithContext(ctx); err != nil {

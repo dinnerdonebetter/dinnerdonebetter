@@ -1,7 +1,9 @@
 package sessions
 
-import "errors"
+import (
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
+)
 
 var (
-	ErrAuthenticationNotFound = errors.New("authentication not found")
+	ErrAuthenticationNotFound = platformerrors.New("authentication not found")
 )

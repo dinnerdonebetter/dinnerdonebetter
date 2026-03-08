@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -26,7 +25,7 @@ import (
 func buildWaitlistManagerForTest(t *testing.T) (*waitlistManager, *waitlistmock.Repository) {
 	t.Helper()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	repo := &waitlistmock.Repository{}
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: t.Name()}
 
@@ -69,7 +68,7 @@ func TestWaitlistDataManager_CreateWaitlist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWaitlistManagerForTest(t)
 
 		exampleWaitlist := fakes.BuildFakeWaitlist()
@@ -98,7 +97,7 @@ func TestWaitlistDataManager_CreateWaitlist(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWaitlistManagerForTest(t)
 
 		exampleWaitlist := fakes.BuildFakeWaitlist()
@@ -125,7 +124,7 @@ func TestWaitlistDataManager_GetWaitlist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWaitlistManagerForTest(t)
 
 		expected := fakes.BuildFakeWaitlist()
@@ -145,7 +144,7 @@ func TestWaitlistDataManager_GetWaitlists(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWaitlistManagerForTest(t)
 
 		filter := filtering.DefaultQueryFilter()
@@ -166,7 +165,7 @@ func TestWaitlistDataManager_UpdateWaitlist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWaitlistManagerForTest(t)
 
 		waitlist := fakes.BuildFakeWaitlist()
@@ -194,7 +193,7 @@ func TestWaitlistDataManager_ArchiveWaitlist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWaitlistManagerForTest(t)
 
 		waitlistID := fakes.BuildFakeID()
@@ -222,7 +221,7 @@ func TestWaitlistDataManager_CreateWaitlistSignup(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWaitlistManagerForTest(t)
 
 		exampleSignup := fakes.BuildFakeWaitlistSignup()
@@ -255,7 +254,7 @@ func TestWaitlistDataManager_UpdateWaitlistSignup(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWaitlistManagerForTest(t)
 
 		signup := fakes.BuildFakeWaitlistSignup()
@@ -283,7 +282,7 @@ func TestWaitlistDataManager_ArchiveWaitlistSignup(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWaitlistManagerForTest(t)
 
 		waitlistSignupID := fakes.BuildFakeID()
@@ -311,7 +310,7 @@ func TestWaitlistDataManager_GetWaitlistSignupsForUser(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWaitlistManagerForTest(t)
 
 		userID := fakes.BuildFakeID()

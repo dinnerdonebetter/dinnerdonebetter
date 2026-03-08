@@ -18,6 +18,7 @@ type Querier interface {
 	ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveUserAvatar(ctx context.Context, db DBTX, belongsToUser string) error
 	ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveWebAuthnCredential(ctx context.Context, db DBTX, id string) (int64, error)
 	AssignInvitationsToUserByEmail(ctx context.Context, db DBTX, arg *AssignInvitationsToUserByEmailParams) (int64, error)
 	AttachAccountInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachAccountInvitationsToUserIDParams) (int64, error)
 	CheckAccountInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error)
@@ -26,6 +27,7 @@ type Querier interface {
 	CreateAccountUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateAccountUserMembershipForNewUserParams) error
 	CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error
 	CreateUserAvatar(ctx context.Context, db DBTX, arg *CreateUserAvatarParams) error
+	CreateWebAuthnCredential(ctx context.Context, db DBTX, arg *CreateWebAuthnCredentialParams) error
 	DeleteUser(ctx context.Context, db DBTX, id string) (int64, error)
 	GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetAccountByIDWithMembershipsRow, error)
 	GetAccountInvitationByAccountAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByAccountAndIDParams) (*GetAccountInvitationByAccountAndIDRow, error)
@@ -49,6 +51,8 @@ type Querier interface {
 	GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error)
 	GetUsersForAccount(ctx context.Context, db DBTX, arg *GetUsersForAccountParams) ([]*GetUsersForAccountRow, error)
 	GetUsersWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetUsersWithIDsRow, error)
+	GetWebAuthnCredentialByCredentialID(ctx context.Context, db DBTX, credentialID []byte) (*GetWebAuthnCredentialByCredentialIDRow, error)
+	GetWebAuthnCredentialsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetWebAuthnCredentialsForUserRow, error)
 	MarkAccountUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkAccountUserMembershipAsUserDefaultParams) error
 	MarkEmailAddressAsUnverified(ctx context.Context, db DBTX, id string) error
 	MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *MarkEmailAddressAsVerifiedParams) error
@@ -70,6 +74,7 @@ type Querier interface {
 	UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUserPasswordParams) (int64, error)
 	UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) (int64, error)
 	UpdateUserUsername(ctx context.Context, db DBTX, arg *UpdateUserUsernameParams) (int64, error)
+	UpdateWebAuthnCredentialSignCount(ctx context.Context, db DBTX, arg *UpdateWebAuthnCredentialSignCountParams) (int64, error)
 	UserIsAccountMember(ctx context.Context, db DBTX, arg *UserIsAccountMemberParams) (bool, error)
 }
 

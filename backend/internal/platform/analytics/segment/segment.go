@@ -2,11 +2,10 @@ package segment
 
 import (
 	"context"
-	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -19,7 +18,7 @@ const (
 
 var (
 	// ErrEmptyAPIToken indicates an empty API token was provided.
-	ErrEmptyAPIToken = errors.New("empty Segment API token")
+	ErrEmptyAPIToken = platformerrors.New("empty Segment API token")
 )
 
 type (
@@ -61,7 +60,7 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return internalerrors.ErrCircuitBroken
+		return circuitbreaking.ErrCircuitBroken
 	}
 
 	t := segment.NewTraits()
@@ -91,7 +90,7 @@ func (c *EventReporter) EventOccurred(ctx context.Context, event, userID string,
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return internalerrors.ErrCircuitBroken
+		return circuitbreaking.ErrCircuitBroken
 	}
 
 	p := segment.NewProperties()

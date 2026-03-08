@@ -179,6 +179,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -230,7 +231,8 @@ type GetValidIngredientGroupMembersRow struct {
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientContainsSoy                             bool
-	ValidIngredientIsFruit                                 bool
+	ValidIngredientIsGrain                                 bool
+	ValidIngredientContaminatesEquipment                   bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsGluten                          bool
@@ -239,8 +241,8 @@ type GetValidIngredientGroupMembersRow struct {
 	ValidIngredientContainsSesame                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
-	ValidIngredientIsGrain                                 bool
 	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsSalt                                  bool
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
@@ -285,6 +287,7 @@ func (q *Queries) GetValidIngredientGroupMembers(ctx context.Context, db DBTX, b
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,

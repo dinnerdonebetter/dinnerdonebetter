@@ -26,7 +26,7 @@ import (
 func buildOAuthManagerForTest(t *testing.T) *manager {
 	t.Helper()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	repo := &oauthmock.RepositoryMock{}
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: t.Name()}
 
@@ -97,7 +97,7 @@ func TestOAuth2Manager_CreateOAuth2Client(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		om := buildOAuthManagerForTest(t)
 
 		input := fakes.BuildFakeOAuth2ClientCreationRequestInput()
@@ -133,7 +133,7 @@ func TestOAuth2Manager_ArchiveOAuth2Client(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		om := buildOAuthManagerForTest(t)
 
 		oauth2ClientID := fakes.BuildFakeID()

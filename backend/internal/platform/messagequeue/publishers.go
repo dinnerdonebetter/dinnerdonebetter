@@ -2,7 +2,8 @@ package messagequeue
 
 import (
 	"context"
-	"errors"
+
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 )
 
 type (
@@ -25,7 +26,7 @@ type (
 
 var (
 	// ErrEmptyTopicName is returned when a topic name is empty.
-	ErrEmptyTopicName = errors.New("empty topic name")
+	ErrEmptyTopicName = platformerrors.New("empty topic name")
 )
 
 type noopPublisher struct{}

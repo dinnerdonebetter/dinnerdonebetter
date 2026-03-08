@@ -137,7 +137,7 @@ struct VoteMealPlanView: View {
           .font(.title2)
           .fontWeight(.bold)
 
-        Text(HomeView.formatMealPlanTimeRange(viewModel.mealPlan))
+        Text(MealPlanningHomeHelpers.formatMealPlanTimeRange(viewModel.mealPlan))
           .font(.subheadline)
           .foregroundColor(.secondary)
       }

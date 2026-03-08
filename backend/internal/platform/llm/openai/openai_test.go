@@ -1,7 +1,6 @@
 package openai
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -87,7 +86,7 @@ func TestOpenAIProvider_Completion(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, provider)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		result, err := provider.Completion(ctx, llm.CompletionParams{
 			Model: "gpt-4o-mini",
 			Messages: []llm.Message{
@@ -115,7 +114,7 @@ func TestOpenAIProvider_Completion(T *testing.T) {
 		})
 		require.NoError(t, err)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		result, err := provider.Completion(ctx, llm.CompletionParams{
 			Messages: []llm.Message{{Role: "user", Content: "Hi"}},
 		})
@@ -138,7 +137,7 @@ func TestOpenAIProvider_Completion(T *testing.T) {
 		})
 		require.NoError(t, err)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		result, err := provider.Completion(ctx, llm.CompletionParams{
 			Model:    "gpt-4o-mini",
 			Messages: []llm.Message{{Role: "user", Content: "Hi"}},

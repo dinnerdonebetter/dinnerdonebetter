@@ -10,6 +10,7 @@ import (
 	authmock "github.com/dinnerdonebetter/backend/internal/domain/auth/mock"
 	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -21,11 +22,14 @@ func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.Identity
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
+	tracerProvider := tracing.NewNoopTracerProvider()
 	tracer := tracing.NewTracerForTest(t.Name())
 	identityDataManager := &identitymanagermock.IdentityDataManager{}
 	authManager := &authmock.AuthManager{}
 	authenticationManager := &authenticationmock.Manager{}
 	featureFlagManager := &mock.FeatureFlagManager{}
+
+	jsonEncoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON)
 
 	service := &serviceImpl{
 		tracer:                tracer,
@@ -34,6 +38,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.Identity
 		authManager:           authManager,
 		authenticationManager: authenticationManager,
 		featureFlagManager:    featureFlagManager,
+		jsonEncoder:           jsonEncoder,
 	}
 
 	return service, identityDataManager, authManager, authenticationManager, featureFlagManager
@@ -52,7 +57,7 @@ func TestNewAuthService(t *testing.T) {
 		authenticationManager := &authenticationmock.Manager{}
 
 		featureFlagManager := &mock.FeatureFlagManager{}
-		service := NewAuthService(logger, tracerProvider, identityDataManager, authManager, authenticationManager, featureFlagManager)
+		service := NewAuthService(logger, tracerProvider, identityDataManager, authManager, authenticationManager, featureFlagManager, nil)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*authsvc.AuthServiceServer)(nil), service)

@@ -1,7 +1,6 @@
 package tracing
 
 import (
-	"context"
 	"errors"
 	"testing"
 )
@@ -12,7 +11,7 @@ func Test_instrumentedSQLSpanWrapper_NewChild(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, span := StartSpan(context.Background())
+		ctx, span := StartSpan(t.Context())
 		w := &instrumentedSQLSpanWrapper{
 			ctx:    ctx,
 			tracer: NewTracer(NewNoopTracerProvider().Tracer(t.Name())),
@@ -29,7 +28,7 @@ func Test_instrumentedSQLSpanWrapper_SetLabel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, span := StartSpan(context.Background())
+		ctx, span := StartSpan(t.Context())
 		w := &instrumentedSQLSpanWrapper{
 			ctx:  ctx,
 			span: span,
@@ -45,7 +44,7 @@ func Test_instrumentedSQLSpanWrapper_SetError(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, span := StartSpan(context.Background())
+		ctx, span := StartSpan(t.Context())
 		w := &instrumentedSQLSpanWrapper{
 			ctx:  ctx,
 			span: span,
@@ -61,7 +60,7 @@ func Test_instrumentedSQLSpanWrapper_Finish(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, span := StartSpan(context.Background())
+		ctx, span := StartSpan(t.Context())
 		w := &instrumentedSQLSpanWrapper{
 			ctx:  ctx,
 			span: span,

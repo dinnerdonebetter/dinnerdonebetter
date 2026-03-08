@@ -10,9 +10,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -62,22 +62,22 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
 	}
 
 	if !sessionContextData.ServiceRolePermissionChecker().HasPermission(authorization.PublishArbitraryQueueMessagePermission) {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.PermissionDenied, "user is not permitted")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.PermissionDenied, "user is not permitted")
 	}
 
 	if request.QueueName == "" {
-		return nil, observability.PrepareAndLogGRPCStatus(nil, logger, span, codes.InvalidArgument, "queue_name is required")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(nil, logger, span, codes.InvalidArgument, "queue_name is required")
 	}
 
 	testID := identifiers.New()
 	start := time.Now()
 
 	if err = s.internalOpsRepo.CreateQueueTestMessage(ctx, testID, request.QueueName); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating queue test message record")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating queue test message record")
 	}
 
 	msg := &audit.DataChangeMessage{
@@ -91,16 +91,16 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 
 	pp, err := msgconfig.ProvidePublisherProvider(ctx, s.logger, tracing.NewNoopTracerProvider(), s.msgConfig)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "establishing publisher provider")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "establishing publisher provider")
 	}
 
 	publisher, err := pp.ProvidePublisher(ctx, request.QueueName)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "initializing publisher")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "initializing publisher")
 	}
 
 	if err = publisher.Publish(ctx, msg); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "publishing test message")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "publishing test message")
 	}
 
 	ticker := time.NewTicker(testQueueMessagePollInterval)
@@ -111,9 +111,9 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 	for {
 		select {
 		case <-deadline:
-			return nil, observability.PrepareAndLogGRPCStatus(nil, logger, span, codes.DeadlineExceeded, "timed out waiting for queue test message acknowledgment")
+			return nil, errorsgrpc.PrepareAndLogGRPCStatus(nil, logger, span, codes.DeadlineExceeded, "timed out waiting for queue test message acknowledgment")
 		case <-ctx.Done():
-			return nil, observability.PrepareAndLogGRPCStatus(ctx.Err(), logger, span, codes.Canceled, "context canceled while waiting for acknowledgment")
+			return nil, errorsgrpc.PrepareAndLogGRPCStatus(ctx.Err(), logger, span, codes.Canceled, "context canceled while waiting for acknowledgment")
 		case <-ticker.C:
 			record, pollErr := s.internalOpsRepo.GetQueueTestMessage(ctx, testID)
 			if pollErr != nil {

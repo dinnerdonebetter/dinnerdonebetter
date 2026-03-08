@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	mealplanningnotifications "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 	domainnotifications "github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
@@ -58,7 +59,7 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx cont
 	requestType = req.RequestType
 
 	switch req.RequestType {
-	case notifications.MobileNotificationRequestTypeMealPlanTask:
+	case mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask:
 		if err := a.handleMealPlanTaskNotification(ctx, &req); err != nil {
 			a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
 			status = statusFailure
@@ -87,7 +88,7 @@ func (a *AsyncDataChangeMessageHandler) handleMealPlanTaskNotification(ctx conte
 
 	mealPlanTaskID := ""
 	if req.Context != nil {
-		mealPlanTaskID = req.Context[notifications.MealPlanTaskIDContextKey]
+		mealPlanTaskID = req.Context[mealplanningnotifications.MealPlanTaskIDContextKey]
 	}
 	if mealPlanTaskID == "" {
 		return fmt.Errorf("meal plan task notification requires mealPlanTaskID in context")

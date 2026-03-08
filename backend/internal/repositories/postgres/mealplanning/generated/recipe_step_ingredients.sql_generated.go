@@ -166,6 +166,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -228,70 +229,71 @@ type GetAllRecipeStepIngredientsForRecipeRow struct {
 	ValidMeasurementUnitCreatedAt                          time.Time
 	CreatedAt                                              time.Time
 	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientCreatedAt                               sql.NullTime
 	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
 	ArchivedAt                                             sql.NullTime
 	LastUpdatedAt                                          sql.NullTime
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitDescription                        string
-	ValidMeasurementUnitPluralName                         string
+	ValidMeasurementUnitID                                 string
 	ValidMeasurementUnitIconPath                           string
+	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitPluralName                         string
 	IngredientNotes                                        string
-	BelongsToRecipeStep                                    string
+	ValidMeasurementUnitDescription                        string
 	ID                                                     string
 	QuantityNotes                                          string
-	ValidMeasurementUnitID                                 string
+	ValidMeasurementUnitName                               string
 	Name                                                   string
 	MinimumQuantityValue                                   string
-	ValidMeasurementUnitName                               string
+	BelongsToRecipeStep                                    string
 	ValidIngredientPluralName                              sql.NullString
 	RecipeStepProductRecipeID                              sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientSlug                                    sql.NullString
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
 	MaximumQuantityValue                                   sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientIconPath                                sql.NullString
 	RecipeStepProductID                                    sql.NullString
 	ValidIngredientID                                      sql.NullString
 	ValidIngredientName                                    sql.NullString
 	ProductPercentageToUse                                 sql.NullString
 	ValidIngredientDescription                             sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientWarning                                 sql.NullString
 	VesselIndex                                            sql.NullInt32
 	OptionIndex                                            int32
 	Index                                                  int32
 	ValidIngredientAnimalFlesh                             sql.NullBool
-	ValidIngredientAnimalDerived                           sql.NullBool
+	ValidIngredientContainsAlcohol                         sql.NullBool
 	ValidIngredientIsAcid                                  sql.NullBool
-	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientIsFat                                   sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientContainsEgg                             sql.NullBool
 	ValidIngredientContainsDairy                           sql.NullBool
-	ValidIngredientContainsPeanut                          sql.NullBool
-	ValidIngredientIsSalt                                  sql.NullBool
+	ValidIngredientIsHeat                                  sql.NullBool
 	ValidIngredientIsFruit                                 sql.NullBool
 	ValidIngredientIsGrain                                 sql.NullBool
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsStarch                                sql.NullBool
-	ValidIngredientContainsAlcohol                         sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContaminatesEquipment                   sql.NullBool
 	ValidIngredientRestrictToPreparations                  sql.NullBool
-	ValidIngredientIsHeat                                  sql.NullBool
+	ValidIngredientAnimalDerived                           sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientContainsGluten                          sql.NullBool
 	ValidIngredientContainsFish                            sql.NullBool
 	ValidIngredientContainsSesame                          sql.NullBool
 	ValidIngredientContainsShellfish                       sql.NullBool
-	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContainsPeanut                          sql.NullBool
 	ValidIngredientContainsWheat                           sql.NullBool
 	ValidIngredientContainsSoy                             sql.NullBool
-	ToTaste                                                bool
 	ValidMeasurementUnitImperial                           bool
+	ToTaste                                                bool
 	ValidMeasurementUnitMetric                             bool
 	ValidMeasurementUnitUniversal                          bool
 	Optional                                               bool
@@ -330,6 +332,7 @@ func (q *Queries) GetAllRecipeStepIngredientsForRecipe(ctx context.Context, db D
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,
@@ -416,6 +419,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -488,70 +492,71 @@ type GetRecipeStepIngredientRow struct {
 	ValidMeasurementUnitCreatedAt                          time.Time
 	CreatedAt                                              time.Time
 	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientCreatedAt                               sql.NullTime
 	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
 	ArchivedAt                                             sql.NullTime
 	LastUpdatedAt                                          sql.NullTime
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitDescription                        string
-	ValidMeasurementUnitPluralName                         string
+	ValidMeasurementUnitID                                 string
 	ValidMeasurementUnitIconPath                           string
+	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitPluralName                         string
 	IngredientNotes                                        string
-	BelongsToRecipeStep                                    string
+	ValidMeasurementUnitDescription                        string
 	ID                                                     string
 	QuantityNotes                                          string
-	ValidMeasurementUnitID                                 string
+	ValidMeasurementUnitName                               string
 	Name                                                   string
 	MinimumQuantityValue                                   string
-	ValidMeasurementUnitName                               string
+	BelongsToRecipeStep                                    string
 	ValidIngredientPluralName                              sql.NullString
 	RecipeStepProductRecipeID                              sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientSlug                                    sql.NullString
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
 	MaximumQuantityValue                                   sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientIconPath                                sql.NullString
 	RecipeStepProductID                                    sql.NullString
 	ValidIngredientID                                      sql.NullString
 	ValidIngredientName                                    sql.NullString
 	ProductPercentageToUse                                 sql.NullString
 	ValidIngredientDescription                             sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientWarning                                 sql.NullString
 	VesselIndex                                            sql.NullInt32
 	OptionIndex                                            int32
 	Index                                                  int32
 	ValidIngredientAnimalFlesh                             sql.NullBool
-	ValidIngredientAnimalDerived                           sql.NullBool
+	ValidIngredientContainsAlcohol                         sql.NullBool
 	ValidIngredientIsAcid                                  sql.NullBool
-	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientIsFat                                   sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientContainsEgg                             sql.NullBool
 	ValidIngredientContainsDairy                           sql.NullBool
-	ValidIngredientContainsPeanut                          sql.NullBool
-	ValidIngredientIsSalt                                  sql.NullBool
+	ValidIngredientIsHeat                                  sql.NullBool
 	ValidIngredientIsFruit                                 sql.NullBool
 	ValidIngredientIsGrain                                 sql.NullBool
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsStarch                                sql.NullBool
-	ValidIngredientContainsAlcohol                         sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContaminatesEquipment                   sql.NullBool
 	ValidIngredientRestrictToPreparations                  sql.NullBool
-	ValidIngredientIsHeat                                  sql.NullBool
+	ValidIngredientAnimalDerived                           sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientContainsGluten                          sql.NullBool
 	ValidIngredientContainsFish                            sql.NullBool
 	ValidIngredientContainsSesame                          sql.NullBool
 	ValidIngredientContainsShellfish                       sql.NullBool
-	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContainsPeanut                          sql.NullBool
 	ValidIngredientContainsWheat                           sql.NullBool
 	ValidIngredientContainsSoy                             sql.NullBool
-	ToTaste                                                bool
 	ValidMeasurementUnitImperial                           bool
+	ToTaste                                                bool
 	ValidMeasurementUnitMetric                             bool
 	ValidMeasurementUnitUniversal                          bool
 	Optional                                               bool
@@ -584,6 +589,7 @@ func (q *Queries) GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *Get
 		&i.ValidIngredientAnimalDerived,
 		&i.ValidIngredientPluralName,
 		&i.ValidIngredientRestrictToPreparations,
+		&i.ValidIngredientContaminatesEquipment,
 		&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 		&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 		&i.ValidIngredientStorageInstructions,
@@ -660,6 +666,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -785,34 +792,34 @@ type GetRecipeStepIngredientsRow struct {
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
 	LastUpdatedAt                                          sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientCreatedAt                               sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ArchivedAt                                             sql.NullTime
 	ValidMeasurementUnitIconPath                           string
-	BelongsToRecipeStep                                    string
+	ValidMeasurementUnitDescription                        string
 	QuantityNotes                                          string
 	ValidMeasurementUnitSlug                               string
 	ValidMeasurementUnitPluralName                         string
-	ValidMeasurementUnitID                                 string
+	BelongsToRecipeStep                                    string
 	ID                                                     string
 	IngredientNotes                                        string
 	Name                                                   string
+	ValidMeasurementUnitID                                 string
 	ValidMeasurementUnitName                               string
-	ValidMeasurementUnitDescription                        string
 	MinimumQuantityValue                                   string
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumQuantityValue                                   sql.NullString
 	ValidIngredientIconPath                                sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientSlug                                    sql.NullString
-	MaximumQuantityValue                                   sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientID                                      sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientPluralName                              sql.NullString
 	RecipeStepProductID                                    sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientName                                    sql.NullString
 	ValidIngredientDescription                             sql.NullString
 	ProductPercentageToUse                                 sql.NullString
@@ -824,12 +831,12 @@ type GetRecipeStepIngredientsRow struct {
 	OptionIndex                                            int32
 	Index                                                  int32
 	ValidIngredientAnimalFlesh                             sql.NullBool
-	ValidIngredientAnimalDerived                           sql.NullBool
-	ValidIngredientIsHeat                                  sql.NullBool
+	ValidIngredientRestrictToPreparations                  sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientContainsEgg                             sql.NullBool
 	ValidIngredientContainsDairy                           sql.NullBool
 	ValidIngredientContainsPeanut                          sql.NullBool
-	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientIsFruit                                 sql.NullBool
@@ -837,8 +844,9 @@ type GetRecipeStepIngredientsRow struct {
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsStarch                                sql.NullBool
 	ValidIngredientContainsAlcohol                         sql.NullBool
-	ValidIngredientRestrictToPreparations                  sql.NullBool
-	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientContaminatesEquipment                   sql.NullBool
+	ValidIngredientIsHeat                                  sql.NullBool
+	ValidIngredientAnimalDerived                           sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientContainsGluten                          sql.NullBool
 	ValidIngredientContainsFish                            sql.NullBool
@@ -897,6 +905,7 @@ func (q *Queries) GetRecipeStepIngredients(ctx context.Context, db DBTX, arg *Ge
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,

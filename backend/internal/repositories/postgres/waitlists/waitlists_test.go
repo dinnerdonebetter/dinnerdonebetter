@@ -10,9 +10,9 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -146,7 +146,7 @@ func TestQuerier_WaitlistIsNotExpired(T *testing.T) {
 		actual, err := c.WaitlistIsNotExpired(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -162,7 +162,7 @@ func TestQuerier_GetWaitlist(T *testing.T) {
 		actual, err := c.GetWaitlist(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -178,7 +178,7 @@ func TestQuerier_CreateWaitlist(T *testing.T) {
 		actual, err := c.CreateWaitlist(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrNilInputProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrNilInputProvided)
 	})
 }
 
@@ -193,7 +193,7 @@ func TestQuerier_UpdateWaitlist(T *testing.T) {
 
 		err := c.UpdateWaitlist(ctx, nil)
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrNilInputProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrNilInputProvided)
 	})
 }
 
@@ -208,7 +208,7 @@ func TestQuerier_ArchiveWaitlist(T *testing.T) {
 
 		err := c.ArchiveWaitlist(ctx, "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -225,7 +225,7 @@ func TestQuerier_GetWaitlistSignup(T *testing.T) {
 		actual, err := c.GetWaitlistSignup(ctx, "", exampleWaitlistID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 
 	T.Run("with invalid waitlist ID", func(t *testing.T) {
@@ -238,7 +238,7 @@ func TestQuerier_GetWaitlistSignup(T *testing.T) {
 		actual, err := c.GetWaitlistSignup(ctx, exampleSignupID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -255,7 +255,7 @@ func TestQuerier_GetWaitlistSignupsForWaitlist(T *testing.T) {
 		actual, err := c.GetWaitlistSignupsForWaitlist(ctx, "", filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }
 
@@ -271,7 +271,7 @@ func TestQuerier_CreateWaitlistSignup(T *testing.T) {
 		actual, err := c.CreateWaitlistSignup(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-		assert.ErrorIs(t, err, database.ErrNilInputProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrNilInputProvided)
 	})
 }
 
@@ -286,7 +286,7 @@ func TestQuerier_UpdateWaitlistSignup(T *testing.T) {
 
 		err := c.UpdateWaitlistSignup(ctx, nil)
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrNilInputProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrNilInputProvided)
 	})
 }
 
@@ -301,6 +301,6 @@ func TestQuerier_ArchiveWaitlistSignup(T *testing.T) {
 
 		err := c.ArchiveWaitlistSignup(ctx, "")
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrInvalidIDProvided)
+		assert.ErrorIs(t, err, platformerrors.ErrInvalidIDProvided)
 	})
 }

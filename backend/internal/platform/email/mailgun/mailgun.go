@@ -2,12 +2,11 @@ package mailgun
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -23,13 +22,13 @@ var (
 	_ email.Emailer = (*Emailer)(nil)
 
 	// ErrNilConfig indicates a nil config was provided.
-	ErrNilConfig = errors.New("mailgun config is nil")
+	ErrNilConfig = platformerrors.New("mailgun config is nil")
 	// ErrEmptyDomain indicates an empty domain was provided.
-	ErrEmptyDomain = errors.New("empty domain")
+	ErrEmptyDomain = platformerrors.New("empty domain")
 	// ErrEmptyPrivateAPIKey indicates an empty API token was provided.
-	ErrEmptyPrivateAPIKey = errors.New("empty Mailgun API token")
+	ErrEmptyPrivateAPIKey = platformerrors.New("empty Mailgun API token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
-	ErrNilHTTPClient = errors.New("nil HTTP client")
+	ErrNilHTTPClient = platformerrors.New("nil HTTP client")
 )
 
 type (
@@ -82,7 +81,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
 
 	if e.circuitBreaker.CannotProceed() {
-		return internalerrors.ErrCircuitBroken
+		return circuitbreaking.ErrCircuitBroken
 	}
 
 	msg := mailgun.NewMessage(details.FromName, details.Subject, details.HTMLContent, details.ToAddress)

@@ -9,6 +9,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
@@ -26,13 +27,13 @@ func (q *repository) RecipeRatingExists(ctx context.Context, recipeID, recipeRat
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
@@ -53,13 +54,13 @@ func (q *repository) GetRecipeRating(ctx context.Context, recipeID, recipeRating
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
@@ -101,7 +102,7 @@ func (q *repository) GetRecipeRatingsForRecipe(ctx context.Context, recipeID str
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if recipeID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
@@ -172,7 +173,7 @@ func (q *repository) GetRecipeRatingsForUser(ctx context.Context, userID string,
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -235,7 +236,7 @@ func (q *repository) CreateRecipeRating(ctx context.Context, input *types.Recipe
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	logger := q.logger.WithValue(mealplanningkeys.RecipeRatingIDKey, input.ID)
@@ -280,7 +281,7 @@ func (q *repository) UpdateRecipeRating(ctx context.Context, updated *types.Reci
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.RecipeRatingIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, updated.ID)
@@ -311,13 +312,13 @@ func (q *repository) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRa
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)

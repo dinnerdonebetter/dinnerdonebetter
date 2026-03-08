@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
 	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
@@ -86,23 +87,23 @@ func (m *manager) CreateOAuth2Client(ctx context.Context, input *oauth.OAuth2Cli
 	}
 
 	if err = input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid oauth2 client creation request")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid oauth2 client creation request")
 	}
 
 	dbInput := converters.ConvertOAuth2ClientCreationRequestInputToOAuth2ClientDatabaseCreationInput(input)
 	dbInput.ID = identifiers.New()
 
 	if dbInput.ClientID, err = m.secretGenerator.GenerateHexEncodedString(ctx, clientIDSize); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "generating client id")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "generating client id")
 	}
 
 	if dbInput.ClientSecret, err = m.secretGenerator.GenerateHexEncodedString(ctx, clientSecretSize); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "generating client secret")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "generating client secret")
 	}
 
 	created, err := m.oauthRepository.CreateOAuth2Client(ctx, dbInput)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating oauth2 client")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating oauth2 client")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, &audit.DataChangeMessage{
@@ -141,7 +142,7 @@ func (m *manager) GetOAuth2Clients(ctx context.Context, filter *filtering.QueryF
 
 	oauth2Clients, err := m.oauthRepository.GetOAuth2Clients(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
 	}
 
 	return oauth2Clients, nil

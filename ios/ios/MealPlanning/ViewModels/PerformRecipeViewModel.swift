@@ -380,7 +380,7 @@ class PerformRecipeViewModel {
   /// Use when the user has already made this recipe ahead of time (e.g., garlic confit on Sunday).
   func markAssociatedRecipeAsCompleted(associatedRecipe: Mealplanning_Recipe) {
     let recipeName = associatedRecipe.name.isEmpty ? "Unnamed" : associatedRecipe.name
-    for (index, step) in associatedRecipe.steps.enumerated() {
+    for step in associatedRecipe.steps {
       let currentStepKey = stepKey(recipeID: associatedRecipe.id, stepID: step.id)
       completedSteps.insert(currentStepKey)
 
@@ -915,6 +915,107 @@ class PerformRecipeViewModel {
 
     // Find the step index in main recipe
     return recipe.steps.firstIndex(where: { $0.id == stepID })
+  }
+
+  /// Returns a display label for a step (e.g. "Drain", "Add (2nd)") for use in "(from X)" references.
+  /// Works for both main recipe and associated recipe steps.
+  func getStepDisplayLabelForStepKey(_ stepKey: String) -> String? {
+    let components = stepKey.split(separator: ":", maxSplits: 1)
+    guard components.count == 2,
+      let recipeID = String(components[0]) as String?,
+      let stepID = String(components[1]) as String?
+    else {
+      return nil
+    }
+
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
+      return nil
+    }
+
+    let steps: [Mealplanning_RecipeStep]
+    let recipeName: String?
+    if recipeID == recipe?.id {
+      steps = recipe?.steps ?? []
+      recipeName = nil
+    } else if let associated = recipe?.associatedRecipes.first(where: { $0.id == recipeID }) {
+      steps = associated.steps
+      recipeName = associated.name
+    } else {
+      return nil
+    }
+
+    let prepName: String
+    if step.hasPreparation && !step.preparation.name.isEmpty {
+      prepName = step.preparation.name
+    } else {
+      prepName = "Step \(Int(step.index) + 1)"
+    }
+
+    // Disambiguate when multiple steps share the same preparation name
+    var label = prepName
+    if step.hasPreparation && !step.preparation.name.isEmpty {
+      let samePrepSteps = steps.filter { s in
+        s.hasPreparation && !s.preparation.name.isEmpty && s.preparation.name == prepName
+      }
+      if samePrepSteps.count > 1,
+        let occurrenceIndex = samePrepSteps.firstIndex(where: { $0.id == step.id })
+      {
+        let ordinal = Self.ordinalSuffix(occurrenceIndex + 1)
+        label = "\(prepName) (\(ordinal))"
+      }
+    }
+
+    if let recipeName = recipeName, !recipeName.isEmpty {
+      return "\(recipeName): \(label)"
+    }
+    return label
+  }
+
+  /// Returns (label, stepID) for a product from the main recipe, or nil if from an associated recipe.
+  /// Used for "(from X)" display and tappable navigation.
+  func getStepDisplayInfoForProductID(_ productID: String) -> (label: String, stepID: String)? {
+    guard let recipe = recipe,
+      let stepKey = productIDToStepKey[productID]
+    else {
+      return nil
+    }
+
+    let components = stepKey.split(separator: ":", maxSplits: 1)
+    guard components.count == 2,
+      String(components[0]) == recipe.id,
+      let stepID = String(components[1]) as String?
+    else {
+      return nil  // Product is from associated recipe
+    }
+
+    guard let label = getStepDisplayLabelForStepKey(stepKey) else {
+      return nil
+    }
+    return (label, stepID)
+  }
+
+  private static func ordinalSuffix(_ n: Int) -> String {
+    switch n {
+    case 1: return "1st"
+    case 2: return "2nd"
+    case 3: return "3rd"
+    case 21: return "21st"
+    case 22: return "22nd"
+    case 23: return "23rd"
+    case 31: return "31st"
+    default:
+      let mod10 = n % 10
+      let mod100 = n % 100
+      if mod100 >= 11 && mod100 <= 13 {
+        return "\(n)th"
+      }
+      switch mod10 {
+      case 1: return "\(n)st"
+      case 2: return "\(n)nd"
+      case 3: return "\(n)rd"
+      default: return "\(n)th"
+      }
+    }
   }
 
   // MARK: - Prep Task Completion

@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -268,7 +268,7 @@ func (m *validEnumerationManager) CreateValidIngredientGroup(ctx context.Context
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -313,7 +313,7 @@ func (m *validEnumerationManager) UpdateValidIngredientGroup(ctx context.Context
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidIngredientGroup, err := m.db.GetValidIngredientGroup(ctx, validIngredientGroupID)
@@ -385,7 +385,7 @@ func (m *validEnumerationManager) CreateValidIngredientMeasurementUnit(ctx conte
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -430,7 +430,7 @@ func (m *validEnumerationManager) UpdateValidIngredientMeasurementUnit(ctx conte
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidIngredientMeasurementUnit, err := m.db.GetValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID)
@@ -544,7 +544,7 @@ func (m *validEnumerationManager) CreateValidIngredientPreparation(ctx context.C
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -589,7 +589,7 @@ func (m *validEnumerationManager) UpdateValidIngredientPreparation(ctx context.C
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidIngredientPreparation, err := m.db.GetValidIngredientPreparation(ctx, validIngredientPreparationID)
@@ -703,7 +703,7 @@ func (m *validEnumerationManager) CreateValidPrepTaskConfig(ctx context.Context,
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -748,7 +748,7 @@ func (m *validEnumerationManager) UpdateValidPrepTaskConfig(ctx context.Context,
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidPrepTaskConfig, err := m.db.GetValidPrepTaskConfig(ctx, validPrepTaskConfigID)
@@ -941,7 +941,7 @@ func (m *validEnumerationManager) CreateValidIngredient(ctx context.Context, inp
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -1001,7 +1001,7 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -1099,7 +1099,7 @@ func (m *validEnumerationManager) CreateValidIngredientStateIngredient(ctx conte
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -1144,7 +1144,7 @@ func (m *validEnumerationManager) UpdateValidIngredientStateIngredient(ctx conte
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidIngredientStateIngredient, err := m.db.GetValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
@@ -1307,7 +1307,7 @@ func (m *validEnumerationManager) CreateValidIngredientState(ctx context.Context
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -1352,7 +1352,7 @@ func (m *validEnumerationManager) UpdateValidIngredientState(ctx context.Context
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidIngredientState, err := m.db.GetValidIngredientState(ctx, validIngredientStateID)
@@ -1494,7 +1494,7 @@ func (m *validEnumerationManager) CreateValidMeasurementUnit(ctx context.Context
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -1538,7 +1538,7 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnit(ctx context.Context
 	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidMeasurementUnit, err := m.db.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
@@ -1665,7 +1665,7 @@ func (m *validEnumerationManager) CreateValidInstrument(ctx context.Context, inp
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -1724,7 +1724,7 @@ func (m *validEnumerationManager) UpdateValidInstrument(ctx context.Context, val
 	tracing.AttachToSpan(span, mealplanningkeys.ValidInstrumentIDKey, validInstrumentID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidInstrument, err := m.db.GetValidInstrument(ctx, validInstrumentID)
@@ -1797,7 +1797,7 @@ func (m *validEnumerationManager) CreateValidMeasurementUnitConversion(ctx conte
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -1842,7 +1842,7 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnitConversion(ctx conte
 	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidMeasurementUnitConversion, err := m.db.GetValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
@@ -1914,7 +1914,7 @@ func (m *validEnumerationManager) CreateValidPreparationInstrument(ctx context.C
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -1959,7 +1959,7 @@ func (m *validEnumerationManager) UpdateValidPreparationInstrument(ctx context.C
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidPreparationInstrument, err := m.db.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
@@ -2122,7 +2122,7 @@ func (m *validEnumerationManager) CreateValidPreparation(ctx context.Context, in
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -2181,7 +2181,7 @@ func (m *validEnumerationManager) UpdateValidPreparation(ctx context.Context, va
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidPreparation, err := m.db.GetValidPreparation(ctx, validPreparationID)
@@ -2251,7 +2251,7 @@ func (m *validEnumerationManager) CreateValidPreparationVessel(ctx context.Conte
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -2296,7 +2296,7 @@ func (m *validEnumerationManager) UpdateValidPreparationVessel(ctx context.Conte
 	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidPreparationVessel, err := m.db.GetValidPreparationVessel(ctx, validPreparationVesselID)
@@ -2458,7 +2458,7 @@ func (m *validEnumerationManager) CreateValidVessel(ctx context.Context, input *
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -2518,7 +2518,7 @@ func (m *validEnumerationManager) UpdateValidVessel(ctx context.Context, validVe
 	tracing.AttachToSpan(span, mealplanningkeys.ValidVesselIDKey, validVesselID)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	existingValidVessel, err := m.db.GetValidVessel(ctx, validVesselID)

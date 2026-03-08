@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	mealplanningnotifications "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 	domainnotifications "github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	notificationsmock "github.com/dinnerdonebetter/backend/internal/domain/notifications/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -36,7 +37,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		req := notifications.MobileNotificationRequest{
-			RequestType:      notifications.MobileNotificationRequestTypeMealPlanTask,
+			RequestType:      mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask,
 			RecipientUserIDs: []string{"user-1"},
 			Title:            "",
 			Body:             "body",
@@ -55,7 +56,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		req := notifications.MobileNotificationRequest{
-			RequestType:      notifications.MobileNotificationRequestTypeMealPlanTask,
+			RequestType:      mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask,
 			RecipientUserIDs: []string{"user-1"},
 			Title:            "title",
 			Body:             "",
@@ -111,7 +112,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		req := notifications.MobileNotificationRequest{
-			RequestType:      notifications.MobileNotificationRequestTypeMealPlanTask,
+			RequestType:      mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask,
 			RecipientUserIDs: []string{"user-1"},
 			Title:            "title",
 			Body:             "body",
@@ -132,12 +133,12 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		handler.mealPlanRepo = mealPlanRepo
 
 		req := notifications.MobileNotificationRequest{
-			RequestType:      notifications.MobileNotificationRequestTypeMealPlanTask,
+			RequestType:      mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask,
 			RecipientUserIDs: []string{"user-1"},
 			Title:            "title",
 			Body:             "body",
 			Context: map[string]string{
-				notifications.MealPlanTaskIDContextKey: "task-123",
+				mealplanningnotifications.MealPlanTaskIDContextKey: "task-123",
 			},
 		}
 		raw, _ := json.Marshal(req)
@@ -158,12 +159,12 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		handler.mealPlanRepo = mealPlanRepo
 
 		req := notifications.MobileNotificationRequest{
-			RequestType:      notifications.MobileNotificationRequestTypeMealPlanTask,
+			RequestType:      mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask,
 			RecipientUserIDs: []string{},
 			Title:            "title",
 			Body:             "body",
 			Context: map[string]string{
-				notifications.MealPlanTaskIDContextKey: "task-123",
+				mealplanningnotifications.MealPlanTaskIDContextKey: "task-123",
 			},
 		}
 		raw, _ := json.Marshal(req)
@@ -187,12 +188,12 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		handler.notificationsRepo = notificationsRepo
 
 		req := notifications.MobileNotificationRequest{
-			RequestType:      notifications.MobileNotificationRequestTypeMealPlanTask,
+			RequestType:      mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask,
 			RecipientUserIDs: []string{"user-1"},
 			Title:            "title",
 			Body:             "body",
 			Context: map[string]string{
-				notifications.MealPlanTaskIDContextKey: "task-123",
+				mealplanningnotifications.MealPlanTaskIDContextKey: "task-123",
 			},
 		}
 		raw, _ := json.Marshal(req)
@@ -217,12 +218,12 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		handler.notificationsRepo = notificationsRepo
 
 		req := notifications.MobileNotificationRequest{
-			RequestType:      notifications.MobileNotificationRequestTypeMealPlanTask,
+			RequestType:      mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask,
 			RecipientUserIDs: []string{"user-1"},
 			Title:            "Meal plan task",
 			Body:             "Chop onions for Dinner on Monday",
 			Context: map[string]string{
-				notifications.MealPlanTaskIDContextKey: "task-123",
+				mealplanningnotifications.MealPlanTaskIDContextKey: "task-123",
 			},
 		}
 		raw, _ := json.Marshal(req)

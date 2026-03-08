@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -30,7 +29,7 @@ func TestRecipeListUpdate(t *testing.T) {
 func TestRecipeListValidation(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	require.NoError(t, (&RecipeListCreationRequestInput{Name: "name"}).ValidateWithContext(ctx))
 	require.Error(t, (&RecipeListCreationRequestInput{}).ValidateWithContext(ctx))

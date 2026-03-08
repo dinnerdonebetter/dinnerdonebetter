@@ -6,6 +6,7 @@ import (
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
@@ -22,11 +23,11 @@ func (s *serviceImpl) ArchiveAccount(ctx context.Context, request *identitysvc.A
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	if err = s.identityDataManager.ArchiveAccount(ctx, request.AccountId, sessionContextData.GetUserID()); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive account")
 	}
 
 	x := &identitysvc.ArchiveAccountResponse{
@@ -44,7 +45,7 @@ func (s *serviceImpl) CreateAccount(ctx context.Context, request *identitysvc.Cr
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	belongsToUser := sessionContextData.GetUserID()
@@ -52,7 +53,7 @@ func (s *serviceImpl) CreateAccount(ctx context.Context, request *identitysvc.Cr
 
 	created, err := s.identityDataManager.CreateAccount(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account")
 	}
 
 	x := &identitysvc.CreateAccountResponse{
@@ -72,13 +73,13 @@ func (s *serviceImpl) CreateAccountInvitation(ctx context.Context, request *iden
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	input := converters.ConvertGRPCAccountInvitationCreationRequestInputToAccountInvitationCreationRequestInput(request.Input)
 	created, err := s.identityDataManager.CreateAccountInvitation(ctx, sessionContextData.GetUserID(), sessionContextData.GetActiveAccountID(), input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account invitation")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account invitation")
 	}
 
 	x := &identitysvc.CreateAccountInvitationResponse{
@@ -95,7 +96,7 @@ func (s *serviceImpl) GetAccount(ctx context.Context, request *identitysvc.GetAc
 
 	account, err := s.identityDataManager.GetAccount(ctx, request.AccountId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get account")
 	}
 
 	x := &identitysvc.GetAccountResponse{
@@ -112,14 +113,14 @@ func (s *serviceImpl) GetAccounts(ctx context.Context, request *identitysvc.GetA
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
 	accounts, err := s.identityDataManager.GetAccounts(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
 	}
 
 	x := &identitysvc.GetAccountsResponse{
@@ -141,7 +142,7 @@ func (s *serviceImpl) GetAccountsForUser(ctx context.Context, request *identitys
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	accounts, err := s.identityDataManager.GetAccounts(ctx, request.UserId, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
 	}
 
 	x := &identitysvc.GetAccountsForUserResponse{
@@ -166,11 +167,11 @@ func (s *serviceImpl) SetDefaultAccount(ctx context.Context, request *identitysv
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	if err = s.identityDataManager.SetDefaultAccount(ctx, sessionContextData.GetUserID(), request.AccountId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to set default account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to set default account")
 	}
 
 	x := &identitysvc.SetDefaultAccountResponse{
@@ -191,13 +192,13 @@ func (s *serviceImpl) TransferAccountOwnership(ctx context.Context, request *ide
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	input := converters.ConvertGRPCAccountOwnershipTransferInputToAccountOwnershipTransferInput(request.Input)
 
 	if err = s.identityDataManager.TransferAccountOwnership(ctx, sessionContextData.GetActiveAccountID(), input); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to transfer account ownership")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to transfer account ownership")
 	}
 
 	x := &identitysvc.TransferAccountOwnershipResponse{
@@ -218,13 +219,13 @@ func (s *serviceImpl) UpdateAccount(ctx context.Context, request *identitysvc.Up
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	input := converters.ConvertGRPCAccountUpdateRequestInputToAccountUpdateRequestInput(request.Input)
 
 	if err = s.identityDataManager.UpdateAccount(ctx, sessionContextData.GetActiveAccountID(), input); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account")
 	}
 
 	x := &identitysvc.UpdateAccountResponse{
@@ -244,12 +245,12 @@ func (s *serviceImpl) UpdateAccountMemberPermissions(ctx context.Context, reques
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	input := converters.ConvertGRPCModifyUserPermissionsInputToModifyUserPermissionsInput(request.Input)
 	if err = s.identityDataManager.UpdateAccountMemberPermissions(ctx, sessionContextData.GetActiveAccountID(), request.UserId, input); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account member permissions")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account member permissions")
 	}
 
 	x := &identitysvc.UpdateAccountMemberPermissionsResponse{
@@ -266,7 +267,7 @@ func (s *serviceImpl) ArchiveUserMembership(ctx context.Context, request *identi
 	// TODO: validate that the user is authorized to do this?
 
 	if err := s.identityDataManager.ArchiveUserMembership(ctx, request.UserId, request.AccountId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to archive user membership")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to archive user membership")
 	}
 
 	x := &identitysvc.ArchiveUserMembershipResponse{

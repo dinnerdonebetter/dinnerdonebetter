@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	notificationkeys "github.com/dinnerdonebetter/backend/internal/domain/notifications/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -85,7 +85,7 @@ func (m *notificationsManager) CreateUserNotification(ctx context.Context, input
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserNotificationIDKey, input.ID)
 	tracing.AttachToSpan(span, notificationkeys.UserNotificationIDKey, input.ID)
@@ -111,7 +111,7 @@ func (m *notificationsManager) UpdateUserNotification(ctx context.Context, updat
 	defer span.End()
 
 	if updated == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserNotificationIDKey, updated.ID)
 	tracing.AttachToSpan(span, notificationkeys.UserNotificationIDKey, updated.ID)
@@ -153,7 +153,7 @@ func (m *notificationsManager) CreateUserDeviceToken(ctx context.Context, input 
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserDeviceTokenIDKey, input.ID)
 	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, input.ID)
@@ -179,7 +179,7 @@ func (m *notificationsManager) UpdateUserDeviceToken(ctx context.Context, update
 	defer span.End()
 
 	if updated == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserDeviceTokenIDKey, updated.ID)
 	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, updated.ID)
@@ -200,7 +200,7 @@ func (m *notificationsManager) ArchiveUserDeviceToken(ctx context.Context, userI
 	defer span.End()
 
 	if userID == "" || tokenID == "" {
-		return internalerrors.ErrEmptyInputParameter
+		return platformerrors.ErrEmptyInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(notificationkeys.UserDeviceTokenIDKey, tokenID)
 	tracing.AttachToSpan(span, notificationkeys.UserDeviceTokenIDKey, tokenID)

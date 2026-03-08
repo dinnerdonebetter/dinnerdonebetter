@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -32,7 +31,7 @@ func TestDataPrivacyManager_FetchUserDataCollection(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildDataPrivacyManagerForTest(t)
 
 		userID := identifiers.New()
@@ -53,7 +52,7 @@ func TestDataPrivacyManager_DeleteUser(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildDataPrivacyManagerForTest(t)
 
 		userID := identifiers.New()
@@ -72,7 +71,7 @@ func TestDataPrivacyManager_CreateUserDataDisclosure(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildDataPrivacyManagerForTest(t)
 
 		disclosureID := identifiers.New()

@@ -1,10 +1,13 @@
 package grpc
 
-import "github.com/google/wire"
+import (
+	"github.com/google/wire"
+)
 
 var (
 	AuthSvcProviders = wire.NewSet(
 		NewAuthService,
 		ProvideMethodPermissions,
+		ProvidePasskeyService,
 	)
 )

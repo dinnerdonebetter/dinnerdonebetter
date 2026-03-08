@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
@@ -24,7 +23,7 @@ import (
 func buildSettingsManagerForTest(t *testing.T) *settingsManager {
 	t.Helper()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	queueCfg := &msgconfig.QueuesConfig{
 		DataChangesTopicName: t.Name(),
 	}
@@ -75,7 +74,7 @@ func TestSettingsManager_CreateServiceSetting(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		sm := buildSettingsManagerForTest(t)
 
 		expected := fakes.BuildFakeServiceSetting()
@@ -105,7 +104,7 @@ func TestSettingsManager_ArchiveServiceSetting(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		sm := buildSettingsManagerForTest(t)
 
 		serviceSettingID := fakes.BuildFakeID()
@@ -133,7 +132,7 @@ func TestSettingsManager_CreateServiceSettingConfiguration(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		sm := buildSettingsManagerForTest(t)
 
 		expected := fakes.BuildFakeServiceSettingConfiguration()
@@ -163,7 +162,7 @@ func TestSettingsManager_UpdateServiceSettingConfiguration(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		sm := buildSettingsManagerForTest(t)
 
 		updated := fakes.BuildFakeServiceSettingConfiguration()
@@ -191,7 +190,7 @@ func TestSettingsManager_ArchiveServiceSettingConfiguration(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		sm := buildSettingsManagerForTest(t)
 
 		serviceSettingConfigurationID := fakes.BuildFakeID()

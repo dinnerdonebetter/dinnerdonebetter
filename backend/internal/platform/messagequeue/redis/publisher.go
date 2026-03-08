@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -20,7 +21,7 @@ import (
 
 var (
 	// ErrEmptyInputProvided indicates empty input was provided in an unacceptable context.
-	ErrEmptyInputProvided = errors.New("empty input provided")
+	ErrEmptyInputProvided = platformerrors.New("empty input provided")
 )
 
 var _ messagePublisher = (*redis.ClusterClient)(nil)

@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -65,7 +65,7 @@ func (m *settingsManager) CreateServiceSetting(ctx context.Context, input *setti
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingIDKey, input.ID)
 	tracing.AttachToSpan(span, settingskeys.ServiceSettingIDKey, input.ID)
@@ -170,7 +170,7 @@ func (m *settingsManager) CreateServiceSettingConfiguration(ctx context.Context,
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingConfigurationIDKey, input.ID)
 	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, input.ID)
@@ -196,7 +196,7 @@ func (m *settingsManager) UpdateServiceSettingConfiguration(ctx context.Context,
 	defer span.End()
 
 	if updated == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 	logger := m.logger.WithSpan(span).WithValue(settingskeys.ServiceSettingConfigurationIDKey, updated.ID)
 	tracing.AttachToSpan(span, settingskeys.ServiceSettingConfigurationIDKey, updated.ID)

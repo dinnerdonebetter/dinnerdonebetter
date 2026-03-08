@@ -9,7 +9,7 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -23,12 +23,12 @@ func (s *serviceImpl) GetUserNotification(ctx context.Context, request *notifica
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
 	notification, err := s.notificationsManager.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
 
 	x := &notificationssvc.GetUserNotificationResponse{
@@ -49,7 +49,7 @@ func (s *serviceImpl) GetUserNotifications(ctx context.Context, request *notific
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
@@ -58,7 +58,7 @@ func (s *serviceImpl) GetUserNotifications(ctx context.Context, request *notific
 
 	notifs, err := s.notificationsManager.GetUserNotifications(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching user notifs")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching user notifs")
 	}
 
 	x := &notificationssvc.GetUserNotificationsResponse{
@@ -82,14 +82,14 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
 	logger = logger.WithValue(notificationkeys.UserNotificationIDKey, request.UserNotificationId)
 
 	existing, err := s.notificationsManager.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
 	}
 
 	var newStatus *string
@@ -99,12 +99,12 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 
 	existing.Update(&notifications.UserNotificationUpdateRequestInput{Status: newStatus})
 	if err = s.notificationsManager.UpdateUserNotification(ctx, existing); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating existing notification")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating existing notification")
 	}
 
 	updated, err := s.notificationsManager.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
 	}
 
 	x := &notificationssvc.UpdateUserNotificationResponse{

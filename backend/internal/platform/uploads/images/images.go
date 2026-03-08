@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"image"
 	"io"
@@ -15,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -32,7 +32,7 @@ const (
 
 var (
 	// ErrInvalidImageContentType is what we return to indicate the provided image was of the wrong type.
-	ErrInvalidImageContentType = errors.New("invalid image content type")
+	ErrInvalidImageContentType = platformerrors.New("invalid image content type")
 )
 
 type (

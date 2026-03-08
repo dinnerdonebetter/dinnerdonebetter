@@ -2,10 +2,10 @@ package msgconfig
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/pubsub"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
@@ -27,7 +27,7 @@ const (
 )
 
 var (
-	ErrNilConfig = errors.New("nil config provided")
+	ErrNilConfig = platformerrors.New("nil config provided")
 )
 
 type (

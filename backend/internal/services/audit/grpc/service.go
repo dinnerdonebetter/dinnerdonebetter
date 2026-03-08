@@ -8,7 +8,7 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc/converters"
@@ -52,7 +52,7 @@ func (s *serviceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request 
 
 	auditLogEntries, err := s.auditManager.GetAuditLogEntriesForAccount(ctx, request.AccountId, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
 
 	x := &auditsvc.GetAuditLogEntriesForAccountResponse{
@@ -79,7 +79,7 @@ func (s *serviceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *au
 
 	auditLogEntries, err := s.auditManager.GetAuditLogEntriesForUser(ctx, request.UserId, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
 
 	x := &auditsvc.GetAuditLogEntriesForUserResponse{
@@ -104,7 +104,7 @@ func (s *serviceImpl) GetAuditLogEntryByID(ctx context.Context, request *auditsv
 	logger := s.logger.WithValue(auditkeys.AuditLogEntryIDKey, request.AuditLogEntryId)
 	auditLogEntry, err := s.auditManager.GetAuditLogEntry(ctx, request.AuditLogEntryId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
 
 	returnValue := converters.ConvertAuditLogEntryToGRPCAuditLogEntry(auditLogEntry)

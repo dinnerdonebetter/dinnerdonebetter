@@ -11,6 +11,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -117,7 +118,7 @@ func (q *repository) MealExists(ctx context.Context, mealID string) (exists bool
 	logger := q.logger.Clone()
 
 	if mealID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
@@ -138,7 +139,7 @@ func (q *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.
 	logger := q.logger.Clone()
 
 	if mealID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
@@ -585,7 +586,7 @@ func (q *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
 
@@ -635,7 +636,7 @@ func (q *repository) CreateMeal(ctx context.Context, input *mealplanning.MealDat
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	tx, err := q.writeDB.BeginTx(ctx, nil)
@@ -663,11 +664,11 @@ func (q *repository) CreateMealComponent(ctx context.Context, querier database.S
 	logger := q.logger.Clone()
 
 	if input == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 
 	if mealID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
@@ -694,7 +695,7 @@ func (q *repository) MarkMealAsIndexed(ctx context.Context, mealID string) error
 	logger := q.logger.Clone()
 
 	if mealID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
@@ -716,13 +717,13 @@ func (q *repository) ArchiveMeal(ctx context.Context, mealID, userID string) err
 	logger := q.logger.Clone()
 
 	if mealID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -748,13 +749,13 @@ func (q *repository) AddMealImage(ctx context.Context, mealID, uploadedMediaID, 
 	defer span.End()
 
 	if mealID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	if uploadedMediaID == "" {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 	if uploadedByUser == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealIDKey, mealID)

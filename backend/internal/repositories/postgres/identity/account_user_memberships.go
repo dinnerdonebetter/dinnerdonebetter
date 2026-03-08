@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -32,7 +33,7 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID,
 	defer span.End()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
@@ -95,7 +96,7 @@ func (r *repository) GetDefaultAccountIDForUser(ctx context.Context, userID stri
 	logger := r.logger.Clone()
 
 	if userID == "" {
-		return "", database.ErrInvalidIDProvided
+		return "", platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
@@ -114,7 +115,7 @@ func (r *repository) markAccountAsUserDefault(ctx context.Context, querier datab
 	defer span.End()
 
 	if userID == "" || accountID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	logger := r.logger.WithValues(map[string]any{
@@ -174,7 +175,7 @@ func (r *repository) UserIsMemberOfAccount(ctx context.Context, userID, accountI
 	defer span.End()
 
 	if userID == "" || accountID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
@@ -196,11 +197,11 @@ func (r *repository) ModifyUserPermissions(ctx context.Context, accountID, userI
 	defer span.End()
 
 	if accountID == "" || userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	if input == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 
 	logger := r.logger.WithValues(map[string]any{
@@ -273,11 +274,11 @@ func (r *repository) TransferAccountOwnership(ctx context.Context, accountID str
 	defer span.End()
 
 	if accountID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	if input == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 
 	logger := r.logger.WithValues(map[string]any{
@@ -363,7 +364,7 @@ func (r *repository) addUserToAccount(ctx context.Context, querier database.SQLQ
 	defer span.End()
 
 	if input == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 
 	logger := r.logger.WithValues(map[string]any{
@@ -405,7 +406,7 @@ func (r *repository) removeUserFromAccount(ctx context.Context, querier database
 	defer span.End()
 
 	if userID == "" || accountID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
@@ -467,12 +468,12 @@ func (r *repository) RemoveUserFromAccount(ctx context.Context, userID, accountI
 	defer span.End()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if accountID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 

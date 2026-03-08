@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -26,7 +27,7 @@ func (q *repository) ValidMeasurementUnitExists(ctx context.Context, validMeasur
 	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
@@ -47,7 +48,7 @@ func (q *repository) GetValidMeasurementUnit(ctx context.Context, validMeasureme
 	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
@@ -113,7 +114,7 @@ func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query s
 	logger := q.logger.Clone()
 
 	if query == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(platformkeys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, query)
@@ -182,7 +183,7 @@ func (q *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, v
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if validIngredientID == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
@@ -358,7 +359,7 @@ func (q *repository) CreateValidMeasurementUnit(ctx context.Context, input *type
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, input.ID)
 	logger := q.logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, input.ID)
@@ -404,7 +405,7 @@ func (q *repository) UpdateValidMeasurementUnit(ctx context.Context, updated *ty
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, updated.ID)
@@ -437,7 +438,7 @@ func (q *repository) MarkValidMeasurementUnitAsIndexed(ctx context.Context, vali
 	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
@@ -459,7 +460,7 @@ func (q *repository) ArchiveValidMeasurementUnit(ctx context.Context, validMeasu
 	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, mealplanningkeys.ValidMeasurementUnitIDKey, validMeasurementUnitID)

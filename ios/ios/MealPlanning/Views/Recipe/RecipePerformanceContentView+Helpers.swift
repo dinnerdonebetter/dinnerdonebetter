@@ -57,7 +57,10 @@ enum DiscreteQuantityScaling {
 struct StepItem {
   let name: String
   let isProduct: Bool
-  let prerequisiteStepIndex: Int?
+  /// Display label for prerequisite step (e.g. "Drain", "Add (2nd)") for "(from X)" text.
+  let prerequisiteStepLabel: String?
+  /// Step ID for tappable navigation to prerequisite step.
+  let prerequisiteStepID: String?
   let prerequisiteCompleted: Bool
 }
 

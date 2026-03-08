@@ -329,3 +329,40 @@ func (m *RepositoryMock) ModifyUserPermissions(ctx context.Context, accountID, u
 func (m *RepositoryMock) TransferAccountOwnership(ctx context.Context, accountID string, input *identity.AccountOwnershipTransferInput) error {
 	return m.Called(ctx, accountID, input).Error(0)
 }
+
+// CreateWebAuthnCredential is a mock function.
+func (m *RepositoryMock) CreateWebAuthnCredential(ctx context.Context, input *identity.WebAuthnCredentialCreationInput) (*identity.WebAuthnCredential, error) {
+	returnValues := m.Called(ctx, input)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*identity.WebAuthnCredential), returnValues.Error(1)
+}
+
+// GetWebAuthnCredentialsForUser is a mock function.
+func (m *RepositoryMock) GetWebAuthnCredentialsForUser(ctx context.Context, userID string) ([]*identity.WebAuthnCredential, error) {
+	returnValues := m.Called(ctx, userID)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).([]*identity.WebAuthnCredential), returnValues.Error(1)
+}
+
+// GetWebAuthnCredentialByCredentialID is a mock function.
+func (m *RepositoryMock) GetWebAuthnCredentialByCredentialID(ctx context.Context, credentialID []byte) (*identity.WebAuthnCredential, error) {
+	returnValues := m.Called(ctx, credentialID)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*identity.WebAuthnCredential), returnValues.Error(1)
+}
+
+// UpdateWebAuthnCredentialSignCount is a mock function.
+func (m *RepositoryMock) UpdateWebAuthnCredentialSignCount(ctx context.Context, id string, signCount uint32) error {
+	return m.Called(ctx, id, signCount).Error(0)
+}
+
+// ArchiveWebAuthnCredential is a mock function.
+func (m *RepositoryMock) ArchiveWebAuthnCredential(ctx context.Context, id string) error {
+	return m.Called(ctx, id).Error(0)
+}

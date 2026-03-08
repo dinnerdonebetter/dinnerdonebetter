@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -58,7 +59,7 @@ func (r *repository) GetUser(ctx context.Context, userID string) (*identity.User
 	logger := r.logger.Clone()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -101,7 +102,7 @@ func (r *repository) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, u
 	defer span.End()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
@@ -143,7 +144,7 @@ func (r *repository) GetUserByUsername(ctx context.Context, username string) (*i
 	defer span.End()
 
 	if username == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UsernameKey, username)
 
@@ -185,7 +186,7 @@ func (r *repository) GetAdminUserByUsername(ctx context.Context, username string
 	defer span.End()
 
 	if username == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UsernameKey, username)
 
@@ -230,7 +231,7 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*identit
 	defer span.End()
 
 	if email == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserEmailAddressKey, email)
 
@@ -274,7 +275,7 @@ func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery
 	logger := r.logger.WithSpan(span)
 
 	if usernameQuery == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, usernameQuery)
 	logger = logger.WithValue(identitykeys.UsernameKey, usernameQuery)
@@ -424,7 +425,7 @@ func (r *repository) GetUsersForAccount(ctx context.Context, accountID string, f
 	logger := r.logger.Clone()
 
 	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
@@ -550,7 +551,7 @@ func (r *repository) MarkUserAsIndexed(ctx context.Context, userID string) error
 	logger := r.logger.Clone()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -570,7 +571,7 @@ func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabas
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	tracing.AttachToSpan(span, identitykeys.UsernameKey, input.Username)
@@ -791,13 +792,13 @@ func (r *repository) UpdateUserUsername(ctx context.Context, userID, newUsername
 	logger := r.logger.Clone()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if newUsername == "" {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(identitykeys.UsernameKey, newUsername)
 	tracing.AttachToSpan(span, identitykeys.UsernameKey, newUsername)
@@ -852,13 +853,13 @@ func (r *repository) UpdateUserEmailAddress(ctx context.Context, userID, newEmai
 	defer span.End()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := r.logger.WithValue(identitykeys.UserEmailAddressKey, newEmailAddress).WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if newEmailAddress == "" {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserEmailAddressKey, newEmailAddress)
 
@@ -912,11 +913,11 @@ func (r *repository) UpdateUserDetails(ctx context.Context, userID string, input
 	defer span.End()
 
 	if input == nil {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
@@ -981,11 +982,11 @@ func (r *repository) SetUserAvatar(ctx context.Context, userID, uploadedMediaID 
 	defer span.End()
 
 	if uploadedMediaID == "" {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
@@ -1038,11 +1039,11 @@ func (r *repository) UpdateUserPassword(ctx context.Context, userID, newHash str
 	defer span.End()
 
 	if newHash == "" {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
@@ -1089,11 +1090,11 @@ func (r *repository) UpdateUserTwoFactorSecret(ctx context.Context, userID, newS
 	defer span.End()
 
 	if newSecret == "" {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
@@ -1140,7 +1141,7 @@ func (r *repository) MarkUserTwoFactorSecretAsVerified(ctx context.Context, user
 	defer span.End()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
@@ -1186,11 +1187,11 @@ func (r *repository) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, us
 	defer span.End()
 
 	if newSecret == "" {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
@@ -1250,7 +1251,7 @@ func (r *repository) ArchiveUser(ctx context.Context, userID string) error {
 	defer span.End()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
@@ -1299,7 +1300,7 @@ func (r *repository) GetEmailAddressVerificationTokenForUser(ctx context.Context
 	defer span.End()
 
 	if userID == "" {
-		return "", database.ErrInvalidIDProvided
+		return "", platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
@@ -1316,7 +1317,7 @@ func (r *repository) GetUserByEmailAddressVerificationToken(ctx context.Context,
 	defer span.End()
 
 	if token == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 
 	result, err := r.generatedQuerier.GetUserByEmailAddressVerificationToken(ctx, r.readDB, database.NullStringFromString(token))
@@ -1358,12 +1359,12 @@ func (r *repository) MarkUserEmailAddressAsVerified(ctx context.Context, userID,
 	logger := r.logger.Clone()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 
 	if token == "" {
-		return database.ErrEmptyInputProvided
+		return platformerrors.ErrEmptyInputProvided
 	}
 
 	tx, err := r.writeDB.BeginTx(ctx, nil)
@@ -1423,7 +1424,7 @@ func (r *repository) MarkUserEmailAddressAsUnverified(ctx context.Context, userI
 	logger := r.logger.Clone()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 
@@ -1480,7 +1481,7 @@ func (r *repository) UpdateUserAccountStatus(ctx context.Context, userID string,
 	defer span.End()
 
 	if userID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)

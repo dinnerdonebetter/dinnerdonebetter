@@ -1,7 +1,6 @@
 package metricscfg
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -17,7 +16,7 @@ func TestConfig_ProvideTracerProvider(T *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{}
-		tracerProvider, err := cfg.ProvideMetricsProvider(context.Background(), logging.NewNoopLogger())
+		tracerProvider, err := cfg.ProvideMetricsProvider(t.Context(), logging.NewNoopLogger())
 
 		assert.NoError(t, err)
 		assert.NotNil(t, tracerProvider)

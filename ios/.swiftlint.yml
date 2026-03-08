@@ -7,6 +7,7 @@ included:
   - ios/Views
   - ios/ViewModels
   - ios/Services
+  - ios/MealPlanning
   - iosTests
   - iosUITests
 

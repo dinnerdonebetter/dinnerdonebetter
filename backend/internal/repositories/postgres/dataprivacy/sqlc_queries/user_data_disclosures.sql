@@ -53,7 +53,8 @@ SELECT
 	) AS total_count
 FROM user_data_disclosures
 WHERE user_data_disclosures.archived_at IS NULL
-	AND user_data_disclosures.belongs_to_user = sqlc.arg(user_id)AND user_data_disclosures.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND user_data_disclosures.belongs_to_user = sqlc.arg(user_id)
+	AND user_data_disclosures.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND user_data_disclosures.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND user_data_disclosures.id > COALESCE(sqlc.narg(cursor), '')
 ORDER BY user_data_disclosures.id ASC

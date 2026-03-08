@@ -38,6 +38,10 @@ const (
 	AuthService_VerifyEmailAddress_FullMethodName            = "/auth.AuthService/VerifyEmailAddress"
 	AuthService_VerifyTOTPSecret_FullMethodName              = "/auth.AuthService/VerifyTOTPSecret"
 	AuthService_UpdatePassword_FullMethodName                = "/auth.AuthService/UpdatePassword"
+	AuthService_BeginPasskeyRegistration_FullMethodName      = "/auth.AuthService/BeginPasskeyRegistration"
+	AuthService_FinishPasskeyRegistration_FullMethodName     = "/auth.AuthService/FinishPasskeyRegistration"
+	AuthService_BeginPasskeyAuthentication_FullMethodName    = "/auth.AuthService/BeginPasskeyAuthentication"
+	AuthService_FinishPasskeyAuthentication_FullMethodName   = "/auth.AuthService/FinishPasskeyAuthentication"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -62,6 +66,10 @@ type AuthServiceClient interface {
 	VerifyEmailAddress(ctx context.Context, in *VerifyEmailAddressRequest, opts ...grpc.CallOption) (*VerifyEmailAddressResponse, error)
 	VerifyTOTPSecret(ctx context.Context, in *VerifyTOTPSecretRequest, opts ...grpc.CallOption) (*VerifyTOTPSecretResponse, error)
 	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error)
+	BeginPasskeyRegistration(ctx context.Context, in *BeginPasskeyRegistrationRequest, opts ...grpc.CallOption) (*BeginPasskeyRegistrationResponse, error)
+	FinishPasskeyRegistration(ctx context.Context, in *FinishPasskeyRegistrationRequest, opts ...grpc.CallOption) (*FinishPasskeyRegistrationResponse, error)
+	BeginPasskeyAuthentication(ctx context.Context, in *BeginPasskeyAuthenticationRequest, opts ...grpc.CallOption) (*BeginPasskeyAuthenticationResponse, error)
+	FinishPasskeyAuthentication(ctx context.Context, in *FinishPasskeyAuthenticationRequest, opts ...grpc.CallOption) (*LoginForTokenResponse, error)
 }
 
 type authServiceClient struct {
@@ -252,6 +260,46 @@ func (c *authServiceClient) UpdatePassword(ctx context.Context, in *UpdatePasswo
 	return out, nil
 }
 
+func (c *authServiceClient) BeginPasskeyRegistration(ctx context.Context, in *BeginPasskeyRegistrationRequest, opts ...grpc.CallOption) (*BeginPasskeyRegistrationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BeginPasskeyRegistrationResponse)
+	err := c.cc.Invoke(ctx, AuthService_BeginPasskeyRegistration_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) FinishPasskeyRegistration(ctx context.Context, in *FinishPasskeyRegistrationRequest, opts ...grpc.CallOption) (*FinishPasskeyRegistrationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FinishPasskeyRegistrationResponse)
+	err := c.cc.Invoke(ctx, AuthService_FinishPasskeyRegistration_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) BeginPasskeyAuthentication(ctx context.Context, in *BeginPasskeyAuthenticationRequest, opts ...grpc.CallOption) (*BeginPasskeyAuthenticationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BeginPasskeyAuthenticationResponse)
+	err := c.cc.Invoke(ctx, AuthService_BeginPasskeyAuthentication_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) FinishPasskeyAuthentication(ctx context.Context, in *FinishPasskeyAuthenticationRequest, opts ...grpc.CallOption) (*LoginForTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginForTokenResponse)
+	err := c.cc.Invoke(ctx, AuthService_FinishPasskeyAuthentication_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -274,6 +322,10 @@ type AuthServiceServer interface {
 	VerifyEmailAddress(context.Context, *VerifyEmailAddressRequest) (*VerifyEmailAddressResponse, error)
 	VerifyTOTPSecret(context.Context, *VerifyTOTPSecretRequest) (*VerifyTOTPSecretResponse, error)
 	UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error)
+	BeginPasskeyRegistration(context.Context, *BeginPasskeyRegistrationRequest) (*BeginPasskeyRegistrationResponse, error)
+	FinishPasskeyRegistration(context.Context, *FinishPasskeyRegistrationRequest) (*FinishPasskeyRegistrationResponse, error)
+	BeginPasskeyAuthentication(context.Context, *BeginPasskeyAuthenticationRequest) (*BeginPasskeyAuthenticationResponse, error)
+	FinishPasskeyAuthentication(context.Context, *FinishPasskeyAuthenticationRequest) (*LoginForTokenResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -337,6 +389,18 @@ func (UnimplementedAuthServiceServer) VerifyTOTPSecret(context.Context, *VerifyT
 }
 func (UnimplementedAuthServiceServer) UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
+}
+func (UnimplementedAuthServiceServer) BeginPasskeyRegistration(context.Context, *BeginPasskeyRegistrationRequest) (*BeginPasskeyRegistrationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BeginPasskeyRegistration not implemented")
+}
+func (UnimplementedAuthServiceServer) FinishPasskeyRegistration(context.Context, *FinishPasskeyRegistrationRequest) (*FinishPasskeyRegistrationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FinishPasskeyRegistration not implemented")
+}
+func (UnimplementedAuthServiceServer) BeginPasskeyAuthentication(context.Context, *BeginPasskeyAuthenticationRequest) (*BeginPasskeyAuthenticationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BeginPasskeyAuthentication not implemented")
+}
+func (UnimplementedAuthServiceServer) FinishPasskeyAuthentication(context.Context, *FinishPasskeyAuthenticationRequest) (*LoginForTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FinishPasskeyAuthentication not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -683,6 +747,78 @@ func _AuthService_UpdatePassword_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_BeginPasskeyRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BeginPasskeyRegistrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).BeginPasskeyRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_BeginPasskeyRegistration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).BeginPasskeyRegistration(ctx, req.(*BeginPasskeyRegistrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_FinishPasskeyRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FinishPasskeyRegistrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).FinishPasskeyRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_FinishPasskeyRegistration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).FinishPasskeyRegistration(ctx, req.(*FinishPasskeyRegistrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_BeginPasskeyAuthentication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BeginPasskeyAuthenticationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).BeginPasskeyAuthentication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_BeginPasskeyAuthentication_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).BeginPasskeyAuthentication(ctx, req.(*BeginPasskeyAuthenticationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_FinishPasskeyAuthentication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FinishPasskeyAuthenticationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).FinishPasskeyAuthentication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_FinishPasskeyAuthentication_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).FinishPasskeyAuthentication(ctx, req.(*FinishPasskeyAuthenticationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -761,6 +897,22 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdatePassword",
 			Handler:    _AuthService_UpdatePassword_Handler,
+		},
+		{
+			MethodName: "BeginPasskeyRegistration",
+			Handler:    _AuthService_BeginPasskeyRegistration_Handler,
+		},
+		{
+			MethodName: "FinishPasskeyRegistration",
+			Handler:    _AuthService_FinishPasskeyRegistration_Handler,
+		},
+		{
+			MethodName: "BeginPasskeyAuthentication",
+			Handler:    _AuthService_BeginPasskeyAuthentication_Handler,
+		},
+		{
+			MethodName: "FinishPasskeyAuthentication",
+			Handler:    _AuthService_FinishPasskeyAuthentication_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

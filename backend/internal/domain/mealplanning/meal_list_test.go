@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -33,7 +32,7 @@ func TestMealListUpdate(t *testing.T) {
 func TestMealListValidation(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	require.NoError(t, (&MealListCreationRequestInput{Name: "name"}).ValidateWithContext(ctx))
 	require.Error(t, (&MealListCreationRequestInput{}).ValidateWithContext(ctx))

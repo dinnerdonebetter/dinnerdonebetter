@@ -213,6 +213,39 @@ message EvaluateStringFeatureFlagResponse {
   string value = 2;
 }
 
+message BeginPasskeyRegistrationRequest {}
+
+message BeginPasskeyRegistrationResponse {
+  common.ResponseDetails response_details = 1;
+  bytes public_key_credential_creation_options = 2;
+  string challenge = 3;
+}
+
+message FinishPasskeyRegistrationRequest {
+  bytes attestation_response = 1;
+  string challenge = 2;
+}
+
+message FinishPasskeyRegistrationResponse {
+  common.ResponseDetails response_details = 1;
+}
+
+message BeginPasskeyAuthenticationRequest {
+  string username = 1;
+}
+
+message BeginPasskeyAuthenticationResponse {
+  common.ResponseDetails response_details = 1;
+  bytes public_key_credential_request_options = 2;
+  string challenge = 3;
+}
+
+message FinishPasskeyAuthenticationRequest {
+  bytes assertion_response = 1;
+  string challenge = 2;
+  string username = 3;
+}
+
 message GetSelfRequest {}
 
 message GetSelfResponse {

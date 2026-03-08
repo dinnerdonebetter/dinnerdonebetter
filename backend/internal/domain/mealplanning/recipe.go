@@ -48,6 +48,7 @@ type (
 		Name                string                            `json:"name"`
 		PortionName         string                            `json:"portionName"`
 		Source              string                            `json:"source"`
+		SourceISBN          string                            `json:"sourceISBN"`
 		CreatedByUser       string                            `json:"createdByUser"`
 		PluralPortionName   string                            `json:"pluralPortionName"`
 		Description         string                            `json:"description"`
@@ -68,6 +69,7 @@ type (
 		InspiredByRecipeID  *string                                           `json:"inspiredByRecipeID"`
 		Name                string                                            `json:"name"`
 		Source              string                                            `json:"source"`
+		SourceISBN          string                                            `json:"sourceISBN"`
 		Description         string                                            `json:"description"`
 		PluralPortionName   string                                            `json:"pluralPortionName"`
 		PortionName         string                                            `json:"portionName"`
@@ -91,6 +93,7 @@ type (
 		Name                string                                 `json:"-"`
 		Slug                string                                 `json:"-"`
 		Source              string                                 `json:"-"`
+		SourceISBN          string                                 `json:"-"`
 		PluralPortionName   string                                 `json:"-"`
 		PortionName         string                                 `json:"-"`
 		Description         string                                 `json:"-"`
@@ -110,6 +113,7 @@ type (
 		Name                *string                                             `json:"name,omitempty"`
 		Slug                *string                                             `json:"slug"`
 		Source              *string                                             `json:"source,omitempty"`
+		SourceISBN          *string                                             `json:"sourceISBN,omitempty"`
 		Description         *string                                             `json:"description,omitempty"`
 		InspiredByRecipeID  *string                                             `json:"inspiredByRecipeID,omitempty"`
 		EstimatedPortions   types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimatedPortions"`
@@ -368,6 +372,10 @@ func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 
 	if input.Source != nil && *input.Source != x.Source {
 		x.Source = *input.Source
+	}
+
+	if input.SourceISBN != nil && *input.SourceISBN != x.SourceISBN {
+		x.SourceISBN = *input.SourceISBN
 	}
 
 	if input.Description != nil && *input.Description != x.Description {

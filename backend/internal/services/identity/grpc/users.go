@@ -13,6 +13,8 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -32,7 +34,7 @@ func (s *serviceImpl) CreateUser(ctx context.Context, request *identitysvc.Creat
 
 	created, err := s.identityDataManager.CreateUser(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create user")
 	}
 
 	x := &identitysvc.CreateUserResponse{
@@ -48,7 +50,7 @@ func (s *serviceImpl) ArchiveUser(ctx context.Context, request *identitysvc.Arch
 	defer span.End()
 
 	if err := s.identityDataManager.ArchiveUser(ctx, request.UserId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to archive user")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to archive user")
 	}
 
 	x := &identitysvc.ArchiveUserResponse{
@@ -68,7 +70,7 @@ func (s *serviceImpl) GetUser(ctx context.Context, request *identitysvc.GetUserR
 
 	user, err := s.identityDataManager.GetUser(ctx, request.UserId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
 	}
 
 	x := &identitysvc.GetUserResponse{
@@ -89,7 +91,7 @@ func (s *serviceImpl) GetUsers(ctx context.Context, request *identitysvc.GetUser
 
 	users, err := s.identityDataManager.GetUsers(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
 	}
 
 	x := &identitysvc.GetUsersResponse{
@@ -114,7 +116,7 @@ func (s *serviceImpl) GetUsersForAccount(ctx context.Context, request *identitys
 
 	users, err := s.identityDataManager.GetUsersForAccount(ctx, request.AccountId, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
 	}
 
 	x := &identitysvc.GetUsersForAccountResponse{
@@ -141,7 +143,7 @@ func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.S
 
 	users, err := s.identityDataManager.SearchForUsers(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for users")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for users")
 	}
 
 	x := &identitysvc.SearchForUsersResponse{
@@ -164,13 +166,13 @@ func (s *serviceImpl) UpdateUserDetails(ctx context.Context, request *identitysv
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	input := converters.ConvertGRPCUserDetailsUpdateRequestInputToUserDetailsUpdateRequestInput(request.Input)
 
 	if err = s.identityDataManager.UpdateUserDetails(ctx, sessionContextData.GetUserID(), input); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update user details")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update user details")
 	}
 
 	x := &identitysvc.UpdateUserDetailsResponse{
@@ -188,11 +190,11 @@ func (s *serviceImpl) UpdateUserEmailAddress(ctx context.Context, request *ident
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	if err = s.identityDataManager.UpdateUserEmailAddress(ctx, sessionContextData.GetUserID(), request.NewEmailAddress); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update user email address")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update user email address")
 	}
 
 	x := &identitysvc.UpdateUserEmailAddressResponse{
@@ -210,11 +212,11 @@ func (s *serviceImpl) UpdateUserUsername(ctx context.Context, request *identitys
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
 	if err = s.identityDataManager.UpdateUserUsername(ctx, sessionContextData.GetUserID(), request.NewUsername); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update user username")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update user username")
 	}
 
 	x := &identitysvc.UpdateUserUsernameResponse{
@@ -233,41 +235,41 @@ func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploade
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 	userID := sessionContextData.GetUserID()
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
 
 	firstReq, err := stream.Recv()
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive metadata")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive metadata")
 	}
 
 	metadata := firstReq.GetMetadata()
 	if metadata == nil {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("first message must contain metadata"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("first message must contain metadata"),
 			logger, span, codes.InvalidArgument, "first message must contain metadata",
 		)
 	}
 
 	if metadata.ObjectName == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("object_name is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("object_name is required"),
 			logger, span, codes.InvalidArgument, "object_name is required",
 		)
 	}
 
 	if metadata.ContentType == "" {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("content_type is required"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("content_type is required"),
 			logger, span, codes.InvalidArgument, "content_type is required",
 		)
 	}
 
 	mimeType := metadata.ContentType
 	if !uploadedmedia.IsValidMimeType(mimeType) {
-		return observability.PrepareAndLogGRPCStatus(
+		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("unsupported content type: %s", mimeType),
 			logger, span, codes.InvalidArgument, "unsupported content type",
 		)
@@ -282,7 +284,7 @@ func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploade
 			break
 		}
 		if recvErr != nil {
-			return observability.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
 		}
 
 		chunk := req.GetChunk()
@@ -292,22 +294,22 @@ func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploade
 
 		chunkSize := int64(len(chunk))
 		if totalSize+chunkSize > maxAvatarUploadSize {
-			return observability.PrepareAndLogGRPCStatus(
+			return errorsgrpc.PrepareAndLogGRPCStatus(
 				fmt.Errorf("file size exceeds maximum allowed size of %d bytes", maxAvatarUploadSize),
 				logger, span, codes.InvalidArgument, "file too large",
 			)
 		}
 
 		if _, err = fileData.Write(chunk); err != nil {
-			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
+			return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
 		}
 
 		totalSize += chunkSize
 	}
 
 	if totalSize == 0 {
-		return observability.PrepareAndLogGRPCStatus(
-			errors.New("no file data received"),
+		return errorsgrpc.PrepareAndLogGRPCStatus(
+			platformerrors.New("no file data received"),
 			logger, span, codes.InvalidArgument, "no file data received",
 		)
 	}
@@ -316,7 +318,7 @@ func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploade
 	storagePath := filepath.Join(userID, fileID, metadata.ObjectName)
 
 	if err = s.uploadManager.SaveFile(ctx, storagePath, fileData.Bytes()); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
 	}
 
 	uploadedMediaInput := &uploadedmedia.UploadedMediaDatabaseCreationInput{
@@ -327,16 +329,16 @@ func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploade
 	}
 
 	if err = uploadedMediaInput.ValidateWithContext(ctx); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
 	}
 
 	created, err := s.uploadedMediaManager.CreateUploadedMedia(ctx, uploadedMediaInput)
 	if err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
 	}
 
 	if err = s.identityDataManager.SetUserAvatar(ctx, userID, created.ID); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to set user avatar")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to set user avatar")
 	}
 
 	response := &identitysvc.UploadUserAvatarResponse{
@@ -344,7 +346,7 @@ func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploade
 	}
 
 	if err = stream.SendAndClose(response); err != nil {
-		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
+		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
 	}
 
 	logger.Info("avatar uploaded successfully")

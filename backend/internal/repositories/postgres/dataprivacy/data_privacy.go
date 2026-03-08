@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
@@ -16,6 +17,10 @@ import (
 func (r *repository) FetchUserDataCollection(ctx context.Context, userID string) (*dataprivacy.UserDataCollection, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if userID == "" {
+		return nil, platformerrors.ErrInvalidIDProvided
+	}
 
 	logger := r.logger.WithValue("user_id", userID)
 	logger.Info("fetching user data collection")
@@ -206,6 +211,10 @@ func (r *repository) FetchUserDataCollection(ctx context.Context, userID string)
 func (r *repository) DeleteUser(ctx context.Context, userID string) error {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if userID == "" {
+		return platformerrors.ErrInvalidIDProvided
+	}
 
 	logger := r.logger.WithValue("user_id", userID)
 	logger.Info("deleting user and all associated data")

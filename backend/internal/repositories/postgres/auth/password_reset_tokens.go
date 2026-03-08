@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	authkeys "github.com/dinnerdonebetter/backend/internal/domain/auth/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -27,7 +28,7 @@ func (r *repository) GetPasswordResetTokenByToken(ctx context.Context, token str
 	defer span.End()
 
 	if token == "" {
-		return nil, database.ErrEmptyInputProvided
+		return nil, platformerrors.ErrEmptyInputProvided
 	}
 	tracing.AttachToSpan(span, authkeys.PasswordResetTokenIDKey, token)
 
@@ -55,7 +56,7 @@ func (r *repository) CreatePasswordResetToken(ctx context.Context, input *auth.P
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	logger := r.logger.WithValue(authkeys.PasswordResetTokenIDKey, input.ID)
 	tracing.AttachToSpan(span, authkeys.PasswordResetTokenIDKey, input.ID)
@@ -111,7 +112,7 @@ func (r *repository) RedeemPasswordResetToken(ctx context.Context, passwordReset
 	logger := r.logger.Clone()
 
 	if passwordResetTokenID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(authkeys.PasswordResetTokenIDKey, passwordResetTokenID)
 	tracing.AttachToSpan(span, authkeys.PasswordResetTokenIDKey, passwordResetTokenID)

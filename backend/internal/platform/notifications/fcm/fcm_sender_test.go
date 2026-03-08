@@ -1,7 +1,6 @@
 package fcm
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -16,7 +15,7 @@ import (
 func TestNewSender(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	logger := logging.NewNoopLogger()
 	tracingProvider := tracing.NewNoopTracerProvider()
 

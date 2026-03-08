@@ -15,7 +15,7 @@ struct AssociatedRecipeCard: View {
   @Environment(AuthenticationManager.self) private var authManager
 
   private var canMarkAsMade: Bool {
-    guard let viewModel, let parentRecipe else { return false }
+    guard viewModel != nil, let parentRecipe else { return false }
     return parentRecipe.associatedRecipes.contains { $0.id == recipe.id }
   }
 

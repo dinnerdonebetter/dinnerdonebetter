@@ -8,6 +8,7 @@ import (
 	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -21,6 +22,10 @@ const (
 func (r *repository) CreatePurchase(ctx context.Context, input *payments.PurchaseDatabaseCreationInput) (*payments.Purchase, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, platformerrors.ErrNilInputProvided
+	}
 
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.PurchaseIDKey, input.ID)
@@ -59,7 +64,7 @@ func (r *repository) GetPurchase(ctx context.Context, id string) (*payments.Purc
 
 	logger := r.logger.Clone()
 	if id == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(paymentskeys.PurchaseIDKey, id)
 	tracing.AttachToSpan(span, paymentskeys.PurchaseIDKey, id)
@@ -75,6 +80,10 @@ func (r *repository) GetPurchase(ctx context.Context, id string) (*payments.Purc
 func (r *repository) GetPurchasesForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.Purchase], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if accountID == "" {
+		return nil, platformerrors.ErrInvalidIDProvided
+	}
 
 	logger := r.logger.Clone()
 	if filter == nil {

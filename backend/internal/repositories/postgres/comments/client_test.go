@@ -239,7 +239,7 @@ func TestQuerier_CreateComment(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateComment(ctx, nil)
@@ -254,7 +254,7 @@ func TestQuerier_GetComment(T *testing.T) {
 	T.Run("with empty id", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetComment(ctx, "")
@@ -269,7 +269,7 @@ func TestQuerier_GetCommentsForReference(T *testing.T) {
 	T.Run("with empty target type", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetCommentsForReference(ctx, "", "ref-id", nil)
@@ -280,7 +280,7 @@ func TestQuerier_GetCommentsForReference(T *testing.T) {
 	T.Run("with empty referenced id", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetCommentsForReference(ctx, comments.CommentTargetTypeRecipes, "", nil)
@@ -295,7 +295,7 @@ func TestQuerier_UpdateComment(T *testing.T) {
 	T.Run("with empty id", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		err := c.UpdateComment(ctx, "", "user-id", "content")
@@ -305,7 +305,7 @@ func TestQuerier_UpdateComment(T *testing.T) {
 	T.Run("with empty belongs to user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		err := c.UpdateComment(ctx, "comment-id", "", "content")
@@ -319,7 +319,7 @@ func TestQuerier_ArchiveComment(T *testing.T) {
 	T.Run("with empty id", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		err := c.ArchiveComment(ctx, "")
@@ -333,7 +333,7 @@ func TestQuerier_ArchiveCommentsForReference(T *testing.T) {
 	T.Run("with empty target type", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		err := c.ArchiveCommentsForReference(ctx, "", "ref-id")
@@ -343,7 +343,7 @@ func TestQuerier_ArchiveCommentsForReference(T *testing.T) {
 	T.Run("with empty referenced id", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		err := c.ArchiveCommentsForReference(ctx, comments.CommentTargetTypeRecipes, "")

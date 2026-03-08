@@ -34,6 +34,7 @@ func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInpu
 		ContainsPeanut:         request.ContainsPeanut,
 		AnimalDerived:          request.AnimalDerived,
 		RestrictToPreparations: request.RestrictToPreparations,
+		ContaminatesEquipment:  request.ContaminatesEquipment,
 		ContainsDairy:          request.ContainsDairy,
 		ContainsSesame:         request.ContainsSesame,
 		ContainsTreeNut:        request.ContainsTreeNut,
@@ -80,6 +81,7 @@ func ConvertGRPCValidIngredientUpdateRequestInputToValidIngredientUpdateRequestI
 		PluralName:                  x.PluralName,
 		AnimalDerived:               x.AnimalDerived,
 		RestrictToPreparations:      x.RestrictToPreparations,
+		ContaminatesEquipment:       x.ContaminatesEquipment,
 		StorageTemperatureInCelsius: storageTemperatureInCelsius,
 		StorageInstructions:         x.StorageInstructions,
 		Slug:                        x.Slug,
@@ -117,6 +119,7 @@ func ConvertValidIngredientUpdateRequestInputToGRPCValidIngredientUpdateRequestI
 		PluralName:             x.PluralName,
 		AnimalDerived:          x.AnimalDerived,
 		RestrictToPreparations: x.RestrictToPreparations,
+		ContaminatesEquipment:  x.ContaminatesEquipment,
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
@@ -177,6 +180,7 @@ func ConvertValidIngredientToGRPCValidIngredient(x *mealplanning.ValidIngredient
 		IsHeat:                 x.IsHeat,
 		IsLiquid:               x.IsLiquid,
 		ContainsShellfish:      x.ContainsShellfish,
+		ContaminatesEquipment:  x.ContaminatesEquipment,
 	}
 }
 
@@ -221,6 +225,7 @@ func ConvertGRPCValidIngredientToValidIngredient(x *mealplanninggrpc.ValidIngred
 		IsHeat:                 x.IsHeat,
 		IsLiquid:               x.IsLiquid,
 		ContainsShellfish:      x.ContainsShellfish,
+		ContaminatesEquipment:  x.ContaminatesEquipment,
 	}
 }
 
@@ -245,6 +250,7 @@ func ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequ
 		AnimalFlesh:            x.AnimalFlesh,
 		AnimalDerived:          x.AnimalDerived,
 		RestrictToPreparations: x.RestrictToPreparations,
+		ContaminatesEquipment:  x.ContaminatesEquipment,
 		ContainsDairy:          x.ContainsDairy,
 		ContainsSesame:         x.ContainsSesame,
 		ContainsTreeNut:        x.ContainsTreeNut,

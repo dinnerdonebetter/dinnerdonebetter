@@ -8,6 +8,7 @@ import (
 	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -21,6 +22,10 @@ const (
 func (r *repository) CreateProduct(ctx context.Context, input *payments.ProductDatabaseCreationInput) (*payments.Product, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, platformerrors.ErrNilInputProvided
+	}
 
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.ProductIDKey, input.ID)
@@ -59,7 +64,7 @@ func (r *repository) GetProduct(ctx context.Context, id string) (*payments.Produ
 
 	logger := r.logger.Clone()
 	if id == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(paymentskeys.ProductIDKey, id)
 	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, id)
@@ -78,7 +83,7 @@ func (r *repository) GetProductByExternalID(ctx context.Context, externalProduct
 
 	logger := r.logger.Clone()
 	if externalProductID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue("external_product_id", externalProductID)
 	tracing.AttachToSpan(span, "external_product_id", externalProductID)
@@ -124,6 +129,10 @@ func (r *repository) UpdateProduct(ctx context.Context, product *payments.Produc
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if product == nil {
+		return platformerrors.ErrNilInputProvided
+	}
+
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.ProductIDKey, product.ID)
 	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, product.ID)
@@ -162,7 +171,7 @@ func (r *repository) ArchiveProduct(ctx context.Context, id string) error {
 
 	logger := r.logger.Clone()
 	if id == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(paymentskeys.ProductIDKey, id)
 	tracing.AttachToSpan(span, paymentskeys.ProductIDKey, id)
@@ -189,7 +198,7 @@ func (r *repository) ProductExists(ctx context.Context, id string) (bool, error)
 	defer span.End()
 
 	if id == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 
 	result, err := r.generatedQuerier.CheckProductExistence(ctx, r.readDB, id)

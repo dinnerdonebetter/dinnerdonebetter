@@ -12,6 +12,7 @@ import (
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -32,7 +33,7 @@ func (r *repository) GetAccount(ctx context.Context, accountID string) (*identit
 	defer span.End()
 
 	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
@@ -115,7 +116,7 @@ func (r *repository) getAccountsForUser(ctx context.Context, querier database.SQ
 	logger := r.logger.Clone()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	logger = logger.WithValue(identitykeys.UserIDKey, userID)
@@ -199,7 +200,7 @@ func (r *repository) CreateAccount(ctx context.Context, input *identity.AccountD
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	logger := r.logger.WithValue(identitykeys.UserIDKey, input.BelongsToUser)
@@ -299,7 +300,7 @@ func (r *repository) UpdateAccountBillingFields(ctx context.Context, accountID s
 	defer span.End()
 
 	if accountID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger := r.logger.WithValue(identitykeys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
@@ -323,7 +324,7 @@ func (r *repository) UpdateAccount(ctx context.Context, updated *identity.Accoun
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := r.logger.WithValue(identitykeys.AccountIDKey, updated.ID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, updated.ID)
@@ -462,7 +463,7 @@ func (r *repository) ArchiveAccount(ctx context.Context, accountID, ownerID stri
 	logger := r.logger.Clone()
 
 	if accountID == "" || ownerID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, ownerID)
 	logger = logger.WithValue(identitykeys.UserIDKey, ownerID)

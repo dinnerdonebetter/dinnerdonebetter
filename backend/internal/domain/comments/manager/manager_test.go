@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
@@ -23,7 +22,7 @@ import (
 func buildCommentsManagerForTest(t *testing.T) *commentsManager {
 	t.Helper()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	queueCfg := &msgconfig.QueuesConfig{
 		DataChangesTopicName: t.Name(),
 	}
@@ -74,7 +73,7 @@ func TestCommentsManager_CreateComment(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cm := buildCommentsManagerForTest(t)
 
 		input := fakes.BuildFakeCommentCreationRequestInput()
@@ -104,7 +103,7 @@ func TestCommentsManager_UpdateComment(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cm := buildCommentsManagerForTest(t)
 
 		comment := fakes.BuildFakeComment()
@@ -135,7 +134,7 @@ func TestCommentsManager_ArchiveComment(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cm := buildCommentsManagerForTest(t)
 
 		commentID := fakes.BuildFakeID()

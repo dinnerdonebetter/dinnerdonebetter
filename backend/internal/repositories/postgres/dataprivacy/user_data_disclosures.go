@@ -7,8 +7,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -26,11 +26,11 @@ func (r *repository) CreateUserDataDisclosure(ctx context.Context, input *datapr
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	if input.ID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 
 	tracing.AttachToSpan(span, disclosureIDKey, input.ID)
@@ -71,7 +71,7 @@ func (r *repository) GetUserDataDisclosure(ctx context.Context, disclosureID str
 	defer span.End()
 
 	if disclosureID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 
 	tracing.AttachToSpan(span, disclosureIDKey, disclosureID)
@@ -112,7 +112,7 @@ func (r *repository) GetUserDataDisclosuresForUser(ctx context.Context, userID s
 	defer span.End()
 
 	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
@@ -189,7 +189,7 @@ func (r *repository) MarkUserDataDisclosureCompleted(ctx context.Context, disclo
 	defer span.End()
 
 	if disclosureID == "" || reportID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	tracing.AttachToSpan(span, disclosureIDKey, disclosureID)
@@ -211,7 +211,7 @@ func (r *repository) MarkUserDataDisclosureFailed(ctx context.Context, disclosur
 	defer span.End()
 
 	if disclosureID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	tracing.AttachToSpan(span, disclosureIDKey, disclosureID)
@@ -230,7 +230,7 @@ func (r *repository) ArchiveUserDataDisclosure(ctx context.Context, disclosureID
 	defer span.End()
 
 	if disclosureID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 
 	tracing.AttachToSpan(span, disclosureIDKey, disclosureID)

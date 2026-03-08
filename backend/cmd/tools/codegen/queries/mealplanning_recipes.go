@@ -26,6 +26,7 @@ var recipesColumns = []string{
 	nameColumn,
 	slugColumn,
 	"source",
+	"source_isbn",
 	descriptionColumn,
 	statusColumn,
 	"inspired_by_recipe_id",

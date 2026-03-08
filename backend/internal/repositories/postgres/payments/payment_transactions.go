@@ -9,6 +9,7 @@ import (
 	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -22,6 +23,10 @@ const (
 func (r *repository) CreatePaymentTransaction(ctx context.Context, input *payments.PaymentTransactionDatabaseCreationInput) (*payments.PaymentTransaction, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, platformerrors.ErrNilInputProvided
+	}
 
 	logger := r.logger.Clone()
 	logger = logger.WithValue(paymentskeys.PaymentTransactionIDKey, input.ID)
@@ -68,6 +73,10 @@ func (r *repository) CreatePaymentTransaction(ctx context.Context, input *paymen
 func (r *repository) GetPaymentTransactionsForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.PaymentTransaction], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if accountID == "" {
+		return nil, platformerrors.ErrInvalidIDProvided
+	}
 
 	logger := r.logger.Clone()
 	if filter == nil {

@@ -11,8 +11,8 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -179,7 +179,7 @@ func (m *recipeManager) CreateRecipe(ctx context.Context, creatorID string, inpu
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -187,7 +187,7 @@ func (m *recipeManager) CreateRecipe(ctx context.Context, creatorID string, inpu
 	}
 
 	if creatorID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	if err := m.recipeAnalyzer.ValidateRecipeCreationRequestInputIsDAG(ctx, input); err != nil {
@@ -316,7 +316,7 @@ func (m *recipeManager) UpdateRecipe(ctx context.Context, recipeID string, input
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
@@ -582,10 +582,10 @@ func (m *recipeManager) CreateRecipeList(ctx context.Context, userID string, inp
 	logger := m.logger.WithSpan(span)
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 	if userID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -621,7 +621,7 @@ func (m *recipeManager) ArchiveRecipeList(ctx context.Context, recipeListID, use
 	logger := m.logger.WithSpan(span)
 
 	if recipeListID == "" || userID == "" {
-		return internalerrors.ErrEmptyInputParameter
+		return platformerrors.ErrEmptyInputParameter
 	}
 
 	if err := m.db.ArchiveRecipeList(ctx, recipeListID, userID); err != nil {
@@ -643,13 +643,13 @@ func (m *recipeManager) UpdateRecipeList(ctx context.Context, recipeListID, user
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 	if recipeListID == "" || userID == "" {
-		return internalerrors.ErrEmptyInputParameter
+		return platformerrors.ErrEmptyInputParameter
 	}
 	if input.Name == nil || input.Description == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	updated := &mealplanning.RecipeList{
@@ -679,13 +679,13 @@ func (m *recipeManager) UpdateRecipeListItem(ctx context.Context, recipeListItem
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 	if recipeListItemID == "" || recipeListID == "" || recipeID == "" {
-		return internalerrors.ErrEmptyInputParameter
+		return platformerrors.ErrEmptyInputParameter
 	}
 	if input.Notes == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	updated := &mealplanning.RecipeListItem{
@@ -709,7 +709,7 @@ func (m *recipeManager) AddRecipeToRecipeList(ctx context.Context, recipeListID,
 	logger := m.logger.WithSpan(span)
 
 	if recipeListID == "" || recipeID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	input := &mealplanning.RecipeListItemDatabaseCreationInput{
@@ -734,7 +734,7 @@ func (m *recipeManager) RemoveRecipeFromRecipeList(ctx context.Context, recipeLi
 	logger := m.logger.WithSpan(span)
 
 	if recipeListID == "" || recipeListItemID == "" {
-		return internalerrors.ErrEmptyInputParameter
+		return platformerrors.ErrEmptyInputParameter
 	}
 
 	if err := m.db.ArchiveRecipeListItem(ctx, recipeListItemID, recipeListID); err != nil {
@@ -751,7 +751,7 @@ func (m *recipeManager) ListRecipeListItems(ctx context.Context, recipeListID st
 	logger := m.logger.WithSpan(span)
 
 	if recipeListID == "" {
-		return nil, internalerrors.ErrEmptyInputParameter
+		return nil, platformerrors.ErrEmptyInputParameter
 	}
 
 	res, err := m.db.GetRecipeListItems(ctx, recipeListID, filter)
@@ -788,7 +788,7 @@ func (m *recipeManager) CreateRecipeStep(ctx context.Context, recipeID string, i
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
@@ -876,7 +876,7 @@ func (m *recipeManager) UpdateRecipeStep(ctx context.Context, recipeID, recipeSt
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -964,7 +964,7 @@ func (m *recipeManager) CreateRecipeStepProduct(ctx context.Context, recipeID, r
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1019,7 +1019,7 @@ func (m *recipeManager) UpdateRecipeStepProduct(ctx context.Context, recipeID, r
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1107,7 +1107,7 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1175,7 +1175,7 @@ func (m *recipeManager) UpdateRecipeStepInstrument(ctx context.Context, recipeID
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1263,7 +1263,7 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1340,7 +1340,7 @@ func (m *recipeManager) UpdateRecipeStepIngredient(ctx context.Context, recipeID
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1423,7 +1423,7 @@ func (m *recipeManager) CreateRecipePrepTask(ctx context.Context, recipeID strin
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
@@ -1471,7 +1471,7 @@ func (m *recipeManager) UpdateRecipePrepTask(ctx context.Context, recipeID, reci
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1552,7 +1552,7 @@ func (m *recipeManager) CreateRecipeStepCompletionCondition(ctx context.Context,
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1607,7 +1607,7 @@ func (m *recipeManager) UpdateRecipeStepCompletionCondition(ctx context.Context,
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1695,7 +1695,7 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1763,7 +1763,7 @@ func (m *recipeManager) UpdateRecipeStepVessel(ctx context.Context, recipeID, re
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1865,7 +1865,7 @@ func (m *recipeManager) CreateRecipeRating(ctx context.Context, recipeID string,
 	defer span.End()
 
 	if input == nil {
-		return nil, internalerrors.ErrNilInputParameter
+		return nil, platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
@@ -1893,7 +1893,7 @@ func (m *recipeManager) UpdateRecipeRating(ctx context.Context, recipeID, recipe
 	defer span.End()
 
 	if input == nil {
-		return internalerrors.ErrNilInputParameter
+		return platformerrors.ErrNilInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{

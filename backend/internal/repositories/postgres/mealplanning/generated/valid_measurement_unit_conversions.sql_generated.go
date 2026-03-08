@@ -129,6 +129,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -183,54 +184,55 @@ type GetValidMeasurementUnitConversionRow struct {
 	FromUnitLastUpdatedAt                                  sql.NullTime
 	FromUnitArchivedAt                                     sql.NullTime
 	ValidMeasurementUnitConversionNotes                    string
-	FromUnitIconPath                                       string
+	ToUnitPluralName                                       string
 	ToUnitDescription                                      string
 	ValidMeasurementUnitConversionModifier                 string
 	ToUnitIconPath                                         string
-	FromUnitDescription                                    string
+	ValidMeasurementUnitConversionID                       string
 	ValidMeasurementUnitConversionToUnit                   string
 	ValidMeasurementUnitConversionFromUnit                 string
 	FromUnitName                                           string
-	ToUnitPluralName                                       string
+	FromUnitIconPath                                       string
 	ToUnitSlug                                             string
 	FromUnitID                                             string
 	FromUnitPluralName                                     string
 	ToUnitID                                               string
 	ToUnitName                                             string
-	ValidMeasurementUnitConversionID                       string
+	FromUnitDescription                                    string
 	FromUnitSlug                                           string
-	ValidIngredientWarning                                 sql.NullString
-	ValidIngredientIconPath                                sql.NullString
 	ValidIngredientID                                      sql.NullString
-	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
-	ValidIngredientName                                    sql.NullString
+	ValidIngredientIconPath                                sql.NullString
+	ValidIngredientWarning                                 sql.NullString
 	ValidIngredientDescription                             sql.NullString
+	ValidIngredientName                                    sql.NullString
 	ValidIngredientShoppingSuggestions                     sql.NullString
+	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
 	ValidIngredientSlug                                    sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientPluralName                              sql.NullString
-	ValidIngredientContainsTreeNut                         sql.NullBool
-	ValidIngredientIsSalt                                  sql.NullBool
+	ValidIngredientContainsWheat                           sql.NullBool
+	ValidIngredientIsFruit                                 sql.NullBool
 	ValidIngredientAnimalDerived                           sql.NullBool
 	ValidIngredientAnimalFlesh                             sql.NullBool
 	ValidIngredientRestrictToPreparations                  sql.NullBool
+	ValidIngredientContaminatesEquipment                   sql.NullBool
 	ValidIngredientContainsGluten                          sql.NullBool
 	ValidIngredientContainsFish                            sql.NullBool
 	ValidIngredientContainsSesame                          sql.NullBool
 	ValidIngredientContainsShellfish                       sql.NullBool
 	ValidIngredientContainsAlcohol                         sql.NullBool
-	ValidIngredientContainsWheat                           sql.NullBool
+	ValidIngredientContainsSoy                             sql.NullBool
 	ValidIngredientIsStarch                                sql.NullBool
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsGrain                                 sql.NullBool
-	ValidIngredientIsFruit                                 sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientIsHeat                                  sql.NullBool
-	ValidIngredientContainsSoy                             sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
 	ValidIngredientContainsPeanut                          sql.NullBool
 	ValidIngredientContainsDairy                           sql.NullBool
 	ValidIngredientContainsEgg                             sql.NullBool
@@ -297,6 +299,7 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 		&i.ValidIngredientAnimalDerived,
 		&i.ValidIngredientPluralName,
 		&i.ValidIngredientRestrictToPreparations,
+		&i.ValidIngredientContaminatesEquipment,
 		&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 		&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 		&i.ValidIngredientStorageInstructions,
@@ -378,6 +381,7 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.contaminates_equipment as valid_ingredient_contaminates_equipment,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
@@ -522,8 +526,9 @@ type GetValidMeasurementUnitConversionsForMeasurementUnitRow struct {
 	TotalCount                                             int64
 	FilteredCount                                          int64
 	ValidIngredientContainsWheat                           sql.NullBool
-	ValidIngredientIsAcid                                  sql.NullBool
+	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientRestrictToPreparations                  sql.NullBool
+	ValidIngredientContaminatesEquipment                   sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientAnimalFlesh                             sql.NullBool
 	ValidIngredientContainsGluten                          sql.NullBool
@@ -535,8 +540,8 @@ type GetValidMeasurementUnitConversionsForMeasurementUnitRow struct {
 	ValidIngredientIsGrain                                 sql.NullBool
 	ValidIngredientIsFruit                                 sql.NullBool
 	ValidIngredientIsSalt                                  sql.NullBool
-	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientAnimalDerived                           sql.NullBool
+	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientIsHeat                                  sql.NullBool
 	ValidIngredientContainsShellfish                       sql.NullBool
 	ValidIngredientContainsSoy                             sql.NullBool
@@ -622,6 +627,7 @@ func (q *Queries) GetValidMeasurementUnitConversionsForMeasurementUnit(ctx conte
 			&i.ValidIngredientAnimalDerived,
 			&i.ValidIngredientPluralName,
 			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientContaminatesEquipment,
 			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
 			&i.ValidIngredientStorageInstructions,

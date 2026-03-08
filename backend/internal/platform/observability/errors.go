@@ -3,6 +3,7 @@ package observability
 import (
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -26,7 +27,7 @@ func PrepareAndLogError(err error, logger logging.Logger, span tracing.Span, des
 	}
 
 	if desc != "" {
-		return fmt.Errorf("%s: %w", desc, err)
+		return errors.Wrap(err, desc)
 	}
 	return err
 }
@@ -43,7 +44,7 @@ func PrepareError(err error, span tracing.Span, descriptionFmt string, descripti
 	}
 
 	if desc != "" {
-		return fmt.Errorf("%s: %w", desc, err)
+		return errors.Wrap(err, desc)
 	}
 	return err
 }
@@ -73,9 +74,10 @@ func PrepareAndLogGRPCStatus(err error, logger logging.Logger, span tracing.Span
 		logger.Error(desc, err)
 	}
 
+	// Wrap with platform/errors so the chain is wire-transmittable.
+	wrapped := err
 	if desc != "" {
-		return status.Errorf(code, "%s: %v", desc, err)
+		wrapped = errors.Wrap(err, desc)
 	}
-
-	return status.Errorf(code, "%v", err)
+	return status.Errorf(code, "%v", wrapped)
 }

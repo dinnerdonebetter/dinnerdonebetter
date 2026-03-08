@@ -8,7 +8,7 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -22,18 +22,18 @@ func (s *serviceImpl) CreateWaitlist(ctx context.Context, request *waitlistssvc.
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	input := converters.ConvertGRPCWaitlistCreationRequestInputToWaitlistDatabaseCreationInput(request.Input)
 	if err = input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate waitlist creation request")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate waitlist creation request")
 	}
 
 	created, err := s.waitlistsManager.CreateWaitlist(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create waitlist")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create waitlist")
 	}
 
 	x := &waitlistssvc.CreateWaitlistResponse{
@@ -54,7 +54,7 @@ func (s *serviceImpl) GetWaitlist(ctx context.Context, request *waitlistssvc.Get
 
 	waitlist, err := s.waitlistsManager.GetWaitlist(ctx, request.WaitlistId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist")
 	}
 
 	x := &waitlistssvc.GetWaitlistResponse{
@@ -76,7 +76,7 @@ func (s *serviceImpl) GetWaitlists(ctx context.Context, request *waitlistssvc.Ge
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	retrieved, err := s.waitlistsManager.GetWaitlists(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlists")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlists")
 	}
 
 	x := &waitlistssvc.GetWaitlistsResponse{
@@ -102,7 +102,7 @@ func (s *serviceImpl) GetActiveWaitlists(ctx context.Context, request *waitlists
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	retrieved, err := s.waitlistsManager.GetActiveWaitlists(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch active waitlists")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch active waitlists")
 	}
 
 	x := &waitlistssvc.GetActiveWaitlistsResponse{
@@ -127,14 +127,14 @@ func (s *serviceImpl) UpdateWaitlist(ctx context.Context, request *waitlistssvc.
 
 	waitlist, err := s.waitlistsManager.GetWaitlist(ctx, request.WaitlistId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist for update")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist for update")
 	}
 
 	updateInput := converters.ConvertGRPCWaitlistUpdateRequestInputToWaitlistUpdateRequestInput(request.Input)
 	waitlist.Update(updateInput)
 
 	if err = s.waitlistsManager.UpdateWaitlist(ctx, waitlist); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update waitlist")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update waitlist")
 	}
 
 	x := &waitlistssvc.UpdateWaitlistResponse{
@@ -154,7 +154,7 @@ func (s *serviceImpl) ArchiveWaitlist(ctx context.Context, request *waitlistssvc
 	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistIDKey, request.WaitlistId)
 
 	if err := s.waitlistsManager.ArchiveWaitlist(ctx, request.WaitlistId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive waitlist")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive waitlist")
 	}
 
 	x := &waitlistssvc.ArchiveWaitlistResponse{
@@ -174,7 +174,7 @@ func (s *serviceImpl) WaitlistIsNotExpired(ctx context.Context, request *waitlis
 
 	isNotExpired, err := s.waitlistsManager.WaitlistIsNotExpired(ctx, request.WaitlistId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to check waitlist expiration status")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to check waitlist expiration status")
 	}
 
 	x := &waitlistssvc.WaitlistIsNotExpiredResponse{
@@ -195,7 +195,7 @@ func (s *serviceImpl) CreateWaitlistSignup(ctx context.Context, request *waitlis
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 	logger = logger.WithValue(identitykeys.AccountIDKey, sessionContextData.ActiveAccountID)
 	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
@@ -205,12 +205,12 @@ func (s *serviceImpl) CreateWaitlistSignup(ctx context.Context, request *waitlis
 	input.BelongsToAccount = sessionContextData.ActiveAccountID
 
 	if err = input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate waitlist signup creation request")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate waitlist signup creation request")
 	}
 
 	created, err := s.waitlistsManager.CreateWaitlistSignup(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create waitlist signup")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create waitlist signup")
 	}
 
 	x := &waitlistssvc.CreateWaitlistSignupResponse{
@@ -231,7 +231,7 @@ func (s *serviceImpl) GetWaitlistSignup(ctx context.Context, request *waitlistss
 
 	signup, err := s.waitlistsManager.GetWaitlistSignup(ctx, request.WaitlistSignupId, request.WaitlistId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist signup")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist signup")
 	}
 
 	x := &waitlistssvc.GetWaitlistSignupResponse{
@@ -253,7 +253,7 @@ func (s *serviceImpl) GetWaitlistSignupsForWaitlist(ctx context.Context, request
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	retrieved, err := s.waitlistsManager.GetWaitlistSignupsForWaitlist(ctx, request.WaitlistId, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist signups")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist signups")
 	}
 
 	x := &waitlistssvc.GetWaitlistSignupsForWaitlistResponse{
@@ -278,14 +278,14 @@ func (s *serviceImpl) UpdateWaitlistSignup(ctx context.Context, request *waitlis
 
 	signup, err := s.waitlistsManager.GetWaitlistSignup(ctx, request.WaitlistSignupId, request.WaitlistId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist signup for update")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch waitlist signup for update")
 	}
 
 	updateInput := converters.ConvertGRPCWaitlistSignupUpdateRequestInputToWaitlistSignupUpdateRequestInput(request.Input)
 	signup.Update(updateInput)
 
 	if err = s.waitlistsManager.UpdateWaitlistSignup(ctx, signup); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update waitlist signup")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update waitlist signup")
 	}
 
 	x := &waitlistssvc.UpdateWaitlistSignupResponse{
@@ -305,7 +305,7 @@ func (s *serviceImpl) ArchiveWaitlistSignup(ctx context.Context, request *waitli
 	logger := s.logger.WithSpan(span).WithValue(waitlistkeys.WaitlistSignupIDKey, request.WaitlistSignupId)
 
 	if err := s.waitlistsManager.ArchiveWaitlistSignup(ctx, request.WaitlistSignupId); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive waitlist signup")
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive waitlist signup")
 	}
 
 	x := &waitlistssvc.ArchiveWaitlistSignupResponse{

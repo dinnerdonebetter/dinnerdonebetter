@@ -73,7 +73,7 @@ func TestServiceImpl_CreateWaitlist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeWaitlist := waitlistfakes.BuildFakeWaitlist()
@@ -105,7 +105,7 @@ func TestServiceImpl_CreateWaitlist(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &waitlistssvc.CreateWaitlistRequest{
@@ -126,7 +126,7 @@ func TestServiceImpl_CreateWaitlist(t *testing.T) {
 	t.Run("validation error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, _ := buildTestService(t)
 
 		// Invalid request with empty name
@@ -148,7 +148,7 @@ func TestServiceImpl_CreateWaitlist(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeInput := waitlistfakes.BuildFakeWaitlistCreationRequestInput()
@@ -179,7 +179,7 @@ func TestServiceImpl_GetWaitlist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeWaitlist := waitlistfakes.BuildFakeWaitlist()
@@ -206,7 +206,7 @@ func TestServiceImpl_GetWaitlist(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		waitlistID := "test-waitlist-id"
@@ -233,7 +233,7 @@ func TestServiceImpl_GetWaitlists(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeWaitlists := waitlistfakes.BuildFakeWaitlistsList()
@@ -260,7 +260,7 @@ func TestServiceImpl_GetWaitlists(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		mockRepo.On(reflection.GetMethodName(mockRepo.GetWaitlists), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[waitlists.Waitlist])(nil), errors.New("repository error"))
@@ -285,7 +285,7 @@ func TestServiceImpl_GetActiveWaitlists(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeWaitlists := waitlistfakes.BuildFakeWaitlistsList()
@@ -312,7 +312,7 @@ func TestServiceImpl_GetActiveWaitlists(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		mockRepo.On(reflection.GetMethodName(mockRepo.GetActiveWaitlists), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[waitlists.Waitlist])(nil), errors.New("repository error"))
@@ -337,7 +337,7 @@ func TestServiceImpl_UpdateWaitlist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeWaitlist := waitlistfakes.BuildFakeWaitlist()
@@ -367,7 +367,7 @@ func TestServiceImpl_UpdateWaitlist(t *testing.T) {
 	t.Run("get waitlist error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		waitlistID := "test-waitlist-id"
@@ -391,7 +391,7 @@ func TestServiceImpl_UpdateWaitlist(t *testing.T) {
 	t.Run("update error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeWaitlist := waitlistfakes.BuildFakeWaitlist()
@@ -424,7 +424,7 @@ func TestServiceImpl_ArchiveWaitlist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		waitlistID := "test-waitlist-id"
@@ -447,7 +447,7 @@ func TestServiceImpl_ArchiveWaitlist(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		waitlistID := "test-waitlist-id"
@@ -474,7 +474,7 @@ func TestServiceImpl_WaitlistIsNotExpired(t *testing.T) {
 	t.Run("success - not expired", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		waitlistID := "test-waitlist-id"
@@ -498,7 +498,7 @@ func TestServiceImpl_WaitlistIsNotExpired(t *testing.T) {
 	t.Run("success - expired", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		waitlistID := "test-waitlist-id"
@@ -522,7 +522,7 @@ func TestServiceImpl_WaitlistIsNotExpired(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		waitlistID := "test-waitlist-id"
@@ -549,7 +549,7 @@ func TestServiceImpl_CreateWaitlistSignup(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeSignup := waitlistfakes.BuildFakeWaitlistSignup()
@@ -579,7 +579,7 @@ func TestServiceImpl_CreateWaitlistSignup(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &waitlistssvc.CreateWaitlistSignupRequest{
@@ -599,7 +599,7 @@ func TestServiceImpl_CreateWaitlistSignup(t *testing.T) {
 	t.Run("validation error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, _ := buildTestService(t)
 
 		// Invalid request with empty notes
@@ -620,7 +620,7 @@ func TestServiceImpl_CreateWaitlistSignup(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeInput := waitlistfakes.BuildFakeWaitlistSignupCreationRequestInput()
@@ -650,7 +650,7 @@ func TestServiceImpl_GetWaitlistSignup(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeSignup := waitlistfakes.BuildFakeWaitlistSignup()
@@ -679,7 +679,7 @@ func TestServiceImpl_GetWaitlistSignup(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		signupID := "test-signup-id"
@@ -708,7 +708,7 @@ func TestServiceImpl_GetWaitlistSignupsForWaitlist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeSignups := waitlistfakes.BuildFakeWaitlistSignupsList()
@@ -737,7 +737,7 @@ func TestServiceImpl_GetWaitlistSignupsForWaitlist(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		waitlistID := "test-waitlist-id"
@@ -765,7 +765,7 @@ func TestServiceImpl_UpdateWaitlistSignup(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeSignup := waitlistfakes.BuildFakeWaitlistSignup()
@@ -797,7 +797,7 @@ func TestServiceImpl_UpdateWaitlistSignup(t *testing.T) {
 	t.Run("get signup error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		signupID := "test-signup-id"
@@ -823,7 +823,7 @@ func TestServiceImpl_UpdateWaitlistSignup(t *testing.T) {
 	t.Run("update error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeSignup := waitlistfakes.BuildFakeWaitlistSignup()
@@ -858,7 +858,7 @@ func TestServiceImpl_ArchiveWaitlistSignup(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		signupID := "test-signup-id"
@@ -881,7 +881,7 @@ func TestServiceImpl_ArchiveWaitlistSignup(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		signupID := "test-signup-id"

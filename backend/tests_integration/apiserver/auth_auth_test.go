@@ -21,6 +21,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestAuth_LoginForToken_DesiredAccount(T *testing.T) {
@@ -89,10 +91,11 @@ func TestAuth_LoginForToken_DesiredAccount(T *testing.T) {
 		// Use JWT directly as Bearer so session context uses the token's account_id claim.
 		jwtClient, err := buildAuthedGRPCClientWithBearerToken(tokenRes.Result.AccessToken)
 		require.NoError(t, err)
-		status, err := jwtClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+		authStatus, err := jwtClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+
 		require.NoError(t, err)
-		require.NotNil(t, status)
-		assert.Equal(t, inviterAccountID, status.ActiveAccount, "session context should use account from token")
+		require.NotNil(t, authStatus)
+		assert.Equal(t, inviterAccountID, authStatus.ActiveAccount, "session context should use account from token")
 	})
 
 	T.Run("login with invalid desired account returns error", func(t *testing.T) {
@@ -627,5 +630,206 @@ func TestAuth_InvalidateToken(T *testing.T) {
 		// Token should be invalid after revocation
 		_, err = clientWithToken.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
 		assert.Error(t, err, "API calls with revoked token should fail")
+	})
+}
+
+func TestAuth_Passkey(T *testing.T) {
+	T.Parallel()
+
+	T.Run("BeginPasskeyAuthentication discoverable returns options and challenge", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		res, err := unauthedClient.BeginPasskeyAuthentication(ctx, &authsvc.BeginPasskeyAuthenticationRequest{
+			Username: "",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		require.NotEmpty(t, res.Challenge)
+		require.NotEmpty(t, res.PublicKeyCredentialRequestOptions)
+	})
+
+	T.Run("BeginPasskeyAuthentication with existing user and no passkeys returns error", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, _ := createUserAndClientForTest(t)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		// User exists but has no passkeys; go-webauthn requires at least one credential for username-based login
+		res, err := unauthedClient.BeginPasskeyAuthentication(ctx, &authsvc.BeginPasskeyAuthenticationRequest{
+			Username: user.Username,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+	})
+
+	T.Run("BeginPasskeyAuthentication with nonexistent user returns error", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		res, err := unauthedClient.BeginPasskeyAuthentication(ctx, &authsvc.BeginPasskeyAuthenticationRequest{
+			Username: "nonexistent_user_12345",
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+	})
+
+	T.Run("BeginPasskeyRegistration unauthenticated returns Unauthenticated", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		res, err := unauthedClient.BeginPasskeyRegistration(ctx, &authsvc.BeginPasskeyRegistrationRequest{})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+
+	T.Run("BeginPasskeyRegistration authenticated returns options and challenge", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		res, err := testClient.BeginPasskeyRegistration(ctx, &authsvc.BeginPasskeyRegistrationRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		require.NotEmpty(t, res.Challenge)
+		require.NotEmpty(t, res.PublicKeyCredentialCreationOptions)
+	})
+
+	T.Run("FinishPasskeyAuthentication empty assertion returns InvalidArgument", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		// Get a valid challenge first
+		beginRes, err := unauthedClient.BeginPasskeyAuthentication(ctx, &authsvc.BeginPasskeyAuthenticationRequest{Username: ""})
+		require.NoError(t, err)
+		require.NotEmpty(t, beginRes.Challenge)
+
+		res, err := unauthedClient.FinishPasskeyAuthentication(ctx, &authsvc.FinishPasskeyAuthenticationRequest{
+			Challenge:         beginRes.Challenge,
+			AssertionResponse: nil,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+	})
+
+	T.Run("FinishPasskeyAuthentication empty challenge returns InvalidArgument", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		res, err := unauthedClient.FinishPasskeyAuthentication(ctx, &authsvc.FinishPasskeyAuthenticationRequest{
+			Challenge:         "",
+			AssertionResponse: []byte("some-bytes"),
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+	})
+
+	T.Run("FinishPasskeyAuthentication invalid assertion returns Unauthenticated", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		beginRes, err := unauthedClient.BeginPasskeyAuthentication(ctx, &authsvc.BeginPasskeyAuthenticationRequest{Username: ""})
+		require.NoError(t, err)
+		require.NotEmpty(t, beginRes.Challenge)
+
+		// Malformed assertion - valid JSON structure but not a real WebAuthn assertion
+		invalidAssertion := []byte(`{"id":"x","rawId":"eA==","type":"public-key","response":{"clientDataJSON":"eA==","authenticatorData":"eA==","signature":"eA=="}}`)
+
+		res, err := unauthedClient.FinishPasskeyAuthentication(ctx, &authsvc.FinishPasskeyAuthenticationRequest{
+			Challenge:         beginRes.Challenge,
+			AssertionResponse: invalidAssertion,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		// Invalid/malformed assertion fails validation (signature check, etc.)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+
+	T.Run("FinishPasskeyRegistration unauthenticated returns Unauthenticated", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		res, err := unauthedClient.FinishPasskeyRegistration(ctx, &authsvc.FinishPasskeyRegistrationRequest{
+			Challenge:           "some-challenge",
+			AttestationResponse: []byte("some-bytes"),
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+
+	T.Run("FinishPasskeyRegistration empty attestation returns InvalidArgument", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		beginRes, err := testClient.BeginPasskeyRegistration(ctx, &authsvc.BeginPasskeyRegistrationRequest{})
+		require.NoError(t, err)
+		require.NotEmpty(t, beginRes.Challenge)
+
+		res, err := testClient.FinishPasskeyRegistration(ctx, &authsvc.FinishPasskeyRegistrationRequest{
+			Challenge:           beginRes.Challenge,
+			AttestationResponse: nil,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+	})
+
+	T.Run("FinishPasskeyRegistration empty challenge returns InvalidArgument", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		res, err := testClient.FinishPasskeyRegistration(ctx, &authsvc.FinishPasskeyRegistrationRequest{
+			Challenge:           "",
+			AttestationResponse: []byte("some-bytes"),
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+	})
+
+	T.Run("FinishPasskeyRegistration invalid attestation returns InvalidArgument", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		beginRes, err := testClient.BeginPasskeyRegistration(ctx, &authsvc.BeginPasskeyRegistrationRequest{})
+		require.NoError(t, err)
+		require.NotEmpty(t, beginRes.Challenge)
+
+		// Malformed attestation - not a valid WebAuthn attestation
+		invalidAttestation := []byte(`{"id":"x","rawId":"eA==","type":"public-key","response":{"clientDataJSON":"eA==","attestationObject":"eA=="}}`)
+
+		res, err := testClient.FinishPasskeyRegistration(ctx, &authsvc.FinishPasskeyRegistrationRequest{
+			Challenge:           beginRes.Challenge,
+			AttestationResponse: invalidAttestation,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
 	})
 }

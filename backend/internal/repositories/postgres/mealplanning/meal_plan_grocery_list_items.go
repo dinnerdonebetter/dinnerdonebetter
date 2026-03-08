@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -26,13 +27,13 @@ func (q *repository) MealPlanGroceryListItemExists(ctx context.Context, mealPlan
 	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanGroceryListItemID == "" {
-		return false, database.ErrInvalidIDProvided
+		return false, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
@@ -55,7 +56,7 @@ func (q *repository) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPl
 	logger := q.logger.Clone()
 
 	if mealPlanGroceryListItem == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
@@ -91,13 +92,13 @@ func (q *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanGroceryListItemID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
@@ -214,7 +215,7 @@ func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
-		return nil, database.ErrInvalidIDProvided
+		return nil, platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
@@ -361,7 +362,7 @@ func (q *repository) createMealPlanGroceryListItem(ctx context.Context, querier 
 	defer span.End()
 
 	if input == nil {
-		return nil, database.ErrNilInputProvided
+		return nil, platformerrors.ErrNilInputProvided
 	}
 
 	logger := q.logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, input.ID)
@@ -432,7 +433,7 @@ func (q *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated 
 	defer span.End()
 
 	if updated == nil {
-		return database.ErrNilInputProvided
+		return platformerrors.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, updated.ID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, updated.ID)
@@ -477,7 +478,7 @@ func (q *repository) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPla
 	logger := q.logger.Clone()
 
 	if mealPlanGroceryListItemID == "" {
-		return database.ErrInvalidIDProvided
+		return platformerrors.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, mealplanningkeys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)

@@ -53,6 +53,7 @@ message ValidIngredient {
   bool is_fat = 34;
   bool is_acid = 35;
   bool is_heat = 36;
+  bool contaminates_equipment = 37;
 }
 
 message ValidIngredientGroup {
@@ -264,6 +265,7 @@ message Recipe {
   string id = 10;
   string created_by_user = 11;
   string source = 12;
+  string source_isbn = 22;
   string slug = 13;
   MealComponentType yields_component_type = 14;
   repeated RecipePrepTask prep_tasks = 15;

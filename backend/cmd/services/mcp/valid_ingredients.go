@@ -42,6 +42,7 @@ var validIngredientsSchema = map[string]any{
 	"PluralName":                  stringField("The plural name for the ingredient. So for an ingredient named 'onion', this would be 'onions'"),
 	"AnimalDerived":               boolField("Whether or not the valid ingredient AnimalDerived"),
 	"RestrictToPreparations":      boolField("Whether or not the valid ingredient is restrictToPreparations"),
+	"ContaminatesEquipment":       boolField("Whether or not the valid ingredient contaminates equipment"),
 	"StorageTemperatureInCelsius": optionalFloatRangeSchema(),
 	"StorageInstructions":         stringField("Instructions on how to store the item."),
 	"Slug":                        stringField("An easy-to-use URL slug for the ingredient"),

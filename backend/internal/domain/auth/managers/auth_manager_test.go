@@ -62,7 +62,7 @@ func TestProvideAuthManager(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: t.Name()}
 
 		mpp := &mockpublishers.PublisherProvider{}
@@ -93,7 +93,7 @@ func TestAuthManager_Self(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		userID := identityfakes.BuildFakeID()
 		expectedUser := identityfakes.BuildFakeUser()
 		expectedUser.ID = userID
@@ -131,7 +131,7 @@ func TestAuthManager_CheckUserPermissions(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		userID := identityfakes.BuildFakeID()
 		accountID := identityfakes.BuildFakeID()
 
@@ -169,7 +169,7 @@ func TestAuthManager_CheckUserPermissions(t *testing.T) {
 	t.Run("session fetch error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		sessionFetcher := func(context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		}
@@ -190,7 +190,7 @@ func TestAuthManager_CheckUserPermissions(t *testing.T) {
 func TestProvideAuthManager_NilConfig(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	mpp := &mockpublishers.PublisherProvider{}
 
 	m, err := ProvideAuthManager(
@@ -213,7 +213,7 @@ func TestProvideAuthManager_NilConfig(t *testing.T) {
 func TestAuthManager_Self_SessionError(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	sessionFetcher := func(context.Context) (*sessions.ContextData, error) {
 		return nil, errors.New("session error")
 	}
@@ -233,7 +233,7 @@ func TestAuthManager_Self_SessionError(t *testing.T) {
 func TestAuthManager_Self_UserNotFound(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	userID := identityfakes.BuildFakeID()
 
 	userDataManager := &identitymock.RepositoryMock{}
@@ -260,7 +260,7 @@ func TestAuthManager_Self_UserNotFound(t *testing.T) {
 func TestAuthManager_TOTPSecretVerification_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	key, err := totp.Generate(totp.GenerateOpts{Issuer: "test", AccountName: "user"})
 	require.NoError(t, err)
 
@@ -296,7 +296,7 @@ func TestAuthManager_TOTPSecretVerification_Success(t *testing.T) {
 func TestAuthManager_TOTPSecretVerification_InvalidInput(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	manager := &AuthManager{
 		sessionContextDataFetcher: func(context.Context) (*sessions.ContextData, error) { return &sessions.ContextData{}, nil },
 		logger:                    logging.NewNoopLogger().WithName("auth_manager"),
@@ -311,7 +311,7 @@ func TestAuthManager_TOTPSecretVerification_InvalidInput(t *testing.T) {
 func TestAuthManager_TOTPSecretVerification_AlreadyVerified(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	verifiedAt := time.Now()
 	user := identityfakes.BuildFakeUser()
 	user.TwoFactorSecretVerifiedAt = &verifiedAt
@@ -337,7 +337,7 @@ func TestAuthManager_TOTPSecretVerification_AlreadyVerified(t *testing.T) {
 func TestAuthManager_RequestUsernameReminder_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	input := authfakes.BuildFakeUsernameReminderRequestInput()
 	input.EmailAddress = user.EmailAddress
@@ -365,7 +365,7 @@ func TestAuthManager_RequestUsernameReminder_Success(t *testing.T) {
 func TestAuthManager_RequestUsernameReminder_UserNotFound(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	input := authfakes.BuildFakeUsernameReminderRequestInput()
 
 	userDataManager := &identitymock.RepositoryMock{}
@@ -387,7 +387,7 @@ func TestAuthManager_RequestUsernameReminder_UserNotFound(t *testing.T) {
 func TestAuthManager_CreatePasswordResetToken_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	input := authfakes.BuildFakePasswordResetTokenCreationRequestInput()
 	input.EmailAddress = user.EmailAddress
@@ -425,7 +425,7 @@ func TestAuthManager_CreatePasswordResetToken_Success(t *testing.T) {
 func TestAuthManager_CreatePasswordResetToken_UserNotFound(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	input := authfakes.BuildFakePasswordResetTokenCreationRequestInput()
 
 	userDataManager := &identitymock.RepositoryMock{}
@@ -448,7 +448,7 @@ func TestAuthManager_CreatePasswordResetToken_UserNotFound(t *testing.T) {
 func TestAuthManager_RequestEmailVerificationEmail_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	userID := identityfakes.BuildFakeID()
 
 	userDataManager := &identitymock.RepositoryMock{}
@@ -476,7 +476,7 @@ func TestAuthManager_RequestEmailVerificationEmail_Success(t *testing.T) {
 func TestAuthManager_VerifyUserEmailAddress_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	input := authfakes.BuildFakeEmailAddressVerificationRequestInput()
 
@@ -504,7 +504,7 @@ func TestAuthManager_VerifyUserEmailAddress_Success(t *testing.T) {
 func TestAuthManager_VerifyUserEmailAddressByToken_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	token := "verification-token"
 
@@ -531,7 +531,7 @@ func TestAuthManager_VerifyUserEmailAddressByToken_Success(t *testing.T) {
 func TestAuthManager_VerifyUserEmailAddressByToken_UserNotFound(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	token := "invalid-token"
 
 	userDataManager := &identitymock.RepositoryMock{}
@@ -552,7 +552,7 @@ func TestAuthManager_VerifyUserEmailAddressByToken_UserNotFound(t *testing.T) {
 func TestAuthManager_UpdatePassword_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	user.TwoFactorSecretVerifiedAt = nil
 	password := authfakes.BuildFakePasswordUpdateInput()
@@ -591,7 +591,7 @@ func TestAuthManager_UpdatePassword_Success(t *testing.T) {
 func TestAuthManager_UpdateUserEmailAddress_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	user.TwoFactorSecretVerifiedAt = nil
 	input := authfakes.BuildFakeUserEmailAddressUpdateInput()
@@ -627,7 +627,7 @@ func TestAuthManager_UpdateUserEmailAddress_Success(t *testing.T) {
 func TestAuthManager_UpdateUserUsername_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	user.TwoFactorSecretVerifiedAt = nil
 	input := authfakes.BuildFakeUsernameUpdateInput()
@@ -663,7 +663,7 @@ func TestAuthManager_UpdateUserUsername_Success(t *testing.T) {
 func TestAuthManager_PasswordResetTokenRedemption_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	token := authfakes.BuildFakePasswordResetToken()
 	token.BelongsToUser = user.ID
@@ -705,7 +705,7 @@ func TestAuthManager_PasswordResetTokenRedemption_Success(t *testing.T) {
 func TestAuthManager_NewTOTPSecret_Success(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	verifiedAt := time.Now()
 	user.TwoFactorSecretVerifiedAt = &verifiedAt
@@ -754,7 +754,7 @@ func TestAuthManager_NewTOTPSecret_Success(t *testing.T) {
 func TestAuthManager_PasswordResetTokenRedemption_TokenNotFound(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	input := authfakes.BuildFakePasswordResetTokenRedemptionRequestInput()
 
 	prtManager := &mockPasswordResetTokenDataManager{}
@@ -776,7 +776,7 @@ func TestAuthManager_PasswordResetTokenRedemption_TokenNotFound(t *testing.T) {
 func TestAuthManager_PasswordResetTokenRedemption_InvalidPassword(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	token := authfakes.BuildFakePasswordResetToken()
 	token.BelongsToUser = user.ID
@@ -807,7 +807,7 @@ func TestAuthManager_PasswordResetTokenRedemption_InvalidPassword(t *testing.T) 
 func TestAuthManager_VerifyUserEmailAddress_UserNotFound(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	input := authfakes.BuildFakeEmailAddressVerificationRequestInput()
 
 	userDataManager := &identitymock.RepositoryMock{}
@@ -829,7 +829,7 @@ func TestAuthManager_VerifyUserEmailAddress_UserNotFound(t *testing.T) {
 func TestAuthManager_UpdatePassword_InvalidNewPassword(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	user := identityfakes.BuildFakeUser()
 	user.TwoFactorSecretVerifiedAt = nil
 	password := authfakes.BuildFakePasswordUpdateInput()
@@ -862,7 +862,7 @@ func TestAuthManager_UpdatePassword_InvalidNewPassword(t *testing.T) {
 func TestAuthManager_NewTOTPSecret_UserNotFound(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	userID := identityfakes.BuildFakeID()
 	input := authfakes.BuildFakeTOTPSecretRefreshInput()
 

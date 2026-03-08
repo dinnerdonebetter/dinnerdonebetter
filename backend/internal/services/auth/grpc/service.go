@@ -6,9 +6,11 @@ import (
 
 	authentication2 "github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/authentication/webauthn"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
 	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -29,6 +31,8 @@ type (
 		authenticationManager authentication2.Manager
 		authManager           managers.AuthManagerInterface
 		featureFlagManager    featureflags.FeatureFlagManager
+		passkeyService        *webauthn.Service
+		jsonEncoder           encoding.ServerEncoderDecoder
 	}
 )
 
@@ -39,7 +43,12 @@ func NewAuthService(
 	authManager managers.AuthManagerInterface,
 	authenticationManager authentication2.Manager,
 	featureFlagManager featureflags.FeatureFlagManager,
+	passkeyService *webauthn.Service,
 ) authsvc.AuthServiceServer {
+	// Passkey options are always JSON; create a dedicated encoder rather than relying on
+	// a potentially non-JSON encoder from wire.
+	passkeyJSONEncoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON)
+
 	return &serviceImpl{
 		logger:                logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
@@ -47,6 +56,8 @@ func NewAuthService(
 		authManager:           authManager,
 		authenticationManager: authenticationManager,
 		featureFlagManager:    featureFlagManager,
+		passkeyService:        passkeyService,
+		jsonEncoder:           passkeyJSONEncoder,
 	}
 }
 
