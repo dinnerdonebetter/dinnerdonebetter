@@ -200,7 +200,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         .padding(.horizontal, 4)
 
       ForEach(recipe.associatedRecipes, id: \.id) { associatedRecipe in
-        AssociatedRecipeCard(recipe: associatedRecipe)
+        AssociatedRecipeCard(
+          recipe: associatedRecipe,
+          viewModel: viewModel,
+          parentRecipe: recipe
+        )
       }
     }
   }
@@ -219,7 +223,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         },
         label: {
           HStack {
-            Text("DAG")
+            Text("Recipe Graph")
               .font(.headline)
               .foregroundColor(.primary)
             Spacer()

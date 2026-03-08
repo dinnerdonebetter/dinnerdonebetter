@@ -507,7 +507,7 @@ class CreateMealPlanViewModel {
       guard !recipe.steps.isEmpty else { continue }
       let hasOptions = recipe.steps.contains { step in
         var indexGroups: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
-        for ingredient in step.ingredients where ingredient.index != 0 {
+        for ingredient in step.ingredients {
           let index = ingredient.index
           if indexGroups[index] == nil { indexGroups[index] = [] }
           indexGroups[index]?.append(ingredient)
@@ -535,7 +535,7 @@ class CreateMealPlanViewModel {
     var defaults: [String: [UInt32: UInt32]] = [:]
     for step in recipe.steps {
       var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
-      for ingredient in step.ingredients where ingredient.index != 0 {
+      for ingredient in step.ingredients {
         if optionGroupsByIndex[ingredient.index] == nil {
           optionGroupsByIndex[ingredient.index] = []
         }

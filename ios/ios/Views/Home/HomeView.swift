@@ -326,7 +326,7 @@ struct HomeView: View {
           InfoButton(
             icon: "cart.fill",
             text: neededCount > 0
-              ? "\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed"
+              ? "Grocery List (\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed)"
               : "All ingredients acquired",
             color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
           )
@@ -420,7 +420,7 @@ struct HomeView: View {
             InfoButton(
               icon: "cart.fill",
               text: neededCount > 0
-                ? "\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed"
+                ? "Grocery List (\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed)"
                 : "All ingredients acquired",
               color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
             )
@@ -490,7 +490,7 @@ struct HomeView: View {
 
     if readyCount > 0 {
       return (
-        "\(readyCount) task\(readyCount == 1 ? "" : "s") ready now",
+        "Prep Tasks (\(readyCount) ready)",
         DSTheme.Colors.warning
       )
     }

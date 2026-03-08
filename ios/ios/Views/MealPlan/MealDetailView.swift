@@ -66,10 +66,13 @@ struct MealDetailView: View {
   let mealID: String
   /// When true, scale editing is hidden because the scale is set by the meal plan.
   let isFromMealPlan: Bool
+  /// When viewing from meal plan, the plan's scale for this meal (e.g. 4.0 for 4x). Used to display scaled portions.
+  let mealPlanScale: Float?
 
-  init(mealID: String, isFromMealPlan: Bool = false) {
+  init(mealID: String, isFromMealPlan: Bool = false, mealPlanScale: Float? = nil) {
     self.mealID = mealID
     self.isFromMealPlan = isFromMealPlan
+    self.mealPlanScale = mealPlanScale
   }
 
   var body: some View {
@@ -87,18 +90,26 @@ struct MealDetailView: View {
                   // Overall Info Section
                   overallInfoSection(meal: meal)
 
-                  // DAG section (meal-level step dependencies)
+                  // Equipment, Ingredients & Graph (collapsibles with uniform spacing)
                   if !meal.components.isEmpty {
-                    mealDAGSection(viewModel: viewModel)
+                    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+                      aggregatedInstrumentsVesselsSection
+                      aggregatedIngredientsSection
+                      mealDAGSection(viewModel: viewModel)
+                    }
                   }
 
-                  // Aggregated Ingredients & Instruments/Vessels (consolidated from all recipes)
+                  // Keep screen awake (before wash hands)
                   if !meal.components.isEmpty {
-                    aggregatedListsSection
+                    KeepScreenAwakeButton(inline: true)
                   }
 
                   if !meal.components.isEmpty && !mealWashHandsCompleted {
                     mealWashHandsSection
+                  }
+
+                  if !meal.components.isEmpty {
+                    madeAheadSection(meal: meal)
                   }
 
                   if !meal.components.isEmpty {
@@ -130,6 +141,11 @@ struct MealDetailView: View {
     .onAppear {
       if viewModel == nil {
         viewModel = MealDetailViewModel(mealID: mealID, authManager: authManager)
+      }
+      // When viewing from meal plan, apply the plan's scale so portions and ingredients reflect it
+      if isFromMealPlan, let scale = mealPlanScale, scale > 0 {
+        mealScale = scale
+        mealScaleText = String(format: "%.2f", mealScale)
       }
       if let viewModel = viewModel {
         Task {
@@ -179,14 +195,16 @@ struct MealDetailView: View {
           .foregroundColor(DSTheme.Colors.textSecondary)
       }
 
-      // Estimated portions
+      // Estimated portions (scaled by meal scale when applicable, e.g. from meal plan)
       if meal.hasEstimatedPortions {
         HStack(spacing: DSTheme.Spacing.sm) {
           Image(systemName: "person.2")
             .foregroundColor(DSTheme.Colors.textSecondary)
-          Text("Estimated Portions: \(PortionsFormatter.format(meal.estimatedPortions))")
-            .font(DSTheme.Typography.body)
-            .foregroundColor(DSTheme.Colors.textSecondary)
+          Text(
+            "Estimated Portions: \(PortionsFormatter.formatScaled(meal.estimatedPortions, scale: mealScale))"
+          )
+          .font(DSTheme.Typography.body)
+          .foregroundColor(DSTheme.Colors.textSecondary)
         }
       }
 
@@ -274,7 +292,7 @@ struct MealDetailView: View {
         },
         label: {
           HStack {
-            Text("DAG")
+            Text("Meal Graph")
               .font(DSTheme.Typography.title3)
               .foregroundColor(DSTheme.Colors.textPrimary)
             Spacer()
@@ -385,16 +403,6 @@ struct MealDetailView: View {
     }
   }
 
-  private var aggregatedListsSection: some View {
-    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      // Instruments & Vessels
-      aggregatedInstrumentsVesselsSection
-
-      // Ingredients
-      aggregatedIngredientsSection
-    }
-  }
-
   private var mealWashHandsSection: some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       HStack(alignment: .top, spacing: DSTheme.Spacing.md) {
@@ -467,6 +475,98 @@ struct MealDetailView: View {
       }
       .pickerStyle(.segmented)
     }
+  }
+
+  private func madeAheadSection(meal: Mealplanning_Meal) -> some View {
+    let uniqueAssociated = uniqueAssociatedRecipesFromLoaded
+    guard !uniqueAssociated.isEmpty else {
+      return AnyView(EmptyView())
+    }
+
+    return AnyView(
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+        Text("Made Ahead")
+          .font(DSTheme.Typography.title2)
+
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+          ForEach(uniqueAssociated, id: \.id) { associatedRecipe in
+            madeAheadRow(associatedRecipe: associatedRecipe)
+          }
+        }
+      }
+    )
+  }
+
+  private var uniqueAssociatedRecipesFromLoaded: [Mealplanning_Recipe] {
+    var byID: [String: Mealplanning_Recipe] = [:]
+    for (_, recipeData) in loadedRecipes {
+      for assoc in recipeData.recipe.associatedRecipes {
+        byID[assoc.id] = assoc
+      }
+    }
+    return Array(byID.values).sorted {
+      ($0.name.isEmpty ? "Unnamed" : $0.name) < ($1.name.isEmpty ? "Unnamed" : $1.name)
+    }
+  }
+
+  private func madeAheadRow(associatedRecipe: Mealplanning_Recipe) -> some View {
+    let allComplete = isAssociatedRecipeFullyComplete(associatedRecipe)
+    return HStack {
+      Text(associatedRecipe.name.isEmpty ? "Unnamed Recipe" : associatedRecipe.name)
+        .font(DSTheme.Typography.body)
+        .foregroundColor(DSTheme.Colors.textPrimary)
+
+      Spacer()
+
+      Button(
+        action: {
+          UIImpactFeedbackGenerator(style: .light).impactOccurred()
+          markAssociatedRecipeAsMadeInAllComponents(associatedRecipe: associatedRecipe)
+        },
+        label: {
+          HStack(spacing: DSTheme.Spacing.xs) {
+            Image(systemName: allComplete ? "checkmark.circle.fill" : "checkmark.circle")
+              .foregroundColor(allComplete ? .green : DSTheme.Colors.primary)
+            Text("I made this")
+              .font(DSTheme.Typography.label)
+              .foregroundColor(allComplete ? .green : DSTheme.Colors.primary)
+          }
+        }
+      )
+      .buttonStyle(.plain)
+      .disabled(allComplete)
+    }
+    .padding(DSTheme.Spacing.md)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.md)
+  }
+
+  private func isAssociatedRecipeFullyComplete(_ associatedRecipe: Mealplanning_Recipe) -> Bool {
+    for (componentID, recipeData) in loadedRecipes {
+      guard recipeData.recipe.associatedRecipes.contains(where: { $0.id == associatedRecipe.id })
+      else {
+        continue
+      }
+      guard let vm = componentViewModels[componentID] else { continue }
+      if associatedRecipe.steps.allSatisfy({
+        vm.isStepCompleted(recipeID: associatedRecipe.id, stepID: $0.id)
+      }) {
+        return true
+      }
+    }
+    return false
+  }
+
+  private func markAssociatedRecipeAsMadeInAllComponents(associatedRecipe: Mealplanning_Recipe) {
+    for (componentID, recipeData) in loadedRecipes {
+      guard recipeData.recipe.associatedRecipes.contains(where: { $0.id == associatedRecipe.id })
+      else {
+        continue
+      }
+      componentViewModels[componentID]?.markAssociatedRecipeAsCompleted(
+        associatedRecipe: associatedRecipe)
+    }
+    mealTimerTick += 1
   }
 
   private var aggregatedInstrumentsVesselsSection: some View {
@@ -652,10 +752,10 @@ struct MealDetailView: View {
           .font(DSTheme.Typography.title2)
       },
       allModeLeadingContent: {
-        KeepScreenAwakeButton(inline: true)
+        EmptyView()
       },
       focusModeLeadingContent: {
-        KeepScreenAwakeButton(inline: true)
+        EmptyView()
       },
       rowContent: { item in
         VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {

@@ -363,7 +363,7 @@ struct MealPlanDetailView: View {
     HStack {
       Image(systemName: "checklist")
         .foregroundColor(.blue)
-      Text("View Tasks (\(count))")
+      Text("Prep Tasks (\(count))")
         .font(.headline)
       Spacer()
       if count > 0 {
@@ -418,7 +418,11 @@ struct EventCard: View {
 
           ForEach(event.options.filter { $0.chosen }, id: \.id) { option in
             NavigationLink(
-              destination: MealDetailView(mealID: option.meal.id, isFromMealPlan: true)
+              destination: MealDetailView(
+                mealID: option.meal.id,
+                isFromMealPlan: true,
+                mealPlanScale: option.mealScale > 0 ? option.mealScale : 1.0
+              )
             ) {
               MealOptionCard(option: option, isChosen: true)
             }

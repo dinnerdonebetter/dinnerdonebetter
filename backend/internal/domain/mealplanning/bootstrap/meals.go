@@ -268,7 +268,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 	}
 
 	// Single-recipe meals (recipes 26+): complete dishes that stand alone
-	singleRecipeMeals := []struct {
+	singleRecipeMeals := []*struct {
 		recipeName string
 		mealName   string
 		desc       string

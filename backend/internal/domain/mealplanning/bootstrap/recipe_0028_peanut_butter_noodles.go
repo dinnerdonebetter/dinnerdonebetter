@@ -52,34 +52,20 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	submergeSaltVIP := enums.IngredientPreparations[submergePrep.ID][salt.ID]
 	submergePotVPV := enums.PreparationVessels[submergePrep.ID][pot.ID]
 
-	boilSpaghettiVIP := enums.IngredientPreparations[boilPrep.ID][spaghetti.ID]
-	boilInstantRamenVIP := enums.IngredientPreparations[boilPrep.ID][instantRamen.ID]
 	boilWoodenSpoonVPI := enums.PreparationInstruments[boilPrep.ID][woodenSpoon.ID]
 
-	reserveWaterVIP := enums.IngredientPreparations[reservePrep.ID][water.ID]
-
-	drainSpaghettiVIP := enums.IngredientPreparations[drainPrep.ID][spaghetti.ID]
-	drainInstantRamenVIP := enums.IngredientPreparations[drainPrep.ID][instantRamen.ID]
 	drainColanderVPV := enums.PreparationVessels[drainPrep.ID][colander.ID]
 
 	addPeanutButterVIP := enums.IngredientPreparations[addPrep.ID][peanutButter.ID]
 	addButterVIP := enums.IngredientPreparations[addPrep.ID][butter.ID]
 	addParmesanVIP := enums.IngredientPreparations[addPrep.ID][parmesan.ID]
 	addSoySauceVIP := enums.IngredientPreparations[addPrep.ID][soySauce.ID]
-	addPotVPV := enums.PreparationVessels[addPrep.ID][pot.ID]
 
-	removeFromHeatPotVPV := enums.PreparationVessels[removeFromHeatPrep.ID][pot.ID]
-
-	stirSpaghettiVIP := enums.IngredientPreparations[stirPrep.ID][spaghetti.ID]
-	stirInstantRamenVIP := enums.IngredientPreparations[stirPrep.ID][instantRamen.ID]
-	stirPotVPV := enums.PreparationVessels[stirPrep.ID][pot.ID]
 	stirSpoonVPI := enums.PreparationInstruments[stirPrep.ID][spoon.ID]
 
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
-	seasonPotVPV := enums.PreparationVessels[seasonPrep.ID][pot.ID]
 
 	topParmesanVIP := enums.IngredientPreparations[topPrep.ID][parmesan.ID]
-	topPotVPV := enums.PreparationVessels[topPrep.ID][pot.ID]
 
 	// Measurement unit bridges
 	spaghettiOunceVIMU := enums.IngredientMeasurementUnits[spaghetti.ID][ounceMeasurement.ID]
@@ -98,7 +84,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:        submergePrep.ID,
 		Index:                0,
-		ExplicitInstructions: "Bring a pot of water to a boil. If using spaghetti, salt the water. Add the spaghetti (or ramen noodles, without the seasoning packet) and cook according to package instructions.",
+		ExplicitInstructions: "Bring a pot of water to a boil. If using spaghetti, salt the water. Add the spaghetti (or ramen noodles) and cook according to package instructions.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &submergeSpaghettiVIP.ID,
@@ -132,7 +118,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				QuantityNotes:                "if using spaghetti",
 				Name:                         "salt",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 0,
+					Min: 20,
 				},
 				Optional: true,
 			},
@@ -171,22 +157,18 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Cook the noodles according to package instructions until al dente.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &boilSpaghettiVIP.ID,
-				ValidIngredientMeasurementUnitID: &spaghettiOunceVIMU.ID,
-				Name:                             "noodles in water",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "noodles in water",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 				OptionIndex: 0,
 			},
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &boilInstantRamenVIP.ID,
-				ValidIngredientMeasurementUnitID: &instantRamenUnitVIMU.ID,
-				Name:                             "noodles in water",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "noodles in water",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -245,11 +227,9 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Reserve ½ cup of the cooking water.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &reserveWaterVIP.ID,
-				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
-				Name:                             "noodle cooking water",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "noodle cooking water",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
@@ -285,22 +265,18 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Drain the noodles and return to the pot. Turn off the heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &drainSpaghettiVIP.ID,
-				ValidIngredientMeasurementUnitID: &spaghettiOunceVIMU.ID,
-				Name:                             "cooked al dente noodles",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "cooked al dente noodles",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 				OptionIndex: 0,
 			},
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &drainInstantRamenVIP.ID,
-				ValidIngredientMeasurementUnitID: &instantRamenUnitVIMU.ID,
-				Name:                             "cooked al dente noodles",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "cooked al dente noodles",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -391,7 +367,6 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &removeFromHeatPotVPV.ID,
 				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -467,7 +442,6 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -502,22 +476,18 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &stirSpaghettiVIP.ID,
-				ValidIngredientMeasurementUnitID: &spaghettiOunceVIMU.ID,
-				Name:                             "noodles with sauce ingredients",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "noodles with sauce ingredients",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 				OptionIndex: 0,
 			},
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &stirInstantRamenVIP.ID,
-				ValidIngredientMeasurementUnitID: &instantRamenUnitVIMU.ID,
-				Name:                             "noodles with sauce ingredients",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "noodles with sauce ingredients",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -546,7 +516,6 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &stirPotVPV.ID,
 				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -606,7 +575,6 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &seasonPotVPV.ID,
 				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -659,7 +627,6 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &topPotVPV.ID,
 				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,

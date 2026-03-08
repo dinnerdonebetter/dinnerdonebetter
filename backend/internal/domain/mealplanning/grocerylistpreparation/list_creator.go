@@ -50,6 +50,12 @@ func (g *groceryListCreator) processRecipeIngredients(
 			if ingredient.Ingredient == nil {
 				continue
 			}
+			// Skip ingredients that consume a product from a previous step.
+			// These are not grocery inputs—they're consuming output already produced (e.g., "cooked noodles" from step 0).
+			// Counting them would double-count: e.g., ramen in submerge + boil + drain + stir = 4x instead of 1x.
+			if ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "" {
+				continue
+			}
 
 			logger = logger.WithValue(mealplanningkeys.RecipeStepIngredientIDKey, ingredient.ID)
 

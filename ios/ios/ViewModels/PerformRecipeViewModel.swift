@@ -376,6 +376,32 @@ class PerformRecipeViewModel {
     completedStepCompletionConditions.removeAll()
   }
 
+  /// Marks all steps for an associated (prerequisite) recipe as complete.
+  /// Use when the user has already made this recipe ahead of time (e.g., garlic confit on Sunday).
+  func markAssociatedRecipeAsCompleted(associatedRecipe: Mealplanning_Recipe) {
+    let recipeName = associatedRecipe.name.isEmpty ? "Unnamed" : associatedRecipe.name
+    for (index, step) in associatedRecipe.steps.enumerated() {
+      let currentStepKey = stepKey(recipeID: associatedRecipe.id, stepID: step.id)
+      completedSteps.insert(currentStepKey)
+
+      // Mark completion conditions so canCheckStep logic remains satisfied
+      for (condIndex, condition) in step.completionConditions.enumerated() where !condition.optional
+      {
+        let conditionIdentifier = stepCompletionConditionIdentifier(
+          condition: condition, index: condIndex)
+        let key = completionConditionKey(
+          recipeID: associatedRecipe.id,
+          stepID: step.id,
+          conditionIdentifier: conditionIdentifier
+        )
+        completedStepCompletionConditions.insert(key)
+      }
+    }
+    print(
+      "✅ [\(recipe?.name ?? "???")] markAssociatedRecipeAsCompleted '\(recipeName)' → \(associatedRecipe.steps.count) steps marked done"
+    )
+  }
+
   // Check if a step can be checked off (all prerequisites are completed)
   // Supports both old API (stepIndex for main recipe) and new API (recipeID + stepID)
   func canCheckStep(_ stepIndex: Int) -> Bool {

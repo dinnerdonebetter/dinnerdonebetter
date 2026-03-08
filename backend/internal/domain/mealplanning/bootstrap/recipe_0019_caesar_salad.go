@@ -21,13 +21,10 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	transferPrep := enums.Preparations["transfer"]
 
 	// Get ingredients
-	oliveOil := enums.Ingredients["olive oil"]
-	heartyBread := enums.Ingredients["hearty bread"]
 	parmesanCheese := enums.Ingredients["parmesan cheese"]
 	romaineLettuce := enums.Ingredients["romaine lettuce"]
 
 	// Get measurement units
-	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	cupMeasurement := enums.MeasurementUnits["cup"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
 
@@ -42,11 +39,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	cuttingBoard := enums.Vessels["cutting board"]
 
 	// === SALAD BRIDGE TABLE ENTRIES ===
-	// Toss preparation bridges
-	tossRomaineVIP := enums.IngredientPreparations[tossPrep.ID][romaineLettuce.ID]
-	tossParmesanVIP := enums.IngredientPreparations[tossPrep.ID][parmesanCheese.ID]
-	tossBreadVIP := enums.IngredientPreparations[tossPrep.ID][heartyBread.ID]
-
 	// Grate preparation bridges
 	grateParmesanVIP := enums.IngredientPreparations[gratePrep.ID][parmesanCheese.ID]
 	grateCheeseGraterVPI := enums.PreparationInstruments[gratePrep.ID][cheeseGrater.ID]
@@ -58,16 +50,12 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	inspectBareHandsSaladVPI := enums.PreparationInstruments[inspectPrep.ID][bareHands.ID]
 
 	// Rinse preparation bridges for salad
-	rinseRomaineVIP := enums.IngredientPreparations[rinsePrep.ID][romaineLettuce.ID]
 	rinseLargeBowlSaladVPV := enums.PreparationVessels[rinsePrep.ID][largeBowl.ID]
 
 	// Dry preparation bridges for salad
-	dryRomaineVIP := enums.IngredientPreparations[dryPrep.ID][romaineLettuce.ID]
 	drySaladSpinnerSaladVPV := enums.PreparationVessels[dryPrep.ID][saladSpinner.ID]
 
 	// Sprinkle preparation bridges
-	sprinkleParmesanVIP := enums.IngredientPreparations[sprinklePrep.ID][parmesanCheese.ID]
-	sprinkleBreadVIP := enums.IngredientPreparations[sprinklePrep.ID][heartyBread.ID]
 	sprinkleServingBowlVPV := enums.PreparationVessels[sprinklePrep.ID][servingBowl.ID]
 
 	// Transfer preparation bridges
@@ -75,8 +63,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 
 	// Measurement unit bridges for salad
 	romaineUnitVIMU := enums.IngredientMeasurementUnits[romaineLettuce.ID][unitMeasurement.ID]
-	oliveOilTablespoonVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][tablespoonMeasurement.ID]
-	breadCupVIMU := enums.IngredientMeasurementUnits[heartyBread.ID][cupMeasurement.ID]
 	parmesanCupVIMU := enums.IngredientMeasurementUnits[parmesanCheese.ID][cupMeasurement.ID]
 
 	// ==================== CAESAR SALAD RECIPE STEPS ====================
@@ -137,7 +123,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &rinseRomaineVIP.ID,
 				Name:                            "inner romaine leaves",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
@@ -180,7 +165,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &dryRomaineVIP.ID,
 				Name:                            "washed inner romaine leaves",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
@@ -218,7 +202,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &tossRomaineVIP.ID,
 				Name:                            "romaine lettuce, inner leaves only, washed and carefully dried",
 				QuantityNotes:                   "large leaves torn into smaller pieces, smaller leaves left intact",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -229,13 +212,12 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				// RecipeStepProductRecipeID references the "Caesar Dressing" recipe (slug: "caesar-dressing")
 				// The product "Caesar dressing" is from step 6 (index 6), product index 0
 				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
-				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
-				RecipeStepProductRecipeSlug:      pointer.To("caesar-dressing"),
-				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
-				Name:                             "Caesar dressing",
-				QuantityNotes:                    "add more if desired",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
+				RecipeStepProductRecipeSlug:     pointer.To("caesar-dressing"),
+				Name:                            "Caesar dressing",
+				QuantityNotes:                   "add more if desired",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
 					Max: pointer.To[float32](6),
@@ -325,7 +307,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &tossRomaineVIP.ID,
 				Name:                            "dressed lettuce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -334,7 +315,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &tossParmesanVIP.ID,
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "half of remaining cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -345,14 +325,12 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
 				// The product "garlic parmesan croutons" is from step 9 (index 9), product index 0
 				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
-				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
-				RecipeStepProductRecipeSlug:      pointer.To("garlic-parmesan-croutons"),
-				ValidIngredientPreparationID:     &tossBreadVIP.ID,
-				ValidIngredientMeasurementUnitID: &breadCupVIMU.ID,
-				Name:                             "garlic parmesan croutons",
-				QuantityNotes:                    "three-quarters of croutons",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
+				RecipeStepProductRecipeSlug:     pointer.To("garlic-parmesan-croutons"),
+				Name:                            "garlic parmesan croutons",
+				QuantityNotes:                   "three-quarters of croutons",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2.25,
 				},
@@ -435,7 +413,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &sprinkleParmesanVIP.ID,
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "remaining cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -446,14 +423,12 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
 				// The product "garlic parmesan croutons" is from step 9 (index 9), product index 0
 				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
-				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
-				RecipeStepProductRecipeSlug:      pointer.To("garlic-parmesan-croutons"),
-				ValidIngredientPreparationID:     &sprinkleBreadVIP.ID,
-				ValidIngredientMeasurementUnitID: &breadCupVIMU.ID,
-				Name:                             "garlic parmesan croutons",
-				QuantityNotes:                    "remaining croutons",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
+				RecipeStepProductRecipeSlug:     pointer.To("garlic-parmesan-croutons"),
+				Name:                            "garlic parmesan croutons",
+				QuantityNotes:                   "remaining croutons",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.75,
 				},

@@ -46,28 +46,15 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 	rinseBowlVPV := enums.PreparationVessels[rinsePrep.ID][smallBowl.ID]
 
 	// Combine preparation bridges
-	combineRiceVIP := enums.IngredientPreparations[combinePrep.ID][rice.ID]
 	combineWaterVIP := enums.IngredientPreparations[combinePrep.ID][water.ID]
 	combineSaltVIP := enums.IngredientPreparations[combinePrep.ID][salt.ID]
 	combineOliveOilVIP := enums.IngredientPreparations[combinePrep.ID][oliveOil.ID]
 	combineSaucepanVPV := enums.PreparationVessels[combinePrep.ID][saucepan.ID]
 
-	// Adjust preparation bridges (for lowering heat)
-	adjustSaucepanVPV := enums.PreparationVessels[adjustPrep.ID][saucepan.ID]
-
-	// Simmer preparation bridges
-	simmerRiceVIP := enums.IngredientPreparations[simmerPrep.ID][rice.ID]
-	simmerSaucepanVPV := enums.PreparationVessels[simmerPrep.ID][saucepan.ID]
-
 	// Stir preparation bridges
-	stirRiceVIP := enums.IngredientPreparations[stirPrep.ID][rice.ID]
 	stirWoodenSpoonVPI := enums.PreparationInstruments[stirPrep.ID][woodenSpoon.ID]
 
-	// Rest preparation bridges
-	restRiceVIP := enums.IngredientPreparations[restPrep.ID][rice.ID]
-
 	// Fluff preparation bridges
-	fluffRiceVIP := enums.IngredientPreparations[fluffPrep.ID][rice.ID]
 	fluffForkVPI := enums.PreparationInstruments[fluffPrep.ID][fork.ID]
 
 	// Measurement unit bridges
@@ -128,11 +115,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		ExplicitInstructions: "Combine all ingredients in a 2-quart saucepan.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &combineRiceVIP.ID,
-				ValidIngredientMeasurementUnitID: &riceCupVIMU.ID,
-				Name:                             "rinsed rice",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "rinsed rice",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -196,11 +181,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		ExplicitInstructions: "Bring to a simmer.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &simmerRiceVIP.ID,
-				ValidIngredientMeasurementUnitID: &riceCupVIMU.ID,
-				Name:                             "rice mixture in saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "rice mixture in saucepan",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2.75,
 				},
@@ -210,7 +193,6 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &simmerSaucepanVPV.ID,
 				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -242,11 +224,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		ExplicitInstructions: "As soon as the water reaches a lively simmer, give everything a good stir.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &stirRiceVIP.ID,
-				ValidIngredientMeasurementUnitID: &riceCupVIMU.ID,
-				Name:                             "simmering rice mixture",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "simmering rice mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2.75,
 				},
@@ -351,7 +331,6 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &adjustSaucepanVPV.ID,
 				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -475,11 +454,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &restRiceVIP.ID,
-				ValidIngredientMeasurementUnitID: &riceCupVIMU.ID,
-				Name:                             "cooked rice removed from heat",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "cooked rice removed from heat",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
 				},
@@ -520,11 +497,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		ExplicitInstructions: "Fluff with a fork.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &fluffRiceVIP.ID,
-				ValidIngredientMeasurementUnitID: &riceCupVIMU.ID,
-				Name:                             "rested rice",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "rested rice",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
 				},

@@ -597,21 +597,16 @@ struct StepDetailsView: View {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
 
     for ingredient in ingredients {
-      // Index 0 typically means not in an option group
-      if ingredient.index != 0 {
-        let index = ingredient.index
-        let hasOptions = ingredients.contains { other in
-          other.id != ingredient.id && other.index != 0 && other.index == index
-        }
+      let index = ingredient.index
+      let hasOptions = ingredients.contains { other in
+        other.id != ingredient.id && other.index == index
+      }
 
-        if hasOptions {
-          if optionGroupsByIndex[index] == nil {
-            optionGroupsByIndex[index] = []
-          }
-          optionGroupsByIndex[index]?.append(ingredient)
-        } else {
-          regular.append(ingredient)
+      if hasOptions {
+        if optionGroupsByIndex[index] == nil {
+          optionGroupsByIndex[index] = []
         }
+        optionGroupsByIndex[index]?.append(ingredient)
       } else {
         regular.append(ingredient)
       }
@@ -1059,16 +1054,23 @@ struct OptionGroupView: View {
       let option = group.options.first
     {
       // Selected option - show like a regular ingredient (no indentation, no "one of:" label)
-      HStack(spacing: 6) {
+      HStack(alignment: .top, spacing: 6) {
         if let quantityText = option.aggregated.quantityText(scale: scale) {
           Text(quantityText)
             .font(.caption)
             .foregroundColor(.secondary)
         }
 
-        Text(option.ingredient.name)
-          .font(.caption)
-          .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 2) {
+          Text(option.ingredient.name)
+            .font(.caption)
+            .foregroundColor(.secondary)
+          if !option.aggregated.quantityNotes.isEmpty {
+            Text(option.aggregated.quantityNotes)
+              .font(.caption2)
+              .foregroundColor(.secondary)
+          }
+        }
       }
     } else {
       // No selection - show all options with "one of:" label (indented)
@@ -1079,16 +1081,23 @@ struct OptionGroupView: View {
           .padding(.leading, 16)
 
         ForEach(group.options) { option in
-          HStack(spacing: 6) {
+          HStack(alignment: .top, spacing: 6) {
             if let quantityText = option.aggregated.quantityText(scale: scale) {
               Text(quantityText)
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
 
-            Text(option.ingredient.name)
-              .font(.caption)
-              .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 2) {
+              Text(option.ingredient.name)
+                .font(.caption)
+                .foregroundColor(.secondary)
+              if !option.aggregated.quantityNotes.isEmpty {
+                Text(option.aggregated.quantityNotes)
+                  .font(.caption2)
+                  .foregroundColor(.secondary)
+              }
+            }
           }
           .padding(.leading, 16)
         }

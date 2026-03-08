@@ -292,21 +292,16 @@ struct RecipeOptionSelectionView: View {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
 
     for ingredient in ingredients {
-      // Index 0 typically means not in an option group
-      if ingredient.index != 0 {
-        let index = ingredient.index
-        let hasOptions = ingredients.contains { other in
-          other.id != ingredient.id && other.index != 0 && other.index == index
-        }
+      let index = ingredient.index
+      let hasOptions = ingredients.contains { other in
+        other.id != ingredient.id && other.index == index
+      }
 
-        if hasOptions {
-          if optionGroupsByIndex[index] == nil {
-            optionGroupsByIndex[index] = []
-          }
-          optionGroupsByIndex[index]?.append(ingredient)
-        } else {
-          regular.append(ingredient)
+      if hasOptions {
+        if optionGroupsByIndex[index] == nil {
+          optionGroupsByIndex[index] = []
         }
+        optionGroupsByIndex[index]?.append(ingredient)
       } else {
         regular.append(ingredient)
       }
