@@ -46,6 +46,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	water := enums.Ingredients["water"]
 
 	// Get measurement units
+	gramMeasurement := enums.MeasurementUnits["gram"]
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	poundMeasurement := enums.MeasurementUnits["pound"]
@@ -140,7 +141,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	sliceCuttingBoardVPV := enums.PreparationVessels[slicePrep.ID][cuttingBoard.ID]
 
 	// Measurement unit bridges
-	saltTablespoonVIMU := enums.IngredientMeasurementUnits[salt.ID][tablespoonMeasurement.ID]
+	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	msgTeaspoonVIMU := enums.IngredientMeasurementUnits[msg.ID][teaspoonMeasurement.ID]
 	fiveSpiceTeaspoonVIMU := enums.IngredientMeasurementUnits[fiveSpice.ID][teaspoonMeasurement.ID]
 	darkBrownSugarTablespoonVIMU := enums.IngredientMeasurementUnits[darkBrownSugar.ID][tablespoonMeasurement.ID]
@@ -164,10 +165,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &combineSaltVIP.ID,
-				ValidIngredientMeasurementUnitID: &saltTablespoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 18, // about 1 tbsp
 				},
 			},
 			{

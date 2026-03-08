@@ -40,7 +40,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 	// Get measurement units
 	cupMeasurement := enums.MeasurementUnits["cup"]
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
-	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	gramMeasurement := enums.MeasurementUnits["gram"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
 
 	// Get instruments
@@ -162,7 +162,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 	mintCupVIMU := enums.IngredientMeasurementUnits[mint.ID][cupMeasurement.ID]
 	oliveOilTablespoonVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][tablespoonMeasurement.ID]
 	lemonTablespoonVIMU := enums.IngredientMeasurementUnits[lemon.ID][tablespoonMeasurement.ID]
-	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
+	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 
 	// Step 0: Pick over the leafy vegetables, discarding any wilted or damaged leaves
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
@@ -1417,12 +1417,12 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 			},
 			{
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
-				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "salt",
 				ToTaste:                          true,
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 0.25,
-					Max: pointer.To[float32](0.5),
+					Min: 1.5,
+					Max: pointer.To[float32](3),
 				},
 			},
 		},

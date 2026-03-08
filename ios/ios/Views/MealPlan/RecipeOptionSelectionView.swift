@@ -172,9 +172,12 @@ struct RecipeOptionSelectionContent: View {
               },
               set: { newValue in
                 var copy = selections
-                if copy[recipe.id] == nil { copy[recipe.id] = [:] }
-                if copy[recipe.id]?[step.id] == nil { copy[recipe.id]![step.id] = [:] }
-                copy[recipe.id]![step.id]![group.index] = newValue
+                copy[recipe.id] = copy[recipe.id] ?? [:]
+                var stepSelections = copy[recipe.id] ?? [:]
+                var groupSelections = stepSelections[step.id] ?? [:]
+                groupSelections[group.index] = newValue
+                stepSelections[step.id] = groupSelections
+                copy[recipe.id] = stepSelections
                 selections = copy
               }
             )

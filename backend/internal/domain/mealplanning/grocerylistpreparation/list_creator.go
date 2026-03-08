@@ -15,6 +15,12 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// groceryListExcludedIngredientSlugs contains ingredient slugs that should not appear on grocery lists
+// (e.g. water, which is assumed to be available from the tap).
+var groceryListExcludedIngredientSlugs = map[string]struct{}{
+	"water": {},
+}
+
 // GroceryListCreator creates meal plan grocery lists for a given meal plan.
 type GroceryListCreator interface {
 	GenerateGroceryListInputs(ctx context.Context, mealPlan *mealplanning.MealPlan) ([]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput, error)
@@ -48,6 +54,9 @@ func (g *groceryListCreator) processRecipeIngredients(
 		logger = logger.WithValue(mealplanningkeys.RecipeStepIDKey, step.ID)
 		for _, ingredient := range step.Ingredients {
 			if ingredient.Ingredient == nil || (ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "") {
+				continue
+			}
+			if _, excluded := groceryListExcludedIngredientSlugs[ingredient.Ingredient.Slug]; excluded {
 				continue
 			}
 

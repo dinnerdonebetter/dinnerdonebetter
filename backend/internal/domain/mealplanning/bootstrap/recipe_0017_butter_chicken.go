@@ -56,6 +56,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	aluminumFoilIngredient := enums.Ingredients["aluminum foil"]
 
 	// Get measurement units
+	gramMeasurement := enums.MeasurementUnits["gram"]
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	cupMeasurement := enums.MeasurementUnits["cup"]
@@ -189,7 +190,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	heavyCreamCupVIMU := enums.IngredientMeasurementUnits[heavyCream.ID][cupMeasurement.ID]
 	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
 	butterTablespoonVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
-	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
+	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 
 	// Step 0: Toast fenugreek leaves in a small skillet over medium heat until fragrant
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
@@ -451,10 +452,10 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				},
 			},
 			{
-				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
+					Min: 12, // about 2 tsp
 				},
 			},
 		},
@@ -649,9 +650,9 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 			},
 			{
 				ValidIngredientPreparationID:     &grindSaltVIP.ID,
-				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+				Quantity:                         types.Float32RangeWithOptionalMax{Min: 6}, // about 1 tsp
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{

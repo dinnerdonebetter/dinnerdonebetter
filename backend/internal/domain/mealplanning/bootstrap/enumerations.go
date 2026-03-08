@@ -4130,6 +4130,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	hvaColander := enums.Vessels["colander"]
 
 	// Get measurement units for haricots verts amandine recipe
+	hvaGramMeasurement := enums.MeasurementUnits["gram"]
 	hvaPoundMeasurement := enums.MeasurementUnits["pound"]
 	hvaTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	hvaOunceMeasurement := enums.MeasurementUnits["ounce"]
@@ -4331,6 +4332,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIMU(hvaShallot, hvaUnitMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(hvaShallot, hvaGramMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(hvaSalt, hvaGramMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(hvaLemon, hvaTablespoonMeasurement); err != nil {

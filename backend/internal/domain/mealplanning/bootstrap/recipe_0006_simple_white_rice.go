@@ -28,7 +28,7 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Get measurement units
 	cupMeasurement := enums.MeasurementUnits["cup"]
-	pinchMeasurement := enums.MeasurementUnits["pinch"]
+	gramMeasurement := enums.MeasurementUnits["gram"]
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 
 	// Get instruments
@@ -60,7 +60,7 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 	// Measurement unit bridges
 	riceCupVIMU := enums.IngredientMeasurementUnits[rice.ID][cupMeasurement.ID]
 	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
-	saltPinchVIMU := enums.IngredientMeasurementUnits[salt.ID][pinchMeasurement.ID]
+	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	oliveOilTbspVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][tablespoonMeasurement.ID]
 
 	// Step 0: Rinse rice until water runs clear
@@ -132,10 +132,10 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 			},
 			{
 				ValidIngredientPreparationID:     &combineSaltVIP.ID,
-				ValidIngredientMeasurementUnitID: &saltPinchVIMU.ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "salt",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
+					Min: 1, // approximately 1 pinch
 				},
 			},
 			{

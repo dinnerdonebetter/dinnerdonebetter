@@ -69,7 +69,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	charcoal := enums.Ingredients["charcoal briquettes"]
 
 	// Measurement units
-	cupMeasurement := enums.MeasurementUnits["cup"]
+	gramMeasurement := enums.MeasurementUnits["gram"]
 	literMeasurement := enums.MeasurementUnits["liter"]
 	poundMeasurement := enums.MeasurementUnits["pound"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
@@ -138,7 +138,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	// Measurement unit bridges
 	cauliflowerPoundVIMU := enums.IngredientMeasurementUnits[cauliflower.ID][poundMeasurement.ID]
 	waterLiterVIMU := enums.IngredientMeasurementUnits[water.ID][literMeasurement.ID]
-	saltCupVIMU := enums.IngredientMeasurementUnits[salt.ID][cupMeasurement.ID]
+	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	togarashiTeaspoonVIMU := enums.IngredientMeasurementUnits[togarashi.ID][teaspoonMeasurement.ID]
 
 	// === GRILLED CAULIFLOWER STEPS ===
@@ -169,7 +169,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		ExplicitInstructions: "In a large container (8-quart) or large stock pot, add water and salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ValidIngredientPreparationID: vipID(addWaterVIP), ValidIngredientMeasurementUnitID: vimuID(waterLiterVIMU), Name: "water", QuantityNotes: "3 quarts (2.84L)", Quantity: types.Float32RangeWithOptionalMax{Min: 2.84}},
-			{ValidIngredientPreparationID: vipID(addSaltVIP), ValidIngredientMeasurementUnitID: vimuID(saltCupVIMU), Name: "kosher salt", QuantityNotes: "3/4 cup plus 2 tablespoons (126g)", Quantity: types.Float32RangeWithOptionalMax{Min: 0.875}},
+			{ValidIngredientPreparationID: vipID(addSaltVIP), ValidIngredientMeasurementUnitID: vimuID(saltGramVIMU), Name: "kosher salt", QuantityNotes: "3/4 cup plus 2 tablespoons", Quantity: types.Float32RangeWithOptionalMax{Min: 126}},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(addPotVPV), Name: "8-quart pot", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
