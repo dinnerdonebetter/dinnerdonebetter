@@ -47,13 +47,7 @@ func (g *groceryListCreator) processRecipeIngredients(
 	for _, step := range recipe.Steps {
 		logger = logger.WithValue(mealplanningkeys.RecipeStepIDKey, step.ID)
 		for _, ingredient := range step.Ingredients {
-			if ingredient.Ingredient == nil {
-				continue
-			}
-			// Skip ingredients that consume a product from a previous step.
-			// These are not grocery inputs—they're consuming output already produced (e.g., "cooked noodles" from step 0).
-			// Counting them would double-count: e.g., ramen in submerge + boil + drain + stir = 4x instead of 1x.
-			if ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "" {
+			if ingredient.Ingredient == nil || (ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "") {
 				continue
 			}
 
@@ -85,6 +79,37 @@ func (g *groceryListCreator) processRecipeIngredients(
 
 				// Only add this ingredient if it matches the target option index
 				if ingredient.OptionIndex != targetOptionIndex {
+					continue
+				}
+
+				// Aggregate with existing item if same ingredient+unit (e.g. vegetable oil in step 6 and step 7)
+				aggregationKey := fmt.Sprintf("%s:%s", ingredient.Ingredient.ID, ingredient.MeasurementUnit.ID)
+				if existing, ok := aggregatedInputs[aggregationKey]; ok {
+					existing.QuantityNeeded.Min += minQty
+					if existing.QuantityNeeded.Max != nil && maxQty != nil {
+						*existing.QuantityNeeded.Max += *maxQty
+					} else if maxQty != nil {
+						existing.QuantityNeeded.Max = maxQty
+					}
+					continue
+				}
+				// Check optionInputs for same ingredient+unit within this option
+				var merged bool
+				for _, existing := range *optionInputs {
+					if existing.ValidIngredientID == ingredient.Ingredient.ID &&
+						existing.ValidMeasurementUnitID == ingredient.MeasurementUnit.ID &&
+						existing.BelongsToMealPlanOption != nil && *existing.BelongsToMealPlanOption == optionID {
+						existing.QuantityNeeded.Min += minQty
+						if existing.QuantityNeeded.Max != nil && maxQty != nil {
+							*existing.QuantityNeeded.Max += *maxQty
+						} else if maxQty != nil {
+							existing.QuantityNeeded.Max = maxQty
+						}
+						merged = true
+						break
+					}
+				}
+				if merged {
 					continue
 				}
 

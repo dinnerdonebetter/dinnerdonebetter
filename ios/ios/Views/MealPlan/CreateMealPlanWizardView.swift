@@ -17,17 +17,26 @@ struct CreateMealPlanWizardView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(\.dismiss) var dismiss
   @State private var viewModel: CreateMealPlanViewModel?
-  @State private var recipesForOptionSelection: [Mealplanning_Recipe]?
 
   var acceptedOccupiedDates: Set<Date> = []
   var proposedOccupiedDates: Set<Date> = []
+
+  private func totalSteps(for viewModel: CreateMealPlanViewModel) -> Int {
+    let hasOptions = !viewModel.collectRecipesWithOptions(
+      from: viewModel.allSelectedMeals
+    ).isEmpty
+    return hasOptions || viewModel.wizardStep == .optionSelection ? 3 : 2
+  }
 
   var body: some View {
     Group {
       if let viewModel = viewModel {
         VStack(spacing: 0) {
-          stepIndicator(currentStep: viewModel.wizardStep.rawValue, totalSteps: 2)
-            .padding()
+          stepIndicator(
+            currentStep: viewModel.wizardStep.rawValue,
+            totalSteps: totalSteps(for: viewModel)
+          )
+          .padding()
 
           ScrollView {
             VStack(spacing: 24) {
@@ -38,7 +47,12 @@ struct CreateMealPlanWizardView: View {
               case .mealAssignment:
                 MealAssignmentStepView(
                   viewModel: viewModel,
-                  recipesForOptionSelection: $recipesForOptionSelection,
+                  onDismiss: { dismiss() }
+                )
+
+              case .optionSelection:
+                OptionSelectionStepView(
+                  viewModel: viewModel,
                   onDismiss: { dismiss() }
                 )
               }
@@ -55,42 +69,6 @@ struct CreateMealPlanWizardView: View {
                 .foregroundColor(.red)
             }
             .padding(.horizontal)
-          }
-        }
-        .sheet(
-          isPresented: Binding(
-            get: { recipesForOptionSelection != nil },
-            set: { if !$0 { recipesForOptionSelection = nil } }
-          )
-        ) {
-          if let recipes = recipesForOptionSelection {
-            RecipeOptionSelectionView(
-              isPresented: Binding(
-                get: { recipesForOptionSelection != nil },
-                set: { if !$0 { recipesForOptionSelection = nil } }
-              ),
-              recipes: recipes,
-              onSave: { ingredientSelections in
-                var finalSelections = ingredientSelections
-                if finalSelections.isEmpty {
-                  for recipe in recipes {
-                    let defaults = viewModel.getDefaultOptionSelections(for: recipe)
-                    if !defaults.isEmpty {
-                      finalSelections[recipe.id] = defaults
-                    }
-                  }
-                }
-                viewModel.setOptionSelections(ingredientSelections: finalSelections)
-                Task {
-                  let success = await viewModel.createMealPlan()
-                  if success {
-                    NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
-                    recipesForOptionSelection = nil
-                    dismiss()
-                  }
-                }
-              }
-            )
           }
         }
       } else {

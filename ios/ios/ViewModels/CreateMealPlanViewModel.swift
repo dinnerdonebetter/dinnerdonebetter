@@ -15,6 +15,7 @@ import SwiftUI
 enum CreateMealPlanWizardStep: Int, CaseIterable {
   case weekSelection = 1
   case mealAssignment = 2
+  case optionSelection = 3
 }
 
 // MARK: - Date Occupancy
@@ -491,6 +492,11 @@ class CreateMealPlanViewModel {
 
   func setOptionSelections(ingredientSelections: [String: [String: [UInt32: UInt32]]]) {
     recipeOptionSelections = ingredientSelections
+  }
+
+  /// Returns true if any recipe in this meal has ingredient option groups.
+  func mealHasIngredientOptions(_ meal: Mealplanning_Meal) -> Bool {
+    !collectRecipesWithOptions(from: [meal]).isEmpty
   }
 
   func collectRecipesWithOptions(from meals: [Mealplanning_Meal]) -> Set<String> {

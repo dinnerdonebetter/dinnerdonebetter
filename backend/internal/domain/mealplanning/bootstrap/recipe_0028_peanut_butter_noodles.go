@@ -93,6 +93,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
 				},
+				Index:       pointer.To[uint16](0),
 				OptionIndex: 0,
 			},
 			{
@@ -102,6 +103,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
+				Index:       pointer.To[uint16](0),
 				OptionIndex: 1,
 			},
 			{

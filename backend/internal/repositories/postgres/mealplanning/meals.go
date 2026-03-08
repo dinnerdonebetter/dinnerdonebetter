@@ -446,12 +446,21 @@ func (q *repository) GetMealsWithIDs(ctx context.Context, ids []string) ([]*meal
 			mealsByID[result.ID] = m
 		}
 
+		recipe, recipeErr := q.getRecipe(ctx, result.ComponentRecipeID)
+		if recipeErr != nil {
+			if errors.Is(recipeErr, sql.ErrNoRows) {
+				logger.WithValue(mealplanningkeys.MealIDKey, result.ID).
+					WithValue(mealplanningkeys.RecipeIDKey, result.ComponentRecipeID).
+					Info("skipping meal component with missing or archived recipe")
+				continue
+			}
+			return nil, observability.PrepareAndLogError(recipeErr, logger, span, "getting recipe for meal component")
+		}
+
 		m.Components = append(m.Components, &mealplanning.MealComponent{
 			ComponentType: string(result.ComponentMealComponentType),
-			Recipe: mealplanning.Recipe{
-				ID: result.ComponentRecipeID,
-			},
-			RecipeScale: database.Float32FromString(result.ComponentRecipeScale),
+			Recipe:        *recipe,
+			RecipeScale:   database.Float32FromString(result.ComponentRecipeScale),
 		})
 	}
 
