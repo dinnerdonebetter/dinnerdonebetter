@@ -72,7 +72,7 @@ func TestServiceImpl_CreateIssueReport(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
@@ -100,7 +100,7 @@ func TestServiceImpl_CreateIssueReport(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &issuereportssvc.CreateIssueReportRequest{
@@ -117,7 +117,7 @@ func TestServiceImpl_CreateIssueReport(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeInput := issuereportfakes.BuildFakeIssueReportCreationRequestInput()
@@ -144,7 +144,7 @@ func TestServiceImpl_GetIssueReport(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
@@ -169,7 +169,7 @@ func TestServiceImpl_GetIssueReport(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &issuereportssvc.GetIssueReportRequest{
@@ -186,7 +186,7 @@ func TestServiceImpl_GetIssueReport(t *testing.T) {
 	t.Run("permission denied - different account", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
@@ -214,7 +214,7 @@ func TestServiceImpl_GetIssueReports(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReports := &filtering.QueryFilteredResult[issuereports.IssueReport]{
@@ -246,7 +246,7 @@ func TestServiceImpl_GetIssueReports(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &issuereportssvc.GetIssueReportsRequest{
@@ -267,7 +267,7 @@ func TestServiceImpl_GetIssueReportsForAccount(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReports := &filtering.QueryFilteredResult[issuereports.IssueReport]{
@@ -300,7 +300,7 @@ func TestServiceImpl_GetIssueReportsForAccount(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &issuereportssvc.GetIssueReportsForAccountRequest{
@@ -322,7 +322,7 @@ func TestServiceImpl_GetIssueReportsForTable(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReports := &filtering.QueryFilteredResult[issuereports.IssueReport]{
@@ -354,7 +354,7 @@ func TestServiceImpl_GetIssueReportsForTable(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &issuereportssvc.GetIssueReportsForTableRequest{
@@ -376,7 +376,7 @@ func TestServiceImpl_GetIssueReportsForRecord(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReports := &filtering.QueryFilteredResult[issuereports.IssueReport]{
@@ -409,7 +409,7 @@ func TestServiceImpl_GetIssueReportsForRecord(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &issuereportssvc.GetIssueReportsForRecordRequest{
@@ -432,7 +432,7 @@ func TestServiceImpl_UpdateIssueReport(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
@@ -461,7 +461,7 @@ func TestServiceImpl_UpdateIssueReport(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &issuereportssvc.UpdateIssueReportRequest{
@@ -479,7 +479,7 @@ func TestServiceImpl_UpdateIssueReport(t *testing.T) {
 	t.Run("permission denied - different account", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
@@ -508,7 +508,7 @@ func TestServiceImpl_ArchiveIssueReport(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
@@ -532,7 +532,7 @@ func TestServiceImpl_ArchiveIssueReport(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &issuereportssvc.ArchiveIssueReportRequest{
@@ -549,7 +549,7 @@ func TestServiceImpl_ArchiveIssueReport(t *testing.T) {
 	t.Run("permission denied - different account", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()

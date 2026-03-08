@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -26,7 +25,7 @@ import (
 func buildWebhookManagerForTest(t *testing.T) (*webhookManager, *webhookmock.Repository) {
 	t.Helper()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	repo := &webhookmock.Repository{}
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: t.Name()}
 
@@ -69,7 +68,7 @@ func TestWebhookDataManager_CreateWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWebhookManagerForTest(t)
 
 		userID := "user-1"
@@ -107,7 +106,7 @@ func TestWebhookDataManager_CreateWebhook(t *testing.T) {
 	t.Run("nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWebhookManagerForTest(t)
 
 		created, err := manager.CreateWebhook(ctx, "user-1", "account-1", nil)
@@ -120,7 +119,7 @@ func TestWebhookDataManager_CreateWebhook(t *testing.T) {
 	t.Run("validation error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWebhookManagerForTest(t)
 
 		input := &webhooks.WebhookCreationRequestInput{
@@ -140,7 +139,7 @@ func TestWebhookDataManager_CreateWebhook(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWebhookManagerForTest(t)
 
 		input := fakes.BuildFakeWebhookCreationRequestInput()
@@ -166,7 +165,7 @@ func TestWebhookDataManager_GetWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWebhookManagerForTest(t)
 
 		expected := fakes.BuildFakeWebhook()
@@ -186,7 +185,7 @@ func TestWebhookDataManager_GetWebhooks(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWebhookManagerForTest(t)
 
 		accountID := "account-1"
@@ -208,7 +207,7 @@ func TestWebhookDataManager_ArchiveWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWebhookManagerForTest(t)
 
 		webhookID := "wh-1"
@@ -237,7 +236,7 @@ func TestWebhookDataManager_AddWebhookTriggerConfig(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWebhookManagerForTest(t)
 
 		accountID := "account-1"
@@ -269,7 +268,7 @@ func TestWebhookDataManager_AddWebhookTriggerConfig(t *testing.T) {
 	t.Run("nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWebhookManagerForTest(t)
 
 		result, err := manager.AddWebhookTriggerConfig(ctx, "account-1", nil)
@@ -286,7 +285,7 @@ func TestWebhookDataManager_ArchiveWebhookTriggerConfig(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildWebhookManagerForTest(t)
 
 		webhookID := "wh-1"
@@ -315,7 +314,7 @@ func TestWebhookDataManager_CreateWebhookTriggerEvent(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWebhookManagerForTest(t)
 
 		input := &webhooks.WebhookTriggerEventCreationRequestInput{
@@ -337,7 +336,7 @@ func TestWebhookDataManager_CreateWebhookTriggerEvent(t *testing.T) {
 	t.Run("nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWebhookManagerForTest(t)
 
 		result, err := manager.CreateWebhookTriggerEvent(ctx, nil)
@@ -354,7 +353,7 @@ func TestWebhookDataManager_WebhookExists(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildWebhookManagerForTest(t)
 
 		repo.On(reflection.GetMethodName(repo.WebhookExists), testutils.ContextMatcher, "wh-1", "account-1").Return(true, nil)

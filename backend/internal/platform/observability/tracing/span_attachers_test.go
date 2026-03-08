@@ -1,7 +1,6 @@
 package tracing
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -39,7 +38,7 @@ func TestAttachSessionContextDataToSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		_, span := StartSpan(context.Background())
+		_, span := StartSpan(t.Context())
 
 		AttachSessionContextDataToSpan(span, &sessions.ContextData{
 			AccountPermissions: nil,
@@ -57,7 +56,7 @@ func TestAttachRequestToSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, span := StartSpan(context.Background())
+		ctx, span := StartSpan(t.Context())
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", http.NoBody)
 		req.Header.Set(t.Name(), "blah")
 		require.NoError(t, err)
@@ -72,7 +71,7 @@ func TestAttachResponseToSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		_, span := StartSpan(context.Background())
+		_, span := StartSpan(t.Context())
 		res := &http.Response{
 			Header: map[string][]string{},
 		}
@@ -88,7 +87,7 @@ func TestAttachErrorToSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		_, span := StartSpan(context.Background())
+		_, span := StartSpan(t.Context())
 
 		AttachErrorToSpan(span, t.Name(), errors.New("blah"))
 	})
@@ -100,7 +99,7 @@ func TestAttachQueryFilterToSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		_, span := StartSpan(context.Background())
+		_, span := StartSpan(t.Context())
 
 		AttachQueryFilterToSpan(span, filtering.DefaultQueryFilter())
 	})
@@ -108,7 +107,7 @@ func TestAttachQueryFilterToSpan(T *testing.T) {
 	T.Run("with nil", func(t *testing.T) {
 		t.Parallel()
 
-		_, span := StartSpan(context.Background())
+		_, span := StartSpan(t.Context())
 
 		AttachQueryFilterToSpan(span, nil)
 	})
@@ -268,7 +267,7 @@ func TestAttachToSpan(T *testing.T) {
 	for _, tt := range tests {
 		T.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			_, span := StartSpan(context.Background())
+			_, span := StartSpan(t.Context())
 			AttachToSpan(span, tt.attachmentKey, tt.x)
 		})
 	}

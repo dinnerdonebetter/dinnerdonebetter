@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"testing"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/audit"
@@ -34,7 +33,7 @@ func TestAuditDataManager_GetAuditLogEntry(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildAuditManagerForTest(t)
 
 		expected := fakes.BuildFakeAuditLogEntry()
@@ -54,7 +53,7 @@ func TestAuditDataManager_GetAuditLogEntriesForAccount(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildAuditManagerForTest(t)
 
 		accountID := fakes.BuildFakeID()
@@ -76,7 +75,7 @@ func TestAuditDataManager_CreateAuditLogEntry(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildAuditManagerForTest(t)
 
 		exampleEntry := fakes.BuildFakeAuditLogEntry()

@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
@@ -24,7 +23,7 @@ import (
 func buildNotificationsManagerForTest(t *testing.T) *notificationsManager {
 	t.Helper()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	queueCfg := &msgconfig.QueuesConfig{
 		DataChangesTopicName: t.Name(),
 	}
@@ -75,7 +74,7 @@ func TestNotificationsManager_CreateUserNotification(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		nm := buildNotificationsManagerForTest(t)
 
 		expected := fakes.BuildFakeUserNotification()
@@ -105,7 +104,7 @@ func TestNotificationsManager_UpdateUserNotification(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		nm := buildNotificationsManagerForTest(t)
 
 		updated := fakes.BuildFakeUserNotification()
@@ -134,7 +133,7 @@ func TestNotificationsManager_CreateUserDeviceToken(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		nm := buildNotificationsManagerForTest(t)
 
 		expected := fakes.BuildFakeUserDeviceToken()
@@ -164,7 +163,7 @@ func TestNotificationsManager_ArchiveUserDeviceToken(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		nm := buildNotificationsManagerForTest(t)
 
 		userID := fakes.BuildFakeID()
@@ -189,7 +188,7 @@ func TestNotificationsManager_ArchiveUserDeviceToken(t *testing.T) {
 	t.Run("with empty user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		nm := buildNotificationsManagerForTest(t)
 
 		err := nm.ArchiveUserDeviceToken(ctx, "", fakes.BuildFakeID())
@@ -199,7 +198,7 @@ func TestNotificationsManager_ArchiveUserDeviceToken(t *testing.T) {
 	t.Run("with empty token ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		nm := buildNotificationsManagerForTest(t)
 
 		err := nm.ArchiveUserDeviceToken(ctx, fakes.BuildFakeID(), "")

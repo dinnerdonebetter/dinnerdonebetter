@@ -101,7 +101,7 @@ func TestQuerier_IsReady(T *testing.T) {
 	T.Run("exhausting all available queries", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		ctx, cancel := context.WithTimeout(t.Context(), time.Second)
 		defer cancel()
 
 		c, db := buildTestClient(t)

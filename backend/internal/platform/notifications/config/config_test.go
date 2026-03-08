@@ -1,7 +1,6 @@
 package config
 
 import (
-	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -42,7 +41,7 @@ func createTestP8File(t *testing.T) string {
 func TestConfig_ValidateWithContext(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	t.Run("with noop provider", func(t *testing.T) {
 		t.Parallel()
@@ -107,7 +106,7 @@ func TestConfig_ValidateWithContext(t *testing.T) {
 func TestConfig_ProvidePushSender(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewNoopTracerProvider()
 

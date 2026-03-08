@@ -1,7 +1,6 @@
 package tracingcfg
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -19,7 +18,7 @@ func TestConfig_ProvideTracerProvider(T *testing.T) {
 		cfg := &Config{}
 
 		tracerProvider, err := cfg.ProvideTracerProvider(
-			context.Background(),
+			t.Context(),
 			logging.NewNoopLogger(),
 		)
 

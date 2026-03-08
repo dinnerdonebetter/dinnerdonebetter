@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -25,7 +24,7 @@ import (
 func buildIssueReportsManagerForTest(t *testing.T) (*issueReportsManager, *issuereportsmock.Repository) {
 	t.Helper()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	repo := &issuereportsmock.Repository{}
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: t.Name()}
 
@@ -68,7 +67,7 @@ func TestIssueReportsDataManager_CreateIssueReport(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildIssueReportsManagerForTest(t)
 
 		dbInput := fakes.BuildFakeIssueReportDatabaseCreationInput()
@@ -96,7 +95,7 @@ func TestIssueReportsDataManager_CreateIssueReport(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildIssueReportsManagerForTest(t)
 
 		dbInput := fakes.BuildFakeIssueReportDatabaseCreationInput()
@@ -122,7 +121,7 @@ func TestIssueReportsDataManager_GetIssueReport(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildIssueReportsManagerForTest(t)
 
 		expected := fakes.BuildFakeIssueReport()
@@ -142,7 +141,7 @@ func TestIssueReportsDataManager_GetIssueReports(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildIssueReportsManagerForTest(t)
 
 		filter := filtering.DefaultQueryFilter()
@@ -166,7 +165,7 @@ func TestIssueReportsDataManager_UpdateIssueReport(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildIssueReportsManagerForTest(t)
 
 		issueReport := fakes.BuildFakeIssueReport()
@@ -194,7 +193,7 @@ func TestIssueReportsDataManager_ArchiveIssueReport(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, _ := buildIssueReportsManagerForTest(t)
 
 		issueReportID := fakes.BuildFakeID()

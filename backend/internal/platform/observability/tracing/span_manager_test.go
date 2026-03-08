@@ -1,7 +1,6 @@
 package tracing
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,7 +22,7 @@ func Test_otelSpanManager_StartSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		NewTracerForTest(t.Name()).StartSpan(context.Background())
+		NewTracerForTest(t.Name()).StartSpan(t.Context())
 	})
 }
 

@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"testing"
 
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
@@ -25,7 +24,7 @@ import (
 func buildPaymentsManagerForTest(t *testing.T) *paymentsManager {
 	t.Helper()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	queueCfg := &msgconfig.QueuesConfig{
 		DataChangesTopicName: t.Name(),
 	}
@@ -83,7 +82,7 @@ func TestPaymentsManager_CreateProduct(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		pm := buildPaymentsManagerForTest(t)
 
 		input := fakes.BuildFakeProductCreationRequestInput()
@@ -113,7 +112,7 @@ func TestPaymentsManager_UpdateProduct(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		pm := buildPaymentsManagerForTest(t)
 
 		product := fakes.BuildFakeProduct()
@@ -147,7 +146,7 @@ func TestPaymentsManager_ArchiveProduct(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		pm := buildPaymentsManagerForTest(t)
 
 		productID := fakes.BuildFakeID()
@@ -175,7 +174,7 @@ func TestPaymentsManager_CreateSubscription(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		pm := buildPaymentsManagerForTest(t)
 
 		accountID := fakes.BuildFakeID()
@@ -207,7 +206,7 @@ func TestPaymentsManager_UpdateSubscription(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		pm := buildPaymentsManagerForTest(t)
 
 		accountID := fakes.BuildFakeID()
@@ -243,7 +242,7 @@ func TestPaymentsManager_ArchiveSubscription(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		pm := buildPaymentsManagerForTest(t)
 
 		subID := fakes.BuildFakeID()

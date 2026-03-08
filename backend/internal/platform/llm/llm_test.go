@@ -1,12 +1,11 @@
 package llm
 
 import (
-	"context"
 	"testing"
 )
 
 func TestNoopProvider_Completion(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	provider := NewNoopProvider()
 
 	result, err := provider.Completion(ctx, CompletionParams{

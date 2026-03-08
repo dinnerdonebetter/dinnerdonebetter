@@ -125,7 +125,7 @@ func TestServiceImpl_CreateUploadedMedia(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -152,7 +152,7 @@ func TestServiceImpl_CreateUploadedMedia(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &uploadedmediasvc.CreateUploadedMediaRequest{
@@ -169,7 +169,7 @@ func TestServiceImpl_CreateUploadedMedia(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeInput := uploadedmediafakes.BuildFakeUploadedMediaCreationRequestInput()
@@ -196,7 +196,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -221,7 +221,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &uploadedmediasvc.GetUploadedMediaRequest{
@@ -238,7 +238,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 	t.Run("permission denied - different user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -262,7 +262,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
@@ -287,7 +287,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia1 := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -320,7 +320,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 	t.Run("filters out other users' media", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia1 := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -354,7 +354,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &uploadedmediasvc.GetUploadedMediaWithIDsRequest{
@@ -371,7 +371,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 	t.Run("no IDs provided", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, _, _ := buildTestService(t)
 
 		request := &uploadedmediasvc.GetUploadedMediaWithIDsRequest{
@@ -388,7 +388,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		ids := []string{"id1", "id2"}
@@ -415,7 +415,7 @@ func TestServiceImpl_GetUploadedMediaForUser(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMediaList := &filtering.QueryFilteredResult[uploadedmedia.UploadedMedia]{
@@ -448,7 +448,7 @@ func TestServiceImpl_GetUploadedMediaForUser(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &uploadedmediasvc.GetUploadedMediaForUserRequest{
@@ -466,7 +466,7 @@ func TestServiceImpl_GetUploadedMediaForUser(t *testing.T) {
 	t.Run("permission denied - different user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, _, _ := buildTestService(t)
 
 		request := &uploadedmediasvc.GetUploadedMediaForUserRequest{
@@ -484,7 +484,7 @@ func TestServiceImpl_GetUploadedMediaForUser(t *testing.T) {
 	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMediaForUser), testutils.ContextMatcher, "test-user-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(nil, errors.New("repository error"))
@@ -510,7 +510,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -540,7 +540,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &uploadedmediasvc.UpdateUploadedMediaRequest{
@@ -558,7 +558,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 	t.Run("permission denied - different user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -583,7 +583,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 	t.Run("repository error on get", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
@@ -605,7 +605,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 	t.Run("repository error on update", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -635,7 +635,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -659,7 +659,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
 		request := &uploadedmediasvc.ArchiveUploadedMediaRequest{
@@ -676,7 +676,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 	t.Run("permission denied - different user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -700,7 +700,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 	t.Run("repository error on get", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
@@ -721,7 +721,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 	t.Run("repository error on archive", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
@@ -757,7 +757,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 
 		// Create mock stream
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		// Setup metadata message
@@ -816,7 +816,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		service := buildTestServiceWithSessionError(t)
 
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		err := service.Upload(mockStream)
@@ -831,7 +831,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		service, _, _ := buildTestService(t)
 
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		// First message is a chunk instead of metadata
@@ -856,7 +856,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		service, _, _ := buildTestService(t)
 
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		uploadMetadata := &uploadedmediasvc.UploadMetadata{
@@ -886,7 +886,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		service, _, _ := buildTestService(t)
 
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		uploadMetadata := &uploadedmediasvc.UploadMetadata{
@@ -916,7 +916,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		service, _, _ := buildTestService(t)
 
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		uploadMetadata := &uploadedmediasvc.UploadMetadata{
@@ -946,7 +946,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		service, _, _ := buildTestService(t)
 
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		uploadMetadata := &uploadedmediasvc.UploadMetadata{
@@ -986,7 +986,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		service, _, _ := buildTestService(t)
 
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		uploadMetadata := &uploadedmediasvc.UploadMetadata{
@@ -1017,7 +1017,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		service, _, mockUploadMgr := buildTestService(t)
 
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		uploadMetadata := &uploadedmediasvc.UploadMetadata{
@@ -1059,7 +1059,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		service, mockRepo, mockUploadMgr := buildTestService(t)
 
 		mockStream := &mockUploadStream{
-			ctx: context.Background(),
+			ctx: t.Context(),
 		}
 
 		uploadMetadata := &uploadedmediasvc.UploadMetadata{

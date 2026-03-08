@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
@@ -32,7 +31,7 @@ func TestUploadedMediaDataManager_GetUploadedMedia(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildUploadedMediaManagerForTest(t)
 
 		expected := fakes.BuildFakeUploadedMedia()
@@ -52,7 +51,7 @@ func TestUploadedMediaDataManager_GetUploadedMediaForUser(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildUploadedMediaManagerForTest(t)
 
 		userID := fakes.BuildFakeUploadedMedia().CreatedByUser
@@ -77,7 +76,7 @@ func TestUploadedMediaDataManager_CreateUploadedMedia(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildUploadedMediaManagerForTest(t)
 
 		dbInput := fakes.BuildFakeUploadedMediaDatabaseCreationInput()
@@ -101,7 +100,7 @@ func TestUploadedMediaDataManager_ArchiveUploadedMedia(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		manager, repo := buildUploadedMediaManagerForTest(t)
 
 		uploadedMediaID := fakes.BuildFakeUploadedMedia().ID

@@ -1,14 +1,13 @@
 package llmcfg
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/llm/openai"
 )
 
 func TestConfig_ProvideLLMProvider_Empty(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	cfg := &Config{Provider: ""}
 
 	provider, err := cfg.ProvideLLMProvider(ctx)
@@ -21,7 +20,7 @@ func TestConfig_ProvideLLMProvider_Empty(t *testing.T) {
 }
 
 func TestConfig_ProvideLLMProvider_OpenAI(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	cfg := &Config{
 		Provider: ProviderOpenAI,
 		OpenAI: &openai.Config{

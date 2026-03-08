@@ -53,7 +53,7 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 
 	helper := &authServiceHTTPRoutesTestHelper{}
 
-	helper.ctx = context.Background()
+	helper.ctx = t.Context()
 	helper.service = buildTestService(t)
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleAccount = fakes.BuildFakeAccount()
