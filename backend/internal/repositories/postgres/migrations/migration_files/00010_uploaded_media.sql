@@ -9,3 +9,12 @@ CREATE TABLE IF NOT EXISTS uploaded_media (
     archived_at TIMESTAMP WITH TIME ZONE,
     created_by_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS user_avatars (
+    id TEXT NOT NULL PRIMARY KEY,
+    belongs_to_user TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    uploaded_media_id TEXT NOT NULL REFERENCES uploaded_media(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    archived_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE(belongs_to_user, archived_at)
+);

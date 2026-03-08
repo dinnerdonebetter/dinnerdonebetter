@@ -19,7 +19,6 @@ CREATE TYPE invitation_state AS ENUM (
 CREATE TABLE IF NOT EXISTS users (
     id TEXT NOT NULL PRIMARY KEY,
     username TEXT NOT NULL,
-    avatar_src TEXT,
     email_address TEXT NOT NULL,
     hashed_password TEXT NOT NULL,
     password_last_changed_at TIMESTAMP WITH TIME ZONE,
