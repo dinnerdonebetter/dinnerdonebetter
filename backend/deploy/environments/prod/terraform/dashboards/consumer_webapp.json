@@ -1,6 +1,6 @@
 {
-  "title": "API Server",
-  "uid": "ddb-api-server",
+  "title": "Consumer Webapp",
+  "uid": "ddb-consumer-webapp",
   "timezone": "browser",
   "refresh": "30s",
   "time": {
@@ -33,47 +33,9 @@
   },
   "panels": [
     {
-      "title": "DB Query Rate",
-      "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
-      "datasource": { "type": "prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
-        }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(rate(db_sql_latency_milliseconds_count{job=\"api_server\"}[5m]))",
-          "legendFormat": "Queries/s"
-        }
-      ]
-    },
-    {
-      "title": "DB Latency",
-      "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 8, "y": 0 },
-      "datasource": { "type": "prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ms",
-          "color": { "mode": "palette-classic" },
-          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
-        }
-      },
-      "targets": [
-        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(db_sql_latency_milliseconds_bucket{job=\"api_server\"}[5m])) by (le))", "legendFormat": "p50" },
-        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(db_sql_latency_milliseconds_bucket{job=\"api_server\"}[5m])) by (le))", "legendFormat": "p95" },
-        { "refId": "C", "expr": "histogram_quantile(0.99, sum(rate(db_sql_latency_milliseconds_bucket{job=\"api_server\"}[5m])) by (le))", "legendFormat": "p99" }
-      ]
-    },
-    {
       "title": "Deployment Replicas",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 6 },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 0 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -83,14 +45,14 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "kube_deployment_status_replicas_available{namespace=\"prod\", deployment=~\"dinner-done-better-service-api.*\"}", "legendFormat": "{{deployment}} available" },
-        { "refId": "B", "expr": "kube_deployment_spec_replicas{namespace=\"prod\", deployment=~\"dinner-done-better-service-api.*\"}", "legendFormat": "{{deployment}} desired" }
+        { "refId": "A", "expr": "kube_deployment_status_replicas_available{namespace=\"prod\", deployment=~\"dinner-done-better-root-site.*\"}", "legendFormat": "{{deployment}} available" },
+        { "refId": "B", "expr": "kube_deployment_spec_replicas{namespace=\"prod\", deployment=~\"dinner-done-better-root-site.*\"}", "legendFormat": "{{deployment}} desired" }
       ]
     },
     {
       "title": "Go Goroutines",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 6 },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -100,13 +62,13 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "process_runtime_go_goroutines{job=\"api_server\"}", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "process_runtime_go_goroutines{job=\"consumer_webapp\"}", "legendFormat": "{{instance}}" }
       ]
     },
     {
       "title": "Go Heap Allocated",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 6 },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -116,13 +78,13 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "process_runtime_go_mem_heap_alloc_bytes{job=\"api_server\"}", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "process_runtime_go_mem_heap_alloc_bytes{job=\"consumer_webapp\"}", "legendFormat": "{{instance}}" }
       ]
     },
     {
       "title": "Go GC Pause (p99)",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 12 },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 6 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -132,13 +94,13 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "histogram_quantile(0.99, sum(rate(process_runtime_go_gc_pause_ns_bucket{job=\"api_server\"}[5m])) by (le, instance))", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "histogram_quantile(0.99, sum(rate(process_runtime_go_gc_pause_ns_bucket{job=\"consumer_webapp\"}[5m])) by (le, instance))", "legendFormat": "{{instance}}" }
       ]
     },
     {
       "title": "Host CPU",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 12 },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 6 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -148,13 +110,13 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "sum(rate(system_cpu_time_seconds_total{job=\"api_server\"}[5m])) by (instance) * 100", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "sum(rate(system_cpu_time_seconds_total{job=\"consumer_webapp\"}[5m])) by (instance) * 100", "legendFormat": "{{instance}}" }
       ]
     },
     {
       "title": "Host Memory",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 12 },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 6 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -164,13 +126,13 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "system_memory_usage_bytes{job=\"api_server\"}", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "system_memory_usage_bytes{job=\"consumer_webapp\"}", "legendFormat": "{{instance}}" }
       ]
     },
     {
       "title": "Memory Utilization",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 18 },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 12 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -180,7 +142,7 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "system_memory_utilization_ratio{job=\"api_server\"}", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "system_memory_utilization_ratio{job=\"consumer_webapp\"}", "legendFormat": "{{instance}}" }
       ]
     }
   ],

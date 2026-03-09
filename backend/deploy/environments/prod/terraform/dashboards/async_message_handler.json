@@ -1,6 +1,6 @@
 {
-  "title": "Admin Webapp",
-  "uid": "ddb-admin-webapp",
+  "title": "Async Message Handler",
+  "uid": "ddb-async-message-handler",
   "timezone": "browser",
   "refresh": "30s",
   "time": {
@@ -33,25 +33,41 @@
   },
   "panels": [
     {
-      "title": "Request Rate",
+      "title": "Messages Processed Rate",
       "type": "timeseries",
       "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
-          "unit": "reqps",
+          "unit": "short",
           "color": { "mode": "palette-classic" },
           "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
         }
       },
       "targets": [
-        { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"admin_webapp\"}[5m]))", "legendFormat": "Requests/s" }
+        { "refId": "A", "expr": "sum(rate(async_message_handler_messages_processed_total{job=\"async_message_handler\"}[5m]))", "legendFormat": "Messages/s" }
       ]
     },
     {
-      "title": "Error Rate (5xx)",
+      "title": "Handler Errors Rate",
       "type": "timeseries",
       "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(async_message_handler_handler_errors_total{job=\"async_message_handler\"}[5m]))", "legendFormat": "Errors/s" }
+      ]
+    },
+    {
+      "title": "Search Index Requests - Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -61,11 +77,11 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "sum(rate(http_server_request_body_size_bytes_count{job=\"admin_webapp\", http_response_status_code=~\"5..\"}[5m]))", "legendFormat": "5xx/s" }
+        { "refId": "A", "expr": "sum(rate(async_message_handler_search_index_requests_execution_time_count{job=\"async_message_handler\"}[5m]))", "legendFormat": "Search index req/s" }
       ]
     },
     {
-      "title": "Request Latency",
+      "title": "Search Index Requests - Latency",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
       "datasource": { "type": "prometheus" },
@@ -77,25 +93,27 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{job=\"admin_webapp\"}[5m])) by (le))", "legendFormat": "p50" },
-        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job=\"admin_webapp\"}[5m])) by (le))", "legendFormat": "p95" },
-        { "refId": "C", "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{job=\"admin_webapp\"}[5m])) by (le))", "legendFormat": "p99" }
+        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(async_message_handler_search_index_requests_execution_time_bucket{job=\"async_message_handler\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(async_message_handler_search_index_requests_execution_time_bucket{job=\"async_message_handler\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "refId": "C", "expr": "histogram_quantile(0.99, sum(rate(async_message_handler_search_index_requests_execution_time_bucket{job=\"async_message_handler\"}[5m])) by (le))", "legendFormat": "p99" }
       ]
     },
     {
-      "title": "Response Size (p95)",
+      "title": "gRPC Client Latency",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
+          "unit": "ms",
           "color": { "mode": "palette-classic" },
           "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
         }
       },
       "targets": [
-        { "refId": "A", "expr": "histogram_quantile(0.95, sum(rate(http_server_response_body_size_bytes_bucket{job=\"admin_webapp\"}[5m])) by (le))", "legendFormat": "p95" }
+        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(rpc_client_duration_milliseconds_bucket{job=\"async_message_handler\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(rpc_client_duration_milliseconds_bucket{job=\"async_message_handler\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "refId": "C", "expr": "histogram_quantile(0.99, sum(rate(rpc_client_duration_milliseconds_bucket{job=\"async_message_handler\"}[5m])) by (le))", "legendFormat": "p99" }
       ]
     },
     {
@@ -111,8 +129,8 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "kube_deployment_status_replicas_available{namespace=\"prod\", deployment=~\"dinner-done-better-admin.*\"}", "legendFormat": "{{deployment}} available" },
-        { "refId": "B", "expr": "kube_deployment_spec_replicas{namespace=\"prod\", deployment=~\"dinner-done-better-admin.*\"}", "legendFormat": "{{deployment}} desired" }
+        { "refId": "A", "expr": "kube_deployment_status_replicas_available{namespace=\"prod\", deployment=~\"dinner-done-better-async.*\"}", "legendFormat": "{{deployment}} available" },
+        { "refId": "B", "expr": "kube_deployment_spec_replicas{namespace=\"prod\", deployment=~\"dinner-done-better-async.*\"}", "legendFormat": "{{deployment}} desired" }
       ]
     },
     {
@@ -128,7 +146,7 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "process_runtime_go_goroutines{job=\"admin_webapp\"}", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "process_runtime_go_goroutines{job=\"async_message_handler\"}", "legendFormat": "{{instance}}" }
       ]
     },
     {
@@ -144,7 +162,7 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "process_runtime_go_mem_heap_alloc_bytes{job=\"admin_webapp\"}", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "process_runtime_go_mem_heap_alloc_bytes{job=\"async_message_handler\"}", "legendFormat": "{{instance}}" }
       ]
     },
     {
@@ -160,7 +178,7 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "sum(rate(system_cpu_time_seconds_total{job=\"admin_webapp\"}[5m])) by (instance) * 100", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "sum(rate(system_cpu_time_seconds_total{job=\"async_message_handler\"}[5m])) by (instance) * 100", "legendFormat": "{{instance}}" }
       ]
     },
     {
@@ -176,7 +194,7 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "system_memory_usage_bytes{job=\"admin_webapp\"}", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "system_memory_usage_bytes{job=\"async_message_handler\"}", "legendFormat": "{{instance}}" }
       ]
     },
     {
@@ -192,7 +210,7 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "system_memory_utilization_ratio{job=\"admin_webapp\"}", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "system_memory_utilization_ratio{job=\"async_message_handler\"}", "legendFormat": "{{instance}}" }
       ]
     }
   ],

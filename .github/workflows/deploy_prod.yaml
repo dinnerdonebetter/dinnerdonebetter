@@ -45,6 +45,21 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: infra/deploy/environments/prod/terraform
 
+      - name: Create Grafana infra terraform annotation
+        if: success()
+        env:
+          GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
+          GRAFANA_AUTH_TOKEN: ${{ secrets.GRAFANA_AUTH_TOKEN }}
+        run: |
+          curl -sSf -X POST \
+            -H "Authorization: Bearer ${GRAFANA_AUTH_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"text\": \"Terraform apply (infra) - ${{ github.sha }} (${{ github.event.head_commit.message | split('\n') | first | truncate(80) }})\",
+              \"tags\": [\"terraform\", \"infra\", \"production\"]
+            }" \
+            "${GRAFANA_URL}/api/annotations"
+
   backend-infra:
     needs:
       - baseline-infra
@@ -103,6 +118,21 @@ jobs:
       - name: remove kubernetes config
         working-directory: backend/deploy/environments/prod
         run: rm -f terraform/terraform_kubeconfig || true
+
+      - name: Create Grafana backend-infra terraform annotation
+        if: success()
+        env:
+          GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
+          GRAFANA_AUTH_TOKEN: ${{ secrets.GRAFANA_AUTH_TOKEN }}
+        run: |
+          curl -sSf -X POST \
+            -H "Authorization: Bearer ${GRAFANA_AUTH_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"text\": \"Terraform apply (backend-infra) - ${{ github.sha }} (${{ github.event.head_commit.message | split('\n') | first | truncate(80) }})\",
+              \"tags\": [\"terraform\", \"backend-infra\", \"production\"]
+            }" \
+            "${GRAFANA_URL}/api/annotations"
 
   applications:
     needs:
@@ -168,3 +198,18 @@ jobs:
 
       - name: Skaffold deploy
         run: KOCACHE="$HOME/.cache/ko" skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile prod
+
+      - name: Create Grafana deployment annotation
+        if: success()
+        env:
+          GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
+          GRAFANA_AUTH_TOKEN: ${{ secrets.GRAFANA_AUTH_TOKEN }}
+        run: |
+          curl -sSf -X POST \
+            -H "Authorization: Bearer ${GRAFANA_AUTH_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"text\": \"Deployed prod - ${{ github.sha }} (${{ github.event.head_commit.message | split('\n') | first | truncate(80) }})\",
+              \"tags\": [\"deployment\", \"production\"]
+            }" \
+            "${GRAFANA_URL}/api/annotations"

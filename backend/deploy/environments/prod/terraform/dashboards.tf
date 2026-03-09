@@ -13,3 +13,15 @@ resource "grafana_dashboard" "admin_webapp" {
 
   config_json = file("${path.module}/dashboards/admin_webapp.json")
 }
+
+resource "grafana_dashboard" "consumer_webapp" {
+  folder = grafana_folder.dashboards.id
+
+  config_json = file("${path.module}/dashboards/consumer_webapp.json")
+}
+
+resource "grafana_dashboard" "async_message_handler" {
+  folder = grafana_folder.dashboards.id
+
+  config_json = file("${path.module}/dashboards/async_message_handler.json")
+}
