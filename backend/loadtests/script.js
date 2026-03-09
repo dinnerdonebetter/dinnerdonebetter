@@ -62,11 +62,9 @@ const READ_ENDPOINTS = [
   { method: "mealplanning.MealPlanningService/SearchForMeals", request: { filter: {}, query: "dinner", use_search_service: false } },
   { method: "mealplanning.MealPlanningService/GetAccountInstrumentOwnerships", request: { filter: {} } },
   { method: "mealplanning.MealPlanningService/GetUserIngredientPreferences", request: { filter: {} } },
-  { method: "mealplanning.MealPlanningService/SearchForRecipesWithInstrumentOwnership", request: { filter: {}, query: "salad", use_search_service: false } },
+  { method: "mealplanning.MealPlanningService/SearchForRecipesWithInstrumentOwnership", request: { filter: {}, query: "salad" } },
   { method: "mealplanning.MealPlanningService/SearchForValidIngredientGroups", request: { filter: {}, query: "dairy", use_search_service: false } },
   { method: "mealplanning.MealPlanningService/SearchForValidIngredientStates", request: { filter: {}, query: "raw", use_search_service: false } },
-  { method: "mealplanning.MealPlanningService/SearchValidIngredientsByPreparation", request: { filter: {}, query: "diced", use_search_service: false } },
-  { method: "mealplanning.MealPlanningService/SearchValidMeasurementUnitsByIngredient", request: { filter: {}, query: "flour", use_search_service: false } },
   { method: "mealplanning.MealPlanningService/GetValidPrepTaskConfigs", request: { filter: {} } },
   { method: "mealplanning.MealPlanningService/GetValidIngredientStates", request: { filter: {} } },
   { method: "mealplanning.MealPlanningService/GetValidPreparationInstruments", request: { filter: {} } },
@@ -74,14 +72,10 @@ const READ_ENDPOINTS = [
   // Webhooks
   { method: "webhooks.WebhooksService/GetWebhooks", request: { filter: {} } },
   { method: "webhooks.WebhooksService/GetWebhookTriggerEvents", request: { filter: {} } },
-  // Identity – account members, invitations
+  // Identity – accounts and invitations (user-scoped; no admin-only GetUsersForAccount/SearchForUsers)
   { method: "identity.IdentityService/GetAccounts", request: { filter: {} } },
   { method: "identity.IdentityService/GetReceivedAccountInvitations", request: { filter: {} } },
   { method: "identity.IdentityService/GetSentAccountInvitations", request: { filter: {} } },
-  { method: "identity.IdentityService/GetUsersForAccount", request: (d) => ({ filter: {}, account_id: d.accountId }) },
-  { method: "identity.IdentityService/GetAccount", request: (d) => ({ account_id: d.accountId }) },
-  { method: "identity.IdentityService/GetAccountsForUser", request: (d) => ({ filter: {}, user_id: d.userId }) },
-  { method: "identity.IdentityService/SearchForUsers", request: { filter: {}, query: "test", use_search_service: false } },
   // Settings
   { method: "settings.SettingsService/GetServiceSettingConfigurationsForAccount", request: { filter: {} } },
   { method: "settings.SettingsService/GetServiceSettingConfigurationsForUser", request: { filter: {} } },

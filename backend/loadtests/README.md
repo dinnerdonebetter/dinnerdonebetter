@@ -74,11 +74,11 @@ Read-only only. Setup fetches `account_id` and `user_id` via GetActiveAccount/Ge
 
 **Valid enums (shared):** GetValidInstruments, GetValidIngredients, GetValidVessels, GetValidPreparations, GetValidIngredientGroups, GetValidMeasurementUnits, SearchForValidIngredients, SearchForValidInstruments, SearchForValidVessels, SearchForValidPreparations, SearchForValidMeasurementUnits
 
-**Mealplanning (account/user-scoped):** GetRecipes, GetMealPlansForAccount, GetMeals, GetRecipeLists, GetMealLists, SearchForRecipes, SearchForMealEligibleRecipes, SearchForMeals, GetAccountInstrumentOwnerships, GetUserIngredientPreferences, SearchForRecipesWithInstrumentOwnership, SearchForValidIngredientGroups, SearchForValidIngredientStates, SearchValidIngredientsByPreparation, SearchValidMeasurementUnitsByIngredient, GetValidPrepTaskConfigs, GetValidIngredientStates, GetValidPreparationInstruments, GetValidPreparationVessels
+**Mealplanning (account/user-scoped):** GetRecipes, GetMealPlansForAccount, GetMeals, GetRecipeLists, GetMealLists, SearchForRecipes, SearchForMealEligibleRecipes, SearchForMeals, GetAccountInstrumentOwnerships, GetUserIngredientPreferences, SearchForRecipesWithInstrumentOwnership, SearchForValidIngredientGroups, SearchForValidIngredientStates, GetValidPrepTaskConfigs, GetValidIngredientStates, GetValidPreparationInstruments, GetValidPreparationVessels
 
 **Webhooks:** GetWebhooks, GetWebhookTriggerEvents
 
-**Identity:** GetAccounts, GetReceivedAccountInvitations, GetSentAccountInvitations, GetUsersForAccount, GetAccount, GetAccountsForUser, SearchForUsers
+**Identity:** GetAccounts, GetReceivedAccountInvitations, GetSentAccountInvitations (admin-only GetUsersForAccount, GetAccount, GetAccountsForUser, SearchForUsers excluded)
 
 **Settings:** GetServiceSettingConfigurationsForAccount, GetServiceSettingConfigurationsForUser, GetServiceSettings, SearchForServiceSettings
 
