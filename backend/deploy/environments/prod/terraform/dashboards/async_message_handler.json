@@ -16,8 +16,8 @@
         "hide": false,
         "iconColor": "blue",
         "name": "Deployments",
-        "target": { "limit": 100, "matchAny": true, "tags": ["deployment", "production"], "type": "dashboard" },
-        "type": "dashboard"
+        "target": { "limit": 100, "matchAny": true, "tags": ["deployment", "production"], "type": "tags" },
+        "type": "tags"
       },
       {
         "builtIn": 0,
@@ -26,8 +26,8 @@
         "hide": false,
         "iconColor": "orange",
         "name": "Terraform",
-        "target": { "limit": 100, "matchAny": true, "tags": ["terraform", "infra", "backend-infra"], "type": "dashboard" },
-        "type": "dashboard"
+        "target": { "limit": 100, "matchAny": true, "tags": ["terraform", "infra", "backend-infra"], "type": "tags" },
+        "type": "tags"
       }
     ]
   },
