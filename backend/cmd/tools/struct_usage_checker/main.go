@@ -410,7 +410,6 @@ func main() {
 	var wg sync.WaitGroup
 	for _, config := range configs {
 		for _, targetPkg := range config.TargetPkgs {
-			config, targetPkg := config, targetPkg
 			wg.Add(1)
 			go func() {
 				defer wg.Done()

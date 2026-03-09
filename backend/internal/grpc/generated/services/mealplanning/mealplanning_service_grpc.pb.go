@@ -241,6 +241,7 @@ const (
 	MealPlanningService_CreateUserIngredientPreference_FullMethodName                      = "/mealplanning.MealPlanningService/CreateUserIngredientPreference"
 	MealPlanningService_GetAccountInstrumentOwnership_FullMethodName                       = "/mealplanning.MealPlanningService/GetAccountInstrumentOwnership"
 	MealPlanningService_GetAccountInstrumentOwnerships_FullMethodName                      = "/mealplanning.MealPlanningService/GetAccountInstrumentOwnerships"
+	MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_FullMethodName          = "/mealplanning.MealPlanningService/SearchForValidInstrumentsNotOwnedByAccount"
 	MealPlanningService_GetUserIngredientPreference_FullMethodName                         = "/mealplanning.MealPlanningService/GetUserIngredientPreference"
 	MealPlanningService_GetUserIngredientPreferences_FullMethodName                        = "/mealplanning.MealPlanningService/GetUserIngredientPreferences"
 	MealPlanningService_UpdateAccountInstrumentOwnership_FullMethodName                    = "/mealplanning.MealPlanningService/UpdateAccountInstrumentOwnership"
@@ -473,6 +474,7 @@ type MealPlanningServiceClient interface {
 	CreateUserIngredientPreference(ctx context.Context, in *CreateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*CreateUserIngredientPreferenceResponse, error)
 	GetAccountInstrumentOwnership(ctx context.Context, in *GetAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*GetAccountInstrumentOwnershipResponse, error)
 	GetAccountInstrumentOwnerships(ctx context.Context, in *GetAccountInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*GetAccountInstrumentOwnershipsResponse, error)
+	SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, in *SearchForValidInstrumentsNotOwnedByAccountRequest, opts ...grpc.CallOption) (*SearchForValidInstrumentsNotOwnedByAccountResponse, error)
 	GetUserIngredientPreference(ctx context.Context, in *GetUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferenceResponse, error)
 	GetUserIngredientPreferences(ctx context.Context, in *GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferencesResponse, error)
 	UpdateAccountInstrumentOwnership(ctx context.Context, in *UpdateAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*UpdateAccountInstrumentOwnershipResponse, error)
@@ -2680,6 +2682,16 @@ func (c *mealPlanningServiceClient) GetAccountInstrumentOwnerships(ctx context.C
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, in *SearchForValidInstrumentsNotOwnedByAccountRequest, opts ...grpc.CallOption) (*SearchForValidInstrumentsNotOwnedByAccountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchForValidInstrumentsNotOwnedByAccountResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) GetUserIngredientPreference(ctx context.Context, in *GetUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetUserIngredientPreferenceResponse)
@@ -2979,6 +2991,7 @@ type MealPlanningServiceServer interface {
 	CreateUserIngredientPreference(context.Context, *CreateUserIngredientPreferenceRequest) (*CreateUserIngredientPreferenceResponse, error)
 	GetAccountInstrumentOwnership(context.Context, *GetAccountInstrumentOwnershipRequest) (*GetAccountInstrumentOwnershipResponse, error)
 	GetAccountInstrumentOwnerships(context.Context, *GetAccountInstrumentOwnershipsRequest) (*GetAccountInstrumentOwnershipsResponse, error)
+	SearchForValidInstrumentsNotOwnedByAccount(context.Context, *SearchForValidInstrumentsNotOwnedByAccountRequest) (*SearchForValidInstrumentsNotOwnedByAccountResponse, error)
 	GetUserIngredientPreference(context.Context, *GetUserIngredientPreferenceRequest) (*GetUserIngredientPreferenceResponse, error)
 	GetUserIngredientPreferences(context.Context, *GetUserIngredientPreferencesRequest) (*GetUserIngredientPreferencesResponse, error)
 	UpdateAccountInstrumentOwnership(context.Context, *UpdateAccountInstrumentOwnershipRequest) (*UpdateAccountInstrumentOwnershipResponse, error)
@@ -3652,6 +3665,9 @@ func (UnimplementedMealPlanningServiceServer) GetAccountInstrumentOwnership(cont
 }
 func (UnimplementedMealPlanningServiceServer) GetAccountInstrumentOwnerships(context.Context, *GetAccountInstrumentOwnershipsRequest) (*GetAccountInstrumentOwnershipsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountInstrumentOwnerships not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) SearchForValidInstrumentsNotOwnedByAccount(context.Context, *SearchForValidInstrumentsNotOwnedByAccountRequest) (*SearchForValidInstrumentsNotOwnedByAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidInstrumentsNotOwnedByAccount not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) GetUserIngredientPreference(context.Context, *GetUserIngredientPreferenceRequest) (*GetUserIngredientPreferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserIngredientPreference not implemented")
@@ -7637,6 +7653,24 @@ func _MealPlanningService_GetAccountInstrumentOwnerships_Handler(srv interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchForValidInstrumentsNotOwnedByAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).SearchForValidInstrumentsNotOwnedByAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).SearchForValidInstrumentsNotOwnedByAccount(ctx, req.(*SearchForValidInstrumentsNotOwnedByAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_GetUserIngredientPreference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserIngredientPreferenceRequest)
 	if err := dec(in); err != nil {
@@ -8623,6 +8657,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccountInstrumentOwnerships",
 			Handler:    _MealPlanningService_GetAccountInstrumentOwnerships_Handler,
+		},
+		{
+			MethodName: "SearchForValidInstrumentsNotOwnedByAccount",
+			Handler:    _MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_Handler,
 		},
 		{
 			MethodName: "GetUserIngredientPreference",

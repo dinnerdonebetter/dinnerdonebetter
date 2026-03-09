@@ -439,6 +439,16 @@ func (m *MockMealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Co
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.AccountInstrumentOwnership]), returnValues.Error(1)
 }
 
+// SearchValidInstrumentsNotOwnedByAccount is a mock method.
+func (m *MockMealPlanningManager) SearchValidInstrumentsNotOwnedByAccount(ctx context.Context, accountID, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
+	returnValues := m.Called(ctx, accountID, query, useSearchService, filter)
+
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidInstrument]), returnValues.Error(1)
+}
+
 // CreateAccountInstrumentOwnership is a mock method.
 func (m *MockMealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Context, ownerID string, input *mealplanning.AccountInstrumentOwnershipCreationRequestInput) (*mealplanning.AccountInstrumentOwnership, error) {
 	returnValues := m.Called(ctx, ownerID, input)

@@ -142,11 +142,12 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_ArchiveUserIngredientPreference_FullMethodName: {authorization.ArchiveUserIngredientPreferencesPermission},
 
 		// AccountInstrumentOwnerships
-		mealplanningsvc.MealPlanningService_CreateAccountInstrumentOwnership_FullMethodName:  {authorization.CreateAccountInstrumentOwnershipsPermission},
-		mealplanningsvc.MealPlanningService_GetAccountInstrumentOwnership_FullMethodName:     {authorization.ReadAccountInstrumentOwnershipsPermission},
-		mealplanningsvc.MealPlanningService_GetAccountInstrumentOwnerships_FullMethodName:    {authorization.ReadAccountInstrumentOwnershipsPermission},
-		mealplanningsvc.MealPlanningService_UpdateAccountInstrumentOwnership_FullMethodName:  {authorization.UpdateAccountInstrumentOwnershipsPermission},
-		mealplanningsvc.MealPlanningService_ArchiveAccountInstrumentOwnership_FullMethodName: {authorization.ArchiveAccountInstrumentOwnershipsPermission},
+		mealplanningsvc.MealPlanningService_CreateAccountInstrumentOwnership_FullMethodName:           {authorization.CreateAccountInstrumentOwnershipsPermission},
+		mealplanningsvc.MealPlanningService_GetAccountInstrumentOwnership_FullMethodName:              {authorization.ReadAccountInstrumentOwnershipsPermission},
+		mealplanningsvc.MealPlanningService_GetAccountInstrumentOwnerships_FullMethodName:             {authorization.ReadAccountInstrumentOwnershipsPermission},
+		mealplanningsvc.MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_FullMethodName: {authorization.ReadAccountInstrumentOwnershipsPermission},
+		mealplanningsvc.MealPlanningService_UpdateAccountInstrumentOwnership_FullMethodName:           {authorization.UpdateAccountInstrumentOwnershipsPermission},
+		mealplanningsvc.MealPlanningService_ArchiveAccountInstrumentOwnership_FullMethodName:          {authorization.ArchiveAccountInstrumentOwnershipsPermission},
 
 		// Recipes
 		mealplanningsvc.MealPlanningService_CreateRecipe_FullMethodName:                 {authorization.CreateRecipesPermission},

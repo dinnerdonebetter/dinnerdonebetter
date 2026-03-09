@@ -577,6 +577,144 @@ func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, arg *S
 	return items, nil
 }
 
+const searchForValidInstrumentsNotOwnedByAccount = `-- name: SearchForValidInstrumentsNotOwnedByAccount :many
+SELECT
+	valid_instruments.id,
+	valid_instruments.name,
+	valid_instruments.description,
+	valid_instruments.icon_path,
+	valid_instruments.plural_name,
+	valid_instruments.usable_for_storage,
+	valid_instruments.slug,
+	valid_instruments.display_in_summary_lists,
+	valid_instruments.include_in_generated_instructions,
+	valid_instruments.last_indexed_at,
+	valid_instruments.created_at,
+	valid_instruments.last_updated_at,
+	valid_instruments.archived_at,
+	(
+		SELECT COUNT(valid_instruments.id)
+		FROM valid_instruments
+		WHERE valid_instruments.archived_at IS NULL
+			AND
+			valid_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_instruments.last_updated_at IS NULL
+				OR valid_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_instruments.last_updated_at IS NULL
+				OR valid_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR valid_instruments.archived_at = NULL)
+			AND valid_instruments.id NOT IN (SELECT valid_instrument_id FROM account_instrument_ownerships WHERE account_instrument_ownerships.belongs_to_account = $6 AND account_instrument_ownerships.archived_at IS NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_instruments.id)
+		FROM valid_instruments
+		WHERE valid_instruments.archived_at IS NULL
+			AND valid_instruments.id NOT IN (SELECT valid_instrument_id FROM account_instrument_ownerships WHERE account_instrument_ownerships.belongs_to_account = $6 AND account_instrument_ownerships.archived_at IS NULL)
+	) AS total_count
+FROM valid_instruments
+WHERE valid_instruments.archived_at IS NULL
+	AND valid_instruments.name ILIKE '%' || $7::text || '%'
+	AND valid_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_instruments.last_updated_at IS NULL
+		OR valid_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_instruments.last_updated_at IS NULL
+		OR valid_instruments.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR valid_instruments.archived_at = NULL)
+	AND valid_instruments.id NOT IN (SELECT valid_instrument_id FROM account_instrument_ownerships WHERE account_instrument_ownerships.belongs_to_account = $6 AND account_instrument_ownerships.archived_at IS NULL)
+	AND valid_instruments.id > COALESCE($8, '')
+ORDER BY valid_instruments.id ASC
+LIMIT COALESCE($9, 50)
+`
+
+type SearchForValidInstrumentsNotOwnedByAccountParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	AccountID       string
+	NameQuery       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
+
+type SearchForValidInstrumentsNotOwnedByAccountRow struct {
+	CreatedAt                      time.Time
+	LastIndexedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	IconPath                       string
+	Slug                           string
+	PluralName                     string
+	ID                             string
+	Description                    string
+	Name                           string
+	FilteredCount                  int64
+	TotalCount                     int64
+	UsableForStorage               bool
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
+}
+
+func (q *Queries) SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, db DBTX, arg *SearchForValidInstrumentsNotOwnedByAccountParams) ([]*SearchForValidInstrumentsNotOwnedByAccountRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidInstrumentsNotOwnedByAccount,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.AccountID,
+		arg.NameQuery,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*SearchForValidInstrumentsNotOwnedByAccountRow{}
+	for rows.Next() {
+		var i SearchForValidInstrumentsNotOwnedByAccountRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.IconPath,
+			&i.PluralName,
+			&i.UsableForStorage,
+			&i.Slug,
+			&i.DisplayInSummaryLists,
+			&i.IncludeInGeneratedInstructions,
+			&i.LastIndexedAt,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateValidInstrument = `-- name: UpdateValidInstrument :execrows
 UPDATE valid_instruments SET
 	name = $1,

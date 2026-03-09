@@ -1859,6 +1859,34 @@ func TestMealPlanningManager_ListAccountInstrumentOwnerships(T *testing.T) {
 	})
 }
 
+func TestMealPlanningManager_SearchValidInstrumentsNotOwnedByAccount(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		expected := fakes.BuildFakeValidInstrumentsList()
+		exampleAccountID := fakes.BuildFakeID()
+		exampleQuery := "knife"
+
+		expectations := setupExpectationsForMealPlanningManager(
+			mpm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(mpm.db.SearchForValidInstrumentsNotOwnedByAccount), testutils.ContextMatcher, exampleAccountID, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.SearchValidInstrumentsNotOwnedByAccount(ctx, exampleAccountID, exampleQuery, false, nil)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
 func TestMealPlanningManager_CreateAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 

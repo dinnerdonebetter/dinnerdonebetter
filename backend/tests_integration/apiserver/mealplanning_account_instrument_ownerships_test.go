@@ -207,3 +207,36 @@ func TestAccountInstrumentOwnerships_Listing(T *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestAccountInstrumentOwnerships_SearchForValidInstrumentsNotOwnedByAccount(T *testing.T) {
+	T.Parallel()
+
+	T.Run("excludes owned instruments", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		owned := createAccountInstrumentOwnershipForTest(t, testClient)
+
+		res, err := testClient.SearchForValidInstrumentsNotOwnedByAccount(ctx, &settingssvc.SearchForValidInstrumentsNotOwnedByAccountRequest{
+			Query: "",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+
+		ownedInstrumentID := owned.Instrument.ID
+		for _, result := range res.Results {
+			assert.NotEqual(t, ownedInstrumentID, result.Id, "owned instrument should not appear in search results")
+		}
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.SearchForValidInstrumentsNotOwnedByAccount(ctx, &settingssvc.SearchForValidInstrumentsNotOwnedByAccountRequest{})
+		assert.Error(t, err)
+	})
+}

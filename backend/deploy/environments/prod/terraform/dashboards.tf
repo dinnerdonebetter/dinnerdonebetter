@@ -25,3 +25,9 @@ resource "grafana_dashboard" "async_message_handler" {
 
   config_json = file("${path.module}/dashboards/async_message_handler.json")
 }
+
+resource "grafana_dashboard" "gcp_infrastructure" {
+  folder = grafana_folder.dashboards.id
+
+  config_json = file("${path.module}/dashboards/gcp_infrastructure.json")
+}

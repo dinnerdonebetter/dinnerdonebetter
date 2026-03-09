@@ -1654,6 +1654,38 @@ func (s *serviceImpl) GetAccountInstrumentOwnerships(ctx context.Context, reques
 	return x, nil
 }
 
+func (s *serviceImpl) SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, request *mealplanningsvc.SearchForValidInstrumentsNotOwnedByAccountRequest) (*mealplanningsvc.SearchForValidInstrumentsNotOwnedByAccountResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	logger := observability.ObserveValues(nil, span, s.logger)
+
+	x, err := s.mealPlanningManager.SearchValidInstrumentsNotOwnedByAccount(ctx, sessionContextData.GetActiveAccountID(), request.Query, request.UseSearchService, filter)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid instruments not owned by account")
+	}
+
+	res := &mealplanningsvc.SearchForValidInstrumentsNotOwnedByAccountResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
+	}
+
+	for _, y := range x.Data {
+		res.Results = append(res.Results, converters.ConvertValidInstrumentToGRPCValidInstrument(y))
+	}
+
+	return res, nil
+}
+
 func (s *serviceImpl) UpdateAccountInstrumentOwnership(ctx context.Context, request *mealplanningsvc.UpdateAccountInstrumentOwnershipRequest) (*mealplanningsvc.UpdateAccountInstrumentOwnershipResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

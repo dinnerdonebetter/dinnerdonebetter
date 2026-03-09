@@ -241,6 +241,42 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "SearchForValidInstrumentsNotOwnedByAccount",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s %s
+	%s
+%s;`,
+					strings.Join(applyToEach(validInstrumentsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validInstrumentsTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(validInstrumentsTableName, true, true, []string{},
+						validInstrumentsTableName+".id NOT IN (SELECT valid_instrument_id FROM account_instrument_ownerships WHERE account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id) AND account_instrument_ownerships.archived_at IS NULL)"),
+					buildTotalCountSelect(validInstrumentsTableName, true, []string{},
+						validInstrumentsTableName+".id NOT IN (SELECT valid_instrument_id FROM account_instrument_ownerships WHERE account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id) AND account_instrument_ownerships.archived_at IS NULL)"),
+					validInstrumentsTableName,
+					validInstrumentsTableName,
+					archivedAtColumn,
+					validInstrumentsTableName,
+					nameColumn,
+					buildILIKEForArgument("name_query"),
+					buildFilterConditions(
+						validInstrumentsTableName,
+						true,
+						true,
+						validInstrumentsTableName+".id NOT IN (SELECT valid_instrument_id FROM account_instrument_ownerships WHERE account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id) AND account_instrument_ownerships.archived_at IS NULL)",
+					),
+					buildCursorLimitClause(validInstrumentsTableName),
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "UpdateValidInstrument",
 					Type: ExecRowsType,
 				},

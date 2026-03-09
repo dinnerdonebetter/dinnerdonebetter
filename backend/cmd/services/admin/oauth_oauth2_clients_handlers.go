@@ -154,18 +154,20 @@ func (s *AdminFrontendServer) OAuth2ClientPage(_ http.ResponseWriter, req *http.
 			EnabledFields: []string{},
 
 			FieldConfigs: map[string]*components.FieldConfig{
-				"Name": {
+				"name": {
 					Validation: &components.FieldValidation{
 						Required: true,
 					},
 				},
-				"Description": {
+				"description": {
 					Placeholder: "Description of the OAuth2 client...",
 				},
-				"ClientID": {
+				"client_id": {
+					DisplayName: "Client ID",
 					Placeholder: "OAuth2 Client ID",
 				},
-				"ClientSecret": {
+				"client_secret": {
+					DisplayName: "Client Secret",
 					InputType:   "password",
 					Placeholder: "OAuth2 Client Secret (hidden)",
 				},
@@ -173,19 +175,19 @@ func (s *AdminFrontendServer) OAuth2ClientPage(_ http.ResponseWriter, req *http.
 
 			FormRows: []*components.FormRow{
 				{
-					Fields:  []string{"Name"},
+					Fields:  []string{"name"},
 					Columns: 1,
 				},
 				{
-					Fields:  []string{"Description"},
+					Fields:  []string{"description"},
 					Columns: 1,
 				},
 				{
-					Fields:  []string{"ClientID"},
+					Fields:  []string{"client_id"},
 					Columns: 1,
 				},
 				{
-					Fields:  []string{"ClientSecret"},
+					Fields:  []string{"client_secret"},
 					Columns: 1,
 				},
 			},

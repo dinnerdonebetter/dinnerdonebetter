@@ -39,6 +39,12 @@ func (m *Repository) SearchForValidInstruments(ctx context.Context, query string
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidInstrument]), returnValues.Error(1)
 }
 
+// SearchForValidInstrumentsNotOwnedByAccount is a mock function.
+func (m *Repository) SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, accountID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
+	returnValues := m.Called(ctx, accountID, query, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidInstrument]), returnValues.Error(1)
+}
+
 // GetValidInstruments is a mock function.
 func (m *Repository) GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
 	returnValues := m.Called(ctx, filter)
