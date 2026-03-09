@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 
@@ -13,10 +14,14 @@ import (
 	"github.com/hashicorp/go-multierror"
 )
 
+// defaultCookieLifetime is used when no override is provided; must satisfy cookies.Config validation (>= 5 min).
+const defaultCookieLifetime = 24 * time.Hour
+
 // EnvironmentConfigSet contains a way of rendering a set of every config for a given environment to a given folder.
 type EnvironmentConfigSet struct {
 	RootConfig                               *APIServiceConfig
 	ConsumerWebappCookiesOverride            *cookies.Config
+	AdminWebappCookiesOverride               *cookies.Config
 	SearchDataIndexSchedulerConfigPath       string
 	MealPlanFinalizerConfigPath              string
 	MealPlanGroceryListInitializerConfigPath string
@@ -28,6 +33,7 @@ type EnvironmentConfigSet struct {
 	ConsumerWebappConfigPath                 string
 	APIServiceConfigPath                     string
 	ConsumerWebappPortOverride               uint16
+	AdminWebappPortOverride                  uint16
 }
 
 func stringOrDefault(s, defaultStr string) string {
@@ -178,24 +184,35 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	amhConfig.Observability.Logging.ServiceName = amhConfigObservabilityServiceName
 	amhConfig.Observability.Profiling.ServiceName = amhConfigObservabilityServiceName
 
+	awaHTTPServer := s.RootConfig.HTTPServer
+	if s.AdminWebappPortOverride != 0 {
+		awaHTTPServer.Port = s.AdminWebappPortOverride
+	}
+	awaCookies := cookies.Config{
+		CookieName:            "admin_webapp",
+		Base64EncodedHashKey:  " ",
+		Base64EncodedBlockKey: " ",
+		Lifetime:              defaultCookieLifetime,
+	}
+	if s.AdminWebappCookiesOverride != nil {
+		awaCookies = *s.AdminWebappCookiesOverride
+	}
 	awaConfig := &AdminWebappConfig{
-		Cookies: cookies.Config{
-			CookieName:            "admin_webapp",
-			Base64EncodedHashKey:  " ",
-			Base64EncodedBlockKey: " ",
-		},
+		Cookies:       awaCookies,
 		Encoding:      s.RootConfig.Encoding,
 		Observability: s.RootConfig.Observability,
 		Meta:          s.RootConfig.Meta,
 		Routing:       s.RootConfig.Routing,
-		HTTPServer:    s.RootConfig.HTTPServer,
+		HTTPServer:    awaHTTPServer,
 	}
 	awaConfig.Observability.Tracing.ServiceName = awaConfigObservabilityServiceName
 	awaConfig.Observability.Metrics.ServiceName = awaConfigObservabilityServiceName
 	awaConfig.Observability.Logging.ServiceName = awaConfigObservabilityServiceName
 	awaConfig.Observability.Profiling.ServiceName = awaConfigObservabilityServiceName
 	if awaConfig.Routing.Chi != nil {
-		awaConfig.Routing.Chi.ServiceName = awaConfigObservabilityServiceName
+		chiCopy := *awaConfig.Routing.Chi
+		chiCopy.ServiceName = awaConfigObservabilityServiceName
+		awaConfig.Routing.Chi = &chiCopy
 	}
 
 	cwaHTTPServer := s.RootConfig.HTTPServer
@@ -206,6 +223,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		CookieName:            "consumer_webapp",
 		Base64EncodedHashKey:  " ",
 		Base64EncodedBlockKey: " ",
+		Lifetime:              defaultCookieLifetime,
 	}
 	if s.ConsumerWebappCookiesOverride != nil {
 		cwaCookies = *s.ConsumerWebappCookiesOverride
@@ -223,7 +241,9 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	cwaConfig.Observability.Logging.ServiceName = cwaConfigObservabilityServiceName
 	cwaConfig.Observability.Profiling.ServiceName = cwaConfigObservabilityServiceName
 	if cwaConfig.Routing.Chi != nil {
-		cwaConfig.Routing.Chi.ServiceName = cwaConfigObservabilityServiceName
+		chiCopy := *cwaConfig.Routing.Chi
+		chiCopy.ServiceName = cwaConfigObservabilityServiceName
+		cwaConfig.Routing.Chi = &chiCopy
 	}
 
 	if validate {

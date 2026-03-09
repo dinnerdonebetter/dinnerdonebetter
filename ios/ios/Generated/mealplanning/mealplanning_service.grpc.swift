@@ -1784,6 +1784,18 @@ internal enum Mealplanning_MealPlanningService {
                 method: "GetValidMeasurementUnitConversionsForUnit"
             )
         }
+        /// Namespace for "GetMeasurementUnitConversionMismatches" metadata.
+        internal enum GetMeasurementUnitConversionMismatches {
+            /// Request type for "GetMeasurementUnitConversionMismatches".
+            internal typealias Input = Mealplanning_GetMeasurementUnitConversionMismatchesRequest
+            /// Response type for "GetMeasurementUnitConversionMismatches".
+            internal typealias Output = Mealplanning_GetMeasurementUnitConversionMismatchesResponse
+            /// Descriptor for "GetMeasurementUnitConversionMismatches".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "GetMeasurementUnitConversionMismatches"
+            )
+        }
         /// Namespace for "GetValidMeasurementUnits" metadata.
         internal enum GetValidMeasurementUnits {
             /// Request type for "GetValidMeasurementUnits".
@@ -2857,6 +2869,7 @@ internal enum Mealplanning_MealPlanningService {
             GetValidMeasurementUnit.descriptor,
             GetValidMeasurementUnitConversion.descriptor,
             GetValidMeasurementUnitConversionsForUnit.descriptor,
+            GetMeasurementUnitConversionMismatches.descriptor,
             GetValidMeasurementUnits.descriptor,
             GetValidPreparation.descriptor,
             GetValidPreparationInstrument.descriptor,
@@ -5744,6 +5757,25 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidMeasurementUnitConversionsForUnitResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidMeasurementUnitConversionsForUnitResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetMeasurementUnitConversionMismatches" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetMeasurementUnitConversionMismatchesRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetMeasurementUnitConversionMismatchesRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetMeasurementUnitConversionMismatchesResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getMeasurementUnitConversionMismatches<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetMeasurementUnitConversionMismatchesRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetMeasurementUnitConversionMismatchesRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetMeasurementUnitConversionMismatchesResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetMeasurementUnitConversionMismatchesResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "GetValidMeasurementUnits" method.
@@ -11629,6 +11661,36 @@ extension Mealplanning_MealPlanningService {
             try await self.client.unary(
                 request: request,
                 descriptor: Mealplanning_MealPlanningService.Method.GetValidMeasurementUnitConversionsForUnit.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetMeasurementUnitConversionMismatches" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetMeasurementUnitConversionMismatchesRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetMeasurementUnitConversionMismatchesRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetMeasurementUnitConversionMismatchesResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getMeasurementUnitConversionMismatches<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetMeasurementUnitConversionMismatchesRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetMeasurementUnitConversionMismatchesRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetMeasurementUnitConversionMismatchesResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetMeasurementUnitConversionMismatchesResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.GetMeasurementUnitConversionMismatches.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -17621,6 +17683,31 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetValidMeasurementUnitConversionsForUnitRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetValidMeasurementUnitConversionsForUnitResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetMeasurementUnitConversionMismatches" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_GetMeasurementUnitConversionMismatchesRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getMeasurementUnitConversionMismatches<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_GetMeasurementUnitConversionMismatchesRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetMeasurementUnitConversionMismatchesResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getMeasurementUnitConversionMismatches(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetMeasurementUnitConversionMismatchesRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetMeasurementUnitConversionMismatchesResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -23812,6 +23899,35 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             metadata: metadata
         )
         return try await self.getValidMeasurementUnitConversionsForUnit(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetMeasurementUnitConversionMismatches" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getMeasurementUnitConversionMismatches<Result>(
+        _ message: Mealplanning_GetMeasurementUnitConversionMismatchesRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetMeasurementUnitConversionMismatchesResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_GetMeasurementUnitConversionMismatchesRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getMeasurementUnitConversionMismatches(
             request: request,
             options: options,
             onResponse: handleResponse

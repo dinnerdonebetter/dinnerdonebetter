@@ -169,6 +169,7 @@ const (
 	MealPlanningService_GetValidMeasurementUnit_FullMethodName                             = "/mealplanning.MealPlanningService/GetValidMeasurementUnit"
 	MealPlanningService_GetValidMeasurementUnitConversion_FullMethodName                   = "/mealplanning.MealPlanningService/GetValidMeasurementUnitConversion"
 	MealPlanningService_GetValidMeasurementUnitConversionsForUnit_FullMethodName           = "/mealplanning.MealPlanningService/GetValidMeasurementUnitConversionsForUnit"
+	MealPlanningService_GetMeasurementUnitConversionMismatches_FullMethodName              = "/mealplanning.MealPlanningService/GetMeasurementUnitConversionMismatches"
 	MealPlanningService_GetValidMeasurementUnits_FullMethodName                            = "/mealplanning.MealPlanningService/GetValidMeasurementUnits"
 	MealPlanningService_GetValidPreparation_FullMethodName                                 = "/mealplanning.MealPlanningService/GetValidPreparation"
 	MealPlanningService_GetValidPreparationInstrument_FullMethodName                       = "/mealplanning.MealPlanningService/GetValidPreparationInstrument"
@@ -399,6 +400,7 @@ type MealPlanningServiceClient interface {
 	GetValidMeasurementUnit(ctx context.Context, in *GetValidMeasurementUnitRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitResponse, error)
 	GetValidMeasurementUnitConversion(ctx context.Context, in *GetValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitConversionResponse, error)
 	GetValidMeasurementUnitConversionsForUnit(ctx context.Context, in *GetValidMeasurementUnitConversionsForUnitRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitConversionsForUnitResponse, error)
+	GetMeasurementUnitConversionMismatches(ctx context.Context, in *GetMeasurementUnitConversionMismatchesRequest, opts ...grpc.CallOption) (*GetMeasurementUnitConversionMismatchesResponse, error)
 	GetValidMeasurementUnits(ctx context.Context, in *GetValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitsResponse, error)
 	GetValidPreparation(ctx context.Context, in *GetValidPreparationRequest, opts ...grpc.CallOption) (*GetValidPreparationResponse, error)
 	GetValidPreparationInstrument(ctx context.Context, in *GetValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*GetValidPreparationInstrumentResponse, error)
@@ -1956,6 +1958,16 @@ func (c *mealPlanningServiceClient) GetValidMeasurementUnitConversionsForUnit(ct
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) GetMeasurementUnitConversionMismatches(ctx context.Context, in *GetMeasurementUnitConversionMismatchesRequest, opts ...grpc.CallOption) (*GetMeasurementUnitConversionMismatchesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMeasurementUnitConversionMismatchesResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetMeasurementUnitConversionMismatches_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) GetValidMeasurementUnits(ctx context.Context, in *GetValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetValidMeasurementUnitsResponse)
@@ -2883,6 +2895,7 @@ type MealPlanningServiceServer interface {
 	GetValidMeasurementUnit(context.Context, *GetValidMeasurementUnitRequest) (*GetValidMeasurementUnitResponse, error)
 	GetValidMeasurementUnitConversion(context.Context, *GetValidMeasurementUnitConversionRequest) (*GetValidMeasurementUnitConversionResponse, error)
 	GetValidMeasurementUnitConversionsForUnit(context.Context, *GetValidMeasurementUnitConversionsForUnitRequest) (*GetValidMeasurementUnitConversionsForUnitResponse, error)
+	GetMeasurementUnitConversionMismatches(context.Context, *GetMeasurementUnitConversionMismatchesRequest) (*GetMeasurementUnitConversionMismatchesResponse, error)
 	GetValidMeasurementUnits(context.Context, *GetValidMeasurementUnitsRequest) (*GetValidMeasurementUnitsResponse, error)
 	GetValidPreparation(context.Context, *GetValidPreparationRequest) (*GetValidPreparationResponse, error)
 	GetValidPreparationInstrument(context.Context, *GetValidPreparationInstrumentRequest) (*GetValidPreparationInstrumentResponse, error)
@@ -3410,6 +3423,9 @@ func (UnimplementedMealPlanningServiceServer) GetValidMeasurementUnitConversion(
 }
 func (UnimplementedMealPlanningServiceServer) GetValidMeasurementUnitConversionsForUnit(context.Context, *GetValidMeasurementUnitConversionsForUnitRequest) (*GetValidMeasurementUnitConversionsForUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnitConversionsForUnit not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetMeasurementUnitConversionMismatches(context.Context, *GetMeasurementUnitConversionMismatchesRequest) (*GetMeasurementUnitConversionMismatchesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMeasurementUnitConversionMismatches not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) GetValidMeasurementUnits(context.Context, *GetValidMeasurementUnitsRequest) (*GetValidMeasurementUnitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnits not implemented")
@@ -6309,6 +6325,24 @@ func _MealPlanningService_GetValidMeasurementUnitConversionsForUnit_Handler(srv 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_GetMeasurementUnitConversionMismatches_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMeasurementUnitConversionMismatchesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetMeasurementUnitConversionMismatches(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetMeasurementUnitConversionMismatches_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetMeasurementUnitConversionMismatches(ctx, req.(*GetMeasurementUnitConversionMismatchesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_GetValidMeasurementUnits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetValidMeasurementUnitsRequest)
 	if err := dec(in); err != nil {
@@ -8267,6 +8301,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetValidMeasurementUnitConversionsForUnit",
 			Handler:    _MealPlanningService_GetValidMeasurementUnitConversionsForUnit_Handler,
+		},
+		{
+			MethodName: "GetMeasurementUnitConversionMismatches",
+			Handler:    _MealPlanningService_GetMeasurementUnitConversionMismatches_Handler,
 		},
 		{
 			MethodName: "GetValidMeasurementUnits",

@@ -895,6 +895,13 @@ message GetValidMeasurementUnitConversionsForUnitResponse {
   repeated ValidMeasurementUnitConversion results = 3;
 }
 
+message GetMeasurementUnitConversionMismatchesRequest {}
+
+message GetMeasurementUnitConversionMismatchesResponse {
+  common.ResponseDetails response_details = 1;
+  repeated MeasurementUnitConversionMismatch mismatches = 2;
+}
+
 message GetValidMeasurementUnitsRequest {
   filtering.QueryFilter filter = 1;
 }

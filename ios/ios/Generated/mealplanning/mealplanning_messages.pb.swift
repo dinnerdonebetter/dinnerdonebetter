@@ -1387,6 +1387,45 @@ public struct Mealplanning_ValidMeasurementUnitConversion: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
+public struct Mealplanning_MeasurementUnitConversionMismatch: @unchecked Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var ingredient: Mealplanning_ValidIngredient {
+    get {return _storage._ingredient ?? Mealplanning_ValidIngredient()}
+    set {_uniqueStorage()._ingredient = newValue}
+  }
+  /// Returns true if `ingredient` has been explicitly set.
+  public var hasIngredient: Bool {return _storage._ingredient != nil}
+  /// Clears the value of `ingredient`. Subsequent reads from it will return its default value.
+  public mutating func clearIngredient() {_uniqueStorage()._ingredient = nil}
+
+  public var fromUnit: Mealplanning_ValidMeasurementUnit {
+    get {return _storage._fromUnit ?? Mealplanning_ValidMeasurementUnit()}
+    set {_uniqueStorage()._fromUnit = newValue}
+  }
+  /// Returns true if `fromUnit` has been explicitly set.
+  public var hasFromUnit: Bool {return _storage._fromUnit != nil}
+  /// Clears the value of `fromUnit`. Subsequent reads from it will return its default value.
+  public mutating func clearFromUnit() {_uniqueStorage()._fromUnit = nil}
+
+  public var toUnit: Mealplanning_ValidMeasurementUnit {
+    get {return _storage._toUnit ?? Mealplanning_ValidMeasurementUnit()}
+    set {_uniqueStorage()._toUnit = newValue}
+  }
+  /// Returns true if `toUnit` has been explicitly set.
+  public var hasToUnit: Bool {return _storage._toUnit != nil}
+  /// Clears the value of `toUnit`. Subsequent reads from it will return its default value.
+  public mutating func clearToUnit() {_uniqueStorage()._toUnit = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
 public struct Mealplanning_ValidPreparation: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -5387,6 +5426,90 @@ extension Mealplanning_ValidMeasurementUnitConversion: SwiftProtobuf.Message, Sw
         if _storage._from != rhs_storage._from {return false}
         if _storage._to != rhs_storage._to {return false}
         if _storage._modifier != rhs_storage._modifier {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_MeasurementUnitConversionMismatch: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".MeasurementUnitConversionMismatch"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ingredient\0\u{3}from_unit\0\u{3}to_unit\0")
+
+  fileprivate class _StorageClass {
+    var _ingredient: Mealplanning_ValidIngredient? = nil
+    var _fromUnit: Mealplanning_ValidMeasurementUnit? = nil
+    var _toUnit: Mealplanning_ValidMeasurementUnit? = nil
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _ingredient = source._ingredient
+      _fromUnit = source._fromUnit
+      _toUnit = source._toUnit
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._ingredient) }()
+        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._fromUnit) }()
+        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._toUnit) }()
+        default: break
+        }
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._ingredient {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      } }()
+      try { if let v = _storage._fromUnit {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      } }()
+      try { if let v = _storage._toUnit {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      } }()
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_MeasurementUnitConversionMismatch, rhs: Mealplanning_MeasurementUnitConversionMismatch) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._ingredient != rhs_storage._ingredient {return false}
+        if _storage._fromUnit != rhs_storage._fromUnit {return false}
+        if _storage._toUnit != rhs_storage._toUnit {return false}
         return true
       }
       if !storagesAreEqual {return false}

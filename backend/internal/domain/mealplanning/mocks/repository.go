@@ -1233,6 +1233,12 @@ func (m *Repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, 
 	return m.Called(ctx, validPreparationID).Error(0)
 }
 
+// GetMeasurementUnitConversionMismatches is a mock function.
+func (m *Repository) GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*mealplanning.MeasurementUnitConversionMismatch, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]*mealplanning.MeasurementUnitConversionMismatch), returnValues.Error(1)
+}
+
 // RecipeMediaExists is a mock function.
 func (m *Repository) RecipeMediaExists(ctx context.Context, validPreparationID string) (bool, error) {
 	returnValues := m.Called(ctx, validPreparationID)

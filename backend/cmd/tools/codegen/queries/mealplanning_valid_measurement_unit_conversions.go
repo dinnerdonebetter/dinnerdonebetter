@@ -197,6 +197,42 @@ WHERE %s IS NULL
 					idColumn,
 				)),
 			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetMeasurementUnitConversionMismatches",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`WITH ingredient_units AS (
+	SELECT DISTINCT
+		vimu.valid_ingredient_id,
+		vimu.valid_measurement_unit_id
+	FROM valid_ingredient_measurement_units vimu
+	JOIN valid_ingredients vi ON vi.id = vimu.valid_ingredient_id
+	JOIN valid_measurement_units vmu ON vmu.id = vimu.valid_measurement_unit_id
+	WHERE vimu.archived_at IS NULL
+		AND vi.archived_at IS NULL
+		AND vmu.archived_at IS NULL
+),
+unit_pairs AS (
+	SELECT
+		a.valid_ingredient_id,
+		a.valid_measurement_unit_id AS from_unit_id,
+		b.valid_measurement_unit_id AS to_unit_id
+	FROM ingredient_units a
+	JOIN ingredient_units b ON a.valid_ingredient_id = b.valid_ingredient_id
+		AND a.valid_measurement_unit_id < b.valid_measurement_unit_id
+)
+SELECT
+	unit_pairs.valid_ingredient_id,
+	unit_pairs.from_unit_id,
+	unit_pairs.to_unit_id
+FROM unit_pairs
+LEFT JOIN valid_measurement_unit_conversions c ON c.from_unit = unit_pairs.from_unit_id
+	AND c.to_unit = unit_pairs.to_unit_id
+	AND (c.only_for_ingredient IS NULL OR c.only_for_ingredient = unit_pairs.valid_ingredient_id)
+	AND c.archived_at IS NULL
+WHERE c.id IS NULL;`)),
+			},
 		}
 	default:
 		return nil

@@ -177,6 +177,12 @@ message ValidMeasurementUnitConversion {
   float modifier = 9;
 }
 
+message MeasurementUnitConversionMismatch {
+  ValidIngredient ingredient = 1;
+  ValidMeasurementUnit from_unit = 2;
+  ValidMeasurementUnit to_unit = 3;
+}
+
 message ValidPreparation {
   google.protobuf.Timestamp created_at = 1;
   common.Uint16RangeWithOptionalMax instrument_count = 2;

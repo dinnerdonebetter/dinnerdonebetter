@@ -129,6 +129,7 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_CreateValidMeasurementUnitConversion_FullMethodName:      {authorization.CreateValidMeasurementUnitConversionsPermission},
 		mealplanningsvc.MealPlanningService_GetValidMeasurementUnitConversion_FullMethodName:         {authorization.ReadValidMeasurementUnitConversionsPermission},
 		mealplanningsvc.MealPlanningService_GetValidMeasurementUnitConversionsForUnit_FullMethodName: {authorization.ReadValidMeasurementUnitConversionsPermission},
+		mealplanningsvc.MealPlanningService_GetMeasurementUnitConversionMismatches_FullMethodName:    {authorization.ReadValidMeasurementUnitConversionsPermission},
 		mealplanningsvc.MealPlanningService_UpdateValidMeasurementUnitConversion_FullMethodName:      {authorization.UpdateValidMeasurementUnitConversionsPermission},
 		mealplanningsvc.MealPlanningService_ArchiveValidMeasurementUnitConversion_FullMethodName:     {authorization.ArchiveValidMeasurementUnitConversionsPermission},
 

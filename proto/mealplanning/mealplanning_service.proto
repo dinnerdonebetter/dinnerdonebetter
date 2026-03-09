@@ -155,6 +155,7 @@ service MealPlanningService {
   rpc GetValidMeasurementUnit(GetValidMeasurementUnitRequest) returns (GetValidMeasurementUnitResponse);
   rpc GetValidMeasurementUnitConversion(GetValidMeasurementUnitConversionRequest) returns (GetValidMeasurementUnitConversionResponse);
   rpc GetValidMeasurementUnitConversionsForUnit(GetValidMeasurementUnitConversionsForUnitRequest) returns (GetValidMeasurementUnitConversionsForUnitResponse);
+  rpc GetMeasurementUnitConversionMismatches(GetMeasurementUnitConversionMismatchesRequest) returns (GetMeasurementUnitConversionMismatchesResponse);
   rpc GetValidMeasurementUnits(GetValidMeasurementUnitsRequest) returns (GetValidMeasurementUnitsResponse);
   rpc GetValidPreparation(GetValidPreparationRequest) returns (GetValidPreparationResponse);
   rpc GetValidPreparationInstrument(GetValidPreparationInstrumentRequest) returns (GetValidPreparationInstrumentResponse);

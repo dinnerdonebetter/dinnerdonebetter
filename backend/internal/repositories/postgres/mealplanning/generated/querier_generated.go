@@ -170,6 +170,7 @@ type Querier interface {
 	GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error)
 	GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetMealsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetMealsWithIDsRow, error)
+	GetMeasurementUnitConversionMismatches(ctx context.Context, db DBTX) ([]*GetMeasurementUnitConversionMismatchesRow, error)
 	GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRandomValidIngredientRow, error)
 	GetRandomValidInstrument(ctx context.Context, db DBTX) (*GetRandomValidInstrumentRow, error)
 	GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error)

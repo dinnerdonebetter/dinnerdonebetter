@@ -135,15 +135,15 @@
 		"sso": {
 			"google": {}
 		},
+		"sessionStore": {
+			"provider": ""
+		},
 		"tokens": {
 			"provider": "",
 			"audience": "",
 			"base64EncodedSigningKey": "",
 			"maxAccessTokenLifetime": 0,
 			"maxRefreshTokenLifetime": 0
-		},
-		"sessionStore": {
-			"provider": ""
 		}
 	},
 	"database": {

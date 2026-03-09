@@ -1214,6 +1214,25 @@ func (s *serviceImpl) GetValidMeasurementUnitConversionsForUnit(ctx context.Cont
 	return res, nil
 }
 
+func (s *serviceImpl) GetMeasurementUnitConversionMismatches(ctx context.Context, request *mealplanning.GetMeasurementUnitConversionMismatchesRequest) (*mealplanning.GetMeasurementUnitConversionMismatchesResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	x, err := s.validEnumerationsManager.GetMeasurementUnitConversionMismatches(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching measurement unit conversion mismatches")
+	}
+
+	res := &mealplanning.GetMeasurementUnitConversionMismatchesResponse{}
+	for _, y := range x {
+		res.Mismatches = append(res.Mismatches, mealplanningconverters.ConvertMeasurementUnitConversionMismatchToGRPCMeasurementUnitConversionMismatch(y))
+	}
+
+	return res, nil
+}
+
 func (s *serviceImpl) GetValidMeasurementUnits(ctx context.Context, request *mealplanning.GetValidMeasurementUnitsRequest) (*mealplanning.GetValidMeasurementUnitsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

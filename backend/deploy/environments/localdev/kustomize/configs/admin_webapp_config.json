@@ -2,9 +2,9 @@
 	"cookies": {
 		"domain": "",
 		"cookieName": "admin_webapp",
-		"base64EncodedHashKey": " ",
-		"base64EncodedBlockKey": " ",
-		"lifetime": 0,
+		"base64EncodedHashKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		"base64EncodedBlockKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		"lifetime": 86400000000000,
 		"secureOnly": false
 	},
 	"apiServiceConfig": {
@@ -15,7 +15,7 @@
 	},
 	"routing": {
 		"chiConfig": {
-			"serviceName": "consumer_webapp",
+			"serviceName": "admin_webapp",
 			"enableCORSForLocalhost": true
 		},
 		"provider": "chi"
@@ -70,7 +70,7 @@
 	},
 	"server": {
 		"startupDeadline": 60000000000,
-		"port": 8000,
+		"port": 8888,
 		"debug": true
 	}
 }

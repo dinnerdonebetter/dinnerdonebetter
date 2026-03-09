@@ -16,10 +16,13 @@ type Config struct {
 	SecureOnly            bool          `env:"SECURE_ONLY" json:"secureOnly"`
 }
 
+const minCookieLifetime = 5 * time.Minute
+
 func (c *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, c,
 		validation.Field(&c.CookieName, validation.Required),
 		validation.Field(&c.Base64EncodedHashKey, validation.Required),
 		validation.Field(&c.Base64EncodedBlockKey, validation.Required),
+		validation.Field(&c.Lifetime, validation.Min(minCookieLifetime)),
 	)
 }

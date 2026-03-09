@@ -4,7 +4,7 @@
 		"cookieName": "admin_webapp",
 		"base64EncodedHashKey": " ",
 		"base64EncodedBlockKey": " ",
-		"lifetime": 0,
+		"lifetime": 86400000000000,
 		"secureOnly": false
 	},
 	"apiServiceConfig": {
@@ -15,7 +15,7 @@
 	},
 	"routing": {
 		"chiConfig": {
-			"serviceName": "consumer_webapp",
+			"serviceName": "admin_webapp",
 			"enableCORSForLocalhost": true
 		},
 		"provider": "chi"

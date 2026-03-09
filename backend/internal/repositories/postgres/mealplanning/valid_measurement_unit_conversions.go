@@ -420,3 +420,50 @@ func (q *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, 
 
 	return nil
 }
+
+// GetMeasurementUnitConversionMismatches fetches ingredient-unit pairs that lack a conversion in the database.
+func (q *repository) GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*mealplanning.MeasurementUnitConversionMismatch, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	rows, err := q.generatedQuerier.GetMeasurementUnitConversionMismatches(ctx, q.readDB)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "querying for measurement unit conversion mismatches")
+	}
+
+	mismatches := make([]*mealplanning.MeasurementUnitConversionMismatch, 0, len(rows))
+	for _, row := range rows {
+		var ingredient *mealplanning.ValidIngredient
+		var fromUnit, toUnit *mealplanning.ValidMeasurementUnit
+		ingredient, err = q.GetValidIngredient(ctx, row.ValidIngredientID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching ingredient for mismatch")
+		}
+		fromUnit, err = q.GetValidMeasurementUnit(ctx, row.FromUnitID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching from unit for mismatch")
+		}
+		toUnit, err = q.GetValidMeasurementUnit(ctx, row.ToUnitID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching to unit for mismatch")
+		}
+		mismatches = append(mismatches, &mealplanning.MeasurementUnitConversionMismatch{
+			Ingredient: *ingredient,
+			FromUnit:   derefValidMeasurementUnit(fromUnit),
+			ToUnit:     derefValidMeasurementUnit(toUnit),
+		})
+	}
+
+	return mismatches, nil
+}
+
+// derefValidMeasurementUnit returns the value or zero value if nil.
+// GetValidMeasurementUnit returns *mealplanning.ValidMeasurementUnit (via types alias in valid_measurement_units).
+func derefValidMeasurementUnit(u *mealplanning.ValidMeasurementUnit) mealplanning.ValidMeasurementUnit {
+	if u == nil {
+		return mealplanning.ValidMeasurementUnit{}
+	}
+	return *u
+}
