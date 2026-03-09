@@ -790,9 +790,16 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 		return observability.PrepareAndLogError(err, logger, span, "fetching meal plan event to update")
 	}
 
+	oldStartsAt := existingMealPlanEvent.StartsAt
 	existingMealPlanEvent.Update(input)
 	if err = m.db.UpdateMealPlanEvent(ctx, existingMealPlanEvent); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event")
+	}
+
+	if input.StartsAt != nil && !oldStartsAt.Equal(*input.StartsAt) {
+		if err = m.db.ClearMealPlanTaskNotificationSentForEvent(ctx, mealPlanEventID); err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "clearing meal plan task notification sent for event")
+		}
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventUpdatedServiceEventType, map[string]any{
@@ -816,6 +823,13 @@ func (m *mealPlanningManager) SwapMealPlanEvents(ctx context.Context, mealPlanID
 
 	if err := m.db.SwapMealPlanEvents(ctx, mealPlanID, mealPlanEventIDA, mealPlanEventIDB); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "swapping meal plan events")
+	}
+
+	if err := m.db.ClearMealPlanTaskNotificationSentForEvent(ctx, mealPlanEventIDA); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "clearing meal plan task notification sent for event A")
+	}
+	if err := m.db.ClearMealPlanTaskNotificationSentForEvent(ctx, mealPlanEventIDB); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "clearing meal plan task notification sent for event B")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventUpdatedServiceEventType, map[string]any{

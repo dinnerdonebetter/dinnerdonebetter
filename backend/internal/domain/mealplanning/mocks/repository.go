@@ -1104,6 +1104,11 @@ func (m *Repository) MarkMealPlanTaskNotificationSent(ctx context.Context, mealP
 	return m.Called(ctx, mealPlanTaskID).Error(0)
 }
 
+// ClearMealPlanTaskNotificationSentForEvent is a mock function.
+func (m *Repository) ClearMealPlanTaskNotificationSentForEvent(ctx context.Context, mealPlanEventID string) error {
+	return m.Called(ctx, mealPlanEventID).Error(0)
+}
+
 // GetMealPlanTaskIDsThatNeedNotification is a mock function.
 func (m *Repository) GetMealPlanTaskIDsThatNeedNotification(ctx context.Context) ([]string, error) {
 	returnValues := m.Called(ctx)

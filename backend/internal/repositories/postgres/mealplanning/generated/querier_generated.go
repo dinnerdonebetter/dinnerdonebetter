@@ -85,6 +85,7 @@ type Querier interface {
 	CheckValidPreparationVesselExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidVesselExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidityOfValidIngredientStateIngredientPair(ctx context.Context, db DBTX, arg *CheckValidityOfValidIngredientStateIngredientPairParams) (bool, error)
+	ClearMealPlanTaskNotificationSentForEvent(ctx context.Context, db DBTX, mealPlanEventID sql.NullString) error
 	CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error
 	CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error
 	CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error

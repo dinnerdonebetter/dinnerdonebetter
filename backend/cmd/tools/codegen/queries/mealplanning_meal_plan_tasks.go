@@ -278,6 +278,24 @@ WHERE %s = sqlc.arg(%s);`,
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "ClearMealPlanTaskNotificationSentForEvent",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NULL
+FROM %s
+WHERE %s.%s = %s.%s
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL;`,
+					mealPlanTasksTableName,
+					mealPlanTaskNotificationSentAtColumn,
+					mealPlanOptionsTableName,
+					mealPlanTasksTableName, belongsToMealPlanOptionColumn, mealPlanOptionsTableName, idColumn,
+					mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventIDColumn,
+					mealPlanTasksTableName, mealPlanTaskCompletedAtColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetMealPlanTaskIDsThatNeedNotification",
 					Type: ManyType,
 				},

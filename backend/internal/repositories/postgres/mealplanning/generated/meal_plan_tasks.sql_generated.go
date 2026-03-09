@@ -62,6 +62,19 @@ func (q *Queries) CheckMealPlanTaskExistence(ctx context.Context, db DBTX, arg *
 	return exists, err
 }
 
+const clearMealPlanTaskNotificationSentForEvent = `-- name: ClearMealPlanTaskNotificationSentForEvent :exec
+UPDATE meal_plan_tasks SET notification_sent_at = NULL
+FROM meal_plan_options
+WHERE meal_plan_tasks.belongs_to_meal_plan_option = meal_plan_options.id
+	AND meal_plan_options.belongs_to_meal_plan_event = $1
+	AND meal_plan_tasks.completed_at IS NULL
+`
+
+func (q *Queries) ClearMealPlanTaskNotificationSentForEvent(ctx context.Context, db DBTX, mealPlanEventID sql.NullString) error {
+	_, err := db.ExecContext(ctx, clearMealPlanTaskNotificationSentForEvent, mealPlanEventID)
+	return err
+}
+
 const createMealPlanTask = `-- name: CreateMealPlanTask :exec
 INSERT INTO meal_plan_tasks (
 	id,
