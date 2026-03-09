@@ -1445,6 +1445,174 @@ func (q *Queries) SearchForMealEligibleRecipes(ctx context.Context, db DBTX, arg
 	return items, nil
 }
 
+const searchForRecipesWithInstrumentOwnership = `-- name: SearchForRecipesWithInstrumentOwnership :many
+SELECT
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.source_isbn,
+	recipes.description,
+	recipes.status,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+			AND
+			recipes.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipes.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR recipes.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+	) AS total_count
+FROM recipes
+WHERE recipes.archived_at IS NULL
+	AND recipes.name ILIKE '%' || $6::text || '%'
+	AND recipes.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipes.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND recipes.id > COALESCE($7, '')
+	AND NOT EXISTS (
+		SELECT 1 FROM recipe_step_instruments rsi
+		JOIN recipe_steps rs ON rsi.belongs_to_recipe_step = rs.id
+		WHERE rs.belongs_to_recipe = recipes.id
+			AND rsi.archived_at IS NULL
+			AND rs.archived_at IS NULL
+			AND rsi.optional = false
+			AND rsi.instrument_id IS NOT NULL
+			AND rsi.instrument_id NOT IN (
+				SELECT valid_instrument_id FROM account_instrument_ownerships
+				WHERE belongs_to_account = $8 AND archived_at IS NULL
+			)
+	)
+ORDER BY recipes.id ASC
+LIMIT COALESCE($9, 50)
+`
+
+type SearchForRecipesWithInstrumentOwnershipParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	Query           string
+	AccountID       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
+
+type SearchForRecipesWithInstrumentOwnershipRow struct {
+	CreatedAt            time.Time
+	LastIndexedAt        sql.NullTime
+	ArchivedAt           sql.NullTime
+	LastUpdatedAt        sql.NullTime
+	LastValidatedAt      sql.NullTime
+	Description          string
+	ID                   string
+	CreatedByUser        string
+	MinEstimatedPortions string
+	Name                 string
+	PortionName          string
+	PluralPortionName    string
+	Slug                 string
+	YieldsComponentType  ComponentType
+	Status               RecipeStatus
+	SourceIsbn           string
+	Source               string
+	MaxEstimatedPortions sql.NullString
+	InspiredByRecipeID   sql.NullString
+	FilteredCount        int64
+	TotalCount           int64
+	EligibleForMeals     bool
+}
+
+func (q *Queries) SearchForRecipesWithInstrumentOwnership(ctx context.Context, db DBTX, arg *SearchForRecipesWithInstrumentOwnershipParams) ([]*SearchForRecipesWithInstrumentOwnershipRow, error) {
+	rows, err := db.QueryContext(ctx, searchForRecipesWithInstrumentOwnership,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.Query,
+		arg.Cursor,
+		arg.AccountID,
+		arg.ResultLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*SearchForRecipesWithInstrumentOwnershipRow{}
+	for rows.Next() {
+		var i SearchForRecipesWithInstrumentOwnershipRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Slug,
+			&i.Source,
+			&i.SourceIsbn,
+			&i.Description,
+			&i.Status,
+			&i.InspiredByRecipeID,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.PortionName,
+			&i.PluralPortionName,
+			&i.EligibleForMeals,
+			&i.YieldsComponentType,
+			&i.LastIndexedAt,
+			&i.LastValidatedAt,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateRecipe = `-- name: UpdateRecipe :execrows
 UPDATE recipes SET
 	name = $1,

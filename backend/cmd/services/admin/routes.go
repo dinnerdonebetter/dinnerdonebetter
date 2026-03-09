@@ -120,6 +120,12 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get(fmt.Sprintf("/api/valid_measurement_units/{%s}/conversions/search", validMeasurementUnitIDURLParamKey), ghttp.Adapt(s.SearchMeasurementUnitsForConversion))
 	r.Post("/api/valid_measurement_unit_conversions", ghttp.Adapt(s.CreateMeasurementUnitConversion))
 
+	// Measurement Unit Conversion Mismatches
+	r.Get("/measurement_unit_conversion_mismatches", ghttp.Adapt(s.MeasurementUnitConversionMismatchesPage))
+	r.Get("/api/measurement_unit_conversion_mismatches", ghttp.Adapt(s.MeasurementUnitConversionMismatchesList))
+	r.Get("/measurement_unit_conversion_mismatches/add_conversion", ghttp.Adapt(s.AddConversionPage))
+	r.Post("/measurement_unit_conversion_mismatches/add_conversion", ghttp.Adapt(s.AddConversionSubmit))
+
 	// Valid Ingredient States - specific routes before dynamic ones
 	r.Get("/valid_ingredient_states/new", ghttp.Adapt(s.ValidIngredientStateNewPage))
 	r.Post("/api/valid_ingredient_states", ghttp.Adapt(s.ValidIngredientStateCreate))
@@ -206,7 +212,7 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))
-	passkeyHandlers := passkey.NewHandlers(s.tracer, s.logger, s.encoder, s.cookieManager, &s.config.Cookies, s.buildUnauthedGRPCClient)
+	passkeyHandlers := passkey.NewHandlers(s.tracer, s.logger, s.encoder, s.cookieManager, &s.config.Cookies, s.buildUnauthedGRPCClient, nil)
 	router.Post("/auth/passkey/authentication/options", passkeyHandlers.AuthOptionsHandler)
 	router.Post("/auth/passkey/authentication/verify", passkeyHandlers.AuthVerifyHandler)
 

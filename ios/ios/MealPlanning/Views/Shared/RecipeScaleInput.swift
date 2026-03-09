@@ -24,15 +24,16 @@ struct RecipeScaleInput: View {
   }
 
   var body: some View {
-    HStack(spacing: 12) {
+    HStack(spacing: DSTheme.Spacing.md) {
       Text("Scale:")
-        .font(.subheadline)
-        .fontWeight(.medium)
+        .font(DSTheme.Typography.label)
+        .foregroundColor(DSTheme.Colors.textPrimary)
 
-      HStack(spacing: 8) {
+      HStack(spacing: DSTheme.Spacing.sm) {
         TextField("1.0", text: $scaleText)
           .keyboardType(.decimalPad)
           .textFieldStyle(.roundedBorder)
+          .font(DSTheme.Typography.body)
           .frame(width: 80)
           .focused($isScaleFocused)
           .onSubmit {
@@ -55,28 +56,17 @@ struct RecipeScaleInput: View {
           }
 
         Text("x")
-          .font(.subheadline)
-          .foregroundColor(.secondary)
+          .font(DSTheme.Typography.body)
+          .foregroundColor(DSTheme.Colors.textSecondary)
 
-        Button {
-          adjustScale(by: -step)
-        } label: {
-          Image(systemName: "minus.circle")
-        }
-        .buttonStyle(.plain)
-
-        Button {
-          adjustScale(by: step)
-        } label: {
-          Image(systemName: "plus.circle")
-        }
-        .buttonStyle(.plain)
+        DSStepperButtons(
+          onDecrement: { adjustScale(by: -step) }, onIncrement: { adjustScale(by: step) })
       }
 
       if let portions = estimatedPortions, portions.min > 0 {
         Text("(~\(PortionsFormatter.formatScaled(portions, scale: scale)) servings)")
-          .font(.caption)
-          .foregroundColor(.secondary)
+          .font(DSTheme.Typography.caption)
+          .foregroundColor(DSTheme.Colors.textSecondary)
       }
     }
     .onAppear {

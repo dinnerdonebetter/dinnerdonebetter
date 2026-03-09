@@ -209,6 +209,64 @@ WHERE valid_instruments.archived_at IS NULL
 ORDER BY valid_instruments.id ASC
 LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
+-- name: SearchForValidInstrumentsNotOwnedByAccount :many
+SELECT
+	valid_instruments.id,
+	valid_instruments.name,
+	valid_instruments.description,
+	valid_instruments.icon_path,
+	valid_instruments.plural_name,
+	valid_instruments.usable_for_storage,
+	valid_instruments.slug,
+	valid_instruments.display_in_summary_lists,
+	valid_instruments.include_in_generated_instructions,
+	valid_instruments.last_indexed_at,
+	valid_instruments.created_at,
+	valid_instruments.last_updated_at,
+	valid_instruments.archived_at,
+	(
+		SELECT COUNT(valid_instruments.id)
+		FROM valid_instruments
+		WHERE valid_instruments.archived_at IS NULL
+			AND
+			valid_instruments.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_instruments.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_instruments.last_updated_at IS NULL
+				OR valid_instruments.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_instruments.last_updated_at IS NULL
+				OR valid_instruments.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_instruments.archived_at = NULL)
+			AND valid_instruments.id NOT IN (SELECT valid_instrument_id FROM account_instrument_ownerships WHERE account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id) AND account_instrument_ownerships.archived_at IS NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_instruments.id)
+		FROM valid_instruments
+		WHERE valid_instruments.archived_at IS NULL
+			AND valid_instruments.id NOT IN (SELECT valid_instrument_id FROM account_instrument_ownerships WHERE account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id) AND account_instrument_ownerships.archived_at IS NULL)
+	) AS total_count
+FROM valid_instruments
+WHERE valid_instruments.archived_at IS NULL
+	AND valid_instruments.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
+	AND valid_instruments.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_instruments.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_instruments.last_updated_at IS NULL
+		OR valid_instruments.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_instruments.last_updated_at IS NULL
+		OR valid_instruments.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_instruments.archived_at = NULL)
+	AND valid_instruments.id NOT IN (SELECT valid_instrument_id FROM account_instrument_ownerships WHERE account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id) AND account_instrument_ownerships.archived_at IS NULL)
+	AND valid_instruments.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_instruments.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
+
 -- name: UpdateValidInstrument :execrows
 UPDATE valid_instruments SET
 	name = sqlc.arg(name),

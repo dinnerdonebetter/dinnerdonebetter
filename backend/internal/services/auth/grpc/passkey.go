@@ -25,6 +25,7 @@ func (s *passkeyUserStore) GetUserByUsername(ctx context.Context, username strin
 func ProvidePasskeyService(
 	identityDataManager identitymanager.IdentityDataManager,
 	identityRepo identity.Repository,
+	sessionStore webauthn.SessionStore,
 ) (*webauthn.Service, error) {
 	// TODO: read RPID and RPOrigins from config
 	cfg := webauthn.Config{
@@ -33,6 +34,5 @@ func ProvidePasskeyService(
 		RPOrigins:     []string{"https://localhost:8080", "http://localhost:8080"},
 	}
 	userStore := &passkeyUserStore{identityDataManager: identityDataManager}
-	sessionStore := webauthn.NewInMemorySessionStore()
 	return webauthn.NewService(cfg, identityRepo, userStore, sessionStore)
 }

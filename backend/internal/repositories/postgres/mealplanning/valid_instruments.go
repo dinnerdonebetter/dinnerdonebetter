@@ -167,6 +167,64 @@ func (q *repository) SearchForValidInstruments(ctx context.Context, query string
 	return x, nil
 }
 
+// SearchForValidInstrumentsNotOwnedByAccount fetches valid instruments not owned by the account.
+func (q *repository) SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, accountID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidInstrument], error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	results, err := q.generatedQuerier.SearchForValidInstrumentsNotOwnedByAccount(ctx, q.readDB, &generated.SearchForValidInstrumentsNotOwnedByAccountParams{
+		AccountID:       accountID,
+		NameQuery:       query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments not owned by account search query")
+	}
+
+	var (
+		data                      = []*types.ValidInstrument{}
+		filteredCount, totalCount uint64
+	)
+	for _, result := range results {
+		validInstrument := &types.ValidInstrument{
+			CreatedAt:                      result.CreatedAt,
+			LastUpdatedAt:                  database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                     database.TimePointerFromNullTime(result.ArchivedAt),
+			IconPath:                       result.IconPath,
+			ID:                             result.ID,
+			Name:                           result.Name,
+			PluralName:                     result.PluralName,
+			Description:                    result.Description,
+			Slug:                           result.Slug,
+			DisplayInSummaryLists:          result.DisplayInSummaryLists,
+			IncludeInGeneratedInstructions: result.IncludeInGeneratedInstructions,
+			UsableForStorage:               result.UsableForStorage,
+		}
+		data = append(data, validInstrument)
+
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
+	}
+
+	x := filtering.NewQueryFilteredResult(data, filteredCount, totalCount, func(vi *types.ValidInstrument) string { return vi.ID }, filter)
+
+	return x, nil
+}
+
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
 func (q *repository) GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

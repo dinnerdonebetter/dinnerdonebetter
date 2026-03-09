@@ -63,6 +63,51 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 	return exampleRecipe
 }
 
+// buildRecipeForTestCreationWithInstrument builds a recipe with a step that has a required instrument.
+// Use this when testing SearchForRecipesWithInstrumentOwnership.
+func buildRecipeForTestCreationWithInstrument(t *testing.T, ctx context.Context, userID string, instrument *mealplanning.ValidInstrument, dbc *repository) *mealplanning.Recipe {
+	t.Helper()
+
+	if userID == "" {
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+		userID = user.ID
+	}
+
+	exampleRecipe := fakes.BuildFakeRecipe()
+
+	exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
+	exampleRecipeMedia.BelongsToRecipe = &exampleRecipe.ID
+	exampleRecipe.Media = []*mealplanning.RecipeMedia{
+		exampleRecipeMedia,
+	}
+
+	exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
+	exampleRecipePrepTask.BelongsToRecipe = exampleRecipe.ID
+	exampleRecipe.Steps = []*mealplanning.RecipeStep{
+		buildRecipeStepForTestCreationWithInstrument(t, ctx, exampleRecipe.ID, instrument, dbc),
+	}
+	exampleRecipePrepTask.TaskSteps = []*mealplanning.RecipePrepTaskStep{
+		{
+			ID:                      identifiers.New(),
+			BelongsToRecipeStep:     exampleRecipe.Steps[0].ID,
+			BelongsToRecipePrepTask: exampleRecipePrepTask.ID,
+			SatisfiesRecipeStep:     true,
+		},
+	}
+	exampleRecipe.PrepTasks = []*mealplanning.RecipePrepTask{
+		exampleRecipePrepTask,
+	}
+	exampleRecipe.CreatedByUser = userID
+
+	exampleRecipe.Media = []*mealplanning.RecipeMedia{}
+	for i := range exampleRecipe.Steps {
+		exampleRecipe.Steps[i].Media = []*mealplanning.RecipeMedia{}
+		exampleRecipe.Steps[i].CompletionConditions = nil // []*mealplanning.RecipeStepCompletionCondition{}
+	}
+
+	return exampleRecipe
+}
+
 func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *mealplanning.Recipe, dbc *repository, alsoCreateMeal bool) *mealplanning.Recipe {
 	t.Helper()
 
@@ -222,6 +267,69 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 		assert.NoError(t, err)
 		assert.False(t, exists)
 	}
+}
+
+func TestQuerier_Integration_SearchForRecipesWithInstrumentOwnership(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, _, container := buildDatabaseClientForTest(t)
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
+
+	// Create instrument and account ownership
+	instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+	ownershipInput := fakes.BuildFakeAccountInstrumentOwnership()
+	ownershipInput.BelongsToAccount = account.ID
+	ownershipInput.Instrument = *instrument
+	createAccountInstrumentOwnershipForTest(t, ctx, ownershipInput, dbc)
+
+	// Create recipe with required instrument (account owns it)
+	recipeWithOwnedInstrument := buildRecipeForTestCreationWithInstrument(t, ctx, user.ID, instrument, dbc)
+	recipeWithOwnedInstrument.Name = "Pasta Carbonara SearchTest"
+	createdRecipe := createRecipeForTest(t, ctx, recipeWithOwnedInstrument, dbc, false)
+
+	// Search with account that owns the instrument - should find the recipe
+	results, err := dbc.SearchForRecipesWithInstrumentOwnership(ctx, account.ID, "Pasta Carbonara", nil)
+	require.NoError(t, err)
+	require.NotEmpty(t, results.Data)
+	found := false
+	for _, r := range results.Data {
+		if r.ID == createdRecipe.ID {
+			found = true
+			break
+		}
+	}
+	assert.True(t, found, "recipe with owned instrument should appear in search results")
+
+	// Create recipe with different instrument (account does NOT own it)
+	otherInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+	recipeWithUnownedInstrument := buildRecipeForTestCreationWithInstrument(t, ctx, user.ID, otherInstrument, dbc)
+	recipeWithUnownedInstrument.Name = "Excluded Recipe SearchTest"
+	excludedRecipe := createRecipeForTest(t, ctx, recipeWithUnownedInstrument, dbc, false)
+
+	// Search again - excluded recipe should NOT appear (account doesn't own its instrument)
+	results2, err := dbc.SearchForRecipesWithInstrumentOwnership(ctx, account.ID, "SearchTest", nil)
+	require.NoError(t, err)
+	foundExcluded := false
+	for _, r := range results2.Data {
+		if r.ID == excludedRecipe.ID {
+			foundExcluded = true
+			break
+		}
+	}
+	assert.False(t, foundExcluded, "recipe with unowned instrument should not appear in search results")
+
+	// Cleanup
+	assert.NoError(t, dbc.ArchiveRecipe(ctx, createdRecipe.ID, user.ID))
+	assert.NoError(t, dbc.ArchiveRecipe(ctx, excludedRecipe.ID, user.ID))
 }
 
 func TestQuerier_Integration_GetRecipesWithIDs(t *testing.T) {

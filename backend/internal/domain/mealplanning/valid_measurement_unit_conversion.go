@@ -28,6 +28,15 @@ func init() {
 }
 
 type (
+	// MeasurementUnitConversionMismatch represents an ingredient that has multiple valid measurement units
+	// but lacks a conversion between them in the database.
+	MeasurementUnitConversionMismatch struct {
+		_          struct{}             `json:"-"`
+		FromUnit   ValidMeasurementUnit `json:"fromUnit"`
+		ToUnit     ValidMeasurementUnit `json:"toUnit"`
+		Ingredient ValidIngredient      `json:"ingredient"`
+	}
+
 	// ValidMeasurementUnitConversion represents a valid measurement conversion.
 	ValidMeasurementUnitConversion struct {
 		_ struct{} `json:"-"`
@@ -85,6 +94,8 @@ type (
 		UpdateValidMeasurementUnitConversion(ctx context.Context, updated *ValidMeasurementUnitConversion) error
 		ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error
 		GetValidMeasurementUnitConversionsForUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidMeasurementUnitConversion], error)
+		GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, validIngredientIDs []string) ([]*ValidMeasurementUnitConversion, error)
+		GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*MeasurementUnitConversionMismatch, error)
 	}
 
 	// ValidMeasurementUnitConversionDataService describes a structure capable of serving traffic related to valid measurement conversions.

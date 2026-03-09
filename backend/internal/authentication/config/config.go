@@ -5,6 +5,7 @@ import (
 	"time"
 
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	webauthncfg "github.com/dinnerdonebetter/backend/internal/authentication/webauthn/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -29,14 +30,14 @@ type (
 
 	// Config is our configuration.
 	Config struct {
-		_ struct{} `json:"-"`
-
-		SSO                   SSOConfigs       `envPrefix:"SSO_CONFIG_"       json:"sso"`
-		Tokens                tokenscfg.Config `envPrefix:"TOKENS_"           json:"tokens"`
-		Debug                 bool             `env:"DEBUG"                   json:"debug,omitempty"`
-		EnableUserSignup      bool             `env:"ENABLE_USER_SIGNUP"      json:"enableUserSignup,omitempty"`
-		MinimumUsernameLength uint8            `env:"MINIMUM_USERNAME_LENGTH" json:"minimumUsernameLength,omitempty"`
-		MinimumPasswordLength uint8            `env:"MINIMUM_PASSWORD_LENGTH" json:"minimumPasswordLength,omitempty"`
+		_                     struct{}           `json:"-"`
+		SSO                   SSOConfigs         `envPrefix:"SSO_CONFIG_"       json:"sso"`
+		SessionStore          webauthncfg.Config `envPrefix:"SESSION_STORE_"    json:"sessionStore"`
+		Tokens                tokenscfg.Config   `envPrefix:"TOKENS_"           json:"tokens"`
+		Debug                 bool               `env:"DEBUG"                   json:"debug,omitempty"`
+		EnableUserSignup      bool               `env:"ENABLE_USER_SIGNUP"      json:"enableUserSignup,omitempty"`
+		MinimumUsernameLength uint8              `env:"MINIMUM_USERNAME_LENGTH" json:"minimumUsernameLength,omitempty"`
+		MinimumPasswordLength uint8              `env:"MINIMUM_PASSWORD_LENGTH" json:"minimumPasswordLength,omitempty"`
 	}
 )
 
@@ -48,5 +49,11 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&cfg.MinimumUsernameLength, validation.Required),
 		validation.Field(&cfg.MinimumPasswordLength, validation.Required),
 		validation.Field(&cfg.Tokens, validation.Required),
+		validation.Field(&cfg.SessionStore, validation.By(func(value interface{}) error {
+			if c, ok := value.(webauthncfg.Config); ok {
+				return (&c).ValidateWithContext(ctx)
+			}
+			return nil
+		})),
 	)
 }

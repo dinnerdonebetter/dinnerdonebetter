@@ -96,6 +96,8 @@ enum DSSectionHeaderStyle {
   case standard
   case compact
   case large
+  /// Caption-sized label for drawer sections and small headers
+  case label
 }
 
 // MARK: - DSSectionHeader Component
@@ -106,27 +108,39 @@ enum DSSectionHeaderStyle {
 /// ```swift
 /// DSSectionHeader(title: "Members")
 /// DSSectionHeader(title: "Details", subtitle: "Additional information")
+/// DSSectionHeader(title: "Future Meal Plans", systemImage: "calendar.badge.clock")
+/// DSSectionHeader(title: "Upcoming", systemImage: "calendar") {
+///   Text("3 plans").font(.caption).foregroundColor(.secondary)
+/// }
 /// ```
-struct DSSectionHeader: View {
+struct DSSectionHeader<Trailing: View>: View {
   let title: String
   let subtitle: String?
+  let systemImage: String?
   let style: DSSectionHeaderStyle
+  let titleColor: Color
+  @ViewBuilder let trailing: () -> Trailing
 
   init(
     title: String,
     subtitle: String? = nil,
-    style: DSSectionHeaderStyle = .standard
+    systemImage: String? = nil,
+    style: DSSectionHeaderStyle = .standard,
+    titleColor: Color? = nil,
+    @ViewBuilder trailing: @escaping () -> Trailing
   ) {
     self.title = title
     self.subtitle = subtitle
+    self.systemImage = systemImage
     self.style = style
+    self.titleColor =
+      titleColor ?? (style == .label ? DSTheme.Colors.textSecondary : DSTheme.Colors.textPrimary)
+    self.trailing = trailing
   }
 
   var body: some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-      Text(title)
-        .font(titleFont)
-        .foregroundColor(DSTheme.Colors.textPrimary)
+      headerContent
 
       if let subtitle = subtitle, !subtitle.isEmpty {
         Text(subtitle)
@@ -145,6 +159,8 @@ struct DSSectionHeader: View {
       return DSTheme.Typography.title2
     case .compact:
       return DSTheme.Typography.title3
+    case .label:
+      return DSTheme.Typography.caption.weight(.semibold)
     }
   }
 
@@ -152,7 +168,7 @@ struct DSSectionHeader: View {
     switch style {
     case .large:
       return DSTheme.Typography.body
-    case .standard, .compact:
+    case .standard, .compact, .label:
       return DSTheme.Typography.bodySmall
     }
   }
@@ -161,9 +177,56 @@ struct DSSectionHeader: View {
     switch style {
     case .compact:
       return DSTheme.Spacing.xxs
+    case .label:
+      return DSTheme.Spacing.md
     default:
       return DSTheme.Spacing.xs
     }
+  }
+
+  @ViewBuilder
+  private var headerContent: some View {
+    if let systemImage = systemImage {
+      HStack {
+        Label(title, systemImage: systemImage)
+          .font(titleFont)
+          .foregroundColor(titleColor)
+
+        Spacer()
+
+        trailing()
+      }
+    } else {
+      HStack {
+        Text(title)
+          .font(titleFont)
+          .foregroundColor(titleColor)
+
+        Spacer()
+
+        trailing()
+      }
+    }
+  }
+}
+
+// MARK: - DSSectionHeader without trailing
+
+extension DSSectionHeader where Trailing == EmptyView {
+  init(
+    title: String,
+    subtitle: String? = nil,
+    systemImage: String? = nil,
+    style: DSSectionHeaderStyle = .standard,
+    titleColor: Color? = nil
+  ) {
+    self.title = title
+    self.subtitle = subtitle
+    self.systemImage = systemImage
+    self.style = style
+    self.titleColor =
+      titleColor ?? (style == .label ? DSTheme.Colors.textSecondary : DSTheme.Colors.textPrimary)
+    self.trailing = { EmptyView() }
   }
 }
 

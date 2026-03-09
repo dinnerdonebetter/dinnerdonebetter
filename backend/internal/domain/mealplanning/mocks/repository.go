@@ -39,6 +39,12 @@ func (m *Repository) SearchForValidInstruments(ctx context.Context, query string
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidInstrument]), returnValues.Error(1)
 }
 
+// SearchForValidInstrumentsNotOwnedByAccount is a mock function.
+func (m *Repository) SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, accountID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
+	returnValues := m.Called(ctx, accountID, query, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidInstrument]), returnValues.Error(1)
+}
+
 // GetValidInstruments is a mock function.
 func (m *Repository) GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
 	returnValues := m.Called(ctx, filter)
@@ -468,6 +474,12 @@ func (m *Repository) SearchForRecipes(ctx context.Context, query string, filter 
 // SearchForMealEligibleRecipes is a mock function.
 func (m *Repository) SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
 	returnValues := m.Called(ctx, query, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
+}
+
+// SearchForRecipesWithInstrumentOwnership is a mock function.
+func (m *Repository) SearchForRecipesWithInstrumentOwnership(ctx context.Context, accountID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, accountID, query, filter)
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
 
@@ -1092,6 +1104,11 @@ func (m *Repository) MarkMealPlanTaskNotificationSent(ctx context.Context, mealP
 	return m.Called(ctx, mealPlanTaskID).Error(0)
 }
 
+// ClearMealPlanTaskNotificationSentForEvent is a mock function.
+func (m *Repository) ClearMealPlanTaskNotificationSentForEvent(ctx context.Context, mealPlanEventID string) error {
+	return m.Called(ctx, mealPlanEventID).Error(0)
+}
+
 // GetMealPlanTaskIDsThatNeedNotification is a mock function.
 func (m *Repository) GetMealPlanTaskIDsThatNeedNotification(ctx context.Context) ([]string, error) {
 	returnValues := m.Called(ctx)
@@ -1205,6 +1222,13 @@ func (m *Repository) GetValidMeasurementUnitConversionsForUnit(ctx context.Conte
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnitConversion]), returnValues.Error(1)
 }
 
+// GetValidMeasurementUnitConversionsForIngredients is a mock function.
+func (m *Repository) GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, validIngredientIDs []string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
+	returnValues := m.Called(ctx, validIngredientIDs)
+
+	return returnValues.Get(0).([]*mealplanning.ValidMeasurementUnitConversion), returnValues.Error(1)
+}
+
 // ValidMeasurementUnitConversionExists is a mock function.
 func (m *Repository) ValidMeasurementUnitConversionExists(ctx context.Context, validPreparationID string) (bool, error) {
 	returnValues := m.Called(ctx, validPreparationID)
@@ -1231,6 +1255,12 @@ func (m *Repository) UpdateValidMeasurementUnitConversion(ctx context.Context, u
 // ArchiveValidMeasurementUnitConversion is a mock function.
 func (m *Repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, validPreparationID string) error {
 	return m.Called(ctx, validPreparationID).Error(0)
+}
+
+// GetMeasurementUnitConversionMismatches is a mock function.
+func (m *Repository) GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*mealplanning.MeasurementUnitConversionMismatch, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]*mealplanning.MeasurementUnitConversionMismatch), returnValues.Error(1)
 }
 
 // RecipeMediaExists is a mock function.

@@ -7,6 +7,8 @@ import (
 	phttp "github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/platform/version"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/passkey"
+	webappauth "github.com/dinnerdonebetter/backend/internal/webapp/auth"
+	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	ghttp "maragu.dev/gomponents/http"
 )
@@ -37,7 +39,9 @@ func (s *ConsumerFrontendServer) setupRoutes(router routing.Router) {
 	// Auth (public)
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))
-	passkeyHandlers := passkey.NewHandlers(s.tracer, s.logger, s.encoder, s.cookieManager, &s.config.Cookies, s.buildUnauthedGRPCClient)
+	passkeyHandlers := passkey.NewHandlers(s.tracer, s.logger, s.encoder, s.cookieManager, &s.config.Cookies, s.buildUnauthedGRPCClient, func(r *http.Request) (client.Client, error) {
+		return webappauth.ClientFromContext(r.Context())
+	})
 	router.Post("/auth/passkey/authentication/options", passkeyHandlers.AuthOptionsHandler)
 	router.Post("/auth/passkey/authentication/verify", passkeyHandlers.AuthVerifyHandler)
 	router.Get("/verify_email_address", ghttp.Adapt(s.VerifyEmailAddressPage))
@@ -54,10 +58,27 @@ func (s *ConsumerFrontendServer) setupRoutes(router routing.Router) {
 	router.Get("/terms-of-service", ghttp.Adapt(s.TermsPage))
 	router.Get("/privacy-policy", ghttp.Adapt(s.PrivacyPage))
 
+	// Logout (public - clearing cookie works regardless of auth state)
+	router.Get("/logout", s.LogoutHandler)
+	router.Post("/logout", s.LogoutHandler)
+
 	// Protected routes
 	r.Get("/", ghttp.Adapt(s.HomePage))
 	r.Get("/account/settings", ghttp.Adapt(s.AccountSettingsPage))
 	r.Get("/account", ghttp.Adapt(s.AccountSettingsPage))
+	r.Get("/account/household-members", ghttp.Adapt(s.HouseholdMembersPage))
+	r.Post("/account/household-members/send-invitation", s.SendInvitationHandler)
+	r.Post("/account/household-members/cancel-invitation", s.CancelInvitationHandler)
+	r.Post("/account/household-members/update-role", s.UpdateMemberRoleHandler)
+	r.Get("/account/household-details", ghttp.Adapt(s.HouseholdDetailsPage))
+	r.Post("/account/household-details/update", s.UpdateHouseholdDetailsHandler)
+	r.Get("/account/preferences", ghttp.Adapt(s.PreferencesPage))
+	r.Post("/account/preferences/update", s.UpdatePreferenceHandler)
+	r.Get("/account/profile", ghttp.Adapt(s.ProfilePage))
+	r.Post("/account/profile/update-username", s.UpdateProfileUsernameHandler)
+	r.Post("/account/profile/update-details", s.UpdateProfileDetailsHandler)
+	r.Post("/auth/passkey/registration/options", passkeyHandlers.RegOptionsHandler)
+	r.Post("/auth/passkey/registration/verify", passkeyHandlers.RegVerifyHandler)
 
 	// static files - NOTE: this must be registered last
 	router.Get("/*", phttp.RootLevelAssetsHandler(assetsDir))

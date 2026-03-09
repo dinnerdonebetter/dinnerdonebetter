@@ -103,6 +103,7 @@ type (
 		MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error
 		MealPlanTaskNotificationHasBeenSent(ctx context.Context, mealPlanTaskID string) (bool, error)
 		MarkMealPlanTaskNotificationSent(ctx context.Context, mealPlanTaskID string) error
+		ClearMealPlanTaskNotificationSentForEvent(ctx context.Context, mealPlanEventID string) error
 		GetMealPlanTaskIDsThatNeedNotification(ctx context.Context) ([]string, error)
 		GetMealPlanTaskAccountID(ctx context.Context, mealPlanTaskID string) (string, error)
 		GetMealPlanTaskNotificationContext(ctx context.Context, mealPlanTaskID string) (*MealPlanTaskNotificationContext, error)

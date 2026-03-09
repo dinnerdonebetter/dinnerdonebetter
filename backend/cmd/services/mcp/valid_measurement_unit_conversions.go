@@ -94,6 +94,45 @@ func (h *mcpToolManager) GetValidMeasurementUnitConversionsForUnit() mcp.ToolHan
 	}
 }
 
+type (
+	GetValidMeasurementUnitConversionsForIngredientsInvocation struct {
+		ValidIngredientIDs []string `jsonschema:"description=The valid ingredient IDs to fetch conversions for"`
+	}
+
+	GetValidMeasurementUnitConversionsForIngredientsResult struct {
+		Results []*mealplanning.ValidMeasurementUnitConversion
+	}
+)
+
+var getValidMeasurementUnitConversionsForIngredientsTool = &mcp.Tool{
+	Name:        "GetValidMeasurementUnitConversionsForIngredients",
+	Description: "Get all valid measurement unit conversions applicable to the given ingredient IDs (universal conversions plus ingredient-specific ones)",
+	InputSchema: schemaObject(map[string]any{
+		"ValidIngredientIDs": arrayType(stringField("A valid ingredient ID")),
+	}),
+	OutputSchema: schemaObject(map[string]any{
+		"Results": arrayType(schemaObject(validMeasurementUnitConversionsSchema)),
+	}),
+}
+
+func (h *mcpToolManager) GetValidMeasurementUnitConversionsForIngredients() mcp.ToolHandlerFor[*GetValidMeasurementUnitConversionsForIngredientsInvocation, *GetValidMeasurementUnitConversionsForIngredientsResult] {
+	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidMeasurementUnitConversionsForIngredientsInvocation) (*mcp.CallToolResult, *GetValidMeasurementUnitConversionsForIngredientsResult, error) {
+		results, err := h.client.GetValidMeasurementUnitConversionsForIngredients(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionsForIngredientsRequest{
+			ValidIngredientIds: x.ValidIngredientIDs,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+
+		out := &GetValidMeasurementUnitConversionsForIngredientsResult{}
+		for _, result := range results.Results {
+			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(result))
+		}
+
+		return nil, out, nil
+	}
+}
+
 var validMeasurementUnitConversionCreationTool = &mcp.Tool{
 	Name:        "CreateValidMeasurementUnitConversion",
 	Description: "Create a valid measurement unit conversion.",

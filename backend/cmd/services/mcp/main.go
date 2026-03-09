@@ -242,6 +242,7 @@ func (h *mcpToolManager) setupServer() *mcp.Server {
 
 	mcp.AddTool(mcpServer, getValidMeasurementUnitConversionTool, h.GetValidMeasurementUnitConversion())
 	mcp.AddTool(mcpServer, getValidMeasurementUnitConversionsForUnitTool, h.GetValidMeasurementUnitConversionsForUnit())
+	mcp.AddTool(mcpServer, getValidMeasurementUnitConversionsForIngredientsTool, h.GetValidMeasurementUnitConversionsForIngredients())
 	mcp.AddTool(mcpServer, validMeasurementUnitConversionCreationTool, h.CreateValidMeasurementUnitConversion())
 	mcp.AddTool(mcpServer, validMeasurementUnitConversionUpdateTool, h.UpdateValidMeasurementUnitConversion())
 

@@ -51,7 +51,7 @@ Structure your subtests with the happy path (successful operation) as the first 
 ### Test Organization
 
 - **Unit tests**: Place alongside the code they test (`*_test.go` files)
-- **Integration tests**: Located in `tests/` directory (should be renamed to `integration_tests/`)
+- **Integration tests**: Located in `testing/integration/` directory
 - **Test utilities**: Shared helpers in `internal/platform/testutils/`
 
 Note: The `tests/` directory contains only integration tests, not unit tests.
@@ -358,9 +358,10 @@ The codebase follows a clean architecture approach with a framework-like platfor
 │       └── webhooks/        # Webhook service
 ├── pkg/                 # Public API packages
 │   └── client/          # Public API client library for external consumers
-├── tests/               # Integration tests (should be renamed to integration_tests/)
-│   └── integration/
-│       └── apiserver/   # API server integration tests
+├── testing/              # Integration and load tests
+│   ├── integration/
+│   │   └── apiserver/   # API server integration tests
+│   └── load/            # k6 load tests
 └── vendor/              # Go module dependencies (vendored)
 ```
 

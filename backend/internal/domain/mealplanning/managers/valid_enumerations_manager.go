@@ -101,10 +101,12 @@ type (
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error
 
 		ValidMeasurementUnitConversionsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnitConversion], error)
+		GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, validIngredientIDs []string) ([]*types.ValidMeasurementUnitConversion, error)
 		CreateValidMeasurementUnitConversion(ctx context.Context, input *types.ValidMeasurementUnitConversionCreationRequestInput) (*types.ValidMeasurementUnitConversion, error)
 		ReadValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) (*types.ValidMeasurementUnitConversion, error)
 		UpdateValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string, input *types.ValidMeasurementUnitConversionUpdateRequestInput) (*types.ValidMeasurementUnitConversion, error)
 		ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error
+		GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*types.MeasurementUnitConversionMismatch, error)
 
 		ListValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationInstrument], error)
 		CreateValidPreparationInstrument(ctx context.Context, input *types.ValidPreparationInstrumentCreationRequestInput) (*types.ValidPreparationInstrument, error)
@@ -1784,6 +1786,36 @@ func (m *validEnumerationManager) ValidMeasurementUnitConversionsForMeasurementU
 	results, err := m.db.GetValidMeasurementUnitConversionsForUnit(ctx, validMeasurementUnitID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid measurement unit conversions from unit")
+	}
+
+	return results, nil
+}
+
+// GetValidMeasurementUnitConversionsForIngredients implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, validIngredientIDs []string) ([]*types.ValidMeasurementUnitConversion, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	results, err := m.db.GetValidMeasurementUnitConversionsForIngredients(ctx, validIngredientIDs)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid measurement unit conversions for ingredients")
+	}
+
+	return results, nil
+}
+
+// GetMeasurementUnitConversionMismatches implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*types.MeasurementUnitConversionMismatch, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	results, err := m.db.GetMeasurementUnitConversionMismatches(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching measurement unit conversion mismatches")
 	}
 
 	return results, nil

@@ -19,11 +19,15 @@ class AccountSettingsViewModel {
     let account: Identity_Account
     let user: Auth_GetSelfResponse
     let invitations: [Identity_AccountInvitation]
+    let instrumentOwnerships: [Mealplanning_AccountInstrumentOwnership]
+    let validInstruments: [Mealplanning_ValidInstrument]
   }
   // Data
   var account: Identity_Account?
   var user: Auth_GetSelfResponse?
   var invitations: [Identity_AccountInvitation] = []
+  var instrumentOwnerships: [Mealplanning_AccountInstrumentOwnership] = []
+  var validInstruments: [Mealplanning_ValidInstrument] = []
 
   // Loading states
   var isLoading = false
@@ -31,6 +35,7 @@ class AccountSettingsViewModel {
   var errorTitle: String = "Error"
   var errorIcon: String = "exclamationmark.triangle"
   var errorIconColor = DSTheme.Colors.warning
+  var isServerDownError = false
 
   // Form state
   var accountName: String = ""
@@ -46,6 +51,11 @@ class AccountSettingsViewModel {
   var invitationEmail: String = ""
   var invitationName: String = ""
   var invitationNote: String = ""
+
+  // Instrument ownership form state
+  var newInstrumentValidInstrumentID: String = ""
+  var newInstrumentQuantity: UInt32 = 1
+  var newInstrumentNotes: String = ""
 
   // Computed properties
   var isAccountAdmin: Bool {
@@ -85,12 +95,15 @@ class AccountSettingsViewModel {
     errorTitle = "Error"
     errorIcon = "exclamationmark.triangle"
     errorIconColor = DSTheme.Colors.warning
+    isServerDownError = false
 
     do {
       let result = try await fetchAllData()
       self.account = result.account
       self.user = result.user
       self.invitations = result.invitations
+      self.instrumentOwnerships = result.instrumentOwnerships
+      self.validInstruments = result.validInstruments
       initializeFormFields(from: result.account)
     } catch {
       await authManager.invalidateCredentialsIfSessionError(error)
@@ -99,6 +112,7 @@ class AccountSettingsViewModel {
       errorTitle = display.title
       errorIcon = display.icon
       errorIconColor = display.iconColor
+      isServerDownError = ErrorDisplayFormatter.isServerDown(error)
       print("❌ Error loading account settings: \(error)")
     }
 
@@ -109,10 +123,14 @@ class AccountSettingsViewModel {
     async let accountTask = fetchActiveAccount()
     async let userTask = fetchUser()
     async let invitationsTask = fetchInvitations()
+    async let instrumentOwnershipsTask = fetchInstrumentOwnerships()
+    async let validInstrumentsTask = fetchValidInstruments()
     return FetchDataResult(
       account: try await accountTask,
       user: try await userTask,
-      invitations: try await invitationsTask
+      invitations: try await invitationsTask,
+      instrumentOwnerships: try await instrumentOwnershipsTask,
+      validInstruments: try await validInstrumentsTask
     )
   }
 
@@ -187,6 +205,157 @@ class AccountSettingsViewModel {
     )
 
     return response.results
+  }
+
+  private func fetchInstrumentOwnerships() async throws -> [Mealplanning_AccountInstrumentOwnership]
+  {
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    var request = Mealplanning_GetAccountInstrumentOwnershipsRequest()
+    request.filter = Filtering_QueryFilter()
+
+    let response = try await clientManager.client.mealPlanning.getAccountInstrumentOwnerships(
+      request,
+      metadata: metadata,
+      options: clientManager.defaultCallOptions
+    )
+
+    return response.results
+  }
+
+  private func fetchValidInstruments() async throws -> [Mealplanning_ValidInstrument] {
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    var request = Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest()
+    request.query = ""
+    request.filter = Filtering_QueryFilter()
+
+    let response = try await clientManager.client.mealPlanning
+      .searchForValidInstrumentsNotOwnedByAccount(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+    return response.results
+  }
+
+  func createInstrumentOwnership() async -> Bool {
+    guard validateInstrumentOwnershipInput() else {
+      return false
+    }
+
+    return await performUpdate {
+      try await executeInstrumentOwnershipCreation()
+      newInstrumentValidInstrumentID = ""
+      newInstrumentQuantity = 1
+      newInstrumentNotes = ""
+      await loadData()
+    } errorMessage: {
+      "Failed to add instrument: \($0.localizedDescription)"
+    }
+  }
+
+  private func validateInstrumentOwnershipInput() -> Bool {
+    guard !newInstrumentValidInstrumentID.isEmpty else {
+      errorMessage = "Please select an instrument"
+      return false
+    }
+
+    guard newInstrumentQuantity >= 1 else {
+      errorMessage = "Quantity must be at least 1"
+      return false
+    }
+
+    return true
+  }
+
+  private func executeInstrumentOwnershipCreation() async throws {
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    var input = Mealplanning_AccountInstrumentOwnershipCreationRequestInput()
+    input.validInstrumentID = newInstrumentValidInstrumentID
+    input.quantity = newInstrumentQuantity
+    input.notes = newInstrumentNotes
+
+    var request = Mealplanning_CreateAccountInstrumentOwnershipRequest()
+    request.input = input
+
+    _ = try await clientManager.client.mealPlanning.createAccountInstrumentOwnership(
+      request,
+      metadata: metadata,
+      options: clientManager.defaultCallOptions
+    )
+  }
+
+  func updateInstrumentOwnership(
+    ownershipID: String,
+    quantity: UInt32?,
+    notes: String?
+  ) async -> Bool {
+    guard quantity ?? 1 >= 1 else {
+      errorMessage = "Quantity must be at least 1"
+      return false
+    }
+
+    return await performUpdate {
+      try await executeInstrumentOwnershipUpdate(
+        ownershipID: ownershipID,
+        quantity: quantity,
+        notes: notes
+      )
+      await loadData()
+    } errorMessage: {
+      "Failed to update instrument: \($0.localizedDescription)"
+    }
+  }
+
+  private func executeInstrumentOwnershipUpdate(
+    ownershipID: String,
+    quantity: UInt32?,
+    notes: String?
+  ) async throws {
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    var input = Mealplanning_AccountInstrumentOwnershipUpdateRequestInput()
+    if let quantity = quantity {
+      input.quantity = quantity
+    }
+    if let notes = notes {
+      input.notes = notes
+    }
+
+    var request = Mealplanning_UpdateAccountInstrumentOwnershipRequest()
+    request.accountInstrumentOwnershipID = ownershipID
+    request.input = input
+
+    _ = try await clientManager.client.mealPlanning.updateAccountInstrumentOwnership(
+      request,
+      metadata: metadata,
+      options: clientManager.defaultCallOptions
+    )
+  }
+
+  func archiveInstrumentOwnership(ownershipID: String) async -> Bool {
+    guard !ownershipID.isEmpty else {
+      errorMessage = "Instrument ownership ID is required"
+      return false
+    }
+
+    return await performUpdate {
+      try await executeInstrumentOwnershipArchive(ownershipID: ownershipID)
+      await loadData()
+    } errorMessage: {
+      "Failed to remove instrument: \($0.localizedDescription)"
+    }
+  }
+
+  private func executeInstrumentOwnershipArchive(ownershipID: String) async throws {
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    var request = Mealplanning_ArchiveAccountInstrumentOwnershipRequest()
+    request.accountInstrumentOwnershipID = ownershipID
+
+    _ = try await clientManager.client.mealPlanning.archiveAccountInstrumentOwnership(
+      request,
+      metadata: metadata,
+      options: clientManager.defaultCallOptions
+    )
   }
 
   func updateAccount() async -> Bool {

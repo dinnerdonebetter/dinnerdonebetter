@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	reflast "github.com/dinnerdonebetter/backend/internal/platform/reflection/ast"
 
@@ -404,17 +405,25 @@ func main() {
 		},
 	}
 
-	totalCount := 0
+	var totalCount int
+	var mu sync.Mutex
+	var wg sync.WaitGroup
 	for _, config := range configs {
 		for _, targetPkg := range config.TargetPkgs {
-			var count int
-			count, err = comparePackages(config, targetPkg)
-			totalCount += count
-			if err != nil {
-				errors = multierror.Append(errors, err)
-			}
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				count, pkgErr := comparePackages(config, targetPkg)
+				mu.Lock()
+				totalCount += count
+				if pkgErr != nil {
+					errors = multierror.Append(errors, pkgErr)
+				}
+				mu.Unlock()
+			}()
 		}
 	}
+	wg.Wait()
 
 	log.Printf("Checked %d struct(s) total", totalCount)
 

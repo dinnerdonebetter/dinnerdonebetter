@@ -253,7 +253,7 @@ Admin uses gRPC or repository directly to list/create/edit products and subscrip
 
 ## Integration Tests
 
-**`tests_integration/apiserver/payments_test.go`**:
+**`testing/integration/apiserver/payments_test.go`**:
 
 - `createProductForTest`, `createSubscriptionForTest` helpers
 - Tests for CreateProduct, GetProduct, CreateSubscription, GetSubscription, etc.
@@ -275,7 +275,7 @@ Admin uses gRPC or repository directly to list/create/edit products and subscrip
 | Migration           | `migrations/migration_files/00011_payments.sql`         |
 | Admin products      | `cmd/services/admin/payments_products_handlers.go`      |
 | Admin subscriptions | `cmd/services/admin/payments_subscriptions_handlers.go` |
-| Integration tests   | `tests_integration/apiserver/payments_test.go`          |
+| Integration tests   | `testing/integration/apiserver/payments_test.go`        |
 
 ---
 

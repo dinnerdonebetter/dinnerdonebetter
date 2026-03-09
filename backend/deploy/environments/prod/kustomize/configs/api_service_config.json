@@ -177,6 +177,9 @@
 		"sso": {
 			"google": {}
 		},
+		"sessionStore": {
+			"provider": ""
+		},
 		"tokens": {
 			"provider": "paseto",
 			"audience": "https://http-api.dinnerdonebetter.com",

@@ -4,8 +4,8 @@
 		"cookieName": "consumer_webapp",
 		"base64EncodedHashKey": " ",
 		"base64EncodedBlockKey": " ",
-		"lifetime": 0,
-		"secureOnly": false
+		"lifetime": 15552000000000000,
+		"secureOnly": true
 	},
 	"apiServiceConfig": {
 		"httpAPIServerURL": "",

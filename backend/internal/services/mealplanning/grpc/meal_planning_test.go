@@ -1608,6 +1608,39 @@ func TestServiceImpl_GetAccountInstrumentOwnerships(T *testing.T) {
 	})
 }
 
+func TestServiceImpl_SearchForValidInstrumentsNotOwnedByAccount(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleAccountID := mealplanningfakes.BuildFakeID()
+		exampleResult := mealplanningfakes.BuildFakeValidInstrumentsList()
+		exampleRequest := fake.BuildFakeForTest[mealplanninggrpc.SearchForValidInstrumentsNotOwnedByAccountRequest](t)
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On(reflection.GetMethodName(mmpm.SearchValidInstrumentsNotOwnedByAccount), testutils.ContextMatcher, exampleAccountID, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.mealPlanningManager = mmpm
+
+		// Override session context to return specific account ID
+		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
+			return &sessions.ContextData{
+				ActiveAccountID: exampleAccountID,
+			}, nil
+		}
+
+		result, err := s.SearchForValidInstrumentsNotOwnedByAccount(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mmpm)
+	})
+}
+
 func TestServiceImpl_UpdateAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 

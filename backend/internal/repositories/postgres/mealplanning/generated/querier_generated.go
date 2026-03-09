@@ -85,6 +85,7 @@ type Querier interface {
 	CheckValidPreparationVesselExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidVesselExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidityOfValidIngredientStateIngredientPair(ctx context.Context, db DBTX, arg *CheckValidityOfValidIngredientStateIngredientPairParams) (bool, error)
+	ClearMealPlanTaskNotificationSentForEvent(ctx context.Context, db DBTX, mealPlanEventID sql.NullString) error
 	CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error
 	CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error
 	CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error
@@ -170,6 +171,7 @@ type Querier interface {
 	GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error)
 	GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetMealsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetMealsWithIDsRow, error)
+	GetMeasurementUnitConversionMismatches(ctx context.Context, db DBTX) ([]*GetMeasurementUnitConversionMismatchesRow, error)
 	GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRandomValidIngredientRow, error)
 	GetRandomValidInstrument(ctx context.Context, db DBTX) (*GetRandomValidInstrumentRow, error)
 	GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error)
@@ -242,6 +244,7 @@ type Querier interface {
 	GetValidInstrumentsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidInstrumentsWithIDsRow, error)
 	GetValidMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitRow, error)
 	GetValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitConversionRow, error)
+	GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, db DBTX, validIngredientIds []string) ([]*GetValidMeasurementUnitConversionsForIngredientsRow, error)
 	GetValidMeasurementUnitConversionsForMeasurementUnit(ctx context.Context, db DBTX, arg *GetValidMeasurementUnitConversionsForMeasurementUnitParams) ([]*GetValidMeasurementUnitConversionsForMeasurementUnitRow, error)
 	GetValidMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidMeasurementUnitsParams) ([]*GetValidMeasurementUnitsRow, error)
 	GetValidMeasurementUnitsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
@@ -280,10 +283,12 @@ type Querier interface {
 	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)
 	SearchForMealEligibleRecipes(ctx context.Context, db DBTX, arg *SearchForMealEligibleRecipesParams) ([]*SearchForMealEligibleRecipesRow, error)
 	SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error)
+	SearchForRecipesWithInstrumentOwnership(ctx context.Context, db DBTX, arg *SearchForRecipesWithInstrumentOwnershipParams) ([]*SearchForRecipesWithInstrumentOwnershipRow, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, arg *SearchForValidIngredientStatesParams) ([]*SearchForValidIngredientStatesRow, error)
 	SearchForValidIngredients(ctx context.Context, db DBTX, arg *SearchForValidIngredientsParams) ([]*SearchForValidIngredientsRow, error)
 	SearchForValidInstruments(ctx context.Context, db DBTX, arg *SearchForValidInstrumentsParams) ([]*SearchForValidInstrumentsRow, error)
+	SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, db DBTX, arg *SearchForValidInstrumentsNotOwnedByAccountParams) ([]*SearchForValidInstrumentsNotOwnedByAccountRow, error)
 	SearchForValidMeasurementUnits(ctx context.Context, db DBTX, arg *SearchForValidMeasurementUnitsParams) ([]*SearchForValidMeasurementUnitsRow, error)
 	SearchForValidPreparations(ctx context.Context, db DBTX, arg *SearchForValidPreparationsParams) ([]*SearchForValidPreparationsRow, error)
 	SearchForValidVessels(ctx context.Context, db DBTX, arg *SearchForValidVesselsParams) ([]*SearchForValidVesselsRow, error)

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -34,7 +35,22 @@ const (
 var (
 	contentTypeJSON         = encoding.ContentTypeToString(encoding.ContentTypeJSON)
 	localdevConsumerCookies = buildLocaldevConsumerCookies()
+	localdevAdminCookies    = buildLocaldevAdminCookies()
+	prodAdminCookies        = buildProdAdminCookies()
+	prodConsumerCookies     = buildProdConsumerCookies()
 )
+
+func buildLocaldevAdminCookies() *cookies.Config {
+	// 32 capital A's - valid base64, decodes to 24 zero bytes for AES
+	const adminCookieKey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+	return &cookies.Config{
+		CookieName:            "admin_webapp",
+		Base64EncodedHashKey:  adminCookieKey,
+		Base64EncodedBlockKey: adminCookieKey,
+		Lifetime:              24 * time.Hour,
+		SecureOnly:            false,
+	}
+}
 
 func buildLocaldevConsumerCookies() *cookies.Config {
 	key := base64.StdEncoding.EncodeToString([]byte(debugCookieHashKey))
@@ -42,6 +58,28 @@ func buildLocaldevConsumerCookies() *cookies.Config {
 		CookieName:            "consumer_session",
 		Base64EncodedHashKey:  key,
 		Base64EncodedBlockKey: key,
+	}
+}
+
+const prodCookieLifetime = 180 * 24 * time.Hour // 6 months (approx)
+
+func buildProdAdminCookies() *cookies.Config {
+	return &cookies.Config{
+		CookieName:            "admin_webapp",
+		Base64EncodedHashKey:  " ", // overridden by env from K8s secret
+		Base64EncodedBlockKey: " ", // overridden by env from K8s secret
+		Lifetime:              prodCookieLifetime,
+		SecureOnly:            true,
+	}
+}
+
+func buildProdConsumerCookies() *cookies.Config {
+	return &cookies.Config{
+		CookieName:            "consumer_webapp",
+		Base64EncodedHashKey:  " ", // overridden by env from K8s secret
+		Base64EncodedBlockKey: " ", // overridden by env from K8s secret
+		Lifetime:              prodCookieLifetime,
+		SecureOnly:            true,
 	}
 }
 
@@ -55,19 +93,25 @@ func main() {
 		"deploy/environments/localdev/config_files": {
 			RootConfig:                    localdevConfig,
 			ConsumerWebappCookiesOverride: localdevConsumerCookies,
+			AdminWebappCookiesOverride:    localdevAdminCookies,
 			ConsumerWebappPortOverride:    8889, // matches consumer.sh proxy.app_port
+			AdminWebappPortOverride:       8888, // matches admin.sh proxy.app_port
 		},
 		"deploy/environments/localdev/kustomize/configs": {
 			RootConfig:                    localdevConfig,
 			ConsumerWebappCookiesOverride: localdevConsumerCookies,
+			AdminWebappCookiesOverride:    localdevAdminCookies,
 			ConsumerWebappPortOverride:    8889, // matches consumer.sh proxy.app_port
+			AdminWebappPortOverride:       8888, // matches admin.sh proxy.app_port
 		},
 		"deploy/environments/testing/config_files": {
 			APIServiceConfigPath: "integration-tests-config.json",
 			RootConfig:           buildIntegrationTestsConfig(),
 		},
 		"deploy/environments/prod/kustomize/configs": {
-			RootConfig: buildProdConfig(),
+			RootConfig:                    buildProdConfig(),
+			AdminWebappCookiesOverride:    prodAdminCookies,
+			ConsumerWebappCookiesOverride: prodConsumerCookies,
 		},
 	}
 

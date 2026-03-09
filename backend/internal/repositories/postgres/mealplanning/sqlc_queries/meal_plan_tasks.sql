@@ -237,6 +237,13 @@ WHERE meal_plan_tasks.id = sqlc.arg(meal_plan_task_id);
 UPDATE meal_plan_tasks SET notification_sent_at = NOW()
 WHERE id = sqlc.arg(id);
 
+-- name: ClearMealPlanTaskNotificationSentForEvent :exec
+UPDATE meal_plan_tasks SET notification_sent_at = NULL
+FROM meal_plan_options
+WHERE meal_plan_tasks.belongs_to_meal_plan_option = meal_plan_options.id
+	AND meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)
+	AND meal_plan_tasks.completed_at IS NULL;
+
 -- name: GetMealPlanTaskIDsThatNeedNotification :many
 SELECT meal_plan_tasks.id
 FROM meal_plan_tasks

@@ -1444,6 +1444,38 @@ func TestServiceImpl_SearchForMealEligibleRecipes(T *testing.T) {
 	})
 }
 
+func TestServiceImpl_SearchForRecipesWithInstrumentOwnership(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleAccountID := mealplanningfakes.BuildFakeID()
+		exampleResult := mealplanningfakes.BuildFakeRecipesList()
+		exampleRequest := fake.BuildFakeForTest[mealplanninggrpc.SearchForRecipesWithInstrumentOwnershipRequest](t)
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
+			return &sessions.ContextData{
+				ActiveAccountID: exampleAccountID,
+			}, nil
+		}
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On(reflection.GetMethodName(mrm.SearchRecipesWithInstrumentOwnership), testutils.ContextMatcher, exampleAccountID, exampleRequest.Query, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.recipeManager = mrm
+
+		result, err := s.SearchForRecipesWithInstrumentOwnership(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
 func TestServiceImpl_UpdateRecipe(T *testing.T) {
 	T.Parallel()
 

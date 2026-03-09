@@ -455,6 +455,23 @@ func (q *repository) MarkMealPlanTaskNotificationSent(ctx context.Context, mealP
 	return nil
 }
 
+// ClearMealPlanTaskNotificationSentForEvent clears notification_sent_at for all incomplete meal plan tasks
+// belonging to options in the given event. Used when an event's start time changes or events are swapped.
+func (q *repository) ClearMealPlanTaskNotificationSentForEvent(ctx context.Context, mealPlanEventID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanEventID == "" {
+		return platformerrors.ErrInvalidIDProvided
+	}
+
+	if err := q.generatedQuerier.ClearMealPlanTaskNotificationSentForEvent(ctx, q.writeDB, database.NullStringFromString(mealPlanEventID)); err != nil {
+		return observability.PrepareAndLogError(err, q.logger.Clone(), span, "clearing meal plan task notification sent for event")
+	}
+
+	return nil
+}
+
 // GetMealPlanTaskIDsThatNeedNotification returns meal plan task IDs that need a push notification sent.
 func (q *repository) GetMealPlanTaskIDsThatNeedNotification(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

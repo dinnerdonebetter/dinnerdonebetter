@@ -14,6 +14,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// createAccountInstrumentOwnershipForInstrumentForTest creates account instrument ownership for the given instrument.
+// Use when the test needs ownership of a specific instrument (e.g. for SearchForRecipesWithInstrumentOwnership).
+func createAccountInstrumentOwnershipForInstrumentForTest(t *testing.T, clientToUse client.Client, validInstrument *mealplanning.ValidInstrument) *mealplanning.AccountInstrumentOwnership {
+	t.Helper()
+	ctx := t.Context()
+
+	exampleAccountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
+	exampleAccountInstrumentOwnershipInput := converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipCreationRequestInput(exampleAccountInstrumentOwnership)
+	exampleAccountInstrumentOwnershipInput.ValidInstrumentID = validInstrument.ID
+	createdAccountInstrumentOwnership, err := clientToUse.CreateAccountInstrumentOwnership(ctx, &settingssvc.CreateAccountInstrumentOwnershipRequest{
+		Input: mealplanningconverters.ConvertAccountInstrumentOwnershipCreationRequestInputToGRPCAccountInstrumentOwnershipCreationRequestInput(exampleAccountInstrumentOwnershipInput),
+	})
+	require.NoError(t, err)
+	converted := mealplanningconverters.ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(createdAccountInstrumentOwnership.Created)
+	return converted
+}
+
 func createAccountInstrumentOwnershipForTest(t *testing.T, clientToUse client.Client) *mealplanning.AccountInstrumentOwnership {
 	t.Helper()
 	ctx := t.Context()
@@ -204,6 +221,39 @@ func TestAccountInstrumentOwnerships_Listing(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.GetAccountInstrumentOwnerships(ctx, &settingssvc.GetAccountInstrumentOwnershipsRequest{})
+		assert.Error(t, err)
+	})
+}
+
+func TestAccountInstrumentOwnerships_SearchForValidInstrumentsNotOwnedByAccount(T *testing.T) {
+	T.Parallel()
+
+	T.Run("excludes owned instruments", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		owned := createAccountInstrumentOwnershipForTest(t, testClient)
+
+		res, err := testClient.SearchForValidInstrumentsNotOwnedByAccount(ctx, &settingssvc.SearchForValidInstrumentsNotOwnedByAccountRequest{
+			Query: "",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+
+		ownedInstrumentID := owned.Instrument.ID
+		for _, result := range res.Results {
+			assert.NotEqual(t, ownedInstrumentID, result.Id, "owned instrument should not appear in search results")
+		}
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.SearchForValidInstrumentsNotOwnedByAccount(ctx, &settingssvc.SearchForValidInstrumentsNotOwnedByAccountRequest{})
 		assert.Error(t, err)
 	})
 }

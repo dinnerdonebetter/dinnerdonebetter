@@ -844,6 +844,78 @@ func (q *repository) SearchForMealEligibleRecipes(ctx context.Context, recipeNam
 	return x, nil
 }
 
+// SearchForRecipesWithInstrumentOwnership fetches recipes that match a query and whose required instruments are owned by the account.
+func (q *repository) SearchForRecipesWithInstrumentOwnership(ctx context.Context, accountID, recipeNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	results, err := q.generatedQuerier.SearchForRecipesWithInstrumentOwnership(ctx, q.readDB, &generated.SearchForRecipesWithInstrumentOwnershipParams{
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		Query:           recipeNameQuery,
+		AccountID:       accountID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes search with instrument ownership query")
+	}
+
+	var (
+		data          []*mealplanning.Recipe
+		filteredCount uint64
+		totalCount    uint64
+	)
+
+	for _, result := range results {
+		data = append(data, &mealplanning.Recipe{
+			CreatedAt:           result.CreatedAt,
+			InspiredByRecipeID:  database.StringPointerFromNullString(result.InspiredByRecipeID),
+			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+			PluralPortionName:   result.PluralPortionName,
+			Description:         result.Description,
+			Name:                result.Name,
+			PortionName:         result.PortionName,
+			ID:                  result.ID,
+			CreatedByUser:       result.CreatedByUser,
+			Source:              result.Source,
+			SourceISBN:          result.SourceIsbn,
+			Slug:                result.Slug,
+			YieldsComponentType: string(result.YieldsComponentType),
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+				Min: database.Float32FromString(result.MinEstimatedPortions),
+			},
+			Status:           string(result.Status),
+			EligibleForMeals: result.EligibleForMeals,
+		})
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
+	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(r *mealplanning.Recipe) string { return r.ID },
+		filter,
+	)
+
+	return x, nil
+}
+
 // validateAndPopulateRecipeInput validates bridge table IDs and populates derived fields.
 // This is a no-op if no bridge table IDs are present (backward compatible).
 func (q *repository) validateAndPopulateRecipeInput(ctx context.Context, input *mealplanning.RecipeDatabaseCreationInput) error {

@@ -144,6 +144,110 @@ func (q *repository) GetValidMeasurementUnitConversion(ctx context.Context, vali
 	return validMeasurementUnitConversion, nil
 }
 
+// GetValidMeasurementUnitConversionsForIngredients fetches all valid measurement conversions applicable to the given ingredient IDs
+// (universal conversions where only_for_ingredient IS NULL, plus ingredient-specific conversions).
+func (q *repository) GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, validIngredientIDs []string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	results, err := q.generatedQuerier.GetValidMeasurementUnitConversionsForIngredients(ctx, q.readDB, validIngredientIDs)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "querying for valid measurement conversions for ingredients")
+	}
+
+	data := make([]*mealplanning.ValidMeasurementUnitConversion, 0, len(results))
+	for _, result := range results {
+		conversion := &mealplanning.ValidMeasurementUnitConversion{
+			CreatedAt:     result.ValidMeasurementUnitConversionCreatedAt,
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitConversionLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitConversionArchivedAt),
+			Notes:         result.ValidMeasurementUnitConversionNotes,
+			ID:            result.ValidMeasurementUnitConversionID,
+			From: mealplanning.ValidMeasurementUnit{
+				CreatedAt:     result.FromUnitCreatedAt,
+				LastUpdatedAt: database.TimePointerFromNullTime(result.FromUnitLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.FromUnitArchivedAt),
+				Name:          result.FromUnitName,
+				IconPath:      result.FromUnitIconPath,
+				ID:            result.FromUnitID,
+				Description:   result.FromUnitDescription,
+				PluralName:    result.FromUnitPluralName,
+				Slug:          result.FromUnitSlug,
+				Volumetric:    database.BoolFromNullBool(result.FromUnitVolumetric),
+				Universal:     result.FromUnitUniversal,
+				Metric:        result.FromUnitMetric,
+				Imperial:      result.FromUnitImperial,
+			},
+			To: mealplanning.ValidMeasurementUnit{
+				CreatedAt:     result.ToUnitCreatedAt,
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ToUnitLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ToUnitArchivedAt),
+				Name:          result.ToUnitName,
+				IconPath:      result.ToUnitIconPath,
+				ID:            result.ToUnitID,
+				Description:   result.ToUnitDescription,
+				PluralName:    result.ToUnitPluralName,
+				Slug:          result.ToUnitSlug,
+				Volumetric:    database.BoolFromNullBool(result.ToUnitVolumetric),
+				Universal:     result.ToUnitUniversal,
+				Metric:        result.ToUnitMetric,
+				Imperial:      result.ToUnitImperial,
+			},
+			Modifier: database.Float32FromString(result.ValidMeasurementUnitConversionModifier),
+		}
+
+		if result.ValidIngredientID.Valid && result.ValidIngredientID.String != "" {
+			conversion.OnlyForIngredient = &mealplanning.ValidIngredient{
+				CreatedAt:     result.ValidIngredientCreatedAt.Time,
+				LastUpdatedAt: &result.ValidIngredientLastUpdatedAt.Time,
+				ArchivedAt:    &result.ValidIngredientArchivedAt.Time,
+				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				},
+				IconPath:               result.ValidIngredientIconPath.String,
+				Warning:                result.ValidIngredientWarning.String,
+				PluralName:             result.ValidIngredientPluralName.String,
+				StorageInstructions:    result.ValidIngredientStorageInstructions.String,
+				Name:                   result.ValidIngredientName.String,
+				ID:                     result.ValidIngredientID.String,
+				Description:            result.ValidIngredientDescription.String,
+				Slug:                   result.ValidIngredientSlug.String,
+				ShoppingSuggestions:    result.ValidIngredientShoppingSuggestions.String,
+				ContainsShellfish:      result.ValidIngredientContainsShellfish.Bool,
+				IsLiquid:               result.ValidIngredientIsLiquid.Bool,
+				ContainsPeanut:         result.ValidIngredientContainsPeanut.Bool,
+				ContainsTreeNut:        result.ValidIngredientContainsTreeNut.Bool,
+				ContainsEgg:            result.ValidIngredientContainsEgg.Bool,
+				ContainsWheat:          result.ValidIngredientContainsWheat.Bool,
+				ContainsSoy:            result.ValidIngredientContainsSoy.Bool,
+				AnimalDerived:          result.ValidIngredientAnimalDerived.Bool,
+				RestrictToPreparations: result.ValidIngredientRestrictToPreparations.Bool,
+				ContainsSesame:         result.ValidIngredientContainsSesame.Bool,
+				ContainsFish:           result.ValidIngredientContainsFish.Bool,
+				ContainsGluten:         result.ValidIngredientContainsGluten.Bool,
+				ContainsDairy:          result.ValidIngredientContainsDairy.Bool,
+				ContainsAlcohol:        result.ValidIngredientContainsAlcohol.Bool,
+				AnimalFlesh:            result.ValidIngredientAnimalFlesh.Bool,
+				IsStarch:               result.ValidIngredientIsStarch.Bool,
+				IsProtein:              result.ValidIngredientIsProtein.Bool,
+				IsGrain:                result.ValidIngredientIsGrain.Bool,
+				IsFruit:                result.ValidIngredientIsFruit.Bool,
+				IsSalt:                 result.ValidIngredientIsSalt.Bool,
+				IsFat:                  result.ValidIngredientIsFat.Bool,
+				IsAcid:                 result.ValidIngredientIsAcid.Bool,
+				IsHeat:                 result.ValidIngredientIsHeat.Bool,
+			}
+		}
+
+		data = append(data, conversion)
+	}
+
+	return data, nil
+}
+
 // GetValidMeasurementUnitConversionsForUnit fetches all valid measurement conversions involving a given measurement unit.
 func (q *repository) GetValidMeasurementUnitConversionsForUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnitConversion], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -419,4 +523,51 @@ func (q *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, 
 	}
 
 	return nil
+}
+
+// GetMeasurementUnitConversionMismatches fetches ingredient-unit pairs that lack a conversion in the database.
+func (q *repository) GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*mealplanning.MeasurementUnitConversionMismatch, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	rows, err := q.generatedQuerier.GetMeasurementUnitConversionMismatches(ctx, q.readDB)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "querying for measurement unit conversion mismatches")
+	}
+
+	mismatches := make([]*mealplanning.MeasurementUnitConversionMismatch, 0, len(rows))
+	for _, row := range rows {
+		var ingredient *mealplanning.ValidIngredient
+		var fromUnit, toUnit *mealplanning.ValidMeasurementUnit
+		ingredient, err = q.GetValidIngredient(ctx, row.ValidIngredientID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching ingredient for mismatch")
+		}
+		fromUnit, err = q.GetValidMeasurementUnit(ctx, row.FromUnitID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching from unit for mismatch")
+		}
+		toUnit, err = q.GetValidMeasurementUnit(ctx, row.ToUnitID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching to unit for mismatch")
+		}
+		mismatches = append(mismatches, &mealplanning.MeasurementUnitConversionMismatch{
+			Ingredient: *ingredient,
+			FromUnit:   derefValidMeasurementUnit(fromUnit),
+			ToUnit:     derefValidMeasurementUnit(toUnit),
+		})
+	}
+
+	return mismatches, nil
+}
+
+// derefValidMeasurementUnit returns the value or zero value if nil.
+// GetValidMeasurementUnit returns *mealplanning.ValidMeasurementUnit (via types alias in valid_measurement_units).
+func derefValidMeasurementUnit(u *mealplanning.ValidMeasurementUnit) mealplanning.ValidMeasurementUnit {
+	if u == nil {
+		return mealplanning.ValidMeasurementUnit{}
+	}
+	return *u
 }

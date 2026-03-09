@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	platformtypes "github.com/dinnerdonebetter/backend/internal/platform/types"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -97,6 +98,26 @@ func buildRecipeStepForTestCreation(t *testing.T, ctx context.Context, recipeID 
 	}
 
 	return exampleRecipeStep
+}
+
+// buildRecipeStepForTestCreationWithInstrument builds a recipe step with a required (optional=false) instrument.
+// Use this when testing SearchForRecipesWithInstrumentOwnership.
+func buildRecipeStepForTestCreationWithInstrument(t *testing.T, ctx context.Context, recipeID string, instrument *types.ValidInstrument, dbc *repository) *types.RecipeStep {
+	t.Helper()
+
+	step := buildRecipeStepForTestCreation(t, ctx, recipeID, dbc)
+	// Override with the passed instrument and ensure it's required (optional=false)
+	step.Instruments = []*types.RecipeStepInstrument{
+		{
+			ID:                  identifiers.New(),
+			Instrument:          instrument,
+			Name:                instrument.Name,
+			BelongsToRecipeStep: step.ID,
+			Optional:            false, // Required for SearchForRecipesWithInstrumentOwnership
+			Quantity:            platformtypes.Uint32RangeWithOptionalMax{Min: 1},
+		},
+	}
+	return step
 }
 
 func createRecipeStepForTest(t *testing.T, ctx context.Context, recipeID string, exampleRecipeStep *types.RecipeStep, dbc *repository) *types.RecipeStep {

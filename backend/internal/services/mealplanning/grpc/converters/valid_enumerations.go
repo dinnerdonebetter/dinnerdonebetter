@@ -933,6 +933,17 @@ func ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(x
 	return y
 }
 
+func ConvertMeasurementUnitConversionMismatchToGRPCMeasurementUnitConversionMismatch(x *mealplanning.MeasurementUnitConversionMismatch) *mealplanninggrpc.MeasurementUnitConversionMismatch {
+	if x == nil {
+		return nil
+	}
+	return &mealplanninggrpc.MeasurementUnitConversionMismatch{
+		Ingredient: ConvertValidIngredientToGRPCValidIngredient(&x.Ingredient),
+		FromUnit:   ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.FromUnit),
+		ToUnit:     ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.ToUnit),
+	}
+}
+
 func ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(x *mealplanninggrpc.ValidMeasurementUnitConversion) *mealplanning.ValidMeasurementUnitConversion {
 	var ingredient *mealplanning.ValidIngredient
 	if x.OnlyForIngredient != nil {

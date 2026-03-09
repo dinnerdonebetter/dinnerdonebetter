@@ -397,6 +397,18 @@ func (m *MockValidEnumerationsManager) ValidMeasurementUnitConversionsForMeasure
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnitConversion]), returnValues.Error(1)
 }
 
+func (m *MockValidEnumerationsManager) GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, validIngredientIDs []string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
+	returnValues := m.Called(ctx, validIngredientIDs)
+
+	return returnValues.Get(0).([]*mealplanning.ValidMeasurementUnitConversion), returnValues.Error(1)
+}
+
+func (m *MockValidEnumerationsManager) GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*mealplanning.MeasurementUnitConversionMismatch, error) {
+	returnValues := m.Called(ctx)
+
+	return returnValues.Get(0).([]*mealplanning.MeasurementUnitConversionMismatch), returnValues.Error(1)
+}
+
 func (m *MockValidEnumerationsManager) ValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
 	returnValues := m.Called(ctx, validMeasurementUnitID)
 

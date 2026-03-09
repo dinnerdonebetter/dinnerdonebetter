@@ -17,6 +17,7 @@ struct HouseholdDetailsView: View {
       errorIcon: viewModel.errorIcon,
       errorIconColor: viewModel.errorIconColor,
       onRetry: { await viewModel.loadData() },
+      showEnvironmentSelector: viewModel.isServerDownError,
       content: { detailsContent }
     )
     .navigationTitle("Household Details")

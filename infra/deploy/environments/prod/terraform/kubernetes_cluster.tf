@@ -74,12 +74,14 @@ resource "google_container_node_pool" "primary_nodes" {
 
   node_locations = [
     local.gcp_main_zone,
+    local.gcp_secondary_zone,
+    local.gcp_tertiary_zone,
   ]
 
   autoscaling {
     total_min_node_count = 1
     total_max_node_count = 1
-    location_policy = "BALANCED"
+    location_policy = "ANY"
   }
 
   management {
@@ -100,7 +102,7 @@ resource "google_container_node_pool" "primary_nodes" {
       env = local.project_id
     }
 
-    preemptible  = true
+    preemptible  = false
     machine_type = "e2-standard-2"
     tags         = ["gke-node", local.environment]
     metadata = {
@@ -127,16 +129,19 @@ resource "google_project_iam_member" "workload_identity_secret_accessor" {
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
+
 resource "google_project_iam_member" "workload_identity_pubsub" {
   project = local.project_id
   role    = "roles/pubsub.publisher"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
+
 resource "google_project_iam_member" "workload_identity_pubsub_subscriber" {
   project = local.project_id
   role    = "roles/pubsub.subscriber"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
+
 # TopicAdminClient.GetTopic requires pubsub.topics.get (included in viewer)
 resource "google_project_iam_member" "workload_identity_pubsub_viewer" {
   project = local.project_id

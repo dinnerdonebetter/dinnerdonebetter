@@ -77,10 +77,9 @@ struct GroceryListView: View {
               .font(DSTheme.Typography.caption)
               .foregroundColor(DSTheme.Colors.error)
             Spacer()
-            Button("Retry") {
+            DSButton("Retry", icon: "arrow.clockwise", style: .primary, size: .small) {
               Task { await viewModel.loadItems() }
             }
-            .font(DSTheme.Typography.caption)
           }
           .padding()
         }

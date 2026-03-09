@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	config2 "github.com/dinnerdonebetter/backend/internal/authentication/webauthn/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit/manager"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
@@ -152,7 +153,12 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	service, err := grpc2.ProvidePasskeyService(identityDataManager, identityRepository)
+	configConfig := grpc2.ProvideSessionStoreConfig(cfg)
+	sessionStore, err := config2.ProvideSessionStore(configConfig, client, logger, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	service, err := grpc2.ProvidePasskeyService(identityDataManager, identityRepository, sessionStore)
 	if err != nil {
 		return nil, err
 	}
@@ -179,9 +185,9 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
 	dataprivacyRepository := dataprivacy.ProvideDataPrivacyRepository(logger, tracerProvider, repository, identityRepository, issuereportsRepository, mealplanningRepository, notificationsDataManager, settingsDataManager, uploadedmediaRepository, waitlistsDataManager, webhooksRepository, client)
 	dataPrivacyManager := manager6.NewDataPrivacyManager(tracerProvider, logger, dataprivacyRepository)
-	configConfig := &servicesConfig.UploadedMedia
-	config2 := &configConfig.Uploads
-	objectstorageConfig := &config2.Storage
+	config3 := &servicesConfig.UploadedMedia
+	config4 := &config3.Uploads
+	objectstorageConfig := &config4.Storage
 	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, objectstorageConfig)
 	if err != nil {
 		return nil, err
@@ -240,8 +246,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	}
 	oAuthServiceServer := grpc9.NewService(logger, tracerProvider, oAuth2Manager)
 	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, repository, client)
-	config3 := servicesConfig.Payments
-	mapProcessorRegistry := adapters.ProvidePaymentProcessorRegistry(logger, tracerProvider, config3)
+	config5 := servicesConfig.Payments
+	mapProcessorRegistry := adapters.ProvidePaymentProcessorRegistry(logger, tracerProvider, config5)
 	paymentsDataManager, err := manager11.NewPaymentsDataManager(ctx, tracerProvider, logger, paymentsRepository, mapProcessorRegistry, identityDataManager, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err

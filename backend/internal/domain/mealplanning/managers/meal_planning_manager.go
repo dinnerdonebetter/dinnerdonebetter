@@ -90,6 +90,7 @@ type (
 		ArchiveUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) error
 
 		ListAccountInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInstrumentOwnership], error)
+		SearchValidInstrumentsNotOwnedByAccount(ctx context.Context, accountID, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidInstrument], error)
 		CreateAccountInstrumentOwnership(ctx context.Context, ownerID string, input *types.AccountInstrumentOwnershipCreationRequestInput) (*types.AccountInstrumentOwnership, error)
 		ReadAccountInstrumentOwnership(ctx context.Context, ownerID, instrumentOwnershipID string) (*types.AccountInstrumentOwnership, error)
 		UpdateAccountInstrumentOwnership(ctx context.Context, instrumentOwnershipID, ownerID string, input *types.AccountInstrumentOwnershipUpdateRequestInput) error
@@ -789,9 +790,16 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 		return observability.PrepareAndLogError(err, logger, span, "fetching meal plan event to update")
 	}
 
+	oldStartsAt := existingMealPlanEvent.StartsAt
 	existingMealPlanEvent.Update(input)
 	if err = m.db.UpdateMealPlanEvent(ctx, existingMealPlanEvent); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event")
+	}
+
+	if input.StartsAt != nil && !oldStartsAt.Equal(*input.StartsAt) {
+		if err = m.db.ClearMealPlanTaskNotificationSentForEvent(ctx, mealPlanEventID); err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "clearing meal plan task notification sent for event")
+		}
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventUpdatedServiceEventType, map[string]any{
@@ -815,6 +823,13 @@ func (m *mealPlanningManager) SwapMealPlanEvents(ctx context.Context, mealPlanID
 
 	if err := m.db.SwapMealPlanEvents(ctx, mealPlanID, mealPlanEventIDA, mealPlanEventIDB); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "swapping meal plan events")
+	}
+
+	if err := m.db.ClearMealPlanTaskNotificationSentForEvent(ctx, mealPlanEventIDA); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "clearing meal plan task notification sent for event A")
+	}
+	if err := m.db.ClearMealPlanTaskNotificationSentForEvent(ctx, mealPlanEventIDB); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "clearing meal plan task notification sent for event B")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventUpdatedServiceEventType, map[string]any{
@@ -1652,6 +1667,26 @@ func (m *mealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Contex
 	results, err := m.db.GetAccountInstrumentOwnerships(ctx, ownerID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching instrument ownerships")
+	}
+
+	return results, nil
+}
+
+func (m *mealPlanningManager) SearchValidInstrumentsNotOwnedByAccount(ctx context.Context, accountID, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidInstrument], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
+	logger := m.logger.WithSpan(span).WithValue(identitykeys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
+
+	// Start with database-only search; add search index support later if needed
+	results, err := m.db.SearchForValidInstrumentsNotOwnedByAccount(ctx, accountID, query, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid instruments not owned by account")
 	}
 
 	return results, nil

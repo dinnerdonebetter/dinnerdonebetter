@@ -294,6 +294,46 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "SearchForRecipesWithInstrumentOwnership",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s %s
+	%s
+	AND NOT EXISTS (
+		SELECT 1 FROM recipe_step_instruments rsi
+		JOIN recipe_steps rs ON rsi.belongs_to_recipe_step = rs.id
+		WHERE rs.belongs_to_recipe = %s.%s
+			AND rsi.archived_at IS NULL
+			AND rs.archived_at IS NULL
+			AND rsi.optional = false
+			AND rsi.instrument_id IS NOT NULL
+			AND rsi.instrument_id NOT IN (
+				SELECT valid_instrument_id FROM account_instrument_ownerships
+				WHERE belongs_to_account = sqlc.arg(account_id) AND archived_at IS NULL
+			)
+	)
+%s;`,
+					strings.Join(applyToEach(recipesColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", recipesTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(recipesTableName, true, true, []string{}),
+					buildTotalCountSelect(recipesTableName, true, []string{}),
+					recipesTableName,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, nameColumn, buildILIKEForArgument("query"),
+					buildFilterConditions(recipesTableName, true, false),
+					recipesTableName, idColumn,
+					buildCursorLimitClause(recipesTableName),
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetRecipesNeedingIndexing",
 					Type: ManyType,
 				},

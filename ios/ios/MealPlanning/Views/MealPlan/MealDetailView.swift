@@ -63,16 +63,29 @@ struct MealDetailView: View {
   @State private var isDAGSectionExpanded = false
   @State private var mealTimerTick: Int = 0
   @State private var mealTimerRefresh: Timer?
+  @State private var completedStepsFromTasks: [String: Set<String>] = [:]
   let mealID: String
   /// When true, scale editing is hidden because the scale is set by the meal plan.
   let isFromMealPlan: Bool
   /// When viewing from meal plan, the plan's scale for this meal (e.g. 4.0 for 4x). Used to display scaled portions.
   let mealPlanScale: Float?
+  /// When viewing from meal plan, the meal plan ID for fetching completed tasks.
+  let mealPlanID: String?
+  /// When viewing from meal plan, the meal plan option ID for filtering tasks.
+  let mealPlanOptionID: String?
 
-  init(mealID: String, isFromMealPlan: Bool = false, mealPlanScale: Float? = nil) {
+  init(
+    mealID: String,
+    isFromMealPlan: Bool = false,
+    mealPlanScale: Float? = nil,
+    mealPlanID: String? = nil,
+    mealPlanOptionID: String? = nil
+  ) {
     self.mealID = mealID
     self.isFromMealPlan = isFromMealPlan
     self.mealPlanScale = mealPlanScale
+    self.mealPlanID = mealPlanID
+    self.mealPlanOptionID = mealPlanOptionID
   }
 
   var body: some View {
@@ -101,7 +114,7 @@ struct MealDetailView: View {
 
                   // Keep screen awake (before wash hands)
                   if !meal.components.isEmpty {
-                    KeepScreenAwakeButton(inline: true)
+                    DSKeepScreenAwakeButton(inline: true)
                   }
 
                   if !meal.components.isEmpty && !mealWashHandsCompleted {
@@ -159,6 +172,9 @@ struct MealDetailView: View {
           if let meal = viewModel.meal {
             ensureComponentDataLoaded(for: meal)
             loadStepOrderFromUserDefaults(mealID: meal.id)
+            if isFromMealPlan, let planID = mealPlanID {
+              await loadCompletedStepsFromTasks(mealPlanID: planID, meal: meal)
+            }
           }
         }
       }
@@ -210,7 +226,7 @@ struct MealDetailView: View {
 
       // Meal Scale Control (hidden when viewing from meal plan – scale is set by the plan)
       if !isFromMealPlan {
-        Divider()
+        DSDivider()
           .padding(.vertical, DSTheme.Spacing.xs)
 
         HStack(spacing: DSTheme.Spacing.md) {
@@ -248,19 +264,10 @@ struct MealDetailView: View {
               .font(DSTheme.Typography.body)
               .foregroundColor(DSTheme.Colors.textSecondary)
 
-            Button {
-              adjustMealScale(by: -0.25)
-            } label: {
-              Image(systemName: "minus.circle")
-            }
-            .buttonStyle(.plain)
-
-            Button {
-              adjustMealScale(by: 0.25)
-            } label: {
-              Image(systemName: "plus.circle")
-            }
-            .buttonStyle(.plain)
+            DSStepperButtons(
+              onDecrement: { adjustMealScale(by: -0.25) },
+              onIncrement: { adjustMealScale(by: 0.25) }
+            )
           }
         }
 
@@ -324,7 +331,7 @@ struct MealDetailView: View {
                 .font(DSTheme.Typography.body)
                 .foregroundColor(DSTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
-              Button("Retry") {
+              DSButton("Retry", icon: "arrow.clockwise", style: .primary, size: .small) {
                 Task {
                   await viewModel.loadMermaidDiagram()
                 }
@@ -959,6 +966,7 @@ struct MealDetailView: View {
 
       let recipeViewModel = PerformRecipeViewModel(recipeID: recipeID, authManager: authManager)
       recipeViewModel.washHandsCompleted = mealWashHandsCompleted
+      recipeViewModel.completedSteps = completedStepsFromTasks[recipeID] ?? []
       componentViewModels[recipeID] = recipeViewModel
 
       Task { @MainActor in
@@ -968,6 +976,76 @@ struct MealDetailView: View {
         }
       }
     }
+  }
+
+  @MainActor
+  private func loadCompletedStepsFromTasks(mealPlanID: String, meal: Mealplanning_Meal) async {
+    do {
+      guard let clientManager = try? authManager.getClientManager() else { return }
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else { return }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+      var request = Mealplanning_GetMealPlanTasksRequest()
+      request.mealPlanID = mealPlanID
+
+      let response = try await clientManager.client.mealPlanning.getMealPlanTasks(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      var completedStepsByRecipe: [String: Set<String>] = [:]
+      let mealRecipeIDs = Set(meal.components.map { $0.recipe.id })
+
+      for task in response.results {
+        guard task.status == .finished, task.hasRecipePrepTask else { continue }
+
+        let prepTask = task.recipePrepTask
+        let prepTaskRecipeID = prepTask.belongsToRecipe.isEmpty ? nil : prepTask.belongsToRecipe
+
+        for taskStep in prepTask.taskSteps where !taskStep.belongsToRecipeStep.isEmpty {
+          let stepID = taskStep.belongsToRecipeStep
+          let recipeID: String? = {
+            if let rid = prepTaskRecipeID, mealRecipeIDs.contains(rid) {
+              return rid
+            }
+            return resolveStepToRecipe(stepID: stepID, meal: meal)?.recipeID
+          }()
+          if let recipeID = recipeID, mealRecipeIDs.contains(recipeID) {
+            completedStepsByRecipe[recipeID, default: []].insert("\(recipeID):\(stepID)")
+          }
+        }
+      }
+
+      completedStepsFromTasks = completedStepsByRecipe
+
+      for (recipeID, viewModel) in componentViewModels {
+        if let steps = completedStepsByRecipe[recipeID] {
+          viewModel.completedSteps.formUnion(steps)
+        }
+      }
+
+      mealTimerTick += 1
+    } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
+    }
+  }
+
+  private func resolveStepToRecipe(
+    stepID: String,
+    meal: Mealplanning_Meal
+  ) -> (recipeID: String, stepID: String)? {
+    for component in meal.components {
+      let recipe = component.recipe
+      if recipe.steps.contains(where: { $0.id == stepID }) {
+        return (recipe.id, stepID)
+      }
+      for associatedRecipe in recipe.associatedRecipes
+      where associatedRecipe.steps.contains(where: { $0.id == stepID }) {
+        return (associatedRecipe.id, stepID)
+      }
+    }
+    return nil
   }
 
   private func setMealWashHandsCompleted(_ isCompleted: Bool) {

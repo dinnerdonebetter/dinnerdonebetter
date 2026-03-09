@@ -169,6 +169,8 @@ const (
 	MealPlanningService_GetValidMeasurementUnit_FullMethodName                             = "/mealplanning.MealPlanningService/GetValidMeasurementUnit"
 	MealPlanningService_GetValidMeasurementUnitConversion_FullMethodName                   = "/mealplanning.MealPlanningService/GetValidMeasurementUnitConversion"
 	MealPlanningService_GetValidMeasurementUnitConversionsForUnit_FullMethodName           = "/mealplanning.MealPlanningService/GetValidMeasurementUnitConversionsForUnit"
+	MealPlanningService_GetValidMeasurementUnitConversionsForIngredients_FullMethodName    = "/mealplanning.MealPlanningService/GetValidMeasurementUnitConversionsForIngredients"
+	MealPlanningService_GetMeasurementUnitConversionMismatches_FullMethodName              = "/mealplanning.MealPlanningService/GetMeasurementUnitConversionMismatches"
 	MealPlanningService_GetValidMeasurementUnits_FullMethodName                            = "/mealplanning.MealPlanningService/GetValidMeasurementUnits"
 	MealPlanningService_GetValidPreparation_FullMethodName                                 = "/mealplanning.MealPlanningService/GetValidPreparation"
 	MealPlanningService_GetValidPreparationInstrument_FullMethodName                       = "/mealplanning.MealPlanningService/GetValidPreparationInstrument"
@@ -188,6 +190,7 @@ const (
 	MealPlanningService_SearchForMeals_FullMethodName                                      = "/mealplanning.MealPlanningService/SearchForMeals"
 	MealPlanningService_SearchForRecipes_FullMethodName                                    = "/mealplanning.MealPlanningService/SearchForRecipes"
 	MealPlanningService_SearchForMealEligibleRecipes_FullMethodName                        = "/mealplanning.MealPlanningService/SearchForMealEligibleRecipes"
+	MealPlanningService_SearchForRecipesWithInstrumentOwnership_FullMethodName             = "/mealplanning.MealPlanningService/SearchForRecipesWithInstrumentOwnership"
 	MealPlanningService_SearchForValidIngredientGroups_FullMethodName                      = "/mealplanning.MealPlanningService/SearchForValidIngredientGroups"
 	MealPlanningService_SearchForValidIngredientStates_FullMethodName                      = "/mealplanning.MealPlanningService/SearchForValidIngredientStates"
 	MealPlanningService_SearchForValidIngredients_FullMethodName                           = "/mealplanning.MealPlanningService/SearchForValidIngredients"
@@ -239,6 +242,7 @@ const (
 	MealPlanningService_CreateUserIngredientPreference_FullMethodName                      = "/mealplanning.MealPlanningService/CreateUserIngredientPreference"
 	MealPlanningService_GetAccountInstrumentOwnership_FullMethodName                       = "/mealplanning.MealPlanningService/GetAccountInstrumentOwnership"
 	MealPlanningService_GetAccountInstrumentOwnerships_FullMethodName                      = "/mealplanning.MealPlanningService/GetAccountInstrumentOwnerships"
+	MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_FullMethodName          = "/mealplanning.MealPlanningService/SearchForValidInstrumentsNotOwnedByAccount"
 	MealPlanningService_GetUserIngredientPreference_FullMethodName                         = "/mealplanning.MealPlanningService/GetUserIngredientPreference"
 	MealPlanningService_GetUserIngredientPreferences_FullMethodName                        = "/mealplanning.MealPlanningService/GetUserIngredientPreferences"
 	MealPlanningService_UpdateAccountInstrumentOwnership_FullMethodName                    = "/mealplanning.MealPlanningService/UpdateAccountInstrumentOwnership"
@@ -399,6 +403,8 @@ type MealPlanningServiceClient interface {
 	GetValidMeasurementUnit(ctx context.Context, in *GetValidMeasurementUnitRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitResponse, error)
 	GetValidMeasurementUnitConversion(ctx context.Context, in *GetValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitConversionResponse, error)
 	GetValidMeasurementUnitConversionsForUnit(ctx context.Context, in *GetValidMeasurementUnitConversionsForUnitRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitConversionsForUnitResponse, error)
+	GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, in *GetValidMeasurementUnitConversionsForIngredientsRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitConversionsForIngredientsResponse, error)
+	GetMeasurementUnitConversionMismatches(ctx context.Context, in *GetMeasurementUnitConversionMismatchesRequest, opts ...grpc.CallOption) (*GetMeasurementUnitConversionMismatchesResponse, error)
 	GetValidMeasurementUnits(ctx context.Context, in *GetValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitsResponse, error)
 	GetValidPreparation(ctx context.Context, in *GetValidPreparationRequest, opts ...grpc.CallOption) (*GetValidPreparationResponse, error)
 	GetValidPreparationInstrument(ctx context.Context, in *GetValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*GetValidPreparationInstrumentResponse, error)
@@ -418,6 +424,7 @@ type MealPlanningServiceClient interface {
 	SearchForMeals(ctx context.Context, in *SearchForMealsRequest, opts ...grpc.CallOption) (*SearchForMealsResponse, error)
 	SearchForRecipes(ctx context.Context, in *SearchForRecipesRequest, opts ...grpc.CallOption) (*SearchForRecipesResponse, error)
 	SearchForMealEligibleRecipes(ctx context.Context, in *SearchForMealEligibleRecipesRequest, opts ...grpc.CallOption) (*SearchForMealEligibleRecipesResponse, error)
+	SearchForRecipesWithInstrumentOwnership(ctx context.Context, in *SearchForRecipesWithInstrumentOwnershipRequest, opts ...grpc.CallOption) (*SearchForRecipesWithInstrumentOwnershipResponse, error)
 	SearchForValidIngredientGroups(ctx context.Context, in *SearchForValidIngredientGroupsRequest, opts ...grpc.CallOption) (*SearchForValidIngredientGroupsResponse, error)
 	SearchForValidIngredientStates(ctx context.Context, in *SearchForValidIngredientStatesRequest, opts ...grpc.CallOption) (*SearchForValidIngredientStatesResponse, error)
 	SearchForValidIngredients(ctx context.Context, in *SearchForValidIngredientsRequest, opts ...grpc.CallOption) (*SearchForValidIngredientsResponse, error)
@@ -469,6 +476,7 @@ type MealPlanningServiceClient interface {
 	CreateUserIngredientPreference(ctx context.Context, in *CreateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*CreateUserIngredientPreferenceResponse, error)
 	GetAccountInstrumentOwnership(ctx context.Context, in *GetAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*GetAccountInstrumentOwnershipResponse, error)
 	GetAccountInstrumentOwnerships(ctx context.Context, in *GetAccountInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*GetAccountInstrumentOwnershipsResponse, error)
+	SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, in *SearchForValidInstrumentsNotOwnedByAccountRequest, opts ...grpc.CallOption) (*SearchForValidInstrumentsNotOwnedByAccountResponse, error)
 	GetUserIngredientPreference(ctx context.Context, in *GetUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferenceResponse, error)
 	GetUserIngredientPreferences(ctx context.Context, in *GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferencesResponse, error)
 	UpdateAccountInstrumentOwnership(ctx context.Context, in *UpdateAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*UpdateAccountInstrumentOwnershipResponse, error)
@@ -1956,6 +1964,26 @@ func (c *mealPlanningServiceClient) GetValidMeasurementUnitConversionsForUnit(ct
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, in *GetValidMeasurementUnitConversionsForIngredientsRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitConversionsForIngredientsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetValidMeasurementUnitConversionsForIngredientsResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetValidMeasurementUnitConversionsForIngredients_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) GetMeasurementUnitConversionMismatches(ctx context.Context, in *GetMeasurementUnitConversionMismatchesRequest, opts ...grpc.CallOption) (*GetMeasurementUnitConversionMismatchesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMeasurementUnitConversionMismatchesResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetMeasurementUnitConversionMismatches_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) GetValidMeasurementUnits(ctx context.Context, in *GetValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*GetValidMeasurementUnitsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetValidMeasurementUnitsResponse)
@@ -2140,6 +2168,16 @@ func (c *mealPlanningServiceClient) SearchForMealEligibleRecipes(ctx context.Con
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SearchForMealEligibleRecipesResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_SearchForMealEligibleRecipes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) SearchForRecipesWithInstrumentOwnership(ctx context.Context, in *SearchForRecipesWithInstrumentOwnershipRequest, opts ...grpc.CallOption) (*SearchForRecipesWithInstrumentOwnershipResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchForRecipesWithInstrumentOwnershipResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_SearchForRecipesWithInstrumentOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2656,6 +2694,16 @@ func (c *mealPlanningServiceClient) GetAccountInstrumentOwnerships(ctx context.C
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) SearchForValidInstrumentsNotOwnedByAccount(ctx context.Context, in *SearchForValidInstrumentsNotOwnedByAccountRequest, opts ...grpc.CallOption) (*SearchForValidInstrumentsNotOwnedByAccountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchForValidInstrumentsNotOwnedByAccountResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) GetUserIngredientPreference(ctx context.Context, in *GetUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetUserIngredientPreferenceResponse)
@@ -2883,6 +2931,8 @@ type MealPlanningServiceServer interface {
 	GetValidMeasurementUnit(context.Context, *GetValidMeasurementUnitRequest) (*GetValidMeasurementUnitResponse, error)
 	GetValidMeasurementUnitConversion(context.Context, *GetValidMeasurementUnitConversionRequest) (*GetValidMeasurementUnitConversionResponse, error)
 	GetValidMeasurementUnitConversionsForUnit(context.Context, *GetValidMeasurementUnitConversionsForUnitRequest) (*GetValidMeasurementUnitConversionsForUnitResponse, error)
+	GetValidMeasurementUnitConversionsForIngredients(context.Context, *GetValidMeasurementUnitConversionsForIngredientsRequest) (*GetValidMeasurementUnitConversionsForIngredientsResponse, error)
+	GetMeasurementUnitConversionMismatches(context.Context, *GetMeasurementUnitConversionMismatchesRequest) (*GetMeasurementUnitConversionMismatchesResponse, error)
 	GetValidMeasurementUnits(context.Context, *GetValidMeasurementUnitsRequest) (*GetValidMeasurementUnitsResponse, error)
 	GetValidPreparation(context.Context, *GetValidPreparationRequest) (*GetValidPreparationResponse, error)
 	GetValidPreparationInstrument(context.Context, *GetValidPreparationInstrumentRequest) (*GetValidPreparationInstrumentResponse, error)
@@ -2902,6 +2952,7 @@ type MealPlanningServiceServer interface {
 	SearchForMeals(context.Context, *SearchForMealsRequest) (*SearchForMealsResponse, error)
 	SearchForRecipes(context.Context, *SearchForRecipesRequest) (*SearchForRecipesResponse, error)
 	SearchForMealEligibleRecipes(context.Context, *SearchForMealEligibleRecipesRequest) (*SearchForMealEligibleRecipesResponse, error)
+	SearchForRecipesWithInstrumentOwnership(context.Context, *SearchForRecipesWithInstrumentOwnershipRequest) (*SearchForRecipesWithInstrumentOwnershipResponse, error)
 	SearchForValidIngredientGroups(context.Context, *SearchForValidIngredientGroupsRequest) (*SearchForValidIngredientGroupsResponse, error)
 	SearchForValidIngredientStates(context.Context, *SearchForValidIngredientStatesRequest) (*SearchForValidIngredientStatesResponse, error)
 	SearchForValidIngredients(context.Context, *SearchForValidIngredientsRequest) (*SearchForValidIngredientsResponse, error)
@@ -2953,6 +3004,7 @@ type MealPlanningServiceServer interface {
 	CreateUserIngredientPreference(context.Context, *CreateUserIngredientPreferenceRequest) (*CreateUserIngredientPreferenceResponse, error)
 	GetAccountInstrumentOwnership(context.Context, *GetAccountInstrumentOwnershipRequest) (*GetAccountInstrumentOwnershipResponse, error)
 	GetAccountInstrumentOwnerships(context.Context, *GetAccountInstrumentOwnershipsRequest) (*GetAccountInstrumentOwnershipsResponse, error)
+	SearchForValidInstrumentsNotOwnedByAccount(context.Context, *SearchForValidInstrumentsNotOwnedByAccountRequest) (*SearchForValidInstrumentsNotOwnedByAccountResponse, error)
 	GetUserIngredientPreference(context.Context, *GetUserIngredientPreferenceRequest) (*GetUserIngredientPreferenceResponse, error)
 	GetUserIngredientPreferences(context.Context, *GetUserIngredientPreferencesRequest) (*GetUserIngredientPreferencesResponse, error)
 	UpdateAccountInstrumentOwnership(context.Context, *UpdateAccountInstrumentOwnershipRequest) (*UpdateAccountInstrumentOwnershipResponse, error)
@@ -3411,6 +3463,12 @@ func (UnimplementedMealPlanningServiceServer) GetValidMeasurementUnitConversion(
 func (UnimplementedMealPlanningServiceServer) GetValidMeasurementUnitConversionsForUnit(context.Context, *GetValidMeasurementUnitConversionsForUnitRequest) (*GetValidMeasurementUnitConversionsForUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnitConversionsForUnit not implemented")
 }
+func (UnimplementedMealPlanningServiceServer) GetValidMeasurementUnitConversionsForIngredients(context.Context, *GetValidMeasurementUnitConversionsForIngredientsRequest) (*GetValidMeasurementUnitConversionsForIngredientsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnitConversionsForIngredients not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetMeasurementUnitConversionMismatches(context.Context, *GetMeasurementUnitConversionMismatchesRequest) (*GetMeasurementUnitConversionMismatchesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMeasurementUnitConversionMismatches not implemented")
+}
 func (UnimplementedMealPlanningServiceServer) GetValidMeasurementUnits(context.Context, *GetValidMeasurementUnitsRequest) (*GetValidMeasurementUnitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnits not implemented")
 }
@@ -3467,6 +3525,9 @@ func (UnimplementedMealPlanningServiceServer) SearchForRecipes(context.Context, 
 }
 func (UnimplementedMealPlanningServiceServer) SearchForMealEligibleRecipes(context.Context, *SearchForMealEligibleRecipesRequest) (*SearchForMealEligibleRecipesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForMealEligibleRecipes not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) SearchForRecipesWithInstrumentOwnership(context.Context, *SearchForRecipesWithInstrumentOwnershipRequest) (*SearchForRecipesWithInstrumentOwnershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchForRecipesWithInstrumentOwnership not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) SearchForValidIngredientGroups(context.Context, *SearchForValidIngredientGroupsRequest) (*SearchForValidIngredientGroupsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidIngredientGroups not implemented")
@@ -3620,6 +3681,9 @@ func (UnimplementedMealPlanningServiceServer) GetAccountInstrumentOwnership(cont
 }
 func (UnimplementedMealPlanningServiceServer) GetAccountInstrumentOwnerships(context.Context, *GetAccountInstrumentOwnershipsRequest) (*GetAccountInstrumentOwnershipsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountInstrumentOwnerships not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) SearchForValidInstrumentsNotOwnedByAccount(context.Context, *SearchForValidInstrumentsNotOwnedByAccountRequest) (*SearchForValidInstrumentsNotOwnedByAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidInstrumentsNotOwnedByAccount not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) GetUserIngredientPreference(context.Context, *GetUserIngredientPreferenceRequest) (*GetUserIngredientPreferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserIngredientPreference not implemented")
@@ -6309,6 +6373,42 @@ func _MealPlanningService_GetValidMeasurementUnitConversionsForUnit_Handler(srv 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_GetValidMeasurementUnitConversionsForIngredients_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetValidMeasurementUnitConversionsForIngredientsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetValidMeasurementUnitConversionsForIngredients(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetValidMeasurementUnitConversionsForIngredients_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetValidMeasurementUnitConversionsForIngredients(ctx, req.(*GetValidMeasurementUnitConversionsForIngredientsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_GetMeasurementUnitConversionMismatches_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMeasurementUnitConversionMismatchesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetMeasurementUnitConversionMismatches(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetMeasurementUnitConversionMismatches_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetMeasurementUnitConversionMismatches(ctx, req.(*GetMeasurementUnitConversionMismatchesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_GetValidMeasurementUnits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetValidMeasurementUnitsRequest)
 	if err := dec(in); err != nil {
@@ -6647,6 +6747,24 @@ func _MealPlanningService_SearchForMealEligibleRecipes_Handler(srv interface{}, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).SearchForMealEligibleRecipes(ctx, req.(*SearchForMealEligibleRecipesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_SearchForRecipesWithInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchForRecipesWithInstrumentOwnershipRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).SearchForRecipesWithInstrumentOwnership(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_SearchForRecipesWithInstrumentOwnership_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).SearchForRecipesWithInstrumentOwnership(ctx, req.(*SearchForRecipesWithInstrumentOwnershipRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -7569,6 +7687,24 @@ func _MealPlanningService_GetAccountInstrumentOwnerships_Handler(srv interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchForValidInstrumentsNotOwnedByAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).SearchForValidInstrumentsNotOwnedByAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).SearchForValidInstrumentsNotOwnedByAccount(ctx, req.(*SearchForValidInstrumentsNotOwnedByAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_GetUserIngredientPreference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserIngredientPreferenceRequest)
 	if err := dec(in); err != nil {
@@ -8269,6 +8405,14 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MealPlanningService_GetValidMeasurementUnitConversionsForUnit_Handler,
 		},
 		{
+			MethodName: "GetValidMeasurementUnitConversionsForIngredients",
+			Handler:    _MealPlanningService_GetValidMeasurementUnitConversionsForIngredients_Handler,
+		},
+		{
+			MethodName: "GetMeasurementUnitConversionMismatches",
+			Handler:    _MealPlanningService_GetMeasurementUnitConversionMismatches_Handler,
+		},
+		{
 			MethodName: "GetValidMeasurementUnits",
 			Handler:    _MealPlanningService_GetValidMeasurementUnits_Handler,
 		},
@@ -8343,6 +8487,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchForMealEligibleRecipes",
 			Handler:    _MealPlanningService_SearchForMealEligibleRecipes_Handler,
+		},
+		{
+			MethodName: "SearchForRecipesWithInstrumentOwnership",
+			Handler:    _MealPlanningService_SearchForRecipesWithInstrumentOwnership_Handler,
 		},
 		{
 			MethodName: "SearchForValidIngredientGroups",
@@ -8547,6 +8695,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccountInstrumentOwnerships",
 			Handler:    _MealPlanningService_GetAccountInstrumentOwnerships_Handler,
+		},
+		{
+			MethodName: "SearchForValidInstrumentsNotOwnedByAccount",
+			Handler:    _MealPlanningService_SearchForValidInstrumentsNotOwnedByAccount_Handler,
 		},
 		{
 			MethodName: "GetUserIngredientPreference",

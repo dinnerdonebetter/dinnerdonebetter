@@ -47,50 +47,6 @@ var (
 	createMealPlansAndVotes = true // os.Getenv("CREATE_MEAL_PLANS_AND_VOTES") == "true"
 )
 
-func cloneTime(t time.Time) time.Time {
-	t, parseErr := time.Parse(time.RFC3339, t.Format(time.RFC3339))
-	if parseErr != nil {
-		panic(parseErr)
-	}
-
-	return t
-}
-
-// resolveEmptyRecipeIDs resolves empty RecipeStepProductRecipeID values in a recipe input
-// by looking up recipes in the createdRecipes map. Prefers RecipeStepProductRecipeSlug when
-// set (ensures correct recipe); otherwise falls back to matching by step index (ambiguous).
-func resolveEmptyRecipeIDs(recipe *mealplanning.RecipeCreationRequestInput, createdRecipes map[string]*mealplanning.Recipe) {
-	for _, step := range recipe.Steps {
-		for _, ingredient := range step.Ingredients {
-			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID == "" {
-				// Prefer slug lookup when available - ensures we resolve to the correct recipe
-				if ingredient.RecipeStepProductRecipeSlug != nil && *ingredient.RecipeStepProductRecipeSlug != "" {
-					if refRecipe, ok := createdRecipes[*ingredient.RecipeStepProductRecipeSlug]; ok && refRecipe != nil {
-						ingredient.RecipeStepProductRecipeID = &refRecipe.ID
-						continue
-					}
-				}
-				// Fallback: match by step index (ambiguous - many recipes may have a step at that index)
-				stepIndex := ingredient.ProductOfRecipeStepIndex
-				if stepIndex != nil {
-					for _, refRecipe := range createdRecipes {
-						if refRecipe != nil && int(*stepIndex) < len(refRecipe.Steps) {
-							referencedStep := refRecipe.Steps[*stepIndex]
-							if ingredient.ProductOfRecipeStepProductIndex != nil {
-								productIndex := int(*ingredient.ProductOfRecipeStepProductIndex)
-								if productIndex < len(referencedStep.Products) {
-									ingredient.RecipeStepProductRecipeID = &refRecipe.ID
-									break
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
 func main() {
 	ctx := context.Background()
 
@@ -108,10 +64,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var adminUserID string
-	var adminAccountID string
-	var currentMealPlanID string
-	var memberUserIDs []string
+	var (
+		adminUserID       string
+		adminAccountID    string
+		currentMealPlanID string
+		memberUserIDs     []string
+	)
 
 	server, err := localdev.AllInOne(
 		ctx,
@@ -784,4 +742,48 @@ func createExampleServiceSettings(ctx context.Context, repo settings.Repository,
 	logger.Debug("Created ServiceSetting: user_language (enumerated, non-admin)")
 
 	return nil
+}
+
+func cloneTime(t time.Time) time.Time {
+	t, parseErr := time.Parse(time.RFC3339, t.Format(time.RFC3339))
+	if parseErr != nil {
+		panic(parseErr)
+	}
+
+	return t
+}
+
+// resolveEmptyRecipeIDs resolves empty RecipeStepProductRecipeID values in a recipe input
+// by looking up recipes in the createdRecipes map. Prefers RecipeStepProductRecipeSlug when
+// set (ensures correct recipe); otherwise falls back to matching by step index (ambiguous).
+func resolveEmptyRecipeIDs(recipe *mealplanning.RecipeCreationRequestInput, createdRecipes map[string]*mealplanning.Recipe) {
+	for _, step := range recipe.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID == "" {
+				// Prefer slug lookup when available - ensures we resolve to the correct recipe
+				if ingredient.RecipeStepProductRecipeSlug != nil && *ingredient.RecipeStepProductRecipeSlug != "" {
+					if refRecipe, ok := createdRecipes[*ingredient.RecipeStepProductRecipeSlug]; ok && refRecipe != nil {
+						ingredient.RecipeStepProductRecipeID = &refRecipe.ID
+						continue
+					}
+				}
+				// Fallback: match by step index (ambiguous - many recipes may have a step at that index)
+				stepIndex := ingredient.ProductOfRecipeStepIndex
+				if stepIndex != nil {
+					for _, refRecipe := range createdRecipes {
+						if refRecipe != nil && int(*stepIndex) < len(refRecipe.Steps) {
+							referencedStep := refRecipe.Steps[*stepIndex]
+							if ingredient.ProductOfRecipeStepProductIndex != nil {
+								productIndex := int(*ingredient.ProductOfRecipeStepProductIndex)
+								if productIndex < len(referencedStep.Products) {
+									ingredient.RecipeStepProductRecipeID = &refRecipe.ID
+									break
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

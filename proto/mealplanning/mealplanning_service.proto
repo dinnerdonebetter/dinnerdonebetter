@@ -155,6 +155,8 @@ service MealPlanningService {
   rpc GetValidMeasurementUnit(GetValidMeasurementUnitRequest) returns (GetValidMeasurementUnitResponse);
   rpc GetValidMeasurementUnitConversion(GetValidMeasurementUnitConversionRequest) returns (GetValidMeasurementUnitConversionResponse);
   rpc GetValidMeasurementUnitConversionsForUnit(GetValidMeasurementUnitConversionsForUnitRequest) returns (GetValidMeasurementUnitConversionsForUnitResponse);
+  rpc GetValidMeasurementUnitConversionsForIngredients(GetValidMeasurementUnitConversionsForIngredientsRequest) returns (GetValidMeasurementUnitConversionsForIngredientsResponse);
+  rpc GetMeasurementUnitConversionMismatches(GetMeasurementUnitConversionMismatchesRequest) returns (GetMeasurementUnitConversionMismatchesResponse);
   rpc GetValidMeasurementUnits(GetValidMeasurementUnitsRequest) returns (GetValidMeasurementUnitsResponse);
   rpc GetValidPreparation(GetValidPreparationRequest) returns (GetValidPreparationResponse);
   rpc GetValidPreparationInstrument(GetValidPreparationInstrumentRequest) returns (GetValidPreparationInstrumentResponse);
@@ -174,6 +176,7 @@ service MealPlanningService {
   rpc SearchForMeals(SearchForMealsRequest) returns (SearchForMealsResponse);
   rpc SearchForRecipes(SearchForRecipesRequest) returns (SearchForRecipesResponse);
   rpc SearchForMealEligibleRecipes(SearchForMealEligibleRecipesRequest) returns (SearchForMealEligibleRecipesResponse);
+  rpc SearchForRecipesWithInstrumentOwnership(SearchForRecipesWithInstrumentOwnershipRequest) returns (SearchForRecipesWithInstrumentOwnershipResponse);
   rpc SearchForValidIngredientGroups(SearchForValidIngredientGroupsRequest) returns (SearchForValidIngredientGroupsResponse);
   rpc SearchForValidIngredientStates(SearchForValidIngredientStatesRequest) returns (SearchForValidIngredientStatesResponse);
   rpc SearchForValidIngredients(SearchForValidIngredientsRequest) returns (SearchForValidIngredientsResponse);
@@ -225,6 +228,7 @@ service MealPlanningService {
   rpc CreateUserIngredientPreference(CreateUserIngredientPreferenceRequest) returns (CreateUserIngredientPreferenceResponse);
   rpc GetAccountInstrumentOwnership(GetAccountInstrumentOwnershipRequest) returns (GetAccountInstrumentOwnershipResponse);
   rpc GetAccountInstrumentOwnerships(GetAccountInstrumentOwnershipsRequest) returns (GetAccountInstrumentOwnershipsResponse);
+  rpc SearchForValidInstrumentsNotOwnedByAccount(SearchForValidInstrumentsNotOwnedByAccountRequest) returns (SearchForValidInstrumentsNotOwnedByAccountResponse);
   rpc GetUserIngredientPreference(GetUserIngredientPreferenceRequest) returns (GetUserIngredientPreferenceResponse);
   rpc GetUserIngredientPreferences(GetUserIngredientPreferencesRequest) returns (GetUserIngredientPreferencesResponse);
   rpc UpdateAccountInstrumentOwnership(UpdateAccountInstrumentOwnershipRequest) returns (UpdateAccountInstrumentOwnershipResponse);

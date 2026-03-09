@@ -23,6 +23,7 @@ struct ServiceSettingsView: View {
           errorIcon: viewModel.errorIcon,
           errorIconColor: viewModel.errorIconColor,
           onRetry: { await viewModel.loadData() },
+          showEnvironmentSelector: viewModel.isServerDownError,
           content: { settingsContent(viewModel: viewModel) }
         )
       } else {

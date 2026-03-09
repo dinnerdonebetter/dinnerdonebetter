@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeDrawerView: View {
+  @Environment(AuthenticationManager.self) private var authManager
   @Binding var isPresented: Bool
 
   var displayName: String = ""
@@ -29,13 +30,10 @@ struct HomeDrawerView: View {
       // Drawer panel (slides in from right)
       VStack(alignment: .leading, spacing: 0) {
         // Account section
-        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-          Text("Account")
-            .font(DSTheme.Typography.caption)
-            .fontWeight(.semibold)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-            .padding(.horizontal, DSTheme.Spacing.md)
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+          DSSectionHeader(title: "Account", style: .label)
             .padding(.top, DSTheme.Spacing.lg)
+            .padding(.horizontal, DSTheme.Spacing.md)
 
           NavigationLink(destination: AccountSettingsView()) {
             HStack(spacing: DSTheme.Spacing.md) {
@@ -45,24 +43,24 @@ struct HomeDrawerView: View {
                 imageURL: avatarURL
               )
               Text(displayName.isEmpty ? "Account" : displayName)
-                .font(DSTheme.Typography.bodyLarge)
+                .font(DSTheme.Typography.button)
                 .foregroundColor(DSTheme.Colors.textPrimary)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .padding(.vertical, DSTheme.Spacing.lg)
+            .padding(.horizontal, DSTheme.Spacing.xl)
           }
           .buttonStyle(.plain)
           .simultaneousGesture(TapGesture().onEnded { isPresented = false })
-          .padding(DSTheme.Spacing.md)
           .padding(.horizontal, DSTheme.Spacing.md)
         }
 
         // Create Meal Plan CTA
-        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-          Text("Meal Planning")
-            .font(DSTheme.Typography.caption)
-            .fontWeight(.semibold)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-            .padding(.horizontal, DSTheme.Spacing.md)
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+          DSSectionHeader(title: "Meal Planning", style: .label)
             .padding(.top, DSTheme.Spacing.lg)
+            .padding(.horizontal, DSTheme.Spacing.md)
 
           NavigationLink(
             destination: CreateMealPlanWizardView(
@@ -71,46 +69,64 @@ struct HomeDrawerView: View {
             )
           ) {
             Label("Create Meal Plan", systemImage: "plus.circle.fill")
-              .font(DSTheme.Typography.bodyLarge)
+              .font(DSTheme.Typography.button)
               .foregroundColor(DSTheme.Colors.primary)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .contentShape(Rectangle())
+              .padding(.vertical, DSTheme.Spacing.lg)
+              .padding(.horizontal, DSTheme.Spacing.xl)
           }
           .buttonStyle(.plain)
           .simultaneousGesture(TapGesture().onEnded { isPresented = false })
-          .padding(DSTheme.Spacing.md)
           .padding(.horizontal, DSTheme.Spacing.md)
         }
 
         // Browse section
-        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-          Text("Browse")
-            .font(DSTheme.Typography.caption)
-            .fontWeight(.semibold)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-            .padding(.horizontal, DSTheme.Spacing.md)
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+          DSSectionHeader(title: "Browse", style: .label)
             .padding(.top, DSTheme.Spacing.lg)
+            .padding(.horizontal, DSTheme.Spacing.md)
 
           NavigationLink(destination: MealListView()) {
             Label("Meals", systemImage: "fork.knife")
-              .font(DSTheme.Typography.bodyLarge)
+              .font(DSTheme.Typography.button)
               .foregroundColor(DSTheme.Colors.textPrimary)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .contentShape(Rectangle())
+              .padding(.vertical, DSTheme.Spacing.lg)
+              .padding(.horizontal, DSTheme.Spacing.xl)
           }
           .buttonStyle(.plain)
           .simultaneousGesture(TapGesture().onEnded { isPresented = false })
-          .padding(DSTheme.Spacing.md)
           .padding(.horizontal, DSTheme.Spacing.md)
 
           NavigationLink(destination: RecipeListView()) {
             Label("Recipes", systemImage: "book.closed.fill")
-              .font(DSTheme.Typography.bodyLarge)
+              .font(DSTheme.Typography.button)
               .foregroundColor(DSTheme.Colors.textPrimary)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .contentShape(Rectangle())
+              .padding(.vertical, DSTheme.Spacing.lg)
+              .padding(.horizontal, DSTheme.Spacing.xl)
           }
           .buttonStyle(.plain)
           .simultaneousGesture(TapGesture().onEnded { isPresented = false })
-          .padding(DSTheme.Spacing.md)
           .padding(.horizontal, DSTheme.Spacing.md)
         }
 
         Spacer()
+
+        VStack(spacing: DSTheme.Spacing.lg) {
+          DSDivider()
+          DSButton("Sign Out", style: .destructiveGhost, size: .large, fullWidth: true) {
+            isPresented = false
+            Task {
+              await authManager.logout()
+            }
+          }
+        }
+        .padding(DSTheme.Spacing.md)
+        .background(Color(.systemBackground))
       }
       .frame(width: drawerWidth)
       .background(Color(.systemBackground))
