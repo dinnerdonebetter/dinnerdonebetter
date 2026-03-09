@@ -224,13 +224,16 @@ class AccountSettingsViewModel {
 
   private func fetchValidInstruments() async throws -> [Mealplanning_ValidInstrument] {
     let (clientManager, metadata) = try await getClientManagerAndMetadata()
-    let request = Mealplanning_GetValidInstrumentsRequest()
+    var request = Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest()
+    request.query = ""
+    request.filter = Filtering_QueryFilter()
 
-    let response = try await clientManager.client.mealPlanning.getValidInstruments(
-      request,
-      metadata: metadata,
-      options: clientManager.defaultCallOptions
-    )
+    let response = try await clientManager.client.mealPlanning
+      .searchForValidInstrumentsNotOwnedByAccount(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
 
     return response.results
   }

@@ -1089,6 +1089,18 @@ message SearchForValidInstrumentsResponse {
   repeated ValidInstrument results = 3;
 }
 
+message SearchForValidInstrumentsNotOwnedByAccountRequest {
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
+}
+
+message SearchForValidInstrumentsNotOwnedByAccountResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidInstrument results = 3;
+}
+
 message SearchForValidMeasurementUnitsRequest {
   filtering.QueryFilter filter = 1;
   string query = 2;

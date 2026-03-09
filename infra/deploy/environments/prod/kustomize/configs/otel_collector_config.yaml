@@ -17,7 +17,7 @@ receivers:
           metric_relabel_configs:
             # Keep only these kube metrics; drop the rest (configmaps, secrets, jobs, etc.)
             - source_labels: [__name__]
-              regex: 'kube_deployment_status_replicas(_ready|_available|_unavailable|_updated)?|kube_deployment_spec_replicas|kube_deployment_status_observed_generation|kube_pod_status_phase'
+              regex: 'kube_deployment_status_replicas(_ready|_available|_unavailable|_updated)?|kube_deployment_spec_replicas|kube_deployment_status_observed_generation|kube_pod_status_phase|kube_node_info|kube_node_status_condition|kube_node_status_allocatable'
               action: keep
 
   googlecloudmonitoring:

@@ -227,6 +227,7 @@ service MealPlanningService {
   rpc CreateUserIngredientPreference(CreateUserIngredientPreferenceRequest) returns (CreateUserIngredientPreferenceResponse);
   rpc GetAccountInstrumentOwnership(GetAccountInstrumentOwnershipRequest) returns (GetAccountInstrumentOwnershipResponse);
   rpc GetAccountInstrumentOwnerships(GetAccountInstrumentOwnershipsRequest) returns (GetAccountInstrumentOwnershipsResponse);
+  rpc SearchForValidInstrumentsNotOwnedByAccount(SearchForValidInstrumentsNotOwnedByAccountRequest) returns (SearchForValidInstrumentsNotOwnedByAccountResponse);
   rpc GetUserIngredientPreference(GetUserIngredientPreferenceRequest) returns (GetUserIngredientPreferenceResponse);
   rpc GetUserIngredientPreferences(GetUserIngredientPreferencesRequest) returns (GetUserIngredientPreferencesResponse);
   rpc UpdateAccountInstrumentOwnership(UpdateAccountInstrumentOwnershipRequest) returns (UpdateAccountInstrumentOwnershipResponse);

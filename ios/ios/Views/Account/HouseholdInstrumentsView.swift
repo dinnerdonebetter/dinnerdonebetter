@@ -8,6 +8,8 @@ import SwiftUI
 struct HouseholdInstrumentsView: View {
   let viewModel: AccountSettingsViewModel
   @State private var instrumentSearchQuery: String = ""
+  @State private var instrumentToAdd: Mealplanning_ValidInstrument?
+  @State private var showAddInstrumentSheet = false
 
   var body: some View {
     DSContentState(
@@ -18,11 +20,26 @@ struct HouseholdInstrumentsView: View {
       errorIcon: viewModel.errorIcon,
       errorIconColor: viewModel.errorIconColor,
       onRetry: { await viewModel.loadData() },
+      showEnvironmentSelector: viewModel.isServerDownError,
       content: { instrumentsContent }
     )
     .navigationTitle("Kitchen Instruments")
     .refreshable {
       await viewModel.loadData()
+    }
+    .sheet(isPresented: $showAddInstrumentSheet) {
+      if let instrument = instrumentToAdd {
+        AddInstrumentSheet(
+          instrument: instrument,
+          viewModel: viewModel,
+          isPresented: $showAddInstrumentSheet
+        )
+      }
+    }
+    .onChange(of: showAddInstrumentSheet) { _, isPresented in
+      if !isPresented {
+        instrumentToAdd = nil
+      }
     }
   }
 
@@ -73,24 +90,20 @@ struct HouseholdInstrumentsView: View {
   private var filteredInstruments: [Mealplanning_ValidInstrument] {
     let query = instrumentSearchQuery.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     guard !query.isEmpty else {
-      return viewModel.validInstruments
+      return []
     }
     return viewModel.validInstruments.filter { instrument in
       instrument.name.lowercased().contains(query)
         || instrument.pluralName.lowercased().contains(query)
-        || (!instrument.description_p.isEmpty && instrument.description_p.lowercased().contains(query))
+        || (!instrument.description_p.isEmpty
+          && instrument.description_p.lowercased().contains(query))
     }
-  }
-
-  private var selectedInstrument: Mealplanning_ValidInstrument? {
-    guard !viewModel.newInstrumentValidInstrumentID.isEmpty else { return nil }
-    return viewModel.validInstruments.first { $0.id == viewModel.newInstrumentValidInstrumentID }
   }
 
   private var addInstrumentSection: some View {
     DSSection(
       "Add Instrument",
-      subtitle: "Add a tool or appliance your household owns"
+      subtitle: "Search for a tool or appliance your household owns"
     ) {
       VStack(spacing: DSTheme.Spacing.lg) {
         DSTextField(
@@ -99,93 +112,95 @@ struct HouseholdInstrumentsView: View {
         )
         .autocorrectionDisabled()
 
-        if let selected = selectedInstrument {
-          HStack {
-            Text("Selected: \(selected.name)")
-              .font(DSTheme.Typography.body)
-              .foregroundColor(DSTheme.Colors.textPrimary)
-            Spacer()
-            DSButton("Clear", style: .ghost, size: .small) {
-              viewModel.newInstrumentValidInstrumentID = ""
-            }
-          }
-          .padding(.vertical, DSTheme.Spacing.xs)
-        }
-
-        if filteredInstruments.isEmpty {
-          Text("No instruments found")
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        } else {
-          ScrollView {
-            LazyVStack(spacing: DSTheme.Spacing.xs) {
-              ForEach(filteredInstruments, id: \.id) { instrument in
-                Button {
-                  viewModel.newInstrumentValidInstrumentID = instrument.id
-                } label: {
-                  HStack {
-                    Text(instrument.name)
-                      .font(DSTheme.Typography.body)
-                      .foregroundColor(DSTheme.Colors.textPrimary)
-                    if viewModel.newInstrumentValidInstrumentID == instrument.id {
-                      Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(DSTheme.Colors.primary)
+        if !instrumentSearchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+          if filteredInstruments.isEmpty {
+            Text("No instruments found")
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+              .frame(maxWidth: .infinity, alignment: .leading)
+          } else {
+            ScrollView {
+              LazyVStack(spacing: DSTheme.Spacing.xs) {
+                ForEach(filteredInstruments, id: \.id) { instrument in
+                  Button {
+                    instrumentToAdd = instrument
+                    showAddInstrumentSheet = true
+                  } label: {
+                    HStack {
+                      Text(instrument.name)
+                        .font(DSTheme.Typography.body)
+                        .foregroundColor(DSTheme.Colors.textPrimary)
+                      Spacer()
+                      Image(systemName: "plus.circle")
+                        .foregroundColor(DSTheme.Colors.textSecondary)
                     }
-                    Spacer()
+                    .padding(.vertical, DSTheme.Spacing.sm)
+                    .padding(.horizontal, DSTheme.Spacing.md)
+                    .contentShape(Rectangle())
                   }
-                  .padding(.vertical, DSTheme.Spacing.sm)
-                  .padding(.horizontal, DSTheme.Spacing.md)
-                  .background(
-                    viewModel.newInstrumentValidInstrumentID == instrument.id
-                      ? DSTheme.Colors.primary.opacity(0.1)
-                      : Color.clear
-                  )
-                  .contentShape(Rectangle())
+                  .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
               }
             }
-          }
-          .frame(maxHeight: 200)
-        }
-
-        HStack {
-          Text("Quantity")
-            .font(DSTheme.Typography.body)
-            .foregroundColor(DSTheme.Colors.textPrimary)
-          Spacer()
-          Stepper(
-            value: Binding(
-              get: { Int(viewModel.newInstrumentQuantity) },
-              set: { viewModel.newInstrumentQuantity = UInt32(max(1, min(999, $0))) }
-            ),
-            in: 1...999
-          ) {
-            Text("\(viewModel.newInstrumentQuantity)")
-              .font(DSTheme.Typography.label)
-              .foregroundColor(DSTheme.Colors.textPrimary)
-              .frame(minWidth: 32, alignment: .trailing)
+            .frame(maxHeight: 200)
           }
         }
+      }
+    }
+  }
+}
 
-        DSTextField(
-          "Notes (Optional)",
-          text: Binding(
-            get: { viewModel.newInstrumentNotes },
-            set: { viewModel.newInstrumentNotes = $0 }
-          ),
-          type: .multiline
-        )
+// MARK: - Add Instrument Sheet
 
-        DSButton(
-          "Add Instrument",
-          icon: "plus",
-          fullWidth: true,
-          isDisabled: viewModel.newInstrumentValidInstrumentID.isEmpty
-        ) {
-          Task {
-            await viewModel.createInstrumentOwnership()
+struct AddInstrumentSheet: View {
+  let instrument: Mealplanning_ValidInstrument
+  let viewModel: AccountSettingsViewModel
+  @Binding var isPresented: Bool
+
+  @State private var quantity: UInt32 = 1
+  @State private var notes: String = ""
+
+  var body: some View {
+    NavigationStack {
+      Form {
+        Section {
+          HStack {
+            Text("Quantity")
+            Spacer()
+            Stepper(
+              value: Binding(
+                get: { Int(quantity) },
+                set: { quantity = UInt32(max(1, min(999, $0))) }
+              ),
+              in: 1...999
+            ) {
+              Text("\(quantity)")
+                .frame(minWidth: 32, alignment: .trailing)
+            }
+          }
+          TextField("Notes (Optional)", text: $notes, axis: .vertical)
+            .lineLimit(2...4)
+        }
+      }
+      .navigationTitle(instrument.name)
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .cancellationAction) {
+          Button("Cancel") {
+            isPresented = false
+          }
+        }
+        ToolbarItem(placement: .confirmationAction) {
+          Button("Add") {
+            Task {
+              viewModel.newInstrumentValidInstrumentID = instrument.id
+              viewModel.newInstrumentQuantity = quantity
+              viewModel.newInstrumentNotes = notes
+              let success = await viewModel.createInstrumentOwnership()
+              if success {
+                isPresented = false
+              }
+            }
           }
         }
       }

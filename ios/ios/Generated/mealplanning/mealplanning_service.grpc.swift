@@ -2648,6 +2648,18 @@ internal enum Mealplanning_MealPlanningService {
                 method: "GetAccountInstrumentOwnerships"
             )
         }
+        /// Namespace for "SearchForValidInstrumentsNotOwnedByAccount" metadata.
+        internal enum SearchForValidInstrumentsNotOwnedByAccount {
+            /// Request type for "SearchForValidInstrumentsNotOwnedByAccount".
+            internal typealias Input = Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest
+            /// Response type for "SearchForValidInstrumentsNotOwnedByAccount".
+            internal typealias Output = Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse
+            /// Descriptor for "SearchForValidInstrumentsNotOwnedByAccount".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "SearchForValidInstrumentsNotOwnedByAccount"
+            )
+        }
         /// Namespace for "GetUserIngredientPreference" metadata.
         internal enum GetUserIngredientPreference {
             /// Request type for "GetUserIngredientPreference".
@@ -2953,6 +2965,7 @@ internal enum Mealplanning_MealPlanningService {
             CreateUserIngredientPreference.descriptor,
             GetAccountInstrumentOwnership.descriptor,
             GetAccountInstrumentOwnerships.descriptor,
+            SearchForValidInstrumentsNotOwnedByAccount.descriptor,
             GetUserIngredientPreference.descriptor,
             GetUserIngredientPreferences.descriptor,
             UpdateAccountInstrumentOwnership.descriptor,
@@ -7138,6 +7151,25 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetAccountInstrumentOwnershipsResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetAccountInstrumentOwnershipsResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "SearchForValidInstrumentsNotOwnedByAccount" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func searchForValidInstrumentsNotOwnedByAccount<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "GetUserIngredientPreference" method.
@@ -13860,6 +13892,36 @@ extension Mealplanning_MealPlanningService {
             )
         }
 
+        /// Call the "SearchForValidInstrumentsNotOwnedByAccount" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func searchForValidInstrumentsNotOwnedByAccount<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.SearchForValidInstrumentsNotOwnedByAccount.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
         /// Call the "GetUserIngredientPreference" method.
         ///
         /// - Parameters:
@@ -19545,6 +19607,31 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetAccountInstrumentOwnershipsRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetAccountInstrumentOwnershipsResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SearchForValidInstrumentsNotOwnedByAccount" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func searchForValidInstrumentsNotOwnedByAccount<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.searchForValidInstrumentsNotOwnedByAccount(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -26074,6 +26161,35 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             metadata: metadata
         )
         return try await self.getAccountInstrumentOwnerships(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SearchForValidInstrumentsNotOwnedByAccount" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func searchForValidInstrumentsNotOwnedByAccount<Result>(
+        _ message: Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_SearchForValidInstrumentsNotOwnedByAccountRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.searchForValidInstrumentsNotOwnedByAccount(
             request: request,
             options: options,
             onResponse: handleResponse

@@ -73,6 +73,7 @@ struct AccountSettingsView: View {
         errorIcon: viewModel.errorIcon,
         errorIconColor: viewModel.errorIconColor,
         onRetry: { await viewModel.loadData() },
+        showEnvironmentSelector: viewModel.isServerDownError,
         content: { accountSettingsScrollContent(viewModel: viewModel) }
       )
     } else {
@@ -122,13 +123,13 @@ struct AccountSettingsView: View {
           destination: HouseholdDetailsView(viewModel: viewModel)
         )
 
-        DSListRowLink(
-          title: "Kitchen Instruments",
-          subtitle: "Tools and appliances your household owns",
-          icon: "frying.pan",
-          style: .card,
-          destination: HouseholdInstrumentsView(viewModel: viewModel)
-        )
+        // DSListRowLink(
+        //   title: "Kitchen Instruments",
+        //   subtitle: "Tools and appliances your household owns",
+        //   icon: "frying.pan",
+        //   style: .card,
+        //   destination: HouseholdInstrumentsView(viewModel: viewModel)
+        // )
       }
 
       DSListRowLink(
