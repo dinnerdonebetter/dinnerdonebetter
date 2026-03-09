@@ -74,12 +74,14 @@ resource "google_container_node_pool" "primary_nodes" {
 
   node_locations = [
     local.gcp_main_zone,
+    local.gcp_secondary_zone,
+    local.gcp_tertiary_zone,
   ]
 
   autoscaling {
     total_min_node_count = 1
     total_max_node_count = 1
-    location_policy = "BALANCED"
+    location_policy = "ANY"
   }
 
   management {
@@ -100,7 +102,7 @@ resource "google_container_node_pool" "primary_nodes" {
       env = local.project_id
     }
 
-    preemptible  = true
+    preemptible  = false
     machine_type = "e2-standard-2"
     tags         = ["gke-node", local.environment]
     metadata = {

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeDrawerView: View {
+  @Environment(AuthenticationManager.self) private var authManager
   @Binding var isPresented: Bool
 
   var displayName: String = ""
@@ -111,6 +112,18 @@ struct HomeDrawerView: View {
         }
 
         Spacer()
+
+        VStack(spacing: DSTheme.Spacing.lg) {
+          Divider()
+          DSButton("Sign Out", style: .destructive, size: .large, fullWidth: true) {
+            isPresented = false
+            Task {
+              await authManager.logout()
+            }
+          }
+        }
+        .padding(DSTheme.Spacing.md)
+        .background(Color(.systemBackground))
       }
       .frame(width: drawerWidth)
       .background(Color(.systemBackground))

@@ -82,24 +82,15 @@ struct AccountSettingsView: View {
   }
 
   private func accountSettingsScrollContent(viewModel: AccountSettingsViewModel) -> some View {
-    VStack(spacing: 0) {
-      ScrollView {
-        VStack(spacing: DSTheme.Spacing.xl) {
-          subscriptionSection
-          navigationLinksSection(viewModel: viewModel)
-        }
-        .dsScreenPadding()
-        .padding(.bottom, DSTheme.Spacing.lg)
-      }
-      .frame(maxHeight: .infinity)
-
-      VStack(spacing: DSTheme.Spacing.lg) {
-        Divider()
-        signOutButton
+    ScrollView {
+      VStack(spacing: DSTheme.Spacing.xl) {
+        subscriptionSection
+        navigationLinksSection(viewModel: viewModel)
       }
       .dsScreenPadding()
-      .background(Color(.systemBackground))
+      .padding(.bottom, DSTheme.Spacing.lg)
     }
+    .frame(maxHeight: .infinity)
   }
 
   // MARK: - Navigation Links Section
@@ -178,15 +169,6 @@ struct AccountSettingsView: View {
             }
           }
         }
-      }
-    }
-  }
-
-  // MARK: - Sign Out Button
-  private var signOutButton: some View {
-    DSButton("Sign Out", style: .destructive, size: .large, fullWidth: true) {
-      Task {
-        await authManager.logout()
       }
     }
   }
