@@ -85,6 +85,11 @@ patches:
       version: v1
       kind: Deployment
       name: dinner-done-better-service-api-deployment
+  - path: patches/deployment-tracing-env.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-service-api-deployment
 
   ### Async Message Handler - needs database, pubsub, service secrets, environment, workload identity
   - path: patches/deployment-workload-identity.yaml

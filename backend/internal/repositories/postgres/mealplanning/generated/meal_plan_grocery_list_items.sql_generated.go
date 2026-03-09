@@ -466,6 +466,7 @@ SELECT
 			AND valid_ingredients.archived_at IS NULL
 			AND meal_plans.archived_at IS NULL
 			AND meal_plan_grocery_list_items.belongs_to_meal_plan = $6
+			AND (meal_plan_grocery_list_items.belongs_to_meal_plan_option IS NULL OR NOT EXISTS (SELECT 1 FROM meal_plan_options o JOIN meal_plan_events e ON o.belongs_to_meal_plan_event = e.id WHERE o.id = meal_plan_grocery_list_items.belongs_to_meal_plan_option AND e.archived_at IS NOT NULL))
 	) AS filtered_count,
 	(
 		SELECT COUNT(meal_plan_grocery_list_items.id)
@@ -478,6 +479,7 @@ SELECT
 			AND valid_ingredients.archived_at IS NULL
 			AND meal_plans.archived_at IS NULL
 			AND meal_plan_grocery_list_items.belongs_to_meal_plan = $6
+			AND (meal_plan_grocery_list_items.belongs_to_meal_plan_option IS NULL OR NOT EXISTS (SELECT 1 FROM meal_plan_options o JOIN meal_plan_events e ON o.belongs_to_meal_plan_event = e.id WHERE o.id = meal_plan_grocery_list_items.belongs_to_meal_plan_option AND e.archived_at IS NOT NULL))
 	) AS total_count
 FROM meal_plan_grocery_list_items
 	JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan=meal_plans.id
@@ -499,6 +501,7 @@ WHERE meal_plan_grocery_list_items.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
 	AND meal_plans.archived_at IS NULL
+	AND (meal_plan_grocery_list_items.belongs_to_meal_plan_option IS NULL OR NOT EXISTS (SELECT 1 FROM meal_plan_options o JOIN meal_plan_events e ON o.belongs_to_meal_plan_event = e.id WHERE o.id = meal_plan_grocery_list_items.belongs_to_meal_plan_option AND e.archived_at IS NOT NULL))
 	AND meal_plan_grocery_list_items.id > COALESCE($7, '')
 GROUP BY meal_plan_grocery_list_items.id,
 	valid_ingredients.id,

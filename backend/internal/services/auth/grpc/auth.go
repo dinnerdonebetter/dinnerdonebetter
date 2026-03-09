@@ -14,6 +14,7 @@ import (
 	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/converters"
+	_ "github.com/dinnerdonebetter/backend/internal/services/errors"
 	identityconverters "github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"google.golang.org/grpc/codes"

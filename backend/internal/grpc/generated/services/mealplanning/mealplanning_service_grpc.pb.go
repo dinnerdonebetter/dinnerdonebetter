@@ -199,6 +199,7 @@ const (
 	MealPlanningService_SearchValidMeasurementUnitsByIngredient_FullMethodName             = "/mealplanning.MealPlanningService/SearchValidMeasurementUnitsByIngredient"
 	MealPlanningService_UpdateMealPlan_FullMethodName                                      = "/mealplanning.MealPlanningService/UpdateMealPlan"
 	MealPlanningService_UpdateMealPlanEvent_FullMethodName                                 = "/mealplanning.MealPlanningService/UpdateMealPlanEvent"
+	MealPlanningService_SwapMealPlanEvents_FullMethodName                                  = "/mealplanning.MealPlanningService/SwapMealPlanEvents"
 	MealPlanningService_UpdateMealPlanGroceryListItem_FullMethodName                       = "/mealplanning.MealPlanningService/UpdateMealPlanGroceryListItem"
 	MealPlanningService_UpdateMealPlanOption_FullMethodName                                = "/mealplanning.MealPlanningService/UpdateMealPlanOption"
 	MealPlanningService_UpdateMealPlanOptionVote_FullMethodName                            = "/mealplanning.MealPlanningService/UpdateMealPlanOptionVote"
@@ -428,6 +429,7 @@ type MealPlanningServiceClient interface {
 	SearchValidMeasurementUnitsByIngredient(ctx context.Context, in *SearchValidMeasurementUnitsByIngredientRequest, opts ...grpc.CallOption) (*SearchValidMeasurementUnitsByIngredientResponse, error)
 	UpdateMealPlan(ctx context.Context, in *UpdateMealPlanRequest, opts ...grpc.CallOption) (*UpdateMealPlanResponse, error)
 	UpdateMealPlanEvent(ctx context.Context, in *UpdateMealPlanEventRequest, opts ...grpc.CallOption) (*UpdateMealPlanEventResponse, error)
+	SwapMealPlanEvents(ctx context.Context, in *SwapMealPlanEventsRequest, opts ...grpc.CallOption) (*SwapMealPlanEventsResponse, error)
 	UpdateMealPlanGroceryListItem(ctx context.Context, in *UpdateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*UpdateMealPlanGroceryListItemResponse, error)
 	UpdateMealPlanOption(ctx context.Context, in *UpdateMealPlanOptionRequest, opts ...grpc.CallOption) (*UpdateMealPlanOptionResponse, error)
 	UpdateMealPlanOptionVote(ctx context.Context, in *UpdateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*UpdateMealPlanOptionVoteResponse, error)
@@ -2254,6 +2256,16 @@ func (c *mealPlanningServiceClient) UpdateMealPlanEvent(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) SwapMealPlanEvents(ctx context.Context, in *SwapMealPlanEventsRequest, opts ...grpc.CallOption) (*SwapMealPlanEventsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SwapMealPlanEventsResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_SwapMealPlanEvents_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) UpdateMealPlanGroceryListItem(ctx context.Context, in *UpdateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*UpdateMealPlanGroceryListItemResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateMealPlanGroceryListItemResponse)
@@ -2901,6 +2913,7 @@ type MealPlanningServiceServer interface {
 	SearchValidMeasurementUnitsByIngredient(context.Context, *SearchValidMeasurementUnitsByIngredientRequest) (*SearchValidMeasurementUnitsByIngredientResponse, error)
 	UpdateMealPlan(context.Context, *UpdateMealPlanRequest) (*UpdateMealPlanResponse, error)
 	UpdateMealPlanEvent(context.Context, *UpdateMealPlanEventRequest) (*UpdateMealPlanEventResponse, error)
+	SwapMealPlanEvents(context.Context, *SwapMealPlanEventsRequest) (*SwapMealPlanEventsResponse, error)
 	UpdateMealPlanGroceryListItem(context.Context, *UpdateMealPlanGroceryListItemRequest) (*UpdateMealPlanGroceryListItemResponse, error)
 	UpdateMealPlanOption(context.Context, *UpdateMealPlanOptionRequest) (*UpdateMealPlanOptionResponse, error)
 	UpdateMealPlanOptionVote(context.Context, *UpdateMealPlanOptionVoteRequest) (*UpdateMealPlanOptionVoteResponse, error)
@@ -3487,6 +3500,9 @@ func (UnimplementedMealPlanningServiceServer) UpdateMealPlan(context.Context, *U
 }
 func (UnimplementedMealPlanningServiceServer) UpdateMealPlanEvent(context.Context, *UpdateMealPlanEventRequest) (*UpdateMealPlanEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealPlanEvent not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) SwapMealPlanEvents(context.Context, *SwapMealPlanEventsRequest) (*SwapMealPlanEventsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SwapMealPlanEvents not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) UpdateMealPlanGroceryListItem(context.Context, *UpdateMealPlanGroceryListItemRequest) (*UpdateMealPlanGroceryListItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealPlanGroceryListItem not implemented")
@@ -6833,6 +6849,24 @@ func _MealPlanningService_UpdateMealPlanEvent_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_SwapMealPlanEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SwapMealPlanEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).SwapMealPlanEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_SwapMealPlanEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).SwapMealPlanEvents(ctx, req.(*SwapMealPlanEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_UpdateMealPlanGroceryListItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateMealPlanGroceryListItemRequest)
 	if err := dec(in); err != nil {
@@ -8353,6 +8387,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateMealPlanEvent",
 			Handler:    _MealPlanningService_UpdateMealPlanEvent_Handler,
+		},
+		{
+			MethodName: "SwapMealPlanEvents",
+			Handler:    _MealPlanningService_SwapMealPlanEvents_Handler,
 		},
 		{
 			MethodName: "UpdateMealPlanGroceryListItem",

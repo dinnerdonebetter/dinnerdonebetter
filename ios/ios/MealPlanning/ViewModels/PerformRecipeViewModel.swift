@@ -541,12 +541,21 @@ class PerformRecipeViewModel {
     if stepTimerStartTimes[currentStepKey] != nil {
       print("🔘 [\(recipeName)] toggleStep '\(stepName)' → CANCEL timer")
       stepTimerStartTimes.removeValue(forKey: currentStepKey)
+      StepTimerNotificationService.cancelNotification(stepKey: currentStepKey)
     } else if completedSteps.contains(currentStepKey) {
       print("🔘 [\(recipeName)] toggleStep '\(stepName)' → UNCHECKING (and dependents)")
       uncheckStepAndDependents(stepKey: currentStepKey)
     } else {
       if let step = stepFor(recipeID: recipeID, stepID: stepID), stepHasTimer(step) {
         stepTimerStartTimes[currentStepKey] = Date()
+        if let minSeconds = stepTimerMinSeconds(step) {
+          StepTimerNotificationService.scheduleNotification(
+            stepKey: currentStepKey,
+            recipeName: recipeName,
+            stepName: stepName,
+            minSeconds: minSeconds
+          )
+        }
         print(
           "🔘 [\(recipeName)] toggleStep '\(stepName)' → TIMER STARTED ⏱ | stepTimerStartTimes now=\(stepTimerStartTimes.count)"
         )
@@ -566,6 +575,7 @@ class PerformRecipeViewModel {
     guard let recipe = recipe else { return }
     completedSteps.remove(stepKey)
     stepTimerStartTimes.removeValue(forKey: stepKey)
+    StepTimerNotificationService.cancelNotification(stepKey: stepKey)
 
     // Parse recipeID and stepID from stepKey
     let components = stepKey.split(separator: ":", maxSplits: 1)
@@ -744,6 +754,7 @@ class PerformRecipeViewModel {
     guard stepTimerStartTimes[currentStepKey] != nil else { return }
     guard canSkipStepTimer(recipeID: recipeID, stepID: stepID) else { return }
     stepTimerStartTimes.removeValue(forKey: currentStepKey)
+    StepTimerNotificationService.cancelNotification(stepKey: currentStepKey)
     completedSteps.insert(currentStepKey)
   }
 

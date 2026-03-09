@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	grpcapi "github.com/dinnerdonebetter/backend/internal/build/services/api/grpc"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -58,5 +59,7 @@ func main() {
 	}()
 
 	logger.Info("shutting down")
-	srv.Shutdown()
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+	srv.Shutdown(shutdownCtx)
 }

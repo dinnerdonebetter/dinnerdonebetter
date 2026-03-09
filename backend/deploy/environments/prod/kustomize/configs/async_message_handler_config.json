@@ -98,7 +98,7 @@
 			},
 			"service_name": "async_message_handler",
 			"provider": "otelgrpc",
-			"spanCollectionProbability": 0.1
+			"spanCollectionProbability": 1
 		}
 	},
 	"email": {

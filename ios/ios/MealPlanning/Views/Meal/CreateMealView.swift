@@ -63,13 +63,6 @@ struct CreateMealView: View {
     }
     .navigationTitle("Create Meal")
     .navigationBarTitleDisplayMode(.large)
-    .toolbar {
-      ToolbarItem(placement: .cancellationAction) {
-        Button("Cancel") {
-          dismiss()
-        }
-      }
-    }
     .onAppear {
       if viewModel == nil {
         viewModel = CreateMealViewModel(authManager: authManager)

@@ -2852,6 +2852,16 @@ message UpdateMealPlanEventResponse {
   MealPlanEvent updated = 2;
 }
 
+message SwapMealPlanEventsRequest {
+  string meal_plan_id = 1;
+  string meal_plan_event_id_a = 2;
+  string meal_plan_event_id_b = 3;
+}
+
+message SwapMealPlanEventsResponse {
+  common.ResponseDetails response_details = 1;
+}
+
 message UpdateMealPlanGroceryListItemRequest {
   string meal_plan_id = 1;
   string meal_plan_grocery_list_item_id = 2;

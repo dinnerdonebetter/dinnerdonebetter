@@ -75,7 +75,7 @@
 			},
 			"service_name": "meal_plan_finalizer",
 			"provider": "otelgrpc",
-			"spanCollectionProbability": 0.1
+			"spanCollectionProbability": 1
 		}
 	},
 	"database": {

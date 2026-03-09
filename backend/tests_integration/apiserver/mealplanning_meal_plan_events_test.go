@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
@@ -69,6 +70,46 @@ func TestMealPlanEvents_CompleteLifecycle(T *testing.T) {
 			MealPlanEventId: createdMealPlanEvent.ID,
 		})
 		assert.NoError(t, err)
+
+		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("should swap events", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		createdMealPlan := createMealPlanForTest(t, userClient, nil)
+
+		require.NotNil(t, createdMealPlan)
+		require.GreaterOrEqual(t, len(createdMealPlan.Events), 2, "need at least 2 events to swap")
+
+		eventA := createdMealPlan.Events[0]
+		eventB := createdMealPlan.Events[1]
+		startsAtA := eventA.StartsAt
+		startsAtB := eventB.StartsAt
+
+		_, err := userClient.SwapMealPlanEvents(ctx, &mealplanninggrpc.SwapMealPlanEventsRequest{
+			MealPlanId:       createdMealPlan.ID,
+			MealPlanEventIdA: eventA.ID,
+			MealPlanEventIdB: eventB.ID,
+		})
+		assert.NoError(t, err)
+
+		actualA, err := userClient.GetMealPlanEvent(ctx, &mealplanninggrpc.GetMealPlanEventRequest{
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: eventA.ID,
+		})
+		require.NoError(t, err)
+		actualB, err := userClient.GetMealPlanEvent(ctx, &mealplanninggrpc.GetMealPlanEventRequest{
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: eventB.ID,
+		})
+		require.NoError(t, err)
+
+		assert.Equal(t, startsAtB, grpcconverters.ConvertPBTimestampToTime(actualA.Result.StartsAt), "event A should have event B's startsAt")
+		assert.Equal(t, startsAtA, grpcconverters.ConvertPBTimestampToTime(actualB.Result.StartsAt), "event B should have event A's startsAt")
 
 		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		assert.NoError(t, err)

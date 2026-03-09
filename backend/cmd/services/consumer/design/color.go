@@ -1,6 +1,6 @@
 package design
 
-import webappdesign "github.com/dinnerdonebetter/backend/internal/platform/webapp/design"
+import webappdesign "github.com/dinnerdonebetter/backend/internal/webapp/design"
 
 type Color = webappdesign.Color
 type Palette = webappdesign.Palette

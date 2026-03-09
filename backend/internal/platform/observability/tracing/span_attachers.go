@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 
@@ -64,15 +63,22 @@ func AttachToSpan[T any](span trace.Span, attachmentKey string, x T) {
 	}
 }
 
-// this is effectively an alias for the existing authentication.SessionContextData struct.
-type sessionContextData interface {
+// ServicePermissionChecker is a minimal interface for attaching permission state to spans.
+// Export it so the app can adapt authorization.ServiceRolePermissionChecker.
+type ServicePermissionChecker interface {
+	IsServiceAdmin() bool
+}
+
+// SessionContextDataForTracing is a minimal interface for attaching session context to spans.
+// Export it so the app can adapt sessions.ContextData.
+type SessionContextDataForTracing interface {
 	GetUserID() string
-	GetServicePermissions() authorization.ServiceRolePermissionChecker
+	GetServicePermissions() ServicePermissionChecker
 	GetActiveAccountID() string
 }
 
 // AttachSessionContextDataToSpan provides a consistent way to attach a SessionContextData object to a span.
-func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData sessionContextData) {
+func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData SessionContextDataForTracing) {
 	if sessionCtxData != nil {
 		AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.GetUserID())
 		AttachToSpan(span, keys.ActiveAccountIDKey, sessionCtxData.GetActiveAccountID())

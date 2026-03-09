@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -21,7 +22,21 @@ import (
 const (
 	serverNamespace   = "dinner_done_better_api"
 	defaultLoggerName = "api_server"
+
+	appleAppSiteAssociationPath = "/.well-known/apple-app-site-association"
 )
+
+// skipNoisePaths returns false for paths that should not be traced (health checks, apple site association, etc).
+func skipNoisePaths(r *http.Request) bool {
+	path := r.URL.Path
+	if strings.HasPrefix(path, "/_ops_/") {
+		return false
+	}
+	if path == appleAppSiteAssociationPath {
+		return false
+	}
+	return true
+}
 
 type (
 	Server interface {
@@ -86,7 +101,12 @@ func (s *server) Shutdown(ctx context.Context) error {
 func (s *server) Serve() {
 	s.logger.Debug("setting up server")
 
-	s.httpServer.Handler = otelhttp.NewHandler(s.router.Handler(), serverNamespace, otelhttp.WithSpanNameFormatter(tracing.FormatSpan))
+	s.httpServer.Handler = otelhttp.NewHandler(
+		s.router.Handler(),
+		serverNamespace,
+		otelhttp.WithSpanNameFormatter(tracing.FormatSpan),
+		otelhttp.WithFilter(skipNoisePaths),
+	)
 
 	http2ServerConf := &http2.Server{}
 	if err := http2.ConfigureServer(s.httpServer, http2ServerConf); err != nil {

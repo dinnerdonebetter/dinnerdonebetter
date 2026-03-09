@@ -3,7 +3,6 @@ package testutils
 import (
 	"bytes"
 	"context"
-	"errors"
 	"image"
 	"image/color"
 	"image/png"
@@ -11,8 +10,6 @@ import (
 	"net/http"
 	"testing"
 	"time"
-
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
@@ -27,14 +24,6 @@ const (
 	Example32ByteKey = "HEREISA32CHARSECRETWHICHISMADEUP"
 	Example64ByteKey = "HEREISA64CHARSECRETWHICHISMADEUPHEREISA64CHARSECRETWHICHISMADEUP"
 )
-
-// errArbitrary is an arbitrary error.
-var errArbitrary = errors.New("blah")
-
-// BrokenSessionContextDataFetcher is a deliberately broken sessionContextDataFetcher.
-func BrokenSessionContextDataFetcher(_ *http.Request) (*sessions.ContextData, error) {
-	return nil, errArbitrary
-}
 
 // BuildArbitraryImage builds an image with a bunch of colors in it.
 func BuildArbitraryImage(widthAndHeight int) image.Image {

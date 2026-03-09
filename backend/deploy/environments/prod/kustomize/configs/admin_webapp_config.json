@@ -63,7 +63,7 @@
 			},
 			"service_name": "admin_webapp",
 			"provider": "otelgrpc",
-			"spanCollectionProbability": 0.1
+			"spanCollectionProbability": 1
 		}
 	},
 	"meta": {

@@ -11,6 +11,7 @@ import SwiftUI
 extension Notification.Name {
   static let mealPlanCreated = Notification.Name("mealPlanCreated")
   static let mealPlanArchived = Notification.Name("mealPlanArchived")
+  static let mealPlanEventsUpdated = Notification.Name("mealPlanEventsUpdated")
 }
 
 struct CreateMealPlanWizardView: View {

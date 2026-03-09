@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/webappauth"
+	webappauth "github.com/dinnerdonebetter/backend/internal/webapp/auth"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 )
 

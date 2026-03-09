@@ -5,31 +5,37 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
-type mockSessionData struct {
-	mock.Mock
+// mockServicePermissionChecker implements ServicePermissionChecker for tests.
+type mockServicePermissionChecker struct {
+	isAdmin bool
 }
 
-// GetUserID implements our interface.
-func (m *mockSessionData) GetUserID() string {
-	return m.Called().String(0)
+func (m mockServicePermissionChecker) IsServiceAdmin() bool {
+	return m.isAdmin
 }
 
-// GetServicePermissions implements our interface.
-func (m *mockSessionData) GetServicePermissions() authorization.ServiceRolePermissionChecker {
-	return m.Called().Get(0).(authorization.ServiceRolePermissionChecker)
+// mockSessionContextData implements SessionContextDataForTracing for tests.
+type mockSessionContextData struct {
+	checker   ServicePermissionChecker
+	userID    string
+	accountID string
 }
 
-// GetActiveAccountID implements our interface.
-func (m *mockSessionData) GetActiveAccountID() string {
-	return m.Called().String(0)
+func (m *mockSessionContextData) GetUserID() string {
+	return m.userID
+}
+
+func (m *mockSessionContextData) GetServicePermissions() ServicePermissionChecker {
+	return m.checker
+}
+
+func (m *mockSessionContextData) GetActiveAccountID() string {
+	return m.accountID
 }
 
 func TestAttachSessionContextDataToSpan(T *testing.T) {
@@ -40,12 +46,10 @@ func TestAttachSessionContextDataToSpan(T *testing.T) {
 
 		_, span := StartSpan(t.Context())
 
-		AttachSessionContextDataToSpan(span, &sessions.ContextData{
-			AccountPermissions: nil,
-			Requester: sessions.RequesterInfo{
-				ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
-			},
-			ActiveAccountID: "",
+		AttachSessionContextDataToSpan(span, &mockSessionContextData{
+			userID:    "user-1",
+			accountID: "account-1",
+			checker:   mockServicePermissionChecker{isAdmin: false},
 		})
 	})
 }

@@ -198,7 +198,7 @@ wire.go:
 #### Unit tests
 
 - `client_test.go` or `<entity>_test.go` — test repo methods against test DB
-- Use `internal/platform/database/postgres/testing` helpers
+- Use `internal/repositories/postgres/testing` helpers
 
 ### 4b. Manager
 

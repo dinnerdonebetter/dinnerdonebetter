@@ -39,7 +39,7 @@
 			},
 			"service_name": "db_cleaner",
 			"provider": "otelgrpc",
-			"spanCollectionProbability": 0.1
+			"spanCollectionProbability": 1
 		}
 	},
 	"database": {

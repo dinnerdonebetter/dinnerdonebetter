@@ -75,7 +75,7 @@
 			},
 			"service_name": "search_data_index_scheduler",
 			"provider": "otelgrpc",
-			"spanCollectionProbability": 0.1
+			"spanCollectionProbability": 1
 		}
 	},
 	"database": {

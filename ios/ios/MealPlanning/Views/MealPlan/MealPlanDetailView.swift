@@ -12,13 +12,22 @@ struct MealPlanDetailView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(UserSettingsService.self) private var userSettingsService
   @Environment(\.dismiss) private var dismiss
-  let mealPlan: Mealplanning_MealPlan
+  @State var mealPlan: Mealplanning_MealPlan
   let groceryListItems: [Mealplanning_MealPlanGroceryListItem]?
   @State private var taskCount: Int?
   @State private var groceryListItemCount: Int?
   @State private var showArchiveConfirmation = false
   @State private var isArchiving = false
   @State private var archiveError: String?
+  @State private var moveSwapSheetEvent: IdentifiableMealPlanEvent?
+  @State private var cancelEventConfirmationEvent: Mealplanning_MealPlanEvent?
+  @State private var isCancellingEvent = false
+  @State private var cancelEventError: String?
+
+  init(mealPlan: Mealplanning_MealPlan, groceryListItems: [Mealplanning_MealPlanGroceryListItem]?) {
+    _mealPlan = State(initialValue: mealPlan)
+    self.groceryListItems = groceryListItems
+  }
 
   var body: some View {
     ScrollView {
@@ -73,10 +82,66 @@ struct MealPlanDetailView: View {
         Text(error)
       }
     }
-    .disabled(isArchiving)
+    .disabled(isArchiving || isCancellingEvent)
     .task {
       await loadTaskCount()
       await loadGroceryListItemCount()
+    }
+    .sheet(item: $moveSwapSheetEvent) { identifiable in
+      MoveSwapEventSheet(
+        mealPlan: mealPlan,
+        event: identifiable.event,
+        onSuccess: { await refetchMealPlan() },
+        startInMoveMode: identifiable.startInMoveMode,
+        startInSwapMode: identifiable.startInSwapMode
+      )
+      .environment(authManager)
+    }
+    .alert(
+      "Cancel Meal",
+      isPresented: Binding(
+        get: { cancelEventConfirmationEvent != nil },
+        set: { if !$0 { cancelEventConfirmationEvent = nil } }
+      )
+    ) {
+      Button("Cancel", role: .cancel) {}
+      Button("Remove from Plan", role: .destructive) {
+        if let evt = cancelEventConfirmationEvent {
+          cancelEventConfirmationEvent = nil
+          Task { await cancelMealPlanEvent(evt) }
+        }
+      }
+    } message: {
+      Text(
+        "This will remove the meal from your plan. Any prep tasks for this meal will be cancelled.")
+    }
+    .alert("Cancel Failed", isPresented: .constant(cancelEventError != nil)) {
+      Button("OK") { cancelEventError = nil }
+    } message: {
+      if let err = cancelEventError {
+        Text(err)
+      }
+    }
+  }
+
+  private func refetchMealPlan() async {
+    do {
+      guard let clientManager = try? authManager.getClientManager() else { return }
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else { return }
+
+      var request = Mealplanning_GetMealPlanRequest()
+      request.mealPlanID = mealPlan.id
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+      let response = try await clientManager.client.mealPlanning.getMealPlan(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      mealPlan = response.result
+    } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
     }
   }
 
@@ -116,6 +181,43 @@ struct MealPlanDetailView: View {
     }
 
     isArchiving = false
+  }
+
+  private func cancelMealPlanEvent(_ event: Mealplanning_MealPlanEvent) async {
+    isCancellingEvent = true
+    cancelEventError = nil
+
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        cancelEventError = "Failed to connect"
+        isCancellingEvent = false
+        return
+      }
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        cancelEventError = "Please sign in again"
+        isCancellingEvent = false
+        return
+      }
+
+      var request = Mealplanning_ArchiveMealPlanEventRequest()
+      request.mealPlanID = mealPlan.id
+      request.mealPlanEventID = event.id
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+      _ = try await clientManager.client.mealPlanning.archiveMealPlanEvent(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      NotificationCenter.default.post(name: .mealPlanEventsUpdated, object: nil)
+      await refetchMealPlan()
+    } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
+      cancelEventError = error.localizedDescription
+    }
+
+    isCancellingEvent = false
   }
 
   private func loadTaskCount() async {
@@ -278,7 +380,18 @@ struct MealPlanDetailView: View {
           .fontWeight(.bold)
 
         ForEach(upcomingEvents, id: \.id) { event in
-          EventCard(event: event)
+          EventCard(
+            event: event,
+            mealPlan: mealPlan,
+            canEdit: mealPlan.status == .finalized,
+            onMove: {
+              moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInMoveMode: true)
+            },
+            onSwap: {
+              moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInSwapMode: true)
+            },
+            onCancel: { cancelEventConfirmationEvent = event }
+          )
         }
       }
 
@@ -289,8 +402,19 @@ struct MealPlanDetailView: View {
           .foregroundColor(.secondary)
 
         ForEach(pastEvents, id: \.id) { event in
-          EventCard(event: event)
-            .opacity(0.7)
+          EventCard(
+            event: event,
+            mealPlan: mealPlan,
+            canEdit: mealPlan.status == .finalized,
+            onMove: {
+              moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInMoveMode: true)
+            },
+            onSwap: {
+              moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInSwapMode: true)
+            },
+            onCancel: { cancelEventConfirmationEvent = event }
+          )
+          .opacity(0.7)
         }
       }
     }
@@ -380,10 +504,29 @@ struct MealPlanDetailView: View {
   }
 }
 
+// MARK: - Identifiable Meal Plan Event
+
+private struct IdentifiableMealPlanEvent: Identifiable {
+  let event: Mealplanning_MealPlanEvent
+  var startInMoveMode = false
+  var startInSwapMode = false
+  var id: String { event.id }
+}
+
 // MARK: - Event Card
 
 struct EventCard: View {
   let event: Mealplanning_MealPlanEvent
+  var mealPlan: Mealplanning_MealPlan?
+  var canEdit: Bool = false
+  var onMove: (() -> Void)?
+  var onSwap: (() -> Void)?
+  var onCancel: (() -> Void)?
+
+  private var canSwap: Bool {
+    guard let plan = mealPlan else { return false }
+    return plan.events.filter { $0.id != event.id }.count >= 1
+  }
 
   private func eventTimeRange(event: Mealplanning_MealPlanEvent) -> some View {
     let startDate = HomeViewModel.timestampToDate(event.startsAt)
@@ -408,6 +551,36 @@ struct EventCard: View {
         }
 
         Spacer()
+
+        if canEdit {
+          Menu {
+            if let onMove = onMove {
+              Button {
+                onMove()
+              } label: {
+                Label("Move to another day", systemImage: "calendar")
+              }
+            }
+            if canSwap, let onSwap = onSwap {
+              Button {
+                onSwap()
+              } label: {
+                Label("Swap with another event", systemImage: "arrow.triangle.2.circlepath")
+              }
+            }
+            if let onCancel = onCancel {
+              Button(role: .destructive) {
+                onCancel()
+              } label: {
+                Label("Cancel event", systemImage: "xmark.circle")
+              }
+            }
+          } label: {
+            Image(systemName: "ellipsis.circle")
+              .font(.body)
+              .foregroundColor(.secondary)
+          }
+        }
       }
 
       // Selected meals

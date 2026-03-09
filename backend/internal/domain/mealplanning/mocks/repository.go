@@ -1013,6 +1013,11 @@ func (m *Repository) UpdateMealPlanEvent(ctx context.Context, updated *mealplann
 	return m.Called(ctx, updated).Error(0)
 }
 
+// SwapMealPlanEvents is a mock function.
+func (m *Repository) SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPlanEventIDA, mealPlanEventIDB string) error {
+	return m.Called(ctx, mealPlanID, mealPlanEventIDA, mealPlanEventIDB).Error(0)
+}
+
 // ArchiveMealPlanEvent is a mock function.
 func (m *Repository) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
 	return m.Called(ctx, mealPlanID, mealPlanEventID).Error(0)

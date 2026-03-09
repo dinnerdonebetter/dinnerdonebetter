@@ -1385,6 +1385,28 @@ func (s *serviceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplan
 	return x, nil
 }
 
+func (s *serviceImpl) SwapMealPlanEvents(ctx context.Context, request *mealplanningsvc.SwapMealPlanEventsRequest) (*mealplanningsvc.SwapMealPlanEventsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		mealplanningkeys.MealPlanIDKey:      request.MealPlanId,
+		mealplanningkeys.MealPlanEventIDKey: request.MealPlanEventIdA + "," + request.MealPlanEventIdB,
+	}, span, s.logger)
+
+	if err := s.mealPlanningManager.SwapMealPlanEvents(ctx, request.MealPlanId, request.MealPlanEventIdA, request.MealPlanEventIdB); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to swap meal plan events")
+	}
+
+	x := &mealplanningsvc.SwapMealPlanEventsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
+}
+
 func (s *serviceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request *mealplanningsvc.UpdateMealPlanGroceryListItemRequest) (*mealplanningsvc.UpdateMealPlanGroceryListItemResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

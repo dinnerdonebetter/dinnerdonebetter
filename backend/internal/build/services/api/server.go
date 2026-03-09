@@ -95,5 +95,5 @@ func (s *Server) Run() {
 		s.logger.Error("shutting down HTTP server", err)
 	}
 
-	s.grpcServer.Shutdown()
+	s.grpcServer.Shutdown(cancelCtx)
 }

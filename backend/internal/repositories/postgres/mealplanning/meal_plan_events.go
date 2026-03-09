@@ -368,6 +368,92 @@ func (q *repository) UpdateMealPlanEvent(ctx context.Context, updated *types.Mea
 	return nil
 }
 
+// SwapMealPlanEvents atomically swaps the startsAt/endsAt of two meal plan events.
+func (q *repository) SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPlanEventIDA, mealPlanEventIDB string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanID == "" || mealPlanEventIDA == "" || mealPlanEventIDB == "" {
+		return platformerrors.ErrInvalidIDProvided
+	}
+	if mealPlanEventIDA == mealPlanEventIDB {
+		return platformerrors.ErrInvalidIDProvided
+	}
+
+	logger := q.logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlanID).
+		WithValue(mealplanningkeys.MealPlanEventIDKey, mealPlanEventIDA+","+mealPlanEventIDB)
+	tracing.AttachToSpan(span, mealplanningkeys.MealPlanIDKey, mealPlanID)
+
+	eventA, err := q.GetMealPlanEvent(ctx, mealPlanID, mealPlanEventIDA)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching meal plan event A for swap")
+	}
+	eventB, err := q.GetMealPlanEvent(ctx, mealPlanID, mealPlanEventIDB)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching meal plan event B for swap")
+	}
+
+	eventAStartsAt, eventAEndsAt := eventA.StartsAt, eventA.EndsAt
+	eventBStartsAt, eventBEndsAt := eventB.StartsAt, eventB.EndsAt
+
+	eventA.StartsAt, eventA.EndsAt = eventBStartsAt, eventBEndsAt
+	eventB.StartsAt, eventB.EndsAt = eventAStartsAt, eventAEndsAt
+
+	tx, err := q.writeDB.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareError(err, span, "beginning transaction for swap")
+	}
+
+	if _, err = q.generatedQuerier.UpdateMealPlanEvent(ctx, tx, &generated.UpdateMealPlanEventParams{
+		Notes:             eventA.Notes,
+		StartsAt:          eventA.StartsAt,
+		EndsAt:            eventA.EndsAt,
+		MealName:          generated.MealName(eventA.MealName),
+		BelongsToMealPlan: eventA.BelongsToMealPlan,
+		ID:                eventA.ID,
+	}); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event A during swap")
+	}
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeMealPlanEvents,
+		RelevantID:   eventA.ID,
+		EventType:    audit.AuditLogEventTypeUpdated,
+	}); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry for event A")
+	}
+
+	if _, err = q.generatedQuerier.UpdateMealPlanEvent(ctx, tx, &generated.UpdateMealPlanEventParams{
+		Notes:             eventB.Notes,
+		StartsAt:          eventB.StartsAt,
+		EndsAt:            eventB.EndsAt,
+		MealName:          generated.MealName(eventB.MealName),
+		BelongsToMealPlan: eventB.BelongsToMealPlan,
+		ID:                eventB.ID,
+	}); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event B during swap")
+	}
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeMealPlanEvents,
+		RelevantID:   eventB.ID,
+		EventType:    audit.AuditLogEventTypeUpdated,
+	}); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry for event B")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareError(err, span, "committing swap transaction")
+	}
+
+	logger.Info("meal plan events swapped")
+	return nil
+}
+
 // ArchiveMealPlanEvent archives a meal plan event from the database by its ID.
 func (q *repository) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
