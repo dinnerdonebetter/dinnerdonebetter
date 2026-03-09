@@ -5,7 +5,7 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-RUN go build -trimpath -o /server github.com/dinnerdonebetter/backend/cmd/services/consumer
+RUN ./scripts/build.sh -o /server github.com/dinnerdonebetter/backend/cmd/services/consumer
 
 # final stage - use bookworm to match glibc requirements from golang:trixie build
 FROM debian:bookworm
