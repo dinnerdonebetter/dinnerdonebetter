@@ -109,7 +109,7 @@ func buildProdConfig() *config.APIServiceConfig {
 		Tracing: tracingcfg.Config{
 			Provider:                  tracingcfg.ProviderOtel,
 			ServiceName:               otelServiceName,
-			SpanCollectionProbability: 0.1,
+			SpanCollectionProbability: 1.0,
 			Otel: &oteltrace.Config{
 				Insecure:          true,
 				CollectorEndpoint: prodOtelCollectorEndpoint,

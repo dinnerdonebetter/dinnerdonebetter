@@ -12,6 +12,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
@@ -31,9 +32,10 @@ type (
 	}
 
 	Server struct {
-		logger     logging.Logger
-		config     *Config
-		grpcServer *grpc.Server
+		logger         logging.Logger
+		config         *Config
+		grpcServer     *grpc.Server
+		tracerProvider tracing.TracerProvider
 	}
 
 	// RegistrationFunc is i.e. protobuf.RegisterSomeExampleServiceServer(grpcServer, &exampleServiceServerImpl{}).
@@ -43,6 +45,7 @@ type (
 func NewGRPCServer(
 	cfg *Config,
 	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
 	unaryServerInterceptors []grpc.UnaryServerInterceptor,
 	streamServerInterceptors []grpc.StreamServerInterceptor,
 	registrationFunctions ...RegistrationFunc,
@@ -51,8 +54,9 @@ func NewGRPCServer(
 		return nil, internalerrors.NilConfigError("grpc server")
 	}
 
+	tp := tracing.EnsureTracerProvider(tracerProvider)
 	opts := []grpc.ServerOption{
-		grpc.StatsHandler(otelgrpc.NewServerHandler()),
+		grpc.StatsHandler(otelgrpc.NewServerHandler(otelgrpc.WithTracerProvider(tp))),
 		grpc.ChainUnaryInterceptor(append([]grpc.UnaryServerInterceptor{LoggingInterceptor(logger)}, unaryServerInterceptors...)...),
 		grpc.ChainStreamInterceptor(streamServerInterceptors...),
 	}
@@ -92,14 +96,19 @@ func NewGRPCServer(
 	reflection.Register(grpcServer)
 
 	return &Server{
-		logger:     logging.EnsureLogger(logger).WithName(serviceName),
-		config:     cfg,
-		grpcServer: grpcServer,
+		logger:         logging.EnsureLogger(logger).WithName(serviceName),
+		config:         cfg,
+		grpcServer:     grpcServer,
+		tracerProvider: tp,
 	}, nil
 }
 
-// Shutdown shuts down the server.
-func (s *Server) Shutdown() {
+// Shutdown shuts down the server. Call with a context that has sufficient timeout
+// to allow in-flight spans to be flushed to the collector.
+func (s *Server) Shutdown(ctx context.Context) {
+	if err := s.tracerProvider.ForceFlush(ctx); err != nil {
+		s.logger.Error("flushing traces", err)
+	}
 	s.grpcServer.Stop()
 }
 

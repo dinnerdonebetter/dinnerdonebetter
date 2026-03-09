@@ -78,6 +78,11 @@ patches:
             secretKeyRef:
               name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: OTEL_TRACE_SAMPLING_PERCENTAGE
+          value: "100"
     target:
       version: v1
       kind: Deployment

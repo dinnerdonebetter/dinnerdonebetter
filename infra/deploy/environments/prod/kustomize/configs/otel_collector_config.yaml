@@ -85,7 +85,7 @@ processors:
       - body.time
 
   probabilistic_sampler:
-    sampling_percentage: 15
+    sampling_percentage: ${env:OTEL_TRACE_SAMPLING_PERCENTAGE}
 
   resource:
     attributes:
