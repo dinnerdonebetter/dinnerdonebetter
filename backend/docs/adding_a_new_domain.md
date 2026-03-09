@@ -372,7 +372,7 @@ If adding:
 
 ## 9. Integration Tests
 
-**Location**: `backend/tests_integration/apiserver/`
+**Location**: `backend/testing/integration/apiserver/`
 
 **File**: `<domain>_<entity>_test.go` or `<domain>_<service>_test.go`
 
@@ -388,7 +388,7 @@ If adding:
 - Invalid input (validation failure → error)
 - Permission denied (non-admin or wrong account → error), if applicable
 
-**Reference**: [backend/tests_integration/apiserver/identity_accounts_test.go](backend/tests_integration/apiserver/identity_accounts_test.go)
+**Reference**: [backend/testing/integration/apiserver/identity_accounts_test.go](backend/testing/integration/apiserver/identity_accounts_test.go)
 
 ---
 
@@ -461,6 +461,6 @@ Shorter path — reuse:
 | gRPC - Registration      | `build/services/api/grpc/extras.go`, `build.go`                                                                       |
 | Auth interceptor         | `authorization/*_permissions.go`; `services/<domain>/grpc/permissions.go`; `extras.go` AggregateMethodPermissions     |
 | Configs                  | `config/services_config.go`, `wire.go`, `codegen/configs/*.go` (if needed)                                            |
-| Integration tests        | `tests_integration/apiserver/<domain>_<entity>_test.go`                                                               |
+| Integration tests        | `testing/integration/apiserver/<domain>_<entity>_test.go`                                                               |
 | Admin - List view        | `cmd/services/admin/routes.go`; handler in `cmd/services/admin/`                                                      |
 | Admin - Edit view        | Same                                                                                                                  |

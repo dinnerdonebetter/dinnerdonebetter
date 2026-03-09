@@ -12,8 +12,8 @@
  *   K6_OAUTH2_CLIENT_ID, K6_OAUTH2_CLIENT_SECRET - Load test OAuth2 client
  *   K6_LOADTEST_USERNAME, K6_LOADTEST_PASSWORD - Load test user
  *
- * Run: k6 run --vus 10 --duration 5m loadtests/script.js
- * (from backend/) or backend/loadtests/script.js (from repo root)
+ * Run: k6 run --vus 10 --duration 5m testing/load/script.js
+ * (from backend/) or backend/testing/load/script.js (from repo root)
  */
 
 import grpc from "k6/net/grpc";

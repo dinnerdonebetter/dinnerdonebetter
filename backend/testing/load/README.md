@@ -44,16 +44,16 @@ k6 run \
   -e K6_OAUTH2_CLIENT_SECRET=your_client_secret \
   -e K6_LOADTEST_USERNAME=loadtest_user \
   -e K6_LOADTEST_PASSWORD=your_password \
-  backend/loadtests/script.js
+  backend/testing/load/script.js
 ```
 
-From the **backend** directory, use `loadtests/script.js` instead.
+From the **backend** directory, use `testing/load/script.js` instead.
 
 Or use a `.env` file (do not commit secrets):
 
 ```bash
 export $(grep -v '^#' .env.loadtest | xargs)
-k6 run --vus 10 --duration 5m backend/loadtests/script.js
+k6 run --vus 10 --duration 5m backend/testing/load/script.js
 ```
 
 ## Local Development
