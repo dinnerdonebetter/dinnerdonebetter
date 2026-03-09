@@ -14,6 +14,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// createAccountInstrumentOwnershipForInstrumentForTest creates account instrument ownership for the given instrument.
+// Use when the test needs ownership of a specific instrument (e.g. for SearchForRecipesWithInstrumentOwnership).
+func createAccountInstrumentOwnershipForInstrumentForTest(t *testing.T, clientToUse client.Client, validInstrument *mealplanning.ValidInstrument) *mealplanning.AccountInstrumentOwnership {
+	t.Helper()
+	ctx := t.Context()
+
+	exampleAccountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
+	exampleAccountInstrumentOwnershipInput := converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipCreationRequestInput(exampleAccountInstrumentOwnership)
+	exampleAccountInstrumentOwnershipInput.ValidInstrumentID = validInstrument.ID
+	createdAccountInstrumentOwnership, err := clientToUse.CreateAccountInstrumentOwnership(ctx, &settingssvc.CreateAccountInstrumentOwnershipRequest{
+		Input: mealplanningconverters.ConvertAccountInstrumentOwnershipCreationRequestInputToGRPCAccountInstrumentOwnershipCreationRequestInput(exampleAccountInstrumentOwnershipInput),
+	})
+	require.NoError(t, err)
+	converted := mealplanningconverters.ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(createdAccountInstrumentOwnership.Created)
+	return converted
+}
+
 func createAccountInstrumentOwnershipForTest(t *testing.T, clientToUse client.Client) *mealplanning.AccountInstrumentOwnership {
 	t.Helper()
 	ctx := t.Context()

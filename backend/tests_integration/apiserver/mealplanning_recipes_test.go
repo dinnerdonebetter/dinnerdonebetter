@@ -41,14 +41,29 @@ func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
 	assert.NotZero(t, actual.CreatedAt)
 }
 
+// createRecipeForTestWithInstrument creates a recipe using the given instrument (required, optional=false).
+// Use when testing SearchForRecipesWithInstrumentOwnership.
+func createRecipeForTestWithInstrument(t *testing.T, instrument *mealplanning.ValidInstrument, recipe *mealplanning.Recipe) ([]*mealplanning.ValidIngredient, *mealplanning.ValidPreparation, *mealplanning.Recipe) {
+	t.Helper()
+	return createRecipeForTestWithInstrumentOrNew(t, instrument, recipe, nil)
+}
+
 func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter ...func(input *mealplanning.RecipeCreationRequestInput)) ([]*mealplanning.ValidIngredient, *mealplanning.ValidPreparation, *mealplanning.Recipe) {
+	t.Helper()
+	return createRecipeForTestWithInstrumentOrNew(t, nil, recipe, inputFilter)
+}
+
+func createRecipeForTestWithInstrumentOrNew(t *testing.T, instrument *mealplanning.ValidInstrument, recipe *mealplanning.Recipe, inputFilter []func(input *mealplanning.RecipeCreationRequestInput)) ([]*mealplanning.ValidIngredient, *mealplanning.ValidPreparation, *mealplanning.Recipe) {
 	t.Helper()
 
 	ctx := t.Context()
 
 	createdValidPreparation := createValidPreparationForTest(t)
 	createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
-	createdValidInstrument := createValidInstrumentForTest(t)
+	createdValidInstrument := instrument
+	if createdValidInstrument == nil {
+		createdValidInstrument = createValidInstrumentForTest(t)
+	}
 	createdValidIngredientState := createValidIngredientStateForTest(t)
 	createdValidVessel := createValidVesselForTest(t)
 
@@ -89,6 +104,9 @@ func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter 
 
 		for j := range recipeStep.Instruments {
 			recipeStep.Instruments[j].Instrument = createdValidInstrument
+			if instrument != nil {
+				recipeStep.Instruments[j].Optional = false // Required for SearchForRecipesWithInstrumentOwnership
+			}
 		}
 
 		for j := range recipeStep.Vessels {
@@ -615,6 +633,80 @@ func TestRecipes_Searching(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		results, err := c.SearchForRecipes(ctx, &mealplanninggrpc.SearchForRecipesRequest{
+			Query: "test",
+		})
+		assert.Error(t, err)
+		assert.Nil(t, results)
+	})
+}
+
+func TestRecipes_SearchForRecipesWithInstrumentOwnership(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns recipes when account owns required instruments", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+		createAccountInstrumentOwnershipForInstrumentForTest(t, testClient, instrument)
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.Name = "InstrumentOwnershipSearchTest Recipe"
+		_, _, createdRecipe := createRecipeForTestWithInstrument(t, instrument, exampleRecipe)
+
+		actual, err := testClient.SearchForRecipesWithInstrumentOwnership(ctx, &mealplanninggrpc.SearchForRecipesWithInstrumentOwnershipRequest{
+			Query: "InstrumentOwnershipSearchTest",
+		})
+		require.NoError(t, err)
+		require.NotEmpty(t, actual.Results)
+		found := false
+		for _, r := range actual.Results {
+			if r.Id == createdRecipe.ID {
+				found = true
+				break
+			}
+		}
+		assert.True(t, found, "recipe with owned instrument should appear in search results")
+
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("excludes recipes when account does not own required instruments", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		// Create recipe with instrument that the test user does NOT own
+		unownedInstrument := createValidInstrumentForTest(t)
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.Name = "ExcludedInstrumentSearchTest Recipe"
+		_, _, excludedRecipe := createRecipeForTestWithInstrument(t, unownedInstrument, exampleRecipe)
+
+		actual, err := testClient.SearchForRecipesWithInstrumentOwnership(ctx, &mealplanninggrpc.SearchForRecipesWithInstrumentOwnershipRequest{
+			Query: "ExcludedInstrumentSearchTest",
+		})
+		require.NoError(t, err)
+		found := false
+		for _, r := range actual.Results {
+			if r.Id == excludedRecipe.ID {
+				found = true
+				break
+			}
+		}
+		assert.False(t, found, "recipe with unowned instrument should not appear in search results")
+
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: excludedRecipe.ID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		results, err := c.SearchForRecipesWithInstrumentOwnership(ctx, &mealplanninggrpc.SearchForRecipesWithInstrumentOwnershipRequest{
 			Query: "test",
 		})
 		assert.Error(t, err)
