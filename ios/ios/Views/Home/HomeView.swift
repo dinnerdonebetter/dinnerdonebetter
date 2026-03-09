@@ -12,6 +12,7 @@ struct HomeView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(UserSettingsService.self) private var userSettingsService
   @State private var viewModel: HomeViewModel?
+  @State private var showDrawer = false
 
   var body: some View {
     NavigationStack {
@@ -27,10 +28,22 @@ struct HomeView: View {
             onRetry: { await viewModel.loadData() },
             content: {
               VStack(spacing: 0) {
-                // Sticky header: Greeting
-                greetingSection(viewModel: viewModel)
-                  .dsScreenPadding()
-                  .padding(.bottom, DSTheme.Spacing.md)
+                // Header: welcome text (flex-grow) + hamburger, space-between, align center
+                HStack(alignment: .center, spacing: DSTheme.Spacing.md) {
+                  Text("\(greeting), \(viewModel.currentUserDisplayName)!")
+                    .font(DSTheme.Typography.title2)
+                    .foregroundColor(DSTheme.Colors.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                  Button {
+                    showDrawer.toggle()
+                  } label: {
+                    Image(systemName: showDrawer ? "xmark" : "line.3.horizontal")
+                      .font(.system(size: 18, weight: .medium))
+                  }
+                }
+                .padding(.horizontal, DSTheme.Spacing.lg)
+                .padding(.vertical, DSTheme.Spacing.sm)
 
                 MealPlanningHomeContent(viewModel: viewModel)
               }
@@ -42,24 +55,7 @@ struct HomeView: View {
       }
       .navigationTitle("")
       .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
-          NavigationLink(destination: AccountSettingsView()) {
-            DSAvatar(
-              name: viewModel?.currentUserDisplayName ?? authManager.username,
-              size: .sm,
-              imageURL: viewModel.flatMap { homeViewModel in
-                guard let user = homeViewModel.currentUser,
-                  user.hasAvatar,
-                  !user.avatar.storagePath.isEmpty
-                else { return nil }
-                return APIConfiguration.mediaURL(
-                  forStoragePath: user.avatar.storagePath, bucket: "avatars")
-              }
-            )
-          }
-        }
-      }
+      .toolbar(.hidden, for: .navigationBar)
       .refreshable {
         if let viewModel = viewModel {
           await viewModel.loadData()
@@ -96,15 +92,25 @@ struct HomeView: View {
           }
         }
       }
+      .overlay {
+        if showDrawer {
+          HomeDrawerView(
+            isPresented: $showDrawer,
+            displayName: viewModel?.currentUserDisplayName ?? authManager.username,
+            avatarURL: viewModel.flatMap { homeViewModel in
+              guard let user = homeViewModel.currentUser,
+                user.hasAvatar,
+                !user.avatar.storagePath.isEmpty
+              else { return nil }
+              return APIConfiguration.mediaURL(
+                forStoragePath: user.avatar.storagePath, bucket: "avatars")
+            },
+            acceptedOccupiedDates: viewModel?.acceptedOccupiedDates ?? [],
+            proposedOccupiedDates: viewModel?.proposedOccupiedDates ?? []
+          )
+        }
+      }
     }
-  }
-
-  // MARK: - Greeting
-  private func greetingSection(viewModel: HomeViewModel) -> some View {
-    Text("\(greeting), \(viewModel.currentUserDisplayName)!")
-      .font(DSTheme.Typography.largeTitle)
-      .foregroundColor(DSTheme.Colors.textPrimary)
-      .frame(maxWidth: .infinity, alignment: .leading)
   }
 
   private var greeting: String {

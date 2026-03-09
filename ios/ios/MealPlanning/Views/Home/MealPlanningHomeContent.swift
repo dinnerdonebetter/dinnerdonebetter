@@ -15,91 +15,104 @@ struct MealPlanningHomeContent: View {
   var body: some View {
     Group {
       if let viewModel = viewModel {
-        let isEmpty =
-          viewModel.pendingVoteMealPlans.isEmpty
-          && viewModel.activeMealPlan == nil
-          && viewModel.upcomingMealPlans.isEmpty
-          && viewModel.futureFinalizedMealPlans.isEmpty
+        ScrollView {
+          VStack(spacing: 0) {
+            // Meal Plans section (always first, with plus to create)
+            mealPlansSection(viewModel: viewModel)
+              .dsScreenPadding()
+              .padding(.bottom, DSTheme.Spacing.lg)
 
-        VStack(spacing: 0) {
-          ScrollView {
-            VStack(spacing: 0) {
-              // Active Meal Plan (at top, sorted by date)
-              if let activeMealPlan = viewModel.activeMealPlan {
-                activeMealPlanSection(viewModel: viewModel, mealPlan: activeMealPlan)
-                  .dsScreenPadding()
-                  .padding(.bottom, DSTheme.Spacing.lg)
-              }
+            // Pending Votes
+            if !viewModel.pendingVoteMealPlans.isEmpty {
+              pendingVotesSection(viewModel: viewModel)
+                .dsScreenPadding()
+                .padding(.bottom, DSTheme.Spacing.lg)
+            }
 
-              // Pending Votes
-              if !viewModel.pendingVoteMealPlans.isEmpty {
-                pendingVotesSection(viewModel: viewModel)
-                  .dsScreenPadding()
-                  .padding(.bottom, DSTheme.Spacing.lg)
-              }
+            // Upcoming Meal Plans (non-finalized)
+            if !viewModel.upcomingMealPlans.isEmpty {
+              upcomingMealPlansSection(viewModel: viewModel)
+                .dsScreenPadding()
+                .padding(.bottom, DSTheme.Spacing.lg)
+            }
 
-              // Upcoming Meal Plans (non-finalized)
-              if !viewModel.upcomingMealPlans.isEmpty {
-                upcomingMealPlansSection(viewModel: viewModel)
-                  .dsScreenPadding()
-                  .padding(.bottom, DSTheme.Spacing.lg)
-              }
+            // Future Meal Plans
+            if !viewModel.futureFinalizedMealPlans.isEmpty {
+              softSeparator
 
-              // Future Meal Plans
-              if !viewModel.futureFinalizedMealPlans.isEmpty {
-                softSeparator
-
-                futureMealPlansSection(viewModel: viewModel)
-                  .dsScreenPadding()
-                  .padding(.bottom, DSTheme.Spacing.xl)
-              }
-
-              // Empty State
-              if isEmpty {
-                emptyStateView
-                  .dsScreenPadding()
-                  .padding(.vertical, DSTheme.Spacing.xl)
-              }
+              futureMealPlansSection(viewModel: viewModel)
+                .dsScreenPadding()
+                .padding(.bottom, DSTheme.Spacing.xl)
             }
           }
-          .frame(maxHeight: .infinity)
-
-          // Pinned footer: Create Meal Plan + Recipes/Meals
-          VStack(spacing: DSTheme.Spacing.md) {
-            Divider()
-
-            createMealPlanSection(viewModel: viewModel)
-
-            quickAccessRow
-          }
-          .padding(.horizontal, DSTheme.Spacing.lg)
-          .padding(.vertical, DSTheme.Spacing.md)
-          .background(Color(.systemBackground))
         }
+        .frame(maxHeight: .infinity)
       }
     }
   }
 
-  // MARK: - Create Meal Plan CTA
-  private func createMealPlanSection(viewModel: HomeViewModel) -> some View {
+  // MARK: - Meal Plans Section
+  private func mealPlansSection(viewModel: HomeViewModel) -> some View {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+      // Header with plus icon
+      HStack {
+        Label("Active Meal Plans", systemImage: "star.circle.fill")
+          .font(DSTheme.Typography.title2)
+          .foregroundColor(DSTheme.Colors.textPrimary)
+
+        Spacer()
+
+        NavigationLink(
+          destination: CreateMealPlanWizardView(
+            acceptedOccupiedDates: viewModel.acceptedOccupiedDates,
+            proposedOccupiedDates: viewModel.proposedOccupiedDates
+          )
+        ) {
+          Image(systemName: "plus.circle.fill")
+            .font(.system(size: 24))
+            .foregroundColor(DSTheme.Colors.primary)
+        }
+        .buttonStyle(.plain)
+      }
+
+      if let activeMealPlan = viewModel.activeMealPlan {
+        NavigationLink(
+          destination: MealPlanDetailView(
+            mealPlan: activeMealPlan,
+            groceryListItems: nil
+          )
+        ) {
+          UpcomingMealCardContent(mealPlan: activeMealPlan)
+        }
+        .buttonStyle(.plain)
+
+        activePlanTaskAndGrocery(viewModel: viewModel, mealPlan: activeMealPlan)
+      } else {
+        // Empty state: prominent Create Meal Plan CTA
+        createMealPlanCTA(viewModel: viewModel)
+      }
+    }
+  }
+
+  private func createMealPlanCTA(viewModel: HomeViewModel) -> some View {
     NavigationLink(
       destination: CreateMealPlanWizardView(
         acceptedOccupiedDates: viewModel.acceptedOccupiedDates,
         proposedOccupiedDates: viewModel.proposedOccupiedDates
       )
     ) {
-      HStack(spacing: DSTheme.Spacing.md) {
+      VStack(spacing: DSTheme.Spacing.lg) {
         ZStack {
           Circle()
             .fill(DSTheme.Colors.primary.opacity(0.15))
-            .frame(width: 48, height: 48)
+            .frame(width: 64, height: 64)
 
           Image(systemName: "plus")
-            .font(.system(size: 20, weight: .semibold))
+            .font(.system(size: 28, weight: .semibold))
             .foregroundColor(DSTheme.Colors.primary)
         }
 
-        VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
+        VStack(spacing: DSTheme.Spacing.xxs) {
           Text("Create Meal Plan")
             .font(DSTheme.Typography.label)
             .foregroundColor(DSTheme.Colors.textPrimary)
@@ -109,13 +122,12 @@ struct MealPlanningHomeContent: View {
             .foregroundColor(DSTheme.Colors.textSecondary)
         }
 
-        Spacer()
-
         Image(systemName: "chevron.right")
           .font(.system(size: 14, weight: .semibold))
           .foregroundColor(DSTheme.Colors.textTertiary)
       }
-      .padding(DSTheme.Spacing.lg)
+      .frame(maxWidth: .infinity)
+      .padding(DSTheme.Spacing.xl)
       .background(
         RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
           .fill(DSTheme.Colors.cardBackground)
@@ -127,25 +139,6 @@ struct MealPlanningHomeContent: View {
       )
     }
     .buttonStyle(.plain)
-  }
-
-  // MARK: - Quick Access Row
-  private var quickAccessRow: some View {
-    HStack(spacing: DSTheme.Spacing.md) {
-      QuickAccessButton(
-        icon: "book.closed.fill",
-        label: "Recipes",
-        color: DSTheme.Colors.secondary,
-        destination: RecipeListView()
-      )
-
-      QuickAccessButton(
-        icon: "fork.knife",
-        label: "Meals",
-        color: DSTheme.Colors.tertiary,
-        destination: MealListView()
-      )
-    }
   }
 
   // MARK: - Pending Votes Section
@@ -178,30 +171,6 @@ struct MealPlanningHomeContent: View {
         }
         .buttonStyle(.plain)
       }
-    }
-  }
-
-  // MARK: - Active Meal Plan Section
-  private func activeMealPlanSection(viewModel: HomeViewModel, mealPlan: Mealplanning_MealPlan)
-    -> some View
-  {
-    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      Label("Active Meal Plan", systemImage: "star.circle.fill")
-        .font(DSTheme.Typography.title2)
-        .foregroundColor(DSTheme.Colors.textPrimary)
-
-      NavigationLink(
-        destination: MealPlanDetailView(
-          mealPlan: mealPlan,
-          groceryListItems: nil
-        )
-      ) {
-        UpcomingMealCardContent(mealPlan: mealPlan)
-      }
-      .buttonStyle(.plain)
-
-      // Task and grocery for active plan only
-      activePlanTaskAndGrocery(viewModel: viewModel, mealPlan: mealPlan)
     }
   }
 
@@ -450,47 +419,6 @@ struct MealPlanningHomeContent: View {
       -Double(task.recipePrepTask.timeBufferBeforeRecipeInSeconds.max))
   }
 
-  // MARK: - Empty State
-  private var emptyStateView: some View {
-    DSEmptyState(
-      icon: "calendar.badge.plus",
-      title: "No Active Meal Plans",
-      message: "Create a meal plan to get started!",
-      size: .large
-    )
-  }
-}
-
-// MARK: - Quick Access Button
-
-struct QuickAccessButton<Destination: View>: View {
-  let icon: String
-  let label: String
-  let color: Color
-  let destination: Destination
-
-  var body: some View {
-    NavigationLink(destination: destination) {
-      VStack(spacing: DSTheme.Spacing.sm) {
-        ZStack {
-          RoundedRectangle(cornerRadius: DSTheme.Radius.md)
-            .fill(color.opacity(0.12))
-            .frame(height: 56)
-
-          Image(systemName: icon)
-            .font(.system(size: 22))
-            .foregroundColor(color)
-        }
-
-        Text(label)
-          .font(DSTheme.Typography.caption)
-          .fontWeight(.medium)
-          .foregroundColor(DSTheme.Colors.textPrimary)
-      }
-      .frame(maxWidth: .infinity)
-    }
-    .buttonStyle(.plain)
-  }
 }
 
 // MARK: - Pending Vote Card
