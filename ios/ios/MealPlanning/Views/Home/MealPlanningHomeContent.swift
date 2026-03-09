@@ -236,19 +236,9 @@ struct MealPlanningHomeContent: View {
 
   private func futureMealPlansSection(viewModel: HomeViewModel) -> some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      HStack {
-        Label("Future Meal Plans", systemImage: "calendar.badge.clock")
-          .font(DSTheme.Typography.title2)
-          .foregroundColor(DSTheme.Colors.textPrimary)
-
-        Spacer()
-
-        Text(
-          "\(viewModel.futureFinalizedMealPlans.count) plan\(viewModel.futureFinalizedMealPlans.count == 1 ? "" : "s")"
-        )
-        .font(DSTheme.Typography.caption)
-        .foregroundColor(DSTheme.Colors.textSecondary)
-      }
+      Label("Future Meal Plans", systemImage: "calendar.badge.clock")
+        .font(DSTheme.Typography.title2)
+        .foregroundColor(DSTheme.Colors.textPrimary)
 
       ForEach(viewModel.futureFinalizedMealPlans, id: \.id) { mealPlan in
         futureMealPlanBlock(viewModel: viewModel, mealPlan: mealPlan)

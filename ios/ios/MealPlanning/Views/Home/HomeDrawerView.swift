@@ -19,8 +19,8 @@ struct HomeDrawerView: View {
 
   var body: some View {
     ZStack(alignment: .trailing) {
-      // Backdrop - tap to dismiss
-      Color.black.opacity(0.3)
+      // Backdrop - tap to dismiss (fades in/out)
+      Color.black.opacity(isPresented ? 0.35 : 0)
         .ignoresSafeArea()
         .onTapGesture {
           isPresented = false
@@ -28,20 +28,6 @@ struct HomeDrawerView: View {
 
       // Drawer panel (slides in from right)
       VStack(alignment: .leading, spacing: 0) {
-        // Close button (visible when drawer is open)
-        HStack {
-          Spacer()
-          Button {
-            isPresented = false
-          } label: {
-            Image(systemName: "xmark")
-              .font(.system(size: 18, weight: .bold))
-              .foregroundColor(.red)
-          }
-          .padding(DSTheme.Spacing.md)
-          .offset(x: -15)
-        }
-
         // Account section
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
           Text("Account")
@@ -130,6 +116,7 @@ struct HomeDrawerView: View {
       .background(Color(.systemBackground))
       .offset(x: isPresented ? 0 : drawerWidth)
     }
-    .animation(.easeInOut(duration: 0.25), value: isPresented)
+    .allowsHitTesting(isPresented)
+    .animation(.spring(response: 0.35, dampingFraction: 0.85), value: isPresented)
   }
 }

@@ -28,22 +28,18 @@ struct HomeView: View {
             onRetry: { await viewModel.loadData() },
             content: {
               VStack(spacing: 0) {
-                // Header: welcome text (flex-grow) + hamburger, space-between, align center
+                // Header: welcome text (flex-grow) + placeholder for overlay hamburger
                 HStack(alignment: .center, spacing: DSTheme.Spacing.md) {
                   Text("\(greeting), \(viewModel.currentUserDisplayName)!")
-                    .font(DSTheme.Typography.title2)
+                    .font(DSTheme.Typography.title1)
                     .foregroundColor(DSTheme.Colors.textPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                  Button {
-                    showDrawer.toggle()
-                  } label: {
-                    Image(systemName: showDrawer ? "xmark" : "line.3.horizontal")
-                      .font(.system(size: 18, weight: .medium))
-                  }
+                  Color.clear
+                    .frame(width: 24, height: 24)
                 }
                 .padding(.horizontal, DSTheme.Spacing.lg)
-                .padding(.vertical, DSTheme.Spacing.sm)
+                .padding(.vertical, 14)
 
                 MealPlanningHomeContent(viewModel: viewModel)
               }
@@ -93,22 +89,33 @@ struct HomeView: View {
         }
       }
       .overlay {
-        if showDrawer {
-          HomeDrawerView(
-            isPresented: $showDrawer,
-            displayName: viewModel?.currentUserDisplayName ?? authManager.username,
-            avatarURL: viewModel.flatMap { homeViewModel in
-              guard let user = homeViewModel.currentUser,
-                user.hasAvatar,
-                !user.avatar.storagePath.isEmpty
-              else { return nil }
-              return APIConfiguration.mediaURL(
-                forStoragePath: user.avatar.storagePath, bucket: "avatars")
-            },
-            acceptedOccupiedDates: viewModel?.acceptedOccupiedDates ?? [],
-            proposedOccupiedDates: viewModel?.proposedOccupiedDates ?? []
-          )
+        HomeDrawerView(
+          isPresented: $showDrawer,
+          displayName: viewModel?.currentUserDisplayName ?? authManager.username,
+          avatarURL: viewModel.flatMap { homeViewModel in
+            guard let user = homeViewModel.currentUser,
+              user.hasAvatar,
+              !user.avatar.storagePath.isEmpty
+            else { return nil }
+            return APIConfiguration.mediaURL(
+              forStoragePath: user.avatar.storagePath, bucket: "avatars")
+          },
+          acceptedOccupiedDates: viewModel?.acceptedOccupiedDates ?? [],
+          proposedOccupiedDates: viewModel?.proposedOccupiedDates ?? []
+        )
+      }
+      .overlay(alignment: .topTrailing) {
+        Button {
+          showDrawer.toggle()
+        } label: {
+          Image(systemName: showDrawer ? "xmark" : "line.3.horizontal")
+            .font(.system(size: 24, weight: .medium))
+            .foregroundColor(showDrawer ? .red : DSTheme.Colors.textPrimary)
+            .contentTransition(.symbolEffect(.replace))
         }
+        .padding(.trailing, DSTheme.Spacing.lg)
+        .padding(.top, 14)
+        .animation(.spring(response: 0.35, dampingFraction: 0.85), value: showDrawer)
       }
     }
   }
