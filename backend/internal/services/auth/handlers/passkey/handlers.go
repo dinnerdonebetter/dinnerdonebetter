@@ -35,17 +35,32 @@ type AuthVerifyRequest struct {
 	AssertionResponse json.RawMessage `json:"assertionResponse"`
 }
 
-// Handlers provides HTTP handlers for passkey authentication.
-type Handlers struct {
-	tracer              tracing.Tracer
-	logger              logging.Logger
-	encoder             encoding.ServerEncoderDecoder
-	cookieManager       cookies.Manager
-	cookieConfig        *cookies.Config
-	buildUnauthedClient func(context.Context) (client.Client, error)
+// RegOptionsResponse is the response for passkey registration options.
+type RegOptionsResponse struct {
+	Challenge                          string `json:"challenge"`
+	PublicKeyCredentialCreationOptions []byte `json:"publicKeyCredentialCreationOptions"`
 }
 
-// NewHandlers creates passkey HTTP handlers.
+// RegVerifyRequest is the request body for passkey registration verify.
+type RegVerifyRequest struct {
+	Challenge           string          `json:"challenge"`
+	AttestationResponse json.RawMessage `json:"attestationResponse"`
+}
+
+// Handlers provides HTTP handlers for passkey authentication and registration.
+type Handlers struct {
+	tracer                   tracing.Tracer
+	logger                   logging.Logger
+	encoder                  encoding.ServerEncoderDecoder
+	cookieManager            cookies.Manager
+	cookieConfig             *cookies.Config
+	buildUnauthedClient      func(context.Context) (client.Client, error)
+	getClientForRegistration func(*http.Request) (client.Client, error) // optional; nil means registration disabled
+}
+
+// NewHandlers creates passkey HTTP handlers. getClientForRegistration is optional (pass nil to disable
+// passkey registration); when provided, it is used by RegOptionsHandler and RegVerifyHandler to obtain
+// an authenticated gRPC client (e.g. from request context after auth middleware).
 func NewHandlers(
 	tracer tracing.Tracer,
 	logger logging.Logger,
@@ -53,14 +68,16 @@ func NewHandlers(
 	cookieManager cookies.Manager,
 	cookieConfig *cookies.Config,
 	buildUnauthedClient func(context.Context) (client.Client, error),
+	getClientForRegistration func(*http.Request) (client.Client, error),
 ) *Handlers {
 	return &Handlers{
-		tracer:              tracer,
-		logger:              logger,
-		encoder:             encoder,
-		cookieManager:       cookieManager,
-		cookieConfig:        cookieConfig,
-		buildUnauthedClient: buildUnauthedClient,
+		tracer:                   tracer,
+		logger:                   logger,
+		encoder:                  encoder,
+		cookieManager:            cookieManager,
+		cookieConfig:             cookieConfig,
+		buildUnauthedClient:      buildUnauthedClient,
+		getClientForRegistration: getClientForRegistration,
 	}
 }
 
@@ -148,4 +165,80 @@ func (h *Handlers) AuthVerifyHandler(res http.ResponseWriter, req *http.Request)
 
 	res.Header().Set("HX-Redirect", "/")
 	h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"redirect": "/"}, http.StatusOK)
+}
+
+// RegOptionsHandler handles POST /auth/passkey/registration/options. Requires authentication.
+func (h *Handlers) RegOptionsHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := h.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := h.logger.WithRequest(req)
+
+	if h.getClientForRegistration == nil {
+		h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"error": "passkey registration not configured"}, http.StatusNotImplemented)
+		return
+	}
+
+	authedClient, err := h.getClientForRegistration(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting authenticated client for passkey registration")
+		h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"error": "authentication required"}, http.StatusUnauthorized)
+		return
+	}
+
+	optsRes, err := authedClient.BeginPasskeyRegistration(ctx, &authsvc.BeginPasskeyRegistrationRequest{})
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "beginning passkey registration")
+		h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"error": "failed to get passkey options"}, http.StatusInternalServerError)
+		return
+	}
+
+	h.encoder.EncodeResponseWithStatus(ctx, res, RegOptionsResponse{
+		PublicKeyCredentialCreationOptions: optsRes.PublicKeyCredentialCreationOptions,
+		Challenge:                          optsRes.Challenge,
+	}, http.StatusOK)
+}
+
+// RegVerifyHandler handles POST /auth/passkey/registration/verify. Requires authentication.
+func (h *Handlers) RegVerifyHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := h.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := h.logger.WithRequest(req)
+
+	if h.getClientForRegistration == nil {
+		h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"error": "passkey registration not configured"}, http.StatusNotImplemented)
+		return
+	}
+
+	var body RegVerifyRequest
+	if err := h.encoder.DecodeRequest(ctx, req, &body); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding passkey registration verify request")
+		h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"error": "invalid request"}, http.StatusBadRequest)
+		return
+	}
+
+	if len([]byte(body.AttestationResponse)) == 0 || body.Challenge == "" {
+		h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"error": "attestation_response and challenge are required"}, http.StatusBadRequest)
+		return
+	}
+
+	authedClient, err := h.getClientForRegistration(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting authenticated client for passkey registration")
+		h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"error": "authentication required"}, http.StatusUnauthorized)
+		return
+	}
+
+	_, err = authedClient.FinishPasskeyRegistration(ctx, &authsvc.FinishPasskeyRegistrationRequest{
+		AttestationResponse: []byte(body.AttestationResponse),
+		Challenge:           body.Challenge,
+	})
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "finishing passkey registration")
+		h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"error": "failed to register passkey"}, http.StatusBadRequest)
+		return
+	}
+
+	h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"success": "true"}, http.StatusOK)
 }

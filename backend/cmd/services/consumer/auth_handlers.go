@@ -87,6 +87,12 @@ func (s *ConsumerFrontendServer) LoginSubmission(res http.ResponseWriter, req *h
 	return g.El("div"), nil
 }
 
+// LogoutHandler clears the auth cookie and redirects to the login page.
+func (s *ConsumerFrontendServer) LogoutHandler(res http.ResponseWriter, req *http.Request) {
+	http.SetCookie(res, webappauth.ClearCookie(&s.config.Cookies))
+	http.Redirect(res, req, "/login", http.StatusFound)
+}
+
 // buildUnauthedGRPCClient builds an unauthenticated gRPC client for auth calls.
 func (s *ConsumerFrontendServer) buildUnauthedGRPCClient(_ context.Context) (client.Client, error) {
 	if s.developingLocally {

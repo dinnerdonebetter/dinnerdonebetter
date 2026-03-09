@@ -206,7 +206,7 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))
-	passkeyHandlers := passkey.NewHandlers(s.tracer, s.logger, s.encoder, s.cookieManager, &s.config.Cookies, s.buildUnauthedGRPCClient)
+	passkeyHandlers := passkey.NewHandlers(s.tracer, s.logger, s.encoder, s.cookieManager, &s.config.Cookies, s.buildUnauthedGRPCClient, nil)
 	router.Post("/auth/passkey/authentication/options", passkeyHandlers.AuthOptionsHandler)
 	router.Post("/auth/passkey/authentication/verify", passkeyHandlers.AuthVerifyHandler)
 

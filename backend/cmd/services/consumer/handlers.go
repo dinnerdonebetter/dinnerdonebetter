@@ -5,8 +5,12 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/cmd/services/consumer/components"
+	"github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	webappauth "github.com/dinnerdonebetter/backend/internal/webapp/auth"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	g "maragu.dev/gomponents"
@@ -34,7 +38,60 @@ func (s *ConsumerFrontendServer) HomePage(_ http.ResponseWriter, _ *http.Request
 	), nil
 }
 
-func (s *ConsumerFrontendServer) AccountSettingsPage(_ http.ResponseWriter, _ *http.Request) (g.Node, error) {
+func (s *ConsumerFrontendServer) AccountSettingsPage(res http.ResponseWriter, req *http.Request) (g.Node, error) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+
+	c, err := webappauth.ClientFromContext(req.Context())
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting API client")
+		return page("Account Settings",
+			ghtml.Div(
+				ghtml.Class("space-y-6"),
+				ghtml.P(
+					ghtml.Class("text-red-600"),
+					g.Text("Unable to load account settings. Please try again."),
+				),
+			),
+		), nil
+	}
+
+	selfRes, err := c.GetSelf(ctx, &authsvc.GetSelfRequest{})
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting self")
+		return page("Account Settings",
+			ghtml.Div(
+				ghtml.Class("space-y-6"),
+				ghtml.P(
+					ghtml.Class("text-red-600"),
+					g.Text("Unable to load account settings. Please try again."),
+				),
+			),
+		), nil
+	}
+
+	user := selfRes.GetResult()
+	userID := ""
+	if user != nil {
+		userID = user.Id
+	}
+
+	hasAccount := false
+	if userID != "" {
+		var pageSize uint32 = 1
+		accountsRes, getErr := c.GetAccountsForUser(ctx, &identitysvc.GetAccountsForUserRequest{
+			UserId: userID,
+			Filter: &filtering.QueryFilter{
+				MaxResponseSize: &pageSize,
+			},
+		})
+		if getErr == nil && len(accountsRes.GetResults()) > 0 {
+			hasAccount = true
+		}
+	}
+
 	return page("Account Settings",
 		ghtml.Div(
 			ghtml.Class("space-y-6"),
@@ -46,6 +103,8 @@ func (s *ConsumerFrontendServer) AccountSettingsPage(_ http.ResponseWriter, _ *h
 				ghtml.Class("text-gray-600"),
 				g.Text("Manage your account preferences here."),
 			),
+			s.componentRenderer.AccountLinks(&components.AccountLinksProps{HasAccount: hasAccount}),
+			s.componentRenderer.PasskeySection(),
 		),
 	), nil
 }
