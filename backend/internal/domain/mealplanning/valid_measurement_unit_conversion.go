@@ -94,6 +94,7 @@ type (
 		UpdateValidMeasurementUnitConversion(ctx context.Context, updated *ValidMeasurementUnitConversion) error
 		ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error
 		GetValidMeasurementUnitConversionsForUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidMeasurementUnitConversion], error)
+		GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, validIngredientIDs []string) ([]*ValidMeasurementUnitConversion, error)
 		GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*MeasurementUnitConversionMismatch, error)
 	}
 

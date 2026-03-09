@@ -1784,6 +1784,18 @@ internal enum Mealplanning_MealPlanningService {
                 method: "GetValidMeasurementUnitConversionsForUnit"
             )
         }
+        /// Namespace for "GetValidMeasurementUnitConversionsForIngredients" metadata.
+        internal enum GetValidMeasurementUnitConversionsForIngredients {
+            /// Request type for "GetValidMeasurementUnitConversionsForIngredients".
+            internal typealias Input = Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest
+            /// Response type for "GetValidMeasurementUnitConversionsForIngredients".
+            internal typealias Output = Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse
+            /// Descriptor for "GetValidMeasurementUnitConversionsForIngredients".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "GetValidMeasurementUnitConversionsForIngredients"
+            )
+        }
         /// Namespace for "GetMeasurementUnitConversionMismatches" metadata.
         internal enum GetMeasurementUnitConversionMismatches {
             /// Request type for "GetMeasurementUnitConversionMismatches".
@@ -2869,6 +2881,7 @@ internal enum Mealplanning_MealPlanningService {
             GetValidMeasurementUnit.descriptor,
             GetValidMeasurementUnitConversion.descriptor,
             GetValidMeasurementUnitConversionsForUnit.descriptor,
+            GetValidMeasurementUnitConversionsForIngredients.descriptor,
             GetMeasurementUnitConversionMismatches.descriptor,
             GetValidMeasurementUnits.descriptor,
             GetValidPreparation.descriptor,
@@ -5757,6 +5770,25 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidMeasurementUnitConversionsForUnitResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidMeasurementUnitConversionsForUnitResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetValidMeasurementUnitConversionsForIngredients" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getValidMeasurementUnitConversionsForIngredients<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "GetMeasurementUnitConversionMismatches" method.
@@ -11661,6 +11693,36 @@ extension Mealplanning_MealPlanningService {
             try await self.client.unary(
                 request: request,
                 descriptor: Mealplanning_MealPlanningService.Method.GetValidMeasurementUnitConversionsForUnit.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetValidMeasurementUnitConversionsForIngredients" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getValidMeasurementUnitConversionsForIngredients<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.GetValidMeasurementUnitConversionsForIngredients.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -17683,6 +17745,31 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetValidMeasurementUnitConversionsForUnitRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetValidMeasurementUnitConversionsForUnitResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidMeasurementUnitConversionsForIngredients" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidMeasurementUnitConversionsForIngredients<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getValidMeasurementUnitConversionsForIngredients(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -23899,6 +23986,35 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             metadata: metadata
         )
         return try await self.getValidMeasurementUnitConversionsForUnit(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidMeasurementUnitConversionsForIngredients" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidMeasurementUnitConversionsForIngredients<Result>(
+        _ message: Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_GetValidMeasurementUnitConversionsForIngredientsRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getValidMeasurementUnitConversionsForIngredients(
             request: request,
             options: options,
             onResponse: handleResponse

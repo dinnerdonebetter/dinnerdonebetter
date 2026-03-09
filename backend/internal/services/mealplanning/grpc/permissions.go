@@ -126,12 +126,13 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_ArchiveValidPreparationInstrument_FullMethodName:           {authorization.ArchiveValidPreparationInstrumentsPermission},
 
 		// ValidMeasurementUnitConversions
-		mealplanningsvc.MealPlanningService_CreateValidMeasurementUnitConversion_FullMethodName:      {authorization.CreateValidMeasurementUnitConversionsPermission},
-		mealplanningsvc.MealPlanningService_GetValidMeasurementUnitConversion_FullMethodName:         {authorization.ReadValidMeasurementUnitConversionsPermission},
-		mealplanningsvc.MealPlanningService_GetValidMeasurementUnitConversionsForUnit_FullMethodName: {authorization.ReadValidMeasurementUnitConversionsPermission},
-		mealplanningsvc.MealPlanningService_GetMeasurementUnitConversionMismatches_FullMethodName:    {authorization.ReadValidMeasurementUnitConversionsPermission},
-		mealplanningsvc.MealPlanningService_UpdateValidMeasurementUnitConversion_FullMethodName:      {authorization.UpdateValidMeasurementUnitConversionsPermission},
-		mealplanningsvc.MealPlanningService_ArchiveValidMeasurementUnitConversion_FullMethodName:     {authorization.ArchiveValidMeasurementUnitConversionsPermission},
+		mealplanningsvc.MealPlanningService_CreateValidMeasurementUnitConversion_FullMethodName:             {authorization.CreateValidMeasurementUnitConversionsPermission},
+		mealplanningsvc.MealPlanningService_GetValidMeasurementUnitConversion_FullMethodName:                {authorization.ReadValidMeasurementUnitConversionsPermission},
+		mealplanningsvc.MealPlanningService_GetValidMeasurementUnitConversionsForUnit_FullMethodName:        {authorization.ReadValidMeasurementUnitConversionsPermission},
+		mealplanningsvc.MealPlanningService_GetValidMeasurementUnitConversionsForIngredients_FullMethodName: {authorization.ReadValidMeasurementUnitConversionsPermission},
+		mealplanningsvc.MealPlanningService_GetMeasurementUnitConversionMismatches_FullMethodName:           {authorization.ReadValidMeasurementUnitConversionsPermission},
+		mealplanningsvc.MealPlanningService_UpdateValidMeasurementUnitConversion_FullMethodName:             {authorization.UpdateValidMeasurementUnitConversionsPermission},
+		mealplanningsvc.MealPlanningService_ArchiveValidMeasurementUnitConversion_FullMethodName:            {authorization.ArchiveValidMeasurementUnitConversionsPermission},
 
 		// UserIngredientPreferences
 		mealplanningsvc.MealPlanningService_CreateUserIngredientPreference_FullMethodName:  {authorization.CreateUserIngredientPreferencesPermission},

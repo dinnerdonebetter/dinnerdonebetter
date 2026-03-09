@@ -178,6 +178,34 @@ WHERE
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetValidMeasurementUnitConversionsForIngredients",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+	JOIN %s AS %s_from ON %s.%s = %s_from.%s
+	JOIN %s AS %s_to ON %s.%s = %s_to.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
+WHERE
+	(%s.%s IS NULL OR %s.%s = ANY(sqlc.arg(valid_ingredient_ids)::text[]))
+	AND %s.%s IS NULL
+	AND %s_from.%s IS NULL
+	AND %s_to.%s IS NULL;`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					validMeasurementUnitConversionsTableName,
+					validMeasurementUnitsTableName, validMeasurementUnitsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsFromUnitColumn, validMeasurementUnitsTableName, idColumn,
+					validMeasurementUnitsTableName, validMeasurementUnitsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsToUnitColumn, validMeasurementUnitsTableName, idColumn,
+					validIngredientsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsOnlyForIngredientColumn, validIngredientsTableName, idColumn,
+					validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsOnlyForIngredientColumn,
+					validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsOnlyForIngredientColumn,
+					validMeasurementUnitConversionsTableName, archivedAtColumn,
+					validMeasurementUnitsTableName, archivedAtColumn,
+					validMeasurementUnitsTableName, archivedAtColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "UpdateValidMeasurementUnitConversion",
 					Type: ExecRowsType,
 				},

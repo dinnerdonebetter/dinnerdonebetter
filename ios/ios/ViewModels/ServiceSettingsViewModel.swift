@@ -31,6 +31,7 @@ class ServiceSettingsViewModel {
   var errorTitle: String = "Error"
   var errorIcon: String = "exclamationmark.triangle"
   var errorIconColor = DSTheme.Colors.warning
+  var isServerDownError = false
 
   private let authManager: AuthenticationManager
   private let userSettingsService: UserSettingsService
@@ -46,6 +47,7 @@ class ServiceSettingsViewModel {
     errorTitle = "Error"
     errorIcon = "exclamationmark.triangle"
     errorIconColor = DSTheme.Colors.warning
+    isServerDownError = false
 
     do {
       let (settings, configs) = try await fetchSettingsAndConfigs()
@@ -57,6 +59,7 @@ class ServiceSettingsViewModel {
       errorTitle = display.title
       errorIcon = display.icon
       errorIconColor = display.iconColor
+      isServerDownError = ErrorDisplayFormatter.isServerDown(error)
       print("❌ Error loading service settings: \(error)")
     }
 
@@ -118,6 +121,7 @@ class ServiceSettingsViewModel {
       errorTitle = display.title
       errorIcon = display.icon
       errorIconColor = display.iconColor
+      isServerDownError = ErrorDisplayFormatter.isServerDown(error)
       print("❌ Error saving setting: \(error)")
       return false
     }

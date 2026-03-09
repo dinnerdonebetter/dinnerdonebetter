@@ -97,6 +97,12 @@ struct DSErrorView: View {
   let iconColor: Color
   let retryTitle: String
   let onRetry: (() async -> Void)?
+  let showEnvironmentSelector: Bool
+
+  #if DEBUG
+    @State private var showEnvironmentPicker = false
+    @State private var selectedEnvironment: AppEnvironment = APIConfiguration.currentEnvironment
+  #endif
 
   init(
     _ message: String,
@@ -104,7 +110,8 @@ struct DSErrorView: View {
     icon: String = "exclamationmark.triangle",
     iconColor: Color = DSTheme.Colors.warning,
     retryTitle: String = "Retry",
-    onRetry: (() async -> Void)? = nil
+    onRetry: (() async -> Void)? = nil,
+    showEnvironmentSelector: Bool = false
   ) {
     self.message = message
     self.title = title
@@ -112,6 +119,7 @@ struct DSErrorView: View {
     self.iconColor = iconColor
     self.retryTitle = retryTitle
     self.onRetry = onRetry
+    self.showEnvironmentSelector = showEnvironmentSelector
   }
 
   var body: some View {
@@ -139,9 +147,47 @@ struct DSErrorView: View {
           }
         }
       }
+
+      #if DEBUG
+        if showEnvironmentSelector {
+          environmentButton
+        }
+      #endif
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    #if DEBUG
+      .sheet(isPresented: $showEnvironmentPicker) {
+        EnvironmentPickerSheet(
+          selectedEnvironment: $selectedEnvironment,
+          onDismiss: { showEnvironmentPicker = false }
+        )
+        .presentationDetents([.medium])
+      }
+    #endif
   }
+
+  #if DEBUG
+    private var environmentButton: some View {
+      Button {
+        showEnvironmentPicker = true
+      } label: {
+        HStack(spacing: DSTheme.Spacing.xs) {
+          Image(systemName: selectedEnvironment.iconName)
+            .font(.system(size: 12))
+          Text(selectedEnvironment.displayName)
+            .font(DSTheme.Typography.caption)
+          Image(systemName: "chevron.up")
+            .font(.system(size: 10, weight: .semibold))
+        }
+        .foregroundColor(DSTheme.Colors.textSecondary)
+        .padding(.horizontal, DSTheme.Spacing.md)
+        .padding(.vertical, DSTheme.Spacing.sm)
+        .background(DSTheme.Colors.cardBackground)
+        .cornerRadius(DSTheme.Radius.full)
+      }
+      .padding(.top, DSTheme.Spacing.sm)
+    }
+  #endif
 }
 
 // MARK: - DSContentState
@@ -178,6 +224,7 @@ struct DSContentState<Content: View>: View {
   let errorIcon: String
   let errorIconColor: Color
   let onRetry: (() async -> Void)?
+  let showEnvironmentSelector: Bool
   @ViewBuilder let content: () -> Content
 
   init(
@@ -188,6 +235,7 @@ struct DSContentState<Content: View>: View {
     errorIcon: String = "exclamationmark.triangle",
     errorIconColor: Color = DSTheme.Colors.warning,
     onRetry: (() async -> Void)? = nil,
+    showEnvironmentSelector: Bool = false,
     @ViewBuilder content: @escaping () -> Content
   ) {
     self.isLoading = isLoading
@@ -197,6 +245,7 @@ struct DSContentState<Content: View>: View {
     self.errorIcon = errorIcon
     self.errorIconColor = errorIconColor
     self.onRetry = onRetry
+    self.showEnvironmentSelector = showEnvironmentSelector
     self.content = content
   }
 
@@ -210,7 +259,8 @@ struct DSContentState<Content: View>: View {
           title: errorTitle,
           icon: errorIcon,
           iconColor: errorIconColor,
-          onRetry: onRetry
+          onRetry: onRetry,
+          showEnvironmentSelector: showEnvironmentSelector
         )
       } else {
         content()

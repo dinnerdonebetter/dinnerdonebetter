@@ -121,6 +121,14 @@ struct AccountSettingsView: View {
           style: .card,
           destination: HouseholdDetailsView(viewModel: viewModel)
         )
+
+        DSListRowLink(
+          title: "Kitchen Instruments",
+          subtitle: "Tools and appliances your household owns",
+          icon: "frying.pan",
+          style: .card,
+          destination: HouseholdInstrumentsView(viewModel: viewModel)
+        )
       }
 
       DSListRowLink(

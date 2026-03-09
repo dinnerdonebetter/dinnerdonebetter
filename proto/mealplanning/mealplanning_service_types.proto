@@ -895,6 +895,15 @@ message GetValidMeasurementUnitConversionsForUnitResponse {
   repeated ValidMeasurementUnitConversion results = 3;
 }
 
+message GetValidMeasurementUnitConversionsForIngredientsRequest {
+  repeated string valid_ingredient_ids = 1;
+}
+
+message GetValidMeasurementUnitConversionsForIngredientsResponse {
+  common.ResponseDetails response_details = 1;
+  repeated ValidMeasurementUnitConversion results = 2;
+}
+
 message GetMeasurementUnitConversionMismatchesRequest {}
 
 message GetMeasurementUnitConversionMismatchesResponse {

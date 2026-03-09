@@ -6,6 +6,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	mealplanningconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
@@ -1208,6 +1209,29 @@ func (s *serviceImpl) GetValidMeasurementUnitConversionsForUnit(ctx context.Cont
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 	for _, y := range x.Data {
+		res.Results = append(res.Results, mealplanningconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
+	}
+
+	return res, nil
+}
+
+func (s *serviceImpl) GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsForIngredientsRequest) (*mealplanning.GetValidMeasurementUnitConversionsForIngredientsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	x, err := s.validEnumerationsManager.GetValidMeasurementUnitConversionsForIngredients(ctx, request.ValidIngredientIds)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement unit conversions for ingredients")
+	}
+
+	res := &mealplanning.GetValidMeasurementUnitConversionsForIngredientsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+	for _, y := range x {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
 	}
 

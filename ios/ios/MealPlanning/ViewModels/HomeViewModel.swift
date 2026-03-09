@@ -49,6 +49,7 @@ class HomeViewModel {
   var errorTitle: String = "Error"
   var errorIcon: String = "exclamationmark.triangle"
   var errorIconColor = DSTheme.Colors.warning
+  var isServerDownError = false
 
   // Computed properties
   var pendingVoteMealPlans: [Mealplanning_MealPlan] {
@@ -271,6 +272,7 @@ class HomeViewModel {
     errorTitle = "Error"
     errorIcon = "exclamationmark.triangle"
     errorIconColor = DSTheme.Colors.warning
+    isServerDownError = false
 
     do {
       // Fetch current user for welcome message
@@ -301,6 +303,7 @@ class HomeViewModel {
       errorTitle = display.title
       errorIcon = display.icon
       errorIconColor = display.iconColor
+      isServerDownError = ErrorDisplayFormatter.isServerDown(error)
       Self.logDiagnosticError("home data", error: error)
     }
 

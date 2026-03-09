@@ -243,6 +243,7 @@ type Querier interface {
 	GetValidInstrumentsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidInstrumentsWithIDsRow, error)
 	GetValidMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitRow, error)
 	GetValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitConversionRow, error)
+	GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, db DBTX, validIngredientIds []string) ([]*GetValidMeasurementUnitConversionsForIngredientsRow, error)
 	GetValidMeasurementUnitConversionsForMeasurementUnit(ctx context.Context, db DBTX, arg *GetValidMeasurementUnitConversionsForMeasurementUnitParams) ([]*GetValidMeasurementUnitConversionsForMeasurementUnitRow, error)
 	GetValidMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidMeasurementUnitsParams) ([]*GetValidMeasurementUnitsRow, error)
 	GetValidMeasurementUnitsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
