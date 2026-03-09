@@ -275,7 +275,7 @@ Admin uses gRPC or repository directly to list/create/edit products and subscrip
 | Migration           | `migrations/migration_files/00011_payments.sql`         |
 | Admin products      | `cmd/services/admin/payments_products_handlers.go`      |
 | Admin subscriptions | `cmd/services/admin/payments_subscriptions_handlers.go` |
-| Integration tests   | `testing/integration/apiserver/payments_test.go`          |
+| Integration tests   | `testing/integration/apiserver/payments_test.go`        |
 
 ---
 

@@ -461,6 +461,6 @@ Shorter path — reuse:
 | gRPC - Registration      | `build/services/api/grpc/extras.go`, `build.go`                                                                       |
 | Auth interceptor         | `authorization/*_permissions.go`; `services/<domain>/grpc/permissions.go`; `extras.go` AggregateMethodPermissions     |
 | Configs                  | `config/services_config.go`, `wire.go`, `codegen/configs/*.go` (if needed)                                            |
-| Integration tests        | `testing/integration/apiserver/<domain>_<entity>_test.go`                                                               |
+| Integration tests        | `testing/integration/apiserver/<domain>_<entity>_test.go`                                                             |
 | Admin - List view        | `cmd/services/admin/routes.go`; handler in `cmd/services/admin/`                                                      |
 | Admin - Edit view        | Same                                                                                                                  |
