@@ -70,11 +70,23 @@ Then run with `--env` or export before `k6 run`.
 
 ## Endpoints Exercised
 
-Read-only only:
+Read-only only. Setup fetches `account_id` and `user_id` via GetActiveAccount/GetSelf for context-dependent calls.
 
 **Valid enums (shared):** GetValidInstruments, GetValidIngredients, GetValidVessels, GetValidPreparations, GetValidIngredientGroups, GetValidMeasurementUnits, SearchForValidIngredients, SearchForValidInstruments, SearchForValidVessels, SearchForValidPreparations, SearchForValidMeasurementUnits
 
-**Account/user-scoped:** GetRecipes, GetMealPlansForAccount, GetMeals, GetRecipeLists, GetMealLists, SearchForRecipes, SearchForMealEligibleRecipes, SearchForMeals, GetAccountInstrumentOwnerships, GetUserIngredientPreferences
+**Mealplanning (account/user-scoped):** GetRecipes, GetMealPlansForAccount, GetMeals, GetRecipeLists, GetMealLists, SearchForRecipes, SearchForMealEligibleRecipes, SearchForMeals, GetAccountInstrumentOwnerships, GetUserIngredientPreferences, SearchForRecipesWithInstrumentOwnership, SearchForValidIngredientGroups, SearchForValidIngredientStates, SearchValidIngredientsByPreparation, SearchValidMeasurementUnitsByIngredient, GetValidPrepTaskConfigs, GetValidIngredientStates, GetValidPreparationInstruments, GetValidPreparationVessels
+
+**Webhooks:** GetWebhooks, GetWebhookTriggerEvents
+
+**Identity:** GetAccounts, GetReceivedAccountInvitations, GetSentAccountInvitations, GetUsersForAccount, GetAccount, GetAccountsForUser, SearchForUsers
+
+**Settings:** GetServiceSettingConfigurationsForAccount, GetServiceSettingConfigurationsForUser, GetServiceSettings, SearchForServiceSettings
+
+**Audit:** GetAuditLogEntriesForAccount, GetAuditLogEntriesForUser
+
+**Notifications:** GetUserNotifications, GetUserDeviceTokens
+
+**Issue reports:** GetIssueReports, GetIssueReportsForAccount, GetIssueReportsForTable
 
 **Auth:** GetAuthStatus, GetActiveAccount, GetSelf
 

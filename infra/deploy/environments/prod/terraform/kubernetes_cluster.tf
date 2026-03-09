@@ -129,16 +129,19 @@ resource "google_project_iam_member" "workload_identity_secret_accessor" {
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
+
 resource "google_project_iam_member" "workload_identity_pubsub" {
   project = local.project_id
   role    = "roles/pubsub.publisher"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
+
 resource "google_project_iam_member" "workload_identity_pubsub_subscriber" {
   project = local.project_id
   role    = "roles/pubsub.subscriber"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
+
 # TopicAdminClient.GetTopic requires pubsub.topics.get (included in viewer)
 resource "google_project_iam_member" "workload_identity_pubsub_viewer" {
   project = local.project_id

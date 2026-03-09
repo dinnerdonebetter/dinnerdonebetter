@@ -32,7 +32,8 @@ const password = __ENV.K6_LOADTEST_PASSWORD;
 
 const redirectUri = httpBase;
 
-// Read-only endpoints to exercise (no data written)
+// Read-only endpoints to exercise (no data written).
+// request can be a static object or a function (data) => request for context-dependent calls.
 const READ_ENDPOINTS = [
   // Valid enums (shared)
   { method: "mealplanning.MealPlanningService/GetValidInstruments", request: { filter: {} } },
@@ -46,10 +47,14 @@ const READ_ENDPOINTS = [
   { method: "mealplanning.MealPlanningService/SearchForValidVessels", request: { filter: {}, query: "pan", use_search_service: false } },
   { method: "mealplanning.MealPlanningService/SearchForValidPreparations", request: { filter: {}, query: "dice", use_search_service: false } },
   { method: "mealplanning.MealPlanningService/SearchForValidMeasurementUnits", request: { filter: {}, query: "cup", use_search_service: false } },
-  // Account/user-scoped (returns empty or user's data)
+  // Mealplanning – account/user-scoped
   { method: "mealplanning.MealPlanningService/GetRecipes", request: { filter: {} } },
+  { method: "mealplanning.MealPlanningService/GetRecipes", request: { filter: { max_response_size: 10 } } },
+  { method: "mealplanning.MealPlanningService/GetRecipes", request: { filter: { max_response_size: 50 } } },
   { method: "mealplanning.MealPlanningService/GetMealPlansForAccount", request: { filter: {} } },
   { method: "mealplanning.MealPlanningService/GetMeals", request: { filter: {} } },
+  { method: "mealplanning.MealPlanningService/GetMeals", request: { filter: { max_response_size: 10 } } },
+  { method: "mealplanning.MealPlanningService/GetMeals", request: { filter: { max_response_size: 50 } } },
   { method: "mealplanning.MealPlanningService/GetRecipeLists", request: { filter: {} } },
   { method: "mealplanning.MealPlanningService/GetMealLists", request: { filter: {} } },
   { method: "mealplanning.MealPlanningService/SearchForRecipes", request: { filter: {}, query: "chicken", use_search_service: false } },
@@ -57,6 +62,41 @@ const READ_ENDPOINTS = [
   { method: "mealplanning.MealPlanningService/SearchForMeals", request: { filter: {}, query: "dinner", use_search_service: false } },
   { method: "mealplanning.MealPlanningService/GetAccountInstrumentOwnerships", request: { filter: {} } },
   { method: "mealplanning.MealPlanningService/GetUserIngredientPreferences", request: { filter: {} } },
+  { method: "mealplanning.MealPlanningService/SearchForRecipesWithInstrumentOwnership", request: { filter: {}, query: "salad", use_search_service: false } },
+  { method: "mealplanning.MealPlanningService/SearchForValidIngredientGroups", request: { filter: {}, query: "dairy", use_search_service: false } },
+  { method: "mealplanning.MealPlanningService/SearchForValidIngredientStates", request: { filter: {}, query: "raw", use_search_service: false } },
+  { method: "mealplanning.MealPlanningService/SearchValidIngredientsByPreparation", request: { filter: {}, query: "diced", use_search_service: false } },
+  { method: "mealplanning.MealPlanningService/SearchValidMeasurementUnitsByIngredient", request: { filter: {}, query: "flour", use_search_service: false } },
+  { method: "mealplanning.MealPlanningService/GetValidPrepTaskConfigs", request: { filter: {} } },
+  { method: "mealplanning.MealPlanningService/GetValidIngredientStates", request: { filter: {} } },
+  { method: "mealplanning.MealPlanningService/GetValidPreparationInstruments", request: { filter: {} } },
+  { method: "mealplanning.MealPlanningService/GetValidPreparationVessels", request: { filter: {} } },
+  // Webhooks
+  { method: "webhooks.WebhooksService/GetWebhooks", request: { filter: {} } },
+  { method: "webhooks.WebhooksService/GetWebhookTriggerEvents", request: { filter: {} } },
+  // Identity – account members, invitations
+  { method: "identity.IdentityService/GetAccounts", request: { filter: {} } },
+  { method: "identity.IdentityService/GetReceivedAccountInvitations", request: { filter: {} } },
+  { method: "identity.IdentityService/GetSentAccountInvitations", request: { filter: {} } },
+  { method: "identity.IdentityService/GetUsersForAccount", request: (d) => ({ filter: {}, account_id: d.accountId }) },
+  { method: "identity.IdentityService/GetAccount", request: (d) => ({ account_id: d.accountId }) },
+  { method: "identity.IdentityService/GetAccountsForUser", request: (d) => ({ filter: {}, user_id: d.userId }) },
+  { method: "identity.IdentityService/SearchForUsers", request: { filter: {}, query: "test", use_search_service: false } },
+  // Settings
+  { method: "settings.SettingsService/GetServiceSettingConfigurationsForAccount", request: { filter: {} } },
+  { method: "settings.SettingsService/GetServiceSettingConfigurationsForUser", request: { filter: {} } },
+  { method: "settings.SettingsService/GetServiceSettings", request: { filter: {} } },
+  { method: "settings.SettingsService/SearchForServiceSettings", request: { filter: {}, query: "notification" } },
+  // Audit
+  { method: "audit.AuditService/GetAuditLogEntriesForAccount", request: (d) => ({ filter: {}, account_id: d.accountId }) },
+  { method: "audit.AuditService/GetAuditLogEntriesForUser", request: (d) => ({ filter: {}, user_id: d.userId }) },
+  // Notifications
+  { method: "notifications.UserNotificationsService/GetUserNotifications", request: { filter: {} } },
+  { method: "notifications.UserNotificationsService/GetUserDeviceTokens", request: { filter: {} } },
+  // Issue reports
+  { method: "issue_reports.IssueReportsService/GetIssueReports", request: { filter: {} } },
+  { method: "issue_reports.IssueReportsService/GetIssueReportsForAccount", request: (d) => ({ account_id: d.accountId, filter: {} }) },
+  { method: "issue_reports.IssueReportsService/GetIssueReportsForTable", request: { table_name: "recipes", filter: {} } },
   // Auth
   { method: "auth.AuthService/GetAuthStatus", request: {} },
   { method: "auth.AuthService/GetActiveAccount", request: {} },
@@ -177,6 +217,29 @@ function exchangeForOAuth2Token(jwt) {
   return accessToken;
 }
 
+function fetchAccountAndUserIds(accessToken) {
+  const client = new grpc.Client();
+  client.connect(grpcTarget, { plaintext: usePlaintext, reflect: true });
+
+  const accountRes = client.invoke("auth.AuthService/GetActiveAccount", {}, {
+    metadata: { authorization: `Bearer ${accessToken}` },
+  });
+  const selfRes = client.invoke("auth.AuthService/GetSelf", {}, {
+    metadata: { authorization: `Bearer ${accessToken}` },
+  });
+
+  client.close();
+
+  const accountId = accountRes?.status === grpc.StatusOK && accountRes?.message?.result
+    ? (accountRes.message.result.id || accountRes.message.result.Id || "")
+    : "";
+  const userId = selfRes?.status === grpc.StatusOK && selfRes?.message?.result
+    ? (selfRes.message.result.id || selfRes.message.result.Id || "")
+    : "";
+
+  return { accountId, userId };
+}
+
 export function setup() {
   if (!clientId || !clientSecret || !username || !password) {
     throw new Error(
@@ -186,7 +249,8 @@ export function setup() {
 
   const jwt = fetchLoginToken();
   const accessToken = exchangeForOAuth2Token(jwt);
-  return { accessToken };
+  const { accountId, userId } = fetchAccountAndUserIds(accessToken);
+  return { accessToken, accountId, userId };
 }
 
 export default function (data) {
@@ -194,7 +258,11 @@ export default function (data) {
   client.connect(grpcTarget, { plaintext: usePlaintext, reflect: true });
 
   const endpoint = randomElement(READ_ENDPOINTS);
-  const response = client.invoke(endpoint.method, endpoint.request, {
+  const request =
+    typeof endpoint.request === "function"
+      ? endpoint.request(data)
+      : endpoint.request;
+  const response = client.invoke(endpoint.method, request, {
     metadata: { authorization: `Bearer ${data.accessToken}` },
   });
 
