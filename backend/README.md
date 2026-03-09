@@ -2,67 +2,154 @@
 
 [![backend - deploy](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_deploy_dev.yaml/badge.svg)](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_deploy_dev.yaml) [![backend - integration tests](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_integration_tests.yaml/badge.svg)](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_integration_tests.yaml) [![backend - lint](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_lint.yaml/badge.svg)](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_lint.yaml) [![backend - unit tests](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_unit_tests.yaml/badge.svg)](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_unit_tests.yaml)
 
-## dev dependencies
+Go backend for Dinner Done Better — meal planning, recipes, grocery lists, and more. Exposes gRPC and HTTP APIs, backed by PostgreSQL, with workers for indexing, email, and meal plan lifecycle.
 
-The following tools are prerequisites for development work:
+---
 
-- [go](https://golang.org/) 1.26
-- [docker](https://docs.docker.com/get-docker/) &&  [docker-compose](https://docs.docker.com/compose/install/)
-- [wire](https://github.com/google/wire) for dependency management
-- [make](https://www.gnu.org/software/make/) for task running
-- [sqlc](https://sqlc.dev/) for generating database code
-- [gci](https://www.github.com/daixiang0/gci) for sorting imports
-- [tagalign](https://www.github.com/4meepo/tagalign) for aligning struct tags (`go install github.com/4meepo/tagalign/cmd/tagalign@latest`)
-- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) for deploying/formatting
-- [cloud_sql_proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) for production database access
-- [fieldalignment](https://pkg.go.dev/golang.org/x/tools/go/analysis/passes/fieldalignment) (`go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest`)
+## Quick start
 
-## dev setup
+```bash
+cd backend
+make setup      # first-time: vendor, wire, configs, install tools
+make dev        # start local dev server
+```
 
-It's a good idea to run `make quicktest lint integration_tests` before commits.
+→ **<http://localhost:8000>** (HTTP) · **localhost:8001** (gRPC)
 
-## running the server
+---
 
-1. clone this repository
-2. run `make dev`
-3. [http://localhost:8000/](http://localhost:8000/)
+## Prerequisites
 
-## infrastructure
+| Category    | Tools                                                                                                                                                                                                                                                 |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Core**    | [Go](https://golang.org/) 1.26, [Make](https://www.gnu.org/software/make/), [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/)                                                                |
+| **Codegen** | [Wire](https://github.com/google/wire), [sqlc](https://sqlc.dev/), [gci](https://github.com/daixiang0/gci), [tagalign](https://github.com/4meepo/tagalign), [fieldalignment](https://pkg.go.dev/golang.org/x/tools/go/analysis/passes/fieldalignment) |
+| **Infra**   | [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli), [Cloud SQL Proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) (for prod DB access)                                                                                |
+
+Install Go tools:
+
+```bash
+go install github.com/google/wire/cmd/wire@v0.7.0
+go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@v0.37.0
+go install github.com/4meepo/tagalign/cmd/tagalign@v1.4.3
+go install github.com/daixiang0/gci@v0.13.5
+```
+
+`make setup` will ensure these are installed.
+
+---
+
+## Development
+
+### First-time setup
+
+```bash
+make setup
+```
+
+Runs: `revendor`, `rewire`, `configs`, and ensures Wire, fieldalignment, tagalign, and gci are installed.
+
+### Running locally
+
+```bash
+make dev
+```
+
+Starts the all-in-one local dev server (API, workers, in-memory queue, local Postgres via compose). Uses config from `deploy/environments/testing/config_files/integration-tests-config.json`.
+
+### Before committing
+
+```bash
+make test lint integration_tests
+```
+
+### Common targets
+
+| Target                   | Description                                 |
+|--------------------------|---------------------------------------------|
+| `make dev`               | Start local dev server                      |
+| `make admin`             | Start admin webapp (requires dev server)    |
+| `make consumer`          | Start consumer webapp (requires dev server) |
+| `make test`              | Run unit tests                              |
+| `make lint`              | Lint Go, SQL, containers, shell             |
+| `make integration_tests` | Run integration tests (Postgres)            |
+| `make format`            | Format Go and Terraform                     |
+| `make build-api`         | Build API binary to `artifacts/api`         |
+| `make proxy_db`          | Connect Cloud SQL Proxy to prod DB          |
+
+---
+
+## Documentation
+
+| Doc                                                   | Description                               |
+|-------------------------------------------------------|-------------------------------------------|
+| [adding_a_new_domain.md](docs/adding_a_new_domain.md) | Checklist for adding new domains/entities |
+| [configuration.md](docs/configuration.md)             | Config files and env var overrides        |
+| [migrations.md](docs/migrations.md)                   | Database migrations                       |
+| [payments.md](docs/payments.md)                       | Payments integration                      |
+| [writing_go.md](docs/writing_go.md)                   | Go style and conventions                  |
+
+---
+
+## Infrastructure
 
 ```mermaid
-flowchart LR
-    PublicInternet("Public Internet")
-    APIServer("API Server")
-    Sendgrid("Sendgrid")
-    Segment("Segment")
-    Algolia("Algolia")
-    Database("Database")
-    DataChangesQueue("Data Changes Queue")
-    DataChangesWorker("Data Changes Worker")
-    MealPlanFinalizerWorker("Meal Plan Finalizer")
-    MealPlanGroceryListInitializerWorker("Grocery List Initializer")
-    MealPlanTaskCreatorWorker("Meal Plan Task Creator")
-    OutboundEmailerWorker("Outbound Emailer")
-    SearchDataIndexSchedulerWorker("Data Index Scheduler")
-    SearchDataIndexerWorker("Search Data Indexer")
-    PublicInternet-->APIServer
-    Cron-->MealPlanGroceryListInitializerWorker
-    Cron-->SearchDataIndexSchedulerWorker
-    Cron-->MealPlanTaskCreatorWorker
-    Cron-->MealPlanFinalizerWorker
-    DataChangesWorker-->OutboundEmailerWorker
-    DataChangesWorker-->SearchDataIndexerWorker
-    MealPlanGroceryListInitializerWorker-.->DataChangesQueue
-    MealPlanTaskCreatorWorker-.->DataChangesQueue
-    MealPlanFinalizerWorker-.->DataChangesQueue
-    SearchDataIndexSchedulerWorker-->SearchDataIndexerWorker
-    SearchDataIndexerWorker-->Algolia
-    DataChangesQueue-->DataChangesWorker
-    DataChangesWorker-->Segment
-    OutboundEmailerWorker-->Segment
-    OutboundEmailerWorker-->Sendgrid
-    Algolia-->APIServer
-    APIServer-->Database
-    Database-->APIServer
-    APIServer-->DataChangesQueue
+flowchart TB
+    subgraph External["External Services"]
+        PublicInternet["Public Internet"]
+        Sendgrid["Sendgrid"]
+        Segment["Segment"]
+        Algolia["Algolia"]
+        APNS["APNS / FCM"]
+    end
+
+    subgraph Backend["Backend"]
+        APIServer["API Server"]
+        Database["Database"]
+        DataChangesQueue["Data Changes Queue"]
+        DataChangesWorker["Data Changes Worker"]
+    end
+
+    subgraph CronJobs["CronJobs"]
+        MealPlanFinalizer["Meal Plan Finalizer"]
+        MealPlanGroceryListInit["Grocery List Initializer"]
+        MealPlanTaskCreator["Meal Plan Task Creator"]
+        SearchDataIndexScheduler["Search Data Index Scheduler"]
+        MobileNotificationScheduler["Mobile Notification Scheduler"]
+        DBCleaner["DB Cleaner"]
+    end
+
+    subgraph AsyncHandlers["Async Handlers"]
+        OutboundEmailer["Outbound Emailer"]
+        SearchDataIndexer["Search Data Indexer"]
+    end
+
+    Cron["Cron"] --> MealPlanFinalizer
+    Cron --> MealPlanGroceryListInit
+    Cron --> MealPlanTaskCreator
+    Cron --> SearchDataIndexScheduler
+    Cron --> MobileNotificationScheduler
+    Cron --> DBCleaner
+
+    MealPlanFinalizer -.->|publish| DataChangesQueue
+    MealPlanGroceryListInit -.->|publish| DataChangesQueue
+    MealPlanTaskCreator -.->|publish| DataChangesQueue
+
+    DataChangesQueue --> DataChangesWorker
+    DataChangesWorker --> OutboundEmailer
+    DataChangesWorker --> SearchDataIndexer
+    DataChangesWorker --> Segment
+
+    SearchDataIndexScheduler --> SearchDataIndexer
+    MobileNotificationScheduler -.->|mobile_notifications| DataChangesWorker
+    SearchDataIndexer --> Algolia
+    OutboundEmailer --> Sendgrid
+    OutboundEmailer --> Segment
+    DataChangesWorker --> APNS
+
+    DBCleaner --> Database
+    APIServer --> Database
+    APIServer --> DataChangesQueue
+    Algolia --> APIServer
+    PublicInternet --> APIServer
 ```
