@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	authconverters "github.com/dinnerdonebetter/backend/internal/domain/auth/converters"
 	authfakes "github.com/dinnerdonebetter/backend/internal/domain/auth/fakes"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -6,8 +6,8 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

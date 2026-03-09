@@ -404,7 +404,7 @@ func (q *repository) SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPla
 		return observability.PrepareError(err, span, "beginning transaction for swap")
 	}
 
-	if _, err := q.generatedQuerier.UpdateMealPlanEvent(ctx, tx, &generated.UpdateMealPlanEventParams{
+	if _, err = q.generatedQuerier.UpdateMealPlanEvent(ctx, tx, &generated.UpdateMealPlanEventParams{
 		Notes:             eventA.Notes,
 		StartsAt:          eventA.StartsAt,
 		EndsAt:            eventA.EndsAt,
@@ -415,7 +415,7 @@ func (q *repository) SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPla
 		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event A during swap")
 	}
-	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:           identifiers.New(),
 		ResourceType: resourceTypeMealPlanEvents,
 		RelevantID:   eventA.ID,
@@ -425,7 +425,7 @@ func (q *repository) SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPla
 		return observability.PrepareError(err, span, "creating audit log entry for event A")
 	}
 
-	if _, err := q.generatedQuerier.UpdateMealPlanEvent(ctx, tx, &generated.UpdateMealPlanEventParams{
+	if _, err = q.generatedQuerier.UpdateMealPlanEvent(ctx, tx, &generated.UpdateMealPlanEventParams{
 		Notes:             eventB.Notes,
 		StartsAt:          eventB.StartsAt,
 		EndsAt:            eventB.EndsAt,
@@ -436,7 +436,7 @@ func (q *repository) SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPla
 		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event B during swap")
 	}
-	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:           identifiers.New(),
 		ResourceType: resourceTypeMealPlanEvents,
 		RelevantID:   eventB.ID,

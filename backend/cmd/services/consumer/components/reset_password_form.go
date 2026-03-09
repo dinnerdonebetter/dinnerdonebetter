@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/consumer/design"
-	webappdesign "github.com/dinnerdonebetter/backend/internal/platform/webapp/design"
+	webappdesign "github.com/dinnerdonebetter/backend/internal/webapp/design"
 
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"

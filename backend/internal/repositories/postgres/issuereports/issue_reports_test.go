@@ -10,7 +10,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/domain/issuereports/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

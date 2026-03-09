@@ -38,6 +38,29 @@ const (
 	minimumPasswordEntropy = 60
 )
 
+// sessionContextDataForTracing adapts *sessions.ContextData to the tracing package's
+// sessionContextData interface (which uses a minimal servicePermissionChecker to avoid
+// platform depending on authorization).
+type sessionContextDataForTracing struct {
+	*sessions.ContextData
+}
+
+func (s *sessionContextDataForTracing) GetServicePermissions() tracing.ServicePermissionChecker {
+	return servicePermissionCheckerAdapter{inner: s.ContextData.GetServicePermissions()}
+}
+
+// servicePermissionCheckerAdapter adapts authorization.ServiceRolePermissionChecker to tracing.ServicePermissionChecker.
+type servicePermissionCheckerAdapter struct {
+	inner authorization.ServiceRolePermissionChecker
+}
+
+func (a servicePermissionCheckerAdapter) IsServiceAdmin() bool {
+	if a.inner == nil {
+		return false
+	}
+	return a.inner.IsServiceAdmin()
+}
+
 type AuthManager struct {
 	passwordResetTokenDataManager auth.PasswordResetTokenDataManager
 	userDataManager               identity.UserDataManager
@@ -94,7 +117,7 @@ func (l *AuthManager) Self(ctx context.Context) (*identity.User, error) {
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "failed to get session context data")
 	}
-	tracing.AttachSessionContextDataToSpan(span, sessionContextData)
+	tracing.AttachSessionContextDataToSpan(span, &sessionContextDataForTracing{sessionContextData})
 	logger := sessionContextData.AttachToLogger(l.logger)
 
 	// figure out who this is all for.
@@ -202,7 +225,7 @@ func (l *AuthManager) NewTOTPSecret(ctx context.Context, input *auth.TOTPSecretR
 		return nil, observability.PrepareError(err, span, "retrieving session context data")
 	}
 
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	tracing.AttachSessionContextDataToSpan(span, &sessionContextDataForTracing{sessionCtxData})
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// fetch user

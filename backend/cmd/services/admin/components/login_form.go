@@ -2,7 +2,7 @@ package components
 
 import (
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
-	"github.com/dinnerdonebetter/backend/internal/platform/webapp/loginform"
+	"github.com/dinnerdonebetter/backend/internal/webapp/loginform"
 
 	g "maragu.dev/gomponents"
 )

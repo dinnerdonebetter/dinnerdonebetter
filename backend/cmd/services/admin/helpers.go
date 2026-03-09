@@ -11,7 +11,7 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/webappauth"
+	webappauth "github.com/dinnerdonebetter/backend/internal/webapp/auth"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"

@@ -9,7 +9,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/fakes"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

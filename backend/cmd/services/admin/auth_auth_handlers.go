@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/webappauth"
+	webappauth "github.com/dinnerdonebetter/backend/internal/webapp/auth"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	g "maragu.dev/gomponents"

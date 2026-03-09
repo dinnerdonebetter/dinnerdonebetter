@@ -21,7 +21,6 @@ import (
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -35,6 +34,7 @@ import (
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
