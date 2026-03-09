@@ -190,6 +190,7 @@ const (
 	MealPlanningService_SearchForMeals_FullMethodName                                      = "/mealplanning.MealPlanningService/SearchForMeals"
 	MealPlanningService_SearchForRecipes_FullMethodName                                    = "/mealplanning.MealPlanningService/SearchForRecipes"
 	MealPlanningService_SearchForMealEligibleRecipes_FullMethodName                        = "/mealplanning.MealPlanningService/SearchForMealEligibleRecipes"
+	MealPlanningService_SearchForRecipesWithInstrumentOwnership_FullMethodName             = "/mealplanning.MealPlanningService/SearchForRecipesWithInstrumentOwnership"
 	MealPlanningService_SearchForValidIngredientGroups_FullMethodName                      = "/mealplanning.MealPlanningService/SearchForValidIngredientGroups"
 	MealPlanningService_SearchForValidIngredientStates_FullMethodName                      = "/mealplanning.MealPlanningService/SearchForValidIngredientStates"
 	MealPlanningService_SearchForValidIngredients_FullMethodName                           = "/mealplanning.MealPlanningService/SearchForValidIngredients"
@@ -423,6 +424,7 @@ type MealPlanningServiceClient interface {
 	SearchForMeals(ctx context.Context, in *SearchForMealsRequest, opts ...grpc.CallOption) (*SearchForMealsResponse, error)
 	SearchForRecipes(ctx context.Context, in *SearchForRecipesRequest, opts ...grpc.CallOption) (*SearchForRecipesResponse, error)
 	SearchForMealEligibleRecipes(ctx context.Context, in *SearchForMealEligibleRecipesRequest, opts ...grpc.CallOption) (*SearchForMealEligibleRecipesResponse, error)
+	SearchForRecipesWithInstrumentOwnership(ctx context.Context, in *SearchForRecipesWithInstrumentOwnershipRequest, opts ...grpc.CallOption) (*SearchForRecipesWithInstrumentOwnershipResponse, error)
 	SearchForValidIngredientGroups(ctx context.Context, in *SearchForValidIngredientGroupsRequest, opts ...grpc.CallOption) (*SearchForValidIngredientGroupsResponse, error)
 	SearchForValidIngredientStates(ctx context.Context, in *SearchForValidIngredientStatesRequest, opts ...grpc.CallOption) (*SearchForValidIngredientStatesResponse, error)
 	SearchForValidIngredients(ctx context.Context, in *SearchForValidIngredientsRequest, opts ...grpc.CallOption) (*SearchForValidIngredientsResponse, error)
@@ -2172,6 +2174,16 @@ func (c *mealPlanningServiceClient) SearchForMealEligibleRecipes(ctx context.Con
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) SearchForRecipesWithInstrumentOwnership(ctx context.Context, in *SearchForRecipesWithInstrumentOwnershipRequest, opts ...grpc.CallOption) (*SearchForRecipesWithInstrumentOwnershipResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchForRecipesWithInstrumentOwnershipResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_SearchForRecipesWithInstrumentOwnership_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) SearchForValidIngredientGroups(ctx context.Context, in *SearchForValidIngredientGroupsRequest, opts ...grpc.CallOption) (*SearchForValidIngredientGroupsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SearchForValidIngredientGroupsResponse)
@@ -2940,6 +2952,7 @@ type MealPlanningServiceServer interface {
 	SearchForMeals(context.Context, *SearchForMealsRequest) (*SearchForMealsResponse, error)
 	SearchForRecipes(context.Context, *SearchForRecipesRequest) (*SearchForRecipesResponse, error)
 	SearchForMealEligibleRecipes(context.Context, *SearchForMealEligibleRecipesRequest) (*SearchForMealEligibleRecipesResponse, error)
+	SearchForRecipesWithInstrumentOwnership(context.Context, *SearchForRecipesWithInstrumentOwnershipRequest) (*SearchForRecipesWithInstrumentOwnershipResponse, error)
 	SearchForValidIngredientGroups(context.Context, *SearchForValidIngredientGroupsRequest) (*SearchForValidIngredientGroupsResponse, error)
 	SearchForValidIngredientStates(context.Context, *SearchForValidIngredientStatesRequest) (*SearchForValidIngredientStatesResponse, error)
 	SearchForValidIngredients(context.Context, *SearchForValidIngredientsRequest) (*SearchForValidIngredientsResponse, error)
@@ -3512,6 +3525,9 @@ func (UnimplementedMealPlanningServiceServer) SearchForRecipes(context.Context, 
 }
 func (UnimplementedMealPlanningServiceServer) SearchForMealEligibleRecipes(context.Context, *SearchForMealEligibleRecipesRequest) (*SearchForMealEligibleRecipesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForMealEligibleRecipes not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) SearchForRecipesWithInstrumentOwnership(context.Context, *SearchForRecipesWithInstrumentOwnershipRequest) (*SearchForRecipesWithInstrumentOwnershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchForRecipesWithInstrumentOwnership not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) SearchForValidIngredientGroups(context.Context, *SearchForValidIngredientGroupsRequest) (*SearchForValidIngredientGroupsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidIngredientGroups not implemented")
@@ -6735,6 +6751,24 @@ func _MealPlanningService_SearchForMealEligibleRecipes_Handler(srv interface{}, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_SearchForRecipesWithInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchForRecipesWithInstrumentOwnershipRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).SearchForRecipesWithInstrumentOwnership(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_SearchForRecipesWithInstrumentOwnership_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).SearchForRecipesWithInstrumentOwnership(ctx, req.(*SearchForRecipesWithInstrumentOwnershipRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_SearchForValidIngredientGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchForValidIngredientGroupsRequest)
 	if err := dec(in); err != nil {
@@ -8453,6 +8487,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchForMealEligibleRecipes",
 			Handler:    _MealPlanningService_SearchForMealEligibleRecipes_Handler,
+		},
+		{
+			MethodName: "SearchForRecipesWithInstrumentOwnership",
+			Handler:    _MealPlanningService_SearchForRecipesWithInstrumentOwnership_Handler,
 		},
 		{
 			MethodName: "SearchForValidIngredientGroups",

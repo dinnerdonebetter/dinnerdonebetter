@@ -282,6 +282,7 @@ type Querier interface {
 	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)
 	SearchForMealEligibleRecipes(ctx context.Context, db DBTX, arg *SearchForMealEligibleRecipesParams) ([]*SearchForMealEligibleRecipesRow, error)
 	SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error)
+	SearchForRecipesWithInstrumentOwnership(ctx context.Context, db DBTX, arg *SearchForRecipesWithInstrumentOwnershipParams) ([]*SearchForRecipesWithInstrumentOwnershipRow, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, arg *SearchForValidIngredientStatesParams) ([]*SearchForValidIngredientStatesRow, error)
 	SearchForValidIngredients(ctx context.Context, db DBTX, arg *SearchForValidIngredientsParams) ([]*SearchForValidIngredientsRow, error)

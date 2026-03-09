@@ -1298,6 +1298,40 @@ func (s *serviceImpl) SearchForMealEligibleRecipes(ctx context.Context, request 
 	return x, nil
 }
 
+func (s *serviceImpl) SearchForRecipesWithInstrumentOwnership(ctx context.Context, request *mealplanning.SearchForRecipesWithInstrumentOwnershipRequest) (*mealplanning.SearchForRecipesWithInstrumentOwnershipResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		platformkeys.SearchQueryKey: request.Query,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	recipes, err := s.recipeManager.SearchRecipesWithInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.Query, filter)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for recipes with instrument ownership")
+	}
+
+	x := &mealplanning.SearchForRecipesWithInstrumentOwnershipResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipe := range recipes.Data {
+		x.Results = append(x.Results, converters.ConvertRecipeToGRPCRecipe(recipe))
+	}
+
+	return x, nil
+}
+
 func (s *serviceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.UpdateRecipeRequest) (*mealplanning.UpdateRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

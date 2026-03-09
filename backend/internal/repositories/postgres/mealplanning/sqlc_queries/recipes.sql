@@ -495,6 +495,80 @@ WHERE recipes.archived_at IS NULL
 ORDER BY recipes.id ASC
 LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
+-- name: SearchForRecipesWithInstrumentOwnership :many
+SELECT
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.source_isbn,
+	recipes.description,
+	recipes.status,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+			AND
+			recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR recipes.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+	) AS total_count
+FROM recipes
+WHERE recipes.archived_at IS NULL
+	AND recipes.name ILIKE '%' || sqlc.arg(query)::text || '%'
+	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND recipes.id > COALESCE(sqlc.narg(cursor), '')
+	AND NOT EXISTS (
+		SELECT 1 FROM recipe_step_instruments rsi
+		JOIN recipe_steps rs ON rsi.belongs_to_recipe_step = rs.id
+		WHERE rs.belongs_to_recipe = recipes.id
+			AND rsi.archived_at IS NULL
+			AND rs.archived_at IS NULL
+			AND rsi.optional = false
+			AND rsi.instrument_id IS NOT NULL
+			AND rsi.instrument_id NOT IN (
+				SELECT valid_instrument_id FROM account_instrument_ownerships
+				WHERE belongs_to_account = sqlc.arg(account_id) AND archived_at IS NULL
+			)
+	)
+ORDER BY recipes.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
+
 -- name: GetRecipesNeedingIndexing :many
 SELECT recipes.id
 FROM recipes

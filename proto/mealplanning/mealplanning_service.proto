@@ -176,6 +176,7 @@ service MealPlanningService {
   rpc SearchForMeals(SearchForMealsRequest) returns (SearchForMealsResponse);
   rpc SearchForRecipes(SearchForRecipesRequest) returns (SearchForRecipesResponse);
   rpc SearchForMealEligibleRecipes(SearchForMealEligibleRecipesRequest) returns (SearchForMealEligibleRecipesResponse);
+  rpc SearchForRecipesWithInstrumentOwnership(SearchForRecipesWithInstrumentOwnershipRequest) returns (SearchForRecipesWithInstrumentOwnershipResponse);
   rpc SearchForValidIngredientGroups(SearchForValidIngredientGroupsRequest) returns (SearchForValidIngredientGroupsResponse);
   rpc SearchForValidIngredientStates(SearchForValidIngredientStatesRequest) returns (SearchForValidIngredientStatesResponse);
   rpc SearchForValidIngredients(SearchForValidIngredientsRequest) returns (SearchForValidIngredientsResponse);

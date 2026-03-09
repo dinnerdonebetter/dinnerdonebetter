@@ -10894,6 +10894,62 @@ public struct Mealplanning_SearchForMealEligibleRecipesResponse: Sendable {
   fileprivate var _pagination: Filtering_Pagination? = nil
 }
 
+public struct Mealplanning_SearchForRecipesWithInstrumentOwnershipRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var filter: Filtering_QueryFilter {
+    get {return _filter ?? Filtering_QueryFilter()}
+    set {_filter = newValue}
+  }
+  /// Returns true if `filter` has been explicitly set.
+  public var hasFilter: Bool {return self._filter != nil}
+  /// Clears the value of `filter`. Subsequent reads from it will return its default value.
+  public mutating func clearFilter() {self._filter = nil}
+
+  public var query: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _filter: Filtering_QueryFilter? = nil
+}
+
+public struct Mealplanning_SearchForRecipesWithInstrumentOwnershipResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var pagination: Filtering_Pagination {
+    get {return _pagination ?? Filtering_Pagination()}
+    set {_pagination = newValue}
+  }
+  /// Returns true if `pagination` has been explicitly set.
+  public var hasPagination: Bool {return self._pagination != nil}
+  /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
+  public mutating func clearPagination() {self._pagination = nil}
+
+  public var results: [Mealplanning_Recipe] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _pagination: Filtering_Pagination? = nil
+}
+
 public struct Mealplanning_UpdateRecipeRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -31627,6 +31683,89 @@ extension Mealplanning_SearchForMealEligibleRecipesResponse: SwiftProtobuf.Messa
   }
 
   public static func ==(lhs: Mealplanning_SearchForMealEligibleRecipesResponse, rhs: Mealplanning_SearchForMealEligibleRecipesResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._pagination != rhs._pagination {return false}
+    if lhs.results != rhs.results {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_SearchForRecipesWithInstrumentOwnershipRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SearchForRecipesWithInstrumentOwnershipRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._filter) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.query) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._filter {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.query.isEmpty {
+      try visitor.visitSingularStringField(value: self.query, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_SearchForRecipesWithInstrumentOwnershipRequest, rhs: Mealplanning_SearchForRecipesWithInstrumentOwnershipRequest) -> Bool {
+    if lhs._filter != rhs._filter {return false}
+    if lhs.query != rhs.query {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_SearchForRecipesWithInstrumentOwnershipResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SearchForRecipesWithInstrumentOwnershipResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._pagination) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.results) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._pagination {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    if !self.results.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.results, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_SearchForRecipesWithInstrumentOwnershipResponse, rhs: Mealplanning_SearchForRecipesWithInstrumentOwnershipResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._pagination != rhs._pagination {return false}
     if lhs.results != rhs.results {return false}

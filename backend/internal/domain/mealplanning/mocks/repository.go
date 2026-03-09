@@ -477,6 +477,12 @@ func (m *Repository) SearchForMealEligibleRecipes(ctx context.Context, query str
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
 
+// SearchForRecipesWithInstrumentOwnership is a mock function.
+func (m *Repository) SearchForRecipesWithInstrumentOwnership(ctx context.Context, accountID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, accountID, query, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
+}
+
 // GetRecipes is a mock function.
 func (m *Repository) GetRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
 	returnValues := m.Called(ctx, status, filter)

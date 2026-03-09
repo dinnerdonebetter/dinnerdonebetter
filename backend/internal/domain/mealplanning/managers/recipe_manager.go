@@ -36,6 +36,7 @@ type (
 		ReadRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error)
 		SearchRecipes(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
+		SearchRecipesWithInstrumentOwnership(ctx context.Context, accountID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error
 		UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error
 		ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error
@@ -306,6 +307,27 @@ func (m *recipeManager) SearchForMealEligibleRecipes(ctx context.Context, query 
 	recipes, err := m.db.SearchForMealEligibleRecipes(ctx, query, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "failed to search external service for recipes")
+	}
+
+	return recipes, nil
+}
+
+func (m *recipeManager) SearchRecipesWithInstrumentOwnership(ctx context.Context, accountID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(platformkeys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, platformkeys.SearchQueryKey, query)
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+	logger = filter.AttachToLogger(logger)
+
+	recipes, err := m.db.SearchForRecipesWithInstrumentOwnership(ctx, accountID, query, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "failed to search for recipes with instrument ownership")
 	}
 
 	return recipes, nil

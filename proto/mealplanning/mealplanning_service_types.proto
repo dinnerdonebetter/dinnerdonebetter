@@ -2093,6 +2093,17 @@ message SearchForMealEligibleRecipesResponse {
   repeated Recipe results = 3;
 }
 
+message SearchForRecipesWithInstrumentOwnershipRequest {
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+}
+
+message SearchForRecipesWithInstrumentOwnershipResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated Recipe results = 3;
+}
+
 message UpdateRecipeRequest {
   string recipe_id = 1;
   RecipeUpdateRequestInput input = 2;
