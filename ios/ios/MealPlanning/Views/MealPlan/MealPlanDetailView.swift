@@ -596,7 +596,9 @@ struct EventCard: View {
               destination: MealDetailView(
                 mealID: option.meal.id,
                 isFromMealPlan: true,
-                mealPlanScale: option.mealScale > 0 ? option.mealScale : 1.0
+                mealPlanScale: option.mealScale > 0 ? option.mealScale : 1.0,
+                mealPlanID: mealPlan?.id,
+                mealPlanOptionID: option.id
               )
             ) {
               MealOptionCard(option: option, isChosen: true)
