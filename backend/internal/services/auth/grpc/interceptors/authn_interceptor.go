@@ -76,6 +76,9 @@ func ProvideAuthInterceptor(
 			"/auth.AuthService/RequestPasswordResetToken",
 			"/auth.AuthService/RedeemPasswordResetToken",
 			"/auth.AuthService/VerifyEmailAddress",
+			// gRPC reflection (used by k6, grpcurl, etc. for service discovery)
+			"/grpc.reflection.v1.ServerReflection/ServerReflectionInfo",
+			"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo",
 		},
 	}
 }

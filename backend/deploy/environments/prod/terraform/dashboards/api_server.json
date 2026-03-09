@@ -16,8 +16,8 @@
         "hide": false,
         "iconColor": "blue",
         "name": "Deployments",
-        "target": { "limit": 100, "matchAny": true, "tags": ["deployment", "production"], "type": "tags" },
-        "type": "tags"
+        "target": { "limit": 100, "matchAny": true, "tags": ["deployment", "production"], "type": "dashboard" },
+        "type": "dashboard"
       },
       {
         "builtIn": 0,
@@ -26,16 +26,85 @@
         "hide": false,
         "iconColor": "orange",
         "name": "Terraform",
-        "target": { "limit": 100, "matchAny": true, "tags": ["terraform", "infra", "backend-infra"], "type": "tags" },
-        "type": "tags"
+        "target": { "limit": 100, "matchAny": true, "tags": ["terraform", "infra", "backend-infra"], "type": "dashboard" },
+        "type": "dashboard"
       }
     ]
   },
   "panels": [
     {
+      "title": "gRPC Request Rate by Method (from clients)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(rpc_client_duration_milliseconds_count[5m])) by (rpc_service, rpc_method)", "legendFormat": "{{rpc_service}}/{{rpc_method}}" }
+      ],
+      "description": "gRPC methods invoked by clients (async handler, etc.) calling the API. Shows relative popularity of each method."
+    },
+    {
+      "title": "gRPC Request Rate (server-side)",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(rpc_server_duration_seconds_count{job=\"api_server\"}[5m])) or sum(rate(rpc_server_duration_milliseconds_count{job=\"api_server\"}[5m]))", "legendFormat": "gRPC req/s" }
+      ],
+      "description": "Total gRPC requests to API server. If no data, server-side metrics may not be exported."
+    },
+    {
+      "title": "gRPC by Method (server-side)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 6 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(rpc_server_duration_seconds_count{job=\"api_server\"}[5m])) by (rpc_service, rpc_method) or sum(rate(rpc_server_duration_milliseconds_count{job=\"api_server\"}[5m])) by (rpc_service, rpc_method)", "legendFormat": "{{rpc_service}}/{{rpc_method}}" }
+      ],
+      "description": "gRPC method popularity from server. If no data, run {__name__=~\".*rpc.*server.*\"} in Explore to discover metric names."
+    },
+    {
+      "title": "gRPC Latency by Method (from clients)",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(rpc_client_duration_milliseconds_bucket[5m])) by (le, rpc_service, rpc_method))", "legendFormat": "p50 {{rpc_service}}/{{rpc_method}}" },
+        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(rpc_client_duration_milliseconds_bucket[5m])) by (le, rpc_service, rpc_method))", "legendFormat": "p95 {{rpc_service}}/{{rpc_method}}" }
+      ],
+      "description": "gRPC call latency from clients. Helps identify slow methods."
+    },
+    {
       "title": "DB Query Rate",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "gridPos": { "h": 6, "w": 8, "x": 12, "y": 8 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -55,7 +124,7 @@
     {
       "title": "DB Latency",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 8, "y": 0 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -73,7 +142,7 @@
     {
       "title": "Deployment Replicas",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 6 },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 16 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -90,7 +159,7 @@
     {
       "title": "Go Goroutines",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 6 },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 16 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -106,7 +175,7 @@
     {
       "title": "Go Heap Allocated",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 6 },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 16 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -122,7 +191,7 @@
     {
       "title": "Go GC Pause (p99)",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 12 },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 22 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -138,7 +207,7 @@
     {
       "title": "Host CPU",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 12 },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 22 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -154,7 +223,7 @@
     {
       "title": "Host Memory",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 12 },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 22 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -170,7 +239,7 @@
     {
       "title": "Memory Utilization",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 18 },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 28 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
