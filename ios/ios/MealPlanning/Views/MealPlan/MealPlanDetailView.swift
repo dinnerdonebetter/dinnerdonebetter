@@ -20,6 +20,9 @@ struct MealPlanDetailView: View {
   @State private var isArchiving = false
   @State private var archiveError: String?
   @State private var moveSwapSheetEvent: IdentifiableMealPlanEvent?
+  @State private var cancelEventConfirmationEvent: Mealplanning_MealPlanEvent?
+  @State private var isCancellingEvent = false
+  @State private var cancelEventError: String?
 
   init(mealPlan: Mealplanning_MealPlan, groceryListItems: [Mealplanning_MealPlanGroceryListItem]?) {
     _mealPlan = State(initialValue: mealPlan)
@@ -79,7 +82,7 @@ struct MealPlanDetailView: View {
         Text(error)
       }
     }
-    .disabled(isArchiving)
+    .disabled(isArchiving || isCancellingEvent)
     .task {
       await loadTaskCount()
       await loadGroceryListItemCount()
@@ -88,9 +91,36 @@ struct MealPlanDetailView: View {
       MoveSwapEventSheet(
         mealPlan: mealPlan,
         event: identifiable.event,
-        onSuccess: { await refetchMealPlan() }
+        onSuccess: { await refetchMealPlan() },
+        startInMoveMode: identifiable.startInMoveMode,
+        startInSwapMode: identifiable.startInSwapMode
       )
       .environment(authManager)
+    }
+    .alert(
+      "Cancel Meal",
+      isPresented: Binding(
+        get: { cancelEventConfirmationEvent != nil },
+        set: { if !$0 { cancelEventConfirmationEvent = nil } }
+      )
+    ) {
+      Button("Cancel", role: .cancel) {}
+      Button("Remove from Plan", role: .destructive) {
+        if let evt = cancelEventConfirmationEvent {
+          cancelEventConfirmationEvent = nil
+          Task { await cancelMealPlanEvent(evt) }
+        }
+      }
+    } message: {
+      Text(
+        "This will remove the meal from your plan. Any prep tasks for this meal will be cancelled.")
+    }
+    .alert("Cancel Failed", isPresented: .constant(cancelEventError != nil)) {
+      Button("OK") { cancelEventError = nil }
+    } message: {
+      if let err = cancelEventError {
+        Text(err)
+      }
     }
   }
 
@@ -151,6 +181,43 @@ struct MealPlanDetailView: View {
     }
 
     isArchiving = false
+  }
+
+  private func cancelMealPlanEvent(_ event: Mealplanning_MealPlanEvent) async {
+    isCancellingEvent = true
+    cancelEventError = nil
+
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        cancelEventError = "Failed to connect"
+        isCancellingEvent = false
+        return
+      }
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        cancelEventError = "Please sign in again"
+        isCancellingEvent = false
+        return
+      }
+
+      var request = Mealplanning_ArchiveMealPlanEventRequest()
+      request.mealPlanID = mealPlan.id
+      request.mealPlanEventID = event.id
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+      _ = try await clientManager.client.mealPlanning.archiveMealPlanEvent(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      NotificationCenter.default.post(name: .mealPlanEventsUpdated, object: nil)
+      await refetchMealPlan()
+    } catch {
+      await authManager.invalidateCredentialsIfSessionError(error)
+      cancelEventError = error.localizedDescription
+    }
+
+    isCancellingEvent = false
   }
 
   private func loadTaskCount() async {
@@ -315,8 +382,15 @@ struct MealPlanDetailView: View {
         ForEach(upcomingEvents, id: \.id) { event in
           EventCard(
             event: event,
-            canMoveOrSwap: mealPlan.status == .finalized,
-            onMoveOrSwap: { moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event) }
+            mealPlan: mealPlan,
+            canEdit: mealPlan.status == .finalized,
+            onMove: {
+              moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInMoveMode: true)
+            },
+            onSwap: {
+              moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInSwapMode: true)
+            },
+            onCancel: { cancelEventConfirmationEvent = event }
           )
         }
       }
@@ -330,8 +404,15 @@ struct MealPlanDetailView: View {
         ForEach(pastEvents, id: \.id) { event in
           EventCard(
             event: event,
-            canMoveOrSwap: mealPlan.status == .finalized,
-            onMoveOrSwap: { moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event) }
+            mealPlan: mealPlan,
+            canEdit: mealPlan.status == .finalized,
+            onMove: {
+              moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInMoveMode: true)
+            },
+            onSwap: {
+              moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInSwapMode: true)
+            },
+            onCancel: { cancelEventConfirmationEvent = event }
           )
           .opacity(0.7)
         }
@@ -427,6 +508,8 @@ struct MealPlanDetailView: View {
 
 private struct IdentifiableMealPlanEvent: Identifiable {
   let event: Mealplanning_MealPlanEvent
+  var startInMoveMode = false
+  var startInSwapMode = false
   var id: String { event.id }
 }
 
@@ -434,8 +517,16 @@ private struct IdentifiableMealPlanEvent: Identifiable {
 
 struct EventCard: View {
   let event: Mealplanning_MealPlanEvent
-  var canMoveOrSwap: Bool = false
-  var onMoveOrSwap: (() -> Void)?
+  var mealPlan: Mealplanning_MealPlan?
+  var canEdit: Bool = false
+  var onMove: (() -> Void)?
+  var onSwap: (() -> Void)?
+  var onCancel: (() -> Void)?
+
+  private var canSwap: Bool {
+    guard let plan = mealPlan else { return false }
+    return plan.events.filter { $0.id != event.id }.count >= 1
+  }
 
   private func eventTimeRange(event: Mealplanning_MealPlanEvent) -> some View {
     let startDate = HomeViewModel.timestampToDate(event.startsAt)
@@ -461,11 +552,31 @@ struct EventCard: View {
 
         Spacer()
 
-        if canMoveOrSwap, let onMoveOrSwap = onMoveOrSwap {
-          Button {
-            onMoveOrSwap()
+        if canEdit {
+          Menu {
+            if let onMove = onMove {
+              Button {
+                onMove()
+              } label: {
+                Label("Move to another day", systemImage: "calendar")
+              }
+            }
+            if canSwap, let onSwap = onSwap {
+              Button {
+                onSwap()
+              } label: {
+                Label("Swap with another event", systemImage: "arrow.triangle.2.circlepath")
+              }
+            }
+            if let onCancel = onCancel {
+              Button(role: .destructive) {
+                onCancel()
+              } label: {
+                Label("Cancel event", systemImage: "xmark.circle")
+              }
+            }
           } label: {
-            Image(systemName: "calendar.badge.clock")
+            Image(systemName: "ellipsis.circle")
               .font(.body)
               .foregroundColor(.secondary)
           }

@@ -15,6 +15,8 @@ struct MoveSwapEventSheet: View {
   let mealPlan: Mealplanning_MealPlan
   let event: Mealplanning_MealPlanEvent
   let onSuccess: () async -> Void
+  var startInMoveMode = false
+  var startInSwapMode = false
 
   @State private var mode: Mode = .choose
   @State private var selectedDate = Date()
@@ -34,6 +36,31 @@ struct MoveSwapEventSheet: View {
 
   private var canSwap: Bool {
     otherEvents.count >= 1
+  }
+
+  private var datesWithOtherEvents: Set<DateComponents> {
+    let cal = Calendar.current
+    return Set(
+      otherEvents.map { evt in
+        cal.dateComponents(
+          [.year, .month, .day], from: HomeViewModel.timestampToDate(evt.startsAt))
+      }
+    )
+  }
+
+  private func selectedDateHasOtherEvent() -> Bool {
+    let cal = Calendar.current
+    let selectedDay = cal.dateComponents([.year, .month, .day], from: selectedDate)
+    return datesWithOtherEvents.contains(selectedDay)
+  }
+
+  private func selectedDateIsSameAsEvent() -> Bool {
+    let cal = Calendar.current
+    let eventDay = cal.dateComponents(
+      [.year, .month, .day], from: HomeViewModel.timestampToDate(event.startsAt))
+    let selectedDay = cal.dateComponents([.year, .month, .day], from: selectedDate)
+    return eventDay.year == selectedDay.year && eventDay.month == selectedDay.month
+      && eventDay.day == selectedDay.day
   }
 
   var body: some View {
@@ -73,6 +100,14 @@ struct MoveSwapEventSheet: View {
         }
       }
       .disabled(isUpdating)
+    }
+    .onAppear {
+      if startInMoveMode {
+        mode = .move
+        selectedDate = HomeViewModel.timestampToDate(event.startsAt)
+      } else if startInSwapMode {
+        mode = .swap
+      }
     }
   }
 
@@ -128,6 +163,20 @@ struct MoveSwapEventSheet: View {
       )
       .datePickerStyle(.graphical)
 
+      if let notice = moveDateNotice {
+        HStack(spacing: DSTheme.Spacing.sm) {
+          Image(systemName: "info.circle.fill")
+            .foregroundColor(.secondary)
+          Text(notice)
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+        }
+        .padding(.vertical, DSTheme.Spacing.sm)
+        .padding(.horizontal, DSTheme.Spacing.md)
+        .background(Color(.systemGray6))
+        .cornerRadius(8)
+      }
+
       Button {
         Task { await performMove() }
       } label: {
@@ -140,9 +189,30 @@ struct MoveSwapEventSheet: View {
         }
       }
       .buttonStyle(.borderedProminent)
-      .disabled(isUpdating)
+      .disabled(isUpdating || selectedDateIsSameAsEvent() || selectedDateHasOtherEvent())
     }
     .padding()
+  }
+
+  private var moveDateNotice: String? {
+    if selectedDateIsSameAsEvent() {
+      return "This is the current date. Choose a different day."
+    }
+    if let evt = eventOnDate(selectedDate) {
+      return
+        "\(MealPlanningUtils.formatMealName(evt.mealName)) is already scheduled that day. Use \"Swap with another event\" to exchange places."
+    }
+    return nil
+  }
+
+  private func eventOnDate(_ date: Date) -> Mealplanning_MealPlanEvent? {
+    otherEvents.first { evt in
+      let cal = Calendar.current
+      let evtDay = cal.dateComponents(
+        [.year, .month, .day], from: HomeViewModel.timestampToDate(evt.startsAt))
+      let day = cal.dateComponents([.year, .month, .day], from: date)
+      return evtDay.year == day.year && evtDay.month == day.month && evtDay.day == day.day
+    }
   }
 
   private var swapModeContent: some View {
@@ -195,6 +265,16 @@ struct MoveSwapEventSheet: View {
   }
 
   private func performMove() async {
+    if selectedDateIsSameAsEvent() {
+      errorMessage = "That's the same day. No change needed."
+      return
+    }
+    if selectedDateHasOtherEvent() {
+      errorMessage =
+        "That date already has a meal scheduled. Use \"Swap with another event\" to exchange places instead."
+      return
+    }
+
     isUpdating = true
     errorMessage = nil
 

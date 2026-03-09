@@ -15,54 +15,56 @@ struct MealPlanningHomeContent: View {
   var body: some View {
     Group {
       if let viewModel = viewModel {
+        let isEmpty =
+          viewModel.pendingVoteMealPlans.isEmpty
+          && viewModel.activeMealPlan == nil
+          && viewModel.upcomingMealPlans.isEmpty
+          && viewModel.futureFinalizedMealPlans.isEmpty
+
         VStack(spacing: 0) {
-          // Sticky: Active Meal Plan
-          if let activeMealPlan = viewModel.activeMealPlan {
-            activeMealPlanSection(viewModel: viewModel, mealPlan: activeMealPlan)
-              .dsScreenPadding()
-              .padding(.bottom, DSTheme.Spacing.lg)
-          }
+          ScrollView {
+            VStack(spacing: 0) {
+              // Active Meal Plan (at top, sorted by date)
+              if let activeMealPlan = viewModel.activeMealPlan {
+                activeMealPlanSection(viewModel: viewModel, mealPlan: activeMealPlan)
+                  .dsScreenPadding()
+                  .padding(.bottom, DSTheme.Spacing.lg)
+              }
 
-          // Sticky: Pending Votes
-          if !viewModel.pendingVoteMealPlans.isEmpty {
-            pendingVotesSection(viewModel: viewModel)
-              .dsScreenPadding()
-              .padding(.bottom, DSTheme.Spacing.lg)
-          }
+              // Pending Votes
+              if !viewModel.pendingVoteMealPlans.isEmpty {
+                pendingVotesSection(viewModel: viewModel)
+                  .dsScreenPadding()
+                  .padding(.bottom, DSTheme.Spacing.lg)
+              }
 
-          // Sticky: Upcoming Meal Plans (non-finalized)
-          if !viewModel.upcomingMealPlans.isEmpty {
-            upcomingMealPlansSection(viewModel: viewModel)
-              .dsScreenPadding()
-              .padding(.bottom, DSTheme.Spacing.lg)
-          }
+              // Upcoming Meal Plans (non-finalized)
+              if !viewModel.upcomingMealPlans.isEmpty {
+                upcomingMealPlansSection(viewModel: viewModel)
+                  .dsScreenPadding()
+                  .padding(.bottom, DSTheme.Spacing.lg)
+              }
 
-          // Scrollable: Future Meal Plans only (or fill space)
-          if !viewModel.futureFinalizedMealPlans.isEmpty {
-            softSeparator
+              // Future Meal Plans
+              if !viewModel.futureFinalizedMealPlans.isEmpty {
+                softSeparator
 
-            ScrollView {
-              futureMealPlansSection(viewModel: viewModel)
-                .dsScreenPadding()
-                .padding(.bottom, DSTheme.Spacing.xl)
+                futureMealPlansSection(viewModel: viewModel)
+                  .dsScreenPadding()
+                  .padding(.bottom, DSTheme.Spacing.xl)
+              }
+
+              // Empty State
+              if isEmpty {
+                emptyStateView
+                  .dsScreenPadding()
+                  .padding(.vertical, DSTheme.Spacing.xl)
+              }
             }
-            .frame(maxHeight: .infinity)
-          } else if viewModel.pendingVoteMealPlans.isEmpty
-            && viewModel.activeMealPlan == nil
-            && viewModel.upcomingMealPlans.isEmpty
-            && viewModel.futureFinalizedMealPlans.isEmpty
-          {
-            // Empty State
-            emptyStateView
-              .dsScreenPadding()
-              .frame(maxHeight: .infinity)
-          } else {
-            // Active/pending/upcoming but no future - fill space so footer stays bottom
-            Spacer()
-              .frame(maxHeight: .infinity)
           }
+          .frame(maxHeight: .infinity)
 
-          // Sticky footer: Create Meal Plan + Recipes/Meals
+          // Pinned footer: Create Meal Plan + Recipes/Meals
           VStack(spacing: DSTheme.Spacing.lg) {
             Divider()
 
