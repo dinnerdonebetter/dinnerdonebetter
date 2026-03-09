@@ -67,6 +67,9 @@ const (
 	// AuthMinimumUsernameLengthEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.MinimumUsernameLength`.
 	AuthMinimumUsernameLengthEnvVarKey = "DINNER_DONE_BETTER_AUTH_MINIMUM_USERNAME_LENGTH"
 
+	// AuthSessionStoreProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.SessionStore.Provider`.
+	AuthSessionStoreProviderEnvVarKey = "DINNER_DONE_BETTER_AUTH_SESSION_STORE_PROVIDER"
+
 	// AuthSsoConfigGoogleSsoCallbackURLEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.SSO.Google.CallbackURL`.
 	AuthSsoConfigGoogleSsoCallbackURLEnvVarKey = "DINNER_DONE_BETTER_AUTH_SSO_CONFIG_GOOGLE_SSO_CALLBACK_URL"
 

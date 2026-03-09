@@ -184,6 +184,9 @@
 			"maxAccessTokenLifetime": 0,
 			"maxRefreshTokenLifetime": 0
 		},
+		"sessionStore": {
+			"provider": ""
+		},
 		"enableUserSignup": true,
 		"minimumUsernameLength": 3,
 		"minimumPasswordLength": 8
