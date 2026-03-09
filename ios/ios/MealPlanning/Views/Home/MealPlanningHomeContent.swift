@@ -65,14 +65,15 @@ struct MealPlanningHomeContent: View {
           .frame(maxHeight: .infinity)
 
           // Pinned footer: Create Meal Plan + Recipes/Meals
-          VStack(spacing: DSTheme.Spacing.lg) {
+          VStack(spacing: DSTheme.Spacing.md) {
             Divider()
 
             createMealPlanSection(viewModel: viewModel)
 
             quickAccessRow
           }
-          .dsScreenPadding()
+          .padding(.horizontal, DSTheme.Spacing.lg)
+          .padding(.vertical, DSTheme.Spacing.md)
           .background(Color(.systemBackground))
         }
       }
@@ -253,14 +254,14 @@ struct MealPlanningHomeContent: View {
   private var softSeparator: some View {
     VStack(spacing: 0) {
       Spacer()
-        .frame(height: DSTheme.Spacing.lg)
+        .frame(height: DSTheme.Spacing.md)
       Rectangle()
         .fill(DSTheme.Colors.border.opacity(0.5))
         .frame(height: 1)
         .frame(maxWidth: .infinity)
         .padding(.horizontal, DSTheme.Spacing.xl * 2)
       Spacer()
-        .frame(height: DSTheme.Spacing.lg)
+        .frame(height: DSTheme.Spacing.md)
     }
   }
 
