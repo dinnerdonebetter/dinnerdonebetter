@@ -31,11 +31,7 @@ struct HomeDrawerView: View {
       VStack(alignment: .leading, spacing: 0) {
         // Account section
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-          Text("Account")
-            .font(DSTheme.Typography.caption)
-            .fontWeight(.semibold)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-            .padding(.horizontal, DSTheme.Spacing.md)
+          DSSectionHeader(title: "Account", style: .label)
             .padding(.top, DSTheme.Spacing.lg)
 
           NavigationLink(destination: AccountSettingsView()) {
@@ -58,11 +54,7 @@ struct HomeDrawerView: View {
 
         // Create Meal Plan CTA
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-          Text("Meal Planning")
-            .font(DSTheme.Typography.caption)
-            .fontWeight(.semibold)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-            .padding(.horizontal, DSTheme.Spacing.md)
+          DSSectionHeader(title: "Meal Planning", style: .label)
             .padding(.top, DSTheme.Spacing.lg)
 
           NavigationLink(
@@ -83,11 +75,7 @@ struct HomeDrawerView: View {
 
         // Browse section
         VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-          Text("Browse")
-            .font(DSTheme.Typography.caption)
-            .fontWeight(.semibold)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-            .padding(.horizontal, DSTheme.Spacing.md)
+          DSSectionHeader(title: "Browse", style: .label)
             .padding(.top, DSTheme.Spacing.lg)
 
           NavigationLink(destination: MealListView()) {
@@ -114,8 +102,8 @@ struct HomeDrawerView: View {
         Spacer()
 
         VStack(spacing: DSTheme.Spacing.lg) {
-          Divider()
-          DSButton("Sign Out", style: .destructive, size: .large, fullWidth: true) {
+          DSDivider()
+          DSButton("Sign Out", style: .destructiveGhost, size: .large, fullWidth: true) {
             isPresented = false
             Task {
               await authManager.logout()

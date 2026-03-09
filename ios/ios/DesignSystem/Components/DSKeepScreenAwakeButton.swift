@@ -1,9 +1,8 @@
 //
-//  KeepScreenAwakeButton.swift
+//  DSKeepScreenAwakeButton.swift
 //  ios
 //
-//  A button that toggles keeping the screen awake while cooking.
-//  Uses UIApplication.shared.isIdleTimerDisabled to prevent screen dimming.
+//  Design System Keep Screen Awake Button - Toggles screen dimming while cooking
 //
 
 import SwiftUI
@@ -11,9 +10,13 @@ import UIKit
 
 /// A button that toggles keeping the device screen awake.
 /// When enabled, prevents the screen from dimming or locking while following a recipe.
-/// - Parameter inline: When true, renders as a full-width card-style button (e.g. above wash hands).
-///   When false, renders as a compact icon for toolbar use.
-struct KeepScreenAwakeButton: View {
+///
+/// Usage:
+/// ```swift
+/// DSKeepScreenAwakeButton(inline: true)  // Full-width card above recipe steps
+/// DSKeepScreenAwakeButton()              // Compact icon for toolbar
+/// ```
+struct DSKeepScreenAwakeButton: View {
   @State private var isScreenAwake = false
   var inline: Bool = false
 
@@ -23,18 +26,20 @@ struct KeepScreenAwakeButton: View {
       UIApplication.shared.isIdleTimerDisabled = isScreenAwake
     } label: {
       if inline {
-        HStack(spacing: 12) {
+        HStack(spacing: DSTheme.Spacing.md) {
           Image(systemName: isScreenAwake ? "sun.max.fill" : "sun.max")
-            .font(.title2)
+            .font(DSTheme.Typography.title3)
             .foregroundColor(isScreenAwake ? DSTheme.Colors.primary : DSTheme.Colors.textSecondary)
           Text(isScreenAwake ? "Screen awake (tap to allow sleep)" : "Keep screen awake")
-            .font(.subheadline)
-            .foregroundColor(isScreenAwake ? DSTheme.Colors.primary : .primary)
+            .font(DSTheme.Typography.body)
+            .foregroundColor(isScreenAwake ? DSTheme.Colors.primary : DSTheme.Colors.textPrimary)
           Spacer()
         }
-        .padding()
-        .background(isScreenAwake ? DSTheme.Colors.primary.opacity(0.1) : Color(.systemGray6))
-        .cornerRadius(12)
+        .padding(DSTheme.Spacing.md)
+        .background(
+          isScreenAwake ? DSTheme.Colors.primary.opacity(0.1) : DSTheme.Colors.cardBackground
+        )
+        .cornerRadius(DSTheme.Radius.md)
       } else {
         Image(systemName: isScreenAwake ? "sun.max.fill" : "sun.max")
           .foregroundColor(isScreenAwake ? DSTheme.Colors.primary : DSTheme.Colors.textSecondary)
@@ -47,4 +52,14 @@ struct KeepScreenAwakeButton: View {
       UIApplication.shared.isIdleTimerDisabled = false
     }
   }
+}
+
+// MARK: - Preview
+
+#Preview("DSKeepScreenAwakeButton") {
+  VStack(spacing: DSTheme.Spacing.lg) {
+    DSKeepScreenAwakeButton(inline: true)
+    DSKeepScreenAwakeButton(inline: false)
+  }
+  .padding()
 }

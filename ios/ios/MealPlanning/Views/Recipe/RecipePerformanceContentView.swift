@@ -255,7 +255,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-              Button("Retry") {
+              DSButton("Retry", icon: "arrow.clockwise", style: .primary, size: .small) {
                 Task {
                   await viewModel.loadMermaidDiagram()
                 }
@@ -362,7 +362,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
       // Scale control
       if !hideIngredientsAndInstruments {
-        Divider()
+        DSDivider()
           .padding(.vertical, 8)
 
         HStack(spacing: 12) {
@@ -398,22 +398,13 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
               }
 
             Text("x")
-              .font(.subheadline)
-              .foregroundColor(.secondary)
+              .font(DSTheme.Typography.body)
+              .foregroundColor(DSTheme.Colors.textSecondary)
 
-            Button {
-              adjustRecipeScale(by: -0.25)
-            } label: {
-              Image(systemName: "minus.circle")
-            }
-            .buttonStyle(.plain)
-
-            Button {
-              adjustRecipeScale(by: 0.25)
-            } label: {
-              Image(systemName: "plus.circle")
-            }
-            .buttonStyle(.plain)
+            DSStepperButtons(
+              onDecrement: { adjustRecipeScale(by: -0.25) },
+              onIncrement: { adjustRecipeScale(by: 0.25) }
+            )
           }
         }
 
@@ -1373,7 +1364,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       },
       allModeLeadingContent: {
         VStack(alignment: .leading, spacing: 12) {
-          KeepScreenAwakeButton(inline: true)
+          DSKeepScreenAwakeButton(inline: true)
           if showWashHandsStepCard, !sharedWashHandsValue, allSteps.first != nil {
             washHandsStepCard(viewModel: viewModel)
           }
@@ -1381,7 +1372,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       },
       focusModeLeadingContent: {
         VStack(alignment: .leading, spacing: 12) {
-          KeepScreenAwakeButton(inline: true)
+          DSKeepScreenAwakeButton(inline: true)
           if showWashHandsStepCard, !sharedWashHandsValue, upNextSteps.first != nil {
             washHandsStepCard(viewModel: viewModel)
           }

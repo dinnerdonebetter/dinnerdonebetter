@@ -190,7 +190,7 @@ struct MealPlanningHomeContent: View {
             userSettingsService: userSettingsService
           )
         ) {
-          InfoButton(icon: "checklist", text: summary.text, color: summary.color)
+          DSInfoRow(icon: "checklist", text: summary.text, color: summary.color)
         }
         .buttonStyle(.plain)
       }
@@ -207,7 +207,7 @@ struct MealPlanningHomeContent: View {
             authManager: viewModel.authManager
           )
         ) {
-          InfoButton(
+          DSInfoRow(
             icon: "cart.fill",
             text: neededCount > 0
               ? "Grocery List (\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed)"
@@ -221,24 +221,12 @@ struct MealPlanningHomeContent: View {
   }
 
   private var softSeparator: some View {
-    VStack(spacing: 0) {
-      Spacer()
-        .frame(height: DSTheme.Spacing.md)
-      Rectangle()
-        .fill(DSTheme.Colors.border.opacity(0.5))
-        .frame(height: 1)
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, DSTheme.Spacing.xl * 2)
-      Spacer()
-        .frame(height: DSTheme.Spacing.md)
-    }
+    DSSoftDivider()
   }
 
   private func futureMealPlansSection(viewModel: HomeViewModel) -> some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      Label("Future Meal Plans", systemImage: "calendar.badge.clock")
-        .font(DSTheme.Typography.title2)
-        .foregroundColor(DSTheme.Colors.textPrimary)
+      DSSectionHeader(title: "Future Meal Plans", systemImage: "calendar.badge.clock")
 
       ForEach(viewModel.futureFinalizedMealPlans, id: \.id) { mealPlan in
         futureMealPlanBlock(viewModel: viewModel, mealPlan: mealPlan)
@@ -274,7 +262,7 @@ struct MealPlanningHomeContent: View {
               userSettingsService: userSettingsService
             )
           ) {
-            InfoButton(icon: "checklist", text: summary.text, color: summary.color)
+            DSInfoRow(icon: "checklist", text: summary.text, color: summary.color)
           }
           .buttonStyle(.plain)
         }
@@ -292,7 +280,7 @@ struct MealPlanningHomeContent: View {
               authManager: viewModel.authManager
             )
           ) {
-            InfoButton(
+            DSInfoRow(
               icon: "cart.fill",
               text: neededCount > 0
                 ? "Grocery List (\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed)"
@@ -309,13 +297,7 @@ struct MealPlanningHomeContent: View {
   // MARK: - Upcoming Meal Plans Section
   private func upcomingMealPlansSection(viewModel: HomeViewModel) -> some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
-      HStack {
-        Label("Upcoming Meal Plans", systemImage: "calendar")
-          .font(DSTheme.Typography.title2)
-          .foregroundColor(DSTheme.Colors.textPrimary)
-
-        Spacer()
-
+      DSSectionHeader(title: "Upcoming Meal Plans", systemImage: "calendar") {
         Text(
           "\(viewModel.upcomingMealPlans.count) plan\(viewModel.upcomingMealPlans.count == 1 ? "" : "s")"
         )
@@ -538,7 +520,7 @@ struct UpcomingMealCardContent: View {
       }
 
       if !mealPlan.events.isEmpty {
-        Divider()
+        DSDivider()
 
         VStack(spacing: DSTheme.Spacing.xs) {
           ForEach(mealPlan.events.prefix(3), id: \.id) { event in
@@ -634,43 +616,5 @@ struct UpcomingMealCard: View {
 
   var body: some View {
     UpcomingMealCardContent(mealPlan: mealPlan)
-  }
-}
-
-// MARK: - Info Button
-struct InfoButton: View {
-  let icon: String
-  let text: String
-  let color: Color
-
-  var body: some View {
-    HStack(spacing: DSTheme.Spacing.md) {
-      ZStack {
-        Circle()
-          .fill(color.opacity(0.15))
-          .frame(width: 36, height: 36)
-
-        Image(systemName: icon)
-          .font(.system(size: 15, weight: .medium))
-          .foregroundColor(color)
-      }
-
-      Text(text)
-        .font(DSTheme.Typography.label)
-        .foregroundColor(DSTheme.Colors.textPrimary)
-
-      Spacer()
-
-      Image(systemName: "chevron.right")
-        .font(.system(size: 13, weight: .semibold))
-        .foregroundColor(DSTheme.Colors.textTertiary)
-    }
-    .padding(DSTheme.Spacing.md)
-    .background(DSTheme.Colors.cardBackground)
-    .cornerRadius(DSTheme.Radius.lg)
-    .overlay(
-      RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
-        .stroke(DSTheme.Colors.border, lineWidth: 1)
-    )
   }
 }

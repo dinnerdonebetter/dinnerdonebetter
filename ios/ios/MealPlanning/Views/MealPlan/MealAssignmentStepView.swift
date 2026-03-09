@@ -167,40 +167,26 @@ struct MealAssignmentStepView: View {
         }
 
         // Recipe scale
-        HStack(spacing: 12) {
+        HStack(spacing: DSTheme.Spacing.md) {
           Text("Scale:")
-            .font(.subheadline)
+            .font(DSTheme.Typography.label)
             .foregroundColor(DSTheme.Colors.textSecondary)
 
-          HStack(spacing: 8) {
-            Button {
-              viewModel.adjustMealScale(for: date, by: -0.25)
-            } label: {
-              Image(systemName: "minus.circle")
+          DSStepperButtons(
+            onDecrement: { viewModel.adjustMealScale(for: date, by: -0.25) },
+            onIncrement: { viewModel.adjustMealScale(for: date, by: 0.25) },
+            center: {
+              Text(viewModel.mealScaleText(for: date))
+                .font(DSTheme.Typography.body)
+                .frame(minWidth: 36, alignment: .center)
             }
-            .buttonStyle(.plain)
-
-            Text(viewModel.mealScaleText(for: date))
-              .font(.subheadline)
-              .frame(minWidth: 36, alignment: .center)
-
-            Button {
-              viewModel.adjustMealScale(for: date, by: 0.25)
-            } label: {
-              Image(systemName: "plus.circle")
-            }
-            .buttonStyle(.plain)
-          }
-          .padding(.horizontal, 8)
-          .padding(.vertical, 4)
-          .background(Color(.systemGray5))
-          .cornerRadius(8)
+          )
 
           if meal.hasEstimatedPortions {
             let scale = viewModel.mealScale(for: date)
             let portionText = PortionsFormatter.formatScaled(meal.estimatedPortions, scale: scale)
             Text("→ ~\(portionText) servings")
-              .font(.subheadline)
+              .font(DSTheme.Typography.body)
               .foregroundColor(DSTheme.Colors.textSecondary)
           }
         }

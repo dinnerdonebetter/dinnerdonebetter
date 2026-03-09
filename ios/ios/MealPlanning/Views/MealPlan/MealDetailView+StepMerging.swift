@@ -406,7 +406,6 @@ private func partitionGroupByCompletionStatus(
   var done: [UnifiedMealStepSource] = []
   var notDone: [UnifiedMealStepSource] = []
   for source in group {
-    let stepKey = "\(source.recipeID):\(source.step.id)"
     let category = source.viewModel.categorizeStep(
       recipeID: source.recipeID, stepID: source.step.id)
     if category == .done {

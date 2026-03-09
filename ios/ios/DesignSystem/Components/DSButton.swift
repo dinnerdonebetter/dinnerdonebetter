@@ -14,6 +14,7 @@ enum DSButtonStyle {
   case secondary
   case tertiary
   case destructive
+  case destructiveGhost
   case ghost
   case outline
 
@@ -27,7 +28,7 @@ enum DSButtonStyle {
       return DSTheme.Colors.tertiary
     case .destructive:
       return DSTheme.Colors.error
-    case .ghost, .outline:
+    case .destructiveGhost, .ghost, .outline:
       return .clear
     }
   }
@@ -36,6 +37,8 @@ enum DSButtonStyle {
     switch self {
     case .primary, .secondary, .tertiary, .destructive:
       return DSTheme.Colors.textOnPrimary
+    case .destructiveGhost:
+      return DSTheme.Colors.error
     case .ghost:
       return DSTheme.Colors.primary
     case .outline:
@@ -54,7 +57,7 @@ enum DSButtonStyle {
 
   var disabledBackgroundColor: Color {
     switch self {
-    case .ghost, .outline:
+    case .destructiveGhost, .ghost, .outline:
       return .clear
     default:
       return Color.gray.opacity(0.3)
@@ -132,6 +135,9 @@ enum DSButtonSize {
 /// // Full width
 /// DSButton("Continue", fullWidth: true) { next() }
 /// ```
+///
+/// - Note: For sheet/toolbar Cancel and Save actions, use SwiftUI's `Button("Cancel")` /
+///   `Button("Save")` in `cancellationAction` / `confirmationAction`; they receive system styling automatically.
 struct DSButton: View {
   let title: String
   let icon: String?
@@ -354,6 +360,9 @@ struct DSIconButton: View {
 
         Text("Destructive").font(.caption).foregroundColor(.secondary)
         DSButton("Delete", icon: "trash", style: .destructive) { print("Tapped") }
+
+        Text("Destructive Ghost").font(.caption).foregroundColor(.secondary)
+        DSButton("Sign Out", style: .destructiveGhost) { print("Tapped") }
 
         Text("Ghost").font(.caption).foregroundColor(.secondary)
         DSButton("Ghost Button", style: .ghost) { print("Tapped") }

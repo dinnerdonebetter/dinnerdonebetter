@@ -114,7 +114,7 @@ struct MealDetailView: View {
 
                   // Keep screen awake (before wash hands)
                   if !meal.components.isEmpty {
-                    KeepScreenAwakeButton(inline: true)
+                    DSKeepScreenAwakeButton(inline: true)
                   }
 
                   if !meal.components.isEmpty && !mealWashHandsCompleted {
@@ -226,7 +226,7 @@ struct MealDetailView: View {
 
       // Meal Scale Control (hidden when viewing from meal plan – scale is set by the plan)
       if !isFromMealPlan {
-        Divider()
+        DSDivider()
           .padding(.vertical, DSTheme.Spacing.xs)
 
         HStack(spacing: DSTheme.Spacing.md) {
@@ -264,19 +264,10 @@ struct MealDetailView: View {
               .font(DSTheme.Typography.body)
               .foregroundColor(DSTheme.Colors.textSecondary)
 
-            Button {
-              adjustMealScale(by: -0.25)
-            } label: {
-              Image(systemName: "minus.circle")
-            }
-            .buttonStyle(.plain)
-
-            Button {
-              adjustMealScale(by: 0.25)
-            } label: {
-              Image(systemName: "plus.circle")
-            }
-            .buttonStyle(.plain)
+            DSStepperButtons(
+              onDecrement: { adjustMealScale(by: -0.25) },
+              onIncrement: { adjustMealScale(by: 0.25) }
+            )
           }
         }
 
@@ -340,7 +331,7 @@ struct MealDetailView: View {
                 .font(DSTheme.Typography.body)
                 .foregroundColor(DSTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
-              Button("Retry") {
+              DSButton("Retry", icon: "arrow.clockwise", style: .primary, size: .small) {
                 Task {
                   await viewModel.loadMermaidDiagram()
                 }

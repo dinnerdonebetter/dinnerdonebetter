@@ -142,7 +142,7 @@ struct VoteMealPlanView: View {
           .foregroundColor(.secondary)
       }
 
-      Divider()
+      DSDivider()
 
       // Countdown timer section
       VStack(alignment: .leading, spacing: 8) {
@@ -158,7 +158,7 @@ struct VoteMealPlanView: View {
 
       // Event counter (if multiple events)
       if viewModel.mealPlan.events.count > 1 {
-        Divider()
+        DSDivider()
         HStack {
           Image(systemName: "calendar")
             .foregroundColor(.secondary)
@@ -348,7 +348,7 @@ struct VoteMealPlanView: View {
 
   private func votingStatusSection(viewModel: VoteMealPlanViewModel) -> some View {
     VStack(alignment: .leading, spacing: 12) {
-      Divider()
+      DSDivider()
         .padding(.horizontal)
 
       Text("Voting Status")
