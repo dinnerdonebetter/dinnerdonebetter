@@ -18,6 +18,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @Binding var isIngredientsExpanded: Bool
   @State private var isPrepTasksExpanded: Bool = false
   @State private var isDAGSectionExpanded: Bool = false
+  @State private var showDiagramFullScreen: Bool = false
 
   let recipe: Mealplanning_Recipe
   let viewModel: PerformRecipeViewModel
@@ -230,6 +231,16 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
               .font(.headline)
               .foregroundColor(.primary)
             Spacer()
+            if let mermaidSource = viewModel.mermaidDiagram, !mermaidSource.isEmpty {
+              Button {
+                showDiagramFullScreen = true
+              } label: {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+              }
+              .buttonStyle(.plain)
+            }
             Image(systemName: isDAGSectionExpanded ? "chevron.down" : "chevron.right")
               .font(.caption)
               .foregroundColor(.secondary)
@@ -239,6 +250,13 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         }
       )
       .buttonStyle(.plain)
+      .fullScreenCover(isPresented: $showDiagramFullScreen) {
+        DiagramFullScreenSheet(
+          mermaidSource: viewModel.mermaidDiagram ?? "",
+          title: "Recipe Graph",
+          onDismiss: { showDiagramFullScreen = false }
+        )
+      }
 
       if isDAGSectionExpanded {
         VStack(alignment: .leading, spacing: 8) {

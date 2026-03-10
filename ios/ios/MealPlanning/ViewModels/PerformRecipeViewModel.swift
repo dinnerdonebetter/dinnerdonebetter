@@ -843,17 +843,8 @@ class PerformRecipeViewModel {
     let allDependenciesDone = prerequisiteKeys.allSatisfy { completedSteps.contains($0) }
 
     if allDependenciesDone {
-      if !prerequisiteKeys.isEmpty {
-        print(
-          "📊 [\(recipeName)] categorize '\(stepName)' → upNext (all \(prerequisiteKeys.count) prereqs done)"
-        )
-      }
       return .upNext
     } else {
-      let missing = prerequisiteKeys.filter { !completedSteps.contains($0) }
-      print(
-        "📊 [\(recipeName)] categorize '\(stepName)' → forLater (missing \(missing.count)/\(prerequisiteKeys.count) prereqs: \(missing.map { $0.suffix(12) }))"
-      )
       return .forLater
     }
   }

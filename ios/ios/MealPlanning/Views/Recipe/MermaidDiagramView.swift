@@ -22,7 +22,7 @@ struct MermaidDiagramView: View {
     if let theme {
       return theme
     }
-    return colorScheme == .dark ? .nord : .zincLight
+    return colorScheme == .dark ? .tokyoNight : .zincLight
   }
 
   var body: some View {
