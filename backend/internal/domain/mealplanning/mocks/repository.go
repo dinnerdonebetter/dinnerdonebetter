@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
@@ -1808,4 +1809,64 @@ func (m *Repository) UpdateMealPlanRecipeOptionSelection(ctx context.Context, me
 // ArchiveSelection is a mock function.
 func (m *Repository) ArchiveMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) error {
 	return m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType).Error(0)
+}
+
+// AddPreparationMedia is a mock function.
+func (m *Repository) AddPreparationMedia(ctx context.Context, validPreparationID string, forIngredientID *string, uploadedMediaID string, index int32) error {
+	return m.Called(ctx, validPreparationID, forIngredientID, uploadedMediaID, index).Error(0)
+}
+
+// GetPreparationMediaByPreparation is a mock function.
+func (m *Repository) GetPreparationMediaByPreparation(ctx context.Context, validPreparationID string) ([]*mealplanning.PreparationMediaRow, error) {
+	returnValues := m.Called(ctx, validPreparationID)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).([]*mealplanning.PreparationMediaRow), returnValues.Error(1)
+}
+
+// GetPreparationMediaByPreparationAndIngredient is a mock function.
+func (m *Repository) GetPreparationMediaByPreparationAndIngredient(ctx context.Context, validPreparationID string, forIngredientID *string) ([]*mealplanning.PreparationMediaRow, error) {
+	returnValues := m.Called(ctx, validPreparationID, forIngredientID)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).([]*mealplanning.PreparationMediaRow), returnValues.Error(1)
+}
+
+// AddIngredientMedia is a mock function.
+func (m *Repository) AddIngredientMedia(ctx context.Context, validIngredientID, uploadedMediaID string, index int32) error {
+	return m.Called(ctx, validIngredientID, uploadedMediaID, index).Error(0)
+}
+
+// GetIngredientMediaByIngredient is a mock function.
+func (m *Repository) GetIngredientMediaByIngredient(ctx context.Context, validIngredientID string) ([]*mealplanning.IngredientMediaRow, error) {
+	returnValues := m.Called(ctx, validIngredientID)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).([]*mealplanning.IngredientMediaRow), returnValues.Error(1)
+}
+
+// GetUploadedMediaWithIDs is a mock function.
+func (m *Repository) GetUploadedMediaWithIDs(ctx context.Context, ids []string) ([]*uploadedmedia.UploadedMedia, error) {
+	returnValues := m.Called(ctx, ids)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).([]*uploadedmedia.UploadedMedia), returnValues.Error(1)
+}
+
+// AddRecipeStepImage is a mock function.
+func (m *Repository) AddRecipeStepImage(ctx context.Context, recipeStepID, uploadedMediaID, uploadedByUser string) error {
+	return m.Called(ctx, recipeStepID, uploadedMediaID, uploadedByUser).Error(0)
+}
+
+// GetRecipeStepImagesByStep is a mock function.
+func (m *Repository) GetRecipeStepImagesByStep(ctx context.Context, recipeStepID string) ([]*mealplanning.RecipeStepImageRow, error) {
+	returnValues := m.Called(ctx, recipeStepID)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).([]*mealplanning.RecipeStepImageRow), returnValues.Error(1)
 }

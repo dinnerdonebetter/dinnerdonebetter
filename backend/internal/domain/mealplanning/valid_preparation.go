@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -30,27 +31,27 @@ func init() {
 type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
-		_ struct{} `json:"-"`
-
+		_                           struct{}                         `json:"-"`
 		CreatedAt                   time.Time                        `json:"createdAt"`
 		InstrumentCount             types.Uint16RangeWithOptionalMax `json:"instrumentCount"`
 		IngredientCount             types.Uint16RangeWithOptionalMax `json:"ingredientCount"`
 		VesselCount                 types.Uint16RangeWithOptionalMax `json:"vesselCount"`
 		ArchivedAt                  *time.Time                       `json:"archivedAt"`
 		LastUpdatedAt               *time.Time                       `json:"lastUpdatedAt"`
-		IconPath                    string                           `json:"iconPath"`
+		Name                        string                           `json:"name"`
 		PastTense                   string                           `json:"pastTense"`
 		ID                          string                           `json:"id"`
-		Name                        string                           `json:"name"`
+		IconPath                    string                           `json:"iconPath"`
 		Description                 string                           `json:"description"`
 		Slug                        string                           `json:"slug"`
-		RestrictToIngredients       bool                             `json:"restrictToIngredients"`
+		Media                       []*uploadedmedia.UploadedMedia   `json:"media"`
 		TemperatureRequired         bool                             `json:"temperatureRequired"`
 		TimeEstimateRequired        bool                             `json:"timeEstimateRequired"`
 		ConditionExpressionRequired bool                             `json:"conditionExpressionRequired"`
 		ConsumesVessel              bool                             `json:"consumesVessel"`
 		OnlyForVessels              bool                             `json:"onlyForVessels"`
 		YieldsNothing               bool                             `json:"yieldsNothing"`
+		RestrictToIngredients       bool                             `json:"restrictToIngredients"`
 	}
 
 	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.

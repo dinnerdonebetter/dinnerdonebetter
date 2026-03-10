@@ -236,4 +236,7 @@ service MealPlanningService {
   rpc UpdateUserIngredientPreference(UpdateUserIngredientPreferenceRequest) returns (UpdateUserIngredientPreferenceResponse);
   rpc UploadMealImage(stream UploadMealMediaRequest) returns (UploadMealImageResponse);
   rpc UploadRecipeImage(stream UploadRecipeMediaRequest) returns (UploadRecipeImageResponse);
+  rpc UploadPreparationMedia(stream UploadPreparationMediaRequest) returns (UploadPreparationMediaResponse);
+  rpc UploadIngredientMedia(stream UploadIngredientMediaRequest) returns (UploadIngredientMediaResponse);
+  rpc UploadRecipeStepImage(stream UploadRecipeStepImageRequest) returns (UploadRecipeStepImageResponse);
 }

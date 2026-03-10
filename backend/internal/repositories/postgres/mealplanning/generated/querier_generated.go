@@ -87,6 +87,7 @@ type Querier interface {
 	CheckValidityOfValidIngredientStateIngredientPair(ctx context.Context, db DBTX, arg *CheckValidityOfValidIngredientStateIngredientPairParams) (bool, error)
 	ClearMealPlanTaskNotificationSentForEvent(ctx context.Context, db DBTX, mealPlanEventID sql.NullString) error
 	CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error
+	CreateIngredientMedia(ctx context.Context, db DBTX, arg *CreateIngredientMediaParams) error
 	CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error
 	CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error
 	CreateMealImage(ctx context.Context, db DBTX, arg *CreateMealImageParams) error
@@ -99,6 +100,7 @@ type Querier interface {
 	CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *CreateMealPlanOptionVoteParams) error
 	CreateMealPlanRecipeOptionSelection(ctx context.Context, db DBTX, arg *CreateMealPlanRecipeOptionSelectionParams) error
 	CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMealPlanTaskParams) error
+	CreatePreparationMedia(ctx context.Context, db DBTX, arg *CreatePreparationMediaParams) error
 	CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipeParams) error
 	CreateRecipeImage(ctx context.Context, db DBTX, arg *CreateRecipeImageParams) error
 	CreateRecipeList(ctx context.Context, db DBTX, arg *CreateRecipeListParams) error
@@ -110,6 +112,7 @@ type Querier interface {
 	CreateRecipeStep(ctx context.Context, db DBTX, arg *CreateRecipeStepParams) error
 	CreateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *CreateRecipeStepCompletionConditionParams) error
 	CreateRecipeStepCompletionConditionIngredient(ctx context.Context, db DBTX, arg *CreateRecipeStepCompletionConditionIngredientParams) error
+	CreateRecipeStepImage(ctx context.Context, db DBTX, arg *CreateRecipeStepImageParams) error
 	CreateRecipeStepIngredient(ctx context.Context, db DBTX, arg *CreateRecipeStepIngredientParams) error
 	CreateRecipeStepInstrument(ctx context.Context, db DBTX, arg *CreateRecipeStepInstrumentParams) error
 	CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *CreateRecipeStepProductParams) error
@@ -143,6 +146,7 @@ type Querier interface {
 	GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error)
 	GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansForPlanningRow, error)
 	GetFinalizedMealPlansWithoutGroceryListInit(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansWithoutGroceryListInitRow, error)
+	GetIngredientMediaByIngredient(ctx context.Context, db DBTX, validIngredientID string) ([]*IngredientMedia, error)
 	GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error)
 	GetMealListItems(ctx context.Context, db DBTX, arg *GetMealListItemsParams) ([]*GetMealListItemsRow, error)
 	GetMealLists(ctx context.Context, db DBTX, arg *GetMealListsParams) ([]*GetMealListsRow, error)
@@ -172,6 +176,9 @@ type Querier interface {
 	GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetMealsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetMealsWithIDsRow, error)
 	GetMeasurementUnitConversionMismatches(ctx context.Context, db DBTX) ([]*GetMeasurementUnitConversionMismatchesRow, error)
+	GetPreparationMediaByPreparation(ctx context.Context, db DBTX, validPreparationID string) ([]*PreparationMedia, error)
+	// Returns media for a prep+ingredient: ingredient-specific media OR general (for_ingredient_id IS NULL)
+	GetPreparationMediaByPreparationAndIngredient(ctx context.Context, db DBTX, arg *GetPreparationMediaByPreparationAndIngredientParams) ([]*PreparationMedia, error)
 	GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRandomValidIngredientRow, error)
 	GetRandomValidInstrument(ctx context.Context, db DBTX) (*GetRandomValidInstrumentRow, error)
 	GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error)
@@ -193,6 +200,7 @@ type Querier interface {
 	GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id string) (*GetRecipeStepByRecipeIDRow, error)
 	GetRecipeStepCompletionConditionWithIngredients(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionWithIngredientsParams) ([]*GetRecipeStepCompletionConditionWithIngredientsRow, error)
 	GetRecipeStepCompletionConditions(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionsParams) ([]*GetRecipeStepCompletionConditionsRow, error)
+	GetRecipeStepImagesByStep(ctx context.Context, db DBTX, belongsToRecipeStep string) ([]*RecipeStepImages, error)
 	GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *GetRecipeStepIngredientParams) (*GetRecipeStepIngredientRow, error)
 	GetRecipeStepIngredients(ctx context.Context, db DBTX, arg *GetRecipeStepIngredientsParams) ([]*GetRecipeStepIngredientsRow, error)
 	GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) (*GetRecipeStepInstrumentRow, error)
@@ -209,6 +217,7 @@ type Querier interface {
 	GetRecipesCreatedByUser(ctx context.Context, db DBTX, arg *GetRecipesCreatedByUserParams) ([]*GetRecipesCreatedByUserRow, error)
 	GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetRecipesWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetRecipesWithIDsRow, error)
+	GetUploadedMediaWithIDs(ctx context.Context, db DBTX, ids []string) ([]*UploadedMedia, error)
 	GetUserIngredientPreference(ctx context.Context, db DBTX, arg *GetUserIngredientPreferenceParams) (*GetUserIngredientPreferenceRow, error)
 	GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error)
 	GetValidIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientRow, error)

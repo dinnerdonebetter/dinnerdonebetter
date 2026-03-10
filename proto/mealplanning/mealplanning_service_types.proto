@@ -3098,3 +3098,35 @@ message UploadRecipeImageResponse {
   common.ResponseDetails response_details = 1;
   optional string uploaded_media_id = 2;
 }
+
+message UploadPreparationMediaRequest {
+  string valid_preparation_id = 1;
+  optional string for_ingredient_id = 2;
+  uploaded_media.UploadRequest upload = 3;
+}
+
+message UploadPreparationMediaResponse {
+  common.ResponseDetails response_details = 1;
+  optional string uploaded_media_id = 2;
+}
+
+message UploadIngredientMediaRequest {
+  string valid_ingredient_id = 1;
+  uploaded_media.UploadRequest upload = 2;
+}
+
+message UploadIngredientMediaResponse {
+  common.ResponseDetails response_details = 1;
+  optional string uploaded_media_id = 2;
+}
+
+message UploadRecipeStepImageRequest {
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  uploaded_media.UploadRequest upload = 3;
+}
+
+message UploadRecipeStepImageResponse {
+  common.ResponseDetails response_details = 1;
+  optional string uploaded_media_id = 2;
+}

@@ -1,6 +1,17 @@
 package mealplanning
 
+import (
+	"context"
+
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+)
+
 type (
+	// UploadedMediaFetcher fetches uploaded media by IDs (used for enriching preparations/ingredients with media).
+	UploadedMediaFetcher interface {
+		GetUploadedMediaWithIDs(ctx context.Context, ids []string) ([]*uploadedmedia.UploadedMedia, error)
+	}
+
 	ValidEnumerationDataManager interface {
 		ValidIngredientGroupDataManager
 		ValidIngredientMeasurementUnitDataManager
@@ -16,6 +27,9 @@ type (
 		ValidPreparationDataManager
 		ValidPreparationVesselDataManager
 		ValidVesselDataManager
+		PreparationMediaDataManager
+		IngredientMediaDataManager
+		UploadedMediaFetcher
 	}
 
 	ValidEnumerationDataService interface {

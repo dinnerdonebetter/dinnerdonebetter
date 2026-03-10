@@ -62,6 +62,7 @@ func (m *Migrator) Migrate(ctx context.Context, db *sql.DB) error {
 		{Version: 17, Description: "meal planning schema additions", Script: fetchMigration("00017_mealplanning_schema_additions")},
 		{Version: 18, Description: "webauthn credentials table", Script: fetchMigration("00018_webauthn_credentials")},
 		{Version: 19, Description: "webauthn sessions table", Script: fetchMigration("00019_webauthn_sessions")},
+		{Version: 20, Description: "media for preparations ingredients steps", Script: fetchMigration("00020_media_for_preparations_ingredients_steps")},
 	}
 
 	if err := darwin.New(darwin.NewGenericDriver(db, darwin.PostgresDialect{}), migrations, nil).Migrate(); err != nil {

@@ -34,6 +34,7 @@ type AdminFrontendServer struct {
 	validIngredientStateIDRouteParamFetcher func(req *http.Request) string
 	accountIDRouteParamFetcher              func(req *http.Request) string
 	recipeIDRouteParamFetcher               func(req *http.Request) string
+	recipeStepIDRouteParamFetcher           func(req *http.Request) string
 	waitlistIDRouteParamFetcher             func(req *http.Request) string
 	issueReportIDRouteParamFetcher          func(req *http.Request) string
 	validPrepTaskConfigIDRouteParamFetcher  func(req *http.Request) string
@@ -92,6 +93,7 @@ func NewAdminFrontendServer(
 		validIngredientStateIDRouteParamFetcher: rpm.BuildRouteParamStringIDFetcher(validIngredientStateIDURLParamKey),
 		validPreparationIDRouteParamFetcher:     rpm.BuildRouteParamStringIDFetcher(validPreparationIDURLParamKey),
 		recipeIDRouteParamFetcher:               rpm.BuildRouteParamStringIDFetcher(recipeIDURLParamKey),
+		recipeStepIDRouteParamFetcher:           rpm.BuildRouteParamStringIDFetcher(recipeStepIDURLParamKey),
 		waitlistIDRouteParamFetcher:             rpm.BuildRouteParamStringIDFetcher(waitlistIDURLParamKey),
 		issueReportIDRouteParamFetcher:          rpm.BuildRouteParamStringIDFetcher(issueReportIDURLParamKey),
 		validPrepTaskConfigIDRouteParamFetcher:  rpm.BuildRouteParamStringIDFetcher(validPrepTaskConfigIDURLParamKey),

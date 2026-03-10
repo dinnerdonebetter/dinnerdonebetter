@@ -40,6 +40,9 @@ var (
 		ProvideValidPreparationInstrumentDataManagerFromRepository,
 		ProvideValidPreparationVesselDataManagerFromRepository,
 		ProvideValidVesselDataManagerFromRepository,
+		ProvidePreparationMediaDataManagerFromRepository,
+		ProvideIngredientMediaDataManagerFromRepository,
+		ProvideRecipeStepImageDataManagerFromRepository,
 	)
 )
 
@@ -176,5 +179,17 @@ func ProvideValidPreparationVesselDataManagerFromRepository(r Repository) ValidP
 }
 
 func ProvideValidVesselDataManagerFromRepository(r Repository) ValidVesselDataManager {
+	return r
+}
+
+func ProvidePreparationMediaDataManagerFromRepository(r Repository) PreparationMediaDataManager {
+	return r
+}
+
+func ProvideIngredientMediaDataManagerFromRepository(r Repository) IngredientMediaDataManager {
+	return r
+}
+
+func ProvideRecipeStepImageDataManagerFromRepository(r Repository) RecipeStepImageDataManager {
 	return r
 }

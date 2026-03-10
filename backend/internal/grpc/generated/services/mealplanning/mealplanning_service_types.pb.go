@@ -31247,6 +31247,334 @@ func (x *UploadRecipeImageResponse) GetUploadedMediaId() string {
 	return ""
 }
 
+type UploadPreparationMediaRequest struct {
+	state              protoimpl.MessageState        `protogen:"open.v1"`
+	ValidPreparationId string                        `json:"valid_preparation_id,omitempty" protobuf:"bytes,1,opt,name=valid_preparation_id,json=validPreparationId,proto3"`
+	ForIngredientId    *string                       `json:"for_ingredient_id,omitempty"    protobuf:"bytes,2,opt,name=for_ingredient_id,json=forIngredientId,proto3,oneof"`
+	Upload             *uploaded_media.UploadRequest `json:"upload,omitempty"               protobuf:"bytes,3,opt,name=upload,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *UploadPreparationMediaRequest) Reset() {
+	*x = UploadPreparationMediaRequest{}
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[537]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadPreparationMediaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadPreparationMediaRequest) ProtoMessage() {}
+
+func (x *UploadPreparationMediaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[537]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadPreparationMediaRequest.ProtoReflect.Descriptor instead.
+func (*UploadPreparationMediaRequest) Descriptor() ([]byte, []int) {
+	return file_mealplanning_mealplanning_service_types_proto_rawDescGZIP(), []int{537}
+}
+
+func (x *UploadPreparationMediaRequest) GetValidPreparationId() string {
+	if x != nil {
+		return x.ValidPreparationId
+	}
+	return ""
+}
+
+func (x *UploadPreparationMediaRequest) GetForIngredientId() string {
+	if x != nil && x.ForIngredientId != nil {
+		return *x.ForIngredientId
+	}
+	return ""
+}
+
+func (x *UploadPreparationMediaRequest) GetUpload() *uploaded_media.UploadRequest {
+	if x != nil {
+		return x.Upload
+	}
+	return nil
+}
+
+type UploadPreparationMediaResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty"  protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	UploadedMediaId *string                `json:"uploaded_media_id,omitempty" protobuf:"bytes,2,opt,name=uploaded_media_id,json=uploadedMediaId,proto3,oneof"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *UploadPreparationMediaResponse) Reset() {
+	*x = UploadPreparationMediaResponse{}
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[538]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadPreparationMediaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadPreparationMediaResponse) ProtoMessage() {}
+
+func (x *UploadPreparationMediaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[538]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadPreparationMediaResponse.ProtoReflect.Descriptor instead.
+func (*UploadPreparationMediaResponse) Descriptor() ([]byte, []int) {
+	return file_mealplanning_mealplanning_service_types_proto_rawDescGZIP(), []int{538}
+}
+
+func (x *UploadPreparationMediaResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *UploadPreparationMediaResponse) GetUploadedMediaId() string {
+	if x != nil && x.UploadedMediaId != nil {
+		return *x.UploadedMediaId
+	}
+	return ""
+}
+
+type UploadIngredientMediaRequest struct {
+	state             protoimpl.MessageState        `protogen:"open.v1"`
+	ValidIngredientId string                        `json:"valid_ingredient_id,omitempty" protobuf:"bytes,1,opt,name=valid_ingredient_id,json=validIngredientId,proto3"`
+	Upload            *uploaded_media.UploadRequest `json:"upload,omitempty"              protobuf:"bytes,2,opt,name=upload,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *UploadIngredientMediaRequest) Reset() {
+	*x = UploadIngredientMediaRequest{}
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[539]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadIngredientMediaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadIngredientMediaRequest) ProtoMessage() {}
+
+func (x *UploadIngredientMediaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[539]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadIngredientMediaRequest.ProtoReflect.Descriptor instead.
+func (*UploadIngredientMediaRequest) Descriptor() ([]byte, []int) {
+	return file_mealplanning_mealplanning_service_types_proto_rawDescGZIP(), []int{539}
+}
+
+func (x *UploadIngredientMediaRequest) GetValidIngredientId() string {
+	if x != nil {
+		return x.ValidIngredientId
+	}
+	return ""
+}
+
+func (x *UploadIngredientMediaRequest) GetUpload() *uploaded_media.UploadRequest {
+	if x != nil {
+		return x.Upload
+	}
+	return nil
+}
+
+type UploadIngredientMediaResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty"  protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	UploadedMediaId *string                `json:"uploaded_media_id,omitempty" protobuf:"bytes,2,opt,name=uploaded_media_id,json=uploadedMediaId,proto3,oneof"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *UploadIngredientMediaResponse) Reset() {
+	*x = UploadIngredientMediaResponse{}
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[540]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadIngredientMediaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadIngredientMediaResponse) ProtoMessage() {}
+
+func (x *UploadIngredientMediaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[540]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadIngredientMediaResponse.ProtoReflect.Descriptor instead.
+func (*UploadIngredientMediaResponse) Descriptor() ([]byte, []int) {
+	return file_mealplanning_mealplanning_service_types_proto_rawDescGZIP(), []int{540}
+}
+
+func (x *UploadIngredientMediaResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *UploadIngredientMediaResponse) GetUploadedMediaId() string {
+	if x != nil && x.UploadedMediaId != nil {
+		return *x.UploadedMediaId
+	}
+	return ""
+}
+
+type UploadRecipeStepImageRequest struct {
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	RecipeId      string                        `json:"recipe_id,omitempty"      protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3"`
+	RecipeStepId  string                        `json:"recipe_step_id,omitempty" protobuf:"bytes,2,opt,name=recipe_step_id,json=recipeStepId,proto3"`
+	Upload        *uploaded_media.UploadRequest `json:"upload,omitempty"         protobuf:"bytes,3,opt,name=upload,proto3"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadRecipeStepImageRequest) Reset() {
+	*x = UploadRecipeStepImageRequest{}
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[541]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadRecipeStepImageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadRecipeStepImageRequest) ProtoMessage() {}
+
+func (x *UploadRecipeStepImageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[541]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadRecipeStepImageRequest.ProtoReflect.Descriptor instead.
+func (*UploadRecipeStepImageRequest) Descriptor() ([]byte, []int) {
+	return file_mealplanning_mealplanning_service_types_proto_rawDescGZIP(), []int{541}
+}
+
+func (x *UploadRecipeStepImageRequest) GetRecipeId() string {
+	if x != nil {
+		return x.RecipeId
+	}
+	return ""
+}
+
+func (x *UploadRecipeStepImageRequest) GetRecipeStepId() string {
+	if x != nil {
+		return x.RecipeStepId
+	}
+	return ""
+}
+
+func (x *UploadRecipeStepImageRequest) GetUpload() *uploaded_media.UploadRequest {
+	if x != nil {
+		return x.Upload
+	}
+	return nil
+}
+
+type UploadRecipeStepImageResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty"  protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	UploadedMediaId *string                `json:"uploaded_media_id,omitempty" protobuf:"bytes,2,opt,name=uploaded_media_id,json=uploadedMediaId,proto3,oneof"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *UploadRecipeStepImageResponse) Reset() {
+	*x = UploadRecipeStepImageResponse{}
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[542]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadRecipeStepImageResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadRecipeStepImageResponse) ProtoMessage() {}
+
+func (x *UploadRecipeStepImageResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_mealplanning_mealplanning_service_types_proto_msgTypes[542]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadRecipeStepImageResponse.ProtoReflect.Descriptor instead.
+func (*UploadRecipeStepImageResponse) Descriptor() ([]byte, []int) {
+	return file_mealplanning_mealplanning_service_types_proto_rawDescGZIP(), []int{542}
+}
+
+func (x *UploadRecipeStepImageResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *UploadRecipeStepImageResponse) GetUploadedMediaId() string {
+	if x != nil && x.UploadedMediaId != nil {
+		return *x.UploadedMediaId
+	}
+	return ""
+}
+
 var File_mealplanning_mealplanning_service_types_proto protoreflect.FileDescriptor
 
 var file_mealplanning_mealplanning_service_types_proto_rawDesc = string([]byte{
@@ -37781,13 +38109,77 @@ var file_mealplanning_mealplanning_service_types_proto_rawDesc = string([]byte{
 	0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x09, 0x48, 0x00, 0x52, 0x0f, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65,
 	0x64, 0x69, 0x61, 0x49, 0x64, 0x88, 0x01, 0x01, 0x42, 0x14, 0x0a, 0x12, 0x5f, 0x75, 0x70, 0x6c,
-	0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f, 0x69, 0x64, 0x42, 0x53,
-	0x5a, 0x51, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e,
-	0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61,
-	0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67,
-	0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65,
-	0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x6d, 0x65, 0x61, 0x6c, 0x70, 0x6c, 0x61, 0x6e, 0x6e,
-	0x69, 0x6e, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f, 0x69, 0x64, 0x22, 0xcf,
+	0x01, 0x0a, 0x1d, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x50, 0x72, 0x65, 0x70, 0x61, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x30, 0x0a, 0x14, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x5f, 0x70, 0x72, 0x65, 0x70, 0x61, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x12,
+	0x76, 0x61, 0x6c, 0x69, 0x64, 0x50, 0x72, 0x65, 0x70, 0x61, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x49, 0x64, 0x12, 0x2f, 0x0a, 0x11, 0x66, 0x6f, 0x72, 0x5f, 0x69, 0x6e, 0x67, 0x72, 0x65, 0x64,
+	0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52,
+	0x0f, 0x66, 0x6f, 0x72, 0x49, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69, 0x65, 0x6e, 0x74, 0x49, 0x64,
+	0x88, 0x01, 0x01, 0x12, 0x35, 0x0a, 0x06, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d,
+	0x65, 0x64, 0x69, 0x61, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x52, 0x06, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x42, 0x14, 0x0a, 0x12, 0x5f, 0x66,
+	0x6f, 0x72, 0x5f, 0x69, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64,
+	0x22, 0xab, 0x01, 0x0a, 0x1e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x50, 0x72, 0x65, 0x70, 0x61,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f,
+	0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e,
+	0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x2f, 0x0a, 0x11, 0x75, 0x70, 0x6c, 0x6f, 0x61,
+	0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x48, 0x00, 0x52, 0x0f, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65,
+	0x64, 0x69, 0x61, 0x49, 0x64, 0x88, 0x01, 0x01, 0x42, 0x14, 0x0a, 0x12, 0x5f, 0x75, 0x70, 0x6c,
+	0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f, 0x69, 0x64, 0x22, 0x85,
+	0x01, 0x0a, 0x1c, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x49, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69,
+	0x65, 0x6e, 0x74, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x2e, 0x0a, 0x13, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x5f, 0x69, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69,
+	0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x76, 0x61,
+	0x6c, 0x69, 0x64, 0x49, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x12,
+	0x35, 0x0a, 0x06, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1d, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61,
+	0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x06,
+	0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0xaa, 0x01, 0x0a, 0x1d, 0x55, 0x70, 0x6c, 0x6f, 0x61,
+	0x64, 0x49, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69, 0x65, 0x6e, 0x74, 0x4d, 0x65, 0x64, 0x69, 0x61,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x2f, 0x0a, 0x11,
+	0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f, 0x69,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x0f, 0x75, 0x70, 0x6c, 0x6f, 0x61,
+	0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x49, 0x64, 0x88, 0x01, 0x01, 0x42, 0x14, 0x0a,
+	0x12, 0x5f, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61,
+	0x5f, 0x69, 0x64, 0x22, 0x98, 0x01, 0x0a, 0x1c, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65,
+	0x63, 0x69, 0x70, 0x65, 0x53, 0x74, 0x65, 0x70, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x5f, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x49,
+	0x64, 0x12, 0x24, 0x0a, 0x0e, 0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x5f, 0x73, 0x74, 0x65, 0x70,
+	0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x72, 0x65, 0x63, 0x69, 0x70,
+	0x65, 0x53, 0x74, 0x65, 0x70, 0x49, 0x64, 0x12, 0x35, 0x0a, 0x06, 0x75, 0x70, 0x6c, 0x6f, 0x61,
+	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64,
+	0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x06, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0xaa,
+	0x01, 0x0a, 0x1d, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x63, 0x69, 0x70, 0x65, 0x53,
+	0x74, 0x65, 0x70, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d,
+	0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x73, 0x12, 0x2f, 0x0a, 0x11, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64,
+	0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x48,
+	0x00, 0x52, 0x0f, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61,
+	0x49, 0x64, 0x88, 0x01, 0x01, 0x42, 0x14, 0x0a, 0x12, 0x5f, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64,
+	0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f, 0x69, 0x64, 0x42, 0x53, 0x5a, 0x51, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72,
+	0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65,
+	0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63,
+	0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x73, 0x2f, 0x6d, 0x65, 0x61, 0x6c, 0x70, 0x6c, 0x61, 0x6e, 0x6e, 0x69, 0x6e, 0x67,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -37802,7 +38194,7 @@ func file_mealplanning_mealplanning_service_types_proto_rawDescGZIP() []byte {
 	return file_mealplanning_mealplanning_service_types_proto_rawDescData
 }
 
-var file_mealplanning_mealplanning_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 537)
+var file_mealplanning_mealplanning_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 543)
 var file_mealplanning_mealplanning_service_types_proto_goTypes = []any{
 	(*ValidIngredientCreationRequestInput)(nil),                                          // 0: mealplanning.ValidIngredientCreationRequestInput
 	(*ValidIngredientGroupCreationRequestInput)(nil),                                     // 1: mealplanning.ValidIngredientGroupCreationRequestInput
@@ -38341,772 +38733,784 @@ var file_mealplanning_mealplanning_service_types_proto_goTypes = []any{
 	(*UploadRecipeMediaRequest)(nil),                                                     // 534: mealplanning.UploadRecipeMediaRequest
 	(*UploadMealImageResponse)(nil),                                                      // 535: mealplanning.UploadMealImageResponse
 	(*UploadRecipeImageResponse)(nil),                                                    // 536: mealplanning.UploadRecipeImageResponse
-	(*types.OptionalFloat32Range)(nil),                                                   // 537: common.OptionalFloat32Range
-	(*types.Float32RangeWithOptionalMax)(nil),                                            // 538: common.Float32RangeWithOptionalMax
-	(*types.Float32RangeWithOptionalMaxUpdateRequestInput)(nil),                          // 539: common.Float32RangeWithOptionalMaxUpdateRequestInput
-	(*types.Uint32RangeWithOptionalMax)(nil),                                             // 540: common.Uint32RangeWithOptionalMax
-	(*types.Uint32RangeWithOptionalMaxUpdateRequestInput)(nil),                           // 541: common.Uint32RangeWithOptionalMaxUpdateRequestInput
-	(ValidIngredientStateAttributeType)(0),                                               // 542: mealplanning.ValidIngredientStateAttributeType
-	(*types.Uint16RangeWithOptionalMax)(nil),                                             // 543: common.Uint16RangeWithOptionalMax
-	(*types.Uint16RangeWithOptionalMaxUpdateRequestInput)(nil),                           // 544: common.Uint16RangeWithOptionalMaxUpdateRequestInput
-	(ValidVesselShape)(0),                                                                // 545: mealplanning.ValidVesselShape
-	(*types.ResponseDetails)(nil),                                                        // 546: common.ResponseDetails
-	(*ValidIngredient)(nil),                                                              // 547: mealplanning.ValidIngredient
-	(*ValidIngredientGroup)(nil),                                                         // 548: mealplanning.ValidIngredientGroup
-	(*ValidIngredientMeasurementUnit)(nil),                                               // 549: mealplanning.ValidIngredientMeasurementUnit
-	(*ValidIngredientPreparation)(nil),                                                   // 550: mealplanning.ValidIngredientPreparation
-	(*ValidPrepTaskConfig)(nil),                                                          // 551: mealplanning.ValidPrepTaskConfig
-	(*ValidIngredientState)(nil),                                                         // 552: mealplanning.ValidIngredientState
-	(*ValidIngredientStateIngredient)(nil),                                               // 553: mealplanning.ValidIngredientStateIngredient
-	(*ValidInstrument)(nil),                                                              // 554: mealplanning.ValidInstrument
-	(*ValidMeasurementUnit)(nil),                                                         // 555: mealplanning.ValidMeasurementUnit
-	(*ValidMeasurementUnitConversion)(nil),                                               // 556: mealplanning.ValidMeasurementUnitConversion
-	(*ValidPreparation)(nil),                                                             // 557: mealplanning.ValidPreparation
-	(*ValidPreparationInstrument)(nil),                                                   // 558: mealplanning.ValidPreparationInstrument
-	(*ValidPreparationVessel)(nil),                                                       // 559: mealplanning.ValidPreparationVessel
-	(*ValidVessel)(nil),                                                                  // 560: mealplanning.ValidVessel
-	(*filtering.QueryFilter)(nil),                                                        // 561: filtering.QueryFilter
-	(*filtering.Pagination)(nil),                                                         // 562: filtering.Pagination
-	(*MeasurementUnitConversionMismatch)(nil),                                            // 563: mealplanning.MeasurementUnitConversionMismatch
-	(*UserIngredientPreference)(nil),                                                     // 564: mealplanning.UserIngredientPreference
-	(MealComponentType)(0),                                                               // 565: mealplanning.MealComponentType
-	(*RecipeStepCompletionConditionIngredient)(nil),                                      // 566: mealplanning.RecipeStepCompletionConditionIngredient
-	(*types.OptionalUint32Range)(nil),                                                    // 567: common.OptionalUint32Range
-	(RecipeStepProductType)(0),                                                           // 568: mealplanning.RecipeStepProductType
-	(*Recipe)(nil),                                                                       // 569: mealplanning.Recipe
-	(*RecipePrepTask)(nil),                                                               // 570: mealplanning.RecipePrepTask
-	(*RecipeRating)(nil),                                                                 // 571: mealplanning.RecipeRating
-	(*RecipeStep)(nil),                                                                   // 572: mealplanning.RecipeStep
-	(*RecipeStepCompletionCondition)(nil),                                                // 573: mealplanning.RecipeStepCompletionCondition
-	(*RecipeStepIngredient)(nil),                                                         // 574: mealplanning.RecipeStepIngredient
-	(*RecipeStepInstrument)(nil),                                                         // 575: mealplanning.RecipeStepInstrument
-	(*RecipeStepProduct)(nil),                                                            // 576: mealplanning.RecipeStepProduct
-	(*RecipeStepVessel)(nil),                                                             // 577: mealplanning.RecipeStepVessel
-	(*MealPlanTask)(nil),                                                                 // 578: mealplanning.MealPlanTask
-	(*timestamppb.Timestamp)(nil),                                                        // 579: google.protobuf.Timestamp
-	(MealPlanElectionMethod)(0),                                                          // 580: mealplanning.MealPlanElectionMethod
-	(MealPlanEventName)(0),                                                               // 581: mealplanning.MealPlanEventName
-	(MealPlanGroceryListItemStatus)(0),                                                   // 582: mealplanning.MealPlanGroceryListItemStatus
-	(MealPlanRecipeOptionSelectionType)(0),                                               // 583: mealplanning.MealPlanRecipeOptionSelectionType
-	(*MealPlanOptionVoteCreationInput)(nil),                                              // 584: mealplanning.MealPlanOptionVoteCreationInput
-	(MealPlanTaskStatus)(0),                                                              // 585: mealplanning.MealPlanTaskStatus
-	(*Meal)(nil),                                                                         // 586: mealplanning.Meal
-	(*MealPlan)(nil),                                                                     // 587: mealplanning.MealPlan
-	(*MealPlanEvent)(nil),                                                                // 588: mealplanning.MealPlanEvent
-	(*MealPlanOption)(nil),                                                               // 589: mealplanning.MealPlanOption
-	(*MealPlanOptionVote)(nil),                                                           // 590: mealplanning.MealPlanOptionVote
-	(*MealPlanGroceryListItem)(nil),                                                      // 591: mealplanning.MealPlanGroceryListItem
-	(*MealList)(nil),                                                                     // 592: mealplanning.MealList
-	(*MealListItem)(nil),                                                                 // 593: mealplanning.MealListItem
-	(*RecipeList)(nil),                                                                   // 594: mealplanning.RecipeList
-	(*RecipeListItem)(nil),                                                               // 595: mealplanning.RecipeListItem
-	(*MealPlanRecipeOptionSelection)(nil),                                                // 596: mealplanning.MealPlanRecipeOptionSelection
-	(*AccountInstrumentOwnership)(nil),                                                   // 597: mealplanning.AccountInstrumentOwnership
-	(*uploaded_media.UploadRequest)(nil),                                                 // 598: uploaded_media.UploadRequest
+	(*UploadPreparationMediaRequest)(nil),                                                // 537: mealplanning.UploadPreparationMediaRequest
+	(*UploadPreparationMediaResponse)(nil),                                               // 538: mealplanning.UploadPreparationMediaResponse
+	(*UploadIngredientMediaRequest)(nil),                                                 // 539: mealplanning.UploadIngredientMediaRequest
+	(*UploadIngredientMediaResponse)(nil),                                                // 540: mealplanning.UploadIngredientMediaResponse
+	(*UploadRecipeStepImageRequest)(nil),                                                 // 541: mealplanning.UploadRecipeStepImageRequest
+	(*UploadRecipeStepImageResponse)(nil),                                                // 542: mealplanning.UploadRecipeStepImageResponse
+	(*types.OptionalFloat32Range)(nil),                                                   // 543: common.OptionalFloat32Range
+	(*types.Float32RangeWithOptionalMax)(nil),                                            // 544: common.Float32RangeWithOptionalMax
+	(*types.Float32RangeWithOptionalMaxUpdateRequestInput)(nil),                          // 545: common.Float32RangeWithOptionalMaxUpdateRequestInput
+	(*types.Uint32RangeWithOptionalMax)(nil),                                             // 546: common.Uint32RangeWithOptionalMax
+	(*types.Uint32RangeWithOptionalMaxUpdateRequestInput)(nil),                           // 547: common.Uint32RangeWithOptionalMaxUpdateRequestInput
+	(ValidIngredientStateAttributeType)(0),                                               // 548: mealplanning.ValidIngredientStateAttributeType
+	(*types.Uint16RangeWithOptionalMax)(nil),                                             // 549: common.Uint16RangeWithOptionalMax
+	(*types.Uint16RangeWithOptionalMaxUpdateRequestInput)(nil),                           // 550: common.Uint16RangeWithOptionalMaxUpdateRequestInput
+	(ValidVesselShape)(0),                                                                // 551: mealplanning.ValidVesselShape
+	(*types.ResponseDetails)(nil),                                                        // 552: common.ResponseDetails
+	(*ValidIngredient)(nil),                                                              // 553: mealplanning.ValidIngredient
+	(*ValidIngredientGroup)(nil),                                                         // 554: mealplanning.ValidIngredientGroup
+	(*ValidIngredientMeasurementUnit)(nil),                                               // 555: mealplanning.ValidIngredientMeasurementUnit
+	(*ValidIngredientPreparation)(nil),                                                   // 556: mealplanning.ValidIngredientPreparation
+	(*ValidPrepTaskConfig)(nil),                                                          // 557: mealplanning.ValidPrepTaskConfig
+	(*ValidIngredientState)(nil),                                                         // 558: mealplanning.ValidIngredientState
+	(*ValidIngredientStateIngredient)(nil),                                               // 559: mealplanning.ValidIngredientStateIngredient
+	(*ValidInstrument)(nil),                                                              // 560: mealplanning.ValidInstrument
+	(*ValidMeasurementUnit)(nil),                                                         // 561: mealplanning.ValidMeasurementUnit
+	(*ValidMeasurementUnitConversion)(nil),                                               // 562: mealplanning.ValidMeasurementUnitConversion
+	(*ValidPreparation)(nil),                                                             // 563: mealplanning.ValidPreparation
+	(*ValidPreparationInstrument)(nil),                                                   // 564: mealplanning.ValidPreparationInstrument
+	(*ValidPreparationVessel)(nil),                                                       // 565: mealplanning.ValidPreparationVessel
+	(*ValidVessel)(nil),                                                                  // 566: mealplanning.ValidVessel
+	(*filtering.QueryFilter)(nil),                                                        // 567: filtering.QueryFilter
+	(*filtering.Pagination)(nil),                                                         // 568: filtering.Pagination
+	(*MeasurementUnitConversionMismatch)(nil),                                            // 569: mealplanning.MeasurementUnitConversionMismatch
+	(*UserIngredientPreference)(nil),                                                     // 570: mealplanning.UserIngredientPreference
+	(MealComponentType)(0),                                                               // 571: mealplanning.MealComponentType
+	(*RecipeStepCompletionConditionIngredient)(nil),                                      // 572: mealplanning.RecipeStepCompletionConditionIngredient
+	(*types.OptionalUint32Range)(nil),                                                    // 573: common.OptionalUint32Range
+	(RecipeStepProductType)(0),                                                           // 574: mealplanning.RecipeStepProductType
+	(*Recipe)(nil),                                                                       // 575: mealplanning.Recipe
+	(*RecipePrepTask)(nil),                                                               // 576: mealplanning.RecipePrepTask
+	(*RecipeRating)(nil),                                                                 // 577: mealplanning.RecipeRating
+	(*RecipeStep)(nil),                                                                   // 578: mealplanning.RecipeStep
+	(*RecipeStepCompletionCondition)(nil),                                                // 579: mealplanning.RecipeStepCompletionCondition
+	(*RecipeStepIngredient)(nil),                                                         // 580: mealplanning.RecipeStepIngredient
+	(*RecipeStepInstrument)(nil),                                                         // 581: mealplanning.RecipeStepInstrument
+	(*RecipeStepProduct)(nil),                                                            // 582: mealplanning.RecipeStepProduct
+	(*RecipeStepVessel)(nil),                                                             // 583: mealplanning.RecipeStepVessel
+	(*MealPlanTask)(nil),                                                                 // 584: mealplanning.MealPlanTask
+	(*timestamppb.Timestamp)(nil),                                                        // 585: google.protobuf.Timestamp
+	(MealPlanElectionMethod)(0),                                                          // 586: mealplanning.MealPlanElectionMethod
+	(MealPlanEventName)(0),                                                               // 587: mealplanning.MealPlanEventName
+	(MealPlanGroceryListItemStatus)(0),                                                   // 588: mealplanning.MealPlanGroceryListItemStatus
+	(MealPlanRecipeOptionSelectionType)(0),                                               // 589: mealplanning.MealPlanRecipeOptionSelectionType
+	(*MealPlanOptionVoteCreationInput)(nil),                                              // 590: mealplanning.MealPlanOptionVoteCreationInput
+	(MealPlanTaskStatus)(0),                                                              // 591: mealplanning.MealPlanTaskStatus
+	(*Meal)(nil),                                                                         // 592: mealplanning.Meal
+	(*MealPlan)(nil),                                                                     // 593: mealplanning.MealPlan
+	(*MealPlanEvent)(nil),                                                                // 594: mealplanning.MealPlanEvent
+	(*MealPlanOption)(nil),                                                               // 595: mealplanning.MealPlanOption
+	(*MealPlanOptionVote)(nil),                                                           // 596: mealplanning.MealPlanOptionVote
+	(*MealPlanGroceryListItem)(nil),                                                      // 597: mealplanning.MealPlanGroceryListItem
+	(*MealList)(nil),                                                                     // 598: mealplanning.MealList
+	(*MealListItem)(nil),                                                                 // 599: mealplanning.MealListItem
+	(*RecipeList)(nil),                                                                   // 600: mealplanning.RecipeList
+	(*RecipeListItem)(nil),                                                               // 601: mealplanning.RecipeListItem
+	(*MealPlanRecipeOptionSelection)(nil),                                                // 602: mealplanning.MealPlanRecipeOptionSelection
+	(*AccountInstrumentOwnership)(nil),                                                   // 603: mealplanning.AccountInstrumentOwnership
+	(*uploaded_media.UploadRequest)(nil),                                                 // 604: uploaded_media.UploadRequest
 }
 var file_mealplanning_mealplanning_service_types_proto_depIdxs = []int32{
-	537, // 0: mealplanning.ValidIngredientCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	543, // 0: mealplanning.ValidIngredientCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
 	2,   // 1: mealplanning.ValidIngredientGroupCreationRequestInput.members:type_name -> mealplanning.ValidIngredientGroupMemberCreationRequestInput
-	538, // 2: mealplanning.ValidIngredientMeasurementUnitCreationRequestInput.allowable_quantity:type_name -> common.Float32RangeWithOptionalMax
-	539, // 3: mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput.allowable_quantity:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
-	540, // 4: mealplanning.ValidPrepTaskConfigCreationRequestInput.storage_duration_in_seconds:type_name -> common.Uint32RangeWithOptionalMax
-	537, // 5: mealplanning.ValidPrepTaskConfigCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
-	541, // 6: mealplanning.ValidPrepTaskConfigUpdateRequestInput.storage_duration_in_seconds:type_name -> common.Uint32RangeWithOptionalMaxUpdateRequestInput
-	537, // 7: mealplanning.ValidPrepTaskConfigUpdateRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
-	542, // 8: mealplanning.ValidIngredientStateCreationRequestInput.attribute_type:type_name -> mealplanning.ValidIngredientStateAttributeType
-	542, // 9: mealplanning.ValidIngredientStateUpdateRequestInput.attribute_type:type_name -> mealplanning.ValidIngredientStateAttributeType
-	537, // 10: mealplanning.ValidIngredientUpdateRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
-	543, // 11: mealplanning.ValidPreparationCreationRequestInput.instrument_count:type_name -> common.Uint16RangeWithOptionalMax
-	543, // 12: mealplanning.ValidPreparationCreationRequestInput.ingredient_count:type_name -> common.Uint16RangeWithOptionalMax
-	543, // 13: mealplanning.ValidPreparationCreationRequestInput.vessel_count:type_name -> common.Uint16RangeWithOptionalMax
-	544, // 14: mealplanning.ValidPreparationUpdateRequestInput.instrument_count:type_name -> common.Uint16RangeWithOptionalMaxUpdateRequestInput
-	544, // 15: mealplanning.ValidPreparationUpdateRequestInput.ingredient_count:type_name -> common.Uint16RangeWithOptionalMaxUpdateRequestInput
-	544, // 16: mealplanning.ValidPreparationUpdateRequestInput.vessel_count:type_name -> common.Uint16RangeWithOptionalMaxUpdateRequestInput
-	545, // 17: mealplanning.ValidVesselCreationRequestInput.shape:type_name -> mealplanning.ValidVesselShape
-	545, // 18: mealplanning.ValidVesselUpdateRequestInput.shape:type_name -> mealplanning.ValidVesselShape
-	546, // 19: mealplanning.ArchiveValidIngredientResponse.response_details:type_name -> common.ResponseDetails
-	546, // 20: mealplanning.ArchiveValidIngredientGroupResponse.response_details:type_name -> common.ResponseDetails
-	546, // 21: mealplanning.ArchiveValidIngredientMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
-	546, // 22: mealplanning.ArchiveValidIngredientPreparationResponse.response_details:type_name -> common.ResponseDetails
-	546, // 23: mealplanning.ArchiveValidPrepTaskConfigResponse.response_details:type_name -> common.ResponseDetails
-	546, // 24: mealplanning.ArchiveValidIngredientStateResponse.response_details:type_name -> common.ResponseDetails
-	546, // 25: mealplanning.ArchiveValidIngredientStateIngredientResponse.response_details:type_name -> common.ResponseDetails
-	546, // 26: mealplanning.ArchiveValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	546, // 27: mealplanning.ArchiveValidMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
-	546, // 28: mealplanning.ArchiveValidMeasurementUnitConversionResponse.response_details:type_name -> common.ResponseDetails
-	546, // 29: mealplanning.ArchiveValidPreparationResponse.response_details:type_name -> common.ResponseDetails
-	546, // 30: mealplanning.ArchiveValidPreparationInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	546, // 31: mealplanning.ArchiveValidPreparationVesselResponse.response_details:type_name -> common.ResponseDetails
-	546, // 32: mealplanning.ArchiveValidVesselResponse.response_details:type_name -> common.ResponseDetails
+	544, // 2: mealplanning.ValidIngredientMeasurementUnitCreationRequestInput.allowable_quantity:type_name -> common.Float32RangeWithOptionalMax
+	545, // 3: mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput.allowable_quantity:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
+	546, // 4: mealplanning.ValidPrepTaskConfigCreationRequestInput.storage_duration_in_seconds:type_name -> common.Uint32RangeWithOptionalMax
+	543, // 5: mealplanning.ValidPrepTaskConfigCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	547, // 6: mealplanning.ValidPrepTaskConfigUpdateRequestInput.storage_duration_in_seconds:type_name -> common.Uint32RangeWithOptionalMaxUpdateRequestInput
+	543, // 7: mealplanning.ValidPrepTaskConfigUpdateRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	548, // 8: mealplanning.ValidIngredientStateCreationRequestInput.attribute_type:type_name -> mealplanning.ValidIngredientStateAttributeType
+	548, // 9: mealplanning.ValidIngredientStateUpdateRequestInput.attribute_type:type_name -> mealplanning.ValidIngredientStateAttributeType
+	543, // 10: mealplanning.ValidIngredientUpdateRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	549, // 11: mealplanning.ValidPreparationCreationRequestInput.instrument_count:type_name -> common.Uint16RangeWithOptionalMax
+	549, // 12: mealplanning.ValidPreparationCreationRequestInput.ingredient_count:type_name -> common.Uint16RangeWithOptionalMax
+	549, // 13: mealplanning.ValidPreparationCreationRequestInput.vessel_count:type_name -> common.Uint16RangeWithOptionalMax
+	550, // 14: mealplanning.ValidPreparationUpdateRequestInput.instrument_count:type_name -> common.Uint16RangeWithOptionalMaxUpdateRequestInput
+	550, // 15: mealplanning.ValidPreparationUpdateRequestInput.ingredient_count:type_name -> common.Uint16RangeWithOptionalMaxUpdateRequestInput
+	550, // 16: mealplanning.ValidPreparationUpdateRequestInput.vessel_count:type_name -> common.Uint16RangeWithOptionalMaxUpdateRequestInput
+	551, // 17: mealplanning.ValidVesselCreationRequestInput.shape:type_name -> mealplanning.ValidVesselShape
+	551, // 18: mealplanning.ValidVesselUpdateRequestInput.shape:type_name -> mealplanning.ValidVesselShape
+	552, // 19: mealplanning.ArchiveValidIngredientResponse.response_details:type_name -> common.ResponseDetails
+	552, // 20: mealplanning.ArchiveValidIngredientGroupResponse.response_details:type_name -> common.ResponseDetails
+	552, // 21: mealplanning.ArchiveValidIngredientMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
+	552, // 22: mealplanning.ArchiveValidIngredientPreparationResponse.response_details:type_name -> common.ResponseDetails
+	552, // 23: mealplanning.ArchiveValidPrepTaskConfigResponse.response_details:type_name -> common.ResponseDetails
+	552, // 24: mealplanning.ArchiveValidIngredientStateResponse.response_details:type_name -> common.ResponseDetails
+	552, // 25: mealplanning.ArchiveValidIngredientStateIngredientResponse.response_details:type_name -> common.ResponseDetails
+	552, // 26: mealplanning.ArchiveValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	552, // 27: mealplanning.ArchiveValidMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
+	552, // 28: mealplanning.ArchiveValidMeasurementUnitConversionResponse.response_details:type_name -> common.ResponseDetails
+	552, // 29: mealplanning.ArchiveValidPreparationResponse.response_details:type_name -> common.ResponseDetails
+	552, // 30: mealplanning.ArchiveValidPreparationInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	552, // 31: mealplanning.ArchiveValidPreparationVesselResponse.response_details:type_name -> common.ResponseDetails
+	552, // 32: mealplanning.ArchiveValidVesselResponse.response_details:type_name -> common.ResponseDetails
 	0,   // 33: mealplanning.CreateValidIngredientRequest.input:type_name -> mealplanning.ValidIngredientCreationRequestInput
-	546, // 34: mealplanning.CreateValidIngredientResponse.response_details:type_name -> common.ResponseDetails
-	547, // 35: mealplanning.CreateValidIngredientResponse.result:type_name -> mealplanning.ValidIngredient
+	552, // 34: mealplanning.CreateValidIngredientResponse.response_details:type_name -> common.ResponseDetails
+	553, // 35: mealplanning.CreateValidIngredientResponse.result:type_name -> mealplanning.ValidIngredient
 	1,   // 36: mealplanning.CreateValidIngredientGroupRequest.input:type_name -> mealplanning.ValidIngredientGroupCreationRequestInput
-	546, // 37: mealplanning.CreateValidIngredientGroupResponse.response_details:type_name -> common.ResponseDetails
-	548, // 38: mealplanning.CreateValidIngredientGroupResponse.result:type_name -> mealplanning.ValidIngredientGroup
+	552, // 37: mealplanning.CreateValidIngredientGroupResponse.response_details:type_name -> common.ResponseDetails
+	554, // 38: mealplanning.CreateValidIngredientGroupResponse.result:type_name -> mealplanning.ValidIngredientGroup
 	4,   // 39: mealplanning.CreateValidIngredientMeasurementUnitRequest.input:type_name -> mealplanning.ValidIngredientMeasurementUnitCreationRequestInput
-	546, // 40: mealplanning.CreateValidIngredientMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
-	549, // 41: mealplanning.CreateValidIngredientMeasurementUnitResponse.result:type_name -> mealplanning.ValidIngredientMeasurementUnit
+	552, // 40: mealplanning.CreateValidIngredientMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
+	555, // 41: mealplanning.CreateValidIngredientMeasurementUnitResponse.result:type_name -> mealplanning.ValidIngredientMeasurementUnit
 	6,   // 42: mealplanning.CreateValidIngredientPreparationRequest.input:type_name -> mealplanning.ValidIngredientPreparationCreationRequestInput
-	546, // 43: mealplanning.CreateValidIngredientPreparationResponse.response_details:type_name -> common.ResponseDetails
-	550, // 44: mealplanning.CreateValidIngredientPreparationResponse.result:type_name -> mealplanning.ValidIngredientPreparation
+	552, // 43: mealplanning.CreateValidIngredientPreparationResponse.response_details:type_name -> common.ResponseDetails
+	556, // 44: mealplanning.CreateValidIngredientPreparationResponse.result:type_name -> mealplanning.ValidIngredientPreparation
 	8,   // 45: mealplanning.CreateValidPrepTaskConfigRequest.input:type_name -> mealplanning.ValidPrepTaskConfigCreationRequestInput
-	546, // 46: mealplanning.CreateValidPrepTaskConfigResponse.response_details:type_name -> common.ResponseDetails
-	551, // 47: mealplanning.CreateValidPrepTaskConfigResponse.result:type_name -> mealplanning.ValidPrepTaskConfig
+	552, // 46: mealplanning.CreateValidPrepTaskConfigResponse.response_details:type_name -> common.ResponseDetails
+	557, // 47: mealplanning.CreateValidPrepTaskConfigResponse.result:type_name -> mealplanning.ValidPrepTaskConfig
 	10,  // 48: mealplanning.CreateValidIngredientStateRequest.input:type_name -> mealplanning.ValidIngredientStateCreationRequestInput
-	546, // 49: mealplanning.CreateValidIngredientStateResponse.response_details:type_name -> common.ResponseDetails
-	552, // 50: mealplanning.CreateValidIngredientStateResponse.result:type_name -> mealplanning.ValidIngredientState
+	552, // 49: mealplanning.CreateValidIngredientStateResponse.response_details:type_name -> common.ResponseDetails
+	558, // 50: mealplanning.CreateValidIngredientStateResponse.result:type_name -> mealplanning.ValidIngredientState
 	11,  // 51: mealplanning.CreateValidIngredientStateIngredientRequest.input:type_name -> mealplanning.ValidIngredientStateIngredientCreationRequestInput
-	546, // 52: mealplanning.CreateValidIngredientStateIngredientResponse.response_details:type_name -> common.ResponseDetails
-	553, // 53: mealplanning.CreateValidIngredientStateIngredientResponse.result:type_name -> mealplanning.ValidIngredientStateIngredient
+	552, // 52: mealplanning.CreateValidIngredientStateIngredientResponse.response_details:type_name -> common.ResponseDetails
+	559, // 53: mealplanning.CreateValidIngredientStateIngredientResponse.result:type_name -> mealplanning.ValidIngredientStateIngredient
 	15,  // 54: mealplanning.CreateValidInstrumentRequest.input:type_name -> mealplanning.ValidInstrumentCreationRequestInput
-	546, // 55: mealplanning.CreateValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	554, // 56: mealplanning.CreateValidInstrumentResponse.result:type_name -> mealplanning.ValidInstrument
+	552, // 55: mealplanning.CreateValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	560, // 56: mealplanning.CreateValidInstrumentResponse.result:type_name -> mealplanning.ValidInstrument
 	19,  // 57: mealplanning.CreateValidMeasurementUnitRequest.input:type_name -> mealplanning.ValidMeasurementUnitCreationRequestInput
-	546, // 58: mealplanning.CreateValidMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
-	555, // 59: mealplanning.CreateValidMeasurementUnitResponse.result:type_name -> mealplanning.ValidMeasurementUnit
+	552, // 58: mealplanning.CreateValidMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
+	561, // 59: mealplanning.CreateValidMeasurementUnitResponse.result:type_name -> mealplanning.ValidMeasurementUnit
 	17,  // 60: mealplanning.CreateValidMeasurementUnitConversionRequest.input:type_name -> mealplanning.ValidMeasurementUnitConversionCreationRequestInput
-	546, // 61: mealplanning.CreateValidMeasurementUnitConversionResponse.response_details:type_name -> common.ResponseDetails
-	556, // 62: mealplanning.CreateValidMeasurementUnitConversionResponse.result:type_name -> mealplanning.ValidMeasurementUnitConversion
+	552, // 61: mealplanning.CreateValidMeasurementUnitConversionResponse.response_details:type_name -> common.ResponseDetails
+	562, // 62: mealplanning.CreateValidMeasurementUnitConversionResponse.result:type_name -> mealplanning.ValidMeasurementUnitConversion
 	21,  // 63: mealplanning.CreateValidPreparationRequest.input:type_name -> mealplanning.ValidPreparationCreationRequestInput
-	546, // 64: mealplanning.CreateValidPreparationResponse.response_details:type_name -> common.ResponseDetails
-	557, // 65: mealplanning.CreateValidPreparationResponse.result:type_name -> mealplanning.ValidPreparation
+	552, // 64: mealplanning.CreateValidPreparationResponse.response_details:type_name -> common.ResponseDetails
+	563, // 65: mealplanning.CreateValidPreparationResponse.result:type_name -> mealplanning.ValidPreparation
 	22,  // 66: mealplanning.CreateValidPreparationInstrumentRequest.input:type_name -> mealplanning.ValidPreparationInstrumentCreationRequestInput
-	546, // 67: mealplanning.CreateValidPreparationInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	558, // 68: mealplanning.CreateValidPreparationInstrumentResponse.result:type_name -> mealplanning.ValidPreparationInstrument
+	552, // 67: mealplanning.CreateValidPreparationInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	564, // 68: mealplanning.CreateValidPreparationInstrumentResponse.result:type_name -> mealplanning.ValidPreparationInstrument
 	25,  // 69: mealplanning.CreateValidPreparationVesselRequest.input:type_name -> mealplanning.ValidPreparationVesselCreationRequestInput
-	546, // 70: mealplanning.CreateValidPreparationVesselResponse.response_details:type_name -> common.ResponseDetails
-	559, // 71: mealplanning.CreateValidPreparationVesselResponse.result:type_name -> mealplanning.ValidPreparationVessel
+	552, // 70: mealplanning.CreateValidPreparationVesselResponse.response_details:type_name -> common.ResponseDetails
+	565, // 71: mealplanning.CreateValidPreparationVesselResponse.result:type_name -> mealplanning.ValidPreparationVessel
 	27,  // 72: mealplanning.CreateValidVesselRequest.input:type_name -> mealplanning.ValidVesselCreationRequestInput
-	546, // 73: mealplanning.CreateValidVesselResponse.response_details:type_name -> common.ResponseDetails
-	560, // 74: mealplanning.CreateValidVesselResponse.result:type_name -> mealplanning.ValidVessel
-	546, // 75: mealplanning.GetRandomValidIngredientResponse.response_details:type_name -> common.ResponseDetails
-	547, // 76: mealplanning.GetRandomValidIngredientResponse.result:type_name -> mealplanning.ValidIngredient
-	546, // 77: mealplanning.GetRandomValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	554, // 78: mealplanning.GetRandomValidInstrumentResponse.result:type_name -> mealplanning.ValidInstrument
-	546, // 79: mealplanning.GetRandomValidPreparationResponse.response_details:type_name -> common.ResponseDetails
-	557, // 80: mealplanning.GetRandomValidPreparationResponse.result:type_name -> mealplanning.ValidPreparation
-	546, // 81: mealplanning.GetRandomValidVesselResponse.response_details:type_name -> common.ResponseDetails
-	560, // 82: mealplanning.GetRandomValidVesselResponse.result:type_name -> mealplanning.ValidVessel
-	546, // 83: mealplanning.GetValidIngredientResponse.response_details:type_name -> common.ResponseDetails
-	547, // 84: mealplanning.GetValidIngredientResponse.result:type_name -> mealplanning.ValidIngredient
-	546, // 85: mealplanning.GetValidIngredientGroupResponse.response_details:type_name -> common.ResponseDetails
-	548, // 86: mealplanning.GetValidIngredientGroupResponse.result:type_name -> mealplanning.ValidIngredientGroup
-	561, // 87: mealplanning.GetValidIngredientGroupsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 88: mealplanning.GetValidIngredientGroupsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 89: mealplanning.GetValidIngredientGroupsResponse.pagination:type_name -> filtering.Pagination
-	548, // 90: mealplanning.GetValidIngredientGroupsResponse.results:type_name -> mealplanning.ValidIngredientGroup
-	546, // 91: mealplanning.GetValidIngredientMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
-	549, // 92: mealplanning.GetValidIngredientMeasurementUnitResponse.result:type_name -> mealplanning.ValidIngredientMeasurementUnit
-	561, // 93: mealplanning.GetValidIngredientMeasurementUnitsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 94: mealplanning.GetValidIngredientMeasurementUnitsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 95: mealplanning.GetValidIngredientMeasurementUnitsResponse.pagination:type_name -> filtering.Pagination
-	549, // 96: mealplanning.GetValidIngredientMeasurementUnitsResponse.results:type_name -> mealplanning.ValidIngredientMeasurementUnit
-	561, // 97: mealplanning.GetValidIngredientMeasurementUnitsByIngredientRequest.filter:type_name -> filtering.QueryFilter
-	546, // 98: mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse.response_details:type_name -> common.ResponseDetails
-	562, // 99: mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse.pagination:type_name -> filtering.Pagination
-	549, // 100: mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse.results:type_name -> mealplanning.ValidIngredientMeasurementUnit
-	561, // 101: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest.filter:type_name -> filtering.QueryFilter
-	546, // 102: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
-	562, // 103: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse.pagination:type_name -> filtering.Pagination
-	549, // 104: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse.results:type_name -> mealplanning.ValidIngredientMeasurementUnit
-	546, // 105: mealplanning.GetValidIngredientPreparationResponse.response_details:type_name -> common.ResponseDetails
-	550, // 106: mealplanning.GetValidIngredientPreparationResponse.result:type_name -> mealplanning.ValidIngredientPreparation
-	561, // 107: mealplanning.GetValidIngredientPreparationsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 108: mealplanning.GetValidIngredientPreparationsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 109: mealplanning.GetValidIngredientPreparationsResponse.pagination:type_name -> filtering.Pagination
-	550, // 110: mealplanning.GetValidIngredientPreparationsResponse.results:type_name -> mealplanning.ValidIngredientPreparation
-	561, // 111: mealplanning.GetValidIngredientPreparationsByIngredientRequest.filter:type_name -> filtering.QueryFilter
-	546, // 112: mealplanning.GetValidIngredientPreparationsByIngredientResponse.response_details:type_name -> common.ResponseDetails
-	562, // 113: mealplanning.GetValidIngredientPreparationsByIngredientResponse.pagination:type_name -> filtering.Pagination
-	550, // 114: mealplanning.GetValidIngredientPreparationsByIngredientResponse.results:type_name -> mealplanning.ValidIngredientPreparation
-	561, // 115: mealplanning.GetValidIngredientPreparationsByPreparationRequest.filter:type_name -> filtering.QueryFilter
-	546, // 116: mealplanning.GetValidIngredientPreparationsByPreparationResponse.response_details:type_name -> common.ResponseDetails
-	562, // 117: mealplanning.GetValidIngredientPreparationsByPreparationResponse.pagination:type_name -> filtering.Pagination
-	550, // 118: mealplanning.GetValidIngredientPreparationsByPreparationResponse.results:type_name -> mealplanning.ValidIngredientPreparation
-	546, // 119: mealplanning.GetValidPrepTaskConfigResponse.response_details:type_name -> common.ResponseDetails
-	551, // 120: mealplanning.GetValidPrepTaskConfigResponse.result:type_name -> mealplanning.ValidPrepTaskConfig
-	561, // 121: mealplanning.GetValidPrepTaskConfigsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 122: mealplanning.GetValidPrepTaskConfigsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 123: mealplanning.GetValidPrepTaskConfigsResponse.pagination:type_name -> filtering.Pagination
-	551, // 124: mealplanning.GetValidPrepTaskConfigsResponse.results:type_name -> mealplanning.ValidPrepTaskConfig
-	561, // 125: mealplanning.GetValidPrepTaskConfigsByIngredientRequest.filter:type_name -> filtering.QueryFilter
-	546, // 126: mealplanning.GetValidPrepTaskConfigsByIngredientResponse.response_details:type_name -> common.ResponseDetails
-	562, // 127: mealplanning.GetValidPrepTaskConfigsByIngredientResponse.pagination:type_name -> filtering.Pagination
-	551, // 128: mealplanning.GetValidPrepTaskConfigsByIngredientResponse.results:type_name -> mealplanning.ValidPrepTaskConfig
-	561, // 129: mealplanning.GetValidPrepTaskConfigsByPreparationRequest.filter:type_name -> filtering.QueryFilter
-	546, // 130: mealplanning.GetValidPrepTaskConfigsByPreparationResponse.response_details:type_name -> common.ResponseDetails
-	562, // 131: mealplanning.GetValidPrepTaskConfigsByPreparationResponse.pagination:type_name -> filtering.Pagination
-	551, // 132: mealplanning.GetValidPrepTaskConfigsByPreparationResponse.results:type_name -> mealplanning.ValidPrepTaskConfig
-	561, // 133: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationRequest.filter:type_name -> filtering.QueryFilter
-	546, // 134: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse.response_details:type_name -> common.ResponseDetails
-	562, // 135: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse.pagination:type_name -> filtering.Pagination
-	551, // 136: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse.results:type_name -> mealplanning.ValidPrepTaskConfig
-	546, // 137: mealplanning.GetValidIngredientStateResponse.response_details:type_name -> common.ResponseDetails
-	552, // 138: mealplanning.GetValidIngredientStateResponse.result:type_name -> mealplanning.ValidIngredientState
-	546, // 139: mealplanning.GetValidIngredientStateIngredientResponse.response_details:type_name -> common.ResponseDetails
-	553, // 140: mealplanning.GetValidIngredientStateIngredientResponse.result:type_name -> mealplanning.ValidIngredientStateIngredient
-	561, // 141: mealplanning.GetValidIngredientStateIngredientsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 142: mealplanning.GetValidIngredientStateIngredientsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 143: mealplanning.GetValidIngredientStateIngredientsResponse.pagination:type_name -> filtering.Pagination
-	553, // 144: mealplanning.GetValidIngredientStateIngredientsResponse.results:type_name -> mealplanning.ValidIngredientStateIngredient
-	561, // 145: mealplanning.GetValidIngredientStateIngredientsByIngredientRequest.filter:type_name -> filtering.QueryFilter
-	546, // 146: mealplanning.GetValidIngredientStateIngredientsByIngredientResponse.response_details:type_name -> common.ResponseDetails
-	562, // 147: mealplanning.GetValidIngredientStateIngredientsByIngredientResponse.pagination:type_name -> filtering.Pagination
-	553, // 148: mealplanning.GetValidIngredientStateIngredientsByIngredientResponse.results:type_name -> mealplanning.ValidIngredientStateIngredient
-	561, // 149: mealplanning.GetValidIngredientStateIngredientsByIngredientStateRequest.filter:type_name -> filtering.QueryFilter
-	546, // 150: mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse.response_details:type_name -> common.ResponseDetails
-	562, // 151: mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse.pagination:type_name -> filtering.Pagination
-	553, // 152: mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse.results:type_name -> mealplanning.ValidIngredientStateIngredient
-	561, // 153: mealplanning.GetValidIngredientStatesRequest.filter:type_name -> filtering.QueryFilter
-	546, // 154: mealplanning.GetValidIngredientStatesResponse.response_details:type_name -> common.ResponseDetails
-	562, // 155: mealplanning.GetValidIngredientStatesResponse.pagination:type_name -> filtering.Pagination
-	552, // 156: mealplanning.GetValidIngredientStatesResponse.results:type_name -> mealplanning.ValidIngredientState
-	561, // 157: mealplanning.GetValidIngredientsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 158: mealplanning.GetValidIngredientsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 159: mealplanning.GetValidIngredientsResponse.pagination:type_name -> filtering.Pagination
-	547, // 160: mealplanning.GetValidIngredientsResponse.results:type_name -> mealplanning.ValidIngredient
-	546, // 161: mealplanning.GetValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	554, // 162: mealplanning.GetValidInstrumentResponse.result:type_name -> mealplanning.ValidInstrument
-	561, // 163: mealplanning.GetValidInstrumentsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 164: mealplanning.GetValidInstrumentsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 165: mealplanning.GetValidInstrumentsResponse.pagination:type_name -> filtering.Pagination
-	554, // 166: mealplanning.GetValidInstrumentsResponse.results:type_name -> mealplanning.ValidInstrument
-	546, // 167: mealplanning.GetValidMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
-	555, // 168: mealplanning.GetValidMeasurementUnitResponse.result:type_name -> mealplanning.ValidMeasurementUnit
-	546, // 169: mealplanning.GetValidMeasurementUnitConversionResponse.response_details:type_name -> common.ResponseDetails
-	556, // 170: mealplanning.GetValidMeasurementUnitConversionResponse.result:type_name -> mealplanning.ValidMeasurementUnitConversion
-	561, // 171: mealplanning.GetValidMeasurementUnitConversionsForUnitRequest.filter:type_name -> filtering.QueryFilter
-	546, // 172: mealplanning.GetValidMeasurementUnitConversionsForUnitResponse.response_details:type_name -> common.ResponseDetails
-	562, // 173: mealplanning.GetValidMeasurementUnitConversionsForUnitResponse.pagination:type_name -> filtering.Pagination
-	556, // 174: mealplanning.GetValidMeasurementUnitConversionsForUnitResponse.results:type_name -> mealplanning.ValidMeasurementUnitConversion
-	546, // 175: mealplanning.GetValidMeasurementUnitConversionsForIngredientsResponse.response_details:type_name -> common.ResponseDetails
-	556, // 176: mealplanning.GetValidMeasurementUnitConversionsForIngredientsResponse.results:type_name -> mealplanning.ValidMeasurementUnitConversion
-	546, // 177: mealplanning.GetMeasurementUnitConversionMismatchesResponse.response_details:type_name -> common.ResponseDetails
-	563, // 178: mealplanning.GetMeasurementUnitConversionMismatchesResponse.mismatches:type_name -> mealplanning.MeasurementUnitConversionMismatch
-	561, // 179: mealplanning.GetValidMeasurementUnitsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 180: mealplanning.GetValidMeasurementUnitsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 181: mealplanning.GetValidMeasurementUnitsResponse.pagination:type_name -> filtering.Pagination
-	555, // 182: mealplanning.GetValidMeasurementUnitsResponse.results:type_name -> mealplanning.ValidMeasurementUnit
-	546, // 183: mealplanning.GetValidPreparationResponse.response_details:type_name -> common.ResponseDetails
-	557, // 184: mealplanning.GetValidPreparationResponse.result:type_name -> mealplanning.ValidPreparation
-	546, // 185: mealplanning.GetValidPreparationInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	558, // 186: mealplanning.GetValidPreparationInstrumentResponse.result:type_name -> mealplanning.ValidPreparationInstrument
-	561, // 187: mealplanning.GetValidPreparationInstrumentsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 188: mealplanning.GetValidPreparationInstrumentsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 189: mealplanning.GetValidPreparationInstrumentsResponse.pagination:type_name -> filtering.Pagination
-	558, // 190: mealplanning.GetValidPreparationInstrumentsResponse.results:type_name -> mealplanning.ValidPreparationInstrument
-	561, // 191: mealplanning.GetValidPreparationInstrumentsByInstrumentRequest.filter:type_name -> filtering.QueryFilter
-	546, // 192: mealplanning.GetValidPreparationInstrumentsByInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	562, // 193: mealplanning.GetValidPreparationInstrumentsByInstrumentResponse.pagination:type_name -> filtering.Pagination
-	558, // 194: mealplanning.GetValidPreparationInstrumentsByInstrumentResponse.results:type_name -> mealplanning.ValidPreparationInstrument
-	561, // 195: mealplanning.GetValidPreparationInstrumentsByPreparationRequest.filter:type_name -> filtering.QueryFilter
-	546, // 196: mealplanning.GetValidPreparationInstrumentsByPreparationResponse.response_details:type_name -> common.ResponseDetails
-	562, // 197: mealplanning.GetValidPreparationInstrumentsByPreparationResponse.pagination:type_name -> filtering.Pagination
-	558, // 198: mealplanning.GetValidPreparationInstrumentsByPreparationResponse.results:type_name -> mealplanning.ValidPreparationInstrument
-	546, // 199: mealplanning.GetValidPreparationVesselResponse.response_details:type_name -> common.ResponseDetails
-	559, // 200: mealplanning.GetValidPreparationVesselResponse.result:type_name -> mealplanning.ValidPreparationVessel
-	561, // 201: mealplanning.GetValidPreparationVesselsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 202: mealplanning.GetValidPreparationVesselsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 203: mealplanning.GetValidPreparationVesselsResponse.pagination:type_name -> filtering.Pagination
-	559, // 204: mealplanning.GetValidPreparationVesselsResponse.results:type_name -> mealplanning.ValidPreparationVessel
-	561, // 205: mealplanning.GetValidPreparationVesselsByPreparationRequest.filter:type_name -> filtering.QueryFilter
-	546, // 206: mealplanning.GetValidPreparationVesselsByPreparationResponse.response_details:type_name -> common.ResponseDetails
-	562, // 207: mealplanning.GetValidPreparationVesselsByPreparationResponse.pagination:type_name -> filtering.Pagination
-	559, // 208: mealplanning.GetValidPreparationVesselsByPreparationResponse.results:type_name -> mealplanning.ValidPreparationVessel
-	561, // 209: mealplanning.GetValidPreparationVesselsByVesselRequest.filter:type_name -> filtering.QueryFilter
-	546, // 210: mealplanning.GetValidPreparationVesselsByVesselResponse.response_details:type_name -> common.ResponseDetails
-	562, // 211: mealplanning.GetValidPreparationVesselsByVesselResponse.pagination:type_name -> filtering.Pagination
-	559, // 212: mealplanning.GetValidPreparationVesselsByVesselResponse.results:type_name -> mealplanning.ValidPreparationVessel
-	561, // 213: mealplanning.GetValidPreparationsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 214: mealplanning.GetValidPreparationsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 215: mealplanning.GetValidPreparationsResponse.pagination:type_name -> filtering.Pagination
-	557, // 216: mealplanning.GetValidPreparationsResponse.results:type_name -> mealplanning.ValidPreparation
-	546, // 217: mealplanning.GetValidVesselResponse.response_details:type_name -> common.ResponseDetails
-	560, // 218: mealplanning.GetValidVesselResponse.result:type_name -> mealplanning.ValidVessel
-	561, // 219: mealplanning.GetValidVesselsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 220: mealplanning.GetValidVesselsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 221: mealplanning.GetValidVesselsResponse.pagination:type_name -> filtering.Pagination
-	560, // 222: mealplanning.GetValidVesselsResponse.results:type_name -> mealplanning.ValidVessel
-	561, // 223: mealplanning.SearchForValidIngredientGroupsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 224: mealplanning.SearchForValidIngredientGroupsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 225: mealplanning.SearchForValidIngredientGroupsResponse.pagination:type_name -> filtering.Pagination
-	548, // 226: mealplanning.SearchForValidIngredientGroupsResponse.results:type_name -> mealplanning.ValidIngredientGroup
-	561, // 227: mealplanning.SearchForValidIngredientStatesRequest.filter:type_name -> filtering.QueryFilter
-	546, // 228: mealplanning.SearchForValidIngredientStatesResponse.response_details:type_name -> common.ResponseDetails
-	562, // 229: mealplanning.SearchForValidIngredientStatesResponse.pagination:type_name -> filtering.Pagination
-	552, // 230: mealplanning.SearchForValidIngredientStatesResponse.results:type_name -> mealplanning.ValidIngredientState
-	561, // 231: mealplanning.SearchForValidIngredientsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 232: mealplanning.SearchForValidIngredientsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 233: mealplanning.SearchForValidIngredientsResponse.pagination:type_name -> filtering.Pagination
-	547, // 234: mealplanning.SearchForValidIngredientsResponse.results:type_name -> mealplanning.ValidIngredient
-	561, // 235: mealplanning.SearchForValidInstrumentsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 236: mealplanning.SearchForValidInstrumentsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 237: mealplanning.SearchForValidInstrumentsResponse.pagination:type_name -> filtering.Pagination
-	554, // 238: mealplanning.SearchForValidInstrumentsResponse.results:type_name -> mealplanning.ValidInstrument
-	561, // 239: mealplanning.SearchForValidInstrumentsNotOwnedByAccountRequest.filter:type_name -> filtering.QueryFilter
-	546, // 240: mealplanning.SearchForValidInstrumentsNotOwnedByAccountResponse.response_details:type_name -> common.ResponseDetails
-	562, // 241: mealplanning.SearchForValidInstrumentsNotOwnedByAccountResponse.pagination:type_name -> filtering.Pagination
-	554, // 242: mealplanning.SearchForValidInstrumentsNotOwnedByAccountResponse.results:type_name -> mealplanning.ValidInstrument
-	561, // 243: mealplanning.SearchForValidMeasurementUnitsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 244: mealplanning.SearchForValidMeasurementUnitsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 245: mealplanning.SearchForValidMeasurementUnitsResponse.pagination:type_name -> filtering.Pagination
-	555, // 246: mealplanning.SearchForValidMeasurementUnitsResponse.results:type_name -> mealplanning.ValidMeasurementUnit
-	561, // 247: mealplanning.SearchForValidPreparationsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 248: mealplanning.SearchForValidPreparationsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 249: mealplanning.SearchForValidPreparationsResponse.pagination:type_name -> filtering.Pagination
-	557, // 250: mealplanning.SearchForValidPreparationsResponse.results:type_name -> mealplanning.ValidPreparation
-	561, // 251: mealplanning.SearchForValidVesselsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 252: mealplanning.SearchForValidVesselsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 253: mealplanning.SearchForValidVesselsResponse.pagination:type_name -> filtering.Pagination
-	560, // 254: mealplanning.SearchForValidVesselsResponse.results:type_name -> mealplanning.ValidVessel
-	561, // 255: mealplanning.SearchValidIngredientsByPreparationRequest.filter:type_name -> filtering.QueryFilter
-	546, // 256: mealplanning.SearchValidIngredientsByPreparationResponse.response_details:type_name -> common.ResponseDetails
-	562, // 257: mealplanning.SearchValidIngredientsByPreparationResponse.pagination:type_name -> filtering.Pagination
-	547, // 258: mealplanning.SearchValidIngredientsByPreparationResponse.results:type_name -> mealplanning.ValidIngredient
-	561, // 259: mealplanning.SearchValidMeasurementUnitsByIngredientRequest.filter:type_name -> filtering.QueryFilter
-	546, // 260: mealplanning.SearchValidMeasurementUnitsByIngredientResponse.response_details:type_name -> common.ResponseDetails
-	562, // 261: mealplanning.SearchValidMeasurementUnitsByIngredientResponse.pagination:type_name -> filtering.Pagination
-	555, // 262: mealplanning.SearchValidMeasurementUnitsByIngredientResponse.results:type_name -> mealplanning.ValidMeasurementUnit
+	552, // 73: mealplanning.CreateValidVesselResponse.response_details:type_name -> common.ResponseDetails
+	566, // 74: mealplanning.CreateValidVesselResponse.result:type_name -> mealplanning.ValidVessel
+	552, // 75: mealplanning.GetRandomValidIngredientResponse.response_details:type_name -> common.ResponseDetails
+	553, // 76: mealplanning.GetRandomValidIngredientResponse.result:type_name -> mealplanning.ValidIngredient
+	552, // 77: mealplanning.GetRandomValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	560, // 78: mealplanning.GetRandomValidInstrumentResponse.result:type_name -> mealplanning.ValidInstrument
+	552, // 79: mealplanning.GetRandomValidPreparationResponse.response_details:type_name -> common.ResponseDetails
+	563, // 80: mealplanning.GetRandomValidPreparationResponse.result:type_name -> mealplanning.ValidPreparation
+	552, // 81: mealplanning.GetRandomValidVesselResponse.response_details:type_name -> common.ResponseDetails
+	566, // 82: mealplanning.GetRandomValidVesselResponse.result:type_name -> mealplanning.ValidVessel
+	552, // 83: mealplanning.GetValidIngredientResponse.response_details:type_name -> common.ResponseDetails
+	553, // 84: mealplanning.GetValidIngredientResponse.result:type_name -> mealplanning.ValidIngredient
+	552, // 85: mealplanning.GetValidIngredientGroupResponse.response_details:type_name -> common.ResponseDetails
+	554, // 86: mealplanning.GetValidIngredientGroupResponse.result:type_name -> mealplanning.ValidIngredientGroup
+	567, // 87: mealplanning.GetValidIngredientGroupsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 88: mealplanning.GetValidIngredientGroupsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 89: mealplanning.GetValidIngredientGroupsResponse.pagination:type_name -> filtering.Pagination
+	554, // 90: mealplanning.GetValidIngredientGroupsResponse.results:type_name -> mealplanning.ValidIngredientGroup
+	552, // 91: mealplanning.GetValidIngredientMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
+	555, // 92: mealplanning.GetValidIngredientMeasurementUnitResponse.result:type_name -> mealplanning.ValidIngredientMeasurementUnit
+	567, // 93: mealplanning.GetValidIngredientMeasurementUnitsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 94: mealplanning.GetValidIngredientMeasurementUnitsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 95: mealplanning.GetValidIngredientMeasurementUnitsResponse.pagination:type_name -> filtering.Pagination
+	555, // 96: mealplanning.GetValidIngredientMeasurementUnitsResponse.results:type_name -> mealplanning.ValidIngredientMeasurementUnit
+	567, // 97: mealplanning.GetValidIngredientMeasurementUnitsByIngredientRequest.filter:type_name -> filtering.QueryFilter
+	552, // 98: mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse.response_details:type_name -> common.ResponseDetails
+	568, // 99: mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse.pagination:type_name -> filtering.Pagination
+	555, // 100: mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse.results:type_name -> mealplanning.ValidIngredientMeasurementUnit
+	567, // 101: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest.filter:type_name -> filtering.QueryFilter
+	552, // 102: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
+	568, // 103: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse.pagination:type_name -> filtering.Pagination
+	555, // 104: mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse.results:type_name -> mealplanning.ValidIngredientMeasurementUnit
+	552, // 105: mealplanning.GetValidIngredientPreparationResponse.response_details:type_name -> common.ResponseDetails
+	556, // 106: mealplanning.GetValidIngredientPreparationResponse.result:type_name -> mealplanning.ValidIngredientPreparation
+	567, // 107: mealplanning.GetValidIngredientPreparationsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 108: mealplanning.GetValidIngredientPreparationsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 109: mealplanning.GetValidIngredientPreparationsResponse.pagination:type_name -> filtering.Pagination
+	556, // 110: mealplanning.GetValidIngredientPreparationsResponse.results:type_name -> mealplanning.ValidIngredientPreparation
+	567, // 111: mealplanning.GetValidIngredientPreparationsByIngredientRequest.filter:type_name -> filtering.QueryFilter
+	552, // 112: mealplanning.GetValidIngredientPreparationsByIngredientResponse.response_details:type_name -> common.ResponseDetails
+	568, // 113: mealplanning.GetValidIngredientPreparationsByIngredientResponse.pagination:type_name -> filtering.Pagination
+	556, // 114: mealplanning.GetValidIngredientPreparationsByIngredientResponse.results:type_name -> mealplanning.ValidIngredientPreparation
+	567, // 115: mealplanning.GetValidIngredientPreparationsByPreparationRequest.filter:type_name -> filtering.QueryFilter
+	552, // 116: mealplanning.GetValidIngredientPreparationsByPreparationResponse.response_details:type_name -> common.ResponseDetails
+	568, // 117: mealplanning.GetValidIngredientPreparationsByPreparationResponse.pagination:type_name -> filtering.Pagination
+	556, // 118: mealplanning.GetValidIngredientPreparationsByPreparationResponse.results:type_name -> mealplanning.ValidIngredientPreparation
+	552, // 119: mealplanning.GetValidPrepTaskConfigResponse.response_details:type_name -> common.ResponseDetails
+	557, // 120: mealplanning.GetValidPrepTaskConfigResponse.result:type_name -> mealplanning.ValidPrepTaskConfig
+	567, // 121: mealplanning.GetValidPrepTaskConfigsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 122: mealplanning.GetValidPrepTaskConfigsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 123: mealplanning.GetValidPrepTaskConfigsResponse.pagination:type_name -> filtering.Pagination
+	557, // 124: mealplanning.GetValidPrepTaskConfigsResponse.results:type_name -> mealplanning.ValidPrepTaskConfig
+	567, // 125: mealplanning.GetValidPrepTaskConfigsByIngredientRequest.filter:type_name -> filtering.QueryFilter
+	552, // 126: mealplanning.GetValidPrepTaskConfigsByIngredientResponse.response_details:type_name -> common.ResponseDetails
+	568, // 127: mealplanning.GetValidPrepTaskConfigsByIngredientResponse.pagination:type_name -> filtering.Pagination
+	557, // 128: mealplanning.GetValidPrepTaskConfigsByIngredientResponse.results:type_name -> mealplanning.ValidPrepTaskConfig
+	567, // 129: mealplanning.GetValidPrepTaskConfigsByPreparationRequest.filter:type_name -> filtering.QueryFilter
+	552, // 130: mealplanning.GetValidPrepTaskConfigsByPreparationResponse.response_details:type_name -> common.ResponseDetails
+	568, // 131: mealplanning.GetValidPrepTaskConfigsByPreparationResponse.pagination:type_name -> filtering.Pagination
+	557, // 132: mealplanning.GetValidPrepTaskConfigsByPreparationResponse.results:type_name -> mealplanning.ValidPrepTaskConfig
+	567, // 133: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationRequest.filter:type_name -> filtering.QueryFilter
+	552, // 134: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse.response_details:type_name -> common.ResponseDetails
+	568, // 135: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse.pagination:type_name -> filtering.Pagination
+	557, // 136: mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse.results:type_name -> mealplanning.ValidPrepTaskConfig
+	552, // 137: mealplanning.GetValidIngredientStateResponse.response_details:type_name -> common.ResponseDetails
+	558, // 138: mealplanning.GetValidIngredientStateResponse.result:type_name -> mealplanning.ValidIngredientState
+	552, // 139: mealplanning.GetValidIngredientStateIngredientResponse.response_details:type_name -> common.ResponseDetails
+	559, // 140: mealplanning.GetValidIngredientStateIngredientResponse.result:type_name -> mealplanning.ValidIngredientStateIngredient
+	567, // 141: mealplanning.GetValidIngredientStateIngredientsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 142: mealplanning.GetValidIngredientStateIngredientsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 143: mealplanning.GetValidIngredientStateIngredientsResponse.pagination:type_name -> filtering.Pagination
+	559, // 144: mealplanning.GetValidIngredientStateIngredientsResponse.results:type_name -> mealplanning.ValidIngredientStateIngredient
+	567, // 145: mealplanning.GetValidIngredientStateIngredientsByIngredientRequest.filter:type_name -> filtering.QueryFilter
+	552, // 146: mealplanning.GetValidIngredientStateIngredientsByIngredientResponse.response_details:type_name -> common.ResponseDetails
+	568, // 147: mealplanning.GetValidIngredientStateIngredientsByIngredientResponse.pagination:type_name -> filtering.Pagination
+	559, // 148: mealplanning.GetValidIngredientStateIngredientsByIngredientResponse.results:type_name -> mealplanning.ValidIngredientStateIngredient
+	567, // 149: mealplanning.GetValidIngredientStateIngredientsByIngredientStateRequest.filter:type_name -> filtering.QueryFilter
+	552, // 150: mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse.response_details:type_name -> common.ResponseDetails
+	568, // 151: mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse.pagination:type_name -> filtering.Pagination
+	559, // 152: mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse.results:type_name -> mealplanning.ValidIngredientStateIngredient
+	567, // 153: mealplanning.GetValidIngredientStatesRequest.filter:type_name -> filtering.QueryFilter
+	552, // 154: mealplanning.GetValidIngredientStatesResponse.response_details:type_name -> common.ResponseDetails
+	568, // 155: mealplanning.GetValidIngredientStatesResponse.pagination:type_name -> filtering.Pagination
+	558, // 156: mealplanning.GetValidIngredientStatesResponse.results:type_name -> mealplanning.ValidIngredientState
+	567, // 157: mealplanning.GetValidIngredientsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 158: mealplanning.GetValidIngredientsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 159: mealplanning.GetValidIngredientsResponse.pagination:type_name -> filtering.Pagination
+	553, // 160: mealplanning.GetValidIngredientsResponse.results:type_name -> mealplanning.ValidIngredient
+	552, // 161: mealplanning.GetValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	560, // 162: mealplanning.GetValidInstrumentResponse.result:type_name -> mealplanning.ValidInstrument
+	567, // 163: mealplanning.GetValidInstrumentsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 164: mealplanning.GetValidInstrumentsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 165: mealplanning.GetValidInstrumentsResponse.pagination:type_name -> filtering.Pagination
+	560, // 166: mealplanning.GetValidInstrumentsResponse.results:type_name -> mealplanning.ValidInstrument
+	552, // 167: mealplanning.GetValidMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
+	561, // 168: mealplanning.GetValidMeasurementUnitResponse.result:type_name -> mealplanning.ValidMeasurementUnit
+	552, // 169: mealplanning.GetValidMeasurementUnitConversionResponse.response_details:type_name -> common.ResponseDetails
+	562, // 170: mealplanning.GetValidMeasurementUnitConversionResponse.result:type_name -> mealplanning.ValidMeasurementUnitConversion
+	567, // 171: mealplanning.GetValidMeasurementUnitConversionsForUnitRequest.filter:type_name -> filtering.QueryFilter
+	552, // 172: mealplanning.GetValidMeasurementUnitConversionsForUnitResponse.response_details:type_name -> common.ResponseDetails
+	568, // 173: mealplanning.GetValidMeasurementUnitConversionsForUnitResponse.pagination:type_name -> filtering.Pagination
+	562, // 174: mealplanning.GetValidMeasurementUnitConversionsForUnitResponse.results:type_name -> mealplanning.ValidMeasurementUnitConversion
+	552, // 175: mealplanning.GetValidMeasurementUnitConversionsForIngredientsResponse.response_details:type_name -> common.ResponseDetails
+	562, // 176: mealplanning.GetValidMeasurementUnitConversionsForIngredientsResponse.results:type_name -> mealplanning.ValidMeasurementUnitConversion
+	552, // 177: mealplanning.GetMeasurementUnitConversionMismatchesResponse.response_details:type_name -> common.ResponseDetails
+	569, // 178: mealplanning.GetMeasurementUnitConversionMismatchesResponse.mismatches:type_name -> mealplanning.MeasurementUnitConversionMismatch
+	567, // 179: mealplanning.GetValidMeasurementUnitsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 180: mealplanning.GetValidMeasurementUnitsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 181: mealplanning.GetValidMeasurementUnitsResponse.pagination:type_name -> filtering.Pagination
+	561, // 182: mealplanning.GetValidMeasurementUnitsResponse.results:type_name -> mealplanning.ValidMeasurementUnit
+	552, // 183: mealplanning.GetValidPreparationResponse.response_details:type_name -> common.ResponseDetails
+	563, // 184: mealplanning.GetValidPreparationResponse.result:type_name -> mealplanning.ValidPreparation
+	552, // 185: mealplanning.GetValidPreparationInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	564, // 186: mealplanning.GetValidPreparationInstrumentResponse.result:type_name -> mealplanning.ValidPreparationInstrument
+	567, // 187: mealplanning.GetValidPreparationInstrumentsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 188: mealplanning.GetValidPreparationInstrumentsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 189: mealplanning.GetValidPreparationInstrumentsResponse.pagination:type_name -> filtering.Pagination
+	564, // 190: mealplanning.GetValidPreparationInstrumentsResponse.results:type_name -> mealplanning.ValidPreparationInstrument
+	567, // 191: mealplanning.GetValidPreparationInstrumentsByInstrumentRequest.filter:type_name -> filtering.QueryFilter
+	552, // 192: mealplanning.GetValidPreparationInstrumentsByInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	568, // 193: mealplanning.GetValidPreparationInstrumentsByInstrumentResponse.pagination:type_name -> filtering.Pagination
+	564, // 194: mealplanning.GetValidPreparationInstrumentsByInstrumentResponse.results:type_name -> mealplanning.ValidPreparationInstrument
+	567, // 195: mealplanning.GetValidPreparationInstrumentsByPreparationRequest.filter:type_name -> filtering.QueryFilter
+	552, // 196: mealplanning.GetValidPreparationInstrumentsByPreparationResponse.response_details:type_name -> common.ResponseDetails
+	568, // 197: mealplanning.GetValidPreparationInstrumentsByPreparationResponse.pagination:type_name -> filtering.Pagination
+	564, // 198: mealplanning.GetValidPreparationInstrumentsByPreparationResponse.results:type_name -> mealplanning.ValidPreparationInstrument
+	552, // 199: mealplanning.GetValidPreparationVesselResponse.response_details:type_name -> common.ResponseDetails
+	565, // 200: mealplanning.GetValidPreparationVesselResponse.result:type_name -> mealplanning.ValidPreparationVessel
+	567, // 201: mealplanning.GetValidPreparationVesselsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 202: mealplanning.GetValidPreparationVesselsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 203: mealplanning.GetValidPreparationVesselsResponse.pagination:type_name -> filtering.Pagination
+	565, // 204: mealplanning.GetValidPreparationVesselsResponse.results:type_name -> mealplanning.ValidPreparationVessel
+	567, // 205: mealplanning.GetValidPreparationVesselsByPreparationRequest.filter:type_name -> filtering.QueryFilter
+	552, // 206: mealplanning.GetValidPreparationVesselsByPreparationResponse.response_details:type_name -> common.ResponseDetails
+	568, // 207: mealplanning.GetValidPreparationVesselsByPreparationResponse.pagination:type_name -> filtering.Pagination
+	565, // 208: mealplanning.GetValidPreparationVesselsByPreparationResponse.results:type_name -> mealplanning.ValidPreparationVessel
+	567, // 209: mealplanning.GetValidPreparationVesselsByVesselRequest.filter:type_name -> filtering.QueryFilter
+	552, // 210: mealplanning.GetValidPreparationVesselsByVesselResponse.response_details:type_name -> common.ResponseDetails
+	568, // 211: mealplanning.GetValidPreparationVesselsByVesselResponse.pagination:type_name -> filtering.Pagination
+	565, // 212: mealplanning.GetValidPreparationVesselsByVesselResponse.results:type_name -> mealplanning.ValidPreparationVessel
+	567, // 213: mealplanning.GetValidPreparationsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 214: mealplanning.GetValidPreparationsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 215: mealplanning.GetValidPreparationsResponse.pagination:type_name -> filtering.Pagination
+	563, // 216: mealplanning.GetValidPreparationsResponse.results:type_name -> mealplanning.ValidPreparation
+	552, // 217: mealplanning.GetValidVesselResponse.response_details:type_name -> common.ResponseDetails
+	566, // 218: mealplanning.GetValidVesselResponse.result:type_name -> mealplanning.ValidVessel
+	567, // 219: mealplanning.GetValidVesselsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 220: mealplanning.GetValidVesselsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 221: mealplanning.GetValidVesselsResponse.pagination:type_name -> filtering.Pagination
+	566, // 222: mealplanning.GetValidVesselsResponse.results:type_name -> mealplanning.ValidVessel
+	567, // 223: mealplanning.SearchForValidIngredientGroupsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 224: mealplanning.SearchForValidIngredientGroupsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 225: mealplanning.SearchForValidIngredientGroupsResponse.pagination:type_name -> filtering.Pagination
+	554, // 226: mealplanning.SearchForValidIngredientGroupsResponse.results:type_name -> mealplanning.ValidIngredientGroup
+	567, // 227: mealplanning.SearchForValidIngredientStatesRequest.filter:type_name -> filtering.QueryFilter
+	552, // 228: mealplanning.SearchForValidIngredientStatesResponse.response_details:type_name -> common.ResponseDetails
+	568, // 229: mealplanning.SearchForValidIngredientStatesResponse.pagination:type_name -> filtering.Pagination
+	558, // 230: mealplanning.SearchForValidIngredientStatesResponse.results:type_name -> mealplanning.ValidIngredientState
+	567, // 231: mealplanning.SearchForValidIngredientsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 232: mealplanning.SearchForValidIngredientsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 233: mealplanning.SearchForValidIngredientsResponse.pagination:type_name -> filtering.Pagination
+	553, // 234: mealplanning.SearchForValidIngredientsResponse.results:type_name -> mealplanning.ValidIngredient
+	567, // 235: mealplanning.SearchForValidInstrumentsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 236: mealplanning.SearchForValidInstrumentsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 237: mealplanning.SearchForValidInstrumentsResponse.pagination:type_name -> filtering.Pagination
+	560, // 238: mealplanning.SearchForValidInstrumentsResponse.results:type_name -> mealplanning.ValidInstrument
+	567, // 239: mealplanning.SearchForValidInstrumentsNotOwnedByAccountRequest.filter:type_name -> filtering.QueryFilter
+	552, // 240: mealplanning.SearchForValidInstrumentsNotOwnedByAccountResponse.response_details:type_name -> common.ResponseDetails
+	568, // 241: mealplanning.SearchForValidInstrumentsNotOwnedByAccountResponse.pagination:type_name -> filtering.Pagination
+	560, // 242: mealplanning.SearchForValidInstrumentsNotOwnedByAccountResponse.results:type_name -> mealplanning.ValidInstrument
+	567, // 243: mealplanning.SearchForValidMeasurementUnitsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 244: mealplanning.SearchForValidMeasurementUnitsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 245: mealplanning.SearchForValidMeasurementUnitsResponse.pagination:type_name -> filtering.Pagination
+	561, // 246: mealplanning.SearchForValidMeasurementUnitsResponse.results:type_name -> mealplanning.ValidMeasurementUnit
+	567, // 247: mealplanning.SearchForValidPreparationsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 248: mealplanning.SearchForValidPreparationsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 249: mealplanning.SearchForValidPreparationsResponse.pagination:type_name -> filtering.Pagination
+	563, // 250: mealplanning.SearchForValidPreparationsResponse.results:type_name -> mealplanning.ValidPreparation
+	567, // 251: mealplanning.SearchForValidVesselsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 252: mealplanning.SearchForValidVesselsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 253: mealplanning.SearchForValidVesselsResponse.pagination:type_name -> filtering.Pagination
+	566, // 254: mealplanning.SearchForValidVesselsResponse.results:type_name -> mealplanning.ValidVessel
+	567, // 255: mealplanning.SearchValidIngredientsByPreparationRequest.filter:type_name -> filtering.QueryFilter
+	552, // 256: mealplanning.SearchValidIngredientsByPreparationResponse.response_details:type_name -> common.ResponseDetails
+	568, // 257: mealplanning.SearchValidIngredientsByPreparationResponse.pagination:type_name -> filtering.Pagination
+	553, // 258: mealplanning.SearchValidIngredientsByPreparationResponse.results:type_name -> mealplanning.ValidIngredient
+	567, // 259: mealplanning.SearchValidMeasurementUnitsByIngredientRequest.filter:type_name -> filtering.QueryFilter
+	552, // 260: mealplanning.SearchValidMeasurementUnitsByIngredientResponse.response_details:type_name -> common.ResponseDetails
+	568, // 261: mealplanning.SearchValidMeasurementUnitsByIngredientResponse.pagination:type_name -> filtering.Pagination
+	561, // 262: mealplanning.SearchValidMeasurementUnitsByIngredientResponse.results:type_name -> mealplanning.ValidMeasurementUnit
 	14,  // 263: mealplanning.UpdateValidIngredientRequest.input:type_name -> mealplanning.ValidIngredientUpdateRequestInput
-	546, // 264: mealplanning.UpdateValidIngredientResponse.response_details:type_name -> common.ResponseDetails
-	547, // 265: mealplanning.UpdateValidIngredientResponse.result:type_name -> mealplanning.ValidIngredient
+	552, // 264: mealplanning.UpdateValidIngredientResponse.response_details:type_name -> common.ResponseDetails
+	553, // 265: mealplanning.UpdateValidIngredientResponse.result:type_name -> mealplanning.ValidIngredient
 	3,   // 266: mealplanning.UpdateValidIngredientGroupRequest.input:type_name -> mealplanning.ValidIngredientGroupUpdateRequestInput
-	546, // 267: mealplanning.UpdateValidIngredientGroupResponse.response_details:type_name -> common.ResponseDetails
-	548, // 268: mealplanning.UpdateValidIngredientGroupResponse.result:type_name -> mealplanning.ValidIngredientGroup
+	552, // 267: mealplanning.UpdateValidIngredientGroupResponse.response_details:type_name -> common.ResponseDetails
+	554, // 268: mealplanning.UpdateValidIngredientGroupResponse.result:type_name -> mealplanning.ValidIngredientGroup
 	5,   // 269: mealplanning.UpdateValidIngredientMeasurementUnitRequest.input:type_name -> mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput
-	546, // 270: mealplanning.UpdateValidIngredientMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
-	549, // 271: mealplanning.UpdateValidIngredientMeasurementUnitResponse.result:type_name -> mealplanning.ValidIngredientMeasurementUnit
+	552, // 270: mealplanning.UpdateValidIngredientMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
+	555, // 271: mealplanning.UpdateValidIngredientMeasurementUnitResponse.result:type_name -> mealplanning.ValidIngredientMeasurementUnit
 	7,   // 272: mealplanning.UpdateValidIngredientPreparationRequest.input:type_name -> mealplanning.ValidIngredientPreparationUpdateRequestInput
-	546, // 273: mealplanning.UpdateValidIngredientPreparationResponse.response_details:type_name -> common.ResponseDetails
-	550, // 274: mealplanning.UpdateValidIngredientPreparationResponse.result:type_name -> mealplanning.ValidIngredientPreparation
+	552, // 273: mealplanning.UpdateValidIngredientPreparationResponse.response_details:type_name -> common.ResponseDetails
+	556, // 274: mealplanning.UpdateValidIngredientPreparationResponse.result:type_name -> mealplanning.ValidIngredientPreparation
 	9,   // 275: mealplanning.UpdateValidPrepTaskConfigRequest.input:type_name -> mealplanning.ValidPrepTaskConfigUpdateRequestInput
-	546, // 276: mealplanning.UpdateValidPrepTaskConfigResponse.response_details:type_name -> common.ResponseDetails
-	551, // 277: mealplanning.UpdateValidPrepTaskConfigResponse.result:type_name -> mealplanning.ValidPrepTaskConfig
+	552, // 276: mealplanning.UpdateValidPrepTaskConfigResponse.response_details:type_name -> common.ResponseDetails
+	557, // 277: mealplanning.UpdateValidPrepTaskConfigResponse.result:type_name -> mealplanning.ValidPrepTaskConfig
 	13,  // 278: mealplanning.UpdateValidIngredientStateRequest.input:type_name -> mealplanning.ValidIngredientStateUpdateRequestInput
-	546, // 279: mealplanning.UpdateValidIngredientStateResponse.response_details:type_name -> common.ResponseDetails
-	552, // 280: mealplanning.UpdateValidIngredientStateResponse.result:type_name -> mealplanning.ValidIngredientState
+	552, // 279: mealplanning.UpdateValidIngredientStateResponse.response_details:type_name -> common.ResponseDetails
+	558, // 280: mealplanning.UpdateValidIngredientStateResponse.result:type_name -> mealplanning.ValidIngredientState
 	12,  // 281: mealplanning.UpdateValidIngredientStateIngredientRequest.input:type_name -> mealplanning.ValidIngredientStateIngredientUpdateRequestInput
-	546, // 282: mealplanning.UpdateValidIngredientStateIngredientResponse.response_details:type_name -> common.ResponseDetails
-	553, // 283: mealplanning.UpdateValidIngredientStateIngredientResponse.result:type_name -> mealplanning.ValidIngredientStateIngredient
+	552, // 282: mealplanning.UpdateValidIngredientStateIngredientResponse.response_details:type_name -> common.ResponseDetails
+	559, // 283: mealplanning.UpdateValidIngredientStateIngredientResponse.result:type_name -> mealplanning.ValidIngredientStateIngredient
 	16,  // 284: mealplanning.UpdateValidInstrumentRequest.input:type_name -> mealplanning.ValidInstrumentUpdateRequestInput
-	546, // 285: mealplanning.UpdateValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	554, // 286: mealplanning.UpdateValidInstrumentResponse.result:type_name -> mealplanning.ValidInstrument
+	552, // 285: mealplanning.UpdateValidInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	560, // 286: mealplanning.UpdateValidInstrumentResponse.result:type_name -> mealplanning.ValidInstrument
 	20,  // 287: mealplanning.UpdateValidMeasurementUnitRequest.input:type_name -> mealplanning.ValidMeasurementUnitUpdateRequestInput
-	546, // 288: mealplanning.UpdateValidMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
-	555, // 289: mealplanning.UpdateValidMeasurementUnitResponse.result:type_name -> mealplanning.ValidMeasurementUnit
+	552, // 288: mealplanning.UpdateValidMeasurementUnitResponse.response_details:type_name -> common.ResponseDetails
+	561, // 289: mealplanning.UpdateValidMeasurementUnitResponse.result:type_name -> mealplanning.ValidMeasurementUnit
 	18,  // 290: mealplanning.UpdateValidMeasurementUnitConversionRequest.input:type_name -> mealplanning.ValidMeasurementUnitConversionUpdateRequestInput
-	546, // 291: mealplanning.UpdateValidMeasurementUnitConversionResponse.response_details:type_name -> common.ResponseDetails
-	556, // 292: mealplanning.UpdateValidMeasurementUnitConversionResponse.result:type_name -> mealplanning.ValidMeasurementUnitConversion
+	552, // 291: mealplanning.UpdateValidMeasurementUnitConversionResponse.response_details:type_name -> common.ResponseDetails
+	562, // 292: mealplanning.UpdateValidMeasurementUnitConversionResponse.result:type_name -> mealplanning.ValidMeasurementUnitConversion
 	24,  // 293: mealplanning.UpdateValidPreparationRequest.input:type_name -> mealplanning.ValidPreparationUpdateRequestInput
-	546, // 294: mealplanning.UpdateValidPreparationResponse.response_details:type_name -> common.ResponseDetails
-	557, // 295: mealplanning.UpdateValidPreparationResponse.result:type_name -> mealplanning.ValidPreparation
+	552, // 294: mealplanning.UpdateValidPreparationResponse.response_details:type_name -> common.ResponseDetails
+	563, // 295: mealplanning.UpdateValidPreparationResponse.result:type_name -> mealplanning.ValidPreparation
 	23,  // 296: mealplanning.UpdateValidPreparationInstrumentRequest.input:type_name -> mealplanning.ValidPreparationInstrumentUpdateRequestInput
-	546, // 297: mealplanning.UpdateValidPreparationInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	558, // 298: mealplanning.UpdateValidPreparationInstrumentResponse.result:type_name -> mealplanning.ValidPreparationInstrument
+	552, // 297: mealplanning.UpdateValidPreparationInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	564, // 298: mealplanning.UpdateValidPreparationInstrumentResponse.result:type_name -> mealplanning.ValidPreparationInstrument
 	26,  // 299: mealplanning.UpdateValidPreparationVesselRequest.input:type_name -> mealplanning.ValidPreparationVesselUpdateRequestInput
-	546, // 300: mealplanning.UpdateValidPreparationVesselResponse.response_details:type_name -> common.ResponseDetails
-	559, // 301: mealplanning.UpdateValidPreparationVesselResponse.result:type_name -> mealplanning.ValidPreparationVessel
+	552, // 300: mealplanning.UpdateValidPreparationVesselResponse.response_details:type_name -> common.ResponseDetails
+	565, // 301: mealplanning.UpdateValidPreparationVesselResponse.result:type_name -> mealplanning.ValidPreparationVessel
 	28,  // 302: mealplanning.UpdateValidVesselRequest.input:type_name -> mealplanning.ValidVesselUpdateRequestInput
-	546, // 303: mealplanning.UpdateValidVesselResponse.response_details:type_name -> common.ResponseDetails
-	560, // 304: mealplanning.UpdateValidVesselResponse.result:type_name -> mealplanning.ValidVessel
-	546, // 305: mealplanning.ArchiveUserIngredientPreferenceResponse.response_details:type_name -> common.ResponseDetails
+	552, // 303: mealplanning.UpdateValidVesselResponse.response_details:type_name -> common.ResponseDetails
+	566, // 304: mealplanning.UpdateValidVesselResponse.result:type_name -> mealplanning.ValidVessel
+	552, // 305: mealplanning.ArchiveUserIngredientPreferenceResponse.response_details:type_name -> common.ResponseDetails
 	29,  // 306: mealplanning.CreateUserIngredientPreferenceRequest.input:type_name -> mealplanning.UserIngredientPreferenceCreationRequestInput
-	546, // 307: mealplanning.CreateUserIngredientPreferenceResponse.response_details:type_name -> common.ResponseDetails
-	564, // 308: mealplanning.CreateUserIngredientPreferenceResponse.created:type_name -> mealplanning.UserIngredientPreference
-	546, // 309: mealplanning.GetUserIngredientPreferenceResponse.response_details:type_name -> common.ResponseDetails
-	564, // 310: mealplanning.GetUserIngredientPreferenceResponse.result:type_name -> mealplanning.UserIngredientPreference
-	561, // 311: mealplanning.GetUserIngredientPreferencesRequest.filter:type_name -> filtering.QueryFilter
-	546, // 312: mealplanning.GetUserIngredientPreferencesResponse.response_details:type_name -> common.ResponseDetails
-	562, // 313: mealplanning.GetUserIngredientPreferencesResponse.pagination:type_name -> filtering.Pagination
-	564, // 314: mealplanning.GetUserIngredientPreferencesResponse.results:type_name -> mealplanning.UserIngredientPreference
+	552, // 307: mealplanning.CreateUserIngredientPreferenceResponse.response_details:type_name -> common.ResponseDetails
+	570, // 308: mealplanning.CreateUserIngredientPreferenceResponse.created:type_name -> mealplanning.UserIngredientPreference
+	552, // 309: mealplanning.GetUserIngredientPreferenceResponse.response_details:type_name -> common.ResponseDetails
+	570, // 310: mealplanning.GetUserIngredientPreferenceResponse.result:type_name -> mealplanning.UserIngredientPreference
+	567, // 311: mealplanning.GetUserIngredientPreferencesRequest.filter:type_name -> filtering.QueryFilter
+	552, // 312: mealplanning.GetUserIngredientPreferencesResponse.response_details:type_name -> common.ResponseDetails
+	568, // 313: mealplanning.GetUserIngredientPreferencesResponse.pagination:type_name -> filtering.Pagination
+	570, // 314: mealplanning.GetUserIngredientPreferencesResponse.results:type_name -> mealplanning.UserIngredientPreference
 	30,  // 315: mealplanning.UpdateUserIngredientPreferenceRequest.input:type_name -> mealplanning.UserIngredientPreferenceUpdateRequestInput
-	546, // 316: mealplanning.UpdateUserIngredientPreferenceResponse.response_details:type_name -> common.ResponseDetails
-	564, // 317: mealplanning.UpdateUserIngredientPreferenceResponse.updated:type_name -> mealplanning.UserIngredientPreference
-	565, // 318: mealplanning.RecipeCreationRequestInput.yields_component_type:type_name -> mealplanning.MealComponentType
-	538, // 319: mealplanning.RecipeCreationRequestInput.estimated_portions:type_name -> common.Float32RangeWithOptionalMax
+	552, // 316: mealplanning.UpdateUserIngredientPreferenceResponse.response_details:type_name -> common.ResponseDetails
+	570, // 317: mealplanning.UpdateUserIngredientPreferenceResponse.updated:type_name -> mealplanning.UserIngredientPreference
+	571, // 318: mealplanning.RecipeCreationRequestInput.yields_component_type:type_name -> mealplanning.MealComponentType
+	544, // 319: mealplanning.RecipeCreationRequestInput.estimated_portions:type_name -> common.Float32RangeWithOptionalMax
 	247, // 320: mealplanning.RecipeCreationRequestInput.prep_tasks:type_name -> mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput
 	254, // 321: mealplanning.RecipeCreationRequestInput.steps:type_name -> mealplanning.RecipeStepCreationRequestInput
 	240, // 322: mealplanning.RecipeCreationRequestInput.media:type_name -> mealplanning.RecipeMediaCreationRequestInput
-	537, // 323: mealplanning.RecipePrepTaskCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
-	540, // 324: mealplanning.RecipePrepTaskCreationRequestInput.time_buffer_before_recipe_in_seconds:type_name -> common.Uint32RangeWithOptionalMax
+	543, // 323: mealplanning.RecipePrepTaskCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	546, // 324: mealplanning.RecipePrepTaskCreationRequestInput.time_buffer_before_recipe_in_seconds:type_name -> common.Uint32RangeWithOptionalMax
 	243, // 325: mealplanning.RecipePrepTaskCreationRequestInput.recipe_steps:type_name -> mealplanning.RecipePrepTaskStepCreationRequestInput
-	537, // 326: mealplanning.RecipePrepTaskUpdateRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
-	541, // 327: mealplanning.RecipePrepTaskUpdateRequestInput.time_buffer_before_recipe_in_seconds:type_name -> common.Uint32RangeWithOptionalMaxUpdateRequestInput
+	543, // 326: mealplanning.RecipePrepTaskUpdateRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	547, // 327: mealplanning.RecipePrepTaskUpdateRequestInput.time_buffer_before_recipe_in_seconds:type_name -> common.Uint32RangeWithOptionalMaxUpdateRequestInput
 	244, // 328: mealplanning.RecipePrepTaskUpdateRequestInput.task_steps:type_name -> mealplanning.RecipePrepTaskStepUpdateRequestInput
-	537, // 329: mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
-	540, // 330: mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput.time_buffer_before_recipe_in_seconds:type_name -> common.Uint32RangeWithOptionalMax
+	543, // 329: mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	546, // 330: mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput.time_buffer_before_recipe_in_seconds:type_name -> common.Uint32RangeWithOptionalMax
 	245, // 331: mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput.recipe_steps:type_name -> mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput
-	566, // 332: mealplanning.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput.ingredients:type_name -> mealplanning.RecipeStepCompletionConditionIngredient
-	567, // 333: mealplanning.RecipeStepCreationRequestInput.estimated_time_in_seconds:type_name -> common.OptionalUint32Range
-	537, // 334: mealplanning.RecipeStepCreationRequestInput.temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	572, // 332: mealplanning.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput.ingredients:type_name -> mealplanning.RecipeStepCompletionConditionIngredient
+	573, // 333: mealplanning.RecipeStepCreationRequestInput.estimated_time_in_seconds:type_name -> common.OptionalUint32Range
+	543, // 334: mealplanning.RecipeStepCreationRequestInput.temperature_in_celsius:type_name -> common.OptionalFloat32Range
 	257, // 335: mealplanning.RecipeStepCreationRequestInput.instruments:type_name -> mealplanning.RecipeStepInstrumentCreationRequestInput
 	262, // 336: mealplanning.RecipeStepCreationRequestInput.vessels:type_name -> mealplanning.RecipeStepVesselCreationRequestInput
 	259, // 337: mealplanning.RecipeStepCreationRequestInput.products:type_name -> mealplanning.RecipeStepProductCreationRequestInput
 	255, // 338: mealplanning.RecipeStepCreationRequestInput.ingredients:type_name -> mealplanning.RecipeStepIngredientCreationRequestInput
 	250, // 339: mealplanning.RecipeStepCreationRequestInput.completion_conditions:type_name -> mealplanning.RecipeStepCompletionConditionCreationRequestInput
-	538, // 340: mealplanning.RecipeStepIngredientCreationRequestInput.quantity:type_name -> common.Float32RangeWithOptionalMax
-	539, // 341: mealplanning.RecipeStepIngredientUpdateRequestInput.quantity:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
-	540, // 342: mealplanning.RecipeStepInstrumentCreationRequestInput.quantity:type_name -> common.Uint32RangeWithOptionalMax
-	541, // 343: mealplanning.RecipeStepInstrumentUpdateRequestInput.quantity:type_name -> common.Uint32RangeWithOptionalMaxUpdateRequestInput
-	537, // 344: mealplanning.RecipeStepProductCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
-	567, // 345: mealplanning.RecipeStepProductCreationRequestInput.storage_duration_in_seconds:type_name -> common.OptionalUint32Range
-	537, // 346: mealplanning.RecipeStepProductCreationRequestInput.measurement_quantity:type_name -> common.OptionalFloat32Range
-	537, // 347: mealplanning.RecipeStepProductCreationRequestInput.item_quantity:type_name -> common.OptionalFloat32Range
-	568, // 348: mealplanning.RecipeStepProductCreationRequestInput.type:type_name -> mealplanning.RecipeStepProductType
-	568, // 349: mealplanning.RecipeStepProductUpdateRequestInput.type:type_name -> mealplanning.RecipeStepProductType
-	537, // 350: mealplanning.RecipeStepProductUpdateRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
-	567, // 351: mealplanning.RecipeStepProductUpdateRequestInput.storage_duration_in_seconds:type_name -> common.OptionalUint32Range
-	537, // 352: mealplanning.RecipeStepProductUpdateRequestInput.measurement_quantity:type_name -> common.OptionalFloat32Range
-	537, // 353: mealplanning.RecipeStepProductUpdateRequestInput.item_quantity:type_name -> common.OptionalFloat32Range
-	567, // 354: mealplanning.RecipeStepUpdateRequestInput.estimated_time_in_seconds:type_name -> common.OptionalUint32Range
-	537, // 355: mealplanning.RecipeStepUpdateRequestInput.temperature_in_celsius:type_name -> common.OptionalFloat32Range
-	557, // 356: mealplanning.RecipeStepUpdateRequestInput.preparation:type_name -> mealplanning.ValidPreparation
-	543, // 357: mealplanning.RecipeStepVesselCreationRequestInput.quantity:type_name -> common.Uint16RangeWithOptionalMax
-	544, // 358: mealplanning.RecipeStepVesselUpdateRequestInput.quantity:type_name -> common.Uint16RangeWithOptionalMaxUpdateRequestInput
-	539, // 359: mealplanning.RecipeUpdateRequestInput.estimated_portions:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
-	565, // 360: mealplanning.RecipeUpdateRequestInput.yields_component_type:type_name -> mealplanning.MealComponentType
-	546, // 361: mealplanning.ArchiveRecipeResponse.response_details:type_name -> common.ResponseDetails
-	546, // 362: mealplanning.ArchiveRecipePrepTaskResponse.response_details:type_name -> common.ResponseDetails
-	546, // 363: mealplanning.ArchiveRecipeRatingResponse.response_details:type_name -> common.ResponseDetails
-	546, // 364: mealplanning.ArchiveRecipeStepResponse.response_details:type_name -> common.ResponseDetails
-	546, // 365: mealplanning.ArchiveRecipeStepCompletionConditionResponse.response_details:type_name -> common.ResponseDetails
-	546, // 366: mealplanning.ArchiveRecipeStepIngredientResponse.response_details:type_name -> common.ResponseDetails
-	546, // 367: mealplanning.ArchiveRecipeStepInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	546, // 368: mealplanning.ArchiveRecipeStepProductResponse.response_details:type_name -> common.ResponseDetails
-	546, // 369: mealplanning.ArchiveRecipeStepVesselResponse.response_details:type_name -> common.ResponseDetails
-	546, // 370: mealplanning.CloneRecipeResponse.response_details:type_name -> common.ResponseDetails
-	569, // 371: mealplanning.CloneRecipeResponse.cloned:type_name -> mealplanning.Recipe
+	544, // 340: mealplanning.RecipeStepIngredientCreationRequestInput.quantity:type_name -> common.Float32RangeWithOptionalMax
+	545, // 341: mealplanning.RecipeStepIngredientUpdateRequestInput.quantity:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
+	546, // 342: mealplanning.RecipeStepInstrumentCreationRequestInput.quantity:type_name -> common.Uint32RangeWithOptionalMax
+	547, // 343: mealplanning.RecipeStepInstrumentUpdateRequestInput.quantity:type_name -> common.Uint32RangeWithOptionalMaxUpdateRequestInput
+	543, // 344: mealplanning.RecipeStepProductCreationRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	573, // 345: mealplanning.RecipeStepProductCreationRequestInput.storage_duration_in_seconds:type_name -> common.OptionalUint32Range
+	543, // 346: mealplanning.RecipeStepProductCreationRequestInput.measurement_quantity:type_name -> common.OptionalFloat32Range
+	543, // 347: mealplanning.RecipeStepProductCreationRequestInput.item_quantity:type_name -> common.OptionalFloat32Range
+	574, // 348: mealplanning.RecipeStepProductCreationRequestInput.type:type_name -> mealplanning.RecipeStepProductType
+	574, // 349: mealplanning.RecipeStepProductUpdateRequestInput.type:type_name -> mealplanning.RecipeStepProductType
+	543, // 350: mealplanning.RecipeStepProductUpdateRequestInput.storage_temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	573, // 351: mealplanning.RecipeStepProductUpdateRequestInput.storage_duration_in_seconds:type_name -> common.OptionalUint32Range
+	543, // 352: mealplanning.RecipeStepProductUpdateRequestInput.measurement_quantity:type_name -> common.OptionalFloat32Range
+	543, // 353: mealplanning.RecipeStepProductUpdateRequestInput.item_quantity:type_name -> common.OptionalFloat32Range
+	573, // 354: mealplanning.RecipeStepUpdateRequestInput.estimated_time_in_seconds:type_name -> common.OptionalUint32Range
+	543, // 355: mealplanning.RecipeStepUpdateRequestInput.temperature_in_celsius:type_name -> common.OptionalFloat32Range
+	563, // 356: mealplanning.RecipeStepUpdateRequestInput.preparation:type_name -> mealplanning.ValidPreparation
+	549, // 357: mealplanning.RecipeStepVesselCreationRequestInput.quantity:type_name -> common.Uint16RangeWithOptionalMax
+	550, // 358: mealplanning.RecipeStepVesselUpdateRequestInput.quantity:type_name -> common.Uint16RangeWithOptionalMaxUpdateRequestInput
+	545, // 359: mealplanning.RecipeUpdateRequestInput.estimated_portions:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
+	571, // 360: mealplanning.RecipeUpdateRequestInput.yields_component_type:type_name -> mealplanning.MealComponentType
+	552, // 361: mealplanning.ArchiveRecipeResponse.response_details:type_name -> common.ResponseDetails
+	552, // 362: mealplanning.ArchiveRecipePrepTaskResponse.response_details:type_name -> common.ResponseDetails
+	552, // 363: mealplanning.ArchiveRecipeRatingResponse.response_details:type_name -> common.ResponseDetails
+	552, // 364: mealplanning.ArchiveRecipeStepResponse.response_details:type_name -> common.ResponseDetails
+	552, // 365: mealplanning.ArchiveRecipeStepCompletionConditionResponse.response_details:type_name -> common.ResponseDetails
+	552, // 366: mealplanning.ArchiveRecipeStepIngredientResponse.response_details:type_name -> common.ResponseDetails
+	552, // 367: mealplanning.ArchiveRecipeStepInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	552, // 368: mealplanning.ArchiveRecipeStepProductResponse.response_details:type_name -> common.ResponseDetails
+	552, // 369: mealplanning.ArchiveRecipeStepVesselResponse.response_details:type_name -> common.ResponseDetails
+	552, // 370: mealplanning.CloneRecipeResponse.response_details:type_name -> common.ResponseDetails
+	575, // 371: mealplanning.CloneRecipeResponse.cloned:type_name -> mealplanning.Recipe
 	239, // 372: mealplanning.CreateRecipeRequest.input:type_name -> mealplanning.RecipeCreationRequestInput
-	546, // 373: mealplanning.CreateRecipeResponse.response_details:type_name -> common.ResponseDetails
-	569, // 374: mealplanning.CreateRecipeResponse.created:type_name -> mealplanning.Recipe
+	552, // 373: mealplanning.CreateRecipeResponse.response_details:type_name -> common.ResponseDetails
+	575, // 374: mealplanning.CreateRecipeResponse.created:type_name -> mealplanning.Recipe
 	242, // 375: mealplanning.CreateRecipePrepTaskRequest.input:type_name -> mealplanning.RecipePrepTaskCreationRequestInput
-	546, // 376: mealplanning.CreateRecipePrepTaskResponse.response_details:type_name -> common.ResponseDetails
-	570, // 377: mealplanning.CreateRecipePrepTaskResponse.created:type_name -> mealplanning.RecipePrepTask
+	552, // 376: mealplanning.CreateRecipePrepTaskResponse.response_details:type_name -> common.ResponseDetails
+	576, // 377: mealplanning.CreateRecipePrepTaskResponse.created:type_name -> mealplanning.RecipePrepTask
 	248, // 378: mealplanning.CreateRecipeRatingRequest.input:type_name -> mealplanning.RecipeRatingCreationRequestInput
-	546, // 379: mealplanning.CreateRecipeRatingResponse.response_details:type_name -> common.ResponseDetails
-	571, // 380: mealplanning.CreateRecipeRatingResponse.created:type_name -> mealplanning.RecipeRating
+	552, // 379: mealplanning.CreateRecipeRatingResponse.response_details:type_name -> common.ResponseDetails
+	577, // 380: mealplanning.CreateRecipeRatingResponse.created:type_name -> mealplanning.RecipeRating
 	254, // 381: mealplanning.CreateRecipeStepRequest.input:type_name -> mealplanning.RecipeStepCreationRequestInput
-	546, // 382: mealplanning.CreateRecipeStepResponse.response_details:type_name -> common.ResponseDetails
-	572, // 383: mealplanning.CreateRecipeStepResponse.created:type_name -> mealplanning.RecipeStep
+	552, // 382: mealplanning.CreateRecipeStepResponse.response_details:type_name -> common.ResponseDetails
+	578, // 383: mealplanning.CreateRecipeStepResponse.created:type_name -> mealplanning.RecipeStep
 	251, // 384: mealplanning.CreateRecipeStepCompletionConditionRequest.input:type_name -> mealplanning.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput
-	546, // 385: mealplanning.CreateRecipeStepCompletionConditionResponse.response_details:type_name -> common.ResponseDetails
-	573, // 386: mealplanning.CreateRecipeStepCompletionConditionResponse.created:type_name -> mealplanning.RecipeStepCompletionCondition
+	552, // 385: mealplanning.CreateRecipeStepCompletionConditionResponse.response_details:type_name -> common.ResponseDetails
+	579, // 386: mealplanning.CreateRecipeStepCompletionConditionResponse.created:type_name -> mealplanning.RecipeStepCompletionCondition
 	255, // 387: mealplanning.CreateRecipeStepIngredientRequest.input:type_name -> mealplanning.RecipeStepIngredientCreationRequestInput
-	546, // 388: mealplanning.CreateRecipeStepIngredientResponse.response_details:type_name -> common.ResponseDetails
-	574, // 389: mealplanning.CreateRecipeStepIngredientResponse.created:type_name -> mealplanning.RecipeStepIngredient
+	552, // 388: mealplanning.CreateRecipeStepIngredientResponse.response_details:type_name -> common.ResponseDetails
+	580, // 389: mealplanning.CreateRecipeStepIngredientResponse.created:type_name -> mealplanning.RecipeStepIngredient
 	257, // 390: mealplanning.CreateRecipeStepInstrumentRequest.input:type_name -> mealplanning.RecipeStepInstrumentCreationRequestInput
-	546, // 391: mealplanning.CreateRecipeStepInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	575, // 392: mealplanning.CreateRecipeStepInstrumentResponse.created:type_name -> mealplanning.RecipeStepInstrument
+	552, // 391: mealplanning.CreateRecipeStepInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	581, // 392: mealplanning.CreateRecipeStepInstrumentResponse.created:type_name -> mealplanning.RecipeStepInstrument
 	259, // 393: mealplanning.CreateRecipeStepProductRequest.input:type_name -> mealplanning.RecipeStepProductCreationRequestInput
-	546, // 394: mealplanning.CreateRecipeStepProductResponse.response_details:type_name -> common.ResponseDetails
-	576, // 395: mealplanning.CreateRecipeStepProductResponse.created:type_name -> mealplanning.RecipeStepProduct
+	552, // 394: mealplanning.CreateRecipeStepProductResponse.response_details:type_name -> common.ResponseDetails
+	582, // 395: mealplanning.CreateRecipeStepProductResponse.created:type_name -> mealplanning.RecipeStepProduct
 	262, // 396: mealplanning.CreateRecipeStepVesselRequest.input:type_name -> mealplanning.RecipeStepVesselCreationRequestInput
-	546, // 397: mealplanning.CreateRecipeStepVesselResponse.response_details:type_name -> common.ResponseDetails
-	577, // 398: mealplanning.CreateRecipeStepVesselResponse.created:type_name -> mealplanning.RecipeStepVessel
-	546, // 399: mealplanning.GetMermaidDiagramForMealResponse.response_details:type_name -> common.ResponseDetails
-	546, // 400: mealplanning.GetMermaidDiagramForRecipeResponse.response_details:type_name -> common.ResponseDetails
-	546, // 401: mealplanning.GetRecipeResponse.response_details:type_name -> common.ResponseDetails
-	569, // 402: mealplanning.GetRecipeResponse.result:type_name -> mealplanning.Recipe
-	546, // 403: mealplanning.EstimateRecipePrepTasksResponse.response_details:type_name -> common.ResponseDetails
-	578, // 404: mealplanning.EstimateRecipePrepTasksResponse.results:type_name -> mealplanning.MealPlanTask
-	546, // 405: mealplanning.GetRecipePrepTaskResponse.response_details:type_name -> common.ResponseDetails
-	570, // 406: mealplanning.GetRecipePrepTaskResponse.result:type_name -> mealplanning.RecipePrepTask
-	561, // 407: mealplanning.GetRecipePrepTasksRequest.filter:type_name -> filtering.QueryFilter
-	546, // 408: mealplanning.GetRecipePrepTasksResponse.response_details:type_name -> common.ResponseDetails
-	562, // 409: mealplanning.GetRecipePrepTasksResponse.pagination:type_name -> filtering.Pagination
-	570, // 410: mealplanning.GetRecipePrepTasksResponse.results:type_name -> mealplanning.RecipePrepTask
-	546, // 411: mealplanning.GetRecipeRatingResponse.response_details:type_name -> common.ResponseDetails
-	571, // 412: mealplanning.GetRecipeRatingResponse.result:type_name -> mealplanning.RecipeRating
-	561, // 413: mealplanning.GetRecipeRatingsForRecipeRequest.filter:type_name -> filtering.QueryFilter
-	546, // 414: mealplanning.GetRecipeRatingsForRecipeResponse.response_details:type_name -> common.ResponseDetails
-	562, // 415: mealplanning.GetRecipeRatingsForRecipeResponse.pagination:type_name -> filtering.Pagination
-	571, // 416: mealplanning.GetRecipeRatingsForRecipeResponse.results:type_name -> mealplanning.RecipeRating
-	546, // 417: mealplanning.GetRecipeStepResponse.response_details:type_name -> common.ResponseDetails
-	572, // 418: mealplanning.GetRecipeStepResponse.result:type_name -> mealplanning.RecipeStep
-	546, // 419: mealplanning.GetRecipeStepCompletionConditionResponse.response_details:type_name -> common.ResponseDetails
-	573, // 420: mealplanning.GetRecipeStepCompletionConditionResponse.result:type_name -> mealplanning.RecipeStepCompletionCondition
-	561, // 421: mealplanning.GetRecipeStepCompletionConditionsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 422: mealplanning.GetRecipeStepCompletionConditionsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 423: mealplanning.GetRecipeStepCompletionConditionsResponse.pagination:type_name -> filtering.Pagination
-	573, // 424: mealplanning.GetRecipeStepCompletionConditionsResponse.results:type_name -> mealplanning.RecipeStepCompletionCondition
-	546, // 425: mealplanning.GetRecipeStepIngredientResponse.response_details:type_name -> common.ResponseDetails
-	574, // 426: mealplanning.GetRecipeStepIngredientResponse.result:type_name -> mealplanning.RecipeStepIngredient
-	561, // 427: mealplanning.GetRecipeStepIngredientsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 428: mealplanning.GetRecipeStepIngredientsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 429: mealplanning.GetRecipeStepIngredientsResponse.pagination:type_name -> filtering.Pagination
-	574, // 430: mealplanning.GetRecipeStepIngredientsResponse.results:type_name -> mealplanning.RecipeStepIngredient
-	546, // 431: mealplanning.GetRecipeStepInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	575, // 432: mealplanning.GetRecipeStepInstrumentResponse.result:type_name -> mealplanning.RecipeStepInstrument
-	561, // 433: mealplanning.GetRecipeStepInstrumentsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 434: mealplanning.GetRecipeStepInstrumentsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 435: mealplanning.GetRecipeStepInstrumentsResponse.pagination:type_name -> filtering.Pagination
-	575, // 436: mealplanning.GetRecipeStepInstrumentsResponse.results:type_name -> mealplanning.RecipeStepInstrument
-	546, // 437: mealplanning.GetRecipeStepProductResponse.response_details:type_name -> common.ResponseDetails
-	576, // 438: mealplanning.GetRecipeStepProductResponse.result:type_name -> mealplanning.RecipeStepProduct
-	561, // 439: mealplanning.GetRecipeStepProductsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 440: mealplanning.GetRecipeStepProductsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 441: mealplanning.GetRecipeStepProductsResponse.pagination:type_name -> filtering.Pagination
-	576, // 442: mealplanning.GetRecipeStepProductsResponse.results:type_name -> mealplanning.RecipeStepProduct
-	546, // 443: mealplanning.GetRecipeStepVesselResponse.response_details:type_name -> common.ResponseDetails
-	577, // 444: mealplanning.GetRecipeStepVesselResponse.result:type_name -> mealplanning.RecipeStepVessel
-	561, // 445: mealplanning.GetRecipeStepVesselsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 446: mealplanning.GetRecipeStepVesselsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 447: mealplanning.GetRecipeStepVesselsResponse.pagination:type_name -> filtering.Pagination
-	577, // 448: mealplanning.GetRecipeStepVesselsResponse.results:type_name -> mealplanning.RecipeStepVessel
-	561, // 449: mealplanning.GetRecipeStepsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 450: mealplanning.GetRecipeStepsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 451: mealplanning.GetRecipeStepsResponse.pagination:type_name -> filtering.Pagination
-	572, // 452: mealplanning.GetRecipeStepsResponse.results:type_name -> mealplanning.RecipeStep
-	561, // 453: mealplanning.GetRecipesRequest.filter:type_name -> filtering.QueryFilter
-	546, // 454: mealplanning.GetRecipesResponse.response_details:type_name -> common.ResponseDetails
-	562, // 455: mealplanning.GetRecipesResponse.pagination:type_name -> filtering.Pagination
-	569, // 456: mealplanning.GetRecipesResponse.results:type_name -> mealplanning.Recipe
-	561, // 457: mealplanning.SearchForRecipesRequest.filter:type_name -> filtering.QueryFilter
-	546, // 458: mealplanning.SearchForRecipesResponse.response_details:type_name -> common.ResponseDetails
-	562, // 459: mealplanning.SearchForRecipesResponse.pagination:type_name -> filtering.Pagination
-	569, // 460: mealplanning.SearchForRecipesResponse.results:type_name -> mealplanning.Recipe
-	561, // 461: mealplanning.SearchForMealEligibleRecipesRequest.filter:type_name -> filtering.QueryFilter
-	546, // 462: mealplanning.SearchForMealEligibleRecipesResponse.response_details:type_name -> common.ResponseDetails
-	562, // 463: mealplanning.SearchForMealEligibleRecipesResponse.pagination:type_name -> filtering.Pagination
-	569, // 464: mealplanning.SearchForMealEligibleRecipesResponse.results:type_name -> mealplanning.Recipe
-	561, // 465: mealplanning.SearchForRecipesWithInstrumentOwnershipRequest.filter:type_name -> filtering.QueryFilter
-	546, // 466: mealplanning.SearchForRecipesWithInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
-	562, // 467: mealplanning.SearchForRecipesWithInstrumentOwnershipResponse.pagination:type_name -> filtering.Pagination
-	569, // 468: mealplanning.SearchForRecipesWithInstrumentOwnershipResponse.results:type_name -> mealplanning.Recipe
+	552, // 397: mealplanning.CreateRecipeStepVesselResponse.response_details:type_name -> common.ResponseDetails
+	583, // 398: mealplanning.CreateRecipeStepVesselResponse.created:type_name -> mealplanning.RecipeStepVessel
+	552, // 399: mealplanning.GetMermaidDiagramForMealResponse.response_details:type_name -> common.ResponseDetails
+	552, // 400: mealplanning.GetMermaidDiagramForRecipeResponse.response_details:type_name -> common.ResponseDetails
+	552, // 401: mealplanning.GetRecipeResponse.response_details:type_name -> common.ResponseDetails
+	575, // 402: mealplanning.GetRecipeResponse.result:type_name -> mealplanning.Recipe
+	552, // 403: mealplanning.EstimateRecipePrepTasksResponse.response_details:type_name -> common.ResponseDetails
+	584, // 404: mealplanning.EstimateRecipePrepTasksResponse.results:type_name -> mealplanning.MealPlanTask
+	552, // 405: mealplanning.GetRecipePrepTaskResponse.response_details:type_name -> common.ResponseDetails
+	576, // 406: mealplanning.GetRecipePrepTaskResponse.result:type_name -> mealplanning.RecipePrepTask
+	567, // 407: mealplanning.GetRecipePrepTasksRequest.filter:type_name -> filtering.QueryFilter
+	552, // 408: mealplanning.GetRecipePrepTasksResponse.response_details:type_name -> common.ResponseDetails
+	568, // 409: mealplanning.GetRecipePrepTasksResponse.pagination:type_name -> filtering.Pagination
+	576, // 410: mealplanning.GetRecipePrepTasksResponse.results:type_name -> mealplanning.RecipePrepTask
+	552, // 411: mealplanning.GetRecipeRatingResponse.response_details:type_name -> common.ResponseDetails
+	577, // 412: mealplanning.GetRecipeRatingResponse.result:type_name -> mealplanning.RecipeRating
+	567, // 413: mealplanning.GetRecipeRatingsForRecipeRequest.filter:type_name -> filtering.QueryFilter
+	552, // 414: mealplanning.GetRecipeRatingsForRecipeResponse.response_details:type_name -> common.ResponseDetails
+	568, // 415: mealplanning.GetRecipeRatingsForRecipeResponse.pagination:type_name -> filtering.Pagination
+	577, // 416: mealplanning.GetRecipeRatingsForRecipeResponse.results:type_name -> mealplanning.RecipeRating
+	552, // 417: mealplanning.GetRecipeStepResponse.response_details:type_name -> common.ResponseDetails
+	578, // 418: mealplanning.GetRecipeStepResponse.result:type_name -> mealplanning.RecipeStep
+	552, // 419: mealplanning.GetRecipeStepCompletionConditionResponse.response_details:type_name -> common.ResponseDetails
+	579, // 420: mealplanning.GetRecipeStepCompletionConditionResponse.result:type_name -> mealplanning.RecipeStepCompletionCondition
+	567, // 421: mealplanning.GetRecipeStepCompletionConditionsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 422: mealplanning.GetRecipeStepCompletionConditionsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 423: mealplanning.GetRecipeStepCompletionConditionsResponse.pagination:type_name -> filtering.Pagination
+	579, // 424: mealplanning.GetRecipeStepCompletionConditionsResponse.results:type_name -> mealplanning.RecipeStepCompletionCondition
+	552, // 425: mealplanning.GetRecipeStepIngredientResponse.response_details:type_name -> common.ResponseDetails
+	580, // 426: mealplanning.GetRecipeStepIngredientResponse.result:type_name -> mealplanning.RecipeStepIngredient
+	567, // 427: mealplanning.GetRecipeStepIngredientsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 428: mealplanning.GetRecipeStepIngredientsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 429: mealplanning.GetRecipeStepIngredientsResponse.pagination:type_name -> filtering.Pagination
+	580, // 430: mealplanning.GetRecipeStepIngredientsResponse.results:type_name -> mealplanning.RecipeStepIngredient
+	552, // 431: mealplanning.GetRecipeStepInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	581, // 432: mealplanning.GetRecipeStepInstrumentResponse.result:type_name -> mealplanning.RecipeStepInstrument
+	567, // 433: mealplanning.GetRecipeStepInstrumentsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 434: mealplanning.GetRecipeStepInstrumentsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 435: mealplanning.GetRecipeStepInstrumentsResponse.pagination:type_name -> filtering.Pagination
+	581, // 436: mealplanning.GetRecipeStepInstrumentsResponse.results:type_name -> mealplanning.RecipeStepInstrument
+	552, // 437: mealplanning.GetRecipeStepProductResponse.response_details:type_name -> common.ResponseDetails
+	582, // 438: mealplanning.GetRecipeStepProductResponse.result:type_name -> mealplanning.RecipeStepProduct
+	567, // 439: mealplanning.GetRecipeStepProductsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 440: mealplanning.GetRecipeStepProductsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 441: mealplanning.GetRecipeStepProductsResponse.pagination:type_name -> filtering.Pagination
+	582, // 442: mealplanning.GetRecipeStepProductsResponse.results:type_name -> mealplanning.RecipeStepProduct
+	552, // 443: mealplanning.GetRecipeStepVesselResponse.response_details:type_name -> common.ResponseDetails
+	583, // 444: mealplanning.GetRecipeStepVesselResponse.result:type_name -> mealplanning.RecipeStepVessel
+	567, // 445: mealplanning.GetRecipeStepVesselsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 446: mealplanning.GetRecipeStepVesselsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 447: mealplanning.GetRecipeStepVesselsResponse.pagination:type_name -> filtering.Pagination
+	583, // 448: mealplanning.GetRecipeStepVesselsResponse.results:type_name -> mealplanning.RecipeStepVessel
+	567, // 449: mealplanning.GetRecipeStepsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 450: mealplanning.GetRecipeStepsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 451: mealplanning.GetRecipeStepsResponse.pagination:type_name -> filtering.Pagination
+	578, // 452: mealplanning.GetRecipeStepsResponse.results:type_name -> mealplanning.RecipeStep
+	567, // 453: mealplanning.GetRecipesRequest.filter:type_name -> filtering.QueryFilter
+	552, // 454: mealplanning.GetRecipesResponse.response_details:type_name -> common.ResponseDetails
+	568, // 455: mealplanning.GetRecipesResponse.pagination:type_name -> filtering.Pagination
+	575, // 456: mealplanning.GetRecipesResponse.results:type_name -> mealplanning.Recipe
+	567, // 457: mealplanning.SearchForRecipesRequest.filter:type_name -> filtering.QueryFilter
+	552, // 458: mealplanning.SearchForRecipesResponse.response_details:type_name -> common.ResponseDetails
+	568, // 459: mealplanning.SearchForRecipesResponse.pagination:type_name -> filtering.Pagination
+	575, // 460: mealplanning.SearchForRecipesResponse.results:type_name -> mealplanning.Recipe
+	567, // 461: mealplanning.SearchForMealEligibleRecipesRequest.filter:type_name -> filtering.QueryFilter
+	552, // 462: mealplanning.SearchForMealEligibleRecipesResponse.response_details:type_name -> common.ResponseDetails
+	568, // 463: mealplanning.SearchForMealEligibleRecipesResponse.pagination:type_name -> filtering.Pagination
+	575, // 464: mealplanning.SearchForMealEligibleRecipesResponse.results:type_name -> mealplanning.Recipe
+	567, // 465: mealplanning.SearchForRecipesWithInstrumentOwnershipRequest.filter:type_name -> filtering.QueryFilter
+	552, // 466: mealplanning.SearchForRecipesWithInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
+	568, // 467: mealplanning.SearchForRecipesWithInstrumentOwnershipResponse.pagination:type_name -> filtering.Pagination
+	575, // 468: mealplanning.SearchForRecipesWithInstrumentOwnershipResponse.results:type_name -> mealplanning.Recipe
 	264, // 469: mealplanning.UpdateRecipeRequest.input:type_name -> mealplanning.RecipeUpdateRequestInput
-	546, // 470: mealplanning.UpdateRecipeResponse.response_details:type_name -> common.ResponseDetails
-	569, // 471: mealplanning.UpdateRecipeResponse.updated:type_name -> mealplanning.Recipe
-	546, // 472: mealplanning.UpdateRecipeStatusResponse.response_details:type_name -> common.ResponseDetails
-	569, // 473: mealplanning.UpdateRecipeStatusResponse.updated:type_name -> mealplanning.Recipe
+	552, // 470: mealplanning.UpdateRecipeResponse.response_details:type_name -> common.ResponseDetails
+	575, // 471: mealplanning.UpdateRecipeResponse.updated:type_name -> mealplanning.Recipe
+	552, // 472: mealplanning.UpdateRecipeStatusResponse.response_details:type_name -> common.ResponseDetails
+	575, // 473: mealplanning.UpdateRecipeStatusResponse.updated:type_name -> mealplanning.Recipe
 	246, // 474: mealplanning.UpdateRecipePrepTaskRequest.input:type_name -> mealplanning.RecipePrepTaskUpdateRequestInput
-	546, // 475: mealplanning.UpdateRecipePrepTaskResponse.response_details:type_name -> common.ResponseDetails
-	570, // 476: mealplanning.UpdateRecipePrepTaskResponse.updated:type_name -> mealplanning.RecipePrepTask
+	552, // 475: mealplanning.UpdateRecipePrepTaskResponse.response_details:type_name -> common.ResponseDetails
+	576, // 476: mealplanning.UpdateRecipePrepTaskResponse.updated:type_name -> mealplanning.RecipePrepTask
 	249, // 477: mealplanning.UpdateRecipeRatingRequest.input:type_name -> mealplanning.RecipeRatingUpdateRequestInput
-	546, // 478: mealplanning.UpdateRecipeRatingResponse.response_details:type_name -> common.ResponseDetails
-	571, // 479: mealplanning.UpdateRecipeRatingResponse.updated:type_name -> mealplanning.RecipeRating
+	552, // 478: mealplanning.UpdateRecipeRatingResponse.response_details:type_name -> common.ResponseDetails
+	577, // 479: mealplanning.UpdateRecipeRatingResponse.updated:type_name -> mealplanning.RecipeRating
 	261, // 480: mealplanning.UpdateRecipeStepRequest.input:type_name -> mealplanning.RecipeStepUpdateRequestInput
-	546, // 481: mealplanning.UpdateRecipeStepResponse.response_details:type_name -> common.ResponseDetails
-	572, // 482: mealplanning.UpdateRecipeStepResponse.updated:type_name -> mealplanning.RecipeStep
+	552, // 481: mealplanning.UpdateRecipeStepResponse.response_details:type_name -> common.ResponseDetails
+	578, // 482: mealplanning.UpdateRecipeStepResponse.updated:type_name -> mealplanning.RecipeStep
 	253, // 483: mealplanning.UpdateRecipeStepCompletionConditionRequest.input:type_name -> mealplanning.RecipeStepCompletionConditionUpdateRequestInput
-	546, // 484: mealplanning.UpdateRecipeStepCompletionConditionResponse.response_details:type_name -> common.ResponseDetails
-	573, // 485: mealplanning.UpdateRecipeStepCompletionConditionResponse.updated:type_name -> mealplanning.RecipeStepCompletionCondition
+	552, // 484: mealplanning.UpdateRecipeStepCompletionConditionResponse.response_details:type_name -> common.ResponseDetails
+	579, // 485: mealplanning.UpdateRecipeStepCompletionConditionResponse.updated:type_name -> mealplanning.RecipeStepCompletionCondition
 	256, // 486: mealplanning.UpdateRecipeStepIngredientRequest.input:type_name -> mealplanning.RecipeStepIngredientUpdateRequestInput
-	546, // 487: mealplanning.UpdateRecipeStepIngredientResponse.response_details:type_name -> common.ResponseDetails
-	574, // 488: mealplanning.UpdateRecipeStepIngredientResponse.updated:type_name -> mealplanning.RecipeStepIngredient
+	552, // 487: mealplanning.UpdateRecipeStepIngredientResponse.response_details:type_name -> common.ResponseDetails
+	580, // 488: mealplanning.UpdateRecipeStepIngredientResponse.updated:type_name -> mealplanning.RecipeStepIngredient
 	258, // 489: mealplanning.UpdateRecipeStepInstrumentRequest.input:type_name -> mealplanning.RecipeStepInstrumentUpdateRequestInput
-	546, // 490: mealplanning.UpdateRecipeStepInstrumentResponse.response_details:type_name -> common.ResponseDetails
-	575, // 491: mealplanning.UpdateRecipeStepInstrumentResponse.updated:type_name -> mealplanning.RecipeStepInstrument
+	552, // 490: mealplanning.UpdateRecipeStepInstrumentResponse.response_details:type_name -> common.ResponseDetails
+	581, // 491: mealplanning.UpdateRecipeStepInstrumentResponse.updated:type_name -> mealplanning.RecipeStepInstrument
 	260, // 492: mealplanning.UpdateRecipeStepProductRequest.input:type_name -> mealplanning.RecipeStepProductUpdateRequestInput
-	546, // 493: mealplanning.UpdateRecipeStepProductResponse.response_details:type_name -> common.ResponseDetails
-	576, // 494: mealplanning.UpdateRecipeStepProductResponse.updated:type_name -> mealplanning.RecipeStepProduct
+	552, // 493: mealplanning.UpdateRecipeStepProductResponse.response_details:type_name -> common.ResponseDetails
+	582, // 494: mealplanning.UpdateRecipeStepProductResponse.updated:type_name -> mealplanning.RecipeStepProduct
 	263, // 495: mealplanning.UpdateRecipeStepVesselRequest.input:type_name -> mealplanning.RecipeStepVesselUpdateRequestInput
-	546, // 496: mealplanning.UpdateRecipeStepVesselResponse.response_details:type_name -> common.ResponseDetails
-	577, // 497: mealplanning.UpdateRecipeStepVesselResponse.updated:type_name -> mealplanning.RecipeStepVessel
-	565, // 498: mealplanning.MealComponentCreationRequestInput.component_type:type_name -> mealplanning.MealComponentType
-	565, // 499: mealplanning.MealComponentUpdateRequestInput.component_type:type_name -> mealplanning.MealComponentType
-	538, // 500: mealplanning.MealCreationRequestInput.estimated_portions:type_name -> common.Float32RangeWithOptionalMax
+	552, // 496: mealplanning.UpdateRecipeStepVesselResponse.response_details:type_name -> common.ResponseDetails
+	583, // 497: mealplanning.UpdateRecipeStepVesselResponse.updated:type_name -> mealplanning.RecipeStepVessel
+	571, // 498: mealplanning.MealComponentCreationRequestInput.component_type:type_name -> mealplanning.MealComponentType
+	571, // 499: mealplanning.MealComponentUpdateRequestInput.component_type:type_name -> mealplanning.MealComponentType
+	544, // 500: mealplanning.MealCreationRequestInput.estimated_portions:type_name -> common.Float32RangeWithOptionalMax
 	373, // 501: mealplanning.MealCreationRequestInput.components:type_name -> mealplanning.MealComponentCreationRequestInput
-	579, // 502: mealplanning.MealPlanCreationRequestInput.voting_deadline:type_name -> google.protobuf.Timestamp
-	580, // 503: mealplanning.MealPlanCreationRequestInput.election_method:type_name -> mealplanning.MealPlanElectionMethod
+	585, // 502: mealplanning.MealPlanCreationRequestInput.voting_deadline:type_name -> google.protobuf.Timestamp
+	586, // 503: mealplanning.MealPlanCreationRequestInput.election_method:type_name -> mealplanning.MealPlanElectionMethod
 	377, // 504: mealplanning.MealPlanCreationRequestInput.events:type_name -> mealplanning.MealPlanEventCreationRequestInput
 	381, // 505: mealplanning.MealPlanCreationRequestInput.selections:type_name -> mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput
-	579, // 506: mealplanning.MealPlanEventCreationRequestInput.ends_at:type_name -> google.protobuf.Timestamp
-	579, // 507: mealplanning.MealPlanEventCreationRequestInput.starts_at:type_name -> google.protobuf.Timestamp
-	581, // 508: mealplanning.MealPlanEventCreationRequestInput.meal_name:type_name -> mealplanning.MealPlanEventName
+	585, // 506: mealplanning.MealPlanEventCreationRequestInput.ends_at:type_name -> google.protobuf.Timestamp
+	585, // 507: mealplanning.MealPlanEventCreationRequestInput.starts_at:type_name -> google.protobuf.Timestamp
+	587, // 508: mealplanning.MealPlanEventCreationRequestInput.meal_name:type_name -> mealplanning.MealPlanEventName
 	383, // 509: mealplanning.MealPlanEventCreationRequestInput.options:type_name -> mealplanning.MealPlanOptionCreationRequestInput
-	579, // 510: mealplanning.MealPlanEventUpdateRequestInput.starts_at:type_name -> google.protobuf.Timestamp
-	581, // 511: mealplanning.MealPlanEventUpdateRequestInput.meal_name:type_name -> mealplanning.MealPlanEventName
-	579, // 512: mealplanning.MealPlanEventUpdateRequestInput.ends_at:type_name -> google.protobuf.Timestamp
-	582, // 513: mealplanning.MealPlanGroceryListItemCreationRequestInput.status:type_name -> mealplanning.MealPlanGroceryListItemStatus
-	538, // 514: mealplanning.MealPlanGroceryListItemCreationRequestInput.quantity_needed:type_name -> common.Float32RangeWithOptionalMax
-	582, // 515: mealplanning.MealPlanGroceryListItemUpdateRequestInput.status:type_name -> mealplanning.MealPlanGroceryListItemStatus
-	539, // 516: mealplanning.MealPlanGroceryListItemUpdateRequestInput.quantity_needed:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
-	583, // 517: mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput.selection_type:type_name -> mealplanning.MealPlanRecipeOptionSelectionType
+	585, // 510: mealplanning.MealPlanEventUpdateRequestInput.starts_at:type_name -> google.protobuf.Timestamp
+	587, // 511: mealplanning.MealPlanEventUpdateRequestInput.meal_name:type_name -> mealplanning.MealPlanEventName
+	585, // 512: mealplanning.MealPlanEventUpdateRequestInput.ends_at:type_name -> google.protobuf.Timestamp
+	588, // 513: mealplanning.MealPlanGroceryListItemCreationRequestInput.status:type_name -> mealplanning.MealPlanGroceryListItemStatus
+	544, // 514: mealplanning.MealPlanGroceryListItemCreationRequestInput.quantity_needed:type_name -> common.Float32RangeWithOptionalMax
+	588, // 515: mealplanning.MealPlanGroceryListItemUpdateRequestInput.status:type_name -> mealplanning.MealPlanGroceryListItemStatus
+	545, // 516: mealplanning.MealPlanGroceryListItemUpdateRequestInput.quantity_needed:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
+	589, // 517: mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput.selection_type:type_name -> mealplanning.MealPlanRecipeOptionSelectionType
 	381, // 518: mealplanning.MealPlanOptionCreationRequestInput.selections:type_name -> mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput
-	584, // 519: mealplanning.MealPlanOptionVoteCreationRequestInput.votes:type_name -> mealplanning.MealPlanOptionVoteCreationInput
+	590, // 519: mealplanning.MealPlanOptionVoteCreationRequestInput.votes:type_name -> mealplanning.MealPlanOptionVoteCreationInput
 	389, // 520: mealplanning.MealListCreationRequestInput.items:type_name -> mealplanning.MealListItemCreationRequestInput
 	393, // 521: mealplanning.RecipeListCreationRequestInput.items:type_name -> mealplanning.RecipeListItemCreationRequestInput
-	585, // 522: mealplanning.MealPlanTaskCreationRequestInput.status:type_name -> mealplanning.MealPlanTaskStatus
-	585, // 523: mealplanning.MealPlanTaskStatusChangeRequestInput.status:type_name -> mealplanning.MealPlanTaskStatus
-	579, // 524: mealplanning.MealPlanUpdateRequestInput.voting_deadline:type_name -> google.protobuf.Timestamp
-	539, // 525: mealplanning.MealUpdateRequestInput.estimated_portions:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
+	591, // 522: mealplanning.MealPlanTaskCreationRequestInput.status:type_name -> mealplanning.MealPlanTaskStatus
+	591, // 523: mealplanning.MealPlanTaskStatusChangeRequestInput.status:type_name -> mealplanning.MealPlanTaskStatus
+	585, // 524: mealplanning.MealPlanUpdateRequestInput.voting_deadline:type_name -> google.protobuf.Timestamp
+	545, // 525: mealplanning.MealUpdateRequestInput.estimated_portions:type_name -> common.Float32RangeWithOptionalMaxUpdateRequestInput
 	374, // 526: mealplanning.MealUpdateRequestInput.components:type_name -> mealplanning.MealComponentUpdateRequestInput
-	546, // 527: mealplanning.ArchiveMealResponse.response_details:type_name -> common.ResponseDetails
-	546, // 528: mealplanning.ArchiveMealPlanResponse.response_details:type_name -> common.ResponseDetails
-	546, // 529: mealplanning.ArchiveMealPlanEventResponse.response_details:type_name -> common.ResponseDetails
-	546, // 530: mealplanning.ArchiveMealPlanGroceryListItemResponse.response_details:type_name -> common.ResponseDetails
-	546, // 531: mealplanning.ArchiveMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
-	546, // 532: mealplanning.ArchiveMealPlanOptionVoteResponse.response_details:type_name -> common.ResponseDetails
+	552, // 527: mealplanning.ArchiveMealResponse.response_details:type_name -> common.ResponseDetails
+	552, // 528: mealplanning.ArchiveMealPlanResponse.response_details:type_name -> common.ResponseDetails
+	552, // 529: mealplanning.ArchiveMealPlanEventResponse.response_details:type_name -> common.ResponseDetails
+	552, // 530: mealplanning.ArchiveMealPlanGroceryListItemResponse.response_details:type_name -> common.ResponseDetails
+	552, // 531: mealplanning.ArchiveMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
+	552, // 532: mealplanning.ArchiveMealPlanOptionVoteResponse.response_details:type_name -> common.ResponseDetails
 	375, // 533: mealplanning.CreateMealRequest.input:type_name -> mealplanning.MealCreationRequestInput
-	546, // 534: mealplanning.CreateMealResponse.response_details:type_name -> common.ResponseDetails
-	586, // 535: mealplanning.CreateMealResponse.created:type_name -> mealplanning.Meal
+	552, // 534: mealplanning.CreateMealResponse.response_details:type_name -> common.ResponseDetails
+	592, // 535: mealplanning.CreateMealResponse.created:type_name -> mealplanning.Meal
 	376, // 536: mealplanning.CreateMealPlanRequest.input:type_name -> mealplanning.MealPlanCreationRequestInput
-	546, // 537: mealplanning.CreateMealPlanResponse.response_details:type_name -> common.ResponseDetails
-	587, // 538: mealplanning.CreateMealPlanResponse.created:type_name -> mealplanning.MealPlan
+	552, // 537: mealplanning.CreateMealPlanResponse.response_details:type_name -> common.ResponseDetails
+	593, // 538: mealplanning.CreateMealPlanResponse.created:type_name -> mealplanning.MealPlan
 	377, // 539: mealplanning.CreateMealPlanEventRequest.input:type_name -> mealplanning.MealPlanEventCreationRequestInput
-	546, // 540: mealplanning.CreateMealPlanEventResponse.response_details:type_name -> common.ResponseDetails
-	588, // 541: mealplanning.CreateMealPlanEventResponse.created:type_name -> mealplanning.MealPlanEvent
+	552, // 540: mealplanning.CreateMealPlanEventResponse.response_details:type_name -> common.ResponseDetails
+	594, // 541: mealplanning.CreateMealPlanEventResponse.created:type_name -> mealplanning.MealPlanEvent
 	383, // 542: mealplanning.CreateMealPlanOptionRequest.input:type_name -> mealplanning.MealPlanOptionCreationRequestInput
-	546, // 543: mealplanning.CreateMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
-	589, // 544: mealplanning.CreateMealPlanOptionResponse.created:type_name -> mealplanning.MealPlanOption
+	552, // 543: mealplanning.CreateMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
+	595, // 544: mealplanning.CreateMealPlanOptionResponse.created:type_name -> mealplanning.MealPlanOption
 	385, // 545: mealplanning.CreateMealPlanOptionVoteRequest.input:type_name -> mealplanning.MealPlanOptionVoteCreationRequestInput
-	546, // 546: mealplanning.CreateMealPlanOptionVoteResponse.response_details:type_name -> common.ResponseDetails
-	590, // 547: mealplanning.CreateMealPlanOptionVoteResponse.created:type_name -> mealplanning.MealPlanOptionVote
+	552, // 546: mealplanning.CreateMealPlanOptionVoteResponse.response_details:type_name -> common.ResponseDetails
+	596, // 547: mealplanning.CreateMealPlanOptionVoteResponse.created:type_name -> mealplanning.MealPlanOptionVote
 	395, // 548: mealplanning.CreateMealPlanTaskRequest.input:type_name -> mealplanning.MealPlanTaskCreationRequestInput
-	546, // 549: mealplanning.CreateMealPlanTaskResponse.response_details:type_name -> common.ResponseDetails
-	578, // 550: mealplanning.CreateMealPlanTaskResponse.created:type_name -> mealplanning.MealPlanTask
-	546, // 551: mealplanning.FinalizeMealPlanResponse.response_details:type_name -> common.ResponseDetails
-	546, // 552: mealplanning.GetMealResponse.response_details:type_name -> common.ResponseDetails
-	586, // 553: mealplanning.GetMealResponse.result:type_name -> mealplanning.Meal
-	546, // 554: mealplanning.GetMealPlanResponse.response_details:type_name -> common.ResponseDetails
-	587, // 555: mealplanning.GetMealPlanResponse.result:type_name -> mealplanning.MealPlan
-	546, // 556: mealplanning.GetMealPlanEventResponse.response_details:type_name -> common.ResponseDetails
-	588, // 557: mealplanning.GetMealPlanEventResponse.result:type_name -> mealplanning.MealPlanEvent
-	561, // 558: mealplanning.GetMealPlanEventsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 559: mealplanning.GetMealPlanEventsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 560: mealplanning.GetMealPlanEventsResponse.pagination:type_name -> filtering.Pagination
-	588, // 561: mealplanning.GetMealPlanEventsResponse.results:type_name -> mealplanning.MealPlanEvent
-	546, // 562: mealplanning.GetMealPlanGroceryListItemResponse.response_details:type_name -> common.ResponseDetails
-	591, // 563: mealplanning.GetMealPlanGroceryListItemResponse.result:type_name -> mealplanning.MealPlanGroceryListItem
-	561, // 564: mealplanning.GetMealPlanGroceryListItemsForMealPlanRequest.filter:type_name -> filtering.QueryFilter
-	546, // 565: mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse.response_details:type_name -> common.ResponseDetails
-	562, // 566: mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse.pagination:type_name -> filtering.Pagination
-	591, // 567: mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse.results:type_name -> mealplanning.MealPlanGroceryListItem
-	546, // 568: mealplanning.GetMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
-	589, // 569: mealplanning.GetMealPlanOptionResponse.result:type_name -> mealplanning.MealPlanOption
-	546, // 570: mealplanning.GetMealPlanOptionVoteResponse.response_details:type_name -> common.ResponseDetails
-	590, // 571: mealplanning.GetMealPlanOptionVoteResponse.result:type_name -> mealplanning.MealPlanOptionVote
-	561, // 572: mealplanning.GetMealPlanOptionVotesRequest.filter:type_name -> filtering.QueryFilter
-	546, // 573: mealplanning.GetMealPlanOptionVotesResponse.response_details:type_name -> common.ResponseDetails
-	562, // 574: mealplanning.GetMealPlanOptionVotesResponse.pagination:type_name -> filtering.Pagination
-	590, // 575: mealplanning.GetMealPlanOptionVotesResponse.results:type_name -> mealplanning.MealPlanOptionVote
-	561, // 576: mealplanning.GetMealPlanOptionsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 577: mealplanning.GetMealPlanOptionsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 578: mealplanning.GetMealPlanOptionsResponse.pagination:type_name -> filtering.Pagination
-	589, // 579: mealplanning.GetMealPlanOptionsResponse.results:type_name -> mealplanning.MealPlanOption
-	546, // 580: mealplanning.GetMealPlanTaskResponse.response_details:type_name -> common.ResponseDetails
-	578, // 581: mealplanning.GetMealPlanTaskResponse.result:type_name -> mealplanning.MealPlanTask
-	561, // 582: mealplanning.GetMealPlanTasksRequest.filter:type_name -> filtering.QueryFilter
-	546, // 583: mealplanning.GetMealPlanTasksResponse.response_details:type_name -> common.ResponseDetails
-	562, // 584: mealplanning.GetMealPlanTasksResponse.pagination:type_name -> filtering.Pagination
-	578, // 585: mealplanning.GetMealPlanTasksResponse.results:type_name -> mealplanning.MealPlanTask
-	561, // 586: mealplanning.GetMealPlansForAccountRequest.filter:type_name -> filtering.QueryFilter
-	546, // 587: mealplanning.GetMealPlansForAccountResponse.response_details:type_name -> common.ResponseDetails
-	562, // 588: mealplanning.GetMealPlansForAccountResponse.pagination:type_name -> filtering.Pagination
-	587, // 589: mealplanning.GetMealPlansForAccountResponse.results:type_name -> mealplanning.MealPlan
-	561, // 590: mealplanning.GetMealsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 591: mealplanning.GetMealsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 592: mealplanning.GetMealsResponse.pagination:type_name -> filtering.Pagination
-	586, // 593: mealplanning.GetMealsResponse.results:type_name -> mealplanning.Meal
-	561, // 594: mealplanning.GetMealListsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 595: mealplanning.GetMealListsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 596: mealplanning.GetMealListsResponse.pagination:type_name -> filtering.Pagination
-	592, // 597: mealplanning.GetMealListsResponse.results:type_name -> mealplanning.MealList
+	552, // 549: mealplanning.CreateMealPlanTaskResponse.response_details:type_name -> common.ResponseDetails
+	584, // 550: mealplanning.CreateMealPlanTaskResponse.created:type_name -> mealplanning.MealPlanTask
+	552, // 551: mealplanning.FinalizeMealPlanResponse.response_details:type_name -> common.ResponseDetails
+	552, // 552: mealplanning.GetMealResponse.response_details:type_name -> common.ResponseDetails
+	592, // 553: mealplanning.GetMealResponse.result:type_name -> mealplanning.Meal
+	552, // 554: mealplanning.GetMealPlanResponse.response_details:type_name -> common.ResponseDetails
+	593, // 555: mealplanning.GetMealPlanResponse.result:type_name -> mealplanning.MealPlan
+	552, // 556: mealplanning.GetMealPlanEventResponse.response_details:type_name -> common.ResponseDetails
+	594, // 557: mealplanning.GetMealPlanEventResponse.result:type_name -> mealplanning.MealPlanEvent
+	567, // 558: mealplanning.GetMealPlanEventsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 559: mealplanning.GetMealPlanEventsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 560: mealplanning.GetMealPlanEventsResponse.pagination:type_name -> filtering.Pagination
+	594, // 561: mealplanning.GetMealPlanEventsResponse.results:type_name -> mealplanning.MealPlanEvent
+	552, // 562: mealplanning.GetMealPlanGroceryListItemResponse.response_details:type_name -> common.ResponseDetails
+	597, // 563: mealplanning.GetMealPlanGroceryListItemResponse.result:type_name -> mealplanning.MealPlanGroceryListItem
+	567, // 564: mealplanning.GetMealPlanGroceryListItemsForMealPlanRequest.filter:type_name -> filtering.QueryFilter
+	552, // 565: mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse.response_details:type_name -> common.ResponseDetails
+	568, // 566: mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse.pagination:type_name -> filtering.Pagination
+	597, // 567: mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse.results:type_name -> mealplanning.MealPlanGroceryListItem
+	552, // 568: mealplanning.GetMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
+	595, // 569: mealplanning.GetMealPlanOptionResponse.result:type_name -> mealplanning.MealPlanOption
+	552, // 570: mealplanning.GetMealPlanOptionVoteResponse.response_details:type_name -> common.ResponseDetails
+	596, // 571: mealplanning.GetMealPlanOptionVoteResponse.result:type_name -> mealplanning.MealPlanOptionVote
+	567, // 572: mealplanning.GetMealPlanOptionVotesRequest.filter:type_name -> filtering.QueryFilter
+	552, // 573: mealplanning.GetMealPlanOptionVotesResponse.response_details:type_name -> common.ResponseDetails
+	568, // 574: mealplanning.GetMealPlanOptionVotesResponse.pagination:type_name -> filtering.Pagination
+	596, // 575: mealplanning.GetMealPlanOptionVotesResponse.results:type_name -> mealplanning.MealPlanOptionVote
+	567, // 576: mealplanning.GetMealPlanOptionsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 577: mealplanning.GetMealPlanOptionsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 578: mealplanning.GetMealPlanOptionsResponse.pagination:type_name -> filtering.Pagination
+	595, // 579: mealplanning.GetMealPlanOptionsResponse.results:type_name -> mealplanning.MealPlanOption
+	552, // 580: mealplanning.GetMealPlanTaskResponse.response_details:type_name -> common.ResponseDetails
+	584, // 581: mealplanning.GetMealPlanTaskResponse.result:type_name -> mealplanning.MealPlanTask
+	567, // 582: mealplanning.GetMealPlanTasksRequest.filter:type_name -> filtering.QueryFilter
+	552, // 583: mealplanning.GetMealPlanTasksResponse.response_details:type_name -> common.ResponseDetails
+	568, // 584: mealplanning.GetMealPlanTasksResponse.pagination:type_name -> filtering.Pagination
+	584, // 585: mealplanning.GetMealPlanTasksResponse.results:type_name -> mealplanning.MealPlanTask
+	567, // 586: mealplanning.GetMealPlansForAccountRequest.filter:type_name -> filtering.QueryFilter
+	552, // 587: mealplanning.GetMealPlansForAccountResponse.response_details:type_name -> common.ResponseDetails
+	568, // 588: mealplanning.GetMealPlansForAccountResponse.pagination:type_name -> filtering.Pagination
+	593, // 589: mealplanning.GetMealPlansForAccountResponse.results:type_name -> mealplanning.MealPlan
+	567, // 590: mealplanning.GetMealsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 591: mealplanning.GetMealsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 592: mealplanning.GetMealsResponse.pagination:type_name -> filtering.Pagination
+	592, // 593: mealplanning.GetMealsResponse.results:type_name -> mealplanning.Meal
+	567, // 594: mealplanning.GetMealListsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 595: mealplanning.GetMealListsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 596: mealplanning.GetMealListsResponse.pagination:type_name -> filtering.Pagination
+	598, // 597: mealplanning.GetMealListsResponse.results:type_name -> mealplanning.MealList
 	387, // 598: mealplanning.CreateMealListRequest.input:type_name -> mealplanning.MealListCreationRequestInput
-	546, // 599: mealplanning.CreateMealListResponse.response_details:type_name -> common.ResponseDetails
-	592, // 600: mealplanning.CreateMealListResponse.created:type_name -> mealplanning.MealList
+	552, // 599: mealplanning.CreateMealListResponse.response_details:type_name -> common.ResponseDetails
+	598, // 600: mealplanning.CreateMealListResponse.created:type_name -> mealplanning.MealList
 	388, // 601: mealplanning.UpdateMealListRequest.input:type_name -> mealplanning.MealListUpdateRequestInput
-	546, // 602: mealplanning.UpdateMealListResponse.response_details:type_name -> common.ResponseDetails
-	592, // 603: mealplanning.UpdateMealListResponse.updated:type_name -> mealplanning.MealList
-	546, // 604: mealplanning.ArchiveMealListResponse.response_details:type_name -> common.ResponseDetails
-	561, // 605: mealplanning.GetMealListItemsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 606: mealplanning.GetMealListItemsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 607: mealplanning.GetMealListItemsResponse.pagination:type_name -> filtering.Pagination
-	593, // 608: mealplanning.GetMealListItemsResponse.results:type_name -> mealplanning.MealListItem
+	552, // 602: mealplanning.UpdateMealListResponse.response_details:type_name -> common.ResponseDetails
+	598, // 603: mealplanning.UpdateMealListResponse.updated:type_name -> mealplanning.MealList
+	552, // 604: mealplanning.ArchiveMealListResponse.response_details:type_name -> common.ResponseDetails
+	567, // 605: mealplanning.GetMealListItemsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 606: mealplanning.GetMealListItemsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 607: mealplanning.GetMealListItemsResponse.pagination:type_name -> filtering.Pagination
+	599, // 608: mealplanning.GetMealListItemsResponse.results:type_name -> mealplanning.MealListItem
 	389, // 609: mealplanning.CreateMealListItemRequest.input:type_name -> mealplanning.MealListItemCreationRequestInput
-	546, // 610: mealplanning.CreateMealListItemResponse.response_details:type_name -> common.ResponseDetails
-	593, // 611: mealplanning.CreateMealListItemResponse.created:type_name -> mealplanning.MealListItem
+	552, // 610: mealplanning.CreateMealListItemResponse.response_details:type_name -> common.ResponseDetails
+	599, // 611: mealplanning.CreateMealListItemResponse.created:type_name -> mealplanning.MealListItem
 	390, // 612: mealplanning.UpdateMealListItemRequest.input:type_name -> mealplanning.MealListItemUpdateRequestInput
-	546, // 613: mealplanning.UpdateMealListItemResponse.response_details:type_name -> common.ResponseDetails
-	593, // 614: mealplanning.UpdateMealListItemResponse.updated:type_name -> mealplanning.MealListItem
-	546, // 615: mealplanning.ArchiveMealListItemResponse.response_details:type_name -> common.ResponseDetails
-	561, // 616: mealplanning.GetRecipeListsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 617: mealplanning.GetRecipeListsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 618: mealplanning.GetRecipeListsResponse.pagination:type_name -> filtering.Pagination
-	594, // 619: mealplanning.GetRecipeListsResponse.results:type_name -> mealplanning.RecipeList
+	552, // 613: mealplanning.UpdateMealListItemResponse.response_details:type_name -> common.ResponseDetails
+	599, // 614: mealplanning.UpdateMealListItemResponse.updated:type_name -> mealplanning.MealListItem
+	552, // 615: mealplanning.ArchiveMealListItemResponse.response_details:type_name -> common.ResponseDetails
+	567, // 616: mealplanning.GetRecipeListsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 617: mealplanning.GetRecipeListsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 618: mealplanning.GetRecipeListsResponse.pagination:type_name -> filtering.Pagination
+	600, // 619: mealplanning.GetRecipeListsResponse.results:type_name -> mealplanning.RecipeList
 	391, // 620: mealplanning.CreateRecipeListRequest.input:type_name -> mealplanning.RecipeListCreationRequestInput
-	546, // 621: mealplanning.CreateRecipeListResponse.response_details:type_name -> common.ResponseDetails
-	594, // 622: mealplanning.CreateRecipeListResponse.created:type_name -> mealplanning.RecipeList
+	552, // 621: mealplanning.CreateRecipeListResponse.response_details:type_name -> common.ResponseDetails
+	600, // 622: mealplanning.CreateRecipeListResponse.created:type_name -> mealplanning.RecipeList
 	392, // 623: mealplanning.UpdateRecipeListRequest.input:type_name -> mealplanning.RecipeListUpdateRequestInput
-	546, // 624: mealplanning.UpdateRecipeListResponse.response_details:type_name -> common.ResponseDetails
-	594, // 625: mealplanning.UpdateRecipeListResponse.updated:type_name -> mealplanning.RecipeList
-	546, // 626: mealplanning.ArchiveRecipeListResponse.response_details:type_name -> common.ResponseDetails
-	561, // 627: mealplanning.GetRecipeListItemsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 628: mealplanning.GetRecipeListItemsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 629: mealplanning.GetRecipeListItemsResponse.pagination:type_name -> filtering.Pagination
-	595, // 630: mealplanning.GetRecipeListItemsResponse.results:type_name -> mealplanning.RecipeListItem
+	552, // 624: mealplanning.UpdateRecipeListResponse.response_details:type_name -> common.ResponseDetails
+	600, // 625: mealplanning.UpdateRecipeListResponse.updated:type_name -> mealplanning.RecipeList
+	552, // 626: mealplanning.ArchiveRecipeListResponse.response_details:type_name -> common.ResponseDetails
+	567, // 627: mealplanning.GetRecipeListItemsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 628: mealplanning.GetRecipeListItemsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 629: mealplanning.GetRecipeListItemsResponse.pagination:type_name -> filtering.Pagination
+	601, // 630: mealplanning.GetRecipeListItemsResponse.results:type_name -> mealplanning.RecipeListItem
 	393, // 631: mealplanning.CreateRecipeListItemRequest.input:type_name -> mealplanning.RecipeListItemCreationRequestInput
-	546, // 632: mealplanning.CreateRecipeListItemResponse.response_details:type_name -> common.ResponseDetails
-	595, // 633: mealplanning.CreateRecipeListItemResponse.created:type_name -> mealplanning.RecipeListItem
+	552, // 632: mealplanning.CreateRecipeListItemResponse.response_details:type_name -> common.ResponseDetails
+	601, // 633: mealplanning.CreateRecipeListItemResponse.created:type_name -> mealplanning.RecipeListItem
 	394, // 634: mealplanning.UpdateRecipeListItemRequest.input:type_name -> mealplanning.RecipeListItemUpdateRequestInput
-	546, // 635: mealplanning.UpdateRecipeListItemResponse.response_details:type_name -> common.ResponseDetails
-	595, // 636: mealplanning.UpdateRecipeListItemResponse.updated:type_name -> mealplanning.RecipeListItem
-	546, // 637: mealplanning.ArchiveRecipeListItemResponse.response_details:type_name -> common.ResponseDetails
-	546, // 638: mealplanning.RunFinalizeMealPlanWorkerResponse.response_details:type_name -> common.ResponseDetails
-	546, // 639: mealplanning.RunMealPlanGroceryListInitializerWorkerResponse.response_details:type_name -> common.ResponseDetails
-	546, // 640: mealplanning.RunMealPlanTaskCreatorWorkerResponse.response_details:type_name -> common.ResponseDetails
-	561, // 641: mealplanning.SearchForMealsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 642: mealplanning.SearchForMealsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 643: mealplanning.SearchForMealsResponse.pagination:type_name -> filtering.Pagination
-	586, // 644: mealplanning.SearchForMealsResponse.results:type_name -> mealplanning.Meal
+	552, // 635: mealplanning.UpdateRecipeListItemResponse.response_details:type_name -> common.ResponseDetails
+	601, // 636: mealplanning.UpdateRecipeListItemResponse.updated:type_name -> mealplanning.RecipeListItem
+	552, // 637: mealplanning.ArchiveRecipeListItemResponse.response_details:type_name -> common.ResponseDetails
+	552, // 638: mealplanning.RunFinalizeMealPlanWorkerResponse.response_details:type_name -> common.ResponseDetails
+	552, // 639: mealplanning.RunMealPlanGroceryListInitializerWorkerResponse.response_details:type_name -> common.ResponseDetails
+	552, // 640: mealplanning.RunMealPlanTaskCreatorWorkerResponse.response_details:type_name -> common.ResponseDetails
+	567, // 641: mealplanning.SearchForMealsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 642: mealplanning.SearchForMealsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 643: mealplanning.SearchForMealsResponse.pagination:type_name -> filtering.Pagination
+	592, // 644: mealplanning.SearchForMealsResponse.results:type_name -> mealplanning.Meal
 	397, // 645: mealplanning.UpdateMealPlanRequest.input:type_name -> mealplanning.MealPlanUpdateRequestInput
-	546, // 646: mealplanning.UpdateMealPlanResponse.response_details:type_name -> common.ResponseDetails
-	587, // 647: mealplanning.UpdateMealPlanResponse.updated:type_name -> mealplanning.MealPlan
+	552, // 646: mealplanning.UpdateMealPlanResponse.response_details:type_name -> common.ResponseDetails
+	593, // 647: mealplanning.UpdateMealPlanResponse.updated:type_name -> mealplanning.MealPlan
 	378, // 648: mealplanning.UpdateMealPlanEventRequest.input:type_name -> mealplanning.MealPlanEventUpdateRequestInput
-	546, // 649: mealplanning.UpdateMealPlanEventResponse.response_details:type_name -> common.ResponseDetails
-	588, // 650: mealplanning.UpdateMealPlanEventResponse.updated:type_name -> mealplanning.MealPlanEvent
-	546, // 651: mealplanning.SwapMealPlanEventsResponse.response_details:type_name -> common.ResponseDetails
+	552, // 649: mealplanning.UpdateMealPlanEventResponse.response_details:type_name -> common.ResponseDetails
+	594, // 650: mealplanning.UpdateMealPlanEventResponse.updated:type_name -> mealplanning.MealPlanEvent
+	552, // 651: mealplanning.SwapMealPlanEventsResponse.response_details:type_name -> common.ResponseDetails
 	380, // 652: mealplanning.UpdateMealPlanGroceryListItemRequest.input:type_name -> mealplanning.MealPlanGroceryListItemUpdateRequestInput
-	546, // 653: mealplanning.UpdateMealPlanGroceryListItemResponse.response_details:type_name -> common.ResponseDetails
-	591, // 654: mealplanning.UpdateMealPlanGroceryListItemResponse.updated:type_name -> mealplanning.MealPlanGroceryListItem
+	552, // 653: mealplanning.UpdateMealPlanGroceryListItemResponse.response_details:type_name -> common.ResponseDetails
+	597, // 654: mealplanning.UpdateMealPlanGroceryListItemResponse.updated:type_name -> mealplanning.MealPlanGroceryListItem
 	384, // 655: mealplanning.UpdateMealPlanOptionRequest.input:type_name -> mealplanning.MealPlanOptionUpdateRequestInput
-	546, // 656: mealplanning.UpdateMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
-	589, // 657: mealplanning.UpdateMealPlanOptionResponse.updated:type_name -> mealplanning.MealPlanOption
+	552, // 656: mealplanning.UpdateMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
+	595, // 657: mealplanning.UpdateMealPlanOptionResponse.updated:type_name -> mealplanning.MealPlanOption
 	386, // 658: mealplanning.UpdateMealPlanOptionVoteRequest.input:type_name -> mealplanning.MealPlanOptionVoteUpdateRequestInput
-	546, // 659: mealplanning.UpdateMealPlanOptionVoteResponse.response_details:type_name -> common.ResponseDetails
-	590, // 660: mealplanning.UpdateMealPlanOptionVoteResponse.updated:type_name -> mealplanning.MealPlanOptionVote
-	583, // 661: mealplanning.GetMealPlanRecipeOptionSelectionRequest.selection_type:type_name -> mealplanning.MealPlanRecipeOptionSelectionType
-	546, // 662: mealplanning.GetMealPlanRecipeOptionSelectionResponse.response_details:type_name -> common.ResponseDetails
-	596, // 663: mealplanning.GetMealPlanRecipeOptionSelectionResponse.result:type_name -> mealplanning.MealPlanRecipeOptionSelection
-	561, // 664: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionRequest.filter:type_name -> filtering.QueryFilter
-	546, // 665: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
-	562, // 666: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse.pagination:type_name -> filtering.Pagination
-	596, // 667: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse.results:type_name -> mealplanning.MealPlanRecipeOptionSelection
+	552, // 659: mealplanning.UpdateMealPlanOptionVoteResponse.response_details:type_name -> common.ResponseDetails
+	596, // 660: mealplanning.UpdateMealPlanOptionVoteResponse.updated:type_name -> mealplanning.MealPlanOptionVote
+	589, // 661: mealplanning.GetMealPlanRecipeOptionSelectionRequest.selection_type:type_name -> mealplanning.MealPlanRecipeOptionSelectionType
+	552, // 662: mealplanning.GetMealPlanRecipeOptionSelectionResponse.response_details:type_name -> common.ResponseDetails
+	602, // 663: mealplanning.GetMealPlanRecipeOptionSelectionResponse.result:type_name -> mealplanning.MealPlanRecipeOptionSelection
+	567, // 664: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionRequest.filter:type_name -> filtering.QueryFilter
+	552, // 665: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse.response_details:type_name -> common.ResponseDetails
+	568, // 666: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse.pagination:type_name -> filtering.Pagination
+	602, // 667: mealplanning.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse.results:type_name -> mealplanning.MealPlanRecipeOptionSelection
 	381, // 668: mealplanning.CreateMealPlanRecipeOptionSelectionRequest.input:type_name -> mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput
-	546, // 669: mealplanning.CreateMealPlanRecipeOptionSelectionResponse.response_details:type_name -> common.ResponseDetails
-	596, // 670: mealplanning.CreateMealPlanRecipeOptionSelectionResponse.created:type_name -> mealplanning.MealPlanRecipeOptionSelection
-	583, // 671: mealplanning.UpdateMealPlanRecipeOptionSelectionRequest.selection_type:type_name -> mealplanning.MealPlanRecipeOptionSelectionType
+	552, // 669: mealplanning.CreateMealPlanRecipeOptionSelectionResponse.response_details:type_name -> common.ResponseDetails
+	602, // 670: mealplanning.CreateMealPlanRecipeOptionSelectionResponse.created:type_name -> mealplanning.MealPlanRecipeOptionSelection
+	589, // 671: mealplanning.UpdateMealPlanRecipeOptionSelectionRequest.selection_type:type_name -> mealplanning.MealPlanRecipeOptionSelectionType
 	382, // 672: mealplanning.UpdateMealPlanRecipeOptionSelectionRequest.input:type_name -> mealplanning.MealPlanRecipeOptionSelectionUpdateRequestInput
-	546, // 673: mealplanning.UpdateMealPlanRecipeOptionSelectionResponse.response_details:type_name -> common.ResponseDetails
-	596, // 674: mealplanning.UpdateMealPlanRecipeOptionSelectionResponse.updated:type_name -> mealplanning.MealPlanRecipeOptionSelection
-	583, // 675: mealplanning.ArchiveMealPlanRecipeOptionSelectionRequest.selection_type:type_name -> mealplanning.MealPlanRecipeOptionSelectionType
-	546, // 676: mealplanning.ArchiveMealPlanRecipeOptionSelectionResponse.response_details:type_name -> common.ResponseDetails
+	552, // 673: mealplanning.UpdateMealPlanRecipeOptionSelectionResponse.response_details:type_name -> common.ResponseDetails
+	602, // 674: mealplanning.UpdateMealPlanRecipeOptionSelectionResponse.updated:type_name -> mealplanning.MealPlanRecipeOptionSelection
+	589, // 675: mealplanning.ArchiveMealPlanRecipeOptionSelectionRequest.selection_type:type_name -> mealplanning.MealPlanRecipeOptionSelectionType
+	552, // 676: mealplanning.ArchiveMealPlanRecipeOptionSelectionResponse.response_details:type_name -> common.ResponseDetails
 	396, // 677: mealplanning.UpdateMealPlanTaskStatusRequest.input:type_name -> mealplanning.MealPlanTaskStatusChangeRequestInput
-	546, // 678: mealplanning.UpdateMealPlanTaskStatusResponse.response_details:type_name -> common.ResponseDetails
-	578, // 679: mealplanning.UpdateMealPlanTaskStatusResponse.updated:type_name -> mealplanning.MealPlanTask
-	546, // 680: mealplanning.ArchiveAccountInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
+	552, // 678: mealplanning.UpdateMealPlanTaskStatusResponse.response_details:type_name -> common.ResponseDetails
+	584, // 679: mealplanning.UpdateMealPlanTaskStatusResponse.updated:type_name -> mealplanning.MealPlanTask
+	552, // 680: mealplanning.ArchiveAccountInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
 	531, // 681: mealplanning.CreateAccountInstrumentOwnershipRequest.input:type_name -> mealplanning.AccountInstrumentOwnershipCreationRequestInput
-	546, // 682: mealplanning.CreateAccountInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
-	597, // 683: mealplanning.CreateAccountInstrumentOwnershipResponse.created:type_name -> mealplanning.AccountInstrumentOwnership
-	561, // 684: mealplanning.GetAccountInstrumentOwnershipsRequest.filter:type_name -> filtering.QueryFilter
-	546, // 685: mealplanning.GetAccountInstrumentOwnershipsResponse.response_details:type_name -> common.ResponseDetails
-	562, // 686: mealplanning.GetAccountInstrumentOwnershipsResponse.pagination:type_name -> filtering.Pagination
-	597, // 687: mealplanning.GetAccountInstrumentOwnershipsResponse.results:type_name -> mealplanning.AccountInstrumentOwnership
-	546, // 688: mealplanning.GetAccountInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
-	597, // 689: mealplanning.GetAccountInstrumentOwnershipResponse.result:type_name -> mealplanning.AccountInstrumentOwnership
+	552, // 682: mealplanning.CreateAccountInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
+	603, // 683: mealplanning.CreateAccountInstrumentOwnershipResponse.created:type_name -> mealplanning.AccountInstrumentOwnership
+	567, // 684: mealplanning.GetAccountInstrumentOwnershipsRequest.filter:type_name -> filtering.QueryFilter
+	552, // 685: mealplanning.GetAccountInstrumentOwnershipsResponse.response_details:type_name -> common.ResponseDetails
+	568, // 686: mealplanning.GetAccountInstrumentOwnershipsResponse.pagination:type_name -> filtering.Pagination
+	603, // 687: mealplanning.GetAccountInstrumentOwnershipsResponse.results:type_name -> mealplanning.AccountInstrumentOwnership
+	552, // 688: mealplanning.GetAccountInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
+	603, // 689: mealplanning.GetAccountInstrumentOwnershipResponse.result:type_name -> mealplanning.AccountInstrumentOwnership
 	532, // 690: mealplanning.UpdateAccountInstrumentOwnershipRequest.input:type_name -> mealplanning.AccountInstrumentOwnershipUpdateRequestInput
-	546, // 691: mealplanning.UpdateAccountInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
-	597, // 692: mealplanning.UpdateAccountInstrumentOwnershipResponse.updated:type_name -> mealplanning.AccountInstrumentOwnership
-	598, // 693: mealplanning.UploadMealMediaRequest.upload:type_name -> uploaded_media.UploadRequest
-	598, // 694: mealplanning.UploadRecipeMediaRequest.upload:type_name -> uploaded_media.UploadRequest
-	546, // 695: mealplanning.UploadMealImageResponse.response_details:type_name -> common.ResponseDetails
-	546, // 696: mealplanning.UploadRecipeImageResponse.response_details:type_name -> common.ResponseDetails
-	697, // [697:697] is the sub-list for method output_type
-	697, // [697:697] is the sub-list for method input_type
-	697, // [697:697] is the sub-list for extension type_name
-	697, // [697:697] is the sub-list for extension extendee
-	0,   // [0:697] is the sub-list for field type_name
+	552, // 691: mealplanning.UpdateAccountInstrumentOwnershipResponse.response_details:type_name -> common.ResponseDetails
+	603, // 692: mealplanning.UpdateAccountInstrumentOwnershipResponse.updated:type_name -> mealplanning.AccountInstrumentOwnership
+	604, // 693: mealplanning.UploadMealMediaRequest.upload:type_name -> uploaded_media.UploadRequest
+	604, // 694: mealplanning.UploadRecipeMediaRequest.upload:type_name -> uploaded_media.UploadRequest
+	552, // 695: mealplanning.UploadMealImageResponse.response_details:type_name -> common.ResponseDetails
+	552, // 696: mealplanning.UploadRecipeImageResponse.response_details:type_name -> common.ResponseDetails
+	604, // 697: mealplanning.UploadPreparationMediaRequest.upload:type_name -> uploaded_media.UploadRequest
+	552, // 698: mealplanning.UploadPreparationMediaResponse.response_details:type_name -> common.ResponseDetails
+	604, // 699: mealplanning.UploadIngredientMediaRequest.upload:type_name -> uploaded_media.UploadRequest
+	552, // 700: mealplanning.UploadIngredientMediaResponse.response_details:type_name -> common.ResponseDetails
+	604, // 701: mealplanning.UploadRecipeStepImageRequest.upload:type_name -> uploaded_media.UploadRequest
+	552, // 702: mealplanning.UploadRecipeStepImageResponse.response_details:type_name -> common.ResponseDetails
+	703, // [703:703] is the sub-list for method output_type
+	703, // [703:703] is the sub-list for method input_type
+	703, // [703:703] is the sub-list for extension type_name
+	703, // [703:703] is the sub-list for extension extendee
+	0,   // [0:703] is the sub-list for field type_name
 }
 
 func init() { file_mealplanning_mealplanning_service_types_proto_init() }
@@ -39166,13 +39570,17 @@ func file_mealplanning_mealplanning_service_types_proto_init() {
 	file_mealplanning_mealplanning_service_types_proto_msgTypes[532].OneofWrappers = []any{}
 	file_mealplanning_mealplanning_service_types_proto_msgTypes[535].OneofWrappers = []any{}
 	file_mealplanning_mealplanning_service_types_proto_msgTypes[536].OneofWrappers = []any{}
+	file_mealplanning_mealplanning_service_types_proto_msgTypes[537].OneofWrappers = []any{}
+	file_mealplanning_mealplanning_service_types_proto_msgTypes[538].OneofWrappers = []any{}
+	file_mealplanning_mealplanning_service_types_proto_msgTypes[540].OneofWrappers = []any{}
+	file_mealplanning_mealplanning_service_types_proto_msgTypes[542].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mealplanning_mealplanning_service_types_proto_rawDesc), len(file_mealplanning_mealplanning_service_types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   537,
+			NumMessages:   543,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

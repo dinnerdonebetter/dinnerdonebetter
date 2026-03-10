@@ -17,6 +17,7 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_GetValidIngredients_FullMethodName:       {authorization.ReadValidIngredientsPermission},
 		mealplanningsvc.MealPlanningService_SearchForValidIngredients_FullMethodName: {authorization.ReadValidIngredientsPermission},
 		mealplanningsvc.MealPlanningService_UpdateValidIngredient_FullMethodName:     {authorization.UpdateValidIngredientsPermission},
+		mealplanningsvc.MealPlanningService_UploadIngredientMedia_FullMethodName:     {authorization.UpdateValidIngredientsPermission},
 		mealplanningsvc.MealPlanningService_ArchiveValidIngredient_FullMethodName:    {authorization.ArchiveValidIngredientsPermission},
 		mealplanningsvc.MealPlanningService_GetRandomValidIngredient_FullMethodName:  {authorization.ReadValidIngredientsPermission},
 
@@ -51,6 +52,7 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_GetValidPreparations_FullMethodName:       {authorization.ReadValidPreparationsPermission},
 		mealplanningsvc.MealPlanningService_SearchForValidPreparations_FullMethodName: {authorization.ReadValidPreparationsPermission},
 		mealplanningsvc.MealPlanningService_UpdateValidPreparation_FullMethodName:     {authorization.UpdateValidPreparationsPermission},
+		mealplanningsvc.MealPlanningService_UploadPreparationMedia_FullMethodName:     {authorization.UpdateValidPreparationsPermission},
 		mealplanningsvc.MealPlanningService_ArchiveValidPreparation_FullMethodName:    {authorization.ArchiveValidPreparationsPermission},
 		mealplanningsvc.MealPlanningService_GetRandomValidPreparation_FullMethodName:  {authorization.ReadValidPreparationsPermission},
 
@@ -227,11 +229,12 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_UpdateRecipeListItem_FullMethodName:  {authorization.UpdateRecipeListsPermission},
 
 		// RecipeSteps
-		mealplanningsvc.MealPlanningService_CreateRecipeStep_FullMethodName:  {authorization.CreateRecipeStepsPermission},
-		mealplanningsvc.MealPlanningService_GetRecipeSteps_FullMethodName:    {authorization.ReadRecipeStepsPermission},
-		mealplanningsvc.MealPlanningService_GetRecipeStep_FullMethodName:     {authorization.ReadRecipeStepsPermission},
-		mealplanningsvc.MealPlanningService_UpdateRecipeStep_FullMethodName:  {authorization.UpdateRecipeStepsPermission},
-		mealplanningsvc.MealPlanningService_ArchiveRecipeStep_FullMethodName: {authorization.ArchiveRecipeStepsPermission},
+		mealplanningsvc.MealPlanningService_CreateRecipeStep_FullMethodName:      {authorization.CreateRecipeStepsPermission},
+		mealplanningsvc.MealPlanningService_GetRecipeSteps_FullMethodName:        {authorization.ReadRecipeStepsPermission},
+		mealplanningsvc.MealPlanningService_GetRecipeStep_FullMethodName:         {authorization.ReadRecipeStepsPermission},
+		mealplanningsvc.MealPlanningService_UpdateRecipeStep_FullMethodName:      {authorization.UpdateRecipeStepsPermission},
+		mealplanningsvc.MealPlanningService_UploadRecipeStepImage_FullMethodName: {authorization.UpdateRecipeStepsPermission},
+		mealplanningsvc.MealPlanningService_ArchiveRecipeStep_FullMethodName:     {authorization.ArchiveRecipeStepsPermission},
 
 		// RecipeStepVessels
 		mealplanningsvc.MealPlanningService_CreateRecipeStepVessel_FullMethodName:  {authorization.CreateRecipeStepVesselsPermission},

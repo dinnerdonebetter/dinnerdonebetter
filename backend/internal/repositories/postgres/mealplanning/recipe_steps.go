@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
@@ -191,7 +192,26 @@ func (q *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	}
 	recipeStep.Media = recipeMedia
 
+	stepImages, err := q.enrichRecipeStepWithStepImages(ctx, recipeStep.ID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step images")
+	}
+	recipeStep.StepImages = stepImages
+
 	return recipeStep, nil
+}
+
+// enrichRecipeStepWithStepImages fetches step images for a recipe step and returns the uploaded media.
+func (q *repository) enrichRecipeStepWithStepImages(ctx context.Context, recipeStepID string) ([]*uploadedmedia.UploadedMedia, error) {
+	rows, err := q.GetRecipeStepImagesByStep(ctx, recipeStepID)
+	if err != nil || len(rows) == 0 {
+		return nil, err
+	}
+	ids := make([]string, len(rows))
+	for i, r := range rows {
+		ids[i] = r.UploadedMediaID
+	}
+	return q.GetUploadedMediaWithIDs(ctx, ids)
 }
 
 // getRecipeStepByID fetches a recipe step from the database.
@@ -326,6 +346,12 @@ func (q *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe media for recipe step")
 	}
 	recipeStep.Media = recipeMedia
+
+	stepImages, err := q.enrichRecipeStepWithStepImages(ctx, recipeStep.ID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step images")
+	}
+	recipeStep.StepImages = stepImages
 
 	return recipeStep, nil
 }

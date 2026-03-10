@@ -223,6 +223,12 @@ func (m *MockValidEnumerationsManager) ArchiveValidIngredient(ctx context.Contex
 	return returnValues.Error(0)
 }
 
+func (m *MockValidEnumerationsManager) AddIngredientMedia(ctx context.Context, validIngredientID, uploadedMediaID string, index int32) error {
+	returnValues := m.Called(ctx, validIngredientID, uploadedMediaID, index)
+
+	return returnValues.Error(0)
+}
+
 func (m *MockValidEnumerationsManager) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
 	returnValues := m.Called(ctx, preparationID, query, filter)
 
@@ -525,6 +531,12 @@ func (m *MockValidEnumerationsManager) UpdateValidPreparation(ctx context.Contex
 
 func (m *MockValidEnumerationsManager) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	returnValues := m.Called(ctx, validPreparationID)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockValidEnumerationsManager) AddPreparationMedia(ctx context.Context, validPreparationID string, forIngredientID *string, uploadedMediaID string, index int32) error {
+	returnValues := m.Called(ctx, validPreparationID, forIngredientID, uploadedMediaID, index)
 
 	return returnValues.Error(0)
 }
