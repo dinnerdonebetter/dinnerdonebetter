@@ -10,6 +10,7 @@ import SwiftUI
 
 struct PerformRecipeView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @State private var viewModel: PerformRecipeViewModel?
   @State private var isInstrumentsVesselsExpanded = false
   @State private var isIngredientsExpanded = false
@@ -50,7 +51,10 @@ struct PerformRecipeView: View {
             isLoading: viewModel.isLoading,
             loadingMessage: "Loading recipe...",
             error: viewModel.errorMessage,
-            onRetry: { await viewModel.loadRecipe() },
+            onRetry: {
+              eventReporterService.reporter.track(event: "perform_recipe_retry", properties: [:])
+              await viewModel.loadRecipe()
+            },
             content: {
               if let recipe = viewModel.recipe {
                 RecipePerformanceContentView(
@@ -77,6 +81,12 @@ struct PerformRecipeView: View {
       .onAppear {
         if viewModel == nil {
           viewModel = PerformRecipeViewModel(recipeID: recipeID, authManager: authManager)
+          eventReporterService.reporter.track(
+            event: "perform_recipe_started",
+            properties: [
+              "recipe_id": recipeID,
+              "from_prep_task": prepTaskContext != nil,
+            ])
           Task {
             await viewModel?.loadRecipe()
           }
@@ -134,4 +144,5 @@ struct PerformRecipeView: View {
 
   return PerformRecipeView(recipeID: "test-recipe")
     .environment(authManager)
+    .environment(EventReporterService())
 }

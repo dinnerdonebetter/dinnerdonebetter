@@ -12,6 +12,7 @@ import SwiftUI
 struct ContentView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(DeepLinkHandler.self) private var deepLinkHandler
+  @Environment(EventReporterService.self) private var eventReporterService
   @State private var showLogin: Bool = true
 
   // Invitation data from deep link
@@ -74,6 +75,7 @@ struct ContentView: View {
           onAccepted: {}
         )
         .environment(authManager)
+        .environment(eventReporterService)
       }
     )
   }
@@ -83,6 +85,9 @@ struct ContentView: View {
 
     switch destination {
     case .acceptInvitation(let invitationID, let token):
+      eventReporterService.reporter.track(
+        event: "invitation_deep_link_opened",
+        properties: ["invitation_id": invitationID])
       pendingInvitationID = invitationID
       pendingInvitationToken = token
       deepLinkHandler.clearPendingDestination()

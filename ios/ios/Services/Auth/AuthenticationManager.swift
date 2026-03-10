@@ -216,6 +216,14 @@ class AuthenticationManager: AuthenticationManaging {
               "accountID": mock.accountID,
             ]
           )
+          reporter.track(event: "login_succeeded", properties: [:])
+        } else if result.requiresTOTP {
+          AnalyticsConfiguration.provideEventReporter().track(
+            event: "login_2fa_required", properties: [:])
+        } else {
+          AnalyticsConfiguration.provideEventReporter().track(
+            event: "login_failed",
+            properties: ["error": result.error ?? "Unknown error"])
         }
       }
       if result.success {
@@ -276,7 +284,9 @@ class AuthenticationManager: AuthenticationManaging {
         let oauth2Result = await exchangeJWTForOAuth2Token(jwtToken: tokenResponse.accessToken)
         if !oauth2Result.success {
           print("⚠️ Failed to get OAuth2 token: \(oauth2Result.error ?? "Unknown error")")
-          // If OAuth2 token exchange fails, authentication is incomplete
+          let err = "Failed to complete authentication: \(oauth2Result.error ?? "Unknown error")"
+          AnalyticsConfiguration.provideEventReporter().track(
+            event: "login_failed", properties: ["error": err])
           await MainActor.run {
             self.isAuthenticated = false
             self.accessToken = ""
@@ -284,10 +294,7 @@ class AuthenticationManager: AuthenticationManaging {
             self.userID = ""
             self.accountID = ""
           }
-          return LoginResult(
-            success: false,
-            error: "Failed to complete authentication: \(oauth2Result.error ?? "Unknown error")",
-            requiresTOTP: false)
+          return LoginResult(success: false, error: err, requiresTOTP: false)
         } else {
           print("✅ OAuth2 token obtained successfully")
           await MainActor.run {
@@ -300,6 +307,7 @@ class AuthenticationManager: AuthenticationManaging {
                 "accountID": tokenResponse.accountID,
               ]
             )
+            reporter.track(event: "login_succeeded", properties: [:])
             DeviceTokenRegistrationService.shared.tryReportStoredToken()
           }
           await logInToRevenueCatIfNeeded()
@@ -311,6 +319,9 @@ class AuthenticationManager: AuthenticationManaging {
         return LoginResult(success: true, error: nil, requiresTOTP: false)
       } else {
         print("⚠️ Response received but no token result")
+        AnalyticsConfiguration.provideEventReporter().track(
+          event: "login_failed",
+          properties: ["error": "No token received from server"])
         return LoginResult(
           success: false, error: "No token received from server", requiresTOTP: false)
       }
@@ -322,27 +333,42 @@ class AuthenticationManager: AuthenticationManaging {
       let requiresTOTP = error.message.contains("TOTP code required")
 
       // Provide user-friendly error messages
+      let reporter = AnalyticsConfiguration.provideEventReporter()
       switch error.code {
       case .deadlineExceeded:
+        reporter.track(
+          event: "login_failed",
+          properties: ["error": "Request timed out. Please check your connection."])
         return LoginResult(
           success: false, error: "Request timed out. Please check your connection.",
           requiresTOTP: false)
       case .unavailable:
+        reporter.track(
+          event: "login_failed",
+          properties: ["error": "Server is unavailable. Please try again later."])
         return LoginResult(
           success: false, error: "Server is unavailable. Please try again later.",
           requiresTOTP: false)
       case .unauthenticated:
         if requiresTOTP {
+          reporter.track(event: "login_2fa_required", properties: [:])
           return LoginResult(
             success: false, error: "Please enter your 2FA code.", requiresTOTP: true)
         }
+        reporter.track(
+          event: "login_failed",
+          properties: ["error": "Invalid username or password."])
         return LoginResult(
           success: false, error: "Invalid username or password.", requiresTOTP: false)
       default:
         if requiresTOTP {
+          reporter.track(event: "login_2fa_required", properties: [:])
           return LoginResult(
             success: false, error: "Please enter your 2FA code.", requiresTOTP: true)
         }
+        reporter.track(
+          event: "login_failed",
+          properties: ["error": "Login failed: \(error.message)"])
         return LoginResult(
           success: false, error: "Login failed: \(error.message)", requiresTOTP: false)
       }
@@ -358,24 +384,29 @@ class AuthenticationManager: AuthenticationManaging {
       if nsError.domain == NSPOSIXErrorDomain {
         switch nsError.code {
         case 61:  // ECONNREFUSED
-          return LoginResult(
-            success: false, error: "Connection refused. Is the server running on 127.0.0.1:8001?",
-            requiresTOTP: false)
+          let err = "Connection refused. Is the server running on 127.0.0.1:8001?"
+          AnalyticsConfiguration.provideEventReporter().track(
+            event: "login_failed", properties: ["error": err])
+          return LoginResult(success: false, error: err, requiresTOTP: false)
         case 64:  // EHOSTDOWN
-          return LoginResult(
-            success: false, error: "Host is down. Check that the server is running.",
-            requiresTOTP: false)
+          let err = "Host is down. Check that the server is running."
+          AnalyticsConfiguration.provideEventReporter().track(
+            event: "login_failed", properties: ["error": err])
+          return LoginResult(success: false, error: err, requiresTOTP: false)
         default:
           break
         }
       }
     } catch {
       print("❌ Error details: \(String(describing: error))")
-
-      return LoginResult(
-        success: false, error: "Login failed: \(error.localizedDescription)", requiresTOTP: false)
+      let err = "Login failed: \(error.localizedDescription)"
+      AnalyticsConfiguration.provideEventReporter().track(
+        event: "login_failed", properties: ["error": err])
+      return LoginResult(success: false, error: err, requiresTOTP: false)
     }
 
+    AnalyticsConfiguration.provideEventReporter().track(
+      event: "login_failed", properties: ["error": "Unknown login error"])
     return LoginResult(success: false, error: "Unknown login error", requiresTOTP: false)
   }
 

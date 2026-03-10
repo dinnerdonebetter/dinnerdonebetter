@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MealPlanDetailView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @Environment(UserSettingsService.self) private var userSettingsService
   @Environment(\.dismiss) private var dismiss
   @State var mealPlan: Mealplanning_MealPlan
@@ -67,6 +68,7 @@ struct MealPlanDetailView: View {
     }
     .alert("Archive Meal Plan", isPresented: $showArchiveConfirmation) {
       Button("Archive", role: .destructive) {
+        eventReporterService.reporter.track(event: "meal_plan_archived", properties: [:])
         Task { await archiveMealPlan() }
       }
       Button("Cancel", role: .cancel) {}
@@ -83,6 +85,11 @@ struct MealPlanDetailView: View {
       }
     }
     .disabled(isArchiving || isCancellingEvent)
+    .onAppear {
+      eventReporterService.reporter.track(
+        event: "meal_plan_detail_viewed",
+        properties: ["meal_plan_id": mealPlan.id, "status": mealPlan.status.rawValue])
+    }
     .task {
       await loadTaskCount()
       await loadGroceryListItemCount()
@@ -96,6 +103,7 @@ struct MealPlanDetailView: View {
         startInSwapMode: identifiable.startInSwapMode
       )
       .environment(authManager)
+      .environment(eventReporterService)
     }
     .alert(
       "Cancel Meal",
@@ -107,6 +115,9 @@ struct MealPlanDetailView: View {
       Button("Cancel", role: .cancel) {}
       Button("Remove from Plan", role: .destructive) {
         if let evt = cancelEventConfirmationEvent {
+          eventReporterService.reporter.track(
+            event: "meal_plan_event_removed",
+            properties: ["event_id": evt.id])
           cancelEventConfirmationEvent = nil
           Task { await cancelMealPlanEvent(evt) }
         }
@@ -385,9 +396,13 @@ struct MealPlanDetailView: View {
             mealPlan: mealPlan,
             canEdit: mealPlan.status == .finalized,
             onMove: {
+              eventReporterService.reporter.track(
+                event: "meal_plan_move_swap_tapped", properties: ["mode": "move"])
               moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInMoveMode: true)
             },
             onSwap: {
+              eventReporterService.reporter.track(
+                event: "meal_plan_move_swap_tapped", properties: ["mode": "swap"])
               moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInSwapMode: true)
             },
             onCancel: { cancelEventConfirmationEvent = event }
@@ -407,9 +422,13 @@ struct MealPlanDetailView: View {
             mealPlan: mealPlan,
             canEdit: mealPlan.status == .finalized,
             onMove: {
+              eventReporterService.reporter.track(
+                event: "meal_plan_move_swap_tapped", properties: ["mode": "move"])
               moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInMoveMode: true)
             },
             onSwap: {
+              eventReporterService.reporter.track(
+                event: "meal_plan_move_swap_tapped", properties: ["mode": "swap"])
               moveSwapSheetEvent = IdentifiableMealPlanEvent(event: event, startInSwapMode: true)
             },
             onCancel: { cancelEventConfirmationEvent = event }
@@ -435,6 +454,13 @@ struct MealPlanDetailView: View {
         ) {
           groceryListCardContent(count: count)
         }
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            eventReporterService.reporter.track(
+              event: "meal_plan_grocery_tapped",
+              properties: ["meal_plan_id": mealPlan.id])
+          }
+        )
         .buttonStyle(.plain)
       } else {
         groceryListCardContent(count: count)
@@ -477,6 +503,13 @@ struct MealPlanDetailView: View {
         ) {
           tasksCardContent(count: count)
         }
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            eventReporterService.reporter.track(
+              event: "meal_plan_tasks_tapped",
+              properties: ["meal_plan_id": mealPlan.id])
+          }
+        )
         .buttonStyle(.plain)
       } else {
         tasksCardContent(count: count)
@@ -516,6 +549,7 @@ private struct IdentifiableMealPlanEvent: Identifiable {
 // MARK: - Event Card
 
 struct EventCard: View {
+  @Environment(EventReporterService.self) private var eventReporterService
   let event: Mealplanning_MealPlanEvent
   var mealPlan: Mealplanning_MealPlan?
   var canEdit: Bool = false
@@ -604,6 +638,12 @@ struct EventCard: View {
               MealOptionCard(option: option, isChosen: true)
             }
             .buttonStyle(.plain)
+            .simultaneousGesture(
+              TapGesture().onEnded {
+                eventReporterService.reporter.track(
+                  event: "meal_plan_event_card_tapped",
+                  properties: ["event_id": event.id, "meal_id": option.meal.id])
+              })
           }
         }
       } else {

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct WeekSelectionStepView: View {
   @Bindable var viewModel: CreateMealPlanViewModel
+  @Environment(EventReporterService.self) private var eventReporterService
 
   private let shortDateFormatter: DateFormatter = {
     let formatter = DateFormatter()
@@ -24,7 +25,10 @@ struct WeekSelectionStepView: View {
 
       HStack {
         Button(
-          action: { viewModel.goToPreviousWeek() },
+          action: {
+            eventReporterService.reporter.track(event: "meal_plan_week_prev", properties: [:])
+            viewModel.goToPreviousWeek()
+          },
           label: {
             Image(systemName: "chevron.left")
               .font(.title3)
@@ -40,7 +44,10 @@ struct WeekSelectionStepView: View {
         Spacer()
 
         Button(
-          action: { viewModel.goToNextWeek() },
+          action: {
+            eventReporterService.reporter.track(event: "meal_plan_week_next", properties: [:])
+            viewModel.goToNextWeek()
+          },
           label: {
             Image(systemName: "chevron.right")
               .font(.title3)
@@ -60,6 +67,9 @@ struct WeekSelectionStepView: View {
 
       Button(
         action: {
+          eventReporterService.reporter.track(
+            event: "meal_plan_week_continue",
+            properties: ["selected_days_count": viewModel.selectedDates.count])
           viewModel.wizardStep = .mealAssignment
         },
         label: {

@@ -11,6 +11,7 @@ import SwiftUI
 
 struct AccountSettingsView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @State private var viewModel: AccountSettingsViewModel?
   @State private var showCustomerCenter = false
   @State private var showPaywall = false
@@ -45,10 +46,19 @@ struct AccountSettingsView: View {
     }
     .sheet(isPresented: $showCustomerCenter) {
       CustomerCenterView()
+        .onAppear {
+          eventReporterService.reporter.track(event: "customer_center_viewed", properties: [:])
+        }
     }
     .sheet(isPresented: $showPaywall) {
       if let offering = launchOffering {
         PaywallView(offering: offering)
+          .onAppear {
+            eventReporterService.reporter.track(event: "paywall_viewed", properties: [:])
+          }
+          .onDisappear {
+            eventReporterService.reporter.track(event: "paywall_dismissed", properties: [:])
+          }
       } else {
         ProgressView("Loading...")
           .task { launchOffering = await SubscriptionService.launchOffering() }
@@ -59,6 +69,9 @@ struct AccountSettingsView: View {
     }
     .onChange(of: showPaywall) { _, isPresented in
       if !isPresented { Task { isProActive = await EntitlementService.isProActive() } }
+    }
+    .onAppear {
+      eventReporterService.reporter.track(event: "account_settings_viewed", properties: [:])
     }
   }
 
@@ -104,6 +117,10 @@ struct AccountSettingsView: View {
         style: .card,
         destination: HouseholdMembersView(viewModel: viewModel)
       )
+      .simultaneousGesture(
+        TapGesture().onEnded {
+          eventReporterService.reporter.track(event: "household_members_tapped", properties: [:])
+        })
 
       if viewModel.account != nil {
         DSListRowLink(
@@ -113,6 +130,10 @@ struct AccountSettingsView: View {
           style: .card,
           destination: HouseholdDetailsView(viewModel: viewModel)
         )
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            eventReporterService.reporter.track(event: "household_details_tapped", properties: [:])
+          })
 
         // DSListRowLink(
         //   title: "Kitchen Instruments",
@@ -138,6 +159,10 @@ struct AccountSettingsView: View {
         style: .card,
         destination: UserProfileView()
       )
+      .simultaneousGesture(
+        TapGesture().onEnded {
+          eventReporterService.reporter.track(event: "profile_viewed", properties: [:])
+        })
     }
   }
 
@@ -158,6 +183,8 @@ struct AccountSettingsView: View {
               DSStatusBadge(.success, style: .minimal)
             }
             DSButton("Manage Subscription", icon: "gearshape", style: .ghost, fullWidth: true) {
+              eventReporterService.reporter.track(
+                event: "manage_subscription_tapped", properties: [:])
               showCustomerCenter = true
             }
           } else {
@@ -165,6 +192,7 @@ struct AccountSettingsView: View {
               .font(DSTheme.Typography.body)
               .foregroundColor(DSTheme.Colors.textSecondary)
             DSButton("Upgrade to Pro", icon: "crown", fullWidth: true) {
+              eventReporterService.reporter.track(event: "upgrade_to_pro_tapped", properties: [:])
               showPaywall = true
             }
           }

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MealPlanningHomeContent: View {
   @Environment(UserSettingsService.self) private var userSettingsService
+  @Environment(EventReporterService.self) private var eventReporterService
   var viewModel: HomeViewModel?
 
   var body: some View {
@@ -73,6 +74,11 @@ struct MealPlanningHomeContent: View {
             .foregroundColor(DSTheme.Colors.primary)
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            eventReporterService.reporter.track(
+              event: "home_create_meal_plan_plus_tapped", properties: [:])
+          })
       }
 
       if let activeMealPlan = viewModel.activeMealPlan {
@@ -85,6 +91,12 @@ struct MealPlanningHomeContent: View {
           UpcomingMealCardContent(mealPlan: activeMealPlan)
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            eventReporterService.reporter.track(
+              event: "home_meal_plan_card_tapped",
+              properties: ["meal_plan_id": activeMealPlan.id])
+          })
 
         activePlanTaskAndGrocery(viewModel: viewModel, mealPlan: activeMealPlan)
       } else {
@@ -139,6 +151,11 @@ struct MealPlanningHomeContent: View {
       )
     }
     .buttonStyle(.plain)
+    .simultaneousGesture(
+      TapGesture().onEnded {
+        eventReporterService.reporter.track(
+          event: "home_create_meal_plan_cta_tapped", properties: [:])
+      })
   }
 
   // MARK: - Pending Votes Section
@@ -170,6 +187,12 @@ struct MealPlanningHomeContent: View {
           )
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            eventReporterService.reporter.track(
+              event: "home_pending_vote_tapped",
+              properties: ["meal_plan_id": mealPlan.id])
+          })
       }
     }
   }
@@ -193,6 +216,12 @@ struct MealPlanningHomeContent: View {
           DSInfoRow(icon: "checklist", text: summary.text, color: summary.color)
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            eventReporterService.reporter.track(
+              event: "home_task_summary_tapped",
+              properties: ["meal_plan_id": mealPlan.id])
+          })
       }
 
       if let groceryEntry = viewModel.mealPlansWithGroceryLists.first(where: {
@@ -216,6 +245,12 @@ struct MealPlanningHomeContent: View {
           )
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            eventReporterService.reporter.track(
+              event: "home_grocery_list_tapped",
+              properties: ["meal_plan_id": mealPlan.id])
+          })
       }
     }
   }
@@ -247,6 +282,12 @@ struct MealPlanningHomeContent: View {
         UpcomingMealCardContent(mealPlan: mealPlan)
       }
       .buttonStyle(.plain)
+      .simultaneousGesture(
+        TapGesture().onEnded {
+          eventReporterService.reporter.track(
+            event: "home_meal_plan_card_tapped",
+            properties: ["meal_plan_id": mealPlan.id])
+        })
 
       VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
         if let taskEntry = viewModel.mealPlansWithTasks.first(where: {
@@ -265,6 +306,12 @@ struct MealPlanningHomeContent: View {
             DSInfoRow(icon: "checklist", text: summary.text, color: summary.color)
           }
           .buttonStyle(.plain)
+          .simultaneousGesture(
+            TapGesture().onEnded {
+              eventReporterService.reporter.track(
+                event: "home_task_summary_tapped",
+                properties: ["meal_plan_id": mealPlan.id])
+            })
         }
 
         if let groceryEntry = viewModel.mealPlansWithGroceryLists.first(where: {
@@ -289,6 +336,12 @@ struct MealPlanningHomeContent: View {
             )
           }
           .buttonStyle(.plain)
+          .simultaneousGesture(
+            TapGesture().onEnded {
+              eventReporterService.reporter.track(
+                event: "home_grocery_list_tapped",
+                properties: ["meal_plan_id": mealPlan.id])
+            })
         }
       }
     }
@@ -315,6 +368,12 @@ struct MealPlanningHomeContent: View {
           UpcomingMealCardContent(mealPlan: mealPlan)
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            eventReporterService.reporter.track(
+              event: "home_meal_plan_card_tapped",
+              properties: ["meal_plan_id": mealPlan.id])
+          })
       }
     }
   }

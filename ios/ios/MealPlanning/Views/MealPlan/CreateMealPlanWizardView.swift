@@ -16,6 +16,7 @@ extension Notification.Name {
 
 struct CreateMealPlanWizardView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @Environment(\.dismiss) var dismiss
   @State private var viewModel: CreateMealPlanViewModel?
 
@@ -85,6 +86,7 @@ struct CreateMealPlanWizardView: View {
           acceptedOccupiedDates: acceptedOccupiedDates,
           proposedOccupiedDates: proposedOccupiedDates
         )
+        eventReporterService.reporter.track(event: "meal_plan_wizard_started", properties: [:])
       }
     }
   }
@@ -111,5 +113,6 @@ struct CreateMealPlanWizardView: View {
   return NavigationStack {
     CreateMealPlanWizardView()
       .environment(authManager)
+      .environment(EventReporterService())
   }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MealListView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @State private var viewModel: MealListViewModel?
   @State private var searchQuery: String = ""
 
@@ -61,6 +62,12 @@ struct MealListView: View {
                       NavigationLink(destination: MealDetailView(mealID: meal.id)) {
                         MealCard(meal: meal)
                       }
+                      .simultaneousGesture(
+                        TapGesture().onEnded {
+                          eventReporterService.reporter.track(
+                            event: "meal_card_tapped",
+                            properties: ["meal_id": meal.id])
+                        })
                     }
                   }
                   .dsScreenPadding()
@@ -80,6 +87,10 @@ struct MealListView: View {
           } label: {
             Image(systemName: "plus")
           }
+          .simultaneousGesture(
+            TapGesture().onEnded {
+              eventReporterService.reporter.track(event: "create_meal_tapped", properties: [:])
+            })
         }
       }
       .searchable(text: $searchQuery, prompt: "Search meals...")
@@ -98,6 +109,7 @@ struct MealListView: View {
       .onAppear {
         if viewModel == nil {
           viewModel = MealListViewModel(authManager: authManager)
+          eventReporterService.reporter.track(event: "meals_list_viewed", properties: [:])
         }
         if let viewModel = viewModel {
           Task {

@@ -13,6 +13,7 @@ import SwiftUI
 struct OptionSelectionStepView: View {
   @Bindable var viewModel: CreateMealPlanViewModel
   let onDismiss: () -> Void
+  @Environment(EventReporterService.self) private var eventReporterService
 
   @State private var selections: [String: [String: [UInt32: UInt32]]] = [:]
   @State private var isCreating = false
@@ -44,6 +45,7 @@ struct OptionSelectionStepView: View {
 
       HStack(spacing: 12) {
         Button {
+          eventReporterService.reporter.track(event: "meal_plan_option_back", properties: [:])
           viewModel.wizardStep = .mealAssignment
         } label: {
           HStack(spacing: 6) {
@@ -97,6 +99,12 @@ struct OptionSelectionStepView: View {
       let success = await viewModel.createMealPlan()
       isCreating = false
       if success {
+        eventReporterService.reporter.track(
+          event: "meal_plan_created",
+          properties: [
+            "events_count": viewModel.selectedDates.count,
+            "meals_count": viewModel.selectedDates.count,
+          ])
         NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
         onDismiss()
       }

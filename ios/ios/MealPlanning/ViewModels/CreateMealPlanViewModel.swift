@@ -303,6 +303,9 @@ class CreateMealPlanViewModel {
 
       if searchQuery.trimmingCharacters(in: .whitespacesAndNewlines) == queryWhenStarted {
         searchResults = response.results
+        AnalyticsConfiguration.provideEventReporter().track(
+          event: "meal_plan_meal_assignment_search",
+          properties: ["query_length": queryWhenStarted.count])
       }
     } catch {
       await authManager.invalidateCredentialsIfSessionError(error)
@@ -478,11 +481,17 @@ class CreateMealPlanViewModel {
         error.code == .alreadyExists
         ? "One or more meals are already in this plan."
         : "Failed to create meal plan: \(error.localizedDescription)"
+      AnalyticsConfiguration.provideEventReporter().track(
+        event: "meal_plan_creation_failed",
+        properties: ["error": creationError ?? "Unknown error"])
       isCreating = false
       return false
     } catch {
       await authManager.invalidateCredentialsIfSessionError(error)
       creationError = "Failed to create meal plan: \(error.localizedDescription)"
+      AnalyticsConfiguration.provideEventReporter().track(
+        event: "meal_plan_creation_failed",
+        properties: ["error": creationError ?? "Unknown error"])
       isCreating = false
       return false
     }

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct HomeView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @Environment(UserSettingsService.self) private var userSettingsService
   @State private var viewModel: HomeViewModel?
   @State private var showDrawer = false
@@ -54,6 +55,7 @@ struct HomeView: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar(.hidden, for: .navigationBar)
       .refreshable {
+        eventReporterService.reporter.track(event: "home_pull_to_refresh", properties: [:])
         if let viewModel = viewModel {
           await viewModel.loadData()
         }
@@ -107,6 +109,9 @@ struct HomeView: View {
       }
       .overlay(alignment: .topTrailing) {
         Button {
+          eventReporterService.reporter.track(
+            event: showDrawer ? "drawer_closed" : "drawer_opened",
+            properties: [:])
           showDrawer.toggle()
         } label: {
           Image(systemName: showDrawer ? "xmark" : "line.3.horizontal")

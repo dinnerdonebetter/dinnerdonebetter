@@ -10,6 +10,7 @@ import SwiftUI
 
 struct TaskListView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @State private var viewModel: TaskListViewModel
 
   init(
@@ -75,6 +76,11 @@ struct TaskListView: View {
     }
     .navigationTitle(viewModel.mealPlan.notes.isEmpty ? "Tasks" : "Tasks")
     .navigationBarTitleDisplayMode(.large)
+    .onAppear {
+      eventReporterService.reporter.track(
+        event: "task_list_viewed",
+        properties: ["meal_plan_id": viewModel.mealPlan.id])
+    }
     .task {
       await viewModel.loadTasks()
     }
@@ -320,6 +326,7 @@ struct StepPreviewRow: View {
 // MARK: - Task Row
 
 struct TaskRow: View {
+  @Environment(EventReporterService.self) private var eventReporterService
   let task: Mealplanning_MealPlanTask
   let viewModel: TaskListViewModel
   let loadedRecipes: [String: Mealplanning_Recipe]
@@ -441,6 +448,12 @@ struct TaskRow: View {
               .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .simultaneousGesture(
+              TapGesture().onEnded {
+                eventReporterService.reporter.track(
+                  event: "task_recipe_tapped",
+                  properties: ["recipe_id": recipeID, "meal_plan_id": viewModel.mealPlan.id])
+              })
           } else {
             VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
               taskDescriptionContent(isCompleted: isCompleted)

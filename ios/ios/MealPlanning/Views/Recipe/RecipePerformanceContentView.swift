@@ -11,6 +11,7 @@ import SwiftUI
 /// A reusable view for displaying recipe performance content (ingredients, instruments, vessels, and steps)
 /// This can be embedded in PerformRecipeView, Meal views, or any other context where recipe performance is needed
 struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body_length
+  @Environment(EventReporterService.self) private var eventReporterService
   @Binding var checkedIngredients: Set<String>
   @Binding var checkedInstrumentsVessels: Set<String>
   @Binding var isInstrumentsVesselsExpanded: Bool
@@ -452,7 +453,10 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   private func adjustRecipeScale(by delta: Float) {
     let next = min(max(recipeScale + delta, 0.25), 4.0)
     setRecipeScale(next)
-    scaleText = String(format: "%.2f", recipeScale)
+    scaleText = String(format: "%.2f", next)
+    eventReporterService.reporter.track(
+      event: "perform_recipe_scale_changed",
+      properties: ["scale": next])
   }
 
   // MARK: - Instruments & Vessels Section
@@ -1368,6 +1372,9 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
             .padding(.horizontal, 4)
           if highlightedStepIDs != nil {
             Button(showAllStepsFromPrepTask ? "Task only" : "Show all steps") {
+              eventReporterService.reporter.track(
+                event: "perform_recipe_show_all_steps_toggled",
+                properties: ["showing_all": !showAllStepsFromPrepTask])
               withAnimation { showAllStepsFromPrepTask.toggle() }
             }
             .font(.caption)
@@ -1378,7 +1385,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       },
       allModeLeadingContent: {
         VStack(alignment: .leading, spacing: 12) {
-          DSKeepScreenAwakeButton(inline: true)
+          DSKeepScreenAwakeButton(inline: true) {
+            eventReporterService.reporter.track(
+              event: "perform_recipe_keep_awake_toggled",
+              properties: ["enabled": $0])
+          }
           if showWashHandsStepCard, !sharedWashHandsValue, allSteps.first != nil {
             washHandsStepCard(viewModel: viewModel)
           }
@@ -1386,7 +1397,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       },
       focusModeLeadingContent: {
         VStack(alignment: .leading, spacing: 12) {
-          DSKeepScreenAwakeButton(inline: true)
+          DSKeepScreenAwakeButton(inline: true) {
+            eventReporterService.reporter.track(
+              event: "perform_recipe_keep_awake_toggled",
+              properties: ["enabled": $0])
+          }
           if showWashHandsStepCard, !sharedWashHandsValue, upNextSteps.first != nil {
             washHandsStepCard(viewModel: viewModel)
           }

@@ -11,6 +11,7 @@ import SwiftUI
 struct MealAssignmentStepView: View {
   @Bindable var viewModel: CreateMealPlanViewModel
   let onDismiss: () -> Void
+  @Environment(EventReporterService.self) private var eventReporterService
   @FocusState private var isSearchFocused: Bool
   @State private var displayedSearchError: String?
 
@@ -114,6 +115,9 @@ struct MealAssignmentStepView: View {
               isSelected: false,
               assignedToOtherDayLabel: assignedLabel.map { "Added \($0)" },
               onTap: {
+                eventReporterService.reporter.track(
+                  event: "meal_plan_meal_assigned",
+                  properties: ["meal_id": meal.id])
                 viewModel.assignMeal(meal, to: date)
               }
             )
@@ -273,6 +277,12 @@ struct MealAssignmentStepView: View {
         Task {
           let success = await viewModel.createMealPlan()
           if success {
+            eventReporterService.reporter.track(
+              event: "meal_plan_created",
+              properties: [
+                "events_count": viewModel.selectedDates.count,
+                "meals_count": viewModel.selectedDates.count,
+              ])
             NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
             onDismiss()
           }

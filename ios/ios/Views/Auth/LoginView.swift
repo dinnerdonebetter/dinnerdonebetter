@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @Binding var showRegister: Bool
 
   @State private var username: String = ""
@@ -99,6 +100,7 @@ struct LoginView: View {
           isDisabled: username.isEmpty || password.isEmpty
             || (requiresTOTP && totpCode.isEmpty)
         ) {
+          eventReporterService.reporter.track(event: "login_started", properties: [:])
           loginTask?.cancel()
           loginTask = Task { await handleLogin() }
         }
@@ -107,6 +109,7 @@ struct LoginView: View {
 
         // Navigation to register
         Button {
+          eventReporterService.reporter.track(event: "auth_switch_to_register", properties: [:])
           showRegister = true
         } label: {
           Text("Don't have an account? Sign up")
@@ -258,4 +261,5 @@ struct EnvironmentPickerSheet: View {
 #Preview {
   LoginView(showRegister: .constant(true))
     .environment(AuthenticationManager())
+    .environment(EventReporterService())
 }
