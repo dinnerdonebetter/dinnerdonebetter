@@ -44,6 +44,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @State private var customForLaterOrder: [String] = []
   @State private var timerTick: Int = 0
   @State private var timerRefresh: Timer?
+  /// When true, show all steps (including non-task) for context. Only used when opened from meal plan prep task.
+  @State private var showAllStepsFromPrepTask: Bool = false
 
   private var isShowingCompletedSteps: Bool {
     sharedCompletedStepsVisibility?.wrappedValue ?? showCompletedSteps
@@ -1257,7 +1259,9 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   }
 
   private func shouldShowStep(stepID: String) -> Bool {
-    return true
+    guard let highlightedStepIDs = highlightedStepIDs else { return true }
+    if showAllStepsFromPrepTask { return true }
+    return highlightedStepIDs.contains(stepID)
   }
 
   // Step info for categorization
@@ -1358,9 +1362,19 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         )
       },
       headerContent: {
-        Text("Steps")
-          .font(.headline)
-          .padding(.horizontal, 4)
+        HStack(spacing: 8) {
+          Text("Steps")
+            .font(.headline)
+            .padding(.horizontal, 4)
+          if highlightedStepIDs != nil {
+            Button(showAllStepsFromPrepTask ? "Task only" : "Show all steps") {
+              withAnimation { showAllStepsFromPrepTask.toggle() }
+            }
+            .font(.caption)
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+          }
+        }
       },
       allModeLeadingContent: {
         VStack(alignment: .leading, spacing: 12) {
