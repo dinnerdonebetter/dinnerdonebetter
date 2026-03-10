@@ -3,6 +3,7 @@ package msgconfig
 import (
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/sqs"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -30,6 +31,23 @@ func TestProvideConsumerProvider(T *testing.T) {
 		cfg := &Config{
 			Consumer: MessageQueueConfig{
 				Provider: ProviderRedis,
+			},
+		}
+
+		p, err := ProvideConsumerProvider(ctx, logger, cfg)
+		assert.NoError(t, err)
+		assert.NotNil(t, p)
+	})
+
+	T.Run("with SQS provider", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		logger := logging.NewNoopLogger()
+		cfg := &Config{
+			Consumer: MessageQueueConfig{
+				Provider: ProviderSQS,
+				SQS:      sqs.Config{},
 			},
 		}
 

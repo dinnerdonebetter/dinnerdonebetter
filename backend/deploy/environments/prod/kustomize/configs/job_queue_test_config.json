@@ -35,39 +35,10 @@
 			}
 		}
 	},
-	"database": {
-		"encryption": {
-			"provider": "salsa20"
-		},
-		"oauth2TokenEncryptionKey": "",
-		"userDeviceTokenEncryptionKey": "",
-		"provider": "postgres",
-		"readConnection": {
-			"username": "api_db_user",
-			"password": "",
-			"database": "dinner-done-better",
-			"hostname": "",
-			"port": 5432,
-			"disableSSL": false
-		},
-		"writeConnection": {
-			"username": "api_db_user",
-			"password": "",
-			"database": "dinner-done-better",
-			"hostname": "",
-			"port": 5432,
-			"disableSSL": false
-		},
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000,
-		"debug": false,
-		"logQueries": false,
-		"runMigrations": true
-	},
 	"observability": {
 		"profiling": {
 			"pyroscope": {
-				"serverAddress": "http://pyroscope.prod.svc.cluster.local:4040",
+				"serverAddress": "https://profiles-prod-001.grafana.net",
 				"uploadRate": 15000000000,
 				"insecure": false,
 				"enableMutexProfile": false,
@@ -106,5 +77,34 @@
 			"provider": "otelgrpc",
 			"spanCollectionProbability": 1
 		}
+	},
+	"database": {
+		"encryption": {
+			"provider": "salsa20"
+		},
+		"oauth2TokenEncryptionKey": "",
+		"userDeviceTokenEncryptionKey": "",
+		"provider": "postgres",
+		"readConnection": {
+			"username": "api_db_user",
+			"password": "",
+			"database": "dinner-done-better",
+			"hostname": "",
+			"port": 5432,
+			"disableSSL": false
+		},
+		"writeConnection": {
+			"username": "api_db_user",
+			"password": "",
+			"database": "dinner-done-better",
+			"hostname": "",
+			"port": 5432,
+			"disableSSL": false
+		},
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000,
+		"debug": false,
+		"logQueries": false,
+		"runMigrations": true
 	}
 }

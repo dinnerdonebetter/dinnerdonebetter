@@ -23,7 +23,7 @@ import (
 	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 
 	"golang.org/x/oauth2"
@@ -164,7 +164,7 @@ func WithOAuth2Credentials(
 
 	req.Header.Set("Authorization", "Bearer "+authToken)
 
-	c := tracing.BuildTracedHTTPClient()
+	c := httpclient.ProvideHTTPClient(&httpclient.Config{EnableTracing: true})
 	c.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}

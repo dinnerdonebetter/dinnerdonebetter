@@ -19,11 +19,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	config2 "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
@@ -107,7 +107,8 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	emailcfgConfig := &cfg.Email
-	httpClient := tracing.BuildTracedHTTPClient()
+	httpclientConfig := cfg.HTTPClient
+	httpClient := httpclient.ProvideHTTPClient(httpclientConfig)
 	emailer, err := emailcfg.ProvideEmailer(emailcfgConfig, logger, tracerProvider, provider, httpClient)
 	if err != nil {
 		return nil, err

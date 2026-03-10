@@ -15,12 +15,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	notificationscfg "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
@@ -63,9 +63,9 @@ func Build(
 		metricscfg.MetricsConfigProviders,
 		encoding.Providers,
 		loggingcfg.LogConfigProviders,
+		httpclient.Providers,
 		tracingcfg.TracingConfigProviders,
 		observability.O11yProviders,
-		tracing.ProvidersTracing,
 		objectstorage.Providers,
 		identityindexing.Providers,
 		eatingindexing.Providers,

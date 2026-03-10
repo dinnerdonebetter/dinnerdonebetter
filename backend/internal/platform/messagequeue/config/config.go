@@ -92,6 +92,8 @@ func ProvideConsumerProvider(ctx context.Context, logger logging.Logger, c *Conf
 	switch cleanString(string(c.Consumer.Provider)) {
 	case string(ProviderRedis):
 		return redis.ProvideRedisConsumerProvider(logger, c.Consumer.Redis), nil
+	case string(ProviderSQS):
+		return sqs.ProvideSQSConsumerProvider(logger, c.Consumer.SQS), nil
 	case string(ProviderPubSub):
 		client, err := ps.NewClientWithConfig(ctx, c.Consumer.PubSub.ProjectID, &ps.ClientConfig{
 			EnableOpenTelemetryTracing: true,

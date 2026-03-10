@@ -17,6 +17,7 @@ import (
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
+	httpclientcfg "github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	notificationscfg "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -85,6 +86,7 @@ type (
 		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
 		TextSearch        textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
 		FeatureFlags      featureflagscfg.Config  `envPrefix:"FEATURE_FLAGS_"      json:"featureFlags"`
+		HTTPClient        *httpclientcfg.Config   `envPrefix:"HTTP_CLIENT_"        json:"httpClient"`
 		HTTPServer        http.Config             `envPrefix:"HTTP_"               json:"http"`
 		Auth              authcfg.Config          `envPrefix:"AUTH_"               json:"auth"`
 		Database          databasecfg.Config      `envPrefix:"DATABASE_"           json:"database"`
@@ -163,6 +165,7 @@ type (
 		Events            msgconfig.Config        `envPrefix:"EVENTS_"             json:"events"`
 		Observability     observability.Config    `envPrefix:"OBSERVABILITY_"      json:"observability"`
 		Email             emailcfg.Config         `envPrefix:"EMAIL_"              json:"email"`
+		HTTPClient        *httpclientcfg.Config   `envPrefix:"HTTP_CLIENT_"        json:"httpClient"`
 		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
 		Search            textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
 		Database          databasecfg.Config      `envPrefix:"DATABASE_"           json:"database"`
@@ -170,11 +173,12 @@ type (
 
 	// EmailDeliverabilityTestConfig configures the email deliverability test cron job.
 	EmailDeliverabilityTestConfig struct {
-		_                     struct{}             `json:"-"`
-		RecipientEmailAddress string               `env:"RECIPIENT_EMAIL_ADDRESS" json:"recipientEmailAddress"`
-		ServiceEnvironment    string               `env:"SERVICE_ENVIRONMENT"     json:"serviceEnvironment"`
-		Observability         observability.Config `envPrefix:"OBSERVABILITY_"    json:"observability"`
-		Email                 emailcfg.Config      `envPrefix:"EMAIL_"            json:"email"`
+		_                     struct{}              `json:"-"`
+		HTTPClient            *httpclientcfg.Config `envPrefix:"HTTP_CLIENT_"      json:"httpClient"`
+		RecipientEmailAddress string                `env:"RECIPIENT_EMAIL_ADDRESS" json:"recipientEmailAddress"`
+		ServiceEnvironment    string                `env:"SERVICE_ENVIRONMENT"     json:"serviceEnvironment"`
+		Observability         observability.Config  `envPrefix:"OBSERVABILITY_"    json:"observability"`
+		Email                 emailcfg.Config       `envPrefix:"EMAIL_"            json:"email"`
 	}
 
 	// QueueTestJobConfig configures the queue test cron job.

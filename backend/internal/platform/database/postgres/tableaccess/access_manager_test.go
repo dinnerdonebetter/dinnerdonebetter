@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/retry"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,6 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
-	"gopkg.in/matryer/try.v1"
 )
 
 // TODO: lots of duplication with the upper postgres package
@@ -84,7 +84,8 @@ func buildDatabaseConnectionForTest(t *testing.T, ctx context.Context) (*sql.DB,
 	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t.Name()))
 
 	var container *postgres.PostgresContainer
-	err := try.Do(func(attempt int) (bool, error) {
+	policy := retry.NewExponentialBackoffPolicy(retry.Config{MaxAttempts: 5, InitialDelay: 1, UseJitter: false})
+	err := policy.Execute(ctx, func(ctx context.Context) error {
 		var containerErr error
 		container, containerErr = postgres.Run(
 			ctx,
@@ -94,8 +95,7 @@ func buildDatabaseConnectionForTest(t *testing.T, ctx context.Context) (*sql.DB,
 			postgres.WithPassword(reverseString(dbUsername)),
 			testcontainers.WithWaitStrategyAndDeadline(2*time.Minute, wait.ForLog("database system is ready to accept connections").WithOccurrence(2)),
 		)
-
-		return attempt < 5, containerErr
+		return containerErr
 	})
 	require.NoError(t, err)
 	require.NotNil(t, container)

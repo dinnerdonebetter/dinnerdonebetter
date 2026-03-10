@@ -119,7 +119,7 @@ func buildProdConfig() *config.APIServiceConfig {
 			ServiceName: otelServiceName,
 			Provider:    profilingcfg.ProviderPyroscope,
 			Pyroscope: &pyroscope.Config{
-				ServerAddress: "http://pyroscope.prod.svc.cluster.local:4040",
+				ServerAddress: "https://profiles-prod-001.grafana.net",
 				UploadRate:    15 * time.Second,
 			},
 		},

@@ -39,6 +39,27 @@
 			}
 		}
 	},
+	"observability": {
+		"profiling": {
+			"serviceName": "queue_test"
+		},
+		"logging": {
+			"serviceName": "queue_test",
+			"level": "info",
+			"provider": "slog"
+		},
+		"metrics": {
+			"serviceName": "queue_test"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces"
+			},
+			"service_name": "queue_test",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
 	"database": {
 		"encryption": {
 			"provider": "salsa20"
@@ -67,26 +88,5 @@
 		"debug": true,
 		"logQueries": true,
 		"runMigrations": true
-	},
-	"observability": {
-		"profiling": {
-			"serviceName": "queue_test"
-		},
-		"logging": {
-			"serviceName": "queue_test",
-			"level": "info",
-			"provider": "slog"
-		},
-		"metrics": {
-			"serviceName": "queue_test"
-		},
-		"tracing": {
-			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces"
-			},
-			"service_name": "queue_test",
-			"provider": "otelgrpc",
-			"spanCollectionProbability": 1
-		}
 	}
 }

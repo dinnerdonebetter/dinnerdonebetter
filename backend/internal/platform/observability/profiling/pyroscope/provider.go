@@ -38,12 +38,14 @@ func ProvideProfilingProvider(ctx context.Context, logger logging.Logger, servic
 	}
 
 	pyroCfg := pyroscope.Config{
-		ApplicationName: serviceName,
-		ServerAddress:   cfg.ServerAddress,
-		UploadRate:      cfg.UploadRate,
-		ProfileTypes:    profileTypes,
-		Tags:            tags,
-		Logger:          nil, // disable pyroscope's own logging; we use our logger
+		ApplicationName:   serviceName,
+		ServerAddress:     cfg.ServerAddress,
+		UploadRate:        cfg.UploadRate,
+		ProfileTypes:      profileTypes,
+		Tags:              tags,
+		Logger:            nil, // disable pyroscope's own logging; we use our logger
+		BasicAuthUser:     cfg.BasicAuthUser,
+		BasicAuthPassword: cfg.BasicAuthPassword,
 	}
 
 	profiler, err := pyroscope.Start(pyroCfg)

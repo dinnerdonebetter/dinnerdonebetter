@@ -319,6 +319,12 @@ const (
 	// ObservabilityProfilingProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Provider`.
 	ObservabilityProfilingProviderEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PROVIDER"
 
+	// ObservabilityProfilingPyroscopeBasicAuthPasswordEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.BasicAuthPassword`.
+	ObservabilityProfilingPyroscopeBasicAuthPasswordEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_BASIC_AUTH_PASSWORD"
+
+	// ObservabilityProfilingPyroscopeBasicAuthUserEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.BasicAuthUser`.
+	ObservabilityProfilingPyroscopeBasicAuthUserEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_BASIC_AUTH_USER"
+
 	// ObservabilityProfilingPyroscopeEnableBlockProfileEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.EnableBlockProfile`.
 	ObservabilityProfilingPyroscopeEnableBlockProfileEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_ENABLE_BLOCK_PROFILE"
 

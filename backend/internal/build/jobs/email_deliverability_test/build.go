@@ -7,10 +7,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	emaildeliverabilitytest "github.com/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
 
@@ -28,7 +28,7 @@ func Build(
 		observability.O11yProviders,
 		loggingcfg.LogConfigProviders,
 		metricscfg.MetricsConfigProviders,
-		tracing.ProvidersTracing,
+		httpclient.Providers,
 		emailcfg.Providers,
 		ConfigProviders,
 	)

@@ -84,7 +84,7 @@ func (j *Job) Do(ctx context.Context) error {
 	defer span.End()
 
 	topics := j.topicNames()
-	topicName := topics[rand.IntN(len(topics))]
+	topicName := topics[rand.IntN(len(topics))] //nolint:gosec // G404: test data selection does not require cryptographic randomness
 
 	testID := identifiers.New()
 	start := time.Now()
@@ -98,6 +98,7 @@ func (j *Job) Do(ctx context.Context) error {
 	if idx := strings.LastIndex(topicName, "/"); idx >= 0 {
 		logicalName = topicName[idx+1:]
 	}
+
 	msg, err := internalops.BuildQueueTestMessage(logicalName, testID, "")
 	if err != nil {
 		return fmt.Errorf("building queue test message: %w", err)

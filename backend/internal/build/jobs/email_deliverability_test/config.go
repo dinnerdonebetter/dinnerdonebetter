@@ -14,6 +14,7 @@ var (
 			new(*config.EmailDeliverabilityTestConfig),
 			"Observability",
 			"Email",
+			"HTTPClient",
 		),
 		ProvideJobParams,
 	)

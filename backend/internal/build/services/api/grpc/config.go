@@ -18,6 +18,7 @@ var (
 			"Analytics",
 			"TextSearch",
 			"FeatureFlags",
+			"HTTPClient",
 			"Encoding",
 			"Events",
 			"Observability",

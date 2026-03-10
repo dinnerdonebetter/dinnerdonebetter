@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/adk/agent"
@@ -329,7 +329,7 @@ func main() {
 	mcpToolset, err := mcptoolset.New(mcptoolset.Config{
 		Transport: &mcp.StreamableClientTransport{
 			Endpoint:   "http://localhost:9999",
-			HTTPClient: tracing.BuildTracedHTTPClient(),
+			HTTPClient: httpclient.ProvideHTTPClient(&httpclient.Config{EnableTracing: true}),
 			MaxRetries: 5,
 		},
 	})
