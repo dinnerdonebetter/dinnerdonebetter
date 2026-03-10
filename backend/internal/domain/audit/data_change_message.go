@@ -15,13 +15,14 @@ type (
 		Context   map[string]any `json:"context,omitempty"`
 		UserID    string         `json:"userID"`
 		AccountID string         `json:"accountID,omitempty"`
+		TestID    string         `json:"testID,omitempty"`
 	}
 )
 
 func (d *DataChangeMessage) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, &d,
-		validation.Field(&d.UserID, validation.When(d.AccountID == "", validation.Required)),
-		validation.Field(&d.AccountID, validation.When(d.UserID == "", validation.Required)),
-		validation.Field(&d.Context, validation.Required),
+		validation.Field(&d.UserID, validation.When(d.AccountID == "" && d.TestID == "", validation.Required)),
+		validation.Field(&d.AccountID, validation.When(d.UserID == "" && d.TestID == "", validation.Required)),
+		validation.Field(&d.Context, validation.When(d.TestID == "", validation.Required)),
 	)
 }

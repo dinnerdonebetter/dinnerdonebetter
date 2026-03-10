@@ -44,7 +44,7 @@ func TestAsyncDataChangeMessageHandler_OutboundEmailsEventHandler(t *testing.T) 
 				props["subject"] == emailMessage.Subject
 		})).Return(nil)
 
-		err = handler.OutboundEmailsEventHandler(ctx, rawMsg)
+		err = handler.OutboundEmailsEventHandler("outbound_emails")(ctx, rawMsg)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, emailer, analyticsEventReporter)
@@ -58,7 +58,7 @@ func TestAsyncDataChangeMessageHandler_OutboundEmailsEventHandler(t *testing.T) 
 		ctx := t.Context()
 		rawMsg := []byte("invalid json")
 
-		err := handler.OutboundEmailsEventHandler(ctx, rawMsg)
+		err := handler.OutboundEmailsEventHandler("outbound_emails")(ctx, rawMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "decoding JSON body")
 	})
@@ -87,7 +87,7 @@ func TestAsyncDataChangeMessageHandler_OutboundEmailsEventHandler(t *testing.T) 
 		emailer.On(reflection.GetMethodName(emailer.SendEmail), mock.Anything, emailMessage).Return(expectedError)
 		// EventOccurred is NOT called when SendEmail fails
 
-		err = handler.OutboundEmailsEventHandler(ctx, rawMsg)
+		err = handler.OutboundEmailsEventHandler("outbound_emails")(ctx, rawMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "sending email")
 
@@ -118,7 +118,7 @@ func TestAsyncDataChangeMessageHandler_OutboundEmailsEventHandler(t *testing.T) 
 		expectedError := errors.New("analytics error")
 		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.EventOccurred), mock.Anything, email.SentEventType, emailMessage.UserID, mock.AnythingOfType("map[string]interface {}")).Return(expectedError)
 
-		err = handler.OutboundEmailsEventHandler(ctx, rawMsg)
+		err = handler.OutboundEmailsEventHandler("outbound_emails")(ctx, rawMsg)
 		assert.NoError(t, err) // Should not return error, just log it
 
 		mock.AssertExpectationsForObjects(t, emailer, analyticsEventReporter)

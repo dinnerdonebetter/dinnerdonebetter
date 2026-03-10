@@ -15,7 +15,6 @@ import (
 	authkeys "github.com/dinnerdonebetter/backend/internal/domain/auth/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
@@ -34,44 +33,47 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
-func (a *AsyncDataChangeMessageHandler) DataChangesEventHandler(ctx context.Context, rawMsg []byte) error {
-	ctx, span := a.tracer.StartSpan(ctx)
-	defer span.End()
+func (a *AsyncDataChangeMessageHandler) DataChangesEventHandler(topicName string) func(ctx context.Context, rawMsg []byte) error {
+	return func(ctx context.Context, rawMsg []byte) error {
+		ctx, span := a.tracer.StartSpan(ctx)
+		defer span.End()
 
-	start := time.Now()
-	status := statusSuccess
-	eventType := unknownValue
+		start := time.Now()
+		status := statusSuccess
+		eventType := unknownValue
 
-	defer func() {
-		a.dataChangesExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
-			metric.WithAttributes(
-				attribute.String("status", status),
-				attribute.String("event_type", eventType),
-			))
-		a.recordMessagesProcessed(ctx, topicDataChanges, status)
-	}()
+		defer func() {
+			a.dataChangesExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
+				metric.WithAttributes(
+					attribute.String("status", status),
+					attribute.String("event_type", eventType),
+				))
+			a.recordMessagesProcessed(ctx, topicDataChanges, status)
+		}()
 
-	var dataChangeMessage audit.DataChangeMessage
-	if err := a.decoder.DecodeBytes(ctx, rawMsg, &dataChangeMessage); err != nil {
-		a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicDataChanges)))
-		status = statusFailure
-		return fmt.Errorf("decoding message body: %w", err)
+		var dataChangeMessage audit.DataChangeMessage
+		if err := a.decoder.DecodeBytes(ctx, rawMsg, &dataChangeMessage); err != nil {
+			a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicDataChanges)))
+			status = statusFailure
+			return fmt.Errorf("decoding message body: %w", err)
+		}
+
+		eventType = dataChangeMessage.EventType
+
+		if err := a.handleDataChangeMessage(ctx, &dataChangeMessage, topicName); err != nil {
+			a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicDataChanges)))
+			status = statusFailure
+			return observability.PrepareAndLogError(err, a.logger, span, "handling data change message")
+		}
+
+		return nil
 	}
-
-	eventType = dataChangeMessage.EventType
-
-	if err := a.handleDataChangeMessage(ctx, &dataChangeMessage); err != nil {
-		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicDataChanges)))
-		status = statusFailure
-		return observability.PrepareAndLogError(err, a.logger, span, "handling data change message")
-	}
-
-	return nil
 }
 
 func (a *AsyncDataChangeMessageHandler) handleDataChangeMessage(
 	ctx context.Context,
 	changeMessage *audit.DataChangeMessage,
+	topicName string,
 ) error {
 	ctx, span := a.tracer.StartSpan(ctx)
 
@@ -81,14 +83,21 @@ func (a *AsyncDataChangeMessageHandler) handleDataChangeMessage(
 
 	logger := a.logger.WithValue("event_type", changeMessage.EventType)
 
+	// Non-empty TestID triggers queue test behavior (acknowledge and skip business logic)
+	testID := changeMessage.TestID
+	if testID == "" && changeMessage.Context != nil {
+		if v, ok := changeMessage.Context["test_id"].(string); ok {
+			testID = v
+		}
+	}
+	if testID != "" {
+		return a.handleQueueTestMessage(ctx, logger, span, testID, topicName)
+	}
+
 	if changeMessage.UserID != "" && changeMessage.EventType != "" {
 		if err := a.analyticsEventReporter.EventOccurred(ctx, changeMessage.EventType, changeMessage.UserID, changeMessage.Context); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "notifying customer data platform")
 		}
-	}
-
-	if changeMessage.EventType == internalops.QueueTestMessageEventType {
-		return a.handleQueueTestMessage(ctx, logger, span, changeMessage)
 	}
 
 	var wg sync.WaitGroup

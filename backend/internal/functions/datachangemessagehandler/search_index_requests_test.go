@@ -17,7 +17,7 @@ func TestAsyncDataChangeMessageHandler_SearchIndexRequestsEventHandler(t *testin
 		ctx := t.Context()
 		rawMsg := []byte("invalid json")
 
-		err := handler.SearchIndexRequestsEventHandler(ctx, rawMsg)
+		err := handler.SearchIndexRequestsEventHandler("search_index_requests")(ctx, rawMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "decoding JSON body")
 	})

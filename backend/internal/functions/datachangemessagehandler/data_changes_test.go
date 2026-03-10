@@ -71,7 +71,7 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 			handler.webhookExecutionRequestPublisher.(*msgqueuemock.Publisher).On("Publish", mock.Anything, mock.Anything).Return(nil).Maybe()
 		}
 
-		assert.NoError(t, handler.DataChangesEventHandler(ctx, rawMsg))
+		assert.NoError(t, handler.DataChangesEventHandler("data_changes")(ctx, rawMsg))
 
 		mock.AssertExpectationsForObjects(t, analyticsReporter, webhookRepo, identityRepo, decoder)
 	})
@@ -86,7 +86,7 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 
 		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.Anything).Return(errors.New("invalid character 'i' looking for beginning of value")).Once()
 
-		err := handler.DataChangesEventHandler(ctx, rawMsg)
+		err := handler.DataChangesEventHandler("data_changes")(ctx, rawMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "decoding message body")
 
@@ -104,7 +104,7 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 
 		ctx := t.Context()
 
-		err := handler.handleDataChangeMessage(ctx, nil)
+		err := handler.handleDataChangeMessage(ctx, nil, "data_changes")
 		assert.Error(t, err)
 		assert.Equal(t, errRequiredDataIsNil, err)
 	})
@@ -133,7 +133,7 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 		mockSearchPublisher.On(reflection.GetMethodName(mockSearchPublisher.Publish), mock.Anything, mock.AnythingOfType("*textsearch.IndexRequest")).Return(nil)
 		handler.searchDataIndexPublisher = mockSearchPublisher
 
-		err := handler.handleDataChangeMessage(ctx, dataChangeMessage)
+		err := handler.handleDataChangeMessage(ctx, dataChangeMessage, "data_changes")
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, analyticsEventReporter, mockSearchPublisher)
@@ -173,7 +173,7 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 		mockSearchPublisher.On(reflection.GetMethodName(mockSearchPublisher.Publish), mock.Anything, mock.AnythingOfType("*textsearch.IndexRequest")).Return(nil)
 		handler.searchDataIndexPublisher = mockSearchPublisher
 
-		err := handler.handleDataChangeMessage(ctx, dataChangeMessage)
+		err := handler.handleDataChangeMessage(ctx, dataChangeMessage, "data_changes")
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, analyticsEventReporter, webhookRepo, mockWebhookPublisher, mockSearchPublisher)

@@ -63,6 +63,7 @@ type (
 			MobileNotificationSchedulerConfig |
 			AsyncMessageHandlerConfig |
 			EmailDeliverabilityTestConfig |
+			QueueTestJobConfig |
 			AdminWebappConfig |
 			ConsumerWebappConfig |
 			MCPServiceConfig
@@ -174,6 +175,15 @@ type (
 		ServiceEnvironment    string               `env:"SERVICE_ENVIRONMENT"     json:"serviceEnvironment"`
 		Observability         observability.Config `envPrefix:"OBSERVABILITY_"    json:"observability"`
 		Email                 emailcfg.Config      `envPrefix:"EMAIL_"            json:"email"`
+	}
+
+	// QueueTestJobConfig configures the queue test cron job.
+	QueueTestJobConfig struct {
+		_             struct{}               `json:"-"`
+		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	APIServiceOAuth2ConnectionConfig struct {
@@ -477,6 +487,27 @@ func (cfg *EmailDeliverabilityTestConfig) ValidateWithContext(ctx context.Contex
 		validation.Field(&cfg.Email, validation.Required),
 		validation.Field(&cfg.RecipientEmailAddress, validation.Required),
 	)
+}
+
+var _ validation.ValidatableWithContext = (*QueueTestJobConfig)(nil)
+
+// ValidateWithContext validates a QueueTestJobConfig struct.
+func (cfg *QueueTestJobConfig) ValidateWithContext(ctx context.Context) error {
+	result := &multierror.Error{}
+
+	validators := map[string]func(context.Context) error{
+		"Observability": cfg.Observability.ValidateWithContext,
+		"Database":      cfg.Database.ValidateWithContext,
+		"Queues":        cfg.Queues.ValidateWithContext,
+	}
+
+	for name, validator := range validators {
+		if err := validator(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
+		}
+	}
+
+	return result.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*AdminWebappConfig)(nil)

@@ -16,5 +16,6 @@ type MobileNotificationRequest struct {
 	RequestType      string            `json:"requestType"`
 	Title            string            `json:"title"`
 	Body             string            `json:"body"`
+	TestID           string            `json:"testID,omitempty"`
 	RecipientUserIDs []string          `json:"recipientUserIDs"`
 }

@@ -261,7 +261,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	dataChangesConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.DataChangesTopicName,
-		a.DataChangesEventHandler,
+		a.DataChangesEventHandler(a.queuesConfig.DataChangesTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring data changes consumer")
@@ -270,7 +270,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	outboundEmailsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.OutboundEmailsTopicName,
-		a.OutboundEmailsEventHandler,
+		a.OutboundEmailsEventHandler(a.queuesConfig.OutboundEmailsTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring outbound emails consumer")
@@ -279,7 +279,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	searchIndexRequestsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.SearchIndexRequestsTopicName,
-		a.SearchIndexRequestsEventHandler,
+		a.SearchIndexRequestsEventHandler(a.queuesConfig.SearchIndexRequestsTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring search index requests consumer")
@@ -288,7 +288,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	webhookExecutionRequestsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.WebhookExecutionRequestsTopicName,
-		a.WebhookExecutionRequestsEventHandler,
+		a.WebhookExecutionRequestsEventHandler(a.queuesConfig.WebhookExecutionRequestsTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring webhook execution requests consumer")
@@ -297,7 +297,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	userDataAggregationConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.UserDataAggregationTopicName,
-		a.UserDataAggregationEventHandler,
+		a.UserDataAggregationEventHandler(a.queuesConfig.UserDataAggregationTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring user data aggregation requests consumer")
@@ -306,7 +306,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	mobileNotificationsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.MobileNotificationsTopicName,
-		a.MobileNotificationsEventHandler,
+		a.MobileNotificationsEventHandler(a.queuesConfig.MobileNotificationsTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring mobile notifications consumer")

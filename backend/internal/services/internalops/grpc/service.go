@@ -6,8 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
+	domaininternalops "github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
@@ -34,7 +33,7 @@ type (
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
 		msgConfig                 *msgconfig.Config
-		internalOpsRepo           internalops.InternalOpsDataManager
+		internalOpsRepo           domaininternalops.InternalOpsDataManager
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
 	}
 )
@@ -43,7 +42,7 @@ func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	msgConfig *msgconfig.Config,
-	repo internalops.InternalOpsDataManager,
+	repo domaininternalops.InternalOpsDataManager,
 ) settingssvc.InternalOperationsServer {
 	return &serviceImpl{
 		msgConfig:                 msgConfig,
@@ -80,13 +79,9 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating queue test message record")
 	}
 
-	msg := &audit.DataChangeMessage{
-		EventType: internalops.QueueTestMessageEventType,
-		Context: map[string]any{
-			"test_id":    testID,
-			"queue_name": request.QueueName,
-		},
-		UserID: sessionContextData.Requester.UserID,
+	msg, err := domaininternalops.BuildQueueTestMessage(request.QueueName, testID, sessionContextData.Requester.UserID)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "building queue test message")
 	}
 
 	pp, err := msgconfig.ProvidePublisherProvider(ctx, s.logger, tracing.NewNoopTracerProvider(), s.msgConfig)

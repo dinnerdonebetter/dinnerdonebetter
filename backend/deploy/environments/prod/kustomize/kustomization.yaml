@@ -25,6 +25,10 @@ images:
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-email-deliverability-test
     newTag: latest
 
+  - name: dinner-done-better-job-queue-test
+    newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-queue-test
+    newTag: latest
+
   - name: dinner-done-better-job-meal-plan-finalizer
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-meal-plan-finalizer
     newTag: latest
@@ -147,6 +151,16 @@ patches:
     target:
       kind: CronJob
       name: dinner-done-better-job-email-deliverability-test
+
+  ### Queue Test CronJob - needs database, pubsub
+  - path: patches/cronjob-database-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-queue-test
+  - path: patches/cronjob-pubsub-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-queue-test
 
   ### DB Cleaner CronJob - needs database only
   - path: patches/cronjob-database-env.yaml
@@ -356,6 +370,11 @@ configMapGenerator:
     namespace: prod
     files:
       - config.json=./configs/job_email_deliverability_test_config.json
+
+  - name: dinner-done-better-job-queue-test-config
+    namespace: prod
+    files:
+      - config.json=./configs/job_queue_test_config.json
 
   - name: dinner-done-better-job-meal-plan-finalizer-config
     namespace: prod

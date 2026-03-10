@@ -167,9 +167,44 @@
       ]
     },
     {
+      "title": "Queue Test Round-Trip Latency",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(queue_test_round_trip_ms_bucket{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"success\"}[5m])) by (le, topic))", "legendFormat": "{{topic}} p50" },
+        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(queue_test_round_trip_ms_bucket{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"success\"}[5m])) by (le, topic))", "legendFormat": "{{topic}} p95" },
+        { "refId": "C", "expr": "histogram_quantile(0.99, sum(rate(queue_test_round_trip_ms_bucket{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"success\"}[5m])) by (le, topic))", "legendFormat": "{{topic}} p99" }
+      ]
+    },
+    {
+      "title": "Queue Test Success vs Timeout",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(queue_test_round_trip_ms_count{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"success\"}[5m])) by (topic)", "legendFormat": "{{topic}} success" },
+        { "refId": "B", "expr": "sum(rate(queue_test_round_trip_ms_count{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"timeout\"}[5m])) by (topic)", "legendFormat": "{{topic}} timeout" }
+      ]
+    },
+    {
       "title": "Deployment Replicas",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 20 },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 28 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -186,7 +221,7 @@
     {
       "title": "Go Goroutines",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 20 },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 28 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -202,7 +237,7 @@
     {
       "title": "Go Heap Allocated",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 20 },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 28 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -218,7 +253,7 @@
     {
       "title": "Host CPU",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 26 },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 34 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -234,7 +269,7 @@
     {
       "title": "Host Memory",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 26 },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 34 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -250,7 +285,7 @@
     {
       "title": "Memory Utilization",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 26 },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 34 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {

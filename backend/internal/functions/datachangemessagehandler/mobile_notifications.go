@@ -22,61 +22,68 @@ import (
 
 // MobileNotificationsEventHandler handles mobile notification requests from the mobile_notifications queue.
 // It decodes the request, validates it, and routes to the appropriate type-specific handler.
-func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(ctx context.Context, rawMsg []byte) error {
-	ctx, span := a.tracer.StartSpan(ctx)
-	defer span.End()
+func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(topicName string) func(ctx context.Context, rawMsg []byte) error {
+	return func(ctx context.Context, rawMsg []byte) error {
+		ctx, span := a.tracer.StartSpan(ctx)
+		defer span.End()
 
-	start := time.Now()
-	status := statusSuccess
-	requestType := unknownValue
+		start := time.Now()
+		status := statusSuccess
+		requestType := unknownValue
 
-	defer func() {
-		a.mobileNotificationsExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
-			metric.WithAttributes(
-				attribute.String("status", status),
-				attribute.String("request_type", requestType),
-			))
-		a.recordMessagesProcessed(ctx, topicMobileNotifications, status)
-	}()
+		defer func() {
+			a.mobileNotificationsExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
+				metric.WithAttributes(
+					attribute.String("status", status),
+					attribute.String("request_type", requestType),
+				))
+			a.recordMessagesProcessed(ctx, topicMobileNotifications, status)
+		}()
 
-	var req notifications.MobileNotificationRequest
-	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&req); err != nil {
-		a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
-		status = statusFailure
-		return fmt.Errorf("decoding mobile notification request: %w", err)
-	}
-	if req.Title == "" || req.Body == "" {
-		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
-		status = statusFailure
-		return fmt.Errorf("title and body are required")
-	}
-	if req.RequestType == "" {
-		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
-		status = statusFailure
-		return fmt.Errorf("request type is required")
-	}
+		var req notifications.MobileNotificationRequest
+		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&req); err != nil {
+			a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+			status = statusFailure
+			return fmt.Errorf("decoding mobile notification request: %w", err)
+		}
 
-	requestType = req.RequestType
+		if req.TestID != "" {
+			return a.handleQueueTestMessage(ctx, a.logger.WithSpan(span), span, req.TestID, topicName)
+		}
 
-	switch req.RequestType {
-	case mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask:
-		if err := a.handleMealPlanTaskNotification(ctx, &req); err != nil {
+		if req.Title == "" || req.Body == "" {
 			a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
 			status = statusFailure
-			return err
+			return fmt.Errorf("title and body are required")
 		}
-		return nil
-	case notifications.MobileNotificationRequestTypeHouseholdInvitationAccepted:
-		if err := a.handleHouseholdInvitationAcceptedNotification(ctx, &req); err != nil {
+		if req.RequestType == "" {
 			a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
 			status = statusFailure
-			return err
+			return fmt.Errorf("request type is required")
 		}
-		return nil
-	default:
-		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
-		status = statusFailure
-		return fmt.Errorf("unknown request type: %q", req.RequestType)
+
+		requestType = req.RequestType
+
+		switch req.RequestType {
+		case mealplanningnotifications.MobileNotificationRequestTypeMealPlanTask:
+			if err := a.handleMealPlanTaskNotification(ctx, &req); err != nil {
+				a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+				status = statusFailure
+				return err
+			}
+			return nil
+		case notifications.MobileNotificationRequestTypeHouseholdInvitationAccepted:
+			if err := a.handleHouseholdInvitationAcceptedNotification(ctx, &req); err != nil {
+				a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+				status = statusFailure
+				return err
+			}
+			return nil
+		default:
+			a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
+			status = statusFailure
+			return fmt.Errorf("unknown request type: %q", req.RequestType)
+		}
 	}
 }
 
