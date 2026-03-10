@@ -201,6 +201,9 @@ class CreateMealPlanViewModel {
   func assignMeal(_ meal: Mealplanning_Meal, to date: Date) {
     let normalized = selectedDates.first { calendar.isDate($0, inSameDayAs: date) } ?? date
     dayMeals[normalized] = meal
+    searchQuery = ""
+    searchResults = []
+    searchError = nil
   }
 
   func removeMeal(from date: Date) {

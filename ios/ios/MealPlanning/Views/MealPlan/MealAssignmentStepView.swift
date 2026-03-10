@@ -10,7 +10,6 @@ import SwiftUI
 
 struct MealAssignmentStepView: View {
   @Bindable var viewModel: CreateMealPlanViewModel
-  let onDismiss: () -> Void
   @Environment(EventReporterService.self) private var eventReporterService
   @FocusState private var isSearchFocused: Bool
   @State private var displayedSearchError: String?
@@ -115,6 +114,7 @@ struct MealAssignmentStepView: View {
               isSelected: false,
               assignedToOtherDayLabel: assignedLabel.map { "Added \($0)" },
               onTap: {
+                isSearchFocused = false
                 eventReporterService.reporter.track(
                   event: "meal_plan_meal_assigned",
                   properties: ["meal_id": meal.id])
@@ -138,10 +138,6 @@ struct MealAssignmentStepView: View {
           .cornerRadius(8)
         }
       }
-
-      Spacer(minLength: 24)
-
-      dayNavigationAndCreate
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .onAppear {
@@ -202,7 +198,16 @@ struct MealAssignmentStepView: View {
     }
   }
 
-  private var dayNavigationAndCreate: some View {
+}
+
+// MARK: - Meal Assignment Navigation Buttons
+
+struct MealAssignmentNavigationButtons: View {
+  @Bindable var viewModel: CreateMealPlanViewModel
+  let onDismiss: () -> Void
+  @Environment(EventReporterService.self) private var eventReporterService
+
+  var body: some View {
     HStack(spacing: 12) {
       Button {
         if viewModel.canGoToPreviousDay {
@@ -244,30 +249,29 @@ struct MealAssignmentStepView: View {
     }
   }
 
+  @ViewBuilder
   private var lastDayButton: some View {
     let recipesWithOptions = viewModel.collectRecipesWithOptions(
       from: viewModel.allSelectedMeals)
     let hasOptions = !recipesWithOptions.isEmpty
 
-    return Group {
-      if hasOptions {
-        Button {
-          viewModel.wizardStep = .optionSelection
-        } label: {
-          HStack(spacing: 6) {
-            Text("Choose Ingredient Options")
-            Image(systemName: "chevron.right")
-          }
-          .font(.subheadline.weight(.semibold))
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(Color.blue)
-          .foregroundColor(.white)
-          .cornerRadius(10)
+    if hasOptions {
+      Button {
+        viewModel.wizardStep = .optionSelection
+      } label: {
+        HStack(spacing: 6) {
+          Text("Choose Ingredient Options")
+          Image(systemName: "chevron.right")
         }
-      } else {
-        createButton
+        .font(.subheadline.weight(.semibold))
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.blue)
+        .foregroundColor(.white)
+        .cornerRadius(10)
       }
+    } else {
+      createButton
     }
   }
 

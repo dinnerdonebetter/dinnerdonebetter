@@ -256,7 +256,7 @@ struct MealPlanningHomeContent: View {
   }
 
   private var softSeparator: some View {
-    DSSoftDivider()
+    DSSoftDivider(verticalSpacing: DSTheme.Spacing.sm)
   }
 
   private func futureMealPlansSection(viewModel: HomeViewModel) -> some View {

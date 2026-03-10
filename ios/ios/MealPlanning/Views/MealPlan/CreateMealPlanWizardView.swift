@@ -40,6 +40,18 @@ struct CreateMealPlanWizardView: View {
           )
           .padding()
 
+          if viewModel.wizardStep == .mealAssignment,
+            let date = viewModel.currentPlanningDate,
+            viewModel.mealForDate(date) != nil
+          {
+            MealAssignmentNavigationButtons(
+              viewModel: viewModel,
+              onDismiss: { dismiss() }
+            )
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+          }
+
           ScrollView {
             VStack(spacing: 24) {
               switch viewModel.wizardStep {
@@ -47,10 +59,7 @@ struct CreateMealPlanWizardView: View {
                 WeekSelectionStepView(viewModel: viewModel)
 
               case .mealAssignment:
-                MealAssignmentStepView(
-                  viewModel: viewModel,
-                  onDismiss: { dismiss() }
-                )
+                MealAssignmentStepView(viewModel: viewModel)
 
               case .optionSelection:
                 OptionSelectionStepView(
@@ -61,6 +70,7 @@ struct CreateMealPlanWizardView: View {
             }
             .padding()
           }
+          .scrollDismissesKeyboard(.interactively)
 
           if let error = viewModel.creationError {
             HStack {
