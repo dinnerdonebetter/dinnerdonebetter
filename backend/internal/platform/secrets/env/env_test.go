@@ -1,13 +1,17 @@
-package secrets
+package env
 
 import (
 	"context"
 	"os"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/secrets"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+var _ secrets.SecretSource = (*envSecretSource)(nil)
 
 func TestEnvSecretSource_GetSecret(t *testing.T) {
 	t.Parallel()
@@ -41,31 +45,12 @@ func TestEnvSecretSource_GetSecret(t *testing.T) {
 		require.NoError(t, err)
 		assert.Empty(t, got)
 	})
-
-	t.Run("Close is safe", func(t *testing.T) {
-		t.Parallel()
-
-		source := NewEnvSecretSource()
-		err := source.Close()
-		require.NoError(t, err)
-	})
 }
 
-func TestNoopSecretSource_GetSecret(t *testing.T) {
+func TestEnvSecretSource_Close(t *testing.T) {
 	t.Parallel()
 
-	source := NewNoopSecretSource()
-	ctx := context.Background()
-
-	got, err := source.GetSecret(ctx, "any-key")
-	require.NoError(t, err)
-	assert.Empty(t, got)
-}
-
-func TestNoopSecretSource_Close(t *testing.T) {
-	t.Parallel()
-
-	source := NewNoopSecretSource()
+	source := NewEnvSecretSource()
 	err := source.Close()
 	require.NoError(t, err)
 }

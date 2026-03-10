@@ -1,7 +1,11 @@
-package secrets
+package secretscfg
 
 import (
+	"context"
 	"fmt"
+
+	"github.com/dinnerdonebetter/backend/internal/platform/secrets"
+	"github.com/dinnerdonebetter/backend/internal/platform/secrets/env"
 
 	"github.com/google/wire"
 )
@@ -14,11 +18,11 @@ var (
 )
 
 // ProvideSecretSourceFromConfig provides a SecretSource from config.
-func ProvideSecretSourceFromConfig(cfg *Config) (SecretSource, error) {
+func ProvideSecretSourceFromConfig(ctx context.Context, cfg *Config) (secrets.SecretSource, error) {
 	if cfg == nil {
-		return NewEnvSecretSource(), nil
+		return env.NewEnvSecretSource(), nil
 	}
-	source, err := cfg.ProvideSecretSource()
+	source, err := cfg.ProvideSecretSource(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("provide secret source: %w", err)
 	}

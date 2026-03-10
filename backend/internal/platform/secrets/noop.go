@@ -2,6 +2,9 @@ package secrets
 
 import "context"
 
+// Ensure NoopSecretSource implements SecretSource.
+var _ SecretSource = (*NoopSecretSource)(nil)
+
 // NoopSecretSource returns empty string for all secrets.
 type NoopSecretSource struct{}
 
