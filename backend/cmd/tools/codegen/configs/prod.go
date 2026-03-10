@@ -225,6 +225,11 @@ func buildProdConfig() *config.APIServiceConfig {
 		},
 		Auth: authcfg.Config{
 			SSO: authcfg.SSOConfigs{Google: authcfg.GoogleSSOConfig{}},
+			Passkey: authcfg.PasskeyConfig{
+				RPID:          "dinnerdonebetter.com",
+				RPDisplayName: "Dinner Done Better",
+				RPOrigins:     []string{"https://dinnerdonebetter.com", "https://www.dinnerdonebetter.com", "https://admin.dinnerdonebetter.com"},
+			},
 			Tokens: tokenscfg.Config{
 				Provider:                tokenscfg.ProviderPASETO,
 				Audience:                prodTokensAudience,

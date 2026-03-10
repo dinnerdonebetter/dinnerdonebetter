@@ -162,6 +162,7 @@
 		"sessionStore": {
 			"provider": ""
 		},
+		"passkey": {},
 		"tokens": {
 			"provider": "",
 			"audience": "",

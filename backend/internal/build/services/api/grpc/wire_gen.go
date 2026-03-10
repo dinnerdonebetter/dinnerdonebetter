@@ -153,12 +153,13 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
+	webauthnConfig := grpc2.ProvidePasskeyConfig(cfg)
 	configConfig := grpc2.ProvideSessionStoreConfig(cfg)
 	sessionStore, err := config2.ProvideSessionStore(configConfig, client, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
-	service, err := grpc2.ProvidePasskeyService(identityDataManager, identityRepository, sessionStore)
+	service, err := grpc2.ProvidePasskeyService(webauthnConfig, identityDataManager, identityRepository, sessionStore)
 	if err != nil {
 		return nil, err
 	}
