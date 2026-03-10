@@ -25,6 +25,26 @@ func (q *Queries) ArchiveWebAuthnCredential(ctx context.Context, db DBTX, id str
 	return result.RowsAffected()
 }
 
+const archiveWebAuthnCredentialForUser = `-- name: ArchiveWebAuthnCredentialForUser :execrows
+UPDATE webauthn_credentials SET archived_at = NOW()
+WHERE archived_at IS NULL
+    AND id = $1
+    AND belongs_to_user = $2
+`
+
+type ArchiveWebAuthnCredentialForUserParams struct {
+	ID            string
+	BelongsToUser string
+}
+
+func (q *Queries) ArchiveWebAuthnCredentialForUser(ctx context.Context, db DBTX, arg *ArchiveWebAuthnCredentialForUserParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveWebAuthnCredentialForUser, arg.ID, arg.BelongsToUser)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const createWebAuthnCredential = `-- name: CreateWebAuthnCredential :exec
 INSERT INTO webauthn_credentials (
     id,

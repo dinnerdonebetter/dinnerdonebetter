@@ -1222,6 +1222,7 @@ func (s *AdminFrontendServer) renderRecipeStepImagesSection(recipeID string, ste
 	} else {
 		mediaList = ghtml.Div(
 			ghtml.Class("space-y-2"),
+			//nolint:unconvert // g.Map returns []g.Node, g.Group accepts variadic; conversion is required by API
 			g.Group(g.Map(step.StepImages, func(m *uploadedmediagrpc.UploadedMedia) g.Node {
 				if m == nil {
 					return g.El("")

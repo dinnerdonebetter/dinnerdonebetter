@@ -284,6 +284,30 @@ internal enum Auth_AuthService {
                 method: "FinishPasskeyAuthentication"
             )
         }
+        /// Namespace for "ListPasskeys" metadata.
+        internal enum ListPasskeys {
+            /// Request type for "ListPasskeys".
+            internal typealias Input = Auth_ListPasskeysRequest
+            /// Response type for "ListPasskeys".
+            internal typealias Output = Auth_ListPasskeysResponse
+            /// Descriptor for "ListPasskeys".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "ListPasskeys"
+            )
+        }
+        /// Namespace for "ArchivePasskey" metadata.
+        internal enum ArchivePasskey {
+            /// Request type for "ArchivePasskey".
+            internal typealias Input = Auth_ArchivePasskeyRequest
+            /// Response type for "ArchivePasskey".
+            internal typealias Output = Auth_ArchivePasskeyResponse
+            /// Descriptor for "ArchivePasskey".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "ArchivePasskey"
+            )
+        }
         /// Descriptors for all methods in the "auth.AuthService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
             EvaluateBooleanFeatureFlag.descriptor,
@@ -307,7 +331,9 @@ internal enum Auth_AuthService {
             BeginPasskeyRegistration.descriptor,
             FinishPasskeyRegistration.descriptor,
             BeginPasskeyAuthentication.descriptor,
-            FinishPasskeyAuthentication.descriptor
+            FinishPasskeyAuthentication.descriptor,
+            ListPasskeys.descriptor,
+            ArchivePasskey.descriptor
         ]
     }
 }
@@ -743,6 +769,44 @@ extension Auth_AuthService {
             deserializer: some GRPCCore.MessageDeserializer<Auth_LoginForTokenResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_LoginForTokenResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "ListPasskeys" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_ListPasskeysRequest` message.
+        ///   - serializer: A serializer for `Auth_ListPasskeysRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_ListPasskeysResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func listPasskeys<Result>(
+            request: GRPCCore.ClientRequest<Auth_ListPasskeysRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_ListPasskeysRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_ListPasskeysResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListPasskeysResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "ArchivePasskey" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_ArchivePasskeyRequest` message.
+        ///   - serializer: A serializer for `Auth_ArchivePasskeyRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_ArchivePasskeyResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func archivePasskey<Result>(
+            request: GRPCCore.ClientRequest<Auth_ArchivePasskeyRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_ArchivePasskeyRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_ArchivePasskeyResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ArchivePasskeyResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
     }
 
@@ -1421,6 +1485,66 @@ extension Auth_AuthService {
                 onResponse: handleResponse
             )
         }
+
+        /// Call the "ListPasskeys" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_ListPasskeysRequest` message.
+        ///   - serializer: A serializer for `Auth_ListPasskeysRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_ListPasskeysResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func listPasskeys<Result>(
+            request: GRPCCore.ClientRequest<Auth_ListPasskeysRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_ListPasskeysRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_ListPasskeysResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListPasskeysResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.ListPasskeys.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "ArchivePasskey" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_ArchivePasskeyRequest` message.
+        ///   - serializer: A serializer for `Auth_ArchivePasskeyRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_ArchivePasskeyResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func archivePasskey<Result>(
+            request: GRPCCore.ClientRequest<Auth_ArchivePasskeyRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_ArchivePasskeyRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_ArchivePasskeyResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ArchivePasskeyResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.ArchivePasskey.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
     }
 }
 
@@ -1972,6 +2096,56 @@ extension Auth_AuthService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Auth_FinishPasskeyAuthenticationRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_LoginForTokenResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ListPasskeys" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_ListPasskeysRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func listPasskeys<Result>(
+        request: GRPCCore.ClientRequest<Auth_ListPasskeysRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListPasskeysResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.listPasskeys(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_ListPasskeysRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_ListPasskeysResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ArchivePasskey" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_ArchivePasskeyRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func archivePasskey<Result>(
+        request: GRPCCore.ClientRequest<Auth_ArchivePasskeyRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ArchivePasskeyResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.archivePasskey(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_ArchivePasskeyRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_ArchivePasskeyResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -2613,6 +2787,64 @@ extension Auth_AuthService.ClientProtocol {
             metadata: metadata
         )
         return try await self.finishPasskeyAuthentication(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ListPasskeys" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func listPasskeys<Result>(
+        _ message: Auth_ListPasskeysRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListPasskeysResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_ListPasskeysRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.listPasskeys(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ArchivePasskey" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func archivePasskey<Result>(
+        _ message: Auth_ArchivePasskeyRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ArchivePasskeyResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_ArchivePasskeyRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.archivePasskey(
             request: request,
             options: options,
             onResponse: handleResponse

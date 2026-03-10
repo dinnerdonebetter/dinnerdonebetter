@@ -13,7 +13,7 @@ import (
 
 const preparationMediaUploadChunkSize = 32 * 1024
 
-func uploadPreparationMediaForTest(t *testing.T, validPreparationID string, filename, contentType string, fileData []byte) string {
+func uploadPreparationMediaForTest(t *testing.T, validPreparationID, filename, contentType string, fileData []byte) string {
 	t.Helper()
 	ctx := t.Context()
 

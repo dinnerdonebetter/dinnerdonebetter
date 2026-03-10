@@ -720,6 +720,11 @@ public struct Mealplanning_ValidIngredient: @unchecked Sendable {
     set {_uniqueStorage()._contaminatesEquipment = newValue}
   }
 
+  public var media: [UploadedMedia_UploadedMedia] {
+    get {return _storage._media}
+    set {_uniqueStorage()._media = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1548,6 +1553,11 @@ public struct Mealplanning_ValidPreparation: @unchecked Sendable {
   public var yieldsNothing: Bool {
     get {return _storage._yieldsNothing}
     set {_uniqueStorage()._yieldsNothing = newValue}
+  }
+
+  public var media: [UploadedMedia_UploadedMedia] {
+    get {return _storage._media}
+    set {_uniqueStorage()._media = newValue}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -2382,6 +2392,11 @@ public struct Mealplanning_RecipeStep: @unchecked Sendable {
   public var startTimerAutomatically: Bool {
     get {return _storage._startTimerAutomatically}
     set {_uniqueStorage()._startTimerAutomatically = newValue}
+  }
+
+  public var stepImages: [UploadedMedia_UploadedMedia] {
+    get {return _storage._stepImages}
+    set {_uniqueStorage()._stepImages = newValue}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -4162,7 +4177,7 @@ extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}storage_temperature_in_celsius\0\u{3}icon_path\0\u{1}warning\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}id\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_shellfish\0\u{3}is_liquid\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_soy\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}contains_dairy\0\u{3}contains_alcohol\0\u{3}animal_flesh\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0\u{3}contaminates_equipment\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}storage_temperature_in_celsius\0\u{3}icon_path\0\u{1}warning\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}id\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_shellfish\0\u{3}is_liquid\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_soy\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}contains_dairy\0\u{3}contains_alcohol\0\u{3}animal_flesh\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0\u{3}contaminates_equipment\0\u{1}media\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -4202,6 +4217,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
     var _isAcid: Bool = false
     var _isHeat: Bool = false
     var _contaminatesEquipment: Bool = false
+    var _media: [UploadedMedia_UploadedMedia] = []
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -4249,6 +4265,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
       _isAcid = source._isAcid
       _isHeat = source._isHeat
       _contaminatesEquipment = source._contaminatesEquipment
+      _media = source._media
     }
   }
 
@@ -4304,6 +4321,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
         case 35: try { try decoder.decodeSingularBoolField(value: &_storage._isAcid) }()
         case 36: try { try decoder.decodeSingularBoolField(value: &_storage._isHeat) }()
         case 37: try { try decoder.decodeSingularBoolField(value: &_storage._contaminatesEquipment) }()
+        case 38: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
         default: break
         }
       }
@@ -4427,6 +4445,9 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
       if _storage._contaminatesEquipment != false {
         try visitor.visitSingularBoolField(value: _storage._contaminatesEquipment, fieldNumber: 37)
       }
+      if !_storage._media.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._media, fieldNumber: 38)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4473,6 +4494,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
         if _storage._isAcid != rhs_storage._isAcid {return false}
         if _storage._isHeat != rhs_storage._isHeat {return false}
         if _storage._contaminatesEquipment != rhs_storage._contaminatesEquipment {return false}
+        if _storage._media != rhs_storage._media {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -5521,7 +5543,7 @@ extension Mealplanning_MeasurementUnitConversionMismatch: SwiftProtobuf.Message,
 
 extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparation"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}instrument_count\0\u{3}ingredient_count\0\u{3}vessel_count\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}icon_path\0\u{3}past_tense\0\u{1}id\0\u{1}name\0\u{1}description\0\u{1}slug\0\u{3}restrict_to_ingredients\0\u{3}temperature_required\0\u{3}time_estimate_required\0\u{3}condition_expression_required\0\u{3}consumes_vessel\0\u{3}only_for_vessels\0\u{3}yields_nothing\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}instrument_count\0\u{3}ingredient_count\0\u{3}vessel_count\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}icon_path\0\u{3}past_tense\0\u{1}id\0\u{1}name\0\u{1}description\0\u{1}slug\0\u{3}restrict_to_ingredients\0\u{3}temperature_required\0\u{3}time_estimate_required\0\u{3}condition_expression_required\0\u{3}consumes_vessel\0\u{3}only_for_vessels\0\u{3}yields_nothing\0\u{1}media\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -5543,6 +5565,7 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
     var _consumesVessel: Bool = false
     var _onlyForVessels: Bool = false
     var _yieldsNothing: Bool = false
+    var _media: [UploadedMedia_UploadedMedia] = []
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -5572,6 +5595,7 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
       _consumesVessel = source._consumesVessel
       _onlyForVessels = source._onlyForVessels
       _yieldsNothing = source._yieldsNothing
+      _media = source._media
     }
   }
 
@@ -5609,6 +5633,7 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
         case 17: try { try decoder.decodeSingularBoolField(value: &_storage._consumesVessel) }()
         case 18: try { try decoder.decodeSingularBoolField(value: &_storage._onlyForVessels) }()
         case 19: try { try decoder.decodeSingularBoolField(value: &_storage._yieldsNothing) }()
+        case 20: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
         default: break
         }
       }
@@ -5678,6 +5703,9 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
       if _storage._yieldsNothing != false {
         try visitor.visitSingularBoolField(value: _storage._yieldsNothing, fieldNumber: 19)
       }
+      if !_storage._media.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._media, fieldNumber: 20)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5706,6 +5734,7 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
         if _storage._consumesVessel != rhs_storage._consumesVessel {return false}
         if _storage._onlyForVessels != rhs_storage._onlyForVessels {return false}
         if _storage._yieldsNothing != rhs_storage._yieldsNothing {return false}
+        if _storage._media != rhs_storage._media {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -6740,7 +6769,7 @@ extension Mealplanning_RecipeRating: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStep"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}estimated_time_in_seconds\0\u{3}temperature_in_celsius\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}belongs_to_recipe\0\u{3}condition_expression\0\u{1}id\0\u{1}notes\0\u{3}explicit_instructions\0\u{1}media\0\u{1}products\0\u{1}instruments\0\u{1}vessels\0\u{3}completion_conditions\0\u{1}ingredients\0\u{1}preparation\0\u{1}index\0\u{1}optional\0\u{3}start_timer_automatically\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}estimated_time_in_seconds\0\u{3}temperature_in_celsius\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}belongs_to_recipe\0\u{3}condition_expression\0\u{1}id\0\u{1}notes\0\u{3}explicit_instructions\0\u{1}media\0\u{1}products\0\u{1}instruments\0\u{1}vessels\0\u{3}completion_conditions\0\u{1}ingredients\0\u{1}preparation\0\u{1}index\0\u{1}optional\0\u{3}start_timer_automatically\0\u{3}step_images\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -6763,6 +6792,7 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
     var _index: UInt32 = 0
     var _optional: Bool = false
     var _startTimerAutomatically: Bool = false
+    var _stepImages: [UploadedMedia_UploadedMedia] = []
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -6793,6 +6823,7 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
       _index = source._index
       _optional = source._optional
       _startTimerAutomatically = source._startTimerAutomatically
+      _stepImages = source._stepImages
     }
   }
 
@@ -6831,6 +6862,7 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
         case 18: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
         case 19: try { try decoder.decodeSingularBoolField(value: &_storage._optional) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._startTimerAutomatically) }()
+        case 21: try { try decoder.decodeRepeatedMessageField(value: &_storage._stepImages) }()
         default: break
         }
       }
@@ -6903,6 +6935,9 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
       if _storage._startTimerAutomatically != false {
         try visitor.visitSingularBoolField(value: _storage._startTimerAutomatically, fieldNumber: 20)
       }
+      if !_storage._stepImages.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._stepImages, fieldNumber: 21)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6932,6 +6967,7 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
         if _storage._index != rhs_storage._index {return false}
         if _storage._optional != rhs_storage._optional {return false}
         if _storage._startTimerAutomatically != rhs_storage._startTimerAutomatically {return false}
+        if _storage._stepImages != rhs_storage._stepImages {return false}
         return true
       }
       if !storagesAreEqual {return false}

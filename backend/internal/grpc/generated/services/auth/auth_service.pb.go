@@ -27,8 +27,8 @@ var file_auth_auth_service_proto_rawDesc = string([]byte{
 	0x0a, 0x17, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x5f, 0x73, 0x65, 0x72, 0x76,
 	0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x61, 0x75, 0x74, 0x68, 0x1a,
 	0x1d, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69,
-	0x63, 0x65, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xa4,
-	0x10, 0x0a, 0x0b, 0x41, 0x75, 0x74, 0x68, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x6f,
+	0x63, 0x65, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xb8,
+	0x11, 0x0a, 0x0b, 0x41, 0x75, 0x74, 0x68, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x6f,
 	0x0a, 0x1a, 0x45, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x65, 0x42, 0x6f, 0x6f, 0x6c, 0x65, 0x61,
 	0x6e, 0x46, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x46, 0x6c, 0x61, 0x67, 0x12, 0x27, 0x2e, 0x61,
 	0x75, 0x74, 0x68, 0x2e, 0x45, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x65, 0x42, 0x6f, 0x6f, 0x6c,
@@ -158,12 +158,21 @@ var file_auth_auth_service_proto_rawDesc = string([]byte{
 	0x6b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x65, 0x6e, 0x74, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f,
 	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e,
 	0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x46, 0x6f, 0x72, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x4b, 0x5a, 0x49, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65,
-	0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74,
-	0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72,
-	0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x61, 0x75,
-	0x74, 0x68, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x45, 0x0a, 0x0c, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x61, 0x73,
+	0x73, 0x6b, 0x65, 0x79, 0x73, 0x12, 0x19, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x4c, 0x69, 0x73,
+	0x74, 0x50, 0x61, 0x73, 0x73, 0x6b, 0x65, 0x79, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x1a, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x61, 0x73, 0x73,
+	0x6b, 0x65, 0x79, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4b, 0x0a, 0x0e,
+	0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x50, 0x61, 0x73, 0x73, 0x6b, 0x65, 0x79, 0x12, 0x1b,
+	0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x50, 0x61, 0x73,
+	0x73, 0x6b, 0x65, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x61, 0x75,
+	0x74, 0x68, 0x2e, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x50, 0x61, 0x73, 0x73, 0x6b, 0x65,
+	0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x4b, 0x5a, 0x49, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f,
+	0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64,
+	0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67,
+	0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x73, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var file_auth_auth_service_proto_goTypes = []any{
@@ -189,26 +198,30 @@ var file_auth_auth_service_proto_goTypes = []any{
 	(*FinishPasskeyRegistrationRequest)(nil),      // 19: auth.FinishPasskeyRegistrationRequest
 	(*BeginPasskeyAuthenticationRequest)(nil),     // 20: auth.BeginPasskeyAuthenticationRequest
 	(*FinishPasskeyAuthenticationRequest)(nil),    // 21: auth.FinishPasskeyAuthenticationRequest
-	(*EvaluateBooleanFeatureFlagResponse)(nil),    // 22: auth.EvaluateBooleanFeatureFlagResponse
-	(*EvaluateInt64FeatureFlagResponse)(nil),      // 23: auth.EvaluateInt64FeatureFlagResponse
-	(*EvaluateStringFeatureFlagResponse)(nil),     // 24: auth.EvaluateStringFeatureFlagResponse
-	(*GetAuthStatusResponse)(nil),                 // 25: auth.GetAuthStatusResponse
-	(*ExchangeTokenResponse)(nil),                 // 26: auth.ExchangeTokenResponse
-	(*LoginForTokenResponse)(nil),                 // 27: auth.LoginForTokenResponse
-	(*UserPermissionsResponse)(nil),               // 28: auth.UserPermissionsResponse
-	(*GetActiveAccountResponse)(nil),              // 29: auth.GetActiveAccountResponse
-	(*GetSelfResponse)(nil),                       // 30: auth.GetSelfResponse
-	(*RedeemPasswordResetTokenResponse)(nil),      // 31: auth.RedeemPasswordResetTokenResponse
-	(*RefreshTOTPSecretResponse)(nil),             // 32: auth.RefreshTOTPSecretResponse
-	(*RequestEmailVerificationEmailResponse)(nil), // 33: auth.RequestEmailVerificationEmailResponse
-	(*RequestPasswordResetTokenResponse)(nil),     // 34: auth.RequestPasswordResetTokenResponse
-	(*RequestUsernameReminderResponse)(nil),       // 35: auth.RequestUsernameReminderResponse
-	(*VerifyEmailAddressResponse)(nil),            // 36: auth.VerifyEmailAddressResponse
-	(*VerifyTOTPSecretResponse)(nil),              // 37: auth.VerifyTOTPSecretResponse
-	(*UpdatePasswordResponse)(nil),                // 38: auth.UpdatePasswordResponse
-	(*BeginPasskeyRegistrationResponse)(nil),      // 39: auth.BeginPasskeyRegistrationResponse
-	(*FinishPasskeyRegistrationResponse)(nil),     // 40: auth.FinishPasskeyRegistrationResponse
-	(*BeginPasskeyAuthenticationResponse)(nil),    // 41: auth.BeginPasskeyAuthenticationResponse
+	(*ListPasskeysRequest)(nil),                   // 22: auth.ListPasskeysRequest
+	(*ArchivePasskeyRequest)(nil),                 // 23: auth.ArchivePasskeyRequest
+	(*EvaluateBooleanFeatureFlagResponse)(nil),    // 24: auth.EvaluateBooleanFeatureFlagResponse
+	(*EvaluateInt64FeatureFlagResponse)(nil),      // 25: auth.EvaluateInt64FeatureFlagResponse
+	(*EvaluateStringFeatureFlagResponse)(nil),     // 26: auth.EvaluateStringFeatureFlagResponse
+	(*GetAuthStatusResponse)(nil),                 // 27: auth.GetAuthStatusResponse
+	(*ExchangeTokenResponse)(nil),                 // 28: auth.ExchangeTokenResponse
+	(*LoginForTokenResponse)(nil),                 // 29: auth.LoginForTokenResponse
+	(*UserPermissionsResponse)(nil),               // 30: auth.UserPermissionsResponse
+	(*GetActiveAccountResponse)(nil),              // 31: auth.GetActiveAccountResponse
+	(*GetSelfResponse)(nil),                       // 32: auth.GetSelfResponse
+	(*RedeemPasswordResetTokenResponse)(nil),      // 33: auth.RedeemPasswordResetTokenResponse
+	(*RefreshTOTPSecretResponse)(nil),             // 34: auth.RefreshTOTPSecretResponse
+	(*RequestEmailVerificationEmailResponse)(nil), // 35: auth.RequestEmailVerificationEmailResponse
+	(*RequestPasswordResetTokenResponse)(nil),     // 36: auth.RequestPasswordResetTokenResponse
+	(*RequestUsernameReminderResponse)(nil),       // 37: auth.RequestUsernameReminderResponse
+	(*VerifyEmailAddressResponse)(nil),            // 38: auth.VerifyEmailAddressResponse
+	(*VerifyTOTPSecretResponse)(nil),              // 39: auth.VerifyTOTPSecretResponse
+	(*UpdatePasswordResponse)(nil),                // 40: auth.UpdatePasswordResponse
+	(*BeginPasskeyRegistrationResponse)(nil),      // 41: auth.BeginPasskeyRegistrationResponse
+	(*FinishPasskeyRegistrationResponse)(nil),     // 42: auth.FinishPasskeyRegistrationResponse
+	(*BeginPasskeyAuthenticationResponse)(nil),    // 43: auth.BeginPasskeyAuthenticationResponse
+	(*ListPasskeysResponse)(nil),                  // 44: auth.ListPasskeysResponse
+	(*ArchivePasskeyResponse)(nil),                // 45: auth.ArchivePasskeyResponse
 }
 var file_auth_auth_service_proto_depIdxs = []int32{
 	0,  // 0: auth.AuthService.EvaluateBooleanFeatureFlag:input_type -> auth.EvaluateBooleanFeatureFlagRequest
@@ -233,30 +246,34 @@ var file_auth_auth_service_proto_depIdxs = []int32{
 	19, // 19: auth.AuthService.FinishPasskeyRegistration:input_type -> auth.FinishPasskeyRegistrationRequest
 	20, // 20: auth.AuthService.BeginPasskeyAuthentication:input_type -> auth.BeginPasskeyAuthenticationRequest
 	21, // 21: auth.AuthService.FinishPasskeyAuthentication:input_type -> auth.FinishPasskeyAuthenticationRequest
-	22, // 22: auth.AuthService.EvaluateBooleanFeatureFlag:output_type -> auth.EvaluateBooleanFeatureFlagResponse
-	23, // 23: auth.AuthService.EvaluateInt64FeatureFlag:output_type -> auth.EvaluateInt64FeatureFlagResponse
-	24, // 24: auth.AuthService.EvaluateStringFeatureFlag:output_type -> auth.EvaluateStringFeatureFlagResponse
-	25, // 25: auth.AuthService.GetAuthStatus:output_type -> auth.GetAuthStatusResponse
-	26, // 26: auth.AuthService.ExchangeToken:output_type -> auth.ExchangeTokenResponse
-	27, // 27: auth.AuthService.AdminLoginForToken:output_type -> auth.LoginForTokenResponse
-	28, // 28: auth.AuthService.CheckPermissions:output_type -> auth.UserPermissionsResponse
-	29, // 29: auth.AuthService.GetActiveAccount:output_type -> auth.GetActiveAccountResponse
-	30, // 30: auth.AuthService.GetSelf:output_type -> auth.GetSelfResponse
-	27, // 31: auth.AuthService.LoginForToken:output_type -> auth.LoginForTokenResponse
-	31, // 32: auth.AuthService.RedeemPasswordResetToken:output_type -> auth.RedeemPasswordResetTokenResponse
-	32, // 33: auth.AuthService.RefreshTOTPSecret:output_type -> auth.RefreshTOTPSecretResponse
-	33, // 34: auth.AuthService.RequestEmailVerificationEmail:output_type -> auth.RequestEmailVerificationEmailResponse
-	34, // 35: auth.AuthService.RequestPasswordResetToken:output_type -> auth.RequestPasswordResetTokenResponse
-	35, // 36: auth.AuthService.RequestUsernameReminder:output_type -> auth.RequestUsernameReminderResponse
-	36, // 37: auth.AuthService.VerifyEmailAddress:output_type -> auth.VerifyEmailAddressResponse
-	37, // 38: auth.AuthService.VerifyTOTPSecret:output_type -> auth.VerifyTOTPSecretResponse
-	38, // 39: auth.AuthService.UpdatePassword:output_type -> auth.UpdatePasswordResponse
-	39, // 40: auth.AuthService.BeginPasskeyRegistration:output_type -> auth.BeginPasskeyRegistrationResponse
-	40, // 41: auth.AuthService.FinishPasskeyRegistration:output_type -> auth.FinishPasskeyRegistrationResponse
-	41, // 42: auth.AuthService.BeginPasskeyAuthentication:output_type -> auth.BeginPasskeyAuthenticationResponse
-	27, // 43: auth.AuthService.FinishPasskeyAuthentication:output_type -> auth.LoginForTokenResponse
-	22, // [22:44] is the sub-list for method output_type
-	0,  // [0:22] is the sub-list for method input_type
+	22, // 22: auth.AuthService.ListPasskeys:input_type -> auth.ListPasskeysRequest
+	23, // 23: auth.AuthService.ArchivePasskey:input_type -> auth.ArchivePasskeyRequest
+	24, // 24: auth.AuthService.EvaluateBooleanFeatureFlag:output_type -> auth.EvaluateBooleanFeatureFlagResponse
+	25, // 25: auth.AuthService.EvaluateInt64FeatureFlag:output_type -> auth.EvaluateInt64FeatureFlagResponse
+	26, // 26: auth.AuthService.EvaluateStringFeatureFlag:output_type -> auth.EvaluateStringFeatureFlagResponse
+	27, // 27: auth.AuthService.GetAuthStatus:output_type -> auth.GetAuthStatusResponse
+	28, // 28: auth.AuthService.ExchangeToken:output_type -> auth.ExchangeTokenResponse
+	29, // 29: auth.AuthService.AdminLoginForToken:output_type -> auth.LoginForTokenResponse
+	30, // 30: auth.AuthService.CheckPermissions:output_type -> auth.UserPermissionsResponse
+	31, // 31: auth.AuthService.GetActiveAccount:output_type -> auth.GetActiveAccountResponse
+	32, // 32: auth.AuthService.GetSelf:output_type -> auth.GetSelfResponse
+	29, // 33: auth.AuthService.LoginForToken:output_type -> auth.LoginForTokenResponse
+	33, // 34: auth.AuthService.RedeemPasswordResetToken:output_type -> auth.RedeemPasswordResetTokenResponse
+	34, // 35: auth.AuthService.RefreshTOTPSecret:output_type -> auth.RefreshTOTPSecretResponse
+	35, // 36: auth.AuthService.RequestEmailVerificationEmail:output_type -> auth.RequestEmailVerificationEmailResponse
+	36, // 37: auth.AuthService.RequestPasswordResetToken:output_type -> auth.RequestPasswordResetTokenResponse
+	37, // 38: auth.AuthService.RequestUsernameReminder:output_type -> auth.RequestUsernameReminderResponse
+	38, // 39: auth.AuthService.VerifyEmailAddress:output_type -> auth.VerifyEmailAddressResponse
+	39, // 40: auth.AuthService.VerifyTOTPSecret:output_type -> auth.VerifyTOTPSecretResponse
+	40, // 41: auth.AuthService.UpdatePassword:output_type -> auth.UpdatePasswordResponse
+	41, // 42: auth.AuthService.BeginPasskeyRegistration:output_type -> auth.BeginPasskeyRegistrationResponse
+	42, // 43: auth.AuthService.FinishPasskeyRegistration:output_type -> auth.FinishPasskeyRegistrationResponse
+	43, // 44: auth.AuthService.BeginPasskeyAuthentication:output_type -> auth.BeginPasskeyAuthenticationResponse
+	29, // 45: auth.AuthService.FinishPasskeyAuthentication:output_type -> auth.LoginForTokenResponse
+	44, // 46: auth.AuthService.ListPasskeys:output_type -> auth.ListPasskeysResponse
+	45, // 47: auth.AuthService.ArchivePasskey:output_type -> auth.ArchivePasskeyResponse
+	24, // [24:48] is the sub-list for method output_type
+	0,  // [0:24] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

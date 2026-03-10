@@ -882,7 +882,8 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 		err     error
 	)
 	if !useSearchService {
-		rawResults, err := m.db.SearchForValidIngredients(ctx, query, filter)
+		var rawResults *filtering.QueryFilteredResult[types.ValidIngredient]
+		rawResults, err = m.db.SearchForValidIngredients(ctx, query, filter)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching database for valid ingredients")
 		}
@@ -890,7 +891,7 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 		results = rawResults
 	} else {
 		var validIngredientSubsets []*eatingindexing.ValidIngredientSearchSubset
-		validIngredientSubsets, err := m.validIngredientSearchIndex.Search(ctx, query)
+		validIngredientSubsets, err = m.validIngredientSearchIndex.Search(ctx, query)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching valid ingredient search index for valid ingredients")
 		}
@@ -900,7 +901,8 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 			ids = append(ids, validIngredientSubset.ID)
 		}
 
-		dbResults, err := m.db.GetValidIngredientsWithIDs(ctx, ids)
+		var dbResults []*types.ValidIngredient
+		dbResults, err = m.db.GetValidIngredientsWithIDs(ctx, ids)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredients from database")
 		}

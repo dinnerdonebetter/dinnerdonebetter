@@ -366,3 +366,8 @@ func (m *RepositoryMock) UpdateWebAuthnCredentialSignCount(ctx context.Context, 
 func (m *RepositoryMock) ArchiveWebAuthnCredential(ctx context.Context, id string) error {
 	return m.Called(ctx, id).Error(0)
 }
+
+// ArchiveWebAuthnCredentialForUser is a mock function.
+func (m *RepositoryMock) ArchiveWebAuthnCredentialForUser(ctx context.Context, id, userID string) error {
+	return m.Called(ctx, id, userID).Error(0)
+}

@@ -13,7 +13,7 @@ import (
 
 const ingredientMediaUploadChunkSize = 32 * 1024
 
-func uploadIngredientMediaForTest(t *testing.T, validIngredientID string, filename, contentType string, fileData []byte) string {
+func uploadIngredientMediaForTest(t *testing.T, validIngredientID, filename, contentType string, fileData []byte) string {
 	t.Helper()
 	ctx := t.Context()
 

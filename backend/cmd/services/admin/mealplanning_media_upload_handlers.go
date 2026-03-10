@@ -13,8 +13,10 @@ import (
 )
 
 const (
-	maxMediaUploadSize = 5 * 1024 * 1024 // 5 MB
-	uploadChunkSize    = 32 * 1024       // 32 KB
+	maxMediaUploadSize       = 5 * 1024 * 1024 // 5 MB
+	uploadChunkSize          = 32 * 1024       // 32 KB
+	defaultUploadFilename    = "upload"
+	defaultUploadContentType = "application/octet-stream"
 )
 
 // streamFileToPreparationMedia uploads a file to the preparation media gRPC stream.
@@ -189,38 +191,42 @@ func (s *AdminFrontendServer) UploadPreparationMedia(res http.ResponseWriter, re
 	validPreparationID := s.validPreparationIDRouteParamFetcher(req)
 	if validPreparationID == "" {
 		http.Error(res, "valid_preparation_id is required", http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	if err := req.ParseMultipartForm(maxMediaUploadSize); err != nil {
 		http.Error(res, fmt.Sprintf("failed to parse multipart form: %v", err), http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	file, header, err := req.FormFile("file")
 	if err != nil {
 		http.Error(res, fmt.Sprintf("file is required: %v", err), http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
-	defer file.Close()
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil {
+			s.logger.Error("failed to close uploaded file", closeErr)
+		}
+	}()
 
 	fileData, err := io.ReadAll(io.LimitReader(file, maxMediaUploadSize))
 	if err != nil {
 		http.Error(res, fmt.Sprintf("failed to read file: %v", err), http.StatusInternalServerError)
-		return nil, nil
+		return g.El("div"), nil
 	}
 	if len(fileData) == 0 {
 		http.Error(res, "file is empty", http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	filename := header.Filename
 	if filename == "" {
-		filename = "upload"
+		filename = defaultUploadFilename
 	}
 	contentType := header.Header.Get("Content-Type")
 	if contentType == "" {
-		contentType = "application/octet-stream"
+		contentType = defaultUploadContentType
 	}
 
 	forIngredientID := req.FormValue("for_ingredient_id")
@@ -229,7 +235,7 @@ func (s *AdminFrontendServer) UploadPreparationMedia(res http.ResponseWriter, re
 	if err != nil {
 		s.logger.Error("failed to upload preparation media", err)
 		http.Error(res, fmt.Sprintf("upload failed: %v", err), http.StatusInternalServerError)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	http.Redirect(res, req, fmt.Sprintf("/valid_preparations/%s", validPreparationID), http.StatusSeeOther)
@@ -244,45 +250,49 @@ func (s *AdminFrontendServer) UploadIngredientMedia(res http.ResponseWriter, req
 	validIngredientID := s.validIngredientIDRouteParamFetcher(req)
 	if validIngredientID == "" {
 		http.Error(res, "valid_ingredient_id is required", http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	if err := req.ParseMultipartForm(maxMediaUploadSize); err != nil {
 		http.Error(res, fmt.Sprintf("failed to parse multipart form: %v", err), http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	file, header, err := req.FormFile("file")
 	if err != nil {
 		http.Error(res, fmt.Sprintf("file is required: %v", err), http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
-	defer file.Close()
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil {
+			s.logger.Error("failed to close uploaded file", closeErr)
+		}
+	}()
 
 	fileData, err := io.ReadAll(io.LimitReader(file, maxMediaUploadSize))
 	if err != nil {
 		http.Error(res, fmt.Sprintf("failed to read file: %v", err), http.StatusInternalServerError)
-		return nil, nil
+		return g.El("div"), nil
 	}
 	if len(fileData) == 0 {
 		http.Error(res, "file is empty", http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	filename := header.Filename
 	if filename == "" {
-		filename = "upload"
+		filename = defaultUploadFilename
 	}
 	contentType := header.Header.Get("Content-Type")
 	if contentType == "" {
-		contentType = "application/octet-stream"
+		contentType = defaultUploadContentType
 	}
 
 	_, err = s.streamFileToIngredientMedia(ctx, validIngredientID, filename, contentType, fileData)
 	if err != nil {
 		s.logger.Error("failed to upload ingredient media", err)
 		http.Error(res, fmt.Sprintf("upload failed: %v", err), http.StatusInternalServerError)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	http.Redirect(res, req, fmt.Sprintf("/valid_ingredients/%s", validIngredientID), http.StatusSeeOther)
@@ -298,45 +308,49 @@ func (s *AdminFrontendServer) UploadRecipeStepImage(res http.ResponseWriter, req
 	recipeStepID := s.recipeStepIDRouteParamFetcher(req)
 	if recipeID == "" || recipeStepID == "" {
 		http.Error(res, "recipe_id and recipe_step_id are required", http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	if err := req.ParseMultipartForm(maxMediaUploadSize); err != nil {
 		http.Error(res, fmt.Sprintf("failed to parse multipart form: %v", err), http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	file, header, err := req.FormFile("file")
 	if err != nil {
 		http.Error(res, fmt.Sprintf("file is required: %v", err), http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
-	defer file.Close()
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil {
+			s.logger.Error("failed to close uploaded file", closeErr)
+		}
+	}()
 
 	fileData, err := io.ReadAll(io.LimitReader(file, maxMediaUploadSize))
 	if err != nil {
 		http.Error(res, fmt.Sprintf("failed to read file: %v", err), http.StatusInternalServerError)
-		return nil, nil
+		return g.El("div"), nil
 	}
 	if len(fileData) == 0 {
 		http.Error(res, "file is empty", http.StatusBadRequest)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	filename := header.Filename
 	if filename == "" {
-		filename = "upload"
+		filename = defaultUploadFilename
 	}
 	contentType := header.Header.Get("Content-Type")
 	if contentType == "" {
-		contentType = "application/octet-stream"
+		contentType = defaultUploadContentType
 	}
 
 	_, err = s.streamFileToRecipeStepImage(ctx, recipeID, recipeStepID, filename, contentType, fileData)
 	if err != nil {
 		s.logger.Error("failed to upload recipe step image", err)
 		http.Error(res, fmt.Sprintf("upload failed: %v", err), http.StatusInternalServerError)
-		return nil, nil
+		return g.El("div"), nil
 	}
 
 	http.Redirect(res, req, fmt.Sprintf("/recipes/%s", recipeID), http.StatusSeeOther)

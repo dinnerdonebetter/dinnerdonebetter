@@ -13,7 +13,7 @@ import (
 
 const recipeStepImageUploadChunkSize = 32 * 1024
 
-func uploadRecipeStepImageForTest(t *testing.T, recipeID, recipeStepID string, filename, contentType string, fileData []byte) string {
+func uploadRecipeStepImageForTest(t *testing.T, recipeID, recipeStepID, filename, contentType string, fileData []byte) string {
 	t.Helper()
 	ctx := t.Context()
 

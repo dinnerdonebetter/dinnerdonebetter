@@ -104,7 +104,6 @@ func (s *ConsumerFrontendServer) AccountSettingsPage(res http.ResponseWriter, re
 				g.Text("Manage your account preferences here."),
 			),
 			s.componentRenderer.AccountLinks(&components.AccountLinksProps{HasAccount: hasAccount}),
-			s.componentRenderer.PasskeySection(),
 		),
 	), nil
 }

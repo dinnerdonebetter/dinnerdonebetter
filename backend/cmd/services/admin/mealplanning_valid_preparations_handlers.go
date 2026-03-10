@@ -183,9 +183,9 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 
 	// Fetch ingredient associations for the "for ingredient" dropdown in media upload
 	var ingredientOptions []*mealplanningsvc.ValidIngredient
-	if ingRes, err := c.GetValidIngredientPreparationsByPreparation(ctx, &mealplanningsvc.GetValidIngredientPreparationsByPreparationRequest{
+	if ingRes, ingErr := c.GetValidIngredientPreparationsByPreparation(ctx, &mealplanningsvc.GetValidIngredientPreparationsByPreparationRequest{
 		ValidPreparationId: validPreparationID,
-	}); err == nil && ingRes != nil {
+	}); ingErr == nil && ingRes != nil {
 		for _, assoc := range ingRes.Results {
 			if assoc != nil && assoc.Ingredient != nil {
 				ingredientOptions = append(ingredientOptions, assoc.Ingredient)
@@ -525,6 +525,7 @@ func (s *AdminFrontendServer) renderPreparationMediaSection(vp *mealplanningsvc.
 						ghtml.Value(""),
 						g.Text("— General (all ingredients) —"),
 					),
+					//nolint:unconvert // g.Map returns []g.Node, g.Group accepts variadic; conversion is required by API
 					g.Group(g.Map(ingredientOptions, func(ing *mealplanningsvc.ValidIngredient) g.Node {
 						if ing == nil {
 							return g.El("")
@@ -553,6 +554,7 @@ func (s *AdminFrontendServer) renderPreparationMediaSection(vp *mealplanningsvc.
 	} else {
 		mediaList = ghtml.Div(
 			ghtml.Class("space-y-2"),
+			//nolint:unconvert // g.Map returns []g.Node, g.Group accepts variadic; conversion is required by API
 			g.Group(g.Map(vp.Media, func(m *uploadedmediagrpc.UploadedMedia) g.Node {
 				if m == nil {
 					return g.El("")

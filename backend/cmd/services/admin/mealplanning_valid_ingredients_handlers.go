@@ -655,6 +655,7 @@ func (s *AdminFrontendServer) renderIngredientMediaSection(vi *mealplanningsvc.V
 	} else {
 		mediaList = ghtml.Div(
 			ghtml.Class("space-y-2"),
+			//nolint:unconvert // g.Map returns []g.Node, g.Group accepts variadic; conversion is required by API
 			g.Group(g.Map(vi.Media, func(m *uploadedmediagrpc.UploadedMedia) g.Node {
 				if m == nil {
 					return g.El("")

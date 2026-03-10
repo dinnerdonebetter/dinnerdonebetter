@@ -1,6 +1,7 @@
 package webauthn
 
 import (
+	"bytes"
 	"encoding/json"
 	"strings"
 
@@ -15,6 +16,10 @@ type WebAuthnUser struct {
 	User        *identity.User
 	Credentials []*identity.WebAuthnCredential
 	UserID      []byte // WebAuthn user handle - use user ID bytes
+	// Optional: when set, credentials matching AssertionCredID use AssertionFlags for BackupEligible/BackupState.
+	// Used to satisfy go-webauthn's consistency check during login (avoids "Backup Eligible flag inconsistency").
+	AssertionCredID []byte
+	AssertionFlags  protocol.AuthenticatorFlags
 }
 
 // Ensure WebAuthnUser implements webauthn.User.
@@ -42,13 +47,22 @@ func (u *WebAuthnUser) WebAuthnDisplayName() string {
 func (u *WebAuthnUser) WebAuthnCredentials() []webauthn.Credential {
 	creds := make([]webauthn.Credential, 0, len(u.Credentials))
 	for _, c := range u.Credentials {
-		creds = append(creds, domainCredentialToWebAuthn(c))
+		creds = append(creds, domainCredentialToWebAuthnWithAssertionFlags(c, u.AssertionCredID, u.AssertionFlags))
 	}
 	return creds
 }
 
-func domainCredentialToWebAuthn(c *identity.WebAuthnCredential) webauthn.Credential {
+// domainCredentialToWebAuthnWithAssertionFlags converts a domain credential to webauthn.Credential.
+// When assertionCredID and flags are provided and the credential matches, uses the assertion's
+// BackupEligible/BackupState to satisfy go-webauthn's consistency check (avoids "Backup Eligible
+// flag inconsistency" for passkeys that report different flags than our stored default, e.g. iCloud-synced).
+func domainCredentialToWebAuthnWithAssertionFlags(c *identity.WebAuthnCredential, assertionCredID []byte, flags protocol.AuthenticatorFlags) webauthn.Credential {
 	transports := parseTransports(c.Transports)
+	backupEligible, backupState := false, false
+	if len(assertionCredID) > 0 && bytes.Equal(c.CredentialID, assertionCredID) {
+		backupEligible = flags.HasBackupEligible()
+		backupState = flags.HasBackupState()
+	}
 	return webauthn.Credential{
 		ID:              c.CredentialID,
 		PublicKey:       c.PublicKey,
@@ -57,8 +71,8 @@ func domainCredentialToWebAuthn(c *identity.WebAuthnCredential) webauthn.Credent
 		Flags: webauthn.CredentialFlags{
 			UserPresent:    true,
 			UserVerified:   true,
-			BackupEligible: false,
-			BackupState:    false,
+			BackupEligible: backupEligible,
+			BackupState:    backupState,
 		},
 		Authenticator: webauthn.Authenticator{
 			SignCount:    c.SignCount,

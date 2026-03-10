@@ -58,3 +58,9 @@ WHERE archived_at IS NULL
 UPDATE webauthn_credentials SET archived_at = NOW()
 WHERE archived_at IS NULL
     AND id = sqlc.arg(id);
+
+-- name: ArchiveWebAuthnCredentialForUser :execrows
+UPDATE webauthn_credentials SET archived_at = NOW()
+WHERE archived_at IS NULL
+    AND id = sqlc.arg(id)
+    AND belongs_to_user = sqlc.arg(belongs_to_user);

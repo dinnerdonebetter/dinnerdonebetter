@@ -199,6 +199,9 @@ generated_files: configs queries env_vars format_golang
 .PHONY: integration-tests
 integration-tests: integration_tests
 
+.PHONY: integration_test
+integration_test: integration_tests
+
 .PHONY: integration_tests
 integration_tests: integration_tests_postgres
 

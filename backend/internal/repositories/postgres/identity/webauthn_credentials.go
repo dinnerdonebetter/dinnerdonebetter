@@ -140,6 +140,23 @@ func (r *repository) ArchiveWebAuthnCredential(ctx context.Context, id string) e
 	return observability.PrepareError(err, span, "archiving webauthn credential")
 }
 
+// ArchiveWebAuthnCredentialForUser archives a WebAuthn credential only if it belongs to the given user.
+// Returns nil if the credential was archived or if it did not exist / did not belong to the user.
+func (r *repository) ArchiveWebAuthnCredentialForUser(ctx context.Context, id, userID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if id == "" || userID == "" {
+		return platformerrors.ErrInvalidIDProvided
+	}
+
+	_, err := r.generatedQuerier.ArchiveWebAuthnCredentialForUser(ctx, r.writeDB, &generated.ArchiveWebAuthnCredentialForUserParams{
+		ID:            id,
+		BelongsToUser: userID,
+	})
+	return observability.PrepareError(err, span, "archiving webauthn credential for user")
+}
+
 func webauthnCredentialFromRow(row *generated.GetWebAuthnCredentialsForUserRow) *identity.WebAuthnCredential {
 	return &identity.WebAuthnCredential{
 		ID:            row.ID,

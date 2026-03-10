@@ -141,7 +141,7 @@ const passkeyScript = `
 		var b = new Uint8Array(buf);
 		var s = '';
 		for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
-		return btoa(s).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+		return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 	}
 	function b64dec(s) {
 		s = (s + '==='.slice((s.length + 3) % 4)).replace(/-/g,'+').replace(/_/g,'/');

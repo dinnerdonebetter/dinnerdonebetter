@@ -28,6 +28,7 @@ func (r *ComponentRenderer) AccountLinks(props *AccountLinksProps) g.Node {
 		links = append(links, accountLink("/account/household-details", "Household Details", "Edit household details", "house", linkClass))
 	}
 	links = append(links,
+		accountLink("/account/passkeys", "Passkeys", "Add, view, and remove passkeys", "key", linkClass),
 		accountLink("/account/preferences", "Preferences", "Configure preferences", "gearshape", linkClass),
 		accountLink("/account/profile", "Profile", "Photo, name, and account details", "person.crop.circle", linkClass),
 	)

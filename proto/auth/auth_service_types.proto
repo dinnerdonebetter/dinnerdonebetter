@@ -252,3 +252,25 @@ message GetSelfResponse {
   common.ResponseDetails response_details = 1;
   identity.User result = 2;
 }
+
+message ListPasskeysRequest {}
+
+message ListPasskeysResponse {
+  common.ResponseDetails response_details = 1;
+  repeated PasskeyCredential results = 2;
+}
+
+message PasskeyCredential {
+  string id = 1;
+  string friendly_name = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp last_used_at = 4;
+}
+
+message ArchivePasskeyRequest {
+  string credential_id = 1;
+}
+
+message ArchivePasskeyResponse {
+  common.ResponseDetails response_details = 1;
+}
