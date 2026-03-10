@@ -81,9 +81,59 @@
       ]
     },
     {
+      "title": "Outbound Emails - Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(async_message_handler_messages_processed_total{job=\"async_message_handler\", topic=\"outbound_emails\"}[5m])) by (status)", "legendFormat": "{{status}}" }
+      ]
+    },
+    {
+      "title": "Outbound Emails - Errors",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 6 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(async_message_handler_handler_errors_total{job=\"async_message_handler\", topic=\"outbound_emails\"}[5m]))", "legendFormat": "Errors/s" }
+      ]
+    },
+    {
+      "title": "Outbound Emails - Latency",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 6 },
+      "datasource": { "type": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(async_message_handler_outbound_emails_execution_time_bucket{job=\"async_message_handler\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(async_message_handler_outbound_emails_execution_time_bucket{job=\"async_message_handler\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "refId": "C", "expr": "histogram_quantile(0.99, sum(rate(async_message_handler_outbound_emails_execution_time_bucket{job=\"async_message_handler\"}[5m])) by (le))", "legendFormat": "p99" }
+      ]
+    },
+    {
       "title": "Search Index Requests - Latency",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -101,7 +151,7 @@
     {
       "title": "gRPC Client Latency",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -119,7 +169,7 @@
     {
       "title": "Deployment Replicas",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 14 },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 20 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -136,7 +186,7 @@
     {
       "title": "Go Goroutines",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 14 },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 20 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -152,7 +202,7 @@
     {
       "title": "Go Heap Allocated",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 14 },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 20 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -168,7 +218,7 @@
     {
       "title": "Host CPU",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 20 },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 26 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -184,7 +234,7 @@
     {
       "title": "Host Memory",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 20 },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 26 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {
@@ -200,7 +250,7 @@
     {
       "title": "Memory Utilization",
       "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 20 },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 26 },
       "datasource": { "type": "prometheus" },
       "fieldConfig": {
         "defaults": {

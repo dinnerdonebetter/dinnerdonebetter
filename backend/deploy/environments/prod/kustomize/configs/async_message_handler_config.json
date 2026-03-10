@@ -102,14 +102,14 @@
 		}
 	},
 	"email": {
-		"sendgrid": {
-			"apiToken": "placeholder"
-		},
+		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
-		"resend": null,
+		"resend": {
+			"apiToken": "placeholder"
+		},
 		"postmark": null,
-		"provider": "sendgrid",
+		"provider": "resend",
 		"circuitBreakerConfig": {
 			"name": "prod_emailer",
 			"circuitBreakerErrorPercentage": 0.5,

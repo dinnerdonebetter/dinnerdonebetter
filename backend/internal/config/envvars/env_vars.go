@@ -67,6 +67,15 @@ const (
 	// AuthMinimumUsernameLengthEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.MinimumUsernameLength`.
 	AuthMinimumUsernameLengthEnvVarKey = "DINNER_DONE_BETTER_AUTH_MINIMUM_USERNAME_LENGTH"
 
+	// AuthPasskeyRpDisplayNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Passkey.RPDisplayName`.
+	AuthPasskeyRpDisplayNameEnvVarKey = "DINNER_DONE_BETTER_AUTH_PASSKEY_RP_DISPLAY_NAME"
+
+	// AuthPasskeyRpIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Passkey.RPID`.
+	AuthPasskeyRpIDEnvVarKey = "DINNER_DONE_BETTER_AUTH_PASSKEY_RP_ID"
+
+	// AuthPasskeyRpOriginsEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Passkey.RPOrigins`.
+	AuthPasskeyRpOriginsEnvVarKey = "DINNER_DONE_BETTER_AUTH_PASSKEY_RP_ORIGINS"
+
 	// AuthSessionStoreProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.SessionStore.Provider`.
 	AuthSessionStoreProviderEnvVarKey = "DINNER_DONE_BETTER_AUTH_SESSION_STORE_PROVIDER"
 
@@ -388,6 +397,9 @@ const (
 	// QueuesWebhookExecutionRequestsTopicNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Queues.WebhookExecutionRequestsTopicName`.
 	QueuesWebhookExecutionRequestsTopicNameEnvVarKey = "DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME"
 
+	// RecipientEmailAddressEnvVarKey is the environment variable name to set to override `EmailDeliverabilityTestConfigRecipientEmailAddress`.
+	RecipientEmailAddressEnvVarKey = "DINNER_DONE_BETTER_RECIPIENT_EMAIL_ADDRESS"
+
 	// RoutingChiEnableCorsForLocalhostEnvVarKey is the environment variable name to set to override `APIServiceConfig.Routing.Chi.EnableCORSForLocalhost`.
 	RoutingChiEnableCorsForLocalhostEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_ENABLE_CORS_FOR_LOCALHOST"
 
@@ -480,6 +492,9 @@ const (
 
 	// ServiceAuthSsoConfigGoogleClientSecretEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.SSO.Google.ClientSecret`.
 	ServiceAuthSsoConfigGoogleClientSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET"
+
+	// ServiceEnvironmentEnvVarKey is the environment variable name to set to override `EmailDeliverabilityTestConfigServiceEnvironment`.
+	ServiceEnvironmentEnvVarKey = "DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"
 
 	// ServiceMealPlanningPublicMediaURLPrefixEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.PublicMediaURLPrefix`.
 	ServiceMealPlanningPublicMediaURLPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_PUBLIC_MEDIA_URL_PREFIX"

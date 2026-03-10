@@ -90,6 +90,8 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 		messagesProcessedCounter:                  noopCounter,
 		messageDecodeErrorsCounter:                noopCounter,
 		handlerErrorsCounter:                      noopCounter,
+		emailsSentCounter:                         noopCounter,
+		emailsFailedCounter:                       noopCounter,
 		pushNotificationsSentCounter:              noopCounter,
 		badDeviceTokensArchivedCounter:            noopCounter,
 		queuesConfig: msgconfig.QueuesConfig{
@@ -151,6 +153,8 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "messages_processed_total", mock.Anything).Return(noopCounter, nil)
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "message_decode_errors_total", mock.Anything).Return(noopCounter, nil)
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "handler_errors_total", mock.Anything).Return(noopCounter, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "emails_sent_total", mock.Anything).Return(noopCounter, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "emails_failed_total", mock.Anything).Return(noopCounter, nil)
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "push_notifications_sent_total", mock.Anything).Return(noopCounter, nil)
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "bad_device_tokens_archived_total", mock.Anything).Return(noopCounter, nil)
 

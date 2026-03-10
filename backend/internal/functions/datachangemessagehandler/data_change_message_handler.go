@@ -79,6 +79,8 @@ type AsyncDataChangeMessageHandler struct {
 	handlerErrorsCounter                      metrics.Int64Counter
 	messageDecodeErrorsCounter                metrics.Int64Counter
 	messagesProcessedCounter                  metrics.Int64Counter
+	emailsSentCounter                         metrics.Int64Counter
+	emailsFailedCounter                       metrics.Int64Counter
 	mobileNotificationsExecutionTimeHistogram metrics.Float64Histogram
 	mealPlanningDataIndexer                   *mealplanningindexing.MealPlanningDataIndexer
 	userDataIndexer                           *identityindexing.UserDataIndexer
@@ -167,6 +169,16 @@ func NewAsyncDataChangeMessageHandler(
 		return nil, fmt.Errorf("setting up handler errors counter: %w", err)
 	}
 
+	emailsSentCounter, err := metricsProvider.NewInt64Counter("emails_sent_total")
+	if err != nil {
+		return nil, fmt.Errorf("setting up emails sent counter: %w", err)
+	}
+
+	emailsFailedCounter, err := metricsProvider.NewInt64Counter("emails_failed_total")
+	if err != nil {
+		return nil, fmt.Errorf("setting up emails failed counter: %w", err)
+	}
+
 	pushNotificationsSentCounter, err := metricsProvider.NewInt64Counter("push_notifications_sent_total")
 	if err != nil {
 		return nil, fmt.Errorf("setting up push notifications sent counter: %w", err)
@@ -223,6 +235,8 @@ func NewAsyncDataChangeMessageHandler(
 		messagesProcessedCounter:                  messagesProcessedCounter,
 		messageDecodeErrorsCounter:                messageDecodeErrorsCounter,
 		handlerErrorsCounter:                      handlerErrorsCounter,
+		emailsSentCounter:                         emailsSentCounter,
+		emailsFailedCounter:                       emailsFailedCounter,
 		pushNotificationsSentCounter:              pushNotificationsSentCounter,
 		badDeviceTokensArchivedCounter:            badDeviceTokensArchivedCounter,
 		decoder:                                   decoder,

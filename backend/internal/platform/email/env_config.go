@@ -37,6 +37,12 @@ var (
 			passwordResetCreationEmailAddress:   "noreply@dinnerdonebetter.dev",
 			passwordResetRedemptionEmailAddress: "noreply@dinnerdonebetter.dev",
 		},
+		"prod": {
+			baseURL:                             "https://www.dinnerdonebetter.com",
+			outboundInvitesEmailAddress:         "noreply@email.dinnerdonebetter.com",
+			passwordResetCreationEmailAddress:   "noreply@email.dinnerdonebetter.com",
+			passwordResetRedemptionEmailAddress: "noreply@email.dinnerdonebetter.com",
+		},
 		defaultEnv: {
 			baseURL:                             "https://not.real.lol",
 			outboundInvitesEmailAddress:         "not@real.lol",

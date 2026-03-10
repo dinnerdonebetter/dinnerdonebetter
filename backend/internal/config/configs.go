@@ -62,6 +62,7 @@ type (
 			SearchDataIndexSchedulerConfig |
 			MobileNotificationSchedulerConfig |
 			AsyncMessageHandlerConfig |
+			EmailDeliverabilityTestConfig |
 			AdminWebappConfig |
 			ConsumerWebappConfig |
 			MCPServiceConfig
@@ -164,6 +165,15 @@ type (
 		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
 		Search            textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
 		Database          databasecfg.Config      `envPrefix:"DATABASE_"           json:"database"`
+	}
+
+	// EmailDeliverabilityTestConfig configures the email deliverability test cron job.
+	EmailDeliverabilityTestConfig struct {
+		_                     struct{}             `json:"-"`
+		RecipientEmailAddress string               `env:"RECIPIENT_EMAIL_ADDRESS" json:"recipientEmailAddress"`
+		ServiceEnvironment    string               `env:"SERVICE_ENVIRONMENT"     json:"serviceEnvironment"`
+		Observability         observability.Config `envPrefix:"OBSERVABILITY_"    json:"observability"`
+		Email                 emailcfg.Config      `envPrefix:"EMAIL_"            json:"email"`
 	}
 
 	APIServiceOAuth2ConnectionConfig struct {
@@ -454,6 +464,19 @@ func (cfg *AsyncMessageHandlerConfig) ValidateWithContext(ctx context.Context) e
 	}
 
 	return result.ErrorOrNil()
+}
+
+var _ validation.ValidatableWithContext = (*EmailDeliverabilityTestConfig)(nil)
+
+// ValidateWithContext validates an EmailDeliverabilityTestConfig struct.
+func (cfg *EmailDeliverabilityTestConfig) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		cfg,
+		validation.Field(&cfg.Observability, validation.Required),
+		validation.Field(&cfg.Email, validation.Required),
+		validation.Field(&cfg.RecipientEmailAddress, validation.Required),
+	)
 }
 
 var _ validation.ValidatableWithContext = (*AdminWebappConfig)(nil)

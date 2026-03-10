@@ -85,10 +85,11 @@ func TestAsyncDataChangeMessageHandler_OutboundEmailsEventHandler(t *testing.T) 
 
 		expectedError := errors.New("email sending error")
 		emailer.On(reflection.GetMethodName(emailer.SendEmail), mock.Anything, emailMessage).Return(expectedError)
-		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.EventOccurred), mock.Anything, email.SentEventType, emailMessage.UserID, mock.AnythingOfType("map[string]interface {}")).Return(nil)
+		// EventOccurred is NOT called when SendEmail fails
 
 		err = handler.OutboundEmailsEventHandler(ctx, rawMsg)
-		assert.NoError(t, err) // Should not return error, just log it
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "sending email")
 
 		mock.AssertExpectationsForObjects(t, emailer, analyticsEventReporter)
 	})
@@ -190,10 +191,11 @@ func TestAsyncDataChangeMessageHandler_handleEmailRequest(t *testing.T) {
 
 		expectedError := errors.New("email sending error")
 		emailer.On(reflection.GetMethodName(emailer.SendEmail), mock.Anything, emailMessage).Return(expectedError)
-		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.EventOccurred), mock.Anything, email.SentEventType, emailMessage.UserID, mock.AnythingOfType("map[string]interface {}")).Return(nil)
+		// EventOccurred is NOT called when SendEmail fails
 
 		err := handler.handleEmailRequest(ctx, emailMessage)
-		assert.NoError(t, err) // Should not return error, just log it
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "sending email")
 
 		mock.AssertExpectationsForObjects(t, emailer, analyticsEventReporter)
 	})

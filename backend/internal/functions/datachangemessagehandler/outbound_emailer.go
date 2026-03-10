@@ -56,7 +56,11 @@ func (a *AsyncDataChangeMessageHandler) handleEmailRequest(
 
 	if err := a.emailer.SendEmail(ctx, mail); err != nil {
 		observability.AcknowledgeError(err, a.logger, span, "sending email")
+		a.emailsFailedCounter.Add(ctx, 1)
+		return fmt.Errorf("sending email: %w", err)
 	}
+
+	a.emailsSentCounter.Add(ctx, 1)
 
 	if err := a.analyticsEventReporter.EventOccurred(ctx, email.SentEventType, mail.UserID, map[string]any{
 		"toAddress":   mail.ToAddress,

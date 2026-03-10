@@ -17,6 +17,7 @@ WIRE_TARGETS           := internal/build/services/api/grpc \
 	 internal/build/services/api/http \
 	 internal/build/functions/data_change_message_handler \
 	 internal/build/jobs/db_cleaner \
+	 internal/build/jobs/email_deliverability_test \
 	 internal/build/jobs/search_data_index_scheduler \
 	 internal/build/jobs/mobile_notification_scheduler \
 	 internal/build/jobs/meal_plan_finalizer \

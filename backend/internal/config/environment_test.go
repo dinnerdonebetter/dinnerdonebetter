@@ -180,6 +180,7 @@ func TestEnvironmentConfigSet_Render(T *testing.T) {
 		expectedFiles := []string{
 			"api_service_config.json",
 			"job_db_cleaner_config.json",
+			"job_email_deliverability_test_config.json",
 			"job_meal_plan_finalizer_config.json",
 			"job_meal_plan_grocery_list_initializer_config.json",
 			"job_meal_plan_task_creator_config.json",

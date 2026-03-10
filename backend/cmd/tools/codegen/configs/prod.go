@@ -13,7 +13,7 @@ import (
 	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/email/sendgrid"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/resend"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags/posthog"
@@ -186,9 +186,9 @@ func buildProdConfig() *config.APIServiceConfig {
 		},
 		Observability: prodObservabilityConfig,
 		Email: emailcfg.Config{
-			Provider: emailcfg.ProviderSendgrid,
-			Sendgrid: &sendgrid.Config{
-				APIToken: "placeholder", // overridden by env from CSI secret
+			Provider: emailcfg.ProviderResend,
+			Resend: &resend.Config{
+				APIToken: "placeholder", // overridden by env from api-service-config secret
 			},
 			CircuitBreaker: circuitbreaking.Config{
 				Name:                   "prod_emailer",
