@@ -23,7 +23,7 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.35.1"
+      version = "3.0.1"
     }
     algolia = {
       source  = "philippe-vandermoere/algolia"
