@@ -42,6 +42,7 @@
 		"pingWaitPeriod": 1500000000,
 		"debug": true,
 		"logQueries": true,
-		"runMigrations": true
+		"runMigrations": true,
+		"enableDatabaseMetrics": false
 	}
 }

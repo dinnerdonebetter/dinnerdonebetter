@@ -43,6 +43,10 @@ type (
 		Debug                        bool                 `env:"DEBUG"                            json:"debug"`
 		LogQueries                   bool                 `env:"LOG_QUERIES"                      json:"logQueries"`
 		RunMigrations                bool                 `env:"RUN_MIGRATIONS"                   json:"runMigrations"`
+		// EnableDatabaseMetrics turns on db.sql.* metrics (latency, etc.) from otelsql. When true, every
+		// service that uses the DB emits these metrics, which can significantly increase active series count
+		// (e.g. 3.6k → 12k+). Set to true only if you need DB-level metrics and can afford the cardinality.
+		EnableDatabaseMetrics bool `env:"ENABLE_DATABASE_METRICS" json:"enableDatabaseMetrics"`
 	}
 
 	ConnectionDetails struct {
@@ -174,7 +178,8 @@ func (x *ConnectionDetails) LoadFromURL(u string) error {
 
 // ProvideDatabase creates a database client based on the configured provider
 // and optionally runs migrations if RunMigrations is true and a migrator is provided.
-// If metricsProvider is non-nil, the client will emit db.sql.* metrics (e.g. db_sql_latency_milliseconds).
+// If metricsProvider is non-nil and cfg.EnableDatabaseMetrics is true, the client will emit db.sql.* metrics
+// (e.g. db_sql_latency_milliseconds). DB metrics are off by default to avoid high cardinality.
 func ProvideDatabase(
 	ctx context.Context,
 	logger logging.Logger,
@@ -183,9 +188,14 @@ func ProvideDatabase(
 	migrator database.Migrator,
 	metricsProvider metrics.Provider,
 ) (client database.Client, err error) {
+	var dbMetricsProvider metrics.Provider
+	if cfg.EnableDatabaseMetrics && metricsProvider != nil {
+		dbMetricsProvider = metricsProvider
+	}
+
 	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case ProviderPostgres:
-		client, err = postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, cfg, metricsProvider)
+		client, err = postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, cfg, dbMetricsProvider)
 	default:
 		return nil, fmt.Errorf("invalid database provider: %q", cfg.Provider)
 	}

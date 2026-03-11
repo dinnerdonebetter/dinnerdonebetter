@@ -124,6 +124,9 @@ const (
 	// DatabaseDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.Debug`.
 	DatabaseDebugEnvVarKey = "DINNER_DONE_BETTER_DATABASE_DEBUG"
 
+	// DatabaseEnableDatabaseMetricsEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.EnableDatabaseMetrics`.
+	DatabaseEnableDatabaseMetricsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_ENABLE_DATABASE_METRICS"
+
 	// DatabaseEncryptionProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.Encryption.Provider`.
 	DatabaseEncryptionProviderEnvVarKey = "DINNER_DONE_BETTER_DATABASE_ENCRYPTION_PROVIDER"
 
