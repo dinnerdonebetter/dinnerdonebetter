@@ -22,6 +22,9 @@ struct ContentView: View {
   // Sheet for logged-in users who tap an invite link
   @State private var showAcceptInvitationSheet: Bool = false
 
+  // Meal plan ID from deep link (Universal Link from email) — when set, present meal plan vote/detail
+  @State private var pendingMealPlanID: String?
+
   // Launch offering for paywall (avoids "default" offering which has no paywall)
   @State private var launchOffering: Offering?
 
@@ -78,6 +81,16 @@ struct ContentView: View {
         .environment(eventReporterService)
       }
     )
+    .fullScreenCover(
+      isPresented: Binding(
+        get: { pendingMealPlanID != nil },
+        set: { if !$0 { pendingMealPlanID = nil } }
+      )
+    ) {
+      if let id = pendingMealPlanID {
+        MealPlanByIDView(mealPlanID: id)
+      }
+    }
   }
 
   private func handleDeepLink(_ destination: DeepLinkDestination?) {
@@ -110,6 +123,13 @@ struct ContentView: View {
       // swiftlint:disable:next todo
       // TODO: Handle email verification
       print("Email verification token: \(token)")
+      deepLinkHandler.clearPendingDestination()
+
+    case .openMealPlan(let mealPlanID):
+      eventReporterService.reporter.track(
+        event: "meal_plan_deep_link_opened",
+        properties: ["meal_plan_id": mealPlanID])
+      pendingMealPlanID = mealPlanID
       deepLinkHandler.clearPendingDestination()
 
     case .unknown:

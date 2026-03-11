@@ -355,6 +355,11 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	logger := a.logger.WithValue("event_type", changeMessage.EventType)
 
+	// Events from background jobs (e.g. meal plan grocery list initializer) may have no UserID; skip notifications.
+	if changeMessage.UserID == "" {
+		return nil
+	}
+
 	user, err := a.identityRepo.GetUser(ctx, changeMessage.UserID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "getting user")

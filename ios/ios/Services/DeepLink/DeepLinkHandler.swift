@@ -12,6 +12,7 @@ enum DeepLinkDestination: Equatable {
   case acceptInvitation(invitationID: String, token: String)
   case resetPassword(token: String)
   case verifyEmail(token: String)
+  case openMealPlan(mealPlanID: String)
   case unknown
 }
 
@@ -57,6 +58,15 @@ class DeepLinkHandler {
       return .verifyEmail(token: token)
 
     default:
+      // Format: /meal_plans/{mealPlanID}
+      if path.hasPrefix("/meal_plans/") {
+        let segments = path.split(separator: "/", omittingEmptySubsequences: true)
+        // ["meal_plans", "<id>"]
+        guard segments.count >= 2, !String(segments[1]).isEmpty else {
+          return .unknown
+        }
+        return .openMealPlan(mealPlanID: String(segments[1]))
+      }
       return .unknown
     }
   }

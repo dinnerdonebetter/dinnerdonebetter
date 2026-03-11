@@ -253,7 +253,7 @@ func (s *ConsumerFrontendServer) AppleAppSiteAssociationHandler(res http.Respons
 		AppLinks: aasaAppLinks{
 			Apps: []string{},
 			Details: []aasaDetail{
-				{AppID: appID, Paths: []string{"/accept_invitation", "/accept_invitation/*"}},
+				{AppID: appID, Paths: []string{"/accept_invitation", "/accept_invitation/*", "/meal_plans", "/meal_plans/*"}},
 			},
 		},
 		WebCredentials: aasaWebCredentials{Apps: []string{appID}},

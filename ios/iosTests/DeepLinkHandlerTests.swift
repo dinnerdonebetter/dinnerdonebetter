@@ -318,6 +318,16 @@ struct DeepLinkHandlerTests {
     #expect(dest1 != dest3)
   }
 
+  @Test("DeepLinkDestination equality works for openMealPlan")
+  func testDestinationEqualityOpenMealPlan() {
+    let dest1 = DeepLinkDestination.openMealPlan(mealPlanID: "plan-123")
+    let dest2 = DeepLinkDestination.openMealPlan(mealPlanID: "plan-123")
+    let dest3 = DeepLinkDestination.openMealPlan(mealPlanID: "plan-456")
+
+    #expect(dest1 == dest2)
+    #expect(dest1 != dest3)
+  }
+
   @Test("DeepLinkDestination equality works for unknown")
   func testDestinationEqualityUnknown() {
     let dest1 = DeepLinkDestination.unknown
@@ -331,14 +341,52 @@ struct DeepLinkHandlerTests {
     let invitation = DeepLinkDestination.acceptInvitation(invitationID: "id", token: "tok")
     let resetPassword = DeepLinkDestination.resetPassword(token: "tok")
     let verifyEmail = DeepLinkDestination.verifyEmail(token: "tok")
+    let openMealPlan = DeepLinkDestination.openMealPlan(mealPlanID: "plan-1")
     let unknown = DeepLinkDestination.unknown
 
     #expect(invitation != resetPassword)
     #expect(invitation != verifyEmail)
+    #expect(invitation != openMealPlan)
     #expect(invitation != unknown)
     #expect(resetPassword != verifyEmail)
+    #expect(resetPassword != openMealPlan)
     #expect(resetPassword != unknown)
+    #expect(verifyEmail != openMealPlan)
     #expect(verifyEmail != unknown)
+    #expect(openMealPlan != unknown)
+  }
+
+  // MARK: - Meal Plan URL Tests
+
+  @Test("parseURL correctly parses meal_plans URL with valid ID")
+  func testParseMealPlanURL() {
+    let handler = DeepLinkHandler()
+    let url = URL(string: "https://www.dinnerdonebetter.com/meal_plans/plan-abc-123")!
+
+    let result = handler.parseURL(url)
+
+    #expect(result == .openMealPlan(mealPlanID: "plan-abc-123"))
+  }
+
+  @Test("parseURL returns unknown for meal_plans with no ID segment")
+  func testParseMealPlanURLMissingID() {
+    let handler = DeepLinkHandler()
+    let url = URL(string: "https://www.dinnerdonebetter.com/meal_plans/")!
+
+    let result = handler.parseURL(url)
+
+    #expect(result == .unknown)
+  }
+
+  @Test("parseURL returns unknown for meal_plans with only path prefix")
+  func testParseMealPlanURLOnlyPrefix() {
+    let handler = DeepLinkHandler()
+    // Path "/meal_plans" with no trailing slash or ID
+    let url = URL(string: "https://www.dinnerdonebetter.com/meal_plans")!
+
+    let result = handler.parseURL(url)
+
+    #expect(result == .unknown)
   }
 
   // MARK: - Edge Cases
