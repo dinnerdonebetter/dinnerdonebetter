@@ -127,7 +127,7 @@ func runInit(databaseURL, searchProvider, algoliaAppID, algoliaAPIKey, indicesSt
 	}
 	dbConfig.WriteConnection = dbConfig.ReadConnection
 
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, dbConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, dbConfig, nil)
 	if err != nil {
 		return fmt.Errorf("initializing database client: %w", err)
 	}

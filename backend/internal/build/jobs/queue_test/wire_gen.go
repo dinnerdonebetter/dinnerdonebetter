@@ -22,8 +22,8 @@ import (
 
 // Injectors from build.go:
 
-// Build builds the queue test job.
-func Build(ctx context.Context, cfg *config.QueueTestJobConfig) (*queuetest.Job, error) {
+// Build builds the queue test job and a cleanup that flushes metrics.
+func Build(ctx context.Context, cfg *config.QueueTestJobConfig) (*BuildResult, error) {
 	observabilityConfig := &cfg.Observability
 	loggingcfgConfig := &observabilityConfig.Logging
 	logger, err := loggingcfg.ProvideLogger(ctx, loggingcfgConfig)
@@ -37,7 +37,12 @@ func Build(ctx context.Context, cfg *config.QueueTestJobConfig) (*queuetest.Job,
 	}
 	databasecfgConfig := cfg.Database
 	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
+	metricscfgConfig := &observabilityConfig.Metrics
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig, provider)
 	if err != nil {
 		return nil, err
 	}
@@ -47,15 +52,11 @@ func Build(ctx context.Context, cfg *config.QueueTestJobConfig) (*queuetest.Job,
 	if err != nil {
 		return nil, err
 	}
-	metricscfgConfig := &observabilityConfig.Metrics
-	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
-	if err != nil {
-		return nil, err
-	}
 	jobParams := ProvideJobParams(cfg)
 	job, err := queuetest.NewJob(internalOpsDataManager, publisherProvider, logger, tracerProvider, provider, jobParams)
 	if err != nil {
 		return nil, err
 	}
-	return job, nil
+	buildResult := NewBuildResult(job, provider)
+	return buildResult, nil
 }

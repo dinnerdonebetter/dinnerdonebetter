@@ -225,31 +225,27 @@
       "type": "timeseries",
       "gridPos": { "h": 6, "w": 8, "x": 16, "y": 22 },
       "datasource": { "type": "prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "color": { "mode": "palette-classic" },
-          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
-        }
-      },
-      "targets": [
-        { "refId": "A", "expr": "system_memory_usage_bytes{job=\"api_server\"}", "legendFormat": "{{instance}}" }
-      ]
-    },
-    {
-      "title": "Memory Utilization",
-      "type": "timeseries",
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 28 },
-      "datasource": { "type": "prometheus" },
+      "description": "Used vs available memory as share of total (stacks to 100%). Uses average across API server instances.",
       "fieldConfig": {
         "defaults": {
           "unit": "percentunit",
+          "min": 0,
+          "max": 1,
           "color": { "mode": "palette-classic" },
-          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 40,
+            "stacking": { "group": "A", "mode": "percent" }
+          }
         }
       },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "calcs": ["mean", "lastNotNull"] }
+      },
       "targets": [
-        { "refId": "A", "expr": "system_memory_utilization_ratio{job=\"api_server\"}", "legendFormat": "{{instance}}" }
+        { "refId": "A", "expr": "avg(system_memory_utilization_ratio{job=\"api_server\"})", "legendFormat": "Used" },
+        { "refId": "B", "expr": "1 - avg(system_memory_utilization_ratio{job=\"api_server\"})", "legendFormat": "Available" }
       ]
     }
   ],

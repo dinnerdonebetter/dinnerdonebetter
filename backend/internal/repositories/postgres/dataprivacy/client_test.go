@@ -35,7 +35,7 @@ func buildDatabaseClientForTest(t *testing.T) (repo *repository, auditRepo audit
 	container, db, config := pgtesting.BuildDatabaseContainerForTest(t)
 	require.NoError(t, migrations.NewMigrator(logging.NewNoopLogger()).Migrate(ctx, db))
 
-	pgc, err := postgres.ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), config)
+	pgc, err := postgres.ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), config, nil)
 	require.NotNil(t, pgc)
 	require.NoError(t, err)
 

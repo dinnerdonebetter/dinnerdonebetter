@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"github.com/XSAM/otelsql"
@@ -31,18 +32,27 @@ type Client struct {
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
-func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg database.ClientConfig) (database.Client, error) {
+// If metricsProvider is non-nil, the DB driver will use it so SQL latency and other
+// db.sql.* metrics are emitted (e.g. db_sql_latency_milliseconds_bucket in Prometheus).
+func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg database.ClientConfig, metricsProvider metrics.Provider) (database.Client, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(tracingName))
 
 	_, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	db, err := otelsql.Open("pgx", cfg.GetReadConnectionString(), otelsql.WithAttributes(
-		attribute.KeyValue{
-			Key:   semconv.ServiceNameKey,
-			Value: attribute.StringValue("database"),
-		},
-	))
+	opts := []otelsql.Option{
+		otelsql.WithAttributes(
+			attribute.KeyValue{
+				Key:   semconv.ServiceNameKey,
+				Value: attribute.StringValue("database"),
+			},
+		),
+	}
+	if metricsProvider != nil {
+		opts = append(opts, otelsql.WithMeterProvider(metricsProvider.MeterProvider()))
+	}
+
+	db, err := otelsql.Open("pgx", cfg.GetReadConnectionString(), opts...)
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}

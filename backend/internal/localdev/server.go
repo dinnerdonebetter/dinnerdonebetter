@@ -124,7 +124,7 @@ func BuildInProcessServer(ctx context.Context, cfg *config.APIServiceConfig) (se
 
 	tracerProvider := tracing.NewNoopTracerProvider()
 	migrator := repositories.ProvideMigrator(&cfg.Database, logger)
-	databaseClient, err = databasecfg.ProvideDatabase(ctx, logger, tracerProvider, &cfg.Database, migrator)
+	databaseClient, err = databasecfg.ProvideDatabase(ctx, logger, tracerProvider, &cfg.Database, migrator, nil)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("initializing database client: %w", err)
 	}

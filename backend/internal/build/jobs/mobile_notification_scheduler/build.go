@@ -11,6 +11,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
@@ -27,6 +28,7 @@ func Build(
 	wire.Build(
 		tracingcfg.TracingConfigProviders,
 		observability.O11yProviders,
+		metricscfg.MetricsConfigProviders,
 		msgconfig.MessageQueueProviders,
 		databasecfg.ClientConfigProviders,
 		postgres.PGProviders,

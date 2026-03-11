@@ -171,6 +171,7 @@
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
       "datasource": { "type": "prometheus" },
+      "description": "Round-trip latency for the queue_test cron job. Data appears after each run (every 15m) once the job flushes metrics on exit.",
       "fieldConfig": {
         "defaults": {
           "unit": "ms",
@@ -179,9 +180,9 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(queue_test_round_trip_ms_bucket{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"success\"}[5m])) by (le, topic))", "legendFormat": "{{topic}} p50" },
-        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(queue_test_round_trip_ms_bucket{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"success\"}[5m])) by (le, topic))", "legendFormat": "{{topic}} p95" },
-        { "refId": "C", "expr": "histogram_quantile(0.99, sum(rate(queue_test_round_trip_ms_bucket{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"success\"}[5m])) by (le, topic))", "legendFormat": "{{topic}} p99" }
+        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(queue_test_round_trip_ms_bucket{status=\"success\"}[5m])) by (le, topic))", "legendFormat": "{{topic}} p50" },
+        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(queue_test_round_trip_ms_bucket{status=\"success\"}[5m])) by (le, topic))", "legendFormat": "{{topic}} p95" },
+        { "refId": "C", "expr": "histogram_quantile(0.99, sum(rate(queue_test_round_trip_ms_bucket{status=\"success\"}[5m])) by (le, topic))", "legendFormat": "{{topic}} p99" }
       ]
     },
     {
@@ -197,8 +198,8 @@
         }
       },
       "targets": [
-        { "refId": "A", "expr": "sum(rate(queue_test_round_trip_ms_count{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"success\"}[5m])) by (topic)", "legendFormat": "{{topic}} success" },
-        { "refId": "B", "expr": "sum(rate(queue_test_round_trip_ms_count{job=~\"dinner_done_better_job_queue_test|queue_test\", status=\"timeout\"}[5m])) by (topic)", "legendFormat": "{{topic}} timeout" }
+        { "refId": "A", "expr": "sum(rate(queue_test_round_trip_ms_count{status=\"success\"}[5m])) by (topic)", "legendFormat": "{{topic}} success" },
+        { "refId": "B", "expr": "sum(rate(queue_test_round_trip_ms_count{status=\"timeout\"}[5m])) by (topic)", "legendFormat": "{{topic}} timeout" }
       ]
     },
     {

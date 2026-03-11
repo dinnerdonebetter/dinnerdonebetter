@@ -50,7 +50,7 @@ func Build(ctx context.Context, cfg *config.MealPlanGroceryListInitializerConfig
 	}
 	databasecfgConfig := cfg.Database
 	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig, provider)
 	if err != nil {
 		return nil, err
 	}

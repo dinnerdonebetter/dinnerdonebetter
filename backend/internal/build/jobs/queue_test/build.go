@@ -19,12 +19,13 @@ import (
 	"github.com/google/wire"
 )
 
-// Build builds the queue test job.
+// Build builds the queue test job and a cleanup that flushes metrics.
 func Build(
 	ctx context.Context,
 	cfg *config.QueueTestJobConfig,
-) (*queuetest.Job, error) {
+) (*BuildResult, error) {
 	wire.Build(
+		NewBuildResult,
 		queuetest.ProvidersQueueTest,
 		tracingcfg.TracingConfigProviders,
 		observability.O11yProviders,

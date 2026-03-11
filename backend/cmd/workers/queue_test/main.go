@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	queuetest "github.com/dinnerdonebetter/backend/internal/build/jobs/queue_test"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -19,12 +20,21 @@ func doTheThing(ctx context.Context) error {
 		return fmt.Errorf("error getting config: %w", err)
 	}
 
-	job, err := queuetest.Build(ctx, cfg)
+	result, err := queuetest.Build(ctx, cfg)
 	if err != nil {
 		return fmt.Errorf("error building queue test job: %w", err)
 	}
+	defer func() {
+		// Flush metrics so Prometheus receives queue_test_round_trip_ms before the pod exits.
+		shutdownCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
 
-	if err = job.Do(ctx); err != nil {
+		if shutdownErr := result.ShutdownMetrics(shutdownCtx); shutdownErr != nil {
+			log.Printf("error shutting down metrics: %v", shutdownErr)
+		}
+	}()
+
+	if err = result.Job.Do(ctx); err != nil {
 		return fmt.Errorf("running queue test job: %w", err)
 	}
 

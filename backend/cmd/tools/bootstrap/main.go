@@ -114,7 +114,7 @@ func runBootstrap(
 	clientConfig := &bootstrapClientConfig{
 		connDetails: connDetails,
 	}
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig, nil)
 	if err != nil {
 		return fmt.Errorf("connecting to database: %w", err)
 	}

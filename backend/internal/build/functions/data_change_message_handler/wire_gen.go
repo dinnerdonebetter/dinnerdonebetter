@@ -59,7 +59,12 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	}
 	databasecfgConfig := cfg.Database
 	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
+	metricscfgConfig := &observabilityConfig.Metrics
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig, provider)
 	if err != nil {
 		return nil, err
 	}
@@ -98,11 +103,6 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	analyticscfgConfig := &cfg.Analytics
-	metricscfgConfig := &observabilityConfig.Metrics
-	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
-	if err != nil {
-		return nil, err
-	}
 	eventReporter, err := analyticscfg.ProvideEventReporter(ctx, analyticscfgConfig, logger, tracerProvider, provider)
 	if err != nil {
 		return nil, err

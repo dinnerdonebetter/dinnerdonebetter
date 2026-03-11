@@ -99,7 +99,12 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	}
 	databasecfgConfig := &cfg.Database
 	migrator := repositories.ProvideMigrator(databasecfgConfig, logger)
-	client, err := databasecfg.ProvideDatabase(ctx, logger, tracerProvider, databasecfgConfig, migrator)
+	metricscfgConfig := &observabilityConfig.Metrics
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := databasecfg.ProvideDatabase(ctx, logger, tracerProvider, databasecfgConfig, migrator, provider)
 	if err != nil {
 		return nil, err
 	}
@@ -115,11 +120,6 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	generator := random.NewGenerator(logger, tracerProvider)
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
 	hasher := authentication.ProvideHasher(authenticator)
-	metricscfgConfig := &observabilityConfig.Metrics
-	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
-	if err != nil {
-		return nil, err
-	}
 	textsearchcfgConfig := &cfg.TextSearch
 	userTextSearcher, err := ProvideUserTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
 	if err != nil {
