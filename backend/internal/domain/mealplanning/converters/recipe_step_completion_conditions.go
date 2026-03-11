@@ -85,7 +85,7 @@ func ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreation
 	for _, ingredientIndex := range recipeStepCompletionCondition.Ingredients {
 		for i, ingredient := range recipeStep.Ingredients {
 			if ingredient.ID == ingredientIndex.RecipeStepIngredient {
-				x, err := safecast.ToUint64(i)
+				x, err := safecast.Convert[uint64](i)
 				mustnt(err)
 				ingredients = append(ingredients, x)
 			}
