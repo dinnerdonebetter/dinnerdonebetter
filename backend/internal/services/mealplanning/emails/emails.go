@@ -34,9 +34,11 @@ func BuildMealPlanCreatedEmail(recipient *identity.User, mealPlan *mealplanning.
 		}
 	}
 
+	buttonAction := "Check it out"
 	instructions := "You can see what's up for dinner by clicking the button below"
 	if isElectionMealPlan {
 		instructions = "You can rank each meal in the meal plan by clicking the button below"
+		buttonAction = "Submit your vote"
 	}
 
 	e := hermes.Email{
@@ -49,7 +51,7 @@ func BuildMealPlanCreatedEmail(recipient *identity.User, mealPlan *mealplanning.
 				{
 					Instructions: instructions,
 					Button: hermes.Button{
-						Text: "Submit your vote",
+						Text: buttonAction,
 						Link: fmt.Sprintf("%s/meal_plans/%s", envCfg.BaseURL(), mealPlan.ID),
 					},
 				},
