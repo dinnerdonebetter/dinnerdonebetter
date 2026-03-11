@@ -3,10 +3,8 @@ concurrency:
   group: ${{ github.ref }}
 
 on:
-  # pull_request:
-  push:
-    branches:
-      - prod
+  release:
+    types: [published]
 
 name: deploy prod
 jobs:
@@ -16,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref }}
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v2
@@ -55,7 +55,7 @@ jobs:
             -H "Authorization: Bearer ${GRAFANA_AUTH_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "{
-              \"text\": \"Terraform apply (infra) - ${{ github.sha }} (${{ github.event.head_commit.message | split('\n') | first | truncate(80) }})\",
+              \"text\": \"Terraform apply (infra) - ${{ github.event.release.tag_name }} (${{ github.sha }})\",
               \"tags\": [\"terraform\", \"infra\", \"production\"]
             }" \
             "${GRAFANA_URL}/api/annotations"
@@ -71,6 +71,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref }}
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v2
@@ -129,7 +131,7 @@ jobs:
             -H "Authorization: Bearer ${GRAFANA_AUTH_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "{
-              \"text\": \"Terraform apply (backend-infra) - ${{ github.sha }} (${{ github.event.head_commit.message | split('\n') | first | truncate(80) }})\",
+              \"text\": \"Terraform apply (backend-infra) - ${{ github.event.release.tag_name }} (${{ github.sha }})\",
               \"tags\": [\"terraform\", \"backend-infra\", \"production\"]
             }" \
             "${GRAFANA_URL}/api/annotations"
@@ -144,9 +146,13 @@ jobs:
       matrix:
         go-version: ['1.26.x']
         container-registry: ['us-central1-docker.pkg.dev']
+    env:
+      VERSION: ${{ github.event.release.tag_name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref }}
 
       - name: Install Go
         uses: actions/setup-go@v6
@@ -186,6 +192,12 @@ jobs:
       - name: setup Skaffold
         run: gcloud components update --quiet && gcloud components install skaffold --quiet
 
+      - name: Substitute RELEASE_VERSION in kustomization files
+        run: |
+          VER="${{ github.event.release.tag_name }}"
+          sed -i "s/RELEASE_VERSION/${VER}/g" infra/deploy/environments/prod/kustomize/kustomization.yaml
+          sed -i "s/RELEASE_VERSION/${VER}/g" backend/deploy/environments/prod/kustomize/kustomization.yaml
+
       - name: deploy kubernetes deps
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
@@ -197,7 +209,7 @@ jobs:
         run: kubectl apply -k infra/deploy/environments/prod/kustomize
 
       - name: Skaffold deploy
-        run: KOCACHE="$HOME/.cache/ko" skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile prod
+        run: KOCACHE="$HOME/.cache/ko" VERSION="${{ github.event.release.tag_name }}" skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile prod
 
       - name: Create Grafana deployment annotation
         if: success()
@@ -209,7 +221,7 @@ jobs:
             -H "Authorization: Bearer ${GRAFANA_AUTH_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "{
-              \"text\": \"Deployed prod - ${{ github.sha }} (${{ github.event.head_commit.message | split('\n') | first | truncate(80) }})\",
+              \"text\": \"Deployed prod - ${{ github.event.release.tag_name }} (${{ github.sha }})\",
               \"tags\": [\"deployment\", \"production\"]
             }" \
             "${GRAFANA_URL}/api/annotations"

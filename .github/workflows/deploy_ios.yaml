@@ -3,10 +3,11 @@ name: deploy_ios
 
 on:
   gollum:
-  # push:
-  #   branches: [prod]
-  #   paths:
-  #     - ios/**
+  # When ready to deploy iOS on release, uncomment below (and comment or remove gollum above):
+  # release:
+  #   types: [published]
+  #   # paths:
+  #   #   - ios/**
 
 jobs:
   deploy:
