@@ -40,10 +40,11 @@ func NewSender(ctx context.Context, cfg *Config, tracerProvider tracing.TracerPr
 
 	var opts []option.ClientOption
 	if cfg.CredentialsPath != "" {
-		if _, err := os.Stat(cfg.CredentialsPath); err != nil {
+		creds, err := os.ReadFile(cfg.CredentialsPath)
+		if err != nil {
 			return nil, fmt.Errorf("fcm: credentials file not found: %w", err)
 		}
-		opts = append(opts, option.WithCredentialsFile(cfg.CredentialsPath))
+		opts = append(opts, option.WithAuthCredentialsJSON(option.ServiceAccount, creds))
 	}
 	// If CredentialsPath is empty, Application Default Credentials (ADC) are used.
 

@@ -93,7 +93,7 @@ func ProvideConsumerProvider(ctx context.Context, logger logging.Logger, c *Conf
 	case string(ProviderRedis):
 		return redis.ProvideRedisConsumerProvider(logger, c.Consumer.Redis), nil
 	case string(ProviderSQS):
-		return sqs.ProvideSQSConsumerProvider(logger, c.Consumer.SQS), nil
+		return sqs.ProvideSQSConsumerProvider(ctx, logger, c.Consumer.SQS), nil
 	case string(ProviderPubSub):
 		client, err := ps.NewClientWithConfig(ctx, c.Consumer.PubSub.ProjectID, &ps.ClientConfig{
 			EnableOpenTelemetryTracing: true,
@@ -119,7 +119,7 @@ func ProvidePublisherProvider(ctx context.Context, logger logging.Logger, tracer
 	case string(ProviderRedis):
 		return redis.ProvideRedisPublisherProvider(logger, tracerProvider, c.Publisher.Redis), nil
 	case string(ProviderSQS):
-		return sqs.ProvideSQSPublisherProvider(logger, tracerProvider), nil
+		return sqs.ProvideSQSPublisherProvider(ctx, logger, tracerProvider), nil
 	case string(ProviderPubSub):
 		client, err := ps.NewClientWithConfig(ctx, c.Publisher.PubSub.ProjectID, &ps.ClientConfig{
 			EnableOpenTelemetryTracing: true,

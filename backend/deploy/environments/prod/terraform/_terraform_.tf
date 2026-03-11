@@ -11,19 +11,19 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.40.0"
+      version = "5.18.0"
     }
     google = {
       source  = "hashicorp/google"
-      version = "6.14.1"
+      version = "7.23.0"
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "2.5.0"
+      version = "2.7.1"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.35.1"
+      version = "3.0.1"
     }
     algolia = {
       source  = "philippe-vandermoere/algolia"
@@ -31,7 +31,7 @@ terraform {
     }
     grafana = {
       source  = "grafana/grafana"
-      version = "4.25.0"
+      version = "4.28.0"
     }
   }
 }

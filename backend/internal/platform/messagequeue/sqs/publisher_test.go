@@ -1,6 +1,7 @@
 package sqs
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 
@@ -8,9 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -20,10 +19,8 @@ type mockMessagePublisher struct {
 	mock.Mock
 }
 
-// SendMessageWithContext is a mock function.
-func (m *mockMessagePublisher) SendMessageWithContext(ctx aws.Context, input *sqs.SendMessageInput, opts ...request.Option) (*sqs.SendMessageOutput, error) {
-	retVals := m.Called(ctx, input, opts)
-
+func (m *mockMessagePublisher) SendMessage(ctx context.Context, input *sqs.SendMessageInput, optFns ...func(*sqs.Options)) (*sqs.SendMessageOutput, error) {
+	retVals := m.Called(ctx, input, optFns)
 	return retVals.Get(0).(*sqs.SendMessageOutput), retVals.Error(1)
 }
 
@@ -36,7 +33,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
+		provider := ProvideSQSPublisherProvider(ctx, logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
 		a, err := provider.ProvidePublisher(ctx, t.Name())
@@ -54,10 +51,10 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 
 		mmp := &mockMessagePublisher{}
 		mmp.On(
-			"SendMessageWithContext",
+			"SendMessage",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*sqs.SendMessageInput) bool { return true }),
-			[]request.Option(nil),
+			mock.Anything,
 		).Return(&sqs.SendMessageOutput{}, nil)
 
 		actual.publisher = mmp
@@ -74,7 +71,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
+		provider := ProvideSQSPublisherProvider(ctx, logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
 		a, err := provider.ProvidePublisher(ctx, t.Name())
@@ -101,9 +98,10 @@ func TestProvideSQSPublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
-		actual := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
+		actual := ProvideSQSPublisherProvider(ctx, logger, tracing.NewNoopTracerProvider())
 		assert.NotNil(t, actual)
 	})
 }
@@ -117,7 +115,7 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
+		provider := ProvideSQSPublisherProvider(ctx, logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProvidePublisher(ctx, t.Name())
@@ -131,7 +129,7 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
+		provider := ProvideSQSPublisherProvider(ctx, logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProvidePublisher(ctx, t.Name())

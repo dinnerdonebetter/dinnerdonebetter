@@ -59,7 +59,7 @@ resource "google_sql_database" "api_database" {
   instance = google_sql_database_instance.prod.name
 }
 
-resource "cloudflare_record" "database_record" {
+resource "cloudflare_dns_record" "database_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "db"
   content = google_sql_database_instance.prod.public_ip_address

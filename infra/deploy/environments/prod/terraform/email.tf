@@ -14,7 +14,7 @@ resource "sendgrid_link_branding" "default" {
   is_default = true
 }
 
-resource "cloudflare_record" "domain_verification_records" {
+resource "cloudflare_dns_record" "domain_verification_records" {
   for_each = {
     "0" : sendgrid_domain_authentication.prod.dns[0],
     "1" : sendgrid_domain_authentication.prod.dns[1],

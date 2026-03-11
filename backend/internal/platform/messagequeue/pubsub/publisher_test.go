@@ -14,7 +14,7 @@ import (
 	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go/modules/gcloud"
+	tcpubsub "github.com/testcontainers/testcontainers-go/modules/gcloud/pubsub"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -28,16 +28,16 @@ func buildPubSubBackedPublisher(t *testing.T, ctx context.Context) (publisher me
 	projectID := "project-" + randomID
 	topicID := "topic-" + randomID
 
-	pubsubContainer, err := gcloud.RunPubsub(
+	pubsubContainer, err := tcpubsub.Run(
 		ctx,
 		"google/cloud-sdk:latest",
-		gcloud.WithProjectID(projectID),
+		tcpubsub.WithProjectID(projectID),
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	conn, err := grpc.NewClient(pubsubContainer.URI, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(pubsubContainer.URI(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 
@@ -57,7 +57,7 @@ func buildPubSubBackedPublisher(t *testing.T, ctx context.Context) (publisher me
 	assert.NotNil(t, publisher)
 	assert.NoError(t, err)
 
-	return publisher, pubsubContainer.Terminate
+	return publisher, func(ctx context.Context) error { return pubsubContainer.Terminate(ctx) }
 }
 
 func Test_pubSubPublisher_Publish(T *testing.T) {

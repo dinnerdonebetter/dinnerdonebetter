@@ -9,9 +9,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -21,8 +21,8 @@ type mockMessageReceiver struct {
 	mock.Mock
 }
 
-func (m *mockMessageReceiver) ReceiveMessageWithContext(ctx aws.Context, input *sqs.ReceiveMessageInput, opts ...request.Option) (*sqs.ReceiveMessageOutput, error) {
-	retVals := m.Called(ctx, input, opts)
+func (m *mockMessageReceiver) ReceiveMessage(ctx context.Context, input *sqs.ReceiveMessageInput, optFns ...func(*sqs.Options)) (*sqs.ReceiveMessageOutput, error) {
+	retVals := m.Called(ctx, input, optFns)
 	out := retVals.Get(0)
 	if out == nil {
 		return nil, retVals.Error(1)
@@ -30,8 +30,8 @@ func (m *mockMessageReceiver) ReceiveMessageWithContext(ctx aws.Context, input *
 	return out.(*sqs.ReceiveMessageOutput), retVals.Error(1)
 }
 
-func (m *mockMessageReceiver) DeleteMessageWithContext(ctx aws.Context, input *sqs.DeleteMessageInput, opts ...request.Option) (*sqs.DeleteMessageOutput, error) {
-	retVals := m.Called(ctx, input, opts)
+func (m *mockMessageReceiver) DeleteMessage(ctx context.Context, input *sqs.DeleteMessageInput, optFns ...func(*sqs.Options)) (*sqs.DeleteMessageOutput, error) {
+	retVals := m.Called(ctx, input, optFns)
 	out := retVals.Get(0)
 	if out == nil {
 		return nil, retVals.Error(1)
@@ -49,16 +49,16 @@ func Test_sqsConsumer_Consume(T *testing.T) {
 
 		mmr := &mockMessageReceiver{}
 		mmr.On(
-			"ReceiveMessageWithContext",
+			"ReceiveMessage",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(in *sqs.ReceiveMessageInput) bool {
-				return aws.StringValue(in.QueueUrl) == queueURL &&
-					aws.Int64Value(in.MaxNumberOfMessages) == maxNumberOfMessages &&
-					aws.Int64Value(in.WaitTimeSeconds) == longPollWaitSeconds
+				return aws.ToString(in.QueueUrl) == queueURL &&
+					in.MaxNumberOfMessages == maxNumberOfMessages &&
+					in.WaitTimeSeconds == longPollWaitSeconds
 			}),
 			mock.Anything,
 		).Return(&sqs.ReceiveMessageOutput{
-			Messages: []*sqs.Message{
+			Messages: []types.Message{
 				{
 					Body:          aws.String("test-payload"),
 					ReceiptHandle: aws.String("receipt-handle-123"),
@@ -67,21 +67,22 @@ func Test_sqsConsumer_Consume(T *testing.T) {
 		}, nil).Once()
 
 		mmr.On(
-			"ReceiveMessageWithContext",
+			"ReceiveMessage",
 			testutils.ContextMatcher,
 			mock.Anything,
 			mock.Anything,
-		).Return(&sqs.ReceiveMessageOutput{Messages: []*sqs.Message{}}, nil)
+		).Return(&sqs.ReceiveMessageOutput{Messages: []types.Message{}}, nil)
 
+		deleteCalled := make(chan struct{})
 		mmr.On(
-			"DeleteMessageWithContext",
+			"DeleteMessage",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(in *sqs.DeleteMessageInput) bool {
-				return aws.StringValue(in.QueueUrl) == queueURL &&
-					aws.StringValue(in.ReceiptHandle) == "receipt-handle-123"
+				return aws.ToString(in.QueueUrl) == queueURL &&
+					aws.ToString(in.ReceiptHandle) == "receipt-handle-123"
 			}),
 			mock.Anything,
-		).Return(&sqs.DeleteMessageOutput{}, nil).Once()
+		).Run(func(args mock.Arguments) { deleteCalled <- struct{}{} }).Return(&sqs.DeleteMessageOutput{}, nil).Once()
 
 		handlerDone := make(chan []byte, 1)
 		handler := func(ctx context.Context, body []byte) error {
@@ -96,6 +97,7 @@ func Test_sqsConsumer_Consume(T *testing.T) {
 		go consumer.Consume(stopChan, errs)
 
 		receivedBody := <-handlerDone
+		<-deleteCalled // wait for DeleteMessage before stopping
 		stopChan <- true
 
 		assert.Equal(t, []byte("test-payload"), receivedBody)
@@ -108,12 +110,12 @@ func Test_sqsConsumer_Consume(T *testing.T) {
 		anticipatedErr := errors.New("handler failed")
 		mmr := &mockMessageReceiver{}
 		mmr.On(
-			"ReceiveMessageWithContext",
+			"ReceiveMessage",
 			testutils.ContextMatcher,
 			mock.Anything,
 			mock.Anything,
 		).Return(&sqs.ReceiveMessageOutput{
-			Messages: []*sqs.Message{
+			Messages: []types.Message{
 				{
 					Body:          aws.String("fail-payload"),
 					ReceiptHandle: aws.String("receipt-handle-456"),
@@ -122,11 +124,11 @@ func Test_sqsConsumer_Consume(T *testing.T) {
 		}, nil).Once()
 
 		mmr.On(
-			"ReceiveMessageWithContext",
+			"ReceiveMessage",
 			testutils.ContextMatcher,
 			mock.Anything,
 			mock.Anything,
-		).Return(&sqs.ReceiveMessageOutput{Messages: []*sqs.Message{}}, nil)
+		).Return(&sqs.ReceiveMessageOutput{Messages: []types.Message{}}, nil)
 
 		handler := func(ctx context.Context, body []byte) error {
 			return anticipatedErr
@@ -144,7 +146,7 @@ func Test_sqsConsumer_Consume(T *testing.T) {
 
 		stopChan <- true
 
-		mmr.AssertNotCalled(t, "DeleteMessageWithContext")
+		mmr.AssertNotCalled(t, "DeleteMessage")
 		mock.AssertExpectationsForObjects(t, mmr)
 	})
 }
@@ -155,10 +157,11 @@ func TestProvideSQSConsumerProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		cfg := Config{}
 
-		actual := ProvideSQSConsumerProvider(logger, cfg)
+		actual := ProvideSQSConsumerProvider(ctx, logger, cfg)
 		assert.NotNil(t, actual)
 	})
 }
@@ -173,7 +176,7 @@ func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		cfg := Config{}
 
-		provider := ProvideSQSConsumerProvider(logger, cfg)
+		provider := ProvideSQSConsumerProvider(ctx, logger, cfg)
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProvideConsumer(ctx, "https://sqs.us-east-1.amazonaws.com/123/test", nil)
@@ -189,7 +192,7 @@ func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 		cfg := Config{}
 		topic := "https://sqs.us-east-1.amazonaws.com/123/cached-queue"
 
-		provider := ProvideSQSConsumerProvider(logger, cfg)
+		provider := ProvideSQSConsumerProvider(ctx, logger, cfg)
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProvideConsumer(ctx, topic, nil)
@@ -209,7 +212,7 @@ func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		cfg := Config{}
 
-		provider := ProvideSQSConsumerProvider(logger, cfg)
+		provider := ProvideSQSConsumerProvider(ctx, logger, cfg)
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProvideConsumer(ctx, "", nil)

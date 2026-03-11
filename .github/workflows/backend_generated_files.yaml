@@ -26,7 +26,7 @@ jobs:
           go-version: '${{ matrix.go-version }}'
 
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install wire
         run: go install github.com/google/wire/cmd/wire@latest
@@ -51,7 +51,7 @@ jobs:
           go-version: '${{ matrix.go-version }}'
 
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Ensure configs can be generated
         working-directory: backend
@@ -73,7 +73,7 @@ jobs:
           go-version: '${{ matrix.go-version }}'
 
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Ensure queries and querier can be generated
         working-directory: backend
@@ -95,7 +95,7 @@ jobs:
           go-version: '${{ matrix.go-version }}'
 
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: generate env vars file
         working-directory: backend

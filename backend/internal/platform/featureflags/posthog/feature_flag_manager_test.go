@@ -79,9 +79,8 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 			response, err := json.Marshal(&posthog.FeatureFlagsResponse{
 				Flags: []posthog.FeatureFlag{
 					{
-						Key:          flagName,
-						IsSimpleFlag: true,
-						Active:       true,
+						Key:    flagName,
+						Active: true,
 						Filters: posthog.Filter{
 							Groups: []posthog.FeatureFlagCondition{
 								{
