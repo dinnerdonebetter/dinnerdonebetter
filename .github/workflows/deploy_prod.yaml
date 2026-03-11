@@ -86,7 +86,7 @@ jobs:
         run: gcloud auth configure-docker ${{ matrix.container-registry }}
 
       - name: get GKE credentials
-        uses: google-github-actions/get-gke-credentials@v2
+        uses: google-github-actions/get-gke-credentials@v3
         with:
           cluster_name: prod
           context_name: prod_context
@@ -183,7 +183,7 @@ jobs:
         run: gcloud auth configure-docker ${{ matrix.container-registry }}
 
       - name: get GKE credentials
-        uses: google-github-actions/get-gke-credentials@v2
+        uses: google-github-actions/get-gke-credentials@v3
         with:
           cluster_name: prod
           context_name: prod_context
