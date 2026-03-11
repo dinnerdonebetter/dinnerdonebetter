@@ -103,8 +103,8 @@ deploy_localdev:
 # Pass args through, e.g. make deploy_terraform_prod ARGS="-auto-approve"
 .PHONY: deploy_terraform_prod
 deploy_terraform_prod:
-	./infra/scripts/terraform_apply_prod.sh $(ARGS)
-	./backend/scripts/terraform_apply_prod.sh $(ARGS)
+	./infra/scripts/terraform_apply_prod.sh -auto-approve
+	(cd backend && ./scripts/terraform_apply_prod.sh -auto-approve)
 
 # Prod deploy + verify. Run from repo root. Requires kubectl pointed at prod, grpcurl.
 .PHONY: deploy_prod
