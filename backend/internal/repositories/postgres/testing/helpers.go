@@ -121,9 +121,7 @@ func BuildDatabaseContainerForTest(t *testing.T) (*postgres.PostgresContainer, *
 	t.Helper()
 
 	container, db, dbConfig, err := BuildDatabaseContainer(t.Context(), t.Name())
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
 	return container, db, dbConfig
 }
