@@ -21,6 +21,7 @@ import (
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -123,7 +124,7 @@ func BuildInProcessServer(ctx context.Context, cfg *config.APIServiceConfig) (se
 
 	tracerProvider := tracing.NewNoopTracerProvider()
 	migrator := repositories.ProvideMigrator(&cfg.Database, logger)
-	databaseClient, err = databasecfg.ProvideDatabase(ctx, logger, tracerProvider, &cfg.Database, migrator)
+	databaseClient, err = databasecfg.ProvideDatabase(ctx, logger, tracerProvider, &cfg.Database, migrator, nil)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("initializing database client: %w", err)
 	}
@@ -281,7 +282,7 @@ func BuildInsecureOAuthedGRPCClient(
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Location", "localhost")
 
-	httpClient := tracing.BuildTracedHTTPClient()
+	httpClient := httpclient.ProvideHTTPClient(&httpclient.Config{EnableTracing: true})
 	httpClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}
@@ -412,7 +413,7 @@ func FetchOAuth2TokenForUser(
 	req.Header.Set("Authorization", "Bearer "+jwt)
 	req.Header.Set("Location", "localhost")
 
-	httpClient := tracing.BuildTracedHTTPClient()
+	httpClient := httpclient.ProvideHTTPClient(&httpclient.Config{EnableTracing: true})
 	httpClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}

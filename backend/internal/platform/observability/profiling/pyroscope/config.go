@@ -11,6 +11,8 @@ import (
 type Config struct {
 	Tags               map[string]string `env:"-"                    json:"tags,omitempty"`
 	ServerAddress      string            `env:"SERVER_ADDRESS"       json:"serverAddress"`
+	BasicAuthUser      string            `env:"BASIC_AUTH_USER"      json:"basicAuthUser,omitempty"`
+	BasicAuthPassword  string            `env:"BASIC_AUTH_PASSWORD"  json:"basicAuthPassword,omitempty"`
 	UploadRate         time.Duration     `env:"UPLOAD_RATE"          json:"uploadRate"`
 	Insecure           bool              `env:"INSECURE"             json:"insecure"`
 	EnableMutexProfile bool              `env:"ENABLE_MUTEX_PROFILE" json:"enableMutexProfile"`

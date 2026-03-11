@@ -24,6 +24,7 @@ type (
 		FromName    string
 		Subject     string
 		HTMLContent string
+		TestID      string `json:"testID,omitempty"`
 	}
 
 	// Emailer represents a service that can send emails.

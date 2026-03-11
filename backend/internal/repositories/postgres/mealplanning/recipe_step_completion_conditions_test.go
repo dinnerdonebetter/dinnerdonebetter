@@ -20,23 +20,22 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 	t.Helper()
 
 	// create
-	if exampleRecipeStepCompletionCondition == nil {
-		t.Fatal("exampleRecipeStepCompletionCondition must not be nil")
-	}
+	require.NotNil(t, exampleRecipeStepCompletionCondition, "exampleRecipeStepCompletionCondition must not be nil")
+	cond := exampleRecipeStepCompletionCondition
 
 	recipe, getRecipeErr := dbc.GetRecipe(ctx, recipeID)
 	require.NoError(t, getRecipeErr)
 	require.NotNil(t, recipe)
 
-	recipeStep, getRecipeStepErr := dbc.GetRecipeStep(ctx, recipeID, exampleRecipeStepCompletionCondition.BelongsToRecipeStep)
+	recipeStep, getRecipeStepErr := dbc.GetRecipeStep(ctx, recipeID, cond.BelongsToRecipeStep)
 	require.NoError(t, getRecipeStepErr)
 	require.NotNil(t, recipeStep)
 
-	ingredientState, getIngredientStateErr := dbc.GetValidIngredientState(ctx, exampleRecipeStepCompletionCondition.IngredientState.ID)
+	ingredientState, getIngredientStateErr := dbc.GetValidIngredientState(ctx, cond.IngredientState.ID)
 	require.NoError(t, getIngredientStateErr)
 	require.NotNil(t, ingredientState)
 
-	dbInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(exampleRecipeStepCompletionCondition)
+	dbInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(cond)
 	dbInput.Ingredients = []*types.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
 		{
 			ID:                                     identifiers.New(),
@@ -49,20 +48,20 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 
-	exampleRecipeStepCompletionCondition.CreatedAt = created.CreatedAt
-	exampleRecipeStepCompletionCondition.IngredientState = created.IngredientState
-	exampleRecipeStepCompletionCondition.Ingredients = created.Ingredients
-	assert.Equal(t, exampleRecipeStepCompletionCondition, created)
+	cond.CreatedAt = created.CreatedAt
+	cond.IngredientState = created.IngredientState
+	cond.Ingredients = created.Ingredients
+	assert.Equal(t, cond, created)
 
 	recipeStepCompletionCondition, err := dbc.GetRecipeStepCompletionCondition(ctx, recipe.ID, recipeStep.ID, created.ID)
 	require.NoError(t, err)
 	require.NotNil(t, recipeStepCompletionCondition)
 
-	exampleRecipeStepCompletionCondition.CreatedAt = recipeStepCompletionCondition.CreatedAt
-	exampleRecipeStepCompletionCondition.IngredientState = recipeStepCompletionCondition.IngredientState
-	exampleRecipeStepCompletionCondition.Ingredients = recipeStepCompletionCondition.Ingredients
+	cond.CreatedAt = recipeStepCompletionCondition.CreatedAt
+	cond.IngredientState = recipeStepCompletionCondition.IngredientState
+	cond.Ingredients = recipeStepCompletionCondition.Ingredients
 
-	require.Equal(t, exampleRecipeStepCompletionCondition, recipeStepCompletionCondition)
+	require.Equal(t, cond, recipeStepCompletionCondition)
 
 	return recipeStepCompletionCondition
 }

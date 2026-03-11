@@ -19,11 +19,14 @@ import UIKit
 struct DSKeepScreenAwakeButton: View {
   @State private var isScreenAwake = false
   var inline: Bool = false
+  /// Optional callback when the user toggles the keep-awake state (for analytics).
+  var onToggle: ((Bool) -> Void)?
 
   var body: some View {
     Button {
       isScreenAwake.toggle()
       UIApplication.shared.isIdleTimerDisabled = isScreenAwake
+      onToggle?(isScreenAwake)
     } label: {
       if inline {
         HStack(spacing: DSTheme.Spacing.md) {

@@ -61,6 +61,7 @@ struct MealDetailView: View {
   @State private var customUpNextOrder: [String] = []
   @State private var customForLaterOrder: [String] = []
   @State private var isDAGSectionExpanded = false
+  @State private var showDiagramFullScreen = false
   @State private var mealTimerTick: Int = 0
   @State private var mealTimerRefresh: Timer?
   @State private var completedStepsFromTasks: [String: Set<String>] = [:]
@@ -303,6 +304,16 @@ struct MealDetailView: View {
               .font(DSTheme.Typography.title3)
               .foregroundColor(DSTheme.Colors.textPrimary)
             Spacer()
+            if let mermaidSource = viewModel.mermaidDiagram, !mermaidSource.isEmpty {
+              Button {
+                showDiagramFullScreen = true
+              } label: {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                  .font(DSTheme.Typography.caption)
+                  .foregroundColor(DSTheme.Colors.textSecondary)
+              }
+              .buttonStyle(.plain)
+            }
             Image(systemName: isDAGSectionExpanded ? "chevron.down" : "chevron.right")
               .font(DSTheme.Typography.caption)
               .foregroundColor(DSTheme.Colors.textSecondary)
@@ -312,6 +323,13 @@ struct MealDetailView: View {
         }
       )
       .buttonStyle(.plain)
+      .fullScreenCover(isPresented: $showDiagramFullScreen) {
+        DiagramFullScreenSheet(
+          mermaidSource: viewModel.mermaidDiagram ?? "",
+          title: "Meal Graph",
+          onDismiss: { showDiagramFullScreen = false }
+        )
+      }
 
       if isDAGSectionExpanded {
         VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {

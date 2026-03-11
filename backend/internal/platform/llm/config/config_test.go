@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/llm/openai"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestConfig_ProvideLLMProvider_Empty(t *testing.T) {
@@ -11,12 +13,8 @@ func TestConfig_ProvideLLMProvider_Empty(t *testing.T) {
 	cfg := &Config{Provider: ""}
 
 	provider, err := cfg.ProvideLLMProvider(ctx)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if provider == nil {
-		t.Fatal("expected non-nil provider (noop)")
-	}
+	require.NoError(t, err)
+	require.NotNil(t, provider, "expected non-nil provider (noop)")
 }
 
 func TestConfig_ProvideLLMProvider_OpenAI(t *testing.T) {
@@ -29,10 +27,6 @@ func TestConfig_ProvideLLMProvider_OpenAI(t *testing.T) {
 	}
 
 	provider, err := cfg.ProvideLLMProvider(ctx)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if provider == nil {
-		t.Fatal("expected non-nil provider")
-	}
+	require.NoError(t, err)
+	require.NotNil(t, provider, "expected non-nil provider")
 }

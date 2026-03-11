@@ -16,6 +16,7 @@ private enum GroceryItemSection {
 
 struct GroceryListView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @State private var viewModel: GroceryListViewModel
   @State private var itemForEditSheet: Mealplanning_MealPlanGroceryListItem?
   @State private var quantityText: String = ""
@@ -78,6 +79,7 @@ struct GroceryListView: View {
               .foregroundColor(DSTheme.Colors.error)
             Spacer()
             DSButton("Retry", icon: "arrow.clockwise", style: .primary, size: .small) {
+              eventReporterService.reporter.track(event: "grocery_retry", properties: [:])
               Task { await viewModel.loadItems() }
             }
           }
@@ -90,6 +92,11 @@ struct GroceryListView: View {
     .navigationBarTitleDisplayMode(.large)
     .refreshable {
       await viewModel.loadItems()
+    }
+    .onAppear {
+      eventReporterService.reporter.track(
+        event: "grocery_list_viewed",
+        properties: ["meal_plan_id": viewModel.mealPlan.id])
     }
     .task {
       await viewModel.loadItems()
@@ -148,6 +155,9 @@ struct GroceryListView: View {
             Task { await viewModel.markAsNeeds(item) }
           },
           onEditQuantity: {
+            eventReporterService.reporter.track(
+              event: "grocery_item_edit_tapped",
+              properties: ["item_id": item.id])
             itemForEditSheet = item
             quantityText = item.hasQuantityNeeded ? String(item.quantityNeeded.min) : ""
           }
@@ -165,6 +175,9 @@ struct GroceryListView: View {
     }
 
     await viewModel.updateQuantityNeeded(item, min: value, max: nil)
+    eventReporterService.reporter.track(
+      event: "grocery_item_saved",
+      properties: ["item_id": item.id])
 
     itemForEditSheet = nil
     quantityText = ""

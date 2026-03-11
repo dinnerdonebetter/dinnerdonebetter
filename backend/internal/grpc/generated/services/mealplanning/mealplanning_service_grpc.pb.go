@@ -250,6 +250,9 @@ const (
 	MealPlanningService_UpdateUserIngredientPreference_FullMethodName                      = "/mealplanning.MealPlanningService/UpdateUserIngredientPreference"
 	MealPlanningService_UploadMealImage_FullMethodName                                     = "/mealplanning.MealPlanningService/UploadMealImage"
 	MealPlanningService_UploadRecipeImage_FullMethodName                                   = "/mealplanning.MealPlanningService/UploadRecipeImage"
+	MealPlanningService_UploadPreparationMedia_FullMethodName                              = "/mealplanning.MealPlanningService/UploadPreparationMedia"
+	MealPlanningService_UploadIngredientMedia_FullMethodName                               = "/mealplanning.MealPlanningService/UploadIngredientMedia"
+	MealPlanningService_UploadRecipeStepImage_FullMethodName                               = "/mealplanning.MealPlanningService/UploadRecipeStepImage"
 )
 
 // MealPlanningServiceClient is the client API for MealPlanningService service.
@@ -484,6 +487,9 @@ type MealPlanningServiceClient interface {
 	UpdateUserIngredientPreference(ctx context.Context, in *UpdateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*UpdateUserIngredientPreferenceResponse, error)
 	UploadMealImage(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadMealMediaRequest, UploadMealImageResponse], error)
 	UploadRecipeImage(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadRecipeMediaRequest, UploadRecipeImageResponse], error)
+	UploadPreparationMedia(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadPreparationMediaRequest, UploadPreparationMediaResponse], error)
+	UploadIngredientMedia(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadIngredientMediaRequest, UploadIngredientMediaResponse], error)
+	UploadRecipeStepImage(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadRecipeStepImageRequest, UploadRecipeStepImageResponse], error)
 }
 
 type mealPlanningServiceClient struct {
@@ -2780,6 +2786,45 @@ func (c *mealPlanningServiceClient) UploadRecipeImage(ctx context.Context, opts 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type MealPlanningService_UploadRecipeImageClient = grpc.ClientStreamingClient[UploadRecipeMediaRequest, UploadRecipeImageResponse]
 
+func (c *mealPlanningServiceClient) UploadPreparationMedia(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadPreparationMediaRequest, UploadPreparationMediaResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &MealPlanningService_ServiceDesc.Streams[2], MealPlanningService_UploadPreparationMedia_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[UploadPreparationMediaRequest, UploadPreparationMediaResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MealPlanningService_UploadPreparationMediaClient = grpc.ClientStreamingClient[UploadPreparationMediaRequest, UploadPreparationMediaResponse]
+
+func (c *mealPlanningServiceClient) UploadIngredientMedia(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadIngredientMediaRequest, UploadIngredientMediaResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &MealPlanningService_ServiceDesc.Streams[3], MealPlanningService_UploadIngredientMedia_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[UploadIngredientMediaRequest, UploadIngredientMediaResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MealPlanningService_UploadIngredientMediaClient = grpc.ClientStreamingClient[UploadIngredientMediaRequest, UploadIngredientMediaResponse]
+
+func (c *mealPlanningServiceClient) UploadRecipeStepImage(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadRecipeStepImageRequest, UploadRecipeStepImageResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &MealPlanningService_ServiceDesc.Streams[4], MealPlanningService_UploadRecipeStepImage_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[UploadRecipeStepImageRequest, UploadRecipeStepImageResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MealPlanningService_UploadRecipeStepImageClient = grpc.ClientStreamingClient[UploadRecipeStepImageRequest, UploadRecipeStepImageResponse]
+
 // MealPlanningServiceServer is the server API for MealPlanningService service.
 // All implementations must embed UnimplementedMealPlanningServiceServer
 // for forward compatibility.
@@ -3012,6 +3057,9 @@ type MealPlanningServiceServer interface {
 	UpdateUserIngredientPreference(context.Context, *UpdateUserIngredientPreferenceRequest) (*UpdateUserIngredientPreferenceResponse, error)
 	UploadMealImage(grpc.ClientStreamingServer[UploadMealMediaRequest, UploadMealImageResponse]) error
 	UploadRecipeImage(grpc.ClientStreamingServer[UploadRecipeMediaRequest, UploadRecipeImageResponse]) error
+	UploadPreparationMedia(grpc.ClientStreamingServer[UploadPreparationMediaRequest, UploadPreparationMediaResponse]) error
+	UploadIngredientMedia(grpc.ClientStreamingServer[UploadIngredientMediaRequest, UploadIngredientMediaResponse]) error
+	UploadRecipeStepImage(grpc.ClientStreamingServer[UploadRecipeStepImageRequest, UploadRecipeStepImageResponse]) error
 	mustEmbedUnimplementedMealPlanningServiceServer()
 }
 
@@ -3705,6 +3753,15 @@ func (UnimplementedMealPlanningServiceServer) UploadMealImage(grpc.ClientStreami
 }
 func (UnimplementedMealPlanningServiceServer) UploadRecipeImage(grpc.ClientStreamingServer[UploadRecipeMediaRequest, UploadRecipeImageResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method UploadRecipeImage not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) UploadPreparationMedia(grpc.ClientStreamingServer[UploadPreparationMediaRequest, UploadPreparationMediaResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method UploadPreparationMedia not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) UploadIngredientMedia(grpc.ClientStreamingServer[UploadIngredientMediaRequest, UploadIngredientMediaResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method UploadIngredientMedia not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) UploadRecipeStepImage(grpc.ClientStreamingServer[UploadRecipeStepImageRequest, UploadRecipeStepImageResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method UploadRecipeStepImage not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) mustEmbedUnimplementedMealPlanningServiceServer() {}
 func (UnimplementedMealPlanningServiceServer) testEmbeddedByValue()                             {}
@@ -7809,6 +7866,27 @@ func _MealPlanningService_UploadRecipeImage_Handler(srv interface{}, stream grpc
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type MealPlanningService_UploadRecipeImageServer = grpc.ClientStreamingServer[UploadRecipeMediaRequest, UploadRecipeImageResponse]
 
+func _MealPlanningService_UploadPreparationMedia_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(MealPlanningServiceServer).UploadPreparationMedia(&grpc.GenericServerStream[UploadPreparationMediaRequest, UploadPreparationMediaResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MealPlanningService_UploadPreparationMediaServer = grpc.ClientStreamingServer[UploadPreparationMediaRequest, UploadPreparationMediaResponse]
+
+func _MealPlanningService_UploadIngredientMedia_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(MealPlanningServiceServer).UploadIngredientMedia(&grpc.GenericServerStream[UploadIngredientMediaRequest, UploadIngredientMediaResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MealPlanningService_UploadIngredientMediaServer = grpc.ClientStreamingServer[UploadIngredientMediaRequest, UploadIngredientMediaResponse]
+
+func _MealPlanningService_UploadRecipeStepImage_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(MealPlanningServiceServer).UploadRecipeStepImage(&grpc.GenericServerStream[UploadRecipeStepImageRequest, UploadRecipeStepImageResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MealPlanningService_UploadRecipeStepImageServer = grpc.ClientStreamingServer[UploadRecipeStepImageRequest, UploadRecipeStepImageResponse]
+
 // MealPlanningService_ServiceDesc is the grpc.ServiceDesc for MealPlanningService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -8730,6 +8808,21 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "UploadRecipeImage",
 			Handler:       _MealPlanningService_UploadRecipeImage_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "UploadPreparationMedia",
+			Handler:       _MealPlanningService_UploadPreparationMedia_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "UploadIngredientMedia",
+			Handler:       _MealPlanningService_UploadIngredientMedia_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "UploadRecipeStepImage",
+			Handler:       _MealPlanningService_UploadRecipeStepImage_Handler,
 			ClientStreams: true,
 		},
 	},

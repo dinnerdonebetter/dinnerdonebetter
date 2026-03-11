@@ -22,7 +22,9 @@ func TestProvideCircuitBreaker(T *testing.T) {
 		cfg := &Config{}
 		cfg.EnsureDefaults()
 
-		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
+		ctx := t.Context()
+
+		cb, err := ProvideCircuitBreaker(ctx, cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
 		assert.NotNil(t, cb)
 		assert.NoError(t, err)
 	})
@@ -31,12 +33,13 @@ func TestProvideCircuitBreaker(T *testing.T) {
 		cfg := &Config{}
 		cfg.EnsureDefaults()
 
+		ctx := t.Context()
 		i64Counter := &mockmetrics.Int64Counter{}
 
 		mp := &mockmetrics.MetricsProvider{}
 		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
 
-		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), mp)
+		cb, err := ProvideCircuitBreaker(ctx, cfg, logging.NewNoopLogger(), mp)
 		assert.Nil(t, cb)
 		assert.Error(t, err)
 
@@ -47,13 +50,14 @@ func TestProvideCircuitBreaker(T *testing.T) {
 		cfg := &Config{}
 		cfg.EnsureDefaults()
 
+		ctx := t.Context()
 		i64Counter := &mockmetrics.Int64Counter{}
 
 		mp := &mockmetrics.MetricsProvider{}
 		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
 		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_failed", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
 
-		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), mp)
+		cb, err := ProvideCircuitBreaker(ctx, cfg, logging.NewNoopLogger(), mp)
 		assert.Nil(t, cb)
 		assert.Error(t, err)
 
@@ -64,6 +68,7 @@ func TestProvideCircuitBreaker(T *testing.T) {
 		cfg := &Config{}
 		cfg.EnsureDefaults()
 
+		ctx := t.Context()
 		i64Counter := &mockmetrics.Int64Counter{}
 
 		mp := &mockmetrics.MetricsProvider{}
@@ -71,7 +76,7 @@ func TestProvideCircuitBreaker(T *testing.T) {
 		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_failed", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
 		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_reset", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
 
-		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), mp)
+		cb, err := ProvideCircuitBreaker(ctx, cfg, logging.NewNoopLogger(), mp)
 		assert.Nil(t, cb)
 		assert.Error(t, err)
 
@@ -88,13 +93,15 @@ func TestEnsureCircuitBreaker(t *testing.T) {
 func TestCircuitBreaker_Integration(t *testing.T) {
 	t.SkipNow() // cannot run this with the race detector on
 
+	ctx := t.Context()
+
 	cfg := &Config{
 		Name:                   t.Name(),
 		ErrorRate:              1,
 		MinimumSampleThreshold: 1,
 	}
 
-	cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
+	cb, err := ProvideCircuitBreaker(ctx, cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
 	assert.NotNil(t, cb)
 	assert.NoError(t, err)
 

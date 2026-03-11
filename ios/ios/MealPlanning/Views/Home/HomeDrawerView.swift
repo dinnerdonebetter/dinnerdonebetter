@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeDrawerView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @Binding var isPresented: Bool
 
   var displayName: String = ""
@@ -24,6 +25,9 @@ struct HomeDrawerView: View {
       Color.black.opacity(isPresented ? 0.35 : 0)
         .ignoresSafeArea()
         .onTapGesture {
+          if isPresented {
+            eventReporterService.reporter.track(event: "drawer_closed", properties: [:])
+          }
           isPresented = false
         }
 
@@ -52,7 +56,12 @@ struct HomeDrawerView: View {
             .padding(.horizontal, DSTheme.Spacing.xl)
           }
           .buttonStyle(.plain)
-          .simultaneousGesture(TapGesture().onEnded { isPresented = false })
+          .simultaneousGesture(
+            TapGesture().onEnded {
+              eventReporterService.reporter.track(event: "drawer_account_tapped", properties: [:])
+              isPresented = false
+            }
+          )
           .padding(.horizontal, DSTheme.Spacing.md)
         }
 
@@ -77,7 +86,13 @@ struct HomeDrawerView: View {
               .padding(.horizontal, DSTheme.Spacing.xl)
           }
           .buttonStyle(.plain)
-          .simultaneousGesture(TapGesture().onEnded { isPresented = false })
+          .simultaneousGesture(
+            TapGesture().onEnded {
+              eventReporterService.reporter.track(
+                event: "drawer_create_meal_plan_tapped", properties: [:])
+              isPresented = false
+            }
+          )
           .padding(.horizontal, DSTheme.Spacing.md)
         }
 
@@ -97,7 +112,12 @@ struct HomeDrawerView: View {
               .padding(.horizontal, DSTheme.Spacing.xl)
           }
           .buttonStyle(.plain)
-          .simultaneousGesture(TapGesture().onEnded { isPresented = false })
+          .simultaneousGesture(
+            TapGesture().onEnded {
+              eventReporterService.reporter.track(event: "drawer_meals_tapped", properties: [:])
+              isPresented = false
+            }
+          )
           .padding(.horizontal, DSTheme.Spacing.md)
 
           NavigationLink(destination: RecipeListView()) {
@@ -110,7 +130,12 @@ struct HomeDrawerView: View {
               .padding(.horizontal, DSTheme.Spacing.xl)
           }
           .buttonStyle(.plain)
-          .simultaneousGesture(TapGesture().onEnded { isPresented = false })
+          .simultaneousGesture(
+            TapGesture().onEnded {
+              eventReporterService.reporter.track(event: "drawer_recipes_tapped", properties: [:])
+              isPresented = false
+            }
+          )
           .padding(.horizontal, DSTheme.Spacing.md)
         }
 
@@ -119,6 +144,7 @@ struct HomeDrawerView: View {
         VStack(spacing: DSTheme.Spacing.lg) {
           DSDivider()
           DSButton("Sign Out", style: .destructiveGhost, size: .large, fullWidth: true) {
+            eventReporterService.reporter.track(event: "sign_out_tapped", properties: [:])
             isPresented = false
             Task {
               await authManager.logout()

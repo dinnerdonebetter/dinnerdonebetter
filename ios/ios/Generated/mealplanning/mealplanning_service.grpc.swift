@@ -2756,6 +2756,42 @@ internal enum Mealplanning_MealPlanningService {
                 method: "UploadRecipeImage"
             )
         }
+        /// Namespace for "UploadPreparationMedia" metadata.
+        internal enum UploadPreparationMedia {
+            /// Request type for "UploadPreparationMedia".
+            internal typealias Input = Mealplanning_UploadPreparationMediaRequest
+            /// Response type for "UploadPreparationMedia".
+            internal typealias Output = Mealplanning_UploadPreparationMediaResponse
+            /// Descriptor for "UploadPreparationMedia".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "UploadPreparationMedia"
+            )
+        }
+        /// Namespace for "UploadIngredientMedia" metadata.
+        internal enum UploadIngredientMedia {
+            /// Request type for "UploadIngredientMedia".
+            internal typealias Input = Mealplanning_UploadIngredientMediaRequest
+            /// Response type for "UploadIngredientMedia".
+            internal typealias Output = Mealplanning_UploadIngredientMediaResponse
+            /// Descriptor for "UploadIngredientMedia".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "UploadIngredientMedia"
+            )
+        }
+        /// Namespace for "UploadRecipeStepImage" metadata.
+        internal enum UploadRecipeStepImage {
+            /// Request type for "UploadRecipeStepImage".
+            internal typealias Input = Mealplanning_UploadRecipeStepImageRequest
+            /// Response type for "UploadRecipeStepImage".
+            internal typealias Output = Mealplanning_UploadRecipeStepImageResponse
+            /// Descriptor for "UploadRecipeStepImage".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "UploadRecipeStepImage"
+            )
+        }
         /// Descriptors for all methods in the "mealplanning.MealPlanningService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
             AddCommentToMeal.descriptor,
@@ -2985,7 +3021,10 @@ internal enum Mealplanning_MealPlanningService {
             UpdateComment.descriptor,
             UpdateUserIngredientPreference.descriptor,
             UploadMealImage.descriptor,
-            UploadRecipeImage.descriptor
+            UploadRecipeImage.descriptor,
+            UploadPreparationMedia.descriptor,
+            UploadIngredientMedia.descriptor,
+            UploadRecipeStepImage.descriptor
         ]
     }
 }
@@ -7335,6 +7374,63 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UploadRecipeImageResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadRecipeImageResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "UploadPreparationMedia" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request producing `Mealplanning_UploadPreparationMediaRequest` messages.
+        ///   - serializer: A serializer for `Mealplanning_UploadPreparationMediaRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_UploadPreparationMediaResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func uploadPreparationMedia<Result>(
+            request: GRPCCore.StreamingClientRequest<Mealplanning_UploadPreparationMediaRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_UploadPreparationMediaRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UploadPreparationMediaResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadPreparationMediaResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "UploadIngredientMedia" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request producing `Mealplanning_UploadIngredientMediaRequest` messages.
+        ///   - serializer: A serializer for `Mealplanning_UploadIngredientMediaRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_UploadIngredientMediaResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func uploadIngredientMedia<Result>(
+            request: GRPCCore.StreamingClientRequest<Mealplanning_UploadIngredientMediaRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_UploadIngredientMediaRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UploadIngredientMediaResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadIngredientMediaResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "UploadRecipeStepImage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request producing `Mealplanning_UploadRecipeStepImageRequest` messages.
+        ///   - serializer: A serializer for `Mealplanning_UploadRecipeStepImageRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_UploadRecipeStepImageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func uploadRecipeStepImage<Result>(
+            request: GRPCCore.StreamingClientRequest<Mealplanning_UploadRecipeStepImageRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_UploadRecipeStepImageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UploadRecipeStepImageResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadRecipeStepImageResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
     }
 
@@ -14193,6 +14289,96 @@ extension Mealplanning_MealPlanningService {
                 onResponse: handleResponse
             )
         }
+
+        /// Call the "UploadPreparationMedia" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request producing `Mealplanning_UploadPreparationMediaRequest` messages.
+        ///   - serializer: A serializer for `Mealplanning_UploadPreparationMediaRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_UploadPreparationMediaResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func uploadPreparationMedia<Result>(
+            request: GRPCCore.StreamingClientRequest<Mealplanning_UploadPreparationMediaRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_UploadPreparationMediaRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UploadPreparationMediaResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadPreparationMediaResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.clientStreaming(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.UploadPreparationMedia.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "UploadIngredientMedia" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request producing `Mealplanning_UploadIngredientMediaRequest` messages.
+        ///   - serializer: A serializer for `Mealplanning_UploadIngredientMediaRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_UploadIngredientMediaResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func uploadIngredientMedia<Result>(
+            request: GRPCCore.StreamingClientRequest<Mealplanning_UploadIngredientMediaRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_UploadIngredientMediaRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UploadIngredientMediaResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadIngredientMediaResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.clientStreaming(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.UploadIngredientMedia.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "UploadRecipeStepImage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request producing `Mealplanning_UploadRecipeStepImageRequest` messages.
+        ///   - serializer: A serializer for `Mealplanning_UploadRecipeStepImageRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_UploadRecipeStepImageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func uploadRecipeStepImage<Result>(
+            request: GRPCCore.StreamingClientRequest<Mealplanning_UploadRecipeStepImageRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_UploadRecipeStepImageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UploadRecipeStepImageResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadRecipeStepImageResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.clientStreaming(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.UploadRecipeStepImage.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
     }
 }
 
@@ -19894,6 +20080,81 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_UploadRecipeMediaRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_UploadRecipeImageResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "UploadPreparationMedia" method.
+    ///
+    /// - Parameters:
+    ///   - request: A streaming request producing `Mealplanning_UploadPreparationMediaRequest` messages.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func uploadPreparationMedia<Result>(
+        request: GRPCCore.StreamingClientRequest<Mealplanning_UploadPreparationMediaRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadPreparationMediaResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.uploadPreparationMedia(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_UploadPreparationMediaRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_UploadPreparationMediaResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "UploadIngredientMedia" method.
+    ///
+    /// - Parameters:
+    ///   - request: A streaming request producing `Mealplanning_UploadIngredientMediaRequest` messages.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func uploadIngredientMedia<Result>(
+        request: GRPCCore.StreamingClientRequest<Mealplanning_UploadIngredientMediaRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadIngredientMediaResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.uploadIngredientMedia(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_UploadIngredientMediaRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_UploadIngredientMediaResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "UploadRecipeStepImage" method.
+    ///
+    /// - Parameters:
+    ///   - request: A streaming request producing `Mealplanning_UploadRecipeStepImageRequest` messages.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func uploadRecipeStepImage<Result>(
+        request: GRPCCore.StreamingClientRequest<Mealplanning_UploadRecipeStepImageRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadRecipeStepImageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.uploadRecipeStepImage(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_UploadRecipeStepImageRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_UploadRecipeStepImageResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -26511,6 +26772,96 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             producer: producer
         )
         return try await self.uploadRecipeImage(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "UploadPreparationMedia" method.
+    ///
+    /// - Parameters:
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - producer: A closure producing request messages to send to the server. The request
+    ///       stream is closed when the closure returns.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func uploadPreparationMedia<Result>(
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        requestProducer producer: @Sendable @escaping (GRPCCore.RPCWriter<Mealplanning_UploadPreparationMediaRequest>) async throws -> Void,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadPreparationMediaResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.StreamingClientRequest<Mealplanning_UploadPreparationMediaRequest>(
+            metadata: metadata,
+            producer: producer
+        )
+        return try await self.uploadPreparationMedia(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "UploadIngredientMedia" method.
+    ///
+    /// - Parameters:
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - producer: A closure producing request messages to send to the server. The request
+    ///       stream is closed when the closure returns.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func uploadIngredientMedia<Result>(
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        requestProducer producer: @Sendable @escaping (GRPCCore.RPCWriter<Mealplanning_UploadIngredientMediaRequest>) async throws -> Void,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadIngredientMediaResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.StreamingClientRequest<Mealplanning_UploadIngredientMediaRequest>(
+            metadata: metadata,
+            producer: producer
+        )
+        return try await self.uploadIngredientMedia(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "UploadRecipeStepImage" method.
+    ///
+    /// - Parameters:
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - producer: A closure producing request messages to send to the server. The request
+    ///       stream is closed when the closure returns.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func uploadRecipeStepImage<Result>(
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        requestProducer producer: @Sendable @escaping (GRPCCore.RPCWriter<Mealplanning_UploadRecipeStepImageRequest>) async throws -> Void,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UploadRecipeStepImageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.StreamingClientRequest<Mealplanning_UploadRecipeStepImageRequest>(
+            metadata: metadata,
+            producer: producer
+        )
+        return try await self.uploadRecipeStepImage(
             request: request,
             options: options,
             onResponse: handleResponse

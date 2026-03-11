@@ -111,3 +111,31 @@ func (c *EventReporter) EventOccurred(ctx context.Context, event, userID string,
 	c.circuitBreaker.Succeeded()
 	return nil
 }
+
+// EventOccurredAnonymous records an event for an anonymous user.
+func (c *EventReporter) EventOccurredAnonymous(ctx context.Context, event, anonymousID string, properties map[string]any) error {
+	_, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if c.circuitBreaker.CannotProceed() {
+		return circuitbreaking.ErrCircuitBroken
+	}
+
+	p := segment.NewProperties()
+	for k, v := range properties {
+		p.Set(k, v)
+	}
+
+	if err := c.client.Enqueue(segment.Track{
+		Event:        event,
+		AnonymousId:  anonymousID,
+		Properties:   p,
+		Integrations: segment.NewIntegrations().EnableAll(),
+	}); err != nil {
+		c.circuitBreaker.Failed()
+		return err
+	}
+
+	c.circuitBreaker.Succeeded()
+	return nil
+}

@@ -11,13 +11,15 @@ import (
 	"testing"
 	"time"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func init() {
-	fake.Seed(time.Now().UnixNano())
+	if err := fake.Seed(time.Now().UnixNano()); err != nil {
+		panic(err)
+	}
 }
 
 const (

@@ -67,12 +67,7 @@
 			"serviceName": "api_server"
 		},
 		"tracing": {
-			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces"
-			},
-			"service_name": "api_server",
-			"provider": "otelgrpc",
-			"spanCollectionProbability": 1
+			"service_name": "api_server"
 		}
 	},
 	"grpc": {
@@ -99,6 +94,7 @@
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
+		"proxySources": null,
 		"provider": "",
 		"circuitBreaker": {
 			"name": "feature_flagger",
@@ -126,6 +122,7 @@
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
 	},
+	"httpClient": null,
 	"http": {
 		"startupDeadline": 60000000000,
 		"port": 8000,
@@ -138,6 +135,7 @@
 		"sessionStore": {
 			"provider": ""
 		},
+		"passkey": {},
 		"tokens": {
 			"provider": "",
 			"audience": "",

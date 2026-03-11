@@ -119,6 +119,7 @@
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
+		"proxySources": null,
 		"provider": "",
 		"circuitBreaker": {
 			"name": "feature_flagger",
@@ -150,6 +151,7 @@
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
 	},
+	"httpClient": null,
 	"http": {
 		"startupDeadline": 60000000000,
 		"port": 8000,
@@ -162,6 +164,7 @@
 		"sessionStore": {
 			"provider": ""
 		},
+		"passkey": {},
 		"tokens": {
 			"provider": "",
 			"audience": "",

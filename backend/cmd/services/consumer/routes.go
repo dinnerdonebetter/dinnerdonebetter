@@ -77,6 +77,8 @@ func (s *ConsumerFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/account/profile", ghttp.Adapt(s.ProfilePage))
 	r.Post("/account/profile/update-username", s.UpdateProfileUsernameHandler)
 	r.Post("/account/profile/update-details", s.UpdateProfileDetailsHandler)
+	r.Get("/account/passkeys", ghttp.Adapt(s.PasskeysPage))
+	r.Post("/account/passkeys/delete", s.DeletePasskeyHandler)
 	r.Post("/auth/passkey/registration/options", passkeyHandlers.RegOptionsHandler)
 	r.Post("/auth/passkey/registration/verify", passkeyHandlers.RegVerifyHandler)
 

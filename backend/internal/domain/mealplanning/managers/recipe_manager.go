@@ -61,6 +61,7 @@ type (
 		ReadRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*mealplanning.RecipeStep, error)
 		UpdateRecipeStep(ctx context.Context, recipeID, recipeStepID string, input *mealplanning.RecipeStepUpdateRequestInput) error
 		ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error
+		AddRecipeStepImage(ctx context.Context, recipeStepID, uploadedMediaID, uploadedByUser string) error
 		RecipeStepImageUpload(ctx context.Context) error
 
 		ListRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStepProduct], error)
@@ -945,6 +946,20 @@ func (m *recipeManager) ArchiveRecipeStep(ctx context.Context, recipeID, recipeS
 		mealplanningkeys.RecipeIDKey:     recipeID,
 		mealplanningkeys.RecipeStepIDKey: recipeStepID,
 	}))
+
+	return nil
+}
+
+func (m *recipeManager) AddRecipeStepImage(ctx context.Context, recipeStepID, uploadedMediaID, uploadedByUser string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeStepIDKey, recipeStepID)
+
+	if err := m.db.AddRecipeStepImage(ctx, recipeStepID, uploadedMediaID, uploadedByUser); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "adding recipe step image")
+	}
 
 	return nil
 }

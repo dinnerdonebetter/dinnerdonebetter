@@ -53,6 +53,8 @@ func TestConfig_ProvideCollector(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+
 		for _, provider := range allProviders {
 			cfg := &Config{
 				Provider:       provider,
@@ -62,13 +64,15 @@ func TestConfig_ProvideCollector(T *testing.T) {
 				CircuitBreaker: circuitbreaking.Config{},
 			}
 
-			_, err := cfg.ProvideCollector(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
+			_, err := cfg.ProvideCollector(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
 			require.NoError(t, err)
 		}
 	})
 
 	T.Run("with invalid values", func(t *testing.T) {
 		t.Parallel()
+
+		ctx := t.Context()
 
 		for _, provider := range allProviders {
 			cfg := &Config{
@@ -78,7 +82,7 @@ func TestConfig_ProvideCollector(T *testing.T) {
 				Posthog:     &posthog.Config{},
 			}
 
-			_, err := cfg.ProvideCollector(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
+			_, err := cfg.ProvideCollector(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
 			require.Error(t, err)
 		}
 	})

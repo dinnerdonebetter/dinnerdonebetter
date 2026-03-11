@@ -26,6 +26,8 @@ type WebAuthnCredentialDataManager interface {
 	GetWebAuthnCredentialByCredentialID(ctx context.Context, credentialID []byte) (*WebAuthnCredential, error)
 	UpdateWebAuthnCredentialSignCount(ctx context.Context, id string, signCount uint32) error
 	ArchiveWebAuthnCredential(ctx context.Context, id string) error
+	// ArchiveWebAuthnCredentialForUser archives a credential only if it belongs to the given user. Returns nil if no rows updated.
+	ArchiveWebAuthnCredentialForUser(ctx context.Context, id, userID string) error
 }
 
 // WebAuthnCredentialCreationInput is used when creating a new WebAuthn credential.

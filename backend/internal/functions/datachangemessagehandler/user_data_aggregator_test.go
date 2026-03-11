@@ -39,7 +39,7 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 
 		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), mock.Anything, "test-report-id.json", mock.AnythingOfType("[]uint8")).Return(nil)
 
-		err = handler.UserDataAggregationEventHandler(ctx, rawMsg)
+		err = handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, decoder, uploadManager, dataPrivacyRepo)
@@ -57,7 +57,7 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		expectedError := errors.New("decode error")
 		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.AnythingOfType("*dataprivacy.UserDataAggregationRequest")).Return(expectedError)
 
-		err := handler.UserDataAggregationEventHandler(ctx, rawMsg)
+		err := handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "decoding JSON body")
 
@@ -87,7 +87,7 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		expectedError := errors.New("fetch error")
 		dataPrivacyRepo.On(reflection.GetMethodName(dataPrivacyRepo.FetchUserDataCollection), mock.Anything, "test-user-id").Return((*dataprivacy.UserDataCollection)(nil), expectedError)
 
-		err = handler.UserDataAggregationEventHandler(ctx, rawMsg)
+		err = handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "fetching user data collection")
 
@@ -119,7 +119,7 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		expectedError := errors.New("upload error")
 		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), mock.Anything, "test-report-id.json", mock.AnythingOfType("[]uint8")).Return(expectedError)
 
-		err = handler.UserDataAggregationEventHandler(ctx, rawMsg)
+		err = handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "saving collection")
 
@@ -150,7 +150,7 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 
 		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), mock.Anything, ".json", mock.AnythingOfType("[]uint8")).Return(nil)
 
-		err = handler.UserDataAggregationEventHandler(ctx, rawMsg)
+		err = handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, decoder, uploadManager, dataPrivacyRepo)
@@ -183,7 +183,7 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		// Mock the upload manager to return success so we can test the marshaling path
 		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), mock.Anything, "test-report-id.json", mock.AnythingOfType("[]uint8")).Return(nil)
 
-		err = handler.UserDataAggregationEventHandler(ctx, rawMsg)
+		err = handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, decoder, uploadManager, dataPrivacyRepo)

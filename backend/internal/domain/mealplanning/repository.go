@@ -39,4 +39,7 @@ type Repository interface {
 	ValidPreparationInstrumentDataManager
 	ValidPreparationVesselDataManager
 	ValidVesselDataManager
+	PreparationMediaDataManager
+	IngredientMediaDataManager
+	RecipeStepImageDataManager
 }

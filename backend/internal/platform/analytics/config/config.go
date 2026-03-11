@@ -29,12 +29,16 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Segment        *segment.Config        `env:"init"     envPrefix:"SEGMENT_"         json:"segment"`
-		Posthog        *posthog.Config        `env:"init"     envPrefix:"POSTHOG_"         json:"posthog"`
-		Rudderstack    *rudderstack.Config    `env:"init"     envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
-		Provider       string                 `env:"PROVIDER" json:"provider"`
-		CircuitBreaker circuitbreaking.Config `env:"init"     envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
+		Segment        *segment.Config        `env:"init"          envPrefix:"SEGMENT_"         json:"segment"`
+		Posthog        *posthog.Config        `env:"init"          envPrefix:"POSTHOG_"         json:"posthog"`
+		Rudderstack    *rudderstack.Config    `env:"init"          envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
+		ProxySources   ProxySourcesConfig     `json:"proxySources"`
+		Provider       string                 `env:"PROVIDER"      json:"provider"`
+		CircuitBreaker circuitbreaking.Config `env:"init"          envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
 	}
+
+	// ProxySourcesConfig maps source names (e.g. "ios", "web") to per-source analytics config for the analytics proxy gRPC service.
+	ProxySourcesConfig map[string]*Config
 )
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -51,11 +55,12 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 
 // ProvideCollector provides a collector.
 func (cfg *Config) ProvideCollector(
+	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 ) (analytics.EventReporter, error) {
-	cb, err := cfg.CircuitBreaker.ProvideCircuitBreaker(logger, metricsProvider)
+	cb, err := cfg.CircuitBreaker.ProvideCircuitBreaker(ctx, logger, metricsProvider)
 	if err != nil {
 		return nil, fmt.Errorf("could not create analytics circuit breaker: %w", err)
 	}

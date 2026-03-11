@@ -283,7 +283,7 @@ func TestSSEStream_Done(T *testing.T) {
 		case <-done:
 			// expected: channel closed
 		case <-time.After(time.Second):
-			t.Fatal("Done() channel was not closed after Close()")
+			require.Fail(t, "Done() channel was not closed after Close()")
 		}
 	})
 
@@ -319,7 +319,7 @@ func TestSSEStream_Done(T *testing.T) {
 		case <-stream.Done():
 			// expected
 		case <-time.After(2 * time.Second):
-			t.Fatal("Done() channel was not closed after client disconnect")
+			require.Fail(t, "Done() channel was not closed after client disconnect")
 		}
 	})
 }

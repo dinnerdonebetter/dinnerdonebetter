@@ -163,6 +163,29 @@ patches:
       kind: Deployment
       name: dinner-done-better-root-site-deployment
 
+  # Pyroscope (Grafana Cloud) - uncomment to enable for consumer webapp
+  # - patch: |-
+  #     - op: add
+  #       path: "/spec/template/spec/containers/0/env/-"
+  #       value:
+  #         name: DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_BASIC_AUTH_USER
+  #         valueFrom:
+  #           secretKeyRef:
+  #             name: grafana-cloud-creds
+  #             key: GRAFANA_CLOUD_PYROSCOPE_USERNAME
+  #     - op: add
+  #       path: "/spec/template/spec/containers/0/env/-"
+  #       value:
+  #         name: DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_BASIC_AUTH_PASSWORD
+  #         valueFrom:
+  #           secretKeyRef:
+  #             name: grafana-cloud-creds
+  #             key: GRAFANA_CLOUD_PYROSCOPE_PASSWORD
+  #   target:
+  #     version: v1
+  #     kind: Deployment
+  #     name: dinner-done-better-root-site-deployment
+
 configMapGenerator:
   - name: opentelemetry-collector-config
     namespace: prod

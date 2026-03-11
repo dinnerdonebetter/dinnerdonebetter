@@ -210,7 +210,13 @@ func (s *Service) FinishAuthentication(ctx context.Context, username string, req
 		if credErr != nil {
 			return nil, credErr
 		}
-		waUser := &WebAuthnUser{User: u, Credentials: creds, UserID: []byte(u.ID)}
+		waUser := &WebAuthnUser{
+			User:            u,
+			Credentials:     creds,
+			UserID:          []byte(u.ID),
+			AssertionCredID: parsed.RawID,
+			AssertionFlags:  parsed.Response.AuthenticatorData.Flags,
+		}
 		credential, err = s.webauthn.ValidateLogin(waUser, *session, parsed)
 		if err != nil {
 			return nil, err
@@ -218,7 +224,7 @@ func (s *Service) FinishAuthentication(ctx context.Context, username string, req
 
 		user = u
 	} else {
-		handler := s.DiscoverableUserHandler(ctx)
+		handler := s.discoverableUserHandlerWithParsed(ctx, parsed)
 		var waUser webauthn.User
 		waUser, credential, err = s.webauthn.ValidatePasskeyLogin(handler, *session, parsed)
 		if err != nil {
@@ -321,8 +327,24 @@ func (s *Service) FinishAuthenticationFromBytes(ctx context.Context, username st
 	return s.FinishAuthentication(ctx, username, req)
 }
 
+// GetCredentialsForUser returns all active passkey credentials for the given user.
+func (s *Service) GetCredentialsForUser(ctx context.Context, userID string) ([]*identity.WebAuthnCredential, error) {
+	return s.credStore.GetWebAuthnCredentialsForUser(ctx, userID)
+}
+
+// ArchiveCredentialForUser archives a passkey credential only if it belongs to the given user.
+func (s *Service) ArchiveCredentialForUser(ctx context.Context, credentialID, userID string) error {
+	return s.credStore.ArchiveWebAuthnCredentialForUser(ctx, credentialID, userID)
+}
+
 // DiscoverableUserHandler creates a webauthn.DiscoverableUserHandler for passwordless login.
 func (s *Service) DiscoverableUserHandler(ctx context.Context) webauthn.DiscoverableUserHandler {
+	return s.discoverableUserHandlerWithParsed(ctx, nil)
+}
+
+// discoverableUserHandlerWithParsed creates a handler that returns WebAuthnUser with assertion flags
+// when parsed is non-nil, satisfying go-webauthn's BackupEligible consistency check.
+func (s *Service) discoverableUserHandlerWithParsed(ctx context.Context, parsed *protocol.ParsedCredentialAssertionData) webauthn.DiscoverableUserHandler {
 	return func(rawID, userHandle []byte) (webauthn.User, error) {
 		stored, err := s.credStore.GetWebAuthnCredentialByCredentialID(ctx, rawID)
 		if err != nil || stored == nil {
@@ -336,10 +358,15 @@ func (s *Service) DiscoverableUserHandler(ctx context.Context) webauthn.Discover
 		if err != nil {
 			return nil, err
 		}
-		return &WebAuthnUser{
+		waUser := &WebAuthnUser{
 			User:        user,
 			Credentials: creds,
 			UserID:      []byte(user.ID),
-		}, nil
+		}
+		if parsed != nil {
+			waUser.AssertionCredID = parsed.RawID
+			waUser.AssertionFlags = parsed.Response.AuthenticatorData.Flags
+		}
+		return waUser, nil
 	}
 }

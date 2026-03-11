@@ -12,6 +12,7 @@ import SwiftUI
 struct ContentView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(DeepLinkHandler.self) private var deepLinkHandler
+  @Environment(EventReporterService.self) private var eventReporterService
   @State private var showLogin: Bool = true
 
   // Invitation data from deep link
@@ -20,6 +21,9 @@ struct ContentView: View {
 
   // Sheet for logged-in users who tap an invite link
   @State private var showAcceptInvitationSheet: Bool = false
+
+  // Meal plan ID from deep link (Universal Link from email) — when set, present meal plan vote/detail
+  @State private var pendingMealPlanID: String?
 
   // Launch offering for paywall (avoids "default" offering which has no paywall)
   @State private var launchOffering: Offering?
@@ -74,8 +78,19 @@ struct ContentView: View {
           onAccepted: {}
         )
         .environment(authManager)
+        .environment(eventReporterService)
       }
     )
+    .fullScreenCover(
+      isPresented: Binding(
+        get: { pendingMealPlanID != nil },
+        set: { if !$0 { pendingMealPlanID = nil } }
+      )
+    ) {
+      if let id = pendingMealPlanID {
+        MealPlanByIDView(mealPlanID: id)
+      }
+    }
   }
 
   private func handleDeepLink(_ destination: DeepLinkDestination?) {
@@ -83,6 +98,9 @@ struct ContentView: View {
 
     switch destination {
     case .acceptInvitation(let invitationID, let token):
+      eventReporterService.reporter.track(
+        event: "invitation_deep_link_opened",
+        properties: ["invitation_id": invitationID])
       pendingInvitationID = invitationID
       pendingInvitationToken = token
       deepLinkHandler.clearPendingDestination()
@@ -105,6 +123,13 @@ struct ContentView: View {
       // swiftlint:disable:next todo
       // TODO: Handle email verification
       print("Email verification token: \(token)")
+      deepLinkHandler.clearPendingDestination()
+
+    case .openMealPlan(let mealPlanID):
+      eventReporterService.reporter.track(
+        event: "meal_plan_deep_link_opened",
+        properties: ["meal_plan_id": mealPlanID])
+      pendingMealPlanID = mealPlanID
       deepLinkHandler.clearPendingDestination()
 
     case .unknown:

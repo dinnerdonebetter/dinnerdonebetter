@@ -18,6 +18,7 @@ import (
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/retry"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -26,7 +27,6 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
-	"gopkg.in/matryer/try.v1"
 )
 
 var RunContainerTests = strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) != "false" // on by default
@@ -121,9 +121,7 @@ func BuildDatabaseContainerForTest(t *testing.T) (*postgres.PostgresContainer, *
 	t.Helper()
 
 	container, db, dbConfig, err := BuildDatabaseContainer(t.Context(), t.Name())
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
 	return container, db, dbConfig
 }
@@ -132,7 +130,8 @@ func BuildDatabaseContainer(ctx context.Context, dbName string) (*postgres.Postg
 	dbUsername := fmt.Sprintf("%d", MustHashStringToNumber(dbName))
 
 	var container *postgres.PostgresContainer
-	if err := try.Do(func(attempt int) (bool, error) {
+	policy := retry.NewExponentialBackoffPolicy(retry.Config{MaxAttempts: 5, InitialDelay: 1, UseJitter: false})
+	if err := policy.Execute(ctx, func(ctx context.Context) error {
 		var containerErr error
 		container, containerErr = postgres.Run(
 			ctx,
@@ -142,8 +141,7 @@ func BuildDatabaseContainer(ctx context.Context, dbName string) (*postgres.Postg
 			postgres.WithPassword(reverseString(dbUsername)),
 			testcontainers.WithWaitStrategyAndDeadline(2*time.Minute, wait.ForLog("database system is ready to accept connections").WithOccurrence(2)),
 		)
-
-		return attempt < 5, containerErr
+		return containerErr
 	}); err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to connect to postgres: %w", err)
 	}

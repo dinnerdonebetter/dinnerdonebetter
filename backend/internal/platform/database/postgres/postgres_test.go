@@ -126,7 +126,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 			maxPingAttempts:  1,
 		}
 
-		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), exampleConfig)
+		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), exampleConfig, nil)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})

@@ -48,6 +48,26 @@ patches:
       kind: CronJob
       name: dinner-done-better-job-db-cleaner
 
+  # Email Deliverability Test CronJob
+  - path: patches/cronjob-k8s-hostnames.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-email-deliverability-test
+  - path: patches/cronjob-local-image-pull.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-email-deliverability-test
+
+  # Queue Test CronJob
+  - path: patches/cronjob-k8s-hostnames.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-queue-test
+  - path: patches/cronjob-local-image-pull.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-queue-test
+
   # Meal Plan Finalizer CronJob
   - path: patches/cronjob-k8s-hostnames.yaml
     target:
@@ -115,6 +135,16 @@ configMapGenerator:
     namespace: localdev
     files:
       - config.json=configs/job_db_cleaner_config.json
+
+  - name: dinner-done-better-job-email-deliverability-test-config
+    namespace: localdev
+    files:
+      - config.json=configs/job_email_deliverability_test_config.json
+
+  - name: dinner-done-better-job-queue-test-config
+    namespace: localdev
+    files:
+      - config.json=configs/job_queue_test_config.json
 
   - name: dinner-done-better-job-meal-plan-finalizer-config
     namespace: localdev

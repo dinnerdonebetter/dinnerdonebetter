@@ -42,6 +42,8 @@ const (
 	AuthService_FinishPasskeyRegistration_FullMethodName     = "/auth.AuthService/FinishPasskeyRegistration"
 	AuthService_BeginPasskeyAuthentication_FullMethodName    = "/auth.AuthService/BeginPasskeyAuthentication"
 	AuthService_FinishPasskeyAuthentication_FullMethodName   = "/auth.AuthService/FinishPasskeyAuthentication"
+	AuthService_ListPasskeys_FullMethodName                  = "/auth.AuthService/ListPasskeys"
+	AuthService_ArchivePasskey_FullMethodName                = "/auth.AuthService/ArchivePasskey"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -70,6 +72,8 @@ type AuthServiceClient interface {
 	FinishPasskeyRegistration(ctx context.Context, in *FinishPasskeyRegistrationRequest, opts ...grpc.CallOption) (*FinishPasskeyRegistrationResponse, error)
 	BeginPasskeyAuthentication(ctx context.Context, in *BeginPasskeyAuthenticationRequest, opts ...grpc.CallOption) (*BeginPasskeyAuthenticationResponse, error)
 	FinishPasskeyAuthentication(ctx context.Context, in *FinishPasskeyAuthenticationRequest, opts ...grpc.CallOption) (*LoginForTokenResponse, error)
+	ListPasskeys(ctx context.Context, in *ListPasskeysRequest, opts ...grpc.CallOption) (*ListPasskeysResponse, error)
+	ArchivePasskey(ctx context.Context, in *ArchivePasskeyRequest, opts ...grpc.CallOption) (*ArchivePasskeyResponse, error)
 }
 
 type authServiceClient struct {
@@ -300,6 +304,26 @@ func (c *authServiceClient) FinishPasskeyAuthentication(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *authServiceClient) ListPasskeys(ctx context.Context, in *ListPasskeysRequest, opts ...grpc.CallOption) (*ListPasskeysResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListPasskeysResponse)
+	err := c.cc.Invoke(ctx, AuthService_ListPasskeys_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ArchivePasskey(ctx context.Context, in *ArchivePasskeyRequest, opts ...grpc.CallOption) (*ArchivePasskeyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchivePasskeyResponse)
+	err := c.cc.Invoke(ctx, AuthService_ArchivePasskey_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -326,6 +350,8 @@ type AuthServiceServer interface {
 	FinishPasskeyRegistration(context.Context, *FinishPasskeyRegistrationRequest) (*FinishPasskeyRegistrationResponse, error)
 	BeginPasskeyAuthentication(context.Context, *BeginPasskeyAuthenticationRequest) (*BeginPasskeyAuthenticationResponse, error)
 	FinishPasskeyAuthentication(context.Context, *FinishPasskeyAuthenticationRequest) (*LoginForTokenResponse, error)
+	ListPasskeys(context.Context, *ListPasskeysRequest) (*ListPasskeysResponse, error)
+	ArchivePasskey(context.Context, *ArchivePasskeyRequest) (*ArchivePasskeyResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -401,6 +427,12 @@ func (UnimplementedAuthServiceServer) BeginPasskeyAuthentication(context.Context
 }
 func (UnimplementedAuthServiceServer) FinishPasskeyAuthentication(context.Context, *FinishPasskeyAuthenticationRequest) (*LoginForTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishPasskeyAuthentication not implemented")
+}
+func (UnimplementedAuthServiceServer) ListPasskeys(context.Context, *ListPasskeysRequest) (*ListPasskeysResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPasskeys not implemented")
+}
+func (UnimplementedAuthServiceServer) ArchivePasskey(context.Context, *ArchivePasskeyRequest) (*ArchivePasskeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchivePasskey not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -819,6 +851,42 @@ func _AuthService_FinishPasskeyAuthentication_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ListPasskeys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPasskeysRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ListPasskeys(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ListPasskeys_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ListPasskeys(ctx, req.(*ListPasskeysRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ArchivePasskey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchivePasskeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ArchivePasskey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ArchivePasskey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ArchivePasskey(ctx, req.(*ArchivePasskeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -913,6 +981,14 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FinishPasskeyAuthentication",
 			Handler:    _AuthService_FinishPasskeyAuthentication_Handler,
+		},
+		{
+			MethodName: "ListPasskeys",
+			Handler:    _AuthService_ListPasskeys_Handler,
+		},
+		{
+			MethodName: "ArchivePasskey",
+			Handler:    _AuthService_ArchivePasskey_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

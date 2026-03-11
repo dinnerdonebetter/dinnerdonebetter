@@ -812,15 +812,6 @@ class PerformRecipeViewModel {
   // Categorize a step based on its completion status and dependencies
   func categorizeStep(recipeID: String, stepID: String) -> StepCategory {
     let currentStepKey = self.stepKey(recipeID: recipeID, stepID: stepID)
-    let recipeName = recipe?.name ?? "???"
-    let stepName: String = {
-      if let step = stepFor(recipeID: recipeID, stepID: stepID),
-        step.hasPreparation
-      {
-        return step.preparation.name
-      }
-      return stepID
-    }()
 
     if let startDate = stepTimerStartTimes[currentStepKey],
       let step = stepFor(recipeID: recipeID, stepID: stepID),
@@ -843,17 +834,8 @@ class PerformRecipeViewModel {
     let allDependenciesDone = prerequisiteKeys.allSatisfy { completedSteps.contains($0) }
 
     if allDependenciesDone {
-      if !prerequisiteKeys.isEmpty {
-        print(
-          "📊 [\(recipeName)] categorize '\(stepName)' → upNext (all \(prerequisiteKeys.count) prereqs done)"
-        )
-      }
       return .upNext
     } else {
-      let missing = prerequisiteKeys.filter { !completedSteps.contains($0) }
-      print(
-        "📊 [\(recipeName)] categorize '\(stepName)' → forLater (missing \(missing.count)/\(prerequisiteKeys.count) prereqs: \(missing.map { $0.suffix(12) }))"
-      )
       return .forLater
     }
   }

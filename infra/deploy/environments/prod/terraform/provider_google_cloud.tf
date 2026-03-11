@@ -4,8 +4,6 @@ locals {
   project_id    = "dinner-done-better-prod"
   gcp_region    = "us-central1"
   gcp_main_zone = "us-central1-a"
-  gcp_secondary_zone = "us-central1-b"
-  gcp_tertiary_zone = "us-central1-c"
 }
 
 provider "google" {

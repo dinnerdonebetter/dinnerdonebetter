@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	g "maragu.dev/gomponents"
@@ -17,7 +18,8 @@ import (
 )
 
 const (
-	recipeIDURLParamKey = "recipeID"
+	recipeIDURLParamKey     = "recipeID"
+	recipeStepIDURLParamKey = "recipeStepID"
 )
 
 func (s *AdminFrontendServer) RecipePage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
@@ -168,7 +170,7 @@ func (s *AdminFrontendServer) RecipePage(_ http.ResponseWriter, req *http.Reques
 		"Recipe Steps",
 		&design.StandardPalette,
 		nil,
-		s.renderRecipeSteps(recipe.Steps, recipe.AssociatedRecipes),
+		s.renderRecipeSteps(recipeID, recipe.Steps, recipe.AssociatedRecipes),
 	)
 
 	// Create aggregated ingredients section
@@ -757,7 +759,7 @@ func (s *AdminFrontendServer) renderAggregatedInstrumentsAndVessels(items []*Agg
 	)
 }
 
-func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeStep, associatedRecipes []*mealplanningsvc.Recipe) g.Node {
+func (s *AdminFrontendServer) renderRecipeSteps(recipeID string, steps []*mealplanningsvc.RecipeStep, associatedRecipes []*mealplanningsvc.Recipe) g.Node {
 	if len(steps) == 0 && len(associatedRecipes) == 0 {
 		return ghtml.Div(
 			ghtml.Class("text-center py-8"),
@@ -810,7 +812,7 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 
 		// Render each step from this sub-recipe
 		for i, step := range subRecipe.Steps {
-			allStepNodes = append(allStepNodes, s.renderSubRecipeStep(step, i, subRecipe, subRecipeProductUsageMap))
+			allStepNodes = append(allStepNodes, s.renderSubRecipeStep(subRecipe.Id, step, i, subRecipe, subRecipeProductUsageMap))
 		}
 
 		// Add a visual separator before the main recipe steps
@@ -835,7 +837,7 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 
 	// Render the main recipe steps
 	for i, step := range steps {
-		allStepNodes = append(allStepNodes, s.renderSingleRecipeStep(step, i, steps, productUsageMap))
+		allStepNodes = append(allStepNodes, s.renderSingleRecipeStep(recipeID, step, i, steps, productUsageMap))
 	}
 
 	return ghtml.Div(
@@ -860,7 +862,7 @@ func (s *AdminFrontendServer) addMainRecipeProductUsage(usageMap map[string][]ui
 }
 
 // renderSubRecipeStep renders a single step from a sub-recipe with distinct styling.
-func (s *AdminFrontendServer) renderSubRecipeStep(step *mealplanningsvc.RecipeStep, stepIndex int, subRecipe *mealplanningsvc.Recipe, productUsageMap map[string][]uint32) g.Node {
+func (s *AdminFrontendServer) renderSubRecipeStep(recipeID string, step *mealplanningsvc.RecipeStep, stepIndex int, subRecipe *mealplanningsvc.Recipe, productUsageMap map[string][]uint32) g.Node {
 	return ghtml.Div(
 		ghtml.Class("border border-purple-200 rounded-lg p-4 mb-4 last:mb-0 bg-white"),
 		ghtml.Div(
@@ -1015,12 +1017,14 @@ func (s *AdminFrontendServer) renderSubRecipeStep(step *mealplanningsvc.RecipeSt
 					),
 				),
 			),
+			// Step images section
+			s.renderRecipeStepImagesSection(recipeID, step),
 		),
 	)
 }
 
 // renderSingleRecipeStep renders a single recipe step with all its components.
-func (s *AdminFrontendServer) renderSingleRecipeStep(step *mealplanningsvc.RecipeStep, stepIndex int, allSteps []*mealplanningsvc.RecipeStep, productUsageMap map[string][]uint32) g.Node {
+func (s *AdminFrontendServer) renderSingleRecipeStep(recipeID string, step *mealplanningsvc.RecipeStep, stepIndex int, allSteps []*mealplanningsvc.RecipeStep, productUsageMap map[string][]uint32) g.Node {
 	return ghtml.Div(
 		ghtml.Class("border border-gray-200 rounded-lg p-4 mb-4 last:mb-0 bg-white"),
 		ghtml.Div(
@@ -1175,6 +1179,79 @@ func (s *AdminFrontendServer) renderSingleRecipeStep(step *mealplanningsvc.Recip
 					),
 				),
 			),
+			// Step images section
+			s.renderRecipeStepImagesSection(recipeID, step),
+		),
+	)
+}
+
+// renderRecipeStepImagesSection renders the step images upload form and list for a recipe step.
+func (s *AdminFrontendServer) renderRecipeStepImagesSection(recipeID string, step *mealplanningsvc.RecipeStep) g.Node {
+	uploadForm := ghtml.Form(
+		ghtml.Class("space-y-3 mt-3"),
+		ghtml.Method("POST"),
+		ghtml.Action(fmt.Sprintf("/api/recipes/%s/steps/%s/images", recipeID, step.Id)),
+		ghtml.EncType("multipart/form-data"),
+
+		ghtml.Div(
+			ghtml.Class("flex flex-col gap-2"),
+			ghtml.Label(
+				ghtml.Class("text-sm font-medium"),
+				g.Text("Upload step image"),
+			),
+			ghtml.Input(
+				ghtml.Type("file"),
+				ghtml.Name("file"),
+				ghtml.Class("block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"),
+				g.Attr("accept", "image/*,video/mp4"),
+			),
+		),
+		ghtml.Button(
+			ghtml.Type("submit"),
+			ghtml.Class("inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"),
+			g.Text("Upload"),
+		),
+	)
+
+	var mediaList g.Node
+	if len(step.StepImages) == 0 {
+		mediaList = ghtml.P(
+			ghtml.Class("text-xs text-gray-500 py-2"),
+			g.Text("No images uploaded yet."),
+		)
+	} else {
+		mediaList = ghtml.Div(
+			ghtml.Class("space-y-2"),
+			//nolint:unconvert // g.Map returns []g.Node, g.Group accepts variadic; conversion is required by API
+			g.Group(g.Map(step.StepImages, func(m *uploadedmediagrpc.UploadedMedia) g.Node {
+				if m == nil {
+					return g.El("")
+				}
+				return ghtml.Div(
+					ghtml.Class("flex items-center gap-2 py-1 border-b border-gray-100 last:border-0 text-sm"),
+					ghtml.Span(
+						ghtml.Class("font-mono text-gray-600"),
+						g.Text(m.Id),
+					),
+					ghtml.Span(
+						ghtml.Class("text-xs text-gray-400"),
+						g.Text(m.MimeType.String()),
+					),
+				)
+			})),
+		)
+	}
+
+	return ghtml.Div(
+		ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
+		ghtml.Div(
+			ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+			g.Text("Step media:"),
+		),
+		uploadForm,
+		ghtml.Div(
+			ghtml.Class("mt-2"),
+			mediaList,
 		),
 	)
 }

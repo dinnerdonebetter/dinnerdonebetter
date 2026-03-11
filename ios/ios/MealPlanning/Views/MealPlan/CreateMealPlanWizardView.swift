@@ -16,6 +16,7 @@ extension Notification.Name {
 
 struct CreateMealPlanWizardView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @Environment(\.dismiss) var dismiss
   @State private var viewModel: CreateMealPlanViewModel?
 
@@ -39,6 +40,18 @@ struct CreateMealPlanWizardView: View {
           )
           .padding()
 
+          if viewModel.wizardStep == .mealAssignment,
+            let date = viewModel.currentPlanningDate,
+            viewModel.mealForDate(date) != nil
+          {
+            MealAssignmentNavigationButtons(
+              viewModel: viewModel,
+              onDismiss: { dismiss() }
+            )
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+          }
+
           ScrollView {
             VStack(spacing: 24) {
               switch viewModel.wizardStep {
@@ -46,10 +59,7 @@ struct CreateMealPlanWizardView: View {
                 WeekSelectionStepView(viewModel: viewModel)
 
               case .mealAssignment:
-                MealAssignmentStepView(
-                  viewModel: viewModel,
-                  onDismiss: { dismiss() }
-                )
+                MealAssignmentStepView(viewModel: viewModel)
 
               case .optionSelection:
                 OptionSelectionStepView(
@@ -60,6 +70,7 @@ struct CreateMealPlanWizardView: View {
             }
             .padding()
           }
+          .scrollDismissesKeyboard(.interactively)
 
           if let error = viewModel.creationError {
             HStack {
@@ -85,6 +96,7 @@ struct CreateMealPlanWizardView: View {
           acceptedOccupiedDates: acceptedOccupiedDates,
           proposedOccupiedDates: proposedOccupiedDates
         )
+        eventReporterService.reporter.track(event: "meal_plan_wizard_started", properties: [:])
       }
     }
   }
@@ -111,5 +123,6 @@ struct CreateMealPlanWizardView: View {
   return NavigationStack {
     CreateMealPlanWizardView()
       .environment(authManager)
+      .environment(EventReporterService())
   }
 }

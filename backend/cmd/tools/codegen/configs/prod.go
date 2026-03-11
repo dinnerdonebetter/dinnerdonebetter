@@ -13,7 +13,7 @@ import (
 	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/email/sendgrid"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/resend"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags/posthog"
@@ -119,7 +119,7 @@ func buildProdConfig() *config.APIServiceConfig {
 			ServiceName: otelServiceName,
 			Provider:    profilingcfg.ProviderPyroscope,
 			Pyroscope: &pyroscope.Config{
-				ServerAddress: "http://pyroscope.prod.svc.cluster.local:4040",
+				ServerAddress: "https://profiles-prod-001.grafana.net",
 				UploadRate:    15 * time.Second,
 			},
 		},
@@ -186,9 +186,9 @@ func buildProdConfig() *config.APIServiceConfig {
 		},
 		Observability: prodObservabilityConfig,
 		Email: emailcfg.Config{
-			Provider: emailcfg.ProviderSendgrid,
-			Sendgrid: &sendgrid.Config{
-				APIToken: "placeholder", // overridden by env from CSI secret
+			Provider: emailcfg.ProviderResend,
+			Resend: &resend.Config{
+				APIToken: "placeholder", // overridden by env from api-service-config secret
 			},
 			CircuitBreaker: circuitbreaking.Config{
 				Name:                   "prod_emailer",
@@ -225,6 +225,11 @@ func buildProdConfig() *config.APIServiceConfig {
 		},
 		Auth: authcfg.Config{
 			SSO: authcfg.SSOConfigs{Google: authcfg.GoogleSSOConfig{}},
+			Passkey: authcfg.PasskeyConfig{
+				RPID:          "dinnerdonebetter.com",
+				RPDisplayName: "Dinner Done Better",
+				RPOrigins:     []string{"https://dinnerdonebetter.com", "https://www.dinnerdonebetter.com", "https://admin.dinnerdonebetter.com"},
+			},
 			Tokens: tokenscfg.Config{
 				Provider:                tokenscfg.ProviderPASETO,
 				Audience:                prodTokensAudience,

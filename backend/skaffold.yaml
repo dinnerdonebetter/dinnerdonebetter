@@ -44,6 +44,34 @@ profiles:
             main: ./cmd/workers/db_cleaner
             fromImage: golang:1.26-trixie
 
+        - image: dinner-done-better-job-email-deliverability-test
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+            main: ./cmd/workers/email_deliverability_test
+            fromImage: golang:1.26-trixie
+
+        - image: dinner-done-better-job-queue-test
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+            main: ./cmd/workers/queue_test
+            fromImage: golang:1.26-trixie
+
         - image: dinner-done-better-job-meal-plan-finalizer
           ko:
             dir: .
@@ -194,6 +222,34 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
             main: ./cmd/workers/db_cleaner
+            fromImage: golang:1.26-trixie
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-email-deliverability-test
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+            main: ./cmd/workers/email_deliverability_test
+            fromImage: golang:1.26-trixie
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-queue-test
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+            main: ./cmd/workers/queue_test
             fromImage: golang:1.26-trixie
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-meal-plan-finalizer

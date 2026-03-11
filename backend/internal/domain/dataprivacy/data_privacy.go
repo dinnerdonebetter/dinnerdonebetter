@@ -45,6 +45,7 @@ type (
 		RequestID string `json:"id"`
 		ReportID  string `json:"reportID"`
 		UserID    string `json:"userID"`
+		TestID    string `json:"testID,omitempty"`
 	}
 
 	// UserDataCollectionResponse represents the response to a UserDataAggregationRequest.

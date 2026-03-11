@@ -223,12 +223,11 @@ struct AuthenticationManagerTests {
         // Note: This test may fail if the server is not running
         // In a real scenario, you'd want to mock the ClientManager
         do {
-            let clientManager = try manager.getClientManager()
-            #expect(clientManager != nil)
+            _ = try manager.getClientManager()
+            // Success: client manager was created
         } catch {
             // If connection fails, that's expected in a test environment
             // The important thing is that the method doesn't crash
-            #expect(error != nil)
         }
     }
     
@@ -246,7 +245,6 @@ struct AuthenticationManagerTests {
         } catch {
             // If connection fails, that's expected in a test environment
             // The important thing is that the method doesn't crash
-            #expect(error != nil)
         }
     }
     

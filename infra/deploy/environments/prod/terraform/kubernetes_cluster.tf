@@ -73,9 +73,7 @@ resource "google_container_node_pool" "primary_nodes" {
   node_count = 1
 
   node_locations = [
-    local.gcp_main_zone,
-    local.gcp_secondary_zone,
-    local.gcp_tertiary_zone,
+    local.gcp_main_zone
   ]
 
   autoscaling {

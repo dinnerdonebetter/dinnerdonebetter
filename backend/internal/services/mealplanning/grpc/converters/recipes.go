@@ -9,6 +9,7 @@ import (
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
+	uploadedmediaconverters "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -845,6 +846,10 @@ func ConvertRecipeStepToGRPCRecipeStep(input *mealplanning.RecipeStep) *mealplan
 
 	for _, product := range input.Products {
 		step.Products = append(step.Products, ConvertRecipeStepProductToGRPCRecipeStepProduct(product))
+	}
+
+	for _, img := range input.StepImages {
+		step.StepImages = append(step.StepImages, uploadedmediaconverters.ConvertUploadedMediaToGRPCUploadedMedia(img))
 	}
 
 	return step

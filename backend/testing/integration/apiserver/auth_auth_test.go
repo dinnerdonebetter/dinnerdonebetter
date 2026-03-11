@@ -13,6 +13,7 @@ import (
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -832,4 +833,111 @@ func TestAuth_Passkey(T *testing.T) {
 		assert.Nil(t, res)
 		assert.Equal(t, codes.InvalidArgument, status.Code(err))
 	})
+
+	T.Run("ListPasskeys unauthenticated returns Unauthenticated", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		res, err := unauthedClient.ListPasskeys(ctx, &authsvc.ListPasskeysRequest{})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+
+	T.Run("ListPasskeys for user with no passkeys returns empty results", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		res, err := testClient.ListPasskeys(ctx, &authsvc.ListPasskeysRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		assert.Empty(t, res.Results)
+	})
+
+	T.Run("ListPasskeys for user with passkeys returns credentials", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(t)
+		credID := insertWebAuthnCredentialForTest(t, user.ID, "My MacBook")
+
+		res, err := testClient.ListPasskeys(ctx, &authsvc.ListPasskeysRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		require.Len(t, res.Results, 1)
+		assert.Equal(t, credID, res.Results[0].Id)
+		assert.Equal(t, "My MacBook", res.Results[0].FriendlyName)
+		assert.NotNil(t, res.Results[0].CreatedAt)
+	})
+
+	T.Run("ArchivePasskey unauthenticated returns Unauthenticated", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		res, err := unauthedClient.ArchivePasskey(ctx, &authsvc.ArchivePasskeyRequest{
+			CredentialId: "some-cred-id",
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+
+	T.Run("ArchivePasskey empty credential_id returns InvalidArgument", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		res, err := testClient.ArchivePasskey(ctx, &authsvc.ArchivePasskeyRequest{
+			CredentialId: "",
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+	})
+
+	T.Run("ArchivePasskey for user's own credential succeeds", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(t)
+		credID := insertWebAuthnCredentialForTest(t, user.ID, "Test Passkey")
+
+		_, err := testClient.ArchivePasskey(ctx, &authsvc.ArchivePasskeyRequest{
+			CredentialId: credID,
+		})
+		require.NoError(t, err)
+
+		// Verify credential no longer appears in list
+		res, err := testClient.ListPasskeys(ctx, &authsvc.ListPasskeysRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		assert.Empty(t, res.Results)
+	})
+}
+
+// insertWebAuthnCredentialForTest inserts a test WebAuthn credential for the given user.
+// Returns the credential's internal ID (used by ListPasskeys/ArchivePasskey).
+func insertWebAuthnCredentialForTest(t *testing.T, userID, friendlyName string) string {
+	t.Helper()
+
+	credID := identifiers.New()
+	credentialIDBytes := []byte(fmt.Sprintf("test-cred-%s-%d", credID, time.Now().UnixNano()))
+	publicKeyBytes := []byte("test-public-key-data")
+
+	_, err := databaseClient.WriteDB().ExecContext(
+		t.Context(),
+		`INSERT INTO webauthn_credentials (id, belongs_to_user, credential_id, public_key, sign_count, transports, friendly_name)
+		 VALUES ($1, $2, $3, $4, 0, '', $5)`,
+		credID, userID, credentialIDBytes, publicKeyBytes, friendlyName,
+	)
+	require.NoError(t, err)
+
+	return credID
 }

@@ -61,7 +61,7 @@
 	"observability": {
 		"profiling": {
 			"pyroscope": {
-				"serverAddress": "http://pyroscope.prod.svc.cluster.local:4040",
+				"serverAddress": "https://profiles-prod-001.grafana.net",
 				"uploadRate": 15000000000,
 				"insecure": false,
 				"enableMutexProfile": false,
@@ -102,26 +102,28 @@
 		}
 	},
 	"email": {
-		"sendgrid": {
-			"apiToken": "placeholder"
-		},
+		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
-		"resend": null,
+		"resend": {
+			"apiToken": "placeholder"
+		},
 		"postmark": null,
-		"provider": "sendgrid",
+		"provider": "resend",
 		"circuitBreakerConfig": {
 			"name": "prod_emailer",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
 	},
+	"httpClient": null,
 	"analytics": {
 		"segment": {
 			"apiToken": "placeholder"
 		},
 		"posthog": null,
 		"rudderstack": null,
+		"proxySources": null,
 		"provider": "segment",
 		"circuitBreaker": {
 			"name": "prod_analytics",

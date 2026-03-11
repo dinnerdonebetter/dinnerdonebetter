@@ -1,9 +1,11 @@
 package datachangemessagehandler
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	dataprivacymock "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/mock"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	internalopsmock "github.com/dinnerdonebetter/backend/internal/domain/internalops/mock"
@@ -28,6 +30,22 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
+
+// noopPasswordResetTokenDataManager implements auth.PasswordResetTokenDataManager for tests that do not exercise the password reset flow.
+type noopPasswordResetTokenDataManager struct{}
+
+func (noopPasswordResetTokenDataManager) GetPasswordResetTokenByID(context.Context, string) (*auth.PasswordResetToken, error) {
+	return nil, nil
+}
+func (noopPasswordResetTokenDataManager) GetPasswordResetTokenByToken(context.Context, string) (*auth.PasswordResetToken, error) {
+	return nil, nil
+}
+func (noopPasswordResetTokenDataManager) CreatePasswordResetToken(context.Context, *auth.PasswordResetTokenDatabaseCreationInput) (*auth.PasswordResetToken, error) {
+	return nil, nil
+}
+func (noopPasswordResetTokenDataManager) RedeemPasswordResetToken(context.Context, string) error {
+	return nil
+}
 
 //nolint:gocritic // I know this returns too many things
 func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessageHandler, *identitymock.RepositoryMock, *webhooksmock.Repository, *msgqueuemock.ConsumerProvider, *msgqueuemock.PublisherProvider, *analyticsmock.EventReporter, *emailmock.Emailer, *uploadsmock.MockUploadManager, *mockmetrics.MetricsProvider, *encodingmock.EncoderDecoder, *dataprivacymock.Repository) {
@@ -90,6 +108,8 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 		messagesProcessedCounter:                  noopCounter,
 		messageDecodeErrorsCounter:                noopCounter,
 		handlerErrorsCounter:                      noopCounter,
+		emailsSentCounter:                         noopCounter,
+		emailsFailedCounter:                       noopCounter,
 		pushNotificationsSentCounter:              noopCounter,
 		badDeviceTokensArchivedCounter:            noopCounter,
 		queuesConfig: msgconfig.QueuesConfig{
@@ -101,6 +121,7 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 		mobileNotificationsPublisher:     mockPublisher,
 		dataPrivacyRepo:                  dataPrivacyRepo,
 		mealPlanRepo:                     mealPlanRepo,
+		passwordResetTokenDataManager:    noopPasswordResetTokenDataManager{},
 		notificationsRepo:                notificationsRepo,
 		pushNotificationSender:           pushNotificationSender,
 	}
@@ -151,6 +172,8 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "messages_processed_total", mock.Anything).Return(noopCounter, nil)
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "message_decode_errors_total", mock.Anything).Return(noopCounter, nil)
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "handler_errors_total", mock.Anything).Return(noopCounter, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "emails_sent_total", mock.Anything).Return(noopCounter, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "emails_failed_total", mock.Anything).Return(noopCounter, nil)
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "push_notifications_sent_total", mock.Anything).Return(noopCounter, nil)
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "bad_device_tokens_archived_total", mock.Anything).Return(noopCounter, nil)
 
@@ -163,6 +186,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 
 		internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
 		mealPlanRepo := &mealplanningmock.Repository{}
+		prtManager := noopPasswordResetTokenDataManager{}
 		notificationsRepo := &notificationsmock.Repository{}
 		pushNotificationSender := &notifications.NoopPushNotificationSender{}
 
@@ -185,6 +209,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 			coreDataIndexer,
 			eatingDataIndexer,
 			mealPlanRepo,
+			prtManager,
 			notificationsRepo,
 			pushNotificationSender,
 		)

@@ -125,8 +125,8 @@ func (m *manager) AcceptAccountInvitation(ctx context.Context, accountID, accoun
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationAcceptedServiceEventType, map[string]any{
-		identitykeys.AccountInvitationIDKey: accountInvitationID,
-		"destination_account":               invitation.DestinationAccount.ID,
+		identitykeys.AccountInvitationIDKey:  accountInvitationID,
+		identitykeys.DestinationAccountIDKey: invitation.DestinationAccount.ID,
 	}))
 
 	return nil
@@ -332,9 +332,9 @@ func (m *manager) CreateAccountInvitation(ctx context.Context, userID, accountID
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCreatedServiceEventType, map[string]any{
-		identitykeys.AccountInvitationIDKey: created.ID,
-		identitykeys.UserIDKey:              userID,
-		"destination_account":               accountID,
+		identitykeys.AccountInvitationIDKey:  created.ID,
+		identitykeys.UserIDKey:               userID,
+		identitykeys.DestinationAccountIDKey: accountID,
 	}))
 
 	return created, nil

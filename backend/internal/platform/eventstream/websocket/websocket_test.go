@@ -142,7 +142,7 @@ func TestWSStream_Send(T *testing.T) {
 			assert.Equal(t, "test", event.Type)
 			assert.JSONEq(t, `{"msg":"hello"}`, string(event.Payload))
 		case <-time.After(2 * time.Second):
-			t.Fatal("did not receive event")
+			require.Fail(t, "did not receive event")
 		}
 	})
 
@@ -204,7 +204,7 @@ func TestWSStream_Done(T *testing.T) {
 		case <-done:
 			// expected
 		case <-time.After(time.Second):
-			t.Fatal("Done() channel was not closed after Close()")
+			require.Fail(t, "Done() channel was not closed after Close()")
 		}
 	})
 }
@@ -275,7 +275,7 @@ func TestBidirectionalWSStream_Receive(T *testing.T) {
 			assert.Equal(t, "ping", event.Type)
 			assert.JSONEq(t, `{"seq":1}`, string(event.Payload))
 		case <-time.After(2 * time.Second):
-			t.Fatal("did not receive event from client")
+			require.Fail(t, "did not receive event from client")
 		}
 	})
 
@@ -307,7 +307,7 @@ func TestBidirectionalWSStream_Receive(T *testing.T) {
 		case _, open := <-incoming:
 			assert.False(t, open, "Receive channel should be closed")
 		case <-time.After(2 * time.Second):
-			t.Fatal("Receive channel was not closed after stream.Close()")
+			require.Fail(t, "Receive channel was not closed after stream.Close()")
 		}
 	})
 }

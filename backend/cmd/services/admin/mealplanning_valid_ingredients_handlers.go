@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
@@ -352,7 +353,7 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 			return fmt.Sprintf("Viewing ingredient: %s", vi.Name)
 		},
 
-		// Additional content - associations
+		// Additional content - associations and media
 		AdditionalContent: []g.Node{
 			ghtml.Div(
 				ghtml.Class("grid grid-cols-1 md:grid-cols-2 gap-6 mt-6"),
@@ -367,6 +368,7 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 					Palette:  &design.StandardPalette,
 				}, components.Card(&design.StandardPalette, preparationsAssociations)),
 			),
+			s.renderIngredientMediaSection(validIngredient),
 		},
 	})
 	if err != nil {
@@ -614,6 +616,78 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 		g.Attr("class", "overflow-x-auto"),
 		table,
 	), nil
+}
+
+// renderIngredientMediaSection renders the Media section with upload form and list of media.
+func (s *AdminFrontendServer) renderIngredientMediaSection(vi *mealplanningsvc.ValidIngredient) g.Node {
+	uploadForm := ghtml.Form(
+		ghtml.Class("space-y-3"),
+		ghtml.Method("POST"),
+		ghtml.Action(fmt.Sprintf("/api/valid_ingredients/%s/media", vi.Id)),
+		ghtml.EncType("multipart/form-data"),
+
+		ghtml.Div(
+			ghtml.Class("flex flex-col gap-2"),
+			ghtml.Label(
+				ghtml.Class("text-sm font-medium"),
+				g.Text("Upload image or video"),
+			),
+			ghtml.Input(
+				ghtml.Type("file"),
+				ghtml.Name("file"),
+				ghtml.Class("block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"),
+				g.Attr("accept", "image/*,video/mp4"),
+			),
+		),
+		ghtml.Button(
+			ghtml.Type("submit"),
+			ghtml.Class("inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"),
+			g.Text("Upload"),
+		),
+	)
+
+	var mediaList g.Node
+	if len(vi.Media) == 0 {
+		mediaList = ghtml.P(
+			ghtml.Class("text-sm text-gray-500 py-4"),
+			g.Text("No media uploaded yet."),
+		)
+	} else {
+		mediaList = ghtml.Div(
+			ghtml.Class("space-y-2"),
+			//nolint:unconvert // g.Map returns []g.Node, g.Group accepts variadic; conversion is required by API
+			g.Group(g.Map(vi.Media, func(m *uploadedmediagrpc.UploadedMedia) g.Node {
+				if m == nil {
+					return g.El("")
+				}
+				return ghtml.Div(
+					ghtml.Class("flex items-center gap-2 py-2 border-b border-gray-100 last:border-0"),
+					ghtml.Span(
+						ghtml.Class("text-sm font-mono text-gray-600"),
+						g.Text(m.Id),
+					),
+					ghtml.Span(
+						ghtml.Class("text-xs text-gray-400"),
+						g.Text(m.MimeType.String()),
+					),
+				)
+			})),
+		)
+	}
+
+	return components.ContentContainer(&components.ContentContainerProps{
+		Title:    "Media",
+		Subtitle: "Images and videos for this ingredient",
+		Palette:  &design.StandardPalette,
+	}, components.Card(&design.StandardPalette, ghtml.Div(
+		ghtml.Class("space-y-4"),
+		uploadForm,
+		ghtml.Div(
+			ghtml.Class("mt-4"),
+			ghtml.H4(ghtml.Class("text-sm font-medium mb-2"), g.Text("Uploaded media")),
+			mediaList,
+		),
+	)))
 }
 
 // renderValidIngredientsError creates a consistent error display for the valid ingredients page.

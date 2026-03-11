@@ -11,6 +11,7 @@ import SwiftUI
 struct MoveSwapEventSheet: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
 
   let mealPlan: Mealplanning_MealPlan
   let event: Mealplanning_MealPlanEvent
@@ -80,6 +81,7 @@ struct MoveSwapEventSheet: View {
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
           Button("Cancel") {
+            eventReporterService.reporter.track(event: "move_swap_cancelled", properties: [:])
             dismiss()
           }
         }
@@ -102,6 +104,7 @@ struct MoveSwapEventSheet: View {
       .disabled(isUpdating)
     }
     .onAppear {
+      eventReporterService.reporter.track(event: "move_swap_sheet_opened", properties: [:])
       if startInMoveMode {
         mode = .move
         selectedDate = HomeViewModel.timestampToDate(event.startsAt)
@@ -348,6 +351,7 @@ struct MoveSwapEventSheet: View {
         options: clientManager.defaultCallOptions
       )
 
+      eventReporterService.reporter.track(event: "move_swap_completed", properties: [:])
       await onSuccess()
       NotificationCenter.default.post(name: .mealPlanEventsUpdated, object: nil)
       dismiss()
@@ -387,6 +391,7 @@ struct MoveSwapEventSheet: View {
         options: clientManager.defaultCallOptions
       )
 
+      eventReporterService.reporter.track(event: "move_swap_completed", properties: [:])
       await onSuccess()
       NotificationCenter.default.post(name: .mealPlanEventsUpdated, object: nil)
       dismiss()

@@ -21,6 +21,14 @@ images:
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-db-cleaner
     newTag: latest
 
+  - name: dinner-done-better-job-email-deliverability-test
+    newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-email-deliverability-test
+    newTag: latest
+
+  - name: dinner-done-better-job-queue-test
+    newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-queue-test
+    newTag: latest
+
   - name: dinner-done-better-job-meal-plan-finalizer
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-meal-plan-finalizer
     newTag: latest
@@ -91,6 +99,55 @@ patches:
       kind: Deployment
       name: dinner-done-better-service-api-deployment
 
+  ### Pyroscope (Grafana Cloud) - API server only; uncomment to enable for other workloads
+  - path: patches/deployment-pyroscope-env.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-service-api-deployment
+  # - path: patches/deployment-pyroscope-env.yaml
+  #   target:
+  #     version: v1
+  #     kind: Deployment
+  #     name: dinner-done-better-async-message-handler-deployment
+  # - path: patches/deployment-pyroscope-env.yaml
+  #   target:
+  #     version: v1
+  #     kind: Deployment
+  #     name: dinner-done-better-admin-webapp-deployment
+  # - path: patches/cronjob-pyroscope-env.yaml
+  #   target:
+  #     kind: CronJob
+  #     name: dinner-done-better-job-db-cleaner
+  # - path: patches/cronjob-pyroscope-env.yaml
+  #   target:
+  #     kind: CronJob
+  #     name: dinner-done-better-job-email-deliverability-test
+  # - path: patches/cronjob-pyroscope-env.yaml
+  #   target:
+  #     kind: CronJob
+  #     name: dinner-done-better-job-queue-test
+  # - path: patches/cronjob-pyroscope-env.yaml
+  #   target:
+  #     kind: CronJob
+  #     name: dinner-done-better-job-meal-plan-finalizer
+  # - path: patches/cronjob-pyroscope-env.yaml
+  #   target:
+  #     kind: CronJob
+  #     name: dinner-done-better-job-meal-plan-grocery-list-init
+  # - path: patches/cronjob-pyroscope-env.yaml
+  #   target:
+  #     kind: CronJob
+  #     name: dinner-done-better-job-meal-plan-task-creator
+  # - path: patches/cronjob-pyroscope-env.yaml
+  #   target:
+  #     kind: CronJob
+  #     name: dinner-done-better-job-search-data-index-scheduler
+  # - path: patches/cronjob-pyroscope-env.yaml
+  #   target:
+  #     kind: CronJob
+  #     name: dinner-done-better-job-mobile-notification-scheduler
+
   ### Async Message Handler - needs database, pubsub, service secrets, environment, workload identity
   - path: patches/deployment-workload-identity.yaml
     target:
@@ -137,6 +194,22 @@ patches:
   - path: patches/cronjob-secrets-csi-volume.yaml
     target:
       kind: CronJob
+
+  ### Email Deliverability Test CronJob - needs Resend API key
+  - path: patches/cronjob-resend-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-email-deliverability-test
+
+  ### Queue Test CronJob - needs database, pubsub
+  - path: patches/cronjob-database-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-queue-test
+  - path: patches/cronjob-pubsub-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-queue-test
 
   ### DB Cleaner CronJob - needs database only
   - path: patches/cronjob-database-env.yaml
@@ -341,6 +414,16 @@ configMapGenerator:
     namespace: prod
     files:
       - config.json=./configs/job_db_cleaner_config.json
+
+  - name: dinner-done-better-job-email-deliverability-test-config
+    namespace: prod
+    files:
+      - config.json=./configs/job_email_deliverability_test_config.json
+
+  - name: dinner-done-better-job-queue-test-config
+    namespace: prod
+    files:
+      - config.json=./configs/job_queue_test_config.json
 
   - name: dinner-done-better-job-meal-plan-finalizer-config
     namespace: prod

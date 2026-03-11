@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
@@ -67,6 +68,7 @@ type (
 		RandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, validIngredientID string, input *types.ValidIngredientUpdateRequestInput) (*types.ValidIngredient, error)
 		ArchiveValidIngredient(ctx context.Context, validIngredientID string) error
+		AddIngredientMedia(ctx context.Context, validIngredientID, uploadedMediaID string, index int32) error
 		SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error)
 
 		ListValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error)
@@ -123,6 +125,7 @@ type (
 		RandomValidPreparation(ctx context.Context) (*types.ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, validPreparationID string, input *types.ValidPreparationUpdateRequestInput) (*types.ValidPreparation, error)
 		ArchiveValidPreparation(ctx context.Context, validPreparationID string) error
+		AddPreparationMedia(ctx context.Context, validPreparationID string, forIngredientID *string, uploadedMediaID string, index int32) error
 
 		ListValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationVessel], error)
 		CreateValidPreparationVessel(ctx context.Context, input *types.ValidPreparationVesselCreationRequestInput) (*types.ValidPreparationVessel, error)
@@ -876,9 +879,11 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 
 	var (
 		results *filtering.QueryFilteredResult[types.ValidIngredient]
+		err     error
 	)
 	if !useSearchService {
-		rawResults, err := m.db.SearchForValidIngredients(ctx, query, filter)
+		var rawResults *filtering.QueryFilteredResult[types.ValidIngredient]
+		rawResults, err = m.db.SearchForValidIngredients(ctx, query, filter)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching database for valid ingredients")
 		}
@@ -886,7 +891,7 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 		results = rawResults
 	} else {
 		var validIngredientSubsets []*eatingindexing.ValidIngredientSearchSubset
-		validIngredientSubsets, err := m.validIngredientSearchIndex.Search(ctx, query)
+		validIngredientSubsets, err = m.validIngredientSearchIndex.Search(ctx, query)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching valid ingredient search index for valid ingredients")
 		}
@@ -896,7 +901,8 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 			ids = append(ids, validIngredientSubset.ID)
 		}
 
-		dbResults, err := m.db.GetValidIngredientsWithIDs(ctx, ids)
+		var dbResults []*types.ValidIngredient
+		dbResults, err = m.db.GetValidIngredientsWithIDs(ctx, ids)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredients from database")
 		}
@@ -911,7 +917,11 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 			filter,
 		)
 	}
-
+	for _, ing := range results.Data {
+		if err = m.enrichValidIngredientWithMedia(ctx, ing); err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid ingredient with media")
+		}
+	}
 	return results, nil
 }
 
@@ -931,7 +941,11 @@ func (m *validEnumerationManager) ListValidIngredients(ctx context.Context, filt
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "listing valid ingredients")
 	}
-
+	for _, ing := range results.Data {
+		if err = m.enrichValidIngredientWithMedia(ctx, ing); err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid ingredient with media")
+		}
+	}
 	return results, nil
 }
 
@@ -975,7 +989,9 @@ func (m *validEnumerationManager) ReadValidIngredient(ctx context.Context, valid
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient")
 	}
-
+	if err = m.enrichValidIngredientWithMedia(ctx, result); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid ingredient with media")
+	}
 	return result, nil
 }
 
@@ -990,7 +1006,9 @@ func (m *validEnumerationManager) RandomValidIngredient(ctx context.Context) (*t
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching random valid ingredient")
 	}
-
+	if err = m.enrichValidIngredientWithMedia(ctx, result); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid ingredient with media")
+	}
 	return result, nil
 }
 
@@ -1028,7 +1046,9 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid ingredient")
 	}
-
+	if err = m.enrichValidIngredientWithMedia(ctx, existingValidIngredient); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid ingredient with media")
+	}
 	return existingValidIngredient, nil
 }
 
@@ -1051,6 +1071,21 @@ func (m *validEnumerationManager) ArchiveValidIngredient(ctx context.Context, va
 	return nil
 }
 
+// AddIngredientMedia implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) AddIngredientMedia(ctx context.Context, validIngredientID, uploadedMediaID string, index int32) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidIngredientIDKey, validIngredientID)
+
+	if err := m.db.AddIngredientMedia(ctx, validIngredientID, uploadedMediaID, index); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "adding ingredient media")
+	}
+
+	return nil
+}
+
 // SearchValidIngredientsByPreparationAndIngredientName implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, validPreparationID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
@@ -1069,7 +1104,11 @@ func (m *validEnumerationManager) SearchValidIngredientsByPreparationAndIngredie
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid ingredient preparations")
 	}
-
+	for _, ing := range validIngredients.Data {
+		if err = m.enrichValidIngredientWithMedia(ctx, ing); err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid ingredient with media")
+		}
+	}
 	return validIngredients, nil
 }
 
@@ -2122,7 +2161,11 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid preparations")
 	}
-
+	for _, prep := range results.Data {
+		if err = m.enrichValidPreparationWithMedia(ctx, prep); err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid preparation with media")
+		}
+	}
 	return results, nil
 }
 
@@ -2142,7 +2185,11 @@ func (m *validEnumerationManager) ListValidPreparations(ctx context.Context, fil
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "listing valid preparations")
 	}
-
+	for _, prep := range results.Data {
+		if err = m.enrichValidPreparationWithMedia(ctx, prep); err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid preparation with media")
+		}
+	}
 	return results, nil
 }
 
@@ -2184,9 +2231,11 @@ func (m *validEnumerationManager) ReadValidPreparation(ctx context.Context, vali
 
 	result, err := m.db.GetValidPreparation(ctx, validPreparationID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation")
 	}
-
+	if err = m.enrichValidPreparationWithMedia(ctx, result); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid preparation with media")
+	}
 	return result, nil
 }
 
@@ -2201,7 +2250,9 @@ func (m *validEnumerationManager) RandomValidPreparation(ctx context.Context) (*
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching random valid preparation")
 	}
-
+	if err = m.enrichValidPreparationWithMedia(ctx, result); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid preparation with media")
+	}
 	return result, nil
 }
 
@@ -2232,7 +2283,9 @@ func (m *validEnumerationManager) UpdateValidPreparation(ctx context.Context, va
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid preparation")
 	}
-
+	if err = m.enrichValidPreparationWithMedia(ctx, existingValidPreparation); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "enriching valid preparation with media")
+	}
 	return existingValidPreparation, nil
 }
 
@@ -2251,6 +2304,21 @@ func (m *validEnumerationManager) ArchiveValidPreparation(ctx context.Context, v
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationArchivedServiceEventType, map[string]any{
 		mealplanningkeys.ValidPreparationIDKey: validPreparationID,
 	}))
+
+	return nil
+}
+
+// AddPreparationMedia implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) AddPreparationMedia(ctx context.Context, validPreparationID string, forIngredientID *string, uploadedMediaID string, index int32) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, mealplanningkeys.ValidPreparationIDKey, validPreparationID)
+
+	if err := m.db.AddPreparationMedia(ctx, validPreparationID, forIngredientID, uploadedMediaID, index); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "adding preparation media")
+	}
 
 	return nil
 }
@@ -2591,5 +2659,65 @@ func (m *validEnumerationManager) ArchiveValidVessel(ctx context.Context, validV
 		mealplanningkeys.ValidVesselIDKey: validVesselID,
 	}))
 
+	return nil
+}
+
+// enrichValidPreparationWithMedia loads and attaches media to a valid preparation.
+func (m *validEnumerationManager) enrichValidPreparationWithMedia(ctx context.Context, prep *types.ValidPreparation) error {
+	if prep == nil {
+		return nil
+	}
+	rows, err := m.db.GetPreparationMediaByPreparation(ctx, prep.ID)
+	if err != nil || len(rows) == 0 {
+		return err
+	}
+	ids := make([]string, len(rows))
+	for i, r := range rows {
+		ids[i] = r.UploadedMediaID
+	}
+	mediaList, err := m.db.GetUploadedMediaWithIDs(ctx, ids)
+	if err != nil {
+		return err
+	}
+	mediaByID := make(map[string]*uploadedmedia.UploadedMedia)
+	for _, um := range mediaList {
+		mediaByID[um.ID] = um
+	}
+	prep.Media = make([]*uploadedmedia.UploadedMedia, 0, len(rows))
+	for _, r := range rows {
+		if um := mediaByID[r.UploadedMediaID]; um != nil {
+			prep.Media = append(prep.Media, um)
+		}
+	}
+	return nil
+}
+
+// enrichValidIngredientWithMedia loads and attaches media to a valid ingredient.
+func (m *validEnumerationManager) enrichValidIngredientWithMedia(ctx context.Context, ing *types.ValidIngredient) error {
+	if ing == nil {
+		return nil
+	}
+	rows, err := m.db.GetIngredientMediaByIngredient(ctx, ing.ID)
+	if err != nil || len(rows) == 0 {
+		return err
+	}
+	ids := make([]string, len(rows))
+	for i, r := range rows {
+		ids[i] = r.UploadedMediaID
+	}
+	mediaList, err := m.db.GetUploadedMediaWithIDs(ctx, ids)
+	if err != nil {
+		return err
+	}
+	mediaByID := make(map[string]*uploadedmedia.UploadedMedia)
+	for _, um := range mediaList {
+		mediaByID[um.ID] = um
+	}
+	ing.Media = make([]*uploadedmedia.UploadedMedia, 0, len(rows))
+	for _, r := range rows {
+		if um := mediaByID[r.UploadedMediaID]; um != nil {
+			ing.Media = append(ing.Media, um)
+		}
+	}
 	return nil
 }

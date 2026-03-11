@@ -190,8 +190,9 @@ struct SearchTests {
     let meal1 = createMockMeal(id: "meal-1", name: "Pasta")
     let meal2 = createMockMeal(id: "meal-2", name: "Pizza")
     let meal3 = createMockMeal(id: "meal-3", name: "Burger")
-    viewModel.searchResults = [meal1, meal2, meal3]
     viewModel.assignMeal(meal1, to: viewModel.selectedDates[0])
+    // assignMeal clears searchResults; set again to test filter (excludes meal assigned to this date)
+    viewModel.searchResults = [meal1, meal2, meal3]
 
     let filtered = viewModel.filteredSearchResults(for: viewModel.selectedDates[0])
 
@@ -299,7 +300,7 @@ struct OccupiedDatesTests {
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
     viewModel.goToNextWeek()
     let date = viewModel.displayedWeekDays[0]
-    var cal = Calendar.current
+    let cal = Calendar.current
     let occupiedDate = cal.startOfDay(for: date)
 
     let vm = CreateMealPlanViewModel(
@@ -319,7 +320,7 @@ struct OccupiedDatesTests {
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
     viewModel.goToNextWeek()
     let date = viewModel.displayedWeekDays[0]
-    var cal = Calendar.current
+    let cal = Calendar.current
     let occupiedDate = cal.startOfDay(for: date)
 
     let vm = CreateMealPlanViewModel(
@@ -354,7 +355,7 @@ struct OccupiedDatesTests {
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
     viewModel.goToNextWeek()
     let date = viewModel.displayedWeekDays[0]
-    var cal = Calendar.current
+    let cal = Calendar.current
     let occupiedDate = cal.startOfDay(for: date)
 
     let vm = CreateMealPlanViewModel(
@@ -374,7 +375,7 @@ struct OccupiedDatesTests {
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
     viewModel.goToNextWeek()
     let date = viewModel.displayedWeekDays[0]
-    var cal = Calendar.current
+    let cal = Calendar.current
     let occupiedDate = cal.startOfDay(for: date)
 
     let vm = CreateMealPlanViewModel(
@@ -409,7 +410,7 @@ struct OccupiedDatesTests {
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
     viewModel.goToNextWeek()
     let date = viewModel.displayedWeekDays[0]
-    var cal = Calendar.current
+    let cal = Calendar.current
     let occupiedDate = cal.startOfDay(for: date)
 
     let vm = CreateMealPlanViewModel(

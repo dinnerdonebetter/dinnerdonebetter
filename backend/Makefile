@@ -17,6 +17,8 @@ WIRE_TARGETS           := internal/build/services/api/grpc \
 	 internal/build/services/api/http \
 	 internal/build/functions/data_change_message_handler \
 	 internal/build/jobs/db_cleaner \
+	 internal/build/jobs/email_deliverability_test \
+	 internal/build/jobs/queue_test \
 	 internal/build/jobs/search_data_index_scheduler \
 	 internal/build/jobs/mobile_notification_scheduler \
 	 internal/build/jobs/meal_plan_finalizer \
@@ -198,6 +200,9 @@ generated_files: configs queries env_vars format_golang
 
 .PHONY: integration-tests
 integration-tests: integration_tests
+
+.PHONY: integration_test
+integration_test: integration_tests
 
 .PHONY: integration_tests
 integration_tests: integration_tests_postgres

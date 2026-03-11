@@ -47,6 +47,8 @@ func main() {
 		"internal/config.MealPlanTaskCreatorConfig",
 		"internal/config.SearchDataIndexSchedulerConfig",
 		"internal/config.AsyncMessageHandlerConfig",
+		"internal/config.EmailDeliverabilityTestConfig",
+		"internal/config.QueueTestJobConfig",
 		"internal/config.AdminWebappConfig",
 		"internal/config.ConsumerWebappConfig",
 		"internal/config.MCPServiceConfig",

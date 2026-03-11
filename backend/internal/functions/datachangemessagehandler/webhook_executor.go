@@ -14,6 +14,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -22,33 +23,39 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
-func (a *AsyncDataChangeMessageHandler) WebhookExecutionRequestsEventHandler(ctx context.Context, rawMsg []byte) error {
-	ctx, span := a.tracer.StartSpan(ctx)
-	defer span.End()
+func (a *AsyncDataChangeMessageHandler) WebhookExecutionRequestsEventHandler(topicName string) func(ctx context.Context, rawMsg []byte) error {
+	return func(ctx context.Context, rawMsg []byte) error {
+		ctx, span := a.tracer.StartSpan(ctx)
+		defer span.End()
 
-	start := time.Now()
-	status := statusSuccess
+		start := time.Now()
+		status := statusSuccess
 
-	defer func() {
-		a.webhookExecutionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
-			metric.WithAttributes(attribute.String("status", status)))
-		a.recordMessagesProcessed(ctx, topicWebhookExecutionRequests, status)
-	}()
+		defer func() {
+			a.webhookExecutionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
+				metric.WithAttributes(attribute.String("status", status)))
+			a.recordMessagesProcessed(ctx, topicWebhookExecutionRequests, status)
+		}()
 
-	var webhookExecutionRequest webhooks.WebhookExecutionRequest
-	if err := a.decoder.DecodeBytes(ctx, rawMsg, &webhookExecutionRequest); err != nil {
-		a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicWebhookExecutionRequests)))
-		status = statusFailure
-		return fmt.Errorf("decoding JSON body: %w", err)
+		var webhookExecutionRequest webhooks.WebhookExecutionRequest
+		if err := a.decoder.DecodeBytes(ctx, rawMsg, &webhookExecutionRequest); err != nil {
+			a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicWebhookExecutionRequests)))
+			status = statusFailure
+			return fmt.Errorf("decoding JSON body: %w", err)
+		}
+
+		if webhookExecutionRequest.TestID != "" {
+			return a.handleQueueTestMessage(ctx, a.logger.WithSpan(span), span, webhookExecutionRequest.TestID, topicName)
+		}
+
+		if err := a.handleWebhookExecutionRequest(ctx, &webhookExecutionRequest); err != nil {
+			a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicWebhookExecutionRequests)))
+			status = statusFailure
+			return fmt.Errorf("handling webhook execution request: %w", err)
+		}
+
+		return nil
 	}
-
-	if err := a.handleWebhookExecutionRequest(ctx, &webhookExecutionRequest); err != nil {
-		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicWebhookExecutionRequests)))
-		status = statusFailure
-		return fmt.Errorf("handling webhook execution request: %w", err)
-	}
-
-	return nil
 }
 
 func (a *AsyncDataChangeMessageHandler) handleWebhookExecutionRequest(
@@ -105,7 +112,7 @@ func (a *AsyncDataChangeMessageHandler) handleWebhookExecutionRequest(
 	digest.Write(payloadBody)
 	req.Header.Set("X-Dinner-Done-Better-Signature", hex.EncodeToString(digest.Sum(nil)))
 
-	res, err := tracing.BuildTracedHTTPClient().Do(req) //nolint:gosec // G704: webhook URL is admin-configured; webhooks intentionally deliver to external URLs
+	res, err := httpclient.ProvideHTTPClient(&httpclient.Config{EnableTracing: true}).Do(req) //nolint:gosec // G704: webhook URL is admin-configured; webhooks intentionally deliver to external URLs
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "executing webhook request")
 		return nil

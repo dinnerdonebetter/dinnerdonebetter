@@ -11,12 +11,14 @@ import SwiftUI
 /// A reusable view for displaying recipe performance content (ingredients, instruments, vessels, and steps)
 /// This can be embedded in PerformRecipeView, Meal views, or any other context where recipe performance is needed
 struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body_length
+  @Environment(EventReporterService.self) private var eventReporterService
   @Binding var checkedIngredients: Set<String>
   @Binding var checkedInstrumentsVessels: Set<String>
   @Binding var isInstrumentsVesselsExpanded: Bool
   @Binding var isIngredientsExpanded: Bool
   @State private var isPrepTasksExpanded: Bool = false
   @State private var isDAGSectionExpanded: Bool = false
+  @State private var showDiagramFullScreen: Bool = false
 
   let recipe: Mealplanning_Recipe
   let viewModel: PerformRecipeViewModel
@@ -44,6 +46,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @State private var customForLaterOrder: [String] = []
   @State private var timerTick: Int = 0
   @State private var timerRefresh: Timer?
+  /// When true, show all steps (including non-task) for context. Only used when opened from meal plan prep task.
+  @State private var showAllStepsFromPrepTask: Bool = false
 
   private var isShowingCompletedSteps: Bool {
     sharedCompletedStepsVisibility?.wrappedValue ?? showCompletedSteps
@@ -227,6 +231,16 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
               .font(.headline)
               .foregroundColor(.primary)
             Spacer()
+            if let mermaidSource = viewModel.mermaidDiagram, !mermaidSource.isEmpty {
+              Button {
+                showDiagramFullScreen = true
+              } label: {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+              }
+              .buttonStyle(.plain)
+            }
             Image(systemName: isDAGSectionExpanded ? "chevron.down" : "chevron.right")
               .font(.caption)
               .foregroundColor(.secondary)
@@ -236,6 +250,13 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         }
       )
       .buttonStyle(.plain)
+      .fullScreenCover(isPresented: $showDiagramFullScreen) {
+        DiagramFullScreenSheet(
+          mermaidSource: viewModel.mermaidDiagram ?? "",
+          title: "Recipe Graph",
+          onDismiss: { showDiagramFullScreen = false }
+        )
+      }
 
       if isDAGSectionExpanded {
         VStack(alignment: .leading, spacing: 8) {
@@ -450,7 +471,10 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   private func adjustRecipeScale(by delta: Float) {
     let next = min(max(recipeScale + delta, 0.25), 4.0)
     setRecipeScale(next)
-    scaleText = String(format: "%.2f", recipeScale)
+    scaleText = String(format: "%.2f", next)
+    eventReporterService.reporter.track(
+      event: "perform_recipe_scale_changed",
+      properties: ["scale": next])
   }
 
   // MARK: - Instruments & Vessels Section
@@ -1257,7 +1281,9 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   }
 
   private func shouldShowStep(stepID: String) -> Bool {
-    return true
+    guard let highlightedStepIDs = highlightedStepIDs else { return true }
+    if showAllStepsFromPrepTask { return true }
+    return highlightedStepIDs.contains(stepID)
   }
 
   // Step info for categorization
@@ -1358,13 +1384,30 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         )
       },
       headerContent: {
-        Text("Steps")
-          .font(.headline)
-          .padding(.horizontal, 4)
+        HStack(spacing: 8) {
+          Text("Steps")
+            .font(.headline)
+            .padding(.horizontal, 4)
+          if highlightedStepIDs != nil {
+            Button(showAllStepsFromPrepTask ? "Task only" : "Show all steps") {
+              eventReporterService.reporter.track(
+                event: "perform_recipe_show_all_steps_toggled",
+                properties: ["showing_all": !showAllStepsFromPrepTask])
+              withAnimation { showAllStepsFromPrepTask.toggle() }
+            }
+            .font(.caption)
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+          }
+        }
       },
       allModeLeadingContent: {
         VStack(alignment: .leading, spacing: 12) {
-          DSKeepScreenAwakeButton(inline: true)
+          DSKeepScreenAwakeButton(inline: true) {
+            eventReporterService.reporter.track(
+              event: "perform_recipe_keep_awake_toggled",
+              properties: ["enabled": $0])
+          }
           if showWashHandsStepCard, !sharedWashHandsValue, allSteps.first != nil {
             washHandsStepCard(viewModel: viewModel)
           }
@@ -1372,7 +1415,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       },
       focusModeLeadingContent: {
         VStack(alignment: .leading, spacing: 12) {
-          DSKeepScreenAwakeButton(inline: true)
+          DSKeepScreenAwakeButton(inline: true) {
+            eventReporterService.reporter.track(
+              event: "perform_recipe_keep_awake_toggled",
+              properties: ["enabled": $0])
+          }
           if showWashHandsStepCard, !sharedWashHandsValue, upNextSteps.first != nil {
             washHandsStepCard(viewModel: viewModel)
           }

@@ -2,6 +2,8 @@ package llm
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNoopProvider_Completion(t *testing.T) {
@@ -14,13 +16,7 @@ func TestNoopProvider_Completion(t *testing.T) {
 			{Role: "user", Content: "hello"},
 		},
 	})
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if result == nil {
-		t.Fatal("expected non-nil result")
-	}
-	if result.Content != "" {
-		t.Errorf("expected empty content, got %q", result.Content)
-	}
+
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
 }

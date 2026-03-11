@@ -67,6 +67,15 @@ const (
 	// AuthMinimumUsernameLengthEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.MinimumUsernameLength`.
 	AuthMinimumUsernameLengthEnvVarKey = "DINNER_DONE_BETTER_AUTH_MINIMUM_USERNAME_LENGTH"
 
+	// AuthPasskeyRpDisplayNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Passkey.RPDisplayName`.
+	AuthPasskeyRpDisplayNameEnvVarKey = "DINNER_DONE_BETTER_AUTH_PASSKEY_RP_DISPLAY_NAME"
+
+	// AuthPasskeyRpIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Passkey.RPID`.
+	AuthPasskeyRpIDEnvVarKey = "DINNER_DONE_BETTER_AUTH_PASSKEY_RP_ID"
+
+	// AuthPasskeyRpOriginsEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Passkey.RPOrigins`.
+	AuthPasskeyRpOriginsEnvVarKey = "DINNER_DONE_BETTER_AUTH_PASSKEY_RP_ORIGINS"
+
 	// AuthSessionStoreProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.SessionStore.Provider`.
 	AuthSessionStoreProviderEnvVarKey = "DINNER_DONE_BETTER_AUTH_SESSION_STORE_PROVIDER"
 
@@ -238,6 +247,18 @@ const (
 	// GrpcTLSCertificateKeyFilepathEnvVarKey is the environment variable name to set to override `APIServiceConfig.GRPCServer.TLSCertificateKeyFile`.
 	GrpcTLSCertificateKeyFilepathEnvVarKey = "DINNER_DONE_BETTER_GRPC_TLS_CERTIFICATE_KEY_FILEPATH"
 
+	// HTTPClientEnableTracingEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPClient.EnableTracing`.
+	HTTPClientEnableTracingEnvVarKey = "DINNER_DONE_BETTER_HTTP_CLIENT_ENABLE_TRACING"
+
+	// HTTPClientMaxIdleConnsEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPClient.MaxIdleConns`.
+	HTTPClientMaxIdleConnsEnvVarKey = "DINNER_DONE_BETTER_HTTP_CLIENT_MAX_IDLE_CONNS"
+
+	// HTTPClientMaxIdleConnsPerHostEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPClient.MaxIdleConnsPerHost`.
+	HTTPClientMaxIdleConnsPerHostEnvVarKey = "DINNER_DONE_BETTER_HTTP_CLIENT_MAX_IDLE_CONNS_PER_HOST"
+
+	// HTTPClientTimeoutEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPClient.Timeout`.
+	HTTPClientTimeoutEnvVarKey = "DINNER_DONE_BETTER_HTTP_CLIENT_TIMEOUT"
+
 	// HTTPDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPServer.Debug`.
 	HTTPDebugEnvVarKey = "DINNER_DONE_BETTER_HTTP_DEBUG"
 
@@ -309,6 +330,12 @@ const (
 
 	// ObservabilityProfilingProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Provider`.
 	ObservabilityProfilingProviderEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PROVIDER"
+
+	// ObservabilityProfilingPyroscopeBasicAuthPasswordEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.BasicAuthPassword`.
+	ObservabilityProfilingPyroscopeBasicAuthPasswordEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_BASIC_AUTH_PASSWORD"
+
+	// ObservabilityProfilingPyroscopeBasicAuthUserEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.BasicAuthUser`.
+	ObservabilityProfilingPyroscopeBasicAuthUserEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_BASIC_AUTH_USER"
 
 	// ObservabilityProfilingPyroscopeEnableBlockProfileEnvVarKey is the environment variable name to set to override `APIServiceConfig.Observability.Profiling.Pyroscope.EnableBlockProfile`.
 	ObservabilityProfilingPyroscopeEnableBlockProfileEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_ENABLE_BLOCK_PROFILE"
@@ -387,6 +414,9 @@ const (
 
 	// QueuesWebhookExecutionRequestsTopicNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Queues.WebhookExecutionRequestsTopicName`.
 	QueuesWebhookExecutionRequestsTopicNameEnvVarKey = "DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME"
+
+	// RecipientEmailAddressEnvVarKey is the environment variable name to set to override `EmailDeliverabilityTestConfigRecipientEmailAddress`.
+	RecipientEmailAddressEnvVarKey = "DINNER_DONE_BETTER_RECIPIENT_EMAIL_ADDRESS"
 
 	// RoutingChiEnableCorsForLocalhostEnvVarKey is the environment variable name to set to override `APIServiceConfig.Routing.Chi.EnableCORSForLocalhost`.
 	RoutingChiEnableCorsForLocalhostEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_ENABLE_CORS_FOR_LOCALHOST"
@@ -480,6 +510,9 @@ const (
 
 	// ServiceAuthSsoConfigGoogleClientSecretEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.SSO.Google.ClientSecret`.
 	ServiceAuthSsoConfigGoogleClientSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET"
+
+	// ServiceEnvironmentEnvVarKey is the environment variable name to set to override `EmailDeliverabilityTestConfigServiceEnvironment`.
+	ServiceEnvironmentEnvVarKey = "DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"
 
 	// ServiceMealPlanningPublicMediaURLPrefixEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.PublicMediaURLPrefix`.
 	ServiceMealPlanningPublicMediaURLPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_PUBLIC_MEDIA_URL_PREFIX"

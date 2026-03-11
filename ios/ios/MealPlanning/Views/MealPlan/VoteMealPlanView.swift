@@ -10,6 +10,7 @@ import SwiftUI
 
 struct VoteMealPlanView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @Environment(\.dismiss) private var dismiss
   @State private var viewModel: VoteMealPlanViewModel?
   @State private var editMode: EditMode = .active
@@ -64,6 +65,7 @@ struct VoteMealPlanView: View {
           .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
               Button("Cancel") {
+                eventReporterService.reporter.track(event: "vote_cancelled", properties: [:])
                 dismiss()
               }
             }
@@ -101,6 +103,12 @@ struct VoteMealPlanView: View {
       .onAppear {
         if viewModel == nil {
           viewModel = VoteMealPlanViewModel(mealPlan: mealPlan, authManager: authManager)
+          eventReporterService.reporter.track(
+            event: "vote_started",
+            properties: [
+              "meal_plan_id": mealPlan.id,
+              "events_count": mealPlan.events.count,
+            ])
         }
         if let viewModel = viewModel, viewModel.isCreator {
           Task {
@@ -216,6 +224,9 @@ struct VoteMealPlanView: View {
             isUpdateMode: viewModel.hasUserVotedOnEvent(eventID: event.id)
               && viewModel.isDeadlineActive
           ) {
+            eventReporterService.reporter.track(
+              event: "vote_lock_toggled",
+              properties: ["event_id": event.id])
             viewModel.toggleLock(eventID: event.id)
           }
           .padding(.top, 8)
@@ -231,6 +242,9 @@ struct VoteMealPlanView: View {
   ) -> some View {
     Button(
       action: {
+        eventReporterService.reporter.track(
+          event: "vote_abstain_tapped",
+          properties: ["event_id": event.id])
         Task {
           let success = await viewModel.abstainFromEvent(eventID: event.id)
           if success {
@@ -451,6 +465,20 @@ struct VoteMealPlanView: View {
         Task {
           let success = await viewModel.submitVotes()
           if success {
+            let eventsVoted = viewModel.mealPlan.events.filter {
+              guard let ballot = viewModel.getBallot(for: $0.id) else { return false }
+              return !ballot.isAbstained
+            }.count
+            let eventsAbstained = viewModel.mealPlan.events.filter {
+              viewModel.getBallot(for: $0.id)?.isAbstained == true
+            }.count
+            eventReporterService.reporter.track(
+              event: "vote_submitted",
+              properties: [
+                "meal_plan_id": viewModel.mealPlan.id,
+                "events_voted": eventsVoted,
+                "events_abstained": eventsAbstained,
+              ])
             // Alert will be shown via viewModel.submissionSuccess
           }
         }

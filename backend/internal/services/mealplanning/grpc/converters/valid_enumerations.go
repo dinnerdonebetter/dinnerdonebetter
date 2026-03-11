@@ -4,11 +4,14 @@ import (
 	"log"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	converters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
+	uploadedmediaconverters "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 )
 
 func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInput(request *mealplanninggrpc.ValidIngredientCreationRequestInput) *mealplanning.ValidIngredientCreationRequestInput {
@@ -181,7 +184,19 @@ func ConvertValidIngredientToGRPCValidIngredient(x *mealplanning.ValidIngredient
 		IsLiquid:               x.IsLiquid,
 		ContainsShellfish:      x.ContainsShellfish,
 		ContaminatesEquipment:  x.ContaminatesEquipment,
+		Media:                  convertUploadedMediaSliceToGRPC(x.Media),
 	}
+}
+
+func convertUploadedMediaSliceToGRPC(media []*uploadedmedia.UploadedMedia) []*uploadedmediasvc.UploadedMedia {
+	if len(media) == 0 {
+		return nil
+	}
+	out := make([]*uploadedmediasvc.UploadedMedia, len(media))
+	for i, m := range media {
+		out[i] = uploadedmediaconverters.ConvertUploadedMediaToGRPCUploadedMedia(m)
+	}
+	return out
 }
 
 func ConvertGRPCValidIngredientToValidIngredient(x *mealplanninggrpc.ValidIngredient) *mealplanning.ValidIngredient {
@@ -1111,6 +1126,7 @@ func ConvertValidPreparationToGRPCValidPreparation(x *mealplanning.ValidPreparat
 		YieldsNothing:               x.YieldsNothing,
 		TimeEstimateRequired:        x.TimeEstimateRequired,
 		RestrictToIngredients:       x.RestrictToIngredients,
+		Media:                       convertUploadedMediaSliceToGRPC(x.Media),
 	}
 }
 

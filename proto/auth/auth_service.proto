@@ -29,4 +29,6 @@ service AuthService {
   rpc FinishPasskeyRegistration(FinishPasskeyRegistrationRequest) returns (FinishPasskeyRegistrationResponse);
   rpc BeginPasskeyAuthentication(BeginPasskeyAuthenticationRequest) returns (BeginPasskeyAuthenticationResponse);
   rpc FinishPasskeyAuthentication(FinishPasskeyAuthenticationRequest) returns (LoginForTokenResponse);
+  rpc ListPasskeys(ListPasskeysRequest) returns (ListPasskeysResponse);
+  rpc ArchivePasskey(ArchivePasskeyRequest) returns (ArchivePasskeyResponse);
 }

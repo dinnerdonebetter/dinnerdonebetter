@@ -27,17 +27,31 @@ func BuildMealPlanCreatedEmail(recipient *identity.User, mealPlan *mealplanning.
 		return nil, ErrUnverifiedEmailRecipient
 	}
 
+	isElectionMealPlan := false
+	for _, event := range mealPlan.Events {
+		if len(event.Options) > 1 {
+			isElectionMealPlan = true
+		}
+	}
+
+	buttonAction := "Check it out"
+	instructions := "You can see what's up for dinner by clicking the button below"
+	if isElectionMealPlan {
+		instructions = "You can rank each meal in the meal plan by clicking the button below"
+		buttonAction = "Submit your vote"
+	}
+
 	e := hermes.Email{
 		Body: hermes.Body{
-			Name: recipient.Username,
+			Name: recipient.FirstName,
 			Intros: []string{
 				"A new meal plan has been created for your account!",
 			},
 			Actions: []hermes.Action{
 				{
-					Instructions: "You can rank each meal in the meal plan by clicking the button below",
+					Instructions: instructions,
 					Button: hermes.Button{
-						Text: "Submit your vote",
+						Text: buttonAction,
 						Link: fmt.Sprintf("%s/meal_plans/%s", envCfg.BaseURL(), mealPlan.ID),
 					},
 				},

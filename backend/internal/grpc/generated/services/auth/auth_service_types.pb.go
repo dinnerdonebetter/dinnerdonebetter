@@ -2634,6 +2634,250 @@ func (x *GetSelfResponse) GetResult() *identity.User {
 	return nil
 }
 
+type ListPasskeysRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListPasskeysRequest) Reset() {
+	*x = ListPasskeysRequest{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListPasskeysRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListPasskeysRequest) ProtoMessage() {}
+
+func (x *ListPasskeysRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListPasskeysRequest.ProtoReflect.Descriptor instead.
+func (*ListPasskeysRequest) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{52}
+}
+
+type ListPasskeysResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Results         []*PasskeyCredential   `json:"results,omitempty"          protobuf:"bytes,2,rep,name=results,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ListPasskeysResponse) Reset() {
+	*x = ListPasskeysResponse{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[53]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListPasskeysResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListPasskeysResponse) ProtoMessage() {}
+
+func (x *ListPasskeysResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[53]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListPasskeysResponse.ProtoReflect.Descriptor instead.
+func (*ListPasskeysResponse) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{53}
+}
+
+func (x *ListPasskeysResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
+func (x *ListPasskeysResponse) GetResults() []*PasskeyCredential {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+type PasskeyCredential struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `json:"id,omitempty"            protobuf:"bytes,1,opt,name=id,proto3"`
+	FriendlyName  string                 `json:"friendly_name,omitempty" protobuf:"bytes,2,opt,name=friendly_name,json=friendlyName,proto3"`
+	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"    protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3"`
+	LastUsedAt    *timestamppb.Timestamp `json:"last_used_at,omitempty"  protobuf:"bytes,4,opt,name=last_used_at,json=lastUsedAt,proto3"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PasskeyCredential) Reset() {
+	*x = PasskeyCredential{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[54]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PasskeyCredential) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PasskeyCredential) ProtoMessage() {}
+
+func (x *PasskeyCredential) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[54]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PasskeyCredential.ProtoReflect.Descriptor instead.
+func (*PasskeyCredential) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{54}
+}
+
+func (x *PasskeyCredential) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *PasskeyCredential) GetFriendlyName() string {
+	if x != nil {
+		return x.FriendlyName
+	}
+	return ""
+}
+
+func (x *PasskeyCredential) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *PasskeyCredential) GetLastUsedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastUsedAt
+	}
+	return nil
+}
+
+type ArchivePasskeyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CredentialId  string                 `json:"credential_id,omitempty" protobuf:"bytes,1,opt,name=credential_id,json=credentialId,proto3"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchivePasskeyRequest) Reset() {
+	*x = ArchivePasskeyRequest{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[55]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchivePasskeyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchivePasskeyRequest) ProtoMessage() {}
+
+func (x *ArchivePasskeyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[55]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchivePasskeyRequest.ProtoReflect.Descriptor instead.
+func (*ArchivePasskeyRequest) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{55}
+}
+
+func (x *ArchivePasskeyRequest) GetCredentialId() string {
+	if x != nil {
+		return x.CredentialId
+	}
+	return ""
+}
+
+type ArchivePasskeyResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ArchivePasskeyResponse) Reset() {
+	*x = ArchivePasskeyResponse{}
+	mi := &file_auth_auth_service_types_proto_msgTypes[56]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchivePasskeyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchivePasskeyResponse) ProtoMessage() {}
+
+func (x *ArchivePasskeyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_auth_service_types_proto_msgTypes[56]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchivePasskeyResponse.ProtoReflect.Descriptor instead.
+func (*ArchivePasskeyResponse) Descriptor() ([]byte, []int) {
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{56}
+}
+
+func (x *ArchivePasskeyResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
 var File_auth_auth_service_types_proto protoreflect.FileDescriptor
 
 var file_auth_auth_service_types_proto_rawDesc = string([]byte{
@@ -3015,12 +3259,44 @@ var file_auth_auth_service_types_proto_rawDesc = string([]byte{
 	0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x26, 0x0a, 0x06, 0x72, 0x65, 0x73,
 	0x75, 0x6c, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x69, 0x64, 0x65, 0x6e,
 	0x74, 0x69, 0x74, 0x79, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x52, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c,
-	0x74, 0x42, 0x4b, 0x5a, 0x49, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72,
-	0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61,
-	0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64,
-	0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x22, 0x15, 0x0a, 0x13, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x61, 0x73, 0x73, 0x6b, 0x65, 0x79,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x8d, 0x01, 0x0a, 0x14, 0x4c, 0x69, 0x73,
+	0x74, 0x50, 0x61, 0x73, 0x73, 0x6b, 0x65, 0x79, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f,
+	0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x31, 0x0a, 0x07, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73,
+	0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x50, 0x61,
+	0x73, 0x73, 0x6b, 0x65, 0x79, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52,
+	0x07, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x22, 0xc1, 0x01, 0x0a, 0x11, 0x50, 0x61, 0x73,
+	0x73, 0x6b, 0x65, 0x79, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x12, 0x0e,
+	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x23,
+	0x0a, 0x0d, 0x66, 0x72, 0x69, 0x65, 0x6e, 0x64, 0x6c, 0x79, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x66, 0x72, 0x69, 0x65, 0x6e, 0x64, 0x6c, 0x79, 0x4e,
+	0x61, 0x6d, 0x65, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61,
+	0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x61, 0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x3c,
+	0x0a, 0x0c, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x75, 0x73, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x52, 0x0a, 0x6c, 0x61, 0x73, 0x74, 0x55, 0x73, 0x65, 0x64, 0x41, 0x74, 0x22, 0x3c, 0x0a, 0x15,
+	0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x50, 0x61, 0x73, 0x73, 0x6b, 0x65, 0x79, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74,
+	0x69, 0x61, 0x6c, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x63, 0x72,
+	0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x49, 0x64, 0x22, 0x5c, 0x0a, 0x16, 0x41, 0x72,
+	0x63, 0x68, 0x69, 0x76, 0x65, 0x50, 0x61, 0x73, 0x73, 0x6b, 0x65, 0x79, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17,
+	0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x42, 0x4b, 0x5a, 0x49, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e,
+	0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f,
+	0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65,
+	0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73,
+	0x2f, 0x61, 0x75, 0x74, 0x68, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -3035,7 +3311,7 @@ func file_auth_auth_service_types_proto_rawDescGZIP() []byte {
 	return file_auth_auth_service_types_proto_rawDescData
 }
 
-var file_auth_auth_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
+var file_auth_auth_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 58)
 var file_auth_auth_service_types_proto_goTypes = []any{
 	(*LoginForTokenRequest)(nil),                     // 0: auth.LoginForTokenRequest
 	(*LoginForTokenResponse)(nil),                    // 1: auth.LoginForTokenResponse
@@ -3089,53 +3365,63 @@ var file_auth_auth_service_types_proto_goTypes = []any{
 	(*FinishPasskeyAuthenticationRequest)(nil),       // 49: auth.FinishPasskeyAuthenticationRequest
 	(*GetSelfRequest)(nil),                           // 50: auth.GetSelfRequest
 	(*GetSelfResponse)(nil),                          // 51: auth.GetSelfResponse
-	nil,                                              // 52: auth.UserPermissionsResponse.PermissionsEntry
-	(*UserLoginInput)(nil),                           // 53: auth.UserLoginInput
-	(*types.ResponseDetails)(nil),                    // 54: common.ResponseDetails
-	(*timestamppb.Timestamp)(nil),                    // 55: google.protobuf.Timestamp
-	(*identity.Account)(nil),                         // 56: identity.Account
-	(*identity.User)(nil),                            // 57: identity.User
+	(*ListPasskeysRequest)(nil),                      // 52: auth.ListPasskeysRequest
+	(*ListPasskeysResponse)(nil),                     // 53: auth.ListPasskeysResponse
+	(*PasskeyCredential)(nil),                        // 54: auth.PasskeyCredential
+	(*ArchivePasskeyRequest)(nil),                    // 55: auth.ArchivePasskeyRequest
+	(*ArchivePasskeyResponse)(nil),                   // 56: auth.ArchivePasskeyResponse
+	nil,                                              // 57: auth.UserPermissionsResponse.PermissionsEntry
+	(*UserLoginInput)(nil),                           // 58: auth.UserLoginInput
+	(*types.ResponseDetails)(nil),                    // 59: common.ResponseDetails
+	(*timestamppb.Timestamp)(nil),                    // 60: google.protobuf.Timestamp
+	(*identity.Account)(nil),                         // 61: identity.Account
+	(*identity.User)(nil),                            // 62: identity.User
 }
 var file_auth_auth_service_types_proto_depIdxs = []int32{
-	53, // 0: auth.LoginForTokenRequest.input:type_name -> auth.UserLoginInput
-	54, // 1: auth.LoginForTokenResponse.response_details:type_name -> common.ResponseDetails
+	58, // 0: auth.LoginForTokenRequest.input:type_name -> auth.UserLoginInput
+	59, // 1: auth.LoginForTokenResponse.response_details:type_name -> common.ResponseDetails
 	33, // 2: auth.LoginForTokenResponse.result:type_name -> auth.TokenResponse
-	53, // 3: auth.AdminLoginForTokenRequest.input:type_name -> auth.UserLoginInput
-	54, // 4: auth.AdminLoginForTokenResponse.response_details:type_name -> common.ResponseDetails
+	58, // 3: auth.AdminLoginForTokenRequest.input:type_name -> auth.UserLoginInput
+	59, // 4: auth.AdminLoginForTokenResponse.response_details:type_name -> common.ResponseDetails
 	33, // 5: auth.AdminLoginForTokenResponse.result:type_name -> auth.TokenResponse
-	54, // 6: auth.ExchangeTokenResponse.response_details:type_name -> common.ResponseDetails
-	55, // 7: auth.ExchangeTokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
-	54, // 8: auth.GetActiveAccountResponse.response_details:type_name -> common.ResponseDetails
-	56, // 9: auth.GetActiveAccountResponse.result:type_name -> identity.Account
-	54, // 10: auth.GetAuthStatusResponse.response_details:type_name -> common.ResponseDetails
-	54, // 11: auth.RedeemPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
-	54, // 12: auth.RefreshTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
+	59, // 6: auth.ExchangeTokenResponse.response_details:type_name -> common.ResponseDetails
+	60, // 7: auth.ExchangeTokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
+	59, // 8: auth.GetActiveAccountResponse.response_details:type_name -> common.ResponseDetails
+	61, // 9: auth.GetActiveAccountResponse.result:type_name -> identity.Account
+	59, // 10: auth.GetAuthStatusResponse.response_details:type_name -> common.ResponseDetails
+	59, // 11: auth.RedeemPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
+	59, // 12: auth.RefreshTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
 	31, // 13: auth.RefreshTOTPSecretResponse.result:type_name -> auth.TOTPSecretRefreshResponse
-	54, // 14: auth.RequestEmailVerificationEmailResponse.response_details:type_name -> common.ResponseDetails
-	54, // 15: auth.RequestPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
-	54, // 16: auth.RequestUsernameReminderResponse.response_details:type_name -> common.ResponseDetails
-	54, // 17: auth.UpdatePasswordResponse.response_details:type_name -> common.ResponseDetails
-	54, // 18: auth.VerifyEmailAddressResponse.response_details:type_name -> common.ResponseDetails
-	54, // 19: auth.VerifyTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
-	54, // 20: auth.EmailAddressVerificationResponse.response_details:type_name -> common.ResponseDetails
-	54, // 21: auth.PasswordResetResponse.response_details:type_name -> common.ResponseDetails
-	54, // 22: auth.TOTPSecretVerificationResponse.response_details:type_name -> common.ResponseDetails
-	55, // 23: auth.TokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
-	54, // 24: auth.UserPermissionsResponse.response_details:type_name -> common.ResponseDetails
-	52, // 25: auth.UserPermissionsResponse.permissions:type_name -> auth.UserPermissionsResponse.PermissionsEntry
-	54, // 26: auth.EvaluateBooleanFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
-	54, // 27: auth.EvaluateInt64FeatureFlagResponse.response_details:type_name -> common.ResponseDetails
-	54, // 28: auth.EvaluateStringFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
-	54, // 29: auth.BeginPasskeyRegistrationResponse.response_details:type_name -> common.ResponseDetails
-	54, // 30: auth.FinishPasskeyRegistrationResponse.response_details:type_name -> common.ResponseDetails
-	54, // 31: auth.BeginPasskeyAuthenticationResponse.response_details:type_name -> common.ResponseDetails
-	54, // 32: auth.GetSelfResponse.response_details:type_name -> common.ResponseDetails
-	57, // 33: auth.GetSelfResponse.result:type_name -> identity.User
-	34, // [34:34] is the sub-list for method output_type
-	34, // [34:34] is the sub-list for method input_type
-	34, // [34:34] is the sub-list for extension type_name
-	34, // [34:34] is the sub-list for extension extendee
-	0,  // [0:34] is the sub-list for field type_name
+	59, // 14: auth.RequestEmailVerificationEmailResponse.response_details:type_name -> common.ResponseDetails
+	59, // 15: auth.RequestPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
+	59, // 16: auth.RequestUsernameReminderResponse.response_details:type_name -> common.ResponseDetails
+	59, // 17: auth.UpdatePasswordResponse.response_details:type_name -> common.ResponseDetails
+	59, // 18: auth.VerifyEmailAddressResponse.response_details:type_name -> common.ResponseDetails
+	59, // 19: auth.VerifyTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
+	59, // 20: auth.EmailAddressVerificationResponse.response_details:type_name -> common.ResponseDetails
+	59, // 21: auth.PasswordResetResponse.response_details:type_name -> common.ResponseDetails
+	59, // 22: auth.TOTPSecretVerificationResponse.response_details:type_name -> common.ResponseDetails
+	60, // 23: auth.TokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
+	59, // 24: auth.UserPermissionsResponse.response_details:type_name -> common.ResponseDetails
+	57, // 25: auth.UserPermissionsResponse.permissions:type_name -> auth.UserPermissionsResponse.PermissionsEntry
+	59, // 26: auth.EvaluateBooleanFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
+	59, // 27: auth.EvaluateInt64FeatureFlagResponse.response_details:type_name -> common.ResponseDetails
+	59, // 28: auth.EvaluateStringFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
+	59, // 29: auth.BeginPasskeyRegistrationResponse.response_details:type_name -> common.ResponseDetails
+	59, // 30: auth.FinishPasskeyRegistrationResponse.response_details:type_name -> common.ResponseDetails
+	59, // 31: auth.BeginPasskeyAuthenticationResponse.response_details:type_name -> common.ResponseDetails
+	59, // 32: auth.GetSelfResponse.response_details:type_name -> common.ResponseDetails
+	62, // 33: auth.GetSelfResponse.result:type_name -> identity.User
+	59, // 34: auth.ListPasskeysResponse.response_details:type_name -> common.ResponseDetails
+	54, // 35: auth.ListPasskeysResponse.results:type_name -> auth.PasskeyCredential
+	60, // 36: auth.PasskeyCredential.created_at:type_name -> google.protobuf.Timestamp
+	60, // 37: auth.PasskeyCredential.last_used_at:type_name -> google.protobuf.Timestamp
+	59, // 38: auth.ArchivePasskeyResponse.response_details:type_name -> common.ResponseDetails
+	39, // [39:39] is the sub-list for method output_type
+	39, // [39:39] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_auth_auth_service_types_proto_init() }
@@ -3150,7 +3436,7 @@ func file_auth_auth_service_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_auth_service_types_proto_rawDesc), len(file_auth_auth_service_types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   53,
+			NumMessages:   58,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

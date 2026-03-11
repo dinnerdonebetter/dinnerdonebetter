@@ -10,6 +10,7 @@ import SwiftUI
 
 struct RecipeListView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @State private var viewModel: RecipeListViewModel?
   @State private var searchQuery: String = ""
 
@@ -61,6 +62,12 @@ struct RecipeListView: View {
                       NavigationLink(destination: PerformRecipeView(recipeID: recipe.id)) {
                         RecipeCard(recipe: recipe)
                       }
+                      .simultaneousGesture(
+                        TapGesture().onEnded {
+                          eventReporterService.reporter.track(
+                            event: "recipe_card_tapped",
+                            properties: ["recipe_id": recipe.id])
+                        })
                     }
                   }
                   .dsScreenPadding()
@@ -89,7 +96,11 @@ struct RecipeListView: View {
                 isOn: Binding(
                   get: { viewModel.recipeStatusFilter == "approved" },
                   set: {
-                    viewModel.setRecipeStatusFilter($0 ? "approved" : "submitted")
+                    let newFilter = $0 ? "approved" : "submitted"
+                    eventReporterService.reporter.track(
+                      event: "recipe_status_filter_changed",
+                      properties: ["filter": newFilter])
+                    viewModel.setRecipeStatusFilter(newFilter)
                     Task { await viewModel.loadRecipes() }
                   }
                 )
@@ -122,6 +133,7 @@ struct RecipeListView: View {
       .onAppear {
         if viewModel == nil {
           viewModel = RecipeListViewModel(authManager: authManager)
+          eventReporterService.reporter.track(event: "recipes_list_viewed", properties: [:])
         }
         if let viewModel = viewModel {
           Task {

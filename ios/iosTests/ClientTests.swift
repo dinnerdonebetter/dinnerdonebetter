@@ -28,8 +28,8 @@ struct ClientInitializationTests {
 
     // Verify all service clients are initialized
     // We can't directly test the service clients without making actual calls,
-    // but we can verify the client was created successfully
-    #expect(client != nil)
+    // but we can verify the client was created successfully (non-nil by type)
+    _ = client
   }
 
   @Test("Client initializes with shared gRPC client")
@@ -43,7 +43,7 @@ struct ClientInitializationTests {
 
     // The client should wrap the provided gRPC client
     // This is verified by the fact that all service clients use the same underlying client
-    #expect(client != nil)
+    _ = client
   }
 }
 
@@ -81,8 +81,6 @@ struct ClientManagerInitializationTests {
     let manager = try ClientManager<HTTP2ClientTransport.TransportServices>()
 
     // Should use default host (127.0.0.1) and port (8001)
-    // We verify by checking the client was created successfully
-    #expect(manager.client != nil)
     #expect(manager.defaultCallOptions.timeout == .seconds(5))
   }
 
@@ -93,8 +91,8 @@ struct ClientManagerInitializationTests {
       port: 9000
     )
 
-    // Verify client was created with custom host/port
-    #expect(manager.client != nil)
+    // Verify client was created with custom host/port (non-nil by type)
+    _ = manager.client
   }
 
   @Test("ClientManager creates unified client")
@@ -104,8 +102,8 @@ struct ClientManagerInitializationTests {
       port: 8001
     )
 
-    // Verify the unified client is accessible
-    #expect(manager.client != nil)
+    // Verify the unified client is accessible (non-nil by type)
+    _ = manager.client
   }
 
   @Test("ClientManager reuses same client instance")
@@ -120,8 +118,8 @@ struct ClientManagerInitializationTests {
 
     // Should return the same client instance (reused)
     // Since Client is a struct, we verify both are accessible (structs are value types)
-    #expect(client1.auth != nil)
-    #expect(client2.auth != nil)
+    _ = client1.auth
+    _ = client2.auth
   }
 }
 
@@ -307,24 +305,24 @@ struct FactoryFunctionTests {
   func testBuildUnauthenticatedClientDefaults() throws {
     let client = try buildUnauthenticatedClient()
 
-    // Should create client successfully
-    #expect(client != nil)
+    // Should create client successfully (non-nil by type)
+    _ = client
   }
 
   @Test("buildUnauthenticatedClient creates client with custom host and port")
   func testBuildUnauthenticatedClientCustom() throws {
     let client = try buildUnauthenticatedClient(host: "localhost", port: 9000)
 
-    // Should create client with custom host/port
-    #expect(client != nil)
+    // Should create client with custom host/port (non-nil by type)
+    _ = client
   }
 
   @Test("buildUnauthenticatedClientWithFallback uses provided host")
   func testBuildUnauthenticatedClientWithFallbackProvidedHost() throws {
     let client = try buildUnauthenticatedClientWithFallback(host: "127.0.0.1", port: 8001)
 
-    // Should use provided host directly
-    #expect(client != nil)
+    // Should use provided host directly (non-nil by type)
+    _ = client
   }
 
   @Test("buildUnauthenticatedClientWithFallback attempts IPv4 first")
@@ -333,11 +331,10 @@ struct FactoryFunctionTests {
     // This will succeed if IPv4 works, or fail and try other methods
     do {
       let client = try buildUnauthenticatedClientWithFallback(host: nil, port: 8001)
-      #expect(client != nil)
+      _ = client
     } catch {
       // If IPv4 fails, it will try IPv6, then DNS
       // Any of these succeeding is valid
-      #expect(error != nil)
     }
   }
 }
@@ -357,7 +354,6 @@ struct ClientErrorHandlingTests {
       // If it doesn't throw, that's also valid (DNS might resolve it)
     } catch {
       // Expected to throw for invalid host
-      #expect(error != nil)
     }
   }
 
@@ -372,7 +368,6 @@ struct ClientErrorHandlingTests {
       // Some systems might allow port 0, so this is also valid
     } catch {
       // Expected to throw for invalid port
-      #expect(error != nil)
     }
   }
 
@@ -383,7 +378,6 @@ struct ClientErrorHandlingTests {
       // If it doesn't throw, DNS might have resolved it
     } catch {
       // Expected to throw for invalid host
-      #expect(error != nil)
     }
   }
 }
@@ -403,8 +397,8 @@ struct ClientLifecycleTests {
     // startConnections should not throw (it's async)
     client.startConnections()
 
-    // Verify client is still valid after starting connections
-    #expect(client != nil)
+    // Verify client is still valid after starting connections (non-nil by type)
+    _ = client
   }
 
   @Test("ClientManager starts connections on initialization")
@@ -414,9 +408,8 @@ struct ClientLifecycleTests {
       port: 8001
     )
 
-    // Connections should be started automatically
-    // We verify by checking the client is accessible
-    #expect(manager.client != nil)
+    // Connections should be started automatically (client is non-nil by type)
+    _ = manager.client
   }
 }
 
@@ -432,18 +425,17 @@ struct ServiceClientAccessTests {
     let grpcClient = GRPCCore.GRPCClient(transport: transport)
     let client = Client(grpcClient: grpcClient)
 
-    // Verify all service clients are accessible
-    // We can't test actual functionality without a server, but we can verify they exist
-    #expect(client.auth != nil)
-    #expect(client.identity != nil)
-    #expect(client.audit != nil)
-    #expect(client.dataPrivacy != nil)
-    #expect(client.internalOps != nil)
-    #expect(client.mealPlanning != nil)
-    #expect(client.notifications != nil)
-    #expect(client.oauth != nil)
-    #expect(client.settings != nil)
-    #expect(client.webhooks != nil)
+    // Verify all service clients are accessible (non-nil by type)
+    _ = client.auth
+    _ = client.identity
+    _ = client.audit
+    _ = client.dataPrivacy
+    _ = client.internalOps
+    _ = client.mealPlanning
+    _ = client.notifications
+    _ = client.oauth
+    _ = client.settings
+    _ = client.webhooks
   }
 
   @Test("ClientManager provides access to unified client")
@@ -453,10 +445,10 @@ struct ServiceClientAccessTests {
       port: 8001
     )
 
-    // Verify unified client is accessible
-    #expect(manager.client != nil)
-    #expect(manager.client.auth != nil)
-    #expect(manager.client.identity != nil)
+    // Verify unified client is accessible (non-nil by type)
+    _ = manager.client
+    _ = manager.client.auth
+    _ = manager.client.identity
   }
 }
 
@@ -478,8 +470,8 @@ struct ConcurrentAccessTests {
 
     // Both should be created successfully
     #expect(managers.count == 2)
-    #expect(managers[0].client != nil)
-    #expect(managers[1].client != nil)
+    _ = managers[0].client
+    _ = managers[1].client
   }
 
   @Test("ClientManager can be accessed concurrently")
@@ -494,9 +486,9 @@ struct ConcurrentAccessTests {
     let metadata1 = manager.authenticatedMetadata(accessToken: "token1")
     let metadata2 = manager.authenticatedMetadata(accessToken: "token2")
 
-    // All should succeed
-    #expect(client1.auth != nil)
-    #expect(client2.auth != nil)
+    // All should succeed (service clients non-nil by type)
+    _ = client1.auth
+    _ = client2.auth
     let authValues1 = metadata1["authorization"]
     let authValues2 = metadata2["authorization"]
     let valueString1 = String(describing: authValues1.first { _ in true })

@@ -14,6 +14,7 @@ var (
 			"Storage",
 			"Queues",
 			"Email",
+			"HTTPClient",
 			"Analytics",
 			"Search",
 			"Events",

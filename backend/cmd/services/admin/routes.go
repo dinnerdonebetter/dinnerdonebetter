@@ -79,6 +79,9 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get(fmt.Sprintf("/api/valid_ingredients/{%s}/preparations/search", validIngredientIDURLParamKey), ghttp.Adapt(s.SearchPreparationsForIngredient))
 	r.Post(fmt.Sprintf("/api/valid_ingredients/{%s}/preparations", validIngredientIDURLParamKey), ghttp.Adapt(s.CreateIngredientPreparationFromIngredient))
 
+	// Valid Ingredient media upload
+	r.Post(fmt.Sprintf("/api/valid_ingredients/{%s}/media", validIngredientIDURLParamKey), ghttp.Adapt(s.UploadIngredientMedia))
+
 	// Valid Instruments - specific routes before dynamic ones
 	r.Get("/valid_instruments/new", ghttp.Adapt(s.ValidInstrumentNewPage))
 	r.Post("/api/valid_instruments", ghttp.Adapt(s.ValidInstrumentCreate))
@@ -146,6 +149,9 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/instruments/search", validPreparationIDURLParamKey), ghttp.Adapt(s.SearchInstrumentsForPreparation))
 	r.Post(fmt.Sprintf("/api/valid_preparations/{%s}/instruments", validPreparationIDURLParamKey), ghttp.Adapt(s.CreatePreparationInstrumentFromPreparation))
 
+	// Valid Preparation media upload
+	r.Post(fmt.Sprintf("/api/valid_preparations/{%s}/media", validPreparationIDURLParamKey), ghttp.Adapt(s.UploadPreparationMedia))
+
 	// Valid Ingredient Preparation associations (from preparation side)
 	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/ingredients", validPreparationIDURLParamKey), ghttp.Adapt(s.ValidIngredientPreparationsForPreparation))
 	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/ingredients/search", validPreparationIDURLParamKey), ghttp.Adapt(s.SearchIngredientsForPreparation))
@@ -187,6 +193,7 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get(fmt.Sprintf("/recipes/{%s}", recipeIDURLParamKey), ghttp.Adapt(s.RecipePage))
 	r.Get("/recipes", ghttp.Adapt(s.RecipesList))
 	r.Get("/api/recipes/search", ghttp.Adapt(s.RecipesSearch))
+	r.Post(fmt.Sprintf("/api/recipes/{%s}/steps/{%s}/images", recipeIDURLParamKey, recipeStepIDURLParamKey), ghttp.Adapt(s.UploadRecipeStepImage))
 
 	// Waitlists
 	r.Get(fmt.Sprintf("/waitlists/{%s}", waitlistIDURLParamKey), ghttp.Adapt(s.WaitlistPage))

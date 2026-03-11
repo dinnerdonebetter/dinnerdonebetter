@@ -17,6 +17,7 @@ import (
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
+	httpclientcfg "github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	notificationscfg "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -62,6 +63,8 @@ type (
 			SearchDataIndexSchedulerConfig |
 			MobileNotificationSchedulerConfig |
 			AsyncMessageHandlerConfig |
+			EmailDeliverabilityTestConfig |
+			QueueTestJobConfig |
 			AdminWebappConfig |
 			ConsumerWebappConfig |
 			MCPServiceConfig
@@ -83,6 +86,7 @@ type (
 		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
 		TextSearch        textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
 		FeatureFlags      featureflagscfg.Config  `envPrefix:"FEATURE_FLAGS_"      json:"featureFlags"`
+		HTTPClient        *httpclientcfg.Config   `envPrefix:"HTTP_CLIENT_"        json:"httpClient"`
 		HTTPServer        http.Config             `envPrefix:"HTTP_"               json:"http"`
 		Auth              authcfg.Config          `envPrefix:"AUTH_"               json:"auth"`
 		Database          databasecfg.Config      `envPrefix:"DATABASE_"           json:"database"`
@@ -161,9 +165,29 @@ type (
 		Events            msgconfig.Config        `envPrefix:"EVENTS_"             json:"events"`
 		Observability     observability.Config    `envPrefix:"OBSERVABILITY_"      json:"observability"`
 		Email             emailcfg.Config         `envPrefix:"EMAIL_"              json:"email"`
+		HTTPClient        *httpclientcfg.Config   `envPrefix:"HTTP_CLIENT_"        json:"httpClient"`
 		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
 		Search            textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
 		Database          databasecfg.Config      `envPrefix:"DATABASE_"           json:"database"`
+	}
+
+	// EmailDeliverabilityTestConfig configures the email deliverability test cron job.
+	EmailDeliverabilityTestConfig struct {
+		_                     struct{}              `json:"-"`
+		HTTPClient            *httpclientcfg.Config `envPrefix:"HTTP_CLIENT_"      json:"httpClient"`
+		RecipientEmailAddress string                `env:"RECIPIENT_EMAIL_ADDRESS" json:"recipientEmailAddress"`
+		ServiceEnvironment    string                `env:"SERVICE_ENVIRONMENT"     json:"serviceEnvironment"`
+		Observability         observability.Config  `envPrefix:"OBSERVABILITY_"    json:"observability"`
+		Email                 emailcfg.Config       `envPrefix:"EMAIL_"            json:"email"`
+	}
+
+	// QueueTestJobConfig configures the queue test cron job.
+	QueueTestJobConfig struct {
+		_             struct{}               `json:"-"`
+		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	APIServiceOAuth2ConnectionConfig struct {
@@ -445,6 +469,40 @@ func (cfg *AsyncMessageHandlerConfig) ValidateWithContext(ctx context.Context) e
 		"Email":         cfg.Email.ValidateWithContext,
 		"TextSearch":    cfg.Search.ValidateWithContext,
 		"Storage":       cfg.Storage.ValidateWithContext,
+	}
+
+	for name, validator := range validators {
+		if err := validator(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
+		}
+	}
+
+	return result.ErrorOrNil()
+}
+
+var _ validation.ValidatableWithContext = (*EmailDeliverabilityTestConfig)(nil)
+
+// ValidateWithContext validates an EmailDeliverabilityTestConfig struct.
+func (cfg *EmailDeliverabilityTestConfig) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		cfg,
+		validation.Field(&cfg.Observability, validation.Required),
+		validation.Field(&cfg.Email, validation.Required),
+		validation.Field(&cfg.RecipientEmailAddress, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*QueueTestJobConfig)(nil)
+
+// ValidateWithContext validates a QueueTestJobConfig struct.
+func (cfg *QueueTestJobConfig) ValidateWithContext(ctx context.Context) error {
+	result := &multierror.Error{}
+
+	validators := map[string]func(context.Context) error{
+		"Observability": cfg.Observability.ValidateWithContext,
+		"Database":      cfg.Database.ValidateWithContext,
+		"Queues":        cfg.Queues.ValidateWithContext,
 	}
 
 	for name, validator := range validators {

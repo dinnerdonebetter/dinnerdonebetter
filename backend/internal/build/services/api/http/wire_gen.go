@@ -60,7 +60,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
 	databasecfgConfig := &cfg.Database
 	migrator := repositories.ProvideMigrator(databasecfgConfig, logger)
-	client, err := databasecfg.ProvideDatabase(ctx, logger, tracerProvider, databasecfgConfig, migrator)
+	client, err := databasecfg.ProvideDatabase(ctx, logger, tracerProvider, databasecfgConfig, migrator, provider)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
 	analyticscfgConfig := &cfg.Analytics
-	eventReporter, err := analyticscfg.ProvideEventReporter(analyticscfgConfig, logger, tracerProvider, provider)
+	eventReporter, err := analyticscfg.ProvideEventReporter(ctx, analyticscfgConfig, logger, tracerProvider, provider)
 	if err != nil {
 		return nil, err
 	}

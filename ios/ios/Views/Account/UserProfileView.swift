@@ -9,6 +9,7 @@ import UIKit
 
 struct UserProfileView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @Environment(\.dismiss) private var dismiss
   @State private var profileViewModel: UserProfileViewModel?
   @State private var avatarViewModel: UploadAvatarViewModel?
@@ -38,6 +39,7 @@ struct UserProfileView: View {
     .onAppear {
       if profileViewModel == nil {
         profileViewModel = UserProfileViewModel(authManager: authManager)
+        eventReporterService.reporter.track(event: "profile_viewed", properties: [:])
       }
       if avatarViewModel == nil {
         avatarViewModel = UploadAvatarViewModel(authManager: authManager)
@@ -48,12 +50,14 @@ struct UserProfileView: View {
     }
     .onChange(of: selectedAvatarItem) { _, newItem in
       guard let item = newItem, let avatarViewModel = avatarViewModel else { return }
+      eventReporterService.reporter.track(event: "profile_avatar_selected", properties: [:])
       Task {
         await loadAndUploadAvatar(item: item, viewModel: avatarViewModel)
       }
     }
     .onChange(of: avatarViewModel?.didSucceed) { _, didSucceed in
       if didSucceed == true {
+        eventReporterService.reporter.track(event: "profile_avatar_uploaded", properties: [:])
         Task { await profileViewModel?.loadUser() }
       }
     }
@@ -215,6 +219,8 @@ struct UserProfileView: View {
                 currentPassword: confirmPassword,
                 totpToken: confirmTotpToken
               ) == true {
+                eventReporterService.reporter.track(
+                  event: "profile_details_updated", properties: [:])
                 showDetailsConfirmSheet = false
               }
             }

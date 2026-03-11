@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
@@ -29,6 +30,8 @@ type EnvironmentConfigSet struct {
 	DBCleanerConfigPath                      string
 	MobileNotificationSchedulerConfigPath    string
 	AsyncMessageHandlerConfigPath            string
+	EmailDeliverabilityTestConfigPath        string
+	QueueTestJobConfigPath                   string
 	AdminWebappConfigPath                    string
 	ConsumerWebappConfigPath                 string
 	APIServiceConfigPath                     string
@@ -75,6 +78,8 @@ const (
 	sdisConfigObservabilityServiceName  = "search_data_index_scheduler"
 	mnsConfigObservabilityServiceName   = "mobile_notification_scheduler"
 	amhConfigObservabilityServiceName   = "async_message_handler"
+	edtConfigObservabilityServiceName   = "email_deliverability_test"
+	qtConfigObservabilityServiceName    = "queue_test"
 	awaConfigObservabilityServiceName   = "admin_webapp"
 	cwaConfigObservabilityServiceName   = "consumer_webapp"
 )
@@ -184,6 +189,34 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	amhConfig.Observability.Logging.ServiceName = amhConfigObservabilityServiceName
 	amhConfig.Observability.Profiling.ServiceName = amhConfigObservabilityServiceName
 
+	edtServiceEnv := "prod"
+	if strings.Contains(outputDir, "localdev") {
+		edtServiceEnv = "dev"
+	} else if strings.Contains(outputDir, "testing") {
+		edtServiceEnv = "testing"
+	}
+	edtConfig := &EmailDeliverabilityTestConfig{
+		Observability:         s.RootConfig.Observability,
+		Email:                 s.RootConfig.Email,
+		RecipientEmailAddress: "verygoodsoftwarenotvirus@protonmail.com",
+		ServiceEnvironment:    edtServiceEnv,
+	}
+	edtConfig.Observability.Tracing.ServiceName = edtConfigObservabilityServiceName
+	edtConfig.Observability.Metrics.ServiceName = edtConfigObservabilityServiceName
+	edtConfig.Observability.Logging.ServiceName = edtConfigObservabilityServiceName
+	edtConfig.Observability.Profiling.ServiceName = edtConfigObservabilityServiceName
+
+	qtConfig := &QueueTestJobConfig{
+		Observability: s.RootConfig.Observability,
+		Events:        s.RootConfig.Events,
+		Database:      s.RootConfig.Database,
+		Queues:        s.RootConfig.Queues,
+	}
+	qtConfig.Observability.Tracing.ServiceName = qtConfigObservabilityServiceName
+	qtConfig.Observability.Metrics.ServiceName = qtConfigObservabilityServiceName
+	qtConfig.Observability.Logging.ServiceName = qtConfigObservabilityServiceName
+	qtConfig.Observability.Profiling.ServiceName = qtConfigObservabilityServiceName
+
 	awaHTTPServer := s.RootConfig.HTTPServer
 	if s.AdminWebappPortOverride != 0 {
 		awaHTTPServer.Port = s.AdminWebappPortOverride
@@ -256,6 +289,8 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 			sdisConfig,
 			mnsConfig,
 			amhConfig,
+			edtConfig,
+			qtConfig,
 			awaConfig,
 			cwaConfig,
 		}
@@ -279,6 +314,8 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "job_search_data_index_scheduler_config.json")):              renderJSON(sdisConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.MobileNotificationSchedulerConfigPath, "job_mobile_notification_scheduler_config.json")):         renderJSON(mnsConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                             renderJSON(amhConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.EmailDeliverabilityTestConfigPath, "job_email_deliverability_test_config.json")):                 renderJSON(edtConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.QueueTestJobConfigPath, "job_queue_test_config.json")):                                           renderJSON(qtConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.AdminWebappConfigPath, "admin_webapp_config.json")):                                              renderJSON(awaConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.ConsumerWebappConfigPath, "consumer_webapp_config.json")):                                        renderJSON(cwaConfig, pretty),
 	}

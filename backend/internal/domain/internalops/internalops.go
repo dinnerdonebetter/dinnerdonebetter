@@ -5,10 +5,6 @@ import (
 	"time"
 )
 
-const (
-	QueueTestMessageEventType = "queue_test_message"
-)
-
 type (
 	QueueTestMessage struct {
 		CreatedAt      time.Time

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -38,8 +39,7 @@ func init() {
 type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
-		_ struct{} `json:"-"`
-
+		_                       struct{}                         `json:"-"`
 		CreatedAt               time.Time                        `json:"createdAt"`
 		EstimatedTimeInSeconds  types.OptionalUint32Range        `json:"estimatedTimeInSeconds"`
 		TemperatureInCelsius    types.OptionalFloat32Range       `json:"temperatureInCelsius"`
@@ -50,12 +50,13 @@ type (
 		ID                      string                           `json:"id"`
 		Notes                   string                           `json:"notes"`
 		ExplicitInstructions    string                           `json:"explicitInstructions"`
-		Media                   []*RecipeMedia                   `json:"media"`
 		Products                []*RecipeStepProduct             `json:"products"`
 		Instruments             []*RecipeStepInstrument          `json:"instruments"`
 		Vessels                 []*RecipeStepVessel              `json:"vessels"`
 		CompletionConditions    []*RecipeStepCompletionCondition `json:"completionConditions"`
 		Ingredients             []*RecipeStepIngredient          `json:"ingredients"`
+		Media                   []*RecipeMedia                   `json:"media"`
+		StepImages              []*uploadedmedia.UploadedMedia   `json:"stepImages"`
 		Preparation             ValidPreparation                 `json:"preparation"`
 		Index                   uint32                           `json:"index"`
 		Optional                bool                             `json:"optional"`

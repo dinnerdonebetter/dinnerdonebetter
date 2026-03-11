@@ -148,6 +148,7 @@ var (
 
 	// AccountMemberPermissions is every account member permission.
 	AccountMemberPermissions = []gorbac.Permission{
+		ReportAnalyticsEventsPermission,
 		ReadWebhooksPermission,
 		ReadIssueReportsPermission,
 		ReadAuditLogEntriesPermission,

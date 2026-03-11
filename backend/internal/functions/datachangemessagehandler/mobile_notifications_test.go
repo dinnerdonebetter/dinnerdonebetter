@@ -25,7 +25,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 
 		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), []byte("not json"))
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), []byte("not json"))
 
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "decoding")
@@ -44,7 +44,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		}
 		raw, _ := json.Marshal(req)
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), raw)
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), raw)
 
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "title")
@@ -63,7 +63,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		}
 		raw, _ := json.Marshal(req)
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), raw)
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), raw)
 
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "body")
@@ -81,7 +81,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		}
 		raw, _ := json.Marshal(req)
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), raw)
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), raw)
 
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "request type")
@@ -100,7 +100,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		}
 		raw, _ := json.Marshal(req)
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), raw)
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), raw)
 
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "unknown request type")
@@ -119,7 +119,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		}
 		raw, _ := json.Marshal(req)
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), raw)
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), raw)
 
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "mealPlanTaskID")
@@ -145,7 +145,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 
 		mealPlanRepo.On(reflection.GetMethodName(mealPlanRepo.MealPlanTaskNotificationHasBeenSent), mock.Anything, "task-123").Return(true, nil).Once()
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), raw)
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), raw)
 
 		assert.NoError(t, err)
 		mock.AssertExpectationsForObjects(t, mealPlanRepo)
@@ -172,7 +172,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		mealPlanRepo.On(reflection.GetMethodName(mealPlanRepo.MealPlanTaskNotificationHasBeenSent), mock.Anything, "task-123").Return(false, nil).Once()
 		mealPlanRepo.On(reflection.GetMethodName(mealPlanRepo.MarkMealPlanTaskNotificationSent), mock.Anything, "task-123").Return(nil).Once()
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), raw)
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), raw)
 
 		assert.NoError(t, err)
 		mock.AssertExpectationsForObjects(t, mealPlanRepo)
@@ -202,7 +202,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		notificationsRepo.On(reflection.GetMethodName(notificationsRepo.GetUserDeviceTokens), mock.Anything, "user-1", mock.Anything, (*string)(nil)).Return(&filtering.QueryFilteredResult[domainnotifications.UserDeviceToken]{Data: []*domainnotifications.UserDeviceToken{}}, nil).Once()
 		mealPlanRepo.On(reflection.GetMethodName(mealPlanRepo.MarkMealPlanTaskNotificationSent), mock.Anything, "task-123").Return(nil).Once()
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), raw)
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), raw)
 
 		assert.NoError(t, err)
 		mock.AssertExpectationsForObjects(t, mealPlanRepo, notificationsRepo)
@@ -241,7 +241,7 @@ func TestMobileNotificationsEventHandler(t *testing.T) {
 		}, nil).Once()
 		mealPlanRepo.On(reflection.GetMethodName(mealPlanRepo.MarkMealPlanTaskNotificationSent), mock.Anything, "task-123").Return(nil).Once()
 
-		err := handler.MobileNotificationsEventHandler(t.Context(), raw)
+		err := handler.MobileNotificationsEventHandler("mobile_notifications")(t.Context(), raw)
 
 		assert.NoError(t, err)
 		mock.AssertExpectationsForObjects(t, mealPlanRepo, notificationsRepo)

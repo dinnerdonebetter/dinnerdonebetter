@@ -15791,6 +15791,180 @@ public struct Mealplanning_UploadRecipeImageResponse: Sendable {
   fileprivate var _uploadedMediaID: String? = nil
 }
 
+public struct Mealplanning_UploadPreparationMediaRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var validPreparationID: String = String()
+
+  public var forIngredientID: String {
+    get {return _forIngredientID ?? String()}
+    set {_forIngredientID = newValue}
+  }
+  /// Returns true if `forIngredientID` has been explicitly set.
+  public var hasForIngredientID: Bool {return self._forIngredientID != nil}
+  /// Clears the value of `forIngredientID`. Subsequent reads from it will return its default value.
+  public mutating func clearForIngredientID() {self._forIngredientID = nil}
+
+  public var upload: UploadedMedia_UploadRequest {
+    get {return _upload ?? UploadedMedia_UploadRequest()}
+    set {_upload = newValue}
+  }
+  /// Returns true if `upload` has been explicitly set.
+  public var hasUpload: Bool {return self._upload != nil}
+  /// Clears the value of `upload`. Subsequent reads from it will return its default value.
+  public mutating func clearUpload() {self._upload = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _forIngredientID: String? = nil
+  fileprivate var _upload: UploadedMedia_UploadRequest? = nil
+}
+
+public struct Mealplanning_UploadPreparationMediaResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var uploadedMediaID: String {
+    get {return _uploadedMediaID ?? String()}
+    set {_uploadedMediaID = newValue}
+  }
+  /// Returns true if `uploadedMediaID` has been explicitly set.
+  public var hasUploadedMediaID: Bool {return self._uploadedMediaID != nil}
+  /// Clears the value of `uploadedMediaID`. Subsequent reads from it will return its default value.
+  public mutating func clearUploadedMediaID() {self._uploadedMediaID = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _uploadedMediaID: String? = nil
+}
+
+public struct Mealplanning_UploadIngredientMediaRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var validIngredientID: String = String()
+
+  public var upload: UploadedMedia_UploadRequest {
+    get {return _upload ?? UploadedMedia_UploadRequest()}
+    set {_upload = newValue}
+  }
+  /// Returns true if `upload` has been explicitly set.
+  public var hasUpload: Bool {return self._upload != nil}
+  /// Clears the value of `upload`. Subsequent reads from it will return its default value.
+  public mutating func clearUpload() {self._upload = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _upload: UploadedMedia_UploadRequest? = nil
+}
+
+public struct Mealplanning_UploadIngredientMediaResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var uploadedMediaID: String {
+    get {return _uploadedMediaID ?? String()}
+    set {_uploadedMediaID = newValue}
+  }
+  /// Returns true if `uploadedMediaID` has been explicitly set.
+  public var hasUploadedMediaID: Bool {return self._uploadedMediaID != nil}
+  /// Clears the value of `uploadedMediaID`. Subsequent reads from it will return its default value.
+  public mutating func clearUploadedMediaID() {self._uploadedMediaID = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _uploadedMediaID: String? = nil
+}
+
+public struct Mealplanning_UploadRecipeStepImageRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var recipeID: String = String()
+
+  public var recipeStepID: String = String()
+
+  public var upload: UploadedMedia_UploadRequest {
+    get {return _upload ?? UploadedMedia_UploadRequest()}
+    set {_upload = newValue}
+  }
+  /// Returns true if `upload` has been explicitly set.
+  public var hasUpload: Bool {return self._upload != nil}
+  /// Clears the value of `upload`. Subsequent reads from it will return its default value.
+  public mutating func clearUpload() {self._upload = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _upload: UploadedMedia_UploadRequest? = nil
+}
+
+public struct Mealplanning_UploadRecipeStepImageResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var uploadedMediaID: String {
+    get {return _uploadedMediaID ?? String()}
+    set {_uploadedMediaID = newValue}
+  }
+  /// Returns true if `uploadedMediaID` has been explicitly set.
+  public var hasUploadedMediaID: Bool {return self._uploadedMediaID != nil}
+  /// Clears the value of `uploadedMediaID`. Subsequent reads from it will return its default value.
+  public mutating func clearUploadedMediaID() {self._uploadedMediaID = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _uploadedMediaID: String? = nil
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "mealplanning"
@@ -39369,6 +39543,250 @@ extension Mealplanning_UploadRecipeImageResponse: SwiftProtobuf.Message, SwiftPr
   }
 
   public static func ==(lhs: Mealplanning_UploadRecipeImageResponse, rhs: Mealplanning_UploadRecipeImageResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._uploadedMediaID != rhs._uploadedMediaID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UploadPreparationMediaRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UploadPreparationMediaRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_id\0\u{3}for_ingredient_id\0\u{1}upload\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.validPreparationID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._forIngredientID) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._upload) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.validPreparationID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validPreparationID, fieldNumber: 1)
+    }
+    try { if let v = self._forIngredientID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._upload {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UploadPreparationMediaRequest, rhs: Mealplanning_UploadPreparationMediaRequest) -> Bool {
+    if lhs.validPreparationID != rhs.validPreparationID {return false}
+    if lhs._forIngredientID != rhs._forIngredientID {return false}
+    if lhs._upload != rhs._upload {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UploadPreparationMediaResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UploadPreparationMediaResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}uploaded_media_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._uploadedMediaID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._uploadedMediaID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UploadPreparationMediaResponse, rhs: Mealplanning_UploadPreparationMediaResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._uploadedMediaID != rhs._uploadedMediaID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UploadIngredientMediaRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UploadIngredientMediaRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_id\0\u{1}upload\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.validIngredientID) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._upload) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.validIngredientID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validIngredientID, fieldNumber: 1)
+    }
+    try { if let v = self._upload {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UploadIngredientMediaRequest, rhs: Mealplanning_UploadIngredientMediaRequest) -> Bool {
+    if lhs.validIngredientID != rhs.validIngredientID {return false}
+    if lhs._upload != rhs._upload {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UploadIngredientMediaResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UploadIngredientMediaResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}uploaded_media_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._uploadedMediaID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._uploadedMediaID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UploadIngredientMediaResponse, rhs: Mealplanning_UploadIngredientMediaResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._uploadedMediaID != rhs._uploadedMediaID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UploadRecipeStepImageRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UploadRecipeStepImageRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{1}upload\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.recipeID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.recipeStepID) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._upload) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.recipeID.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipeID, fieldNumber: 1)
+    }
+    if !self.recipeStepID.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipeStepID, fieldNumber: 2)
+    }
+    try { if let v = self._upload {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UploadRecipeStepImageRequest, rhs: Mealplanning_UploadRecipeStepImageRequest) -> Bool {
+    if lhs.recipeID != rhs.recipeID {return false}
+    if lhs.recipeStepID != rhs.recipeStepID {return false}
+    if lhs._upload != rhs._upload {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UploadRecipeStepImageResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UploadRecipeStepImageResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}uploaded_media_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._uploadedMediaID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._uploadedMediaID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UploadRecipeStepImageResponse, rhs: Mealplanning_UploadRecipeStepImageResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._uploadedMediaID != rhs._uploadedMediaID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

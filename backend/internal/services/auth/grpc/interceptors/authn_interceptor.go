@@ -79,6 +79,8 @@ func ProvideAuthInterceptor(
 			// gRPC reflection (used by k6, grpcurl, etc. for service discovery)
 			"/grpc.reflection.v1.ServerReflection/ServerReflectionInfo",
 			"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo",
+			// Analytics proxy: anonymous events (no auth)
+			"/analytics.AnalyticsService/TrackAnonymousEvent",
 		},
 	}
 }

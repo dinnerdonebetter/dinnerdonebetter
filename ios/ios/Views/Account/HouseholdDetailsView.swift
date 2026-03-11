@@ -6,6 +6,7 @@
 import SwiftUI
 
 struct HouseholdDetailsView: View {
+  @Environment(EventReporterService.self) private var eventReporterService
   let viewModel: AccountSettingsViewModel
 
   var body: some View {
@@ -94,6 +95,8 @@ struct HouseholdDetailsView: View {
               fullWidth: true,
               isDisabled: !viewModel.isAccountAdmin || !viewModel.accountDataHasChanged
             ) {
+              eventReporterService.reporter.track(
+                event: "household_details_updated", properties: [:])
               Task {
                 await viewModel.updateAccount()
               }
@@ -116,5 +119,6 @@ struct HouseholdDetailsView: View {
   return NavigationStack {
     HouseholdDetailsView(viewModel: AccountSettingsViewModel(authManager: authManager))
       .environment(authManager)
+      .environment(EventReporterService())
   }
 }

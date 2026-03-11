@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RegisterView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Environment(EventReporterService.self) private var eventReporterService
   @Binding var showLogin: Bool
 
   // Invitation data passed from deep link (immutable once set)
@@ -198,6 +199,10 @@ struct RegisterView: View {
             isLoading: isLoading,
             isDisabled: !isFormValid
           ) {
+            eventReporterService.reporter.track(
+              event: "register_started",
+              properties: isInvitedRegistration ? ["from_invite": true] : [:]
+            )
             registrationTask?.cancel()
             registrationTask = Task { await handleRegistration() }
           }
@@ -206,6 +211,7 @@ struct RegisterView: View {
 
           // Navigation to login
           Button {
+            eventReporterService.reporter.track(event: "auth_switch_to_login", properties: [:])
             showLogin = true
           } label: {
             Text("Already have an account? Sign in")
@@ -300,9 +306,14 @@ struct RegisterView: View {
       isLoading = false
 
       if result.success {
+        eventReporterService.reporter.track(event: "register_succeeded", properties: [:])
         clearForm()
         showLogin = true
       } else {
+        eventReporterService.reporter.track(
+          event: "register_failed",
+          properties: ["error": result.error ?? "Unknown error occurred"]
+        )
         errorMessage = result.error ?? "Unknown error occurred"
       }
     }
@@ -323,6 +334,7 @@ struct RegisterView: View {
 #Preview("Standard Registration") {
   RegisterView(showLogin: .constant(false))
     .environment(AuthenticationManager())
+    .environment(EventReporterService())
 }
 
 #Preview("Invitation Registration") {
@@ -332,4 +344,5 @@ struct RegisterView: View {
     invitationToken: "token456"
   )
   .environment(AuthenticationManager())
+  .environment(EventReporterService())
 }

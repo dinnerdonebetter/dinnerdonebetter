@@ -14,33 +14,39 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
-func (a *AsyncDataChangeMessageHandler) OutboundEmailsEventHandler(ctx context.Context, rawMsg []byte) error {
-	ctx, span := a.tracer.StartSpan(ctx)
-	defer span.End()
+func (a *AsyncDataChangeMessageHandler) OutboundEmailsEventHandler(topicName string) func(ctx context.Context, rawMsg []byte) error {
+	return func(ctx context.Context, rawMsg []byte) error {
+		ctx, span := a.tracer.StartSpan(ctx)
+		defer span.End()
 
-	start := time.Now()
-	status := statusSuccess
+		start := time.Now()
+		status := statusSuccess
 
-	defer func() {
-		a.outboundEmailsExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
-			metric.WithAttributes(attribute.String("status", status)))
-		a.recordMessagesProcessed(ctx, topicOutboundEmails, status)
-	}()
+		defer func() {
+			a.outboundEmailsExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()),
+				metric.WithAttributes(attribute.String("status", status)))
+			a.recordMessagesProcessed(ctx, topicOutboundEmails, status)
+		}()
 
-	var emailMessage email.OutboundEmailMessage
-	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&emailMessage); err != nil {
-		a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicOutboundEmails)))
-		status = statusFailure
-		return fmt.Errorf("decoding JSON body: %w", err)
+		var emailMessage email.OutboundEmailMessage
+		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&emailMessage); err != nil {
+			a.messageDecodeErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicOutboundEmails)))
+			status = statusFailure
+			return fmt.Errorf("decoding JSON body: %w", err)
+		}
+
+		if emailMessage.TestID != "" {
+			return a.handleQueueTestMessage(ctx, a.logger.WithSpan(span), span, emailMessage.TestID, topicName)
+		}
+
+		if err := a.handleEmailRequest(ctx, &emailMessage); err != nil {
+			a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicOutboundEmails)))
+			status = statusFailure
+			return fmt.Errorf("handling outbound email request: %w", err)
+		}
+
+		return nil
 	}
-
-	if err := a.handleEmailRequest(ctx, &emailMessage); err != nil {
-		a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicOutboundEmails)))
-		status = statusFailure
-		return fmt.Errorf("handling outbound email request: %w", err)
-	}
-
-	return nil
 }
 
 func (a *AsyncDataChangeMessageHandler) handleEmailRequest(
@@ -56,7 +62,11 @@ func (a *AsyncDataChangeMessageHandler) handleEmailRequest(
 
 	if err := a.emailer.SendEmail(ctx, mail); err != nil {
 		observability.AcknowledgeError(err, a.logger, span, "sending email")
+		a.emailsFailedCounter.Add(ctx, 1)
+		return fmt.Errorf("sending email: %w", err)
 	}
+
+	a.emailsSentCounter.Add(ctx, 1)
 
 	if err := a.analyticsEventReporter.EventOccurred(ctx, email.SentEventType, mail.UserID, map[string]any{
 		"toAddress":   mail.ToAddress,

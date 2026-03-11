@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AcceptInvitationSheet: View {
+  @Environment(EventReporterService.self) private var eventReporterService
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(\.dismiss) private var dismiss
 
@@ -62,11 +63,15 @@ struct AcceptInvitationSheet: View {
 
             HStack(spacing: DSTheme.Spacing.md) {
               DSButton("Decline", style: .ghost, fullWidth: true) {
+                eventReporterService.reporter.track(
+                  event: "invitation_decline_tapped", properties: [:])
                 dismiss()
               }
               .disabled(isLoading)
 
               DSButton("Accept", icon: "checkmark", fullWidth: true, isLoading: isLoading) {
+                eventReporterService.reporter.track(
+                  event: "invitation_accept_tapped", properties: [:])
                 Task { await acceptInvitation() }
               }
             }
@@ -121,6 +126,7 @@ struct AcceptInvitationSheet: View {
         options: clientManager.defaultCallOptions
       )
 
+      eventReporterService.reporter.track(event: "invitation_accepted", properties: [:])
       didAccept = true
       onAccepted()
     } catch {

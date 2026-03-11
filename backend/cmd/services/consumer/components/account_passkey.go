@@ -1,13 +1,8 @@
 package components
 
-import (
-	g "maragu.dev/gomponents"
-	ghtml "maragu.dev/gomponents/html"
-)
-
-// passkeyRegistrationScript is the JavaScript for the passkey registration flow.
+// PasskeyRegistrationScript is the JavaScript for the passkey registration flow.
 // #nosec G101 -- JavaScript source for passkey flow, not credentials
-const passkeyRegistrationScript = `
+const PasskeyRegistrationScript = `
 (function() {
 	if (!window.PublicKeyCredential) return;
 	var btn = document.getElementById('add-passkey-btn');
@@ -73,26 +68,3 @@ const passkeyRegistrationScript = `
 	};
 })();
 `
-
-// PasskeySection renders the "Add passkey" section for the account page.
-// Styled consistently with the account link cards above it.
-func (r *ComponentRenderer) PasskeySection() g.Node {
-	return ghtml.Div(
-		ghtml.Class("block p-4 rounded-lg border border-gray-200 bg-white"),
-		ghtml.Div(
-			ghtml.Class("font-medium"),
-			g.Text("Passkeys"),
-		),
-		ghtml.Div(
-			ghtml.Class("text-sm text-gray-500 mt-0.5"),
-			g.Text("Add a passkey to sign in quickly without a password."),
-		),
-		ghtml.Button(
-			ghtml.Type("button"),
-			ghtml.ID("add-passkey-btn"),
-			ghtml.Class("mt-3 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"),
-			g.Text("Add passkey"),
-		),
-		ghtml.Script(ghtml.Type("text/javascript"), g.Raw(passkeyRegistrationScript)),
-	)
-}

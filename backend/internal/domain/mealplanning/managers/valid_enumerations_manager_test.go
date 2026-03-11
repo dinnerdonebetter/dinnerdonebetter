@@ -863,6 +863,10 @@ func TestValidEnumerationManager_SearchValidIngredients(T *testing.T) {
 			vem,
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredients), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				// SearchValidIngredients enriches each ingredient with media
+				for _, ing := range expected.Data {
+					db.On(reflection.GetMethodName(vem.db.GetIngredientMediaByIngredient), testutils.ContextMatcher, ing.ID).Return([]*types.IngredientMediaRow{}, nil)
+				}
 			},
 		)
 
@@ -889,6 +893,10 @@ func TestValidEnumerationManager_ListValidIngredients(T *testing.T) {
 			vem,
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(vem.db.GetValidIngredients), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				// ListValidIngredients enriches each ingredient with media
+				for _, ing := range expected.Data {
+					db.On(reflection.GetMethodName(vem.db.GetIngredientMediaByIngredient), testutils.ContextMatcher, ing.ID).Return([]*types.IngredientMediaRow{}, nil)
+				}
 			},
 		)
 
@@ -945,6 +953,8 @@ func TestValidEnumerationManager_ReadValidIngredient(T *testing.T) {
 			vem,
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(vem.db.GetValidIngredient), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				// ReadValidIngredient enriches with media; return empty slice so GetUploadedMediaWithIDs is not called
+				db.On(reflection.GetMethodName(vem.db.GetIngredientMediaByIngredient), testutils.ContextMatcher, expected.ID).Return([]*types.IngredientMediaRow{}, nil)
 			},
 		)
 
@@ -971,6 +981,8 @@ func TestValidEnumerationManager_RandomValidIngredient(T *testing.T) {
 			vem,
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(vem.db.GetRandomValidIngredient), testutils.ContextMatcher).Return(expected, nil)
+				// RandomValidIngredient enriches with media; return empty slice so GetUploadedMediaWithIDs is not called
+				db.On(reflection.GetMethodName(vem.db.GetIngredientMediaByIngredient), testutils.ContextMatcher, expected.ID).Return([]*types.IngredientMediaRow{}, nil)
 			},
 		)
 
@@ -999,6 +1011,8 @@ func TestValidEnumerationManager_UpdateValidIngredient(T *testing.T) {
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(mpm.db.GetValidIngredient), testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredient]()).Return(nil)
+				// UpdateValidIngredient enriches with media; return empty slice so GetUploadedMediaWithIDs is not called
+				db.On(reflection.GetMethodName(mpm.db.GetIngredientMediaByIngredient), testutils.ContextMatcher, exampleValidIngredient.ID).Return([]*types.IngredientMediaRow{}, nil)
 			},
 			map[string][]string{
 				types.ValidIngredientUpdatedServiceEventType: {mealplanningkeys.ValidIngredientIDKey},
@@ -1057,6 +1071,10 @@ func TestValidEnumerationManager_SearchValidIngredientsByPreparationAndIngredien
 			vem,
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredientsForPreparation), testutils.ContextMatcher, preparationID, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				// SearchValidIngredientsByPreparationAndIngredientName enriches each ingredient with media
+				for _, ing := range expected.Data {
+					db.On(reflection.GetMethodName(vem.db.GetIngredientMediaByIngredient), testutils.ContextMatcher, ing.ID).Return([]*types.IngredientMediaRow{}, nil)
+				}
 			},
 		)
 
@@ -2167,6 +2185,10 @@ func TestValidEnumerationManager_SearchValidPreparations(T *testing.T) {
 			vem,
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(vem.db.SearchForValidPreparations), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				// SearchValidPreparations enriches each preparation with media
+				for _, prep := range expected.Data {
+					db.On(reflection.GetMethodName(vem.db.GetPreparationMediaByPreparation), testutils.ContextMatcher, prep.ID).Return([]*types.PreparationMediaRow{}, nil)
+				}
 			},
 		)
 
@@ -2193,6 +2215,10 @@ func TestValidEnumerationManager_ListValidPreparations(T *testing.T) {
 			vem,
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(vem.db.GetValidPreparations), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				// ListValidPreparations enriches each preparation with media
+				for _, prep := range expected.Data {
+					db.On(reflection.GetMethodName(vem.db.GetPreparationMediaByPreparation), testutils.ContextMatcher, prep.ID).Return([]*types.PreparationMediaRow{}, nil)
+				}
 			},
 		)
 
@@ -2249,6 +2275,8 @@ func TestValidEnumerationManager_ReadValidPreparation(T *testing.T) {
 			vem,
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(vem.db.GetValidPreparation), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				// ReadValidPreparation enriches with media; return empty slice so GetUploadedMediaWithIDs is not called
+				db.On(reflection.GetMethodName(vem.db.GetPreparationMediaByPreparation), testutils.ContextMatcher, expected.ID).Return([]*types.PreparationMediaRow{}, nil)
 			},
 		)
 
@@ -2275,6 +2303,8 @@ func TestValidEnumerationManager_RandomValidPreparation(T *testing.T) {
 			vem,
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(vem.db.GetRandomValidPreparation), testutils.ContextMatcher).Return(expected, nil)
+				// RandomValidPreparation enriches with media; return empty slice so GetUploadedMediaWithIDs is not called
+				db.On(reflection.GetMethodName(vem.db.GetPreparationMediaByPreparation), testutils.ContextMatcher, expected.ID).Return([]*types.PreparationMediaRow{}, nil)
 			},
 		)
 
@@ -2303,6 +2333,8 @@ func TestValidEnumerationManager_UpdateValidPreparation(T *testing.T) {
 			func(db *mealplanningmock.Repository) {
 				db.On(reflection.GetMethodName(mpm.db.GetValidPreparation), testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
 				db.On(reflection.GetMethodName(mpm.db.UpdateValidPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparation]()).Return(nil)
+				// UpdateValidPreparation enriches with media; return empty slice so GetUploadedMediaWithIDs is not called
+				db.On(reflection.GetMethodName(mpm.db.GetPreparationMediaByPreparation), testutils.ContextMatcher, exampleValidPreparation.ID).Return([]*types.PreparationMediaRow{}, nil)
 			},
 			map[string][]string{
 				types.ValidPreparationUpdatedServiceEventType: {mealplanningkeys.ValidPreparationIDKey},

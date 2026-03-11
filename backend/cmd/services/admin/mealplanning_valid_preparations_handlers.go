@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
@@ -180,6 +181,20 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 		s.logger.Error("error fetching vessel associations", err)
 	}
 
+	// Fetch ingredient associations for the "for ingredient" dropdown in media upload
+	var ingredientOptions []*mealplanningsvc.ValidIngredient
+	if ingRes, ingErr := c.GetValidIngredientPreparationsByPreparation(ctx, &mealplanningsvc.GetValidIngredientPreparationsByPreparationRequest{
+		ValidPreparationId: validPreparationID,
+	}); ingErr == nil && ingRes != nil {
+		for _, assoc := range ingRes.Results {
+			if assoc != nil && assoc.Ingredient != nil {
+				ingredientOptions = append(ingredientOptions, assoc.Ingredient)
+			}
+		}
+	}
+
+	mediaSection := s.renderPreparationMediaSection(validPreparation, validPreparationID, ingredientOptions)
+
 	// Use the FormPage component for viewing valid preparation data
 	formPageResult, err := components.FormPage(&components.FormPageProps[*mealplanningsvc.ValidPreparation]{
 		Title:        "Valid Preparation Details",
@@ -269,7 +284,7 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 			return fmt.Sprintf("Viewing preparation: %s", vp.Name)
 		},
 
-		// Additional content - associations
+		// Additional content - associations and media
 		AdditionalContent: []g.Node{
 			ghtml.Div(
 				ghtml.Class("grid grid-cols-1 md:grid-cols-3 gap-6 mt-6"),
@@ -289,6 +304,7 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 					Palette:  &design.StandardPalette,
 				}, components.Card(&design.StandardPalette, vesselsAssociations)),
 			),
+			mediaSection,
 		},
 	})
 	if err != nil {
@@ -472,6 +488,105 @@ func (s *AdminFrontendServer) ValidPreparationsSearch(_ http.ResponseWriter, req
 		g.Attr("class", "overflow-x-auto"),
 		table,
 	), nil
+}
+
+// renderPreparationMediaSection renders the Media section with upload form and list of media.
+func (s *AdminFrontendServer) renderPreparationMediaSection(vp *mealplanningsvc.ValidPreparation, validPreparationID string, ingredientOptions []*mealplanningsvc.ValidIngredient) g.Node {
+	uploadForm := ghtml.Form(
+		ghtml.Class("space-y-3"),
+		ghtml.Method("POST"),
+		ghtml.Action(fmt.Sprintf("/api/valid_preparations/%s/media", validPreparationID)),
+		ghtml.EncType("multipart/form-data"),
+
+		ghtml.Div(
+			ghtml.Class("flex flex-col gap-2"),
+			ghtml.Label(
+				ghtml.Class("text-sm font-medium"),
+				g.Text("Upload image or video"),
+			),
+			ghtml.Input(
+				ghtml.Type("file"),
+				ghtml.Name("file"),
+				ghtml.Class("block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"),
+				g.Attr("accept", "image/*,video/mp4"),
+			),
+		),
+		g.If(len(ingredientOptions) > 0,
+			ghtml.Div(
+				ghtml.Class("flex flex-col gap-2"),
+				ghtml.Label(
+					ghtml.Class("text-sm font-medium"),
+					g.Text("For ingredient (optional)"),
+				),
+				ghtml.Select(
+					ghtml.Name("for_ingredient_id"),
+					ghtml.Class("block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"),
+					ghtml.Option(
+						ghtml.Value(""),
+						g.Text("— General (all ingredients) —"),
+					),
+					//nolint:unconvert // g.Map returns []g.Node, g.Group accepts variadic; conversion is required by API
+					g.Group(g.Map(ingredientOptions, func(ing *mealplanningsvc.ValidIngredient) g.Node {
+						if ing == nil {
+							return g.El("")
+						}
+						return ghtml.Option(
+							ghtml.Value(ing.Id),
+							g.Text(ing.Name),
+						)
+					})),
+				),
+			),
+		),
+		ghtml.Button(
+			ghtml.Type("submit"),
+			ghtml.Class("inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"),
+			g.Text("Upload"),
+		),
+	)
+
+	var mediaList g.Node
+	if len(vp.Media) == 0 {
+		mediaList = ghtml.P(
+			ghtml.Class("text-sm text-gray-500 py-4"),
+			g.Text("No media uploaded yet."),
+		)
+	} else {
+		mediaList = ghtml.Div(
+			ghtml.Class("space-y-2"),
+			//nolint:unconvert // g.Map returns []g.Node, g.Group accepts variadic; conversion is required by API
+			g.Group(g.Map(vp.Media, func(m *uploadedmediagrpc.UploadedMedia) g.Node {
+				if m == nil {
+					return g.El("")
+				}
+				return ghtml.Div(
+					ghtml.Class("flex items-center gap-2 py-2 border-b border-gray-100 last:border-0"),
+					ghtml.Span(
+						ghtml.Class("text-sm font-mono text-gray-600"),
+						g.Text(m.Id),
+					),
+					ghtml.Span(
+						ghtml.Class("text-xs text-gray-400"),
+						g.Text(m.MimeType.String()),
+					),
+				)
+			})),
+		)
+	}
+
+	return components.ContentContainer(&components.ContentContainerProps{
+		Title:    "Media",
+		Subtitle: "Images and videos for this preparation",
+		Palette:  &design.StandardPalette,
+	}, components.Card(&design.StandardPalette, ghtml.Div(
+		ghtml.Class("space-y-4"),
+		uploadForm,
+		ghtml.Div(
+			ghtml.Class("mt-4"),
+			ghtml.H4(ghtml.Class("text-sm font-medium mb-2"), g.Text("Uploaded media")),
+			mediaList,
+		),
+	)))
 }
 
 // renderValidPreparationsError creates a consistent error display for the valid preparations page.

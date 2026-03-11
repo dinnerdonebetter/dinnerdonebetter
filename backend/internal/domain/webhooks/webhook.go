@@ -141,6 +141,7 @@ type (
 		WebhookID    string `json:"webhookID"`
 		AccountID    string `json:"accountID"`
 		TriggerEvent string `json:"triggerEvent"` // catalog event ID
+		TestID       string `json:"testID,omitempty"`
 	}
 
 	// WebhookDataManager describes a structure capable of storing and retrieving webhooks and trigger events.

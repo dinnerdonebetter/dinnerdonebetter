@@ -7,6 +7,7 @@ import SwiftUI
 import UIKit
 
 struct HouseholdMembersView: View {
+  @Environment(EventReporterService.self) private var eventReporterService
   let viewModel: AccountSettingsViewModel
 
   var body: some View {
@@ -100,6 +101,7 @@ struct HouseholdMembersView: View {
           fullWidth: true,
           isDisabled: viewModel.invitationEmail.isEmpty
         ) {
+          eventReporterService.reporter.track(event: "household_invite_sent", properties: [:])
           Task {
             await viewModel.sendInvitation()
           }
@@ -286,6 +288,7 @@ struct MemberCard: View {
 // MARK: - Invitation Card
 
 struct InvitationCard: View {
+  @Environment(EventReporterService.self) private var eventReporterService
   let invitation: Identity_AccountInvitation
   let isAccountAdmin: Bool
   let onCancel: (() async -> Void)?
@@ -312,6 +315,8 @@ struct InvitationCard: View {
         if invitation.status.lowercased() == "pending" {
           HStack(spacing: DSTheme.Spacing.sm) {
             DSButton("Copy Link", style: .ghost, size: .small) {
+              eventReporterService.reporter.track(
+                event: "household_invite_copy_link", properties: [:])
               guard
                 var components = URLComponents(
                   string: "\(APIConfiguration.webURL)/accept_invitation")
@@ -348,5 +353,6 @@ struct InvitationCard: View {
   return NavigationStack {
     HouseholdMembersView(viewModel: AccountSettingsViewModel(authManager: authManager))
       .environment(authManager)
+      .environment(EventReporterService())
   }
 }

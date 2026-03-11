@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
@@ -74,11 +75,14 @@ type AsyncDataChangeMessageHandler struct {
 	badDeviceTokensArchivedCounter            metrics.Int64Counter
 	pushNotificationsSentCounter              metrics.Int64Counter
 	mealPlanRepo                              mealplanning.Repository
+	passwordResetTokenDataManager             auth.PasswordResetTokenDataManager
 	notificationsRepo                         notificationsmanager.NotificationsDataManager
 	pushNotificationSender                    platformnotifications.PushNotificationSender
 	handlerErrorsCounter                      metrics.Int64Counter
 	messageDecodeErrorsCounter                metrics.Int64Counter
 	messagesProcessedCounter                  metrics.Int64Counter
+	emailsSentCounter                         metrics.Int64Counter
+	emailsFailedCounter                       metrics.Int64Counter
 	mobileNotificationsExecutionTimeHistogram metrics.Float64Histogram
 	mealPlanningDataIndexer                   *mealplanningindexing.MealPlanningDataIndexer
 	userDataIndexer                           *identityindexing.UserDataIndexer
@@ -119,6 +123,7 @@ func NewAsyncDataChangeMessageHandler(
 	coreDataIndexer *identityindexing.UserDataIndexer,
 	eatingDataIndexer *mealplanningindexing.MealPlanningDataIndexer,
 	mealPlanRepo mealplanning.Repository,
+	passwordResetTokenDataManager auth.PasswordResetTokenDataManager,
 	notificationsRepo notificationsmanager.NotificationsDataManager,
 	pushNotificationSender platformnotifications.PushNotificationSender,
 ) (*AsyncDataChangeMessageHandler, error) {
@@ -165,6 +170,16 @@ func NewAsyncDataChangeMessageHandler(
 	handlerErrorsCounter, err := metricsProvider.NewInt64Counter("handler_errors_total")
 	if err != nil {
 		return nil, fmt.Errorf("setting up handler errors counter: %w", err)
+	}
+
+	emailsSentCounter, err := metricsProvider.NewInt64Counter("emails_sent_total")
+	if err != nil {
+		return nil, fmt.Errorf("setting up emails sent counter: %w", err)
+	}
+
+	emailsFailedCounter, err := metricsProvider.NewInt64Counter("emails_failed_total")
+	if err != nil {
+		return nil, fmt.Errorf("setting up emails failed counter: %w", err)
 	}
 
 	pushNotificationsSentCounter, err := metricsProvider.NewInt64Counter("push_notifications_sent_total")
@@ -223,12 +238,15 @@ func NewAsyncDataChangeMessageHandler(
 		messagesProcessedCounter:                  messagesProcessedCounter,
 		messageDecodeErrorsCounter:                messageDecodeErrorsCounter,
 		handlerErrorsCounter:                      handlerErrorsCounter,
+		emailsSentCounter:                         emailsSentCounter,
+		emailsFailedCounter:                       emailsFailedCounter,
 		pushNotificationsSentCounter:              pushNotificationsSentCounter,
 		badDeviceTokensArchivedCounter:            badDeviceTokensArchivedCounter,
 		decoder:                                   decoder,
 		userDataIndexer:                           coreDataIndexer,
 		mealPlanningDataIndexer:                   eatingDataIndexer,
 		mealPlanRepo:                              mealPlanRepo,
+		passwordResetTokenDataManager:             passwordResetTokenDataManager,
 		notificationsRepo:                         notificationsRepo,
 		pushNotificationSender:                    pushNotificationSender,
 	}, nil
@@ -247,7 +265,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	dataChangesConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.DataChangesTopicName,
-		a.DataChangesEventHandler,
+		a.DataChangesEventHandler(a.queuesConfig.DataChangesTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring data changes consumer")
@@ -256,7 +274,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	outboundEmailsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.OutboundEmailsTopicName,
-		a.OutboundEmailsEventHandler,
+		a.OutboundEmailsEventHandler(a.queuesConfig.OutboundEmailsTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring outbound emails consumer")
@@ -265,7 +283,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	searchIndexRequestsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.SearchIndexRequestsTopicName,
-		a.SearchIndexRequestsEventHandler,
+		a.SearchIndexRequestsEventHandler(a.queuesConfig.SearchIndexRequestsTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring search index requests consumer")
@@ -274,7 +292,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	webhookExecutionRequestsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.WebhookExecutionRequestsTopicName,
-		a.WebhookExecutionRequestsEventHandler,
+		a.WebhookExecutionRequestsEventHandler(a.queuesConfig.WebhookExecutionRequestsTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring webhook execution requests consumer")
@@ -283,7 +301,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	userDataAggregationConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.UserDataAggregationTopicName,
-		a.UserDataAggregationEventHandler,
+		a.UserDataAggregationEventHandler(a.queuesConfig.UserDataAggregationTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring user data aggregation requests consumer")
@@ -292,7 +310,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	mobileNotificationsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.MobileNotificationsTopicName,
-		a.MobileNotificationsEventHandler,
+		a.MobileNotificationsEventHandler(a.queuesConfig.MobileNotificationsTopicName),
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring mobile notifications consumer")

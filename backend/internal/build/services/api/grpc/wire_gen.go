@@ -30,16 +30,17 @@ import (
 	manager7 "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/manager"
 	manager5 "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	manager12 "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
+	"github.com/dinnerdonebetter/backend/internal/platform/analytics/multisource"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
-	grpc16 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	grpc17 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
@@ -57,11 +58,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
+	grpc15 "github.com/dinnerdonebetter/backend/internal/services/analytics/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	grpc2 "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
-	grpc15 "github.com/dinnerdonebetter/backend/internal/services/comments/grpc"
+	grpc16 "github.com/dinnerdonebetter/backend/internal/services/comments/grpc"
 	grpc3 "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
 	grpc4 "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	grpc5 "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
@@ -97,7 +99,12 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	}
 	databasecfgConfig := &cfg.Database
 	migrator := repositories.ProvideMigrator(databasecfgConfig, logger)
-	client, err := databasecfg.ProvideDatabase(ctx, logger, tracerProvider, databasecfgConfig, migrator)
+	metricscfgConfig := &observabilityConfig.Metrics
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := databasecfg.ProvideDatabase(ctx, logger, tracerProvider, databasecfgConfig, migrator, provider)
 	if err != nil {
 		return nil, err
 	}
@@ -113,11 +120,6 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	generator := random.NewGenerator(logger, tracerProvider)
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
 	hasher := authentication.ProvideHasher(authenticator)
-	metricscfgConfig := &observabilityConfig.Metrics
-	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
-	if err != nil {
-		return nil, err
-	}
 	textsearchcfgConfig := &cfg.TextSearch
 	userTextSearcher, err := ProvideUserTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
 	if err != nil {
@@ -148,17 +150,19 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 		return nil, err
 	}
 	featureflagscfgConfig := &cfg.FeatureFlags
-	httpClient := tracing.BuildTracedHTTPClient()
-	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, provider, httpClient)
+	httpclientConfig := cfg.HTTPClient
+	httpClient := httpclient.ProvideHTTPClient(httpclientConfig)
+	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(ctx, featureflagscfgConfig, logger, tracerProvider, provider, httpClient)
 	if err != nil {
 		return nil, err
 	}
+	webauthnConfig := grpc2.ProvidePasskeyConfig(cfg)
 	configConfig := grpc2.ProvideSessionStoreConfig(cfg)
 	sessionStore, err := config2.ProvideSessionStore(configConfig, client, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
-	service, err := grpc2.ProvidePasskeyService(identityDataManager, identityRepository, sessionStore)
+	service, err := grpc2.ProvidePasskeyService(webauthnConfig, identityDataManager, identityRepository, sessionStore)
 	if err != nil {
 		return nil, err
 	}
@@ -264,9 +268,10 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	grpcConfig := &cfg.GRPCServer
 	oAuth2Config := &authenticationConfig.OAuth2
 	manageManager := authentication2.ProvideOAuth2ClientManager(logger, tracerProvider, oAuth2Config, oauthRepository)
+	analyticsMethodPermissions := grpc15.ProvideMethodPermissions()
 	auditMethodPermissions := grpc.ProvideMethodPermissions()
 	authMethodPermissions := grpc2.ProvideMethodPermissions()
-	commentsMethodPermissions := grpc15.ProvideMethodPermissions()
+	commentsMethodPermissions := grpc16.ProvideMethodPermissions()
 	identityMethodPermissions := grpc4.ProvideMethodPermissions()
 	internalOpsMethodPermissions := grpc5.ProvideMethodPermissions()
 	issueReportsMethodPermissions := grpc6.ProvideMethodPermissions()
@@ -278,13 +283,19 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	uploadedMediaMethodPermissions := grpc12.ProvideMethodPermissions()
 	waitlistsMethodPermissions := grpc14.ProvideMethodPermissions()
 	webhooksMethodPermissions := grpc13.ProvideMethodPermissions()
-	methodPermissionsMap := AggregateMethodPermissions(auditMethodPermissions, authMethodPermissions, commentsMethodPermissions, identityMethodPermissions, internalOpsMethodPermissions, issueReportsMethodPermissions, mealPlanningMethodPermissions, notificationsMethodPermissions, oAuthMethodPermissions, paymentsMethodPermissions, settingsMethodPermissions, uploadedMediaMethodPermissions, waitlistsMethodPermissions, webhooksMethodPermissions)
+	methodPermissionsMap := AggregateMethodPermissions(analyticsMethodPermissions, auditMethodPermissions, authMethodPermissions, commentsMethodPermissions, identityMethodPermissions, internalOpsMethodPermissions, issueReportsMethodPermissions, mealPlanningMethodPermissions, notificationsMethodPermissions, oAuthMethodPermissions, paymentsMethodPermissions, settingsMethodPermissions, uploadedMediaMethodPermissions, waitlistsMethodPermissions, webhooksMethodPermissions)
 	authInterceptor := interceptors.ProvideAuthInterceptor(tracerProvider, logger, identityDataManager, manageManager, issuer, methodPermissionsMap)
 	v2 := BuildUnaryServerInterceptors(authInterceptor)
 	v3 := BuildStreamServerInterceptors(authInterceptor)
-	commentsServiceServer := grpc15.NewService(logger, tracerProvider, commentsDataManager, mealPlanningManager)
-	v4 := BuildRegistrationFuncs(auditServiceServer, authServiceServer, commentsServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, issueReportsServiceServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, paymentsServiceServer, settingsServiceServer, uploadedMediaServiceServer, waitlistsServiceServer, webhooksServiceServer)
-	server, err := grpc16.NewGRPCServer(grpcConfig, logger, tracerProvider, v2, v3, v4...)
+	proxySourcesConfig := ProvideAnalyticsProxySources(cfg)
+	multiSourceEventReporter, err := multisource.ProvideMultiSourceEventReporter(ctx, proxySourcesConfig, logger, tracerProvider, provider)
+	if err != nil {
+		return nil, err
+	}
+	analyticsServiceServer := grpc15.NewService(logger, tracerProvider, multiSourceEventReporter)
+	commentsServiceServer := grpc16.NewService(logger, tracerProvider, commentsDataManager, mealPlanningManager)
+	v4 := BuildRegistrationFuncs(analyticsServiceServer, auditServiceServer, authServiceServer, commentsServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, issueReportsServiceServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, paymentsServiceServer, settingsServiceServer, uploadedMediaServiceServer, waitlistsServiceServer, webhooksServiceServer)
+	server, err := grpc17.NewGRPCServer(grpcConfig, logger, tracerProvider, v2, v3, v4...)
 	if err != nil {
 		return nil, err
 	}

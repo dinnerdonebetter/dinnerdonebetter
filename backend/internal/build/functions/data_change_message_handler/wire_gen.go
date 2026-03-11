@@ -19,14 +19,15 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	config2 "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
@@ -58,7 +59,12 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	}
 	databasecfgConfig := cfg.Database
 	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
+	metricscfgConfig := &observabilityConfig.Metrics
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig, provider)
 	if err != nil {
 		return nil, err
 	}
@@ -97,18 +103,14 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	analyticscfgConfig := &cfg.Analytics
-	metricscfgConfig := &observabilityConfig.Metrics
-	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
-	if err != nil {
-		return nil, err
-	}
-	eventReporter, err := analyticscfg.ProvideEventReporter(analyticscfgConfig, logger, tracerProvider, provider)
+	eventReporter, err := analyticscfg.ProvideEventReporter(ctx, analyticscfgConfig, logger, tracerProvider, provider)
 	if err != nil {
 		return nil, err
 	}
 	emailcfgConfig := &cfg.Email
-	httpClient := tracing.BuildTracedHTTPClient()
-	emailer, err := emailcfg.ProvideEmailer(emailcfgConfig, logger, tracerProvider, provider, httpClient)
+	httpclientConfig := cfg.HTTPClient
+	httpClient := httpclient.ProvideHTTPClient(httpclientConfig)
+	emailer, err := emailcfg.ProvideEmailer(ctx, emailcfgConfig, logger, tracerProvider, provider, httpClient)
 	if err != nil {
 		return nil, err
 	}
@@ -160,12 +162,14 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	mealPlanningDataIndexer := indexing2.NewMealPlanningDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
+	authRepository := auth.ProvideAuthRepository(logger, tracerProvider, repository, client)
+	passwordResetTokenDataManager := auth.ProvidePasswordResetTokenDataManager(authRepository)
 	configConfig := cfg.PushNotifications
 	pushNotificationSender, err := config2.ProvidePushSender(ctx, configConfig, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
-	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(ctx, logger, tracerProvider, cfg, identityRepository, dataprivacyRepository, webhooksRepository, internalOpsDataManager, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer, mealplanningRepository, notificationsDataManager, pushNotificationSender)
+	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(ctx, logger, tracerProvider, cfg, identityRepository, dataprivacyRepository, webhooksRepository, internalOpsDataManager, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer, mealplanningRepository, passwordResetTokenDataManager, notificationsDataManager, pushNotificationSender)
 	if err != nil {
 		return nil, err
 	}

@@ -19,6 +19,7 @@ type Querier interface {
 	ArchiveUserAvatar(ctx context.Context, db DBTX, belongsToUser string) error
 	ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveWebAuthnCredential(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveWebAuthnCredentialForUser(ctx context.Context, db DBTX, arg *ArchiveWebAuthnCredentialForUserParams) (int64, error)
 	AssignInvitationsToUserByEmail(ctx context.Context, db DBTX, arg *AssignInvitationsToUserByEmailParams) (int64, error)
 	AttachAccountInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachAccountInvitationsToUserIDParams) (int64, error)
 	CheckAccountInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error)

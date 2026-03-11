@@ -99,6 +99,13 @@ deploy_localdev:
 	@echo "  - API Server: http://localhost:8000"
 	@echo "  - Admin Webapp: http://localhost:8888"
 
+# Deploy prod Terraform: infra first (GKE, networking), then backend. Run from repo root.
+# Pass args through, e.g. make deploy_terraform_prod ARGS="-auto-approve"
+.PHONY: deploy_terraform_prod
+deploy_terraform_prod:
+	./infra/scripts/terraform_apply_prod.sh -auto-approve
+	(cd backend && ./scripts/terraform_apply_prod.sh -auto-approve)
+
 # Prod deploy + verify. Run from repo root. Requires kubectl pointed at prod, grpcurl.
 .PHONY: deploy_prod
 deploy_prod:

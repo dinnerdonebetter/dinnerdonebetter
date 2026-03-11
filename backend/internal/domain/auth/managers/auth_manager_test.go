@@ -36,6 +36,14 @@ type mockPasswordResetTokenDataManager struct {
 	mock.Mock
 }
 
+func (m *mockPasswordResetTokenDataManager) GetPasswordResetTokenByID(ctx context.Context, passwordResetTokenID string) (*auth.PasswordResetToken, error) {
+	args := m.Called(ctx, passwordResetTokenID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*auth.PasswordResetToken), args.Error(1)
+}
+
 func (m *mockPasswordResetTokenDataManager) GetPasswordResetTokenByToken(ctx context.Context, token string) (*auth.PasswordResetToken, error) {
 	args := m.Called(ctx, token)
 	if args.Get(0) == nil {

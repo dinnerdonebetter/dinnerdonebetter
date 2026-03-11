@@ -54,14 +54,14 @@ func EnsureCircuitBreaker(breaker CircuitBreaker) CircuitBreaker {
 }
 
 // ProvideCircuitBreaker provides a CircuitBreaker.
-func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider metrics.Provider) (CircuitBreaker, error) {
+func (cfg *Config) ProvideCircuitBreaker(ctx context.Context, logger logging.Logger, metricsProvider metrics.Provider) (CircuitBreaker, error) {
 	if cfg == nil {
 		return nil, internalerrors.NilConfigError("circuit breaker")
 	}
 
 	logger = logging.EnsureLogger(logger).WithValue("circuit_breaker", cfg.Name)
 
-	if err := cfg.ValidateWithContext(context.Background()); err != nil {
+	if err := cfg.ValidateWithContext(ctx); err != nil {
 		logger.Error("invalid config passed, providing noop circuit breaker", err)
 		return NewNoopCircuitBreaker(), nil
 	}
@@ -91,6 +91,7 @@ func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider 
 		WindowBuckets: circuit.DefaultWindowBuckets,
 	})
 
+	//nolint:contextcheck // I actually want to use a whatever context here.
 	go handleCircuitBreakerEvents(logger, cb, failureCounter, resetCounter, brokenCounter)
 
 	return &baseImplementation{

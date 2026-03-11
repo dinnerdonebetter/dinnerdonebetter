@@ -19,7 +19,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/oteltrace"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
@@ -110,12 +109,9 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				Provider:    loggingcfg.ProviderSlog,
 			},
 			Tracing: tracingcfg.Config{
-				Provider:                  tracingcfg.ProviderOtel,
-				SpanCollectionProbability: 1,
+				Provider:                  "", // noop tracer for integration tests (no tracing-server required)
+				SpanCollectionProbability: 0.0,
 				ServiceName:               otelServiceName,
-				Otel: &oteltrace.Config{
-					CollectorEndpoint: "http://tracing-server:14268/api/traces",
-				},
 			},
 		},
 		TextSearch: textsearchcfg.Config{

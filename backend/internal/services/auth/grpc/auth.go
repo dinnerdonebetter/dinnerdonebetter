@@ -582,3 +582,73 @@ func (s *serviceImpl) FinishPasskeyAuthentication(ctx context.Context, request *
 		Result: converters.ConvertTokenResponseToGRPCTokenResponse(tokenResponse),
 	}, nil
 }
+
+func (s *serviceImpl) ListPasskeys(ctx context.Context, _ *authsvc.ListPasskeysRequest) (*authsvc.ListPasskeysResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
+
+	creds, err := s.passkeyService.GetCredentialsForUser(ctx, sessionContextData.GetUserID())
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to list passkeys")
+	}
+
+	results := make([]*authsvc.PasskeyCredential, 0, len(creds))
+	for _, c := range creds {
+		friendlyName := c.FriendlyName
+		if friendlyName == "" {
+			friendlyName = "Passkey"
+		}
+		pc := &authsvc.PasskeyCredential{
+			Id:           c.ID,
+			FriendlyName: friendlyName,
+			CreatedAt:    grpcconverters.ConvertTimeToPBTimestamp(c.CreatedAt),
+		}
+		if c.LastUsedAt != nil {
+			pc.LastUsedAt = grpcconverters.ConvertTimeToPBTimestamp(*c.LastUsedAt)
+		}
+		results = append(results, pc)
+	}
+
+	return &authsvc.ListPasskeysResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Results: results,
+	}, nil
+}
+
+func (s *serviceImpl) ArchivePasskey(ctx context.Context, request *authsvc.ArchivePasskeyRequest) (*authsvc.ArchivePasskeyResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+	logger = logger.WithValue(identitykeys.UserIDKey, sessionContextData.GetUserID())
+
+	credentialID := strings.TrimSpace(request.GetCredentialId())
+	if credentialID == "" {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("credential_id is required"), logger, span, codes.InvalidArgument, "credential_id is required")
+	}
+
+	if err = s.passkeyService.ArchiveCredentialForUser(ctx, credentialID, sessionContextData.GetUserID()); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive passkey")
+	}
+
+	return &authsvc.ArchivePasskeyResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}, nil
+}

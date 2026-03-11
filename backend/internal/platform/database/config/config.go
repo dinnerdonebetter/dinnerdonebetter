@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"github.com/XSAM/otelsql"
@@ -173,16 +174,18 @@ func (x *ConnectionDetails) LoadFromURL(u string) error {
 
 // ProvideDatabase creates a database client based on the configured provider
 // and optionally runs migrations if RunMigrations is true and a migrator is provided.
+// If metricsProvider is non-nil, the client will emit db.sql.* metrics (e.g. db_sql_latency_milliseconds).
 func ProvideDatabase(
 	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	cfg *Config,
 	migrator database.Migrator,
+	metricsProvider metrics.Provider,
 ) (client database.Client, err error) {
 	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case ProviderPostgres:
-		client, err = postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, cfg)
+		client, err = postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, cfg, metricsProvider)
 	default:
 		return nil, fmt.Errorf("invalid database provider: %q", cfg.Provider)
 	}

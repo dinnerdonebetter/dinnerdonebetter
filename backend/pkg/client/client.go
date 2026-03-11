@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 
+	analyticsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	commentsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
@@ -23,7 +24,7 @@ import (
 	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 
 	"golang.org/x/oauth2"
@@ -40,6 +41,7 @@ const (
 )
 
 type Client interface {
+	analyticsgrpc.AnalyticsServiceClient
 	authgrpc.AuthServiceClient
 	identitygrpc.IdentityServiceClient
 	auditgrpc.AuditServiceClient
@@ -61,6 +63,7 @@ type Client interface {
 }
 
 type client struct {
+	analyticsgrpc.AnalyticsServiceClient
 	authgrpc.AuthServiceClient
 	identitygrpc.IdentityServiceClient
 	auditgrpc.AuditServiceClient
@@ -87,6 +90,7 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 	}
 
 	c := &client{
+		AnalyticsServiceClient:         analyticsgrpc.NewAnalyticsServiceClient(conn),
 		AuthServiceClient:              authgrpc.NewAuthServiceClient(conn),
 		IdentityServiceClient:          identitygrpc.NewIdentityServiceClient(conn),
 		AuditServiceClient:             auditgrpc.NewAuditServiceClient(conn),
@@ -164,7 +168,7 @@ func WithOAuth2Credentials(
 
 	req.Header.Set("Authorization", "Bearer "+authToken)
 
-	c := tracing.BuildTracedHTTPClient()
+	c := httpclient.ProvideHTTPClient(&httpclient.Config{EnableTracing: true})
 	c.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}
