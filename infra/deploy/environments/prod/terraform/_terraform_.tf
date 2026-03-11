@@ -15,7 +15,7 @@ terraform {
     }
     google = {
       source  = "hashicorp/google"
-      version = "6.14.1"
+      version = "7.23.0"
     }
     sendgrid = {
       source  = "Trois-Six/sendgrid"
