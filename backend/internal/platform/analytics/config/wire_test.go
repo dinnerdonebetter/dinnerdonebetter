@@ -17,10 +17,11 @@ func TestProvideCollector(T *testing.T) {
 	T.Run("noop", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		cfg := &Config{}
 		logger := logging.NewNoopLogger()
 
-		actual, err := ProvideEventReporter(cfg, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
+		actual, err := ProvideEventReporter(ctx, cfg, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 	})
@@ -28,6 +29,7 @@ func TestProvideCollector(T *testing.T) {
 	T.Run("with segment", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		cfg := &Config{
 			Provider: ProviderSegment,
 			Segment: &segment.Config{
@@ -36,7 +38,7 @@ func TestProvideCollector(T *testing.T) {
 		}
 		logger := logging.NewNoopLogger()
 
-		actual, err := ProvideEventReporter(cfg, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
+		actual, err := ProvideEventReporter(ctx, cfg, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 	})

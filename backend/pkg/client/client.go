@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 
+	analyticsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	commentsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
@@ -40,6 +41,7 @@ const (
 )
 
 type Client interface {
+	analyticsgrpc.AnalyticsServiceClient
 	authgrpc.AuthServiceClient
 	identitygrpc.IdentityServiceClient
 	auditgrpc.AuditServiceClient
@@ -61,6 +63,7 @@ type Client interface {
 }
 
 type client struct {
+	analyticsgrpc.AnalyticsServiceClient
 	authgrpc.AuthServiceClient
 	identitygrpc.IdentityServiceClient
 	auditgrpc.AuditServiceClient
@@ -87,6 +90,7 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 	}
 
 	c := &client{
+		AnalyticsServiceClient:         analyticsgrpc.NewAnalyticsServiceClient(conn),
 		AuthServiceClient:              authgrpc.NewAuthServiceClient(conn),
 		IdentityServiceClient:          identitygrpc.NewIdentityServiceClient(conn),
 		AuditServiceClient:             auditgrpc.NewAuditServiceClient(conn),

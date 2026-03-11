@@ -65,6 +65,14 @@ These variables must be configured in Terraform Cloud for each relevant workspac
 | `POSTHOG_API_KEY`          | PostHog project API key for event ingestion.                                                                                                      |
 | `POSTHOG_PERSONAL_API_KEY` | PostHog personal API key for feature flags API. Create in [PostHog Settings → Personal API Keys](https://app.posthog.com/settings/user-api-keys). |
 
+#### Analytics Proxy (Multi-Source)
+
+The analytics proxy gRPC service forwards client events (e.g. from iOS, web) to analytics providers. Each **source** (e.g. `ios`, `web`) has its own config: provider (Segment, Rudderstack, PostHog) and credentials.
+
+- **Per-source secrets**: Add secrets as needed for each source. Example: `segment-ios-write-key` for the `ios` source when using Segment. Store in GCP Secret Manager, add to `SecretProviderClass` and `secret_sync.yaml`, and wire into the API service config JSON. Each source's config is self-contained.
+- **Missing credentials**: If a source has no config or invalid/missing credentials, that source uses a Noop reporter (events are dropped for that source only).
+- **Config**: `ProxySources` in analytics config maps source names to full analytics config (provider + credentials). See `backend/docs/configuration.md` for structure.
+
 ### Observability (Grafana Cloud)
 
 | Variable                            | Description                                                                |

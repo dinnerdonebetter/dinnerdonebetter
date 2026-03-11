@@ -41,7 +41,7 @@ func Build(ctx context.Context, cfg *config.EmailDeliverabilityTestConfig) (*ema
 	}
 	httpclientConfig := cfg.HTTPClient
 	client := httpclient.ProvideHTTPClient(httpclientConfig)
-	emailer, err := emailcfg.ProvideEmailer(emailcfgConfig, logger, tracerProvider, provider, client)
+	emailer, err := emailcfg.ProvideEmailer(ctx, emailcfgConfig, logger, tracerProvider, provider, client)
 	if err != nil {
 		return nil, err
 	}

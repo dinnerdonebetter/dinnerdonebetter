@@ -1,6 +1,8 @@
 package analyticscfg
 
 import (
+	"context"
+
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
@@ -17,6 +19,6 @@ var (
 )
 
 // ProvideEventReporter provides an analytics.EventReporter from a config.
-func ProvideEventReporter(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider) (analytics.EventReporter, error) {
-	return cfg.ProvideCollector(logger, tracerProvider, metricsProvider)
+func ProvideEventReporter(ctx context.Context, cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider) (analytics.EventReporter, error) {
+	return cfg.ProvideCollector(ctx, logger, tracerProvider, metricsProvider)
 }

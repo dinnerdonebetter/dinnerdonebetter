@@ -25,6 +25,7 @@ import (
 	uploadedmediamanager "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/manager"
 	waitlistsmanager "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	webhooksmanager "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
+	"github.com/dinnerdonebetter/backend/internal/platform/analytics/multisource"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	httpclient "github.com/dinnerdonebetter/backend/internal/platform/httpclient"
@@ -51,6 +52,7 @@ import (
 	paymentsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments"
 	uploadedmediarepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
+	analyticssvc "github.com/dinnerdonebetter/backend/internal/services/analytics/grpc"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authsvc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
@@ -121,7 +123,9 @@ func Build(
 		internalopsrepo.Providers,
 		// services
 		authhttpsvc.AuthHTTPServiceProviders,
+		analyticssvc.AnalyticsSvcProviders,
 		auditsvc.AuditSvcProviders,
+		multisource.Providers,
 		commentssvc.CommentsSvcProviders,
 		authsvc.AuthSvcProviders,
 		dataprivacysvc.DataPrivSvcProviders,
@@ -156,6 +160,7 @@ func Build(
 		// misc
 		recipeanalysis.ProvidersRecipeAnalysis,
 		grocerylistpreparation.ProvidersGroceryListPreparation,
+		ProvideAnalyticsProxySources,
 		ProvideUserTextSearcher,
 		AggregateMethodPermissions,
 		BuildUnaryServerInterceptors,

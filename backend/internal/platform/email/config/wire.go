@@ -1,6 +1,7 @@
 package emailcfg
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -20,8 +21,8 @@ var (
 )
 
 // ProvideEmailer provides an email.Emailer from a config.
-func ProvideEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, client *http.Client) (email.Emailer, error) {
-	circuitBreaker, err := cfg.CircuitBreaker.ProvideCircuitBreaker(logger, metricsProvider)
+func ProvideEmailer(ctx context.Context, cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, client *http.Client) (email.Emailer, error) {
+	circuitBreaker, err := cfg.CircuitBreaker.ProvideCircuitBreaker(ctx, logger, metricsProvider)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize email circuit breaker: %w", err)
 	}

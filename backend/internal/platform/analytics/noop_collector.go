@@ -28,3 +28,8 @@ func (c *NoopEventReporter) AddUser(context.Context, string, map[string]any) err
 func (c *NoopEventReporter) EventOccurred(context.Context, string, string, map[string]any) error {
 	return nil
 }
+
+// EventOccurredAnonymous does nothing.
+func (c *NoopEventReporter) EventOccurredAnonymous(context.Context, string, string, map[string]any) error {
+	return nil
+}

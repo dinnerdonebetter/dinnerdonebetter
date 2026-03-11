@@ -102,14 +102,14 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	if err != nil {
 		return nil, err
 	}
-	eventReporter, err := analyticscfg.ProvideEventReporter(analyticscfgConfig, logger, tracerProvider, provider)
+	eventReporter, err := analyticscfg.ProvideEventReporter(ctx, analyticscfgConfig, logger, tracerProvider, provider)
 	if err != nil {
 		return nil, err
 	}
 	emailcfgConfig := &cfg.Email
 	httpclientConfig := cfg.HTTPClient
 	httpClient := httpclient.ProvideHTTPClient(httpclientConfig)
-	emailer, err := emailcfg.ProvideEmailer(emailcfgConfig, logger, tracerProvider, provider, httpClient)
+	emailer, err := emailcfg.ProvideEmailer(ctx, emailcfgConfig, logger, tracerProvider, provider, httpClient)
 	if err != nil {
 		return nil, err
 	}

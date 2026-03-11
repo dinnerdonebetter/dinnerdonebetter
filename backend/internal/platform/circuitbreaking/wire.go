@@ -1,6 +1,8 @@
 package circuitbreaking
 
 import (
+	"context"
+
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 
@@ -13,6 +15,6 @@ var (
 	)
 )
 
-func ProvideCircuitBreaker(cfg *Config, logger logging.Logger, metricsProvider metrics.Provider) (CircuitBreaker, error) {
-	return cfg.ProvideCircuitBreaker(logger, metricsProvider)
+func ProvideCircuitBreaker(ctx context.Context, cfg *Config, logger logging.Logger, metricsProvider metrics.Provider) (CircuitBreaker, error) {
+	return cfg.ProvideCircuitBreaker(ctx, logger, metricsProvider)
 }

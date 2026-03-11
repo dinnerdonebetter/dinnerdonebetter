@@ -4,6 +4,8 @@ import (
 	"context"
 	"maps"
 
+	"github.com/dinnerdonebetter/backend/internal/config"
+	analyticspb "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	commentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
@@ -19,12 +21,14 @@ import (
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	platformgrpc "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	analyticsgrpc "github.com/dinnerdonebetter/backend/internal/services/analytics/grpc"
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
@@ -46,6 +50,7 @@ import (
 )
 
 func BuildRegistrationFuncs(
+	analyticsService analyticspb.AnalyticsServiceServer,
 	auditLogService auditsvc.AuditServiceServer,
 	authService authsvc.AuthServiceServer,
 	commentsService commentssvc.CommentsServiceServer,
@@ -64,6 +69,7 @@ func BuildRegistrationFuncs(
 ) []platformgrpc.RegistrationFunc {
 	return []platformgrpc.RegistrationFunc{
 		func(server *grpc.Server) {
+			analyticspb.RegisterAnalyticsServiceServer(server, analyticsService)
 			auditsvc.RegisterAuditServiceServer(server, auditLogService)
 			authsvc.RegisterAuthServiceServer(server, authService)
 			commentssvc.RegisterCommentsServiceServer(server, commentsService)
@@ -97,6 +103,11 @@ func BuildStreamServerInterceptors(authInterceptor *interceptors.AuthInterceptor
 	}
 }
 
+// ProvideAnalyticsProxySources extracts proxy sources config for the multisource reporter.
+func ProvideAnalyticsProxySources(cfg *config.APIServiceConfig) analyticscfg.ProxySourcesConfig {
+	return cfg.Analytics.ProxySources
+}
+
 func ProvideUserTextSearcher(
 	ctx context.Context,
 	logger logging.Logger,
@@ -117,6 +128,7 @@ func ProvideUserTextSearcher(
 // Each service provides its permissions via a typed map (e.g., SettingsMethodPermissions),
 // which are then aggregated here for the auth interceptor.
 func AggregateMethodPermissions(
+	analyticsPermissions analyticsgrpc.AnalyticsMethodPermissions,
 	auditPermissions auditgrpc.AuditMethodPermissions,
 	authPermissions authgrpc.AuthMethodPermissions,
 	commentsPermissions commentsgrpc.CommentsMethodPermissions,
@@ -135,6 +147,7 @@ func AggregateMethodPermissions(
 	result := make(interceptors.MethodPermissionsMap)
 
 	// Copy all service permissions into the aggregated map
+	maps.Copy(result, analyticsPermissions)
 	maps.Copy(result, auditPermissions)
 	maps.Copy(result, authPermissions)
 	maps.Copy(result, commentsPermissions)

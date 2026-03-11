@@ -52,8 +52,7 @@ func ProvideIndex[T any](
 	cfg *Config,
 	indexName string,
 ) (textsearch.Index[T], error) {
-	//nolint:contextcheck // I actually want to use a whatever context here.
-	circuitBreaker, err := circuitbreaking.ProvideCircuitBreaker(&cfg.CircuitBreaker, logger, metricsProvider)
+	circuitBreaker, err := circuitbreaking.ProvideCircuitBreaker(ctx, &cfg.CircuitBreaker, logger, metricsProvider)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize text search circuit breaker: %w", err)
 	}
