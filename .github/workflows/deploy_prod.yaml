@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
 
@@ -23,7 +23,7 @@ jobs:
           credentials_json: ${{ secrets.PROD_GOOGLE_CLOUD_CREDENTIALS }}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -70,7 +70,7 @@ jobs:
         container-registry: ['us-central1-docker.pkg.dev']
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
 
@@ -80,13 +80,13 @@ jobs:
           credentials_json: ${{ secrets.PROD_GOOGLE_CLOUD_CREDENTIALS }}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker ${{ matrix.container-registry }}
 
       - name: get GKE credentials
-        uses: google-github-actions/get-gke-credentials@v2
+        uses: google-github-actions/get-gke-credentials@v3
         with:
           cluster_name: prod
           context_name: prod_context
@@ -150,7 +150,7 @@ jobs:
       VERSION: ${{ github.event.release.tag_name }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
 
@@ -161,7 +161,7 @@ jobs:
           cache-dependency-path: backend/go.sum
 
       - name: Restore Skaffold and ko caches
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.skaffold
@@ -177,13 +177,13 @@ jobs:
           credentials_json: ${{ secrets.PROD_GOOGLE_CLOUD_CREDENTIALS }}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker ${{ matrix.container-registry }}
 
       - name: get GKE credentials
-        uses: google-github-actions/get-gke-credentials@v2
+        uses: google-github-actions/get-gke-credentials@v3
         with:
           cluster_name: prod
           context_name: prod_context

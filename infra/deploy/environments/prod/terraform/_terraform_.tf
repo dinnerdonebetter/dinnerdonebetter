@@ -11,11 +11,11 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.40.0"
+      version = "5.18.0"
     }
     google = {
       source  = "hashicorp/google"
-      version = "6.14.1"
+      version = "7.23.0"
     }
     sendgrid = {
       source  = "Trois-Six/sendgrid"
@@ -23,7 +23,7 @@ terraform {
     }
     grafana = {
       source  = "grafana/grafana"
-      version = "4.25.0"
+      version = "4.28.0"
     }
   }
 }

@@ -38,7 +38,7 @@ func buildContainerBackedElasticsearchConfig(t *testing.T) (config *Config, shut
 		CACert:                elasticsearchContainer.Settings.CACert,
 	}
 
-	return cfg, elasticsearchContainer.Terminate
+	return cfg, func(ctx context.Context) error { return elasticsearchContainer.Terminate(ctx) }
 }
 
 func Test_ensureIndices(T *testing.T) {

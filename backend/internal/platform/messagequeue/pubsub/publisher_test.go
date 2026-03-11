@@ -57,7 +57,7 @@ func buildPubSubBackedPublisher(t *testing.T, ctx context.Context) (publisher me
 	assert.NotNil(t, publisher)
 	assert.NoError(t, err)
 
-	return publisher, pubsubContainer.Terminate
+	return publisher, func(ctx context.Context) error { return pubsubContainer.Terminate(ctx) }
 }
 
 func Test_pubSubPublisher_Publish(T *testing.T) {

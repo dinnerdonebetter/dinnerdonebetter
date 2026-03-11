@@ -61,7 +61,7 @@ func buildPubSubBackedConsumer(t *testing.T, ctx context.Context, topic string, 
 	assert.NotNil(t, publisher)
 	assert.NoError(t, err)
 
-	return publisher, pubSubContainer.Terminate
+	return publisher, func(ctx context.Context) error { return pubSubContainer.Terminate(ctx) }
 }
 
 func Test_pubSubConsumer_Consume(T *testing.T) {
