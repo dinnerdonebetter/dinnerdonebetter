@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
@@ -74,6 +75,7 @@ type AsyncDataChangeMessageHandler struct {
 	badDeviceTokensArchivedCounter            metrics.Int64Counter
 	pushNotificationsSentCounter              metrics.Int64Counter
 	mealPlanRepo                              mealplanning.Repository
+	passwordResetTokenDataManager             auth.PasswordResetTokenDataManager
 	notificationsRepo                         notificationsmanager.NotificationsDataManager
 	pushNotificationSender                    platformnotifications.PushNotificationSender
 	handlerErrorsCounter                      metrics.Int64Counter
@@ -121,6 +123,7 @@ func NewAsyncDataChangeMessageHandler(
 	coreDataIndexer *identityindexing.UserDataIndexer,
 	eatingDataIndexer *mealplanningindexing.MealPlanningDataIndexer,
 	mealPlanRepo mealplanning.Repository,
+	passwordResetTokenDataManager auth.PasswordResetTokenDataManager,
 	notificationsRepo notificationsmanager.NotificationsDataManager,
 	pushNotificationSender platformnotifications.PushNotificationSender,
 ) (*AsyncDataChangeMessageHandler, error) {
@@ -243,6 +246,7 @@ func NewAsyncDataChangeMessageHandler(
 		userDataIndexer:                           coreDataIndexer,
 		mealPlanningDataIndexer:                   eatingDataIndexer,
 		mealPlanRepo:                              mealPlanRepo,
+		passwordResetTokenDataManager:             passwordResetTokenDataManager,
 		notificationsRepo:                         notificationsRepo,
 		pushNotificationSender:                    pushNotificationSender,
 	}, nil

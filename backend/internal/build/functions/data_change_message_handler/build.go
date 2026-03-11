@@ -24,6 +24,7 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	internalopsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
@@ -48,6 +49,7 @@ func Build(
 		databasecfg.ClientConfigProviders,
 		postgres.PGProviders,
 		auditlogentries.AuditRepoProviders,
+		auth.AuthRepoProviders,
 		dataprivacy.DataPrivProviders,
 		identity.IDRepoProviders,
 		issue_reports.IssueReportsRepoProviders,

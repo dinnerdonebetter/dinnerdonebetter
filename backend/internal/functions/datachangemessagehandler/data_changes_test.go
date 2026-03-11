@@ -14,7 +14,6 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	webhooksfakes "github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
-	encodingmock "github.com/dinnerdonebetter/backend/internal/platform/encoding/mock"
 	msgqueuemock "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
@@ -244,40 +243,33 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 	t.Run("recipe created event", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, _, _, _, _, decoder, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
 		recipe := mealplanningfakes.BuildFakeRecipe()
-		recipeBytes, err := json.Marshal(recipe)
-		assert.NoError(t, err)
-
+		// Producers send only the recipe ID in context, not the full recipe.
 		dataChangeMessage := &audit.DataChangeMessage{
 			EventType: mealplanning.RecipeCreatedServiceEventType,
 			UserID:    "test-user-id",
 			AccountID: "test-account-id",
 			Context: map[string]any{
-				mealplanningkeys.RecipeKey: string(recipeBytes),
+				mealplanningkeys.RecipeIDKey: recipe.ID,
 			},
 		}
 
-		// Mock decoder (note: parseValueFromEventContext calls with *interface{} due to a bug)
-		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, recipeBytes, mock.Anything).Return(nil)
-
-		// Mock the search data index publisher
 		mockPublisher := &msgqueuemock.Publisher{}
 		mockPublisher.On(reflection.GetMethodName(mockPublisher.Publish), mock.Anything, mock.MatchedBy(func(req *textsearch.IndexRequest) bool {
-			// Due to bug in parseValueFromEventContext, RowID will be empty
-			return req.RowID == "" &&
+			return req.RowID == recipe.ID &&
 				req.IndexType == mealplanningindexing.IndexTypeRecipes &&
 				req.Delete == false
 		})).Return(nil)
 		handler.searchDataIndexPublisher = mockPublisher
 
-		err = handler.handleSearchIndexUpdates(ctx, dataChangeMessage)
+		err := handler.handleSearchIndexUpdates(ctx, dataChangeMessage)
 		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, mockPublisher, decoder)
+		mock.AssertExpectationsForObjects(t, mockPublisher)
 	})
 
 	t.Run("unhandled event type", func(t *testing.T) {
@@ -339,7 +331,7 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 		// Set environment variable needed for email configuration
 		t.Setenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT", "testing")
 
-		handler, identityRepo, _, _, _, analyticsEventReporter, _, _, _, decoder, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, identityRepo, _, _, _, analyticsEventReporter, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -351,26 +343,21 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 			UserID:    user.ID,
 			AccountID: "test-account-id",
 			Context: map[string]any{
-				identitykeys.UserEmailVerificationTokenKey: []byte(evf), // Use byte slice to avoid DecodeBytes call
+				identitykeys.UserEmailVerificationTokenKey: evf,
 			},
 		}
 
 		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, user.ID).Return(user, nil)
 		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.AddUser), mock.Anything, user.ID, dataChangeMessage.Context).Return(nil)
 
-		// Mock the outbound emails publisher
 		mockPublisher := &msgqueuemock.Publisher{}
 		mockPublisher.On(reflection.GetMethodName(mockPublisher.Publish), mock.Anything, mock.AnythingOfType("*email.OutboundEmailMessage")).Return(nil)
 		handler.outboundEmailsPublisher = mockPublisher
 
 		err := handler.handleOutboundNotifications(ctx, dataChangeMessage)
-		// Due to a bug in parseValueFromEventContext, it always returns uninitialized values
-		// which causes BuildVerifyEmailAddressEmail to fail with "email verification token required"
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "email verification token required")
+		assert.NoError(t, err)
 
-		// The mock publisher won'T be called because of the error
-		mock.AssertExpectationsForObjects(t, identityRepo, analyticsEventReporter, decoder)
+		mock.AssertExpectationsForObjects(t, identityRepo, analyticsEventReporter, mockPublisher)
 	})
 
 	T.Run("with user fetch error", func(t *testing.T) {
@@ -421,64 +408,5 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 		assert.NoError(t, err) // Should handle gracefully with no outbound emails
 
 		mock.AssertExpectationsForObjects(t, identityRepo)
-	})
-}
-
-func TestParseValueFromEventContext(t *testing.T) {
-	t.Parallel()
-
-	t.Run("with string value", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		decoder := &encodingmock.EncoderDecoder{}
-
-		testString := "test-value"
-		changeMessage := &audit.DataChangeMessage{
-			Context: map[string]any{
-				"test-key": testString,
-			},
-		}
-
-		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, []byte(testString), mock.Anything).Return(nil)
-
-		result, err := parseValueFromEventContext[string](ctx, changeMessage, decoder, "test-key")
-		assert.NoError(t, err)
-		assert.NotNil(t, result)
-
-		mock.AssertExpectationsForObjects(t, decoder)
-	})
-
-	t.Run("with byte slice value", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		decoder := &encodingmock.EncoderDecoder{}
-
-		testBytes := []byte("test-value")
-		changeMessage := &audit.DataChangeMessage{
-			Context: map[string]any{
-				"test-key": testBytes,
-			},
-		}
-
-		result, err := parseValueFromEventContext[string](ctx, changeMessage, decoder, "test-key")
-		assert.NoError(t, err)
-		assert.NotNil(t, result)
-	})
-
-	t.Run("with missing key", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		decoder := &encodingmock.EncoderDecoder{}
-
-		changeMessage := &audit.DataChangeMessage{
-			Context: nil,
-		}
-
-		result, err := parseValueFromEventContext[string](ctx, changeMessage, decoder, "missing-key")
-		assert.NoError(t, err)
-		assert.NotNil(t, result)
 	})
 }

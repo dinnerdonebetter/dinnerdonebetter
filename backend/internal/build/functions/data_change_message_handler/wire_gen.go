@@ -27,6 +27,7 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
@@ -161,12 +162,14 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	mealPlanningDataIndexer := indexing2.NewMealPlanningDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
+	authRepository := auth.ProvideAuthRepository(logger, tracerProvider, repository, client)
+	passwordResetTokenDataManager := auth.ProvidePasswordResetTokenDataManager(authRepository)
 	configConfig := cfg.PushNotifications
 	pushNotificationSender, err := config2.ProvidePushSender(ctx, configConfig, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
-	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(ctx, logger, tracerProvider, cfg, identityRepository, dataprivacyRepository, webhooksRepository, internalOpsDataManager, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer, mealplanningRepository, notificationsDataManager, pushNotificationSender)
+	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(ctx, logger, tracerProvider, cfg, identityRepository, dataprivacyRepository, webhooksRepository, internalOpsDataManager, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer, mealplanningRepository, passwordResetTokenDataManager, notificationsDataManager, pushNotificationSender)
 	if err != nil {
 		return nil, err
 	}

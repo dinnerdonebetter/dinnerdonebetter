@@ -1,9 +1,11 @@
 package datachangemessagehandler
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	dataprivacymock "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/mock"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	internalopsmock "github.com/dinnerdonebetter/backend/internal/domain/internalops/mock"
@@ -28,6 +30,22 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
+
+// noopPasswordResetTokenDataManager implements auth.PasswordResetTokenDataManager for tests that do not exercise the password reset flow.
+type noopPasswordResetTokenDataManager struct{}
+
+func (noopPasswordResetTokenDataManager) GetPasswordResetTokenByID(context.Context, string) (*auth.PasswordResetToken, error) {
+	return nil, nil
+}
+func (noopPasswordResetTokenDataManager) GetPasswordResetTokenByToken(context.Context, string) (*auth.PasswordResetToken, error) {
+	return nil, nil
+}
+func (noopPasswordResetTokenDataManager) CreatePasswordResetToken(context.Context, *auth.PasswordResetTokenDatabaseCreationInput) (*auth.PasswordResetToken, error) {
+	return nil, nil
+}
+func (noopPasswordResetTokenDataManager) RedeemPasswordResetToken(context.Context, string) error {
+	return nil
+}
 
 //nolint:gocritic // I know this returns too many things
 func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessageHandler, *identitymock.RepositoryMock, *webhooksmock.Repository, *msgqueuemock.ConsumerProvider, *msgqueuemock.PublisherProvider, *analyticsmock.EventReporter, *emailmock.Emailer, *uploadsmock.MockUploadManager, *mockmetrics.MetricsProvider, *encodingmock.EncoderDecoder, *dataprivacymock.Repository) {
@@ -103,6 +121,7 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 		mobileNotificationsPublisher:     mockPublisher,
 		dataPrivacyRepo:                  dataPrivacyRepo,
 		mealPlanRepo:                     mealPlanRepo,
+		passwordResetTokenDataManager:    noopPasswordResetTokenDataManager{},
 		notificationsRepo:                notificationsRepo,
 		pushNotificationSender:           pushNotificationSender,
 	}
@@ -167,6 +186,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 
 		internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
 		mealPlanRepo := &mealplanningmock.Repository{}
+		prtManager := noopPasswordResetTokenDataManager{}
 		notificationsRepo := &notificationsmock.Repository{}
 		pushNotificationSender := &notifications.NoopPushNotificationSender{}
 
@@ -189,6 +209,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 			coreDataIndexer,
 			eatingDataIndexer,
 			mealPlanRepo,
+			prtManager,
 			notificationsRepo,
 			pushNotificationSender,
 		)

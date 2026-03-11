@@ -20,7 +20,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
@@ -175,17 +174,12 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.RecipeCreatedServiceEventType,
 		mealplanning.RecipeUpdatedServiceEventType,
 		mealplanning.RecipeArchivedServiceEventType:
-		recipe, parseError := parseValueFromEventContext[mealplanning.Recipe](ctx, changeMessage, a.decoder, mealplanningkeys.RecipeKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if recipe == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.RecipeIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for Recipe")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     recipe.ID,
+			RowID:     rowID,
 			IndexType: eatingindexing.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == mealplanning.RecipeArchivedServiceEventType,
 		}); err != nil {
@@ -196,18 +190,13 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.MealCreatedServiceEventType,
 		mealplanning.MealUpdatedServiceEventType,
 		mealplanning.MealArchivedServiceEventType:
-		meal, parseError := parseValueFromEventContext[mealplanning.Meal](ctx, changeMessage, a.decoder, mealplanningkeys.MealKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if meal == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.MealIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for Meal")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     meal.ID,
-			IndexType: eatingindexing.IndexTypeRecipes,
+			RowID:     rowID,
+			IndexType: eatingindexing.IndexTypeMeals,
 			Delete:    changeMessage.EventType == mealplanning.MealArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -217,18 +206,13 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidIngredientCreatedServiceEventType,
 		mealplanning.ValidIngredientUpdatedServiceEventType,
 		mealplanning.ValidIngredientArchivedServiceEventType:
-		validIngredient, parseError := parseValueFromEventContext[mealplanning.ValidIngredient](ctx, changeMessage, a.decoder, mealplanningkeys.ValidIngredientKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if validIngredient == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.ValidIngredientIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredient")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     validIngredient.ID,
-			IndexType: eatingindexing.IndexTypeRecipes,
+			RowID:     rowID,
+			IndexType: eatingindexing.IndexTypeValidIngredients,
 			Delete:    changeMessage.EventType == mealplanning.ValidIngredientArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -238,18 +222,13 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidInstrumentCreatedServiceEventType,
 		mealplanning.ValidInstrumentUpdatedServiceEventType,
 		mealplanning.ValidInstrumentArchivedServiceEventType:
-		validInstrument, parseError := parseValueFromEventContext[mealplanning.ValidInstrument](ctx, changeMessage, a.decoder, mealplanningkeys.ValidInstrumentKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if validInstrument == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.ValidInstrumentIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for ValidInstrument")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     validInstrument.ID,
-			IndexType: eatingindexing.IndexTypeRecipes,
+			RowID:     rowID,
+			IndexType: eatingindexing.IndexTypeValidInstruments,
 			Delete:    changeMessage.EventType == mealplanning.ValidInstrumentArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -259,18 +238,13 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidMeasurementUnitCreatedServiceEventType,
 		mealplanning.ValidMeasurementUnitUpdatedServiceEventType,
 		mealplanning.ValidMeasurementUnitArchivedServiceEventType:
-		validMeasurementUnit, parseError := parseValueFromEventContext[mealplanning.ValidMeasurementUnit](ctx, changeMessage, a.decoder, mealplanningkeys.ValidMeasurementUnitKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if validMeasurementUnit == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.ValidMeasurementUnitIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for ValidMeasurementUnit")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     validMeasurementUnit.ID,
-			IndexType: eatingindexing.IndexTypeRecipes,
+			RowID:     rowID,
+			IndexType: eatingindexing.IndexTypeValidMeasurementUnits,
 			Delete:    changeMessage.EventType == mealplanning.ValidMeasurementUnitArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -280,18 +254,13 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidPreparationCreatedServiceEventType,
 		mealplanning.ValidPreparationUpdatedServiceEventType,
 		mealplanning.ValidPreparationArchivedServiceEventType:
-		validPreparation, parseError := parseValueFromEventContext[mealplanning.ValidPreparation](ctx, changeMessage, a.decoder, mealplanningkeys.ValidPreparationKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if validPreparation == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.ValidPreparationIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for ValidPreparation")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     validPreparation.ID,
-			IndexType: eatingindexing.IndexTypeRecipes,
+			RowID:     rowID,
+			IndexType: eatingindexing.IndexTypeValidPreparations,
 			Delete:    changeMessage.EventType == mealplanning.ValidPreparationArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -301,18 +270,13 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidIngredientStateCreatedServiceEventType,
 		mealplanning.ValidIngredientStateUpdatedServiceEventType,
 		mealplanning.ValidIngredientStateArchivedServiceEventType:
-		validIngredientState, parseError := parseValueFromEventContext[mealplanning.ValidIngredientState](ctx, changeMessage, a.decoder, mealplanningkeys.ValidIngredientStateKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if validIngredientState == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.ValidIngredientStateIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredientState")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     validIngredientState.ID,
-			IndexType: eatingindexing.IndexTypeRecipes,
+			RowID:     rowID,
+			IndexType: eatingindexing.IndexTypeValidIngredientStates,
 			Delete:    changeMessage.EventType == mealplanning.ValidIngredientStateArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -322,17 +286,12 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidIngredientMeasurementUnitCreatedServiceEventType,
 		mealplanning.ValidIngredientMeasurementUnitUpdatedServiceEventType,
 		mealplanning.ValidIngredientMeasurementUnitArchivedServiceEventType:
-		validIngredientMeasurementUnit, parseError := parseValueFromEventContext[mealplanning.ValidIngredientMeasurementUnit](ctx, changeMessage, a.decoder, mealplanningkeys.ValidIngredientMeasurementUnitKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if validIngredientMeasurementUnit == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.ValidIngredientMeasurementUnitIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredientMeasurementUnit")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     validIngredientMeasurementUnit.ID,
+			RowID:     rowID,
 			IndexType: eatingindexing.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == mealplanning.ValidIngredientMeasurementUnitArchivedServiceEventType,
 		}); err != nil {
@@ -343,17 +302,12 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidPreparationInstrumentCreatedServiceEventType,
 		mealplanning.ValidPreparationInstrumentUpdatedServiceEventType,
 		mealplanning.ValidPreparationInstrumentArchivedServiceEventType:
-		validPreparationInstrument, parseError := parseValueFromEventContext[mealplanning.ValidPreparationInstrument](ctx, changeMessage, a.decoder, mealplanningkeys.ValidPreparationInstrumentKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if validPreparationInstrument == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.ValidPreparationInstrumentIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for ValidPreparationInstrument")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     validPreparationInstrument.ID,
+			RowID:     rowID,
 			IndexType: eatingindexing.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == mealplanning.ValidPreparationInstrumentArchivedServiceEventType,
 		}); err != nil {
@@ -364,17 +318,12 @@ func (a *AsyncDataChangeMessageHandler) handleSearchIndexUpdates(
 	case mealplanning.ValidIngredientPreparationCreatedServiceEventType,
 		mealplanning.ValidIngredientPreparationUpdatedServiceEventType,
 		mealplanning.ValidIngredientPreparationArchivedServiceEventType:
-		validIngredientPreparation, parseError := parseValueFromEventContext[mealplanning.ValidIngredientPreparation](ctx, changeMessage, a.decoder, mealplanningkeys.ValidIngredientPreparationKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
-		}
-
-		if validIngredientPreparation == nil {
+		rowID := rowIDFromEventContext(changeMessage, mealplanningkeys.ValidIngredientPreparationIDKey)
+		if rowID == "" {
 			return observability.PrepareAndLogError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredientPreparation")
 		}
-
 		if err := a.searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
-			RowID:     validIngredientPreparation.ID,
+			RowID:     rowID,
 			IndexType: eatingindexing.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == mealplanning.ValidIngredientPreparationArchivedServiceEventType,
 		}); err != nil {
@@ -424,12 +373,12 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 			observability.AcknowledgeError(err, logger, span, "notifying customer data platform")
 		}
 
-		evf, parseError := parseValueFromEventContext[string](ctx, changeMessage, a.decoder, identitykeys.UserEmailVerificationTokenKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
+		emailVerificationToken := stringFromEventContext(changeMessage, identitykeys.UserEmailVerificationTokenKey)
+		if emailVerificationToken == "" {
+			return observability.PrepareError(fmt.Errorf("email verification token required"), span, "building address verification email")
 		}
 
-		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, *evf, envCfg)
+		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, emailVerificationToken, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building address verification email")
 		}
@@ -437,12 +386,12 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case identity.UserEmailAddressVerificationEmailRequestedEventType:
 		emailType = "email address verification"
-		evf, parseError := parseValueFromEventContext[string](ctx, changeMessage, a.decoder, identitykeys.UserEmailVerificationTokenKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
+		emailVerificationToken := stringFromEventContext(changeMessage, identitykeys.UserEmailVerificationTokenKey)
+		if emailVerificationToken == "" {
+			return observability.PrepareError(fmt.Errorf("email verification token required"), span, "building address verification email")
 		}
 
-		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, *evf, envCfg)
+		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, emailVerificationToken, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building address verification email")
 		}
@@ -450,12 +399,16 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case mealplanning.MealPlanCreatedServiceEventType:
 		emailType = "meal plan created"
-		mealPlanID, _ := changeMessage.Context[mealplanningkeys.MealPlanIDKey].(string)
+		mealPlanID, ok := changeMessage.Context[mealplanningkeys.MealPlanIDKey].(string)
+		if !ok {
+			mealPlanID = ""
+		}
 		if mealPlanID == "" || changeMessage.AccountID == "" {
 			return observability.PrepareError(fmt.Errorf("meal plan created event requires meal_plan.id and accountID in context"), span, "publishing meal plan created email")
 		}
 
-		mealPlan, err := a.mealPlanRepo.GetMealPlan(ctx, mealPlanID, changeMessage.AccountID)
+		var mealPlan *mealplanning.MealPlan
+		mealPlan, err = a.mealPlanRepo.GetMealPlan(ctx, mealPlanID, changeMessage.AccountID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting meal plan for created email")
 		}
@@ -481,13 +434,18 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 		}
 	case identity.PasswordResetTokenCreatedEventType:
 		emailType = "password reset request"
-		prt, parseError := parseValueFromEventContext[auth.PasswordResetToken](ctx, changeMessage, a.decoder, authkeys.PasswordResetTokenKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
+		tokenID := stringFromEventContext(changeMessage, authkeys.PasswordResetTokenIDKey)
+		if tokenID == "" {
+			return observability.PrepareError(fmt.Errorf("password reset token created event requires password_reset_token.id in context"), span, "building password reset email")
 		}
 
+		var prt *auth.PasswordResetToken
+		prt, err = a.passwordResetTokenDataManager.GetPasswordResetTokenByID(ctx, tokenID)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "getting password reset token")
+		}
 		if prt == nil {
-			return observability.PrepareError(fmt.Errorf("password reset token is nil"), span, "publishing password reset token email")
+			return observability.PrepareError(fmt.Errorf("password reset token not found"), span, "building password reset email")
 		}
 
 		msg, err = coreemails.BuildGeneratedPasswordResetTokenEmail(user, prt, envCfg)
@@ -526,13 +484,22 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case identity.AccountInvitationCreatedServiceEventType:
 		emailType = "account invitation created"
-		accountInvite, parseError := parseValueFromEventContext[identity.AccountInvitation](ctx, changeMessage, a.decoder, identitykeys.AccountInvitationKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
+		invitationID := stringFromEventContext(changeMessage, identitykeys.AccountInvitationIDKey)
+		destinationAccountID, ok := changeMessage.Context["destination_account"].(string)
+		if !ok {
+			destinationAccountID = ""
+		}
+		if invitationID == "" || destinationAccountID == "" {
+			return observability.PrepareError(fmt.Errorf("account invitation created event requires account_invitation.id and destination_account in context"), span, "building invite member email")
 		}
 
+		var accountInvite *identity.AccountInvitation
+		accountInvite, err = a.identityRepo.GetAccountInvitationByAccountAndID(ctx, destinationAccountID, invitationID)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "getting account invitation")
+		}
 		if accountInvite == nil {
-			return observability.PrepareError(fmt.Errorf("account invitation is nil"), span, "publishing password reset token redemption email")
+			return observability.PrepareError(fmt.Errorf("account invitation not found"), span, "building invite member email")
 		}
 
 		msg, err = coreemails.BuildInviteMemberEmail(user, accountInvite, envCfg)
@@ -602,18 +569,30 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 	return nil
 }
 
-func parseValueFromEventContext[T any](ctx context.Context, changeMessage *audit.DataChangeMessage, decoder encoding.ServerEncoderDecoder, key string) (*T, error) {
-	var x T
-	if z, ok := changeMessage.Context[key]; ok {
-		switch y := z.(type) {
-		case string:
-			if err := decoder.DecodeBytes(ctx, []byte(y), &z); err != nil {
-				return nil, err
-			}
-		case []byte:
-			z = string(y)
-		}
+// stringFromEventContext returns a string value from the data change message context.
+// The value may be a string or []byte depending on message serialization.
+func stringFromEventContext(changeMessage *audit.DataChangeMessage, key string) string {
+	if changeMessage == nil || changeMessage.Context == nil {
+		return ""
 	}
 
-	return &x, nil
+	v, ok := changeMessage.Context[key]
+	if !ok {
+		return ""
+	}
+
+	switch s := v.(type) {
+	case string:
+		return s
+	case []byte:
+		return string(s)
+	default:
+		return ""
+	}
+}
+
+// rowIDFromEventContext returns the row ID string from the data change message context.
+// Producers publish only the ID (e.g. RecipeIDKey -> recipe.ID), not the full entity.
+func rowIDFromEventContext(changeMessage *audit.DataChangeMessage, idKey string) string {
+	return stringFromEventContext(changeMessage, idKey)
 }

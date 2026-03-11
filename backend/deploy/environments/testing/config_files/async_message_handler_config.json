@@ -88,10 +88,12 @@
 			"circuitBreakerMinimumOccurrenceThreshold": 0
 		}
 	},
+	"httpClient": null,
 	"analytics": {
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
+		"proxySources": null,
 		"provider": "",
 		"circuitBreaker": {
 			"name": "feature_flagger",

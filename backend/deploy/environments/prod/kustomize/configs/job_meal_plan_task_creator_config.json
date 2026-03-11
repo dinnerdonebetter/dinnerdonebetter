@@ -13,6 +13,7 @@
 		},
 		"posthog": null,
 		"rudderstack": null,
+		"proxySources": null,
 		"provider": "segment",
 		"circuitBreaker": {
 			"name": "prod_analytics",

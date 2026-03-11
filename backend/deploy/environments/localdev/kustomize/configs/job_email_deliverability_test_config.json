@@ -1,4 +1,5 @@
 {
+	"httpClient": null,
 	"recipientEmailAddress": "verygoodsoftwarenotvirus@protonmail.com",
 	"serviceEnvironment": "dev",
 	"observability": {

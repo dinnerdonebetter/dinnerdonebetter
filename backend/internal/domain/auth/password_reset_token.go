@@ -62,6 +62,7 @@ type (
 
 	// PasswordResetTokenDataManager describes a structure capable of storing password reset tokens permanently.
 	PasswordResetTokenDataManager interface {
+		GetPasswordResetTokenByID(ctx context.Context, passwordResetTokenID string) (*PasswordResetToken, error)
 		GetPasswordResetTokenByToken(ctx context.Context, passwordResetTokenID string) (*PasswordResetToken, error)
 		CreatePasswordResetToken(ctx context.Context, input *PasswordResetTokenDatabaseCreationInput) (*PasswordResetToken, error)
 		RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error

@@ -22,6 +22,32 @@ var (
 	_ auth.PasswordResetTokenDataManager = (*repository)(nil)
 )
 
+// GetPasswordResetTokenByID fetches a password reset token from the database by its ID.
+func (r *repository) GetPasswordResetTokenByID(ctx context.Context, passwordResetTokenID string) (*auth.PasswordResetToken, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if passwordResetTokenID == "" {
+		return nil, platformerrors.ErrInvalidIDProvided
+	}
+	tracing.AttachToSpan(span, authkeys.PasswordResetTokenIDKey, passwordResetTokenID)
+
+	result, err := r.generatedQuerier.GetPasswordResetTokenByID(ctx, r.readDB, passwordResetTokenID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, r.logger, span, "getting password reset token by ID")
+	}
+
+	return &auth.PasswordResetToken{
+		CreatedAt:     result.CreatedAt,
+		ExpiresAt:     result.ExpiresAt,
+		RedeemedAt:    database.TimePointerFromNullTime(result.RedeemedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ID:            result.ID,
+		Token:         result.Token,
+		BelongsToUser: result.BelongsToUser,
+	}, nil
+}
+
 // GetPasswordResetTokenByToken fetches a password reset token from the database by its token.
 func (r *repository) GetPasswordResetTokenByToken(ctx context.Context, token string) (*auth.PasswordResetToken, error) {
 	ctx, span := r.tracer.StartSpan(ctx)

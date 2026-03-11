@@ -247,6 +247,18 @@ const (
 	// GrpcTLSCertificateKeyFilepathEnvVarKey is the environment variable name to set to override `APIServiceConfig.GRPCServer.TLSCertificateKeyFile`.
 	GrpcTLSCertificateKeyFilepathEnvVarKey = "DINNER_DONE_BETTER_GRPC_TLS_CERTIFICATE_KEY_FILEPATH"
 
+	// HTTPClientEnableTracingEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPClient.EnableTracing`.
+	HTTPClientEnableTracingEnvVarKey = "DINNER_DONE_BETTER_HTTP_CLIENT_ENABLE_TRACING"
+
+	// HTTPClientMaxIdleConnsEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPClient.MaxIdleConns`.
+	HTTPClientMaxIdleConnsEnvVarKey = "DINNER_DONE_BETTER_HTTP_CLIENT_MAX_IDLE_CONNS"
+
+	// HTTPClientMaxIdleConnsPerHostEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPClient.MaxIdleConnsPerHost`.
+	HTTPClientMaxIdleConnsPerHostEnvVarKey = "DINNER_DONE_BETTER_HTTP_CLIENT_MAX_IDLE_CONNS_PER_HOST"
+
+	// HTTPClientTimeoutEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPClient.Timeout`.
+	HTTPClientTimeoutEnvVarKey = "DINNER_DONE_BETTER_HTTP_CLIENT_TIMEOUT"
+
 	// HTTPDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.HTTPServer.Debug`.
 	HTTPDebugEnvVarKey = "DINNER_DONE_BETTER_HTTP_DEBUG"
 
