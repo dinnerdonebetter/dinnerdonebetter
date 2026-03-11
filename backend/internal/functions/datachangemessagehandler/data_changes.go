@@ -16,6 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	eatingemails "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/emails"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -25,7 +26,6 @@ import (
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	coreemails "github.com/dinnerdonebetter/backend/internal/services/identity/emails"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
-	eatingemails "github.com/dinnerdonebetter/backend/internal/services/mealplanning/emails"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"go.opentelemetry.io/otel/attribute"
