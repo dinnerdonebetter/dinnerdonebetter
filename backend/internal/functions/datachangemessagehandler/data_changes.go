@@ -485,12 +485,12 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 	case identity.AccountInvitationCreatedServiceEventType:
 		emailType = "account invitation created"
 		invitationID := stringFromEventContext(changeMessage, identitykeys.AccountInvitationIDKey)
-		destinationAccountID, ok := changeMessage.Context["destination_account"].(string)
+		destinationAccountID, ok := changeMessage.Context[identitykeys.DestinationAccountIDKey].(string)
 		if !ok {
 			destinationAccountID = ""
 		}
 		if invitationID == "" || destinationAccountID == "" {
-			return observability.PrepareError(fmt.Errorf("account invitation created event requires account_invitation.id and destination_account in context"), span, "building invite member email")
+			return observability.PrepareError(fmt.Errorf("account invitation created event requires %s and %s in context", identitykeys.AccountInvitationIDKey, identitykeys.DestinationAccountIDKey), span, "building invite member email")
 		}
 
 		var accountInvite *identity.AccountInvitation
@@ -510,9 +510,9 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 		outboundEmailMessages = append(outboundEmailMessages, msg)
 
 	case identity.AccountInvitationAcceptedServiceEventType:
-		destinationAccountID, ok := changeMessage.Context["destination_account"].(string)
+		destinationAccountID, ok := changeMessage.Context[identitykeys.DestinationAccountIDKey].(string)
 		if !ok || destinationAccountID == "" {
-			logger.Debug("account invitation accepted: missing destination_account in context, skipping mobile notification")
+			logger.Debug(fmt.Sprintf("account invitation accepted: missing %s in context, skipping mobile notification", identitykeys.DestinationAccountIDKey))
 			return nil
 		}
 		acceptedUserID := changeMessage.UserID
