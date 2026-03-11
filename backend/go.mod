@@ -73,7 +73,7 @@ require (
 	github.com/samber/slog-multi v1.4.0
 	github.com/segmentio/analytics-go/v3 v3.3.0
 	github.com/sendgrid/rest v2.6.9+incompatible
-	github.com/sendgrid/sendgrid-go v3.16.0+incompatible
+	github.com/sendgrid/sendgrid-go v3.16.1+incompatible
 	github.com/shopspring/decimal v1.4.0
 	github.com/sideshow/apns2 v0.25.0
 	github.com/spf13/cobra v1.10.2
