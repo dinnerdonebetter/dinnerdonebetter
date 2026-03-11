@@ -12,15 +12,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 )
 
 type (
 	messagePublisher interface {
-		SendMessageWithContext(ctx aws.Context, input *sqs.SendMessageInput, opts ...request.Option) (*sqs.SendMessageOutput, error)
+		SendMessage(ctx context.Context, input *sqs.SendMessageInput, optFns ...func(*sqs.Options)) (*sqs.SendMessageOutput, error)
 	}
 
 	sqsPublisher struct {
@@ -50,12 +49,11 @@ func (p *sqsPublisher) Publish(ctx context.Context, data any) error {
 	}
 
 	input := &sqs.SendMessageInput{
-		MessageAttributes: nil,
-		MessageBody:       new(b.String()),
-		QueueUrl:          new(p.topic),
+		MessageBody: aws.String(b.String()),
+		QueueUrl:    aws.String(p.topic),
 	}
 
-	if _, err := p.publisher.SendMessageWithContext(ctx, input); err != nil {
+	if _, err := p.publisher.SendMessage(ctx, input); err != nil {
 		return observability.PrepareError(err, span, "publishing message")
 	}
 
@@ -74,21 +72,21 @@ func (p *sqsPublisher) PublishAsync(ctx context.Context, data any) {
 	var b bytes.Buffer
 	if err := p.encoder.Encode(ctx, &b, data); err != nil {
 		observability.AcknowledgeError(err, logger, span, "encoding topic message")
+		return
 	}
 
 	input := &sqs.SendMessageInput{
-		MessageAttributes: nil,
-		MessageBody:       new(b.String()),
-		QueueUrl:          new(p.topic),
+		MessageBody: aws.String(b.String()),
+		QueueUrl:    aws.String(p.topic),
 	}
 
-	if _, err := p.publisher.SendMessageWithContext(ctx, input); err != nil {
+	if _, err := p.publisher.SendMessage(ctx, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing message")
 	}
 }
 
 // provideSQSPublisher provides a sqs-backed Publisher.
-func provideSQSPublisher(logger logging.Logger, sqsClient *sqs.SQS, tracerProvider tracing.TracerProvider, topic string) *sqsPublisher {
+func provideSQSPublisher(logger logging.Logger, sqsClient messagePublisher, tracerProvider tracing.TracerProvider, topic string) *sqsPublisher {
 	return &sqsPublisher{
 		publisher: sqsClient,
 		topic:     topic,
@@ -101,17 +99,18 @@ func provideSQSPublisher(logger logging.Logger, sqsClient *sqs.SQS, tracerProvid
 type publisherProvider struct {
 	logger            logging.Logger
 	publisherCache    map[string]messagequeue.Publisher
-	sqsClient         *sqs.SQS
+	sqsClient         messagePublisher
 	tracerProvider    tracing.TracerProvider
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvideSQSPublisherProvider returns a PublisherProvider for a given address.
-func ProvideSQSPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider) messagequeue.PublisherProvider {
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-	svc := sqs.New(sess)
+func ProvideSQSPublisherProvider(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider) messagequeue.PublisherProvider {
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		panic("sqs publisher provider: load default config: " + err.Error())
+	}
+	svc := sqs.NewFromConfig(cfg)
 
 	return &publisherProvider{
 		logger:         logging.EnsureLogger(logger),

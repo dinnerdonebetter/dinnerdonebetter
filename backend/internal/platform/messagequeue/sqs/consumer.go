@@ -7,10 +7,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 )
 
 const (
@@ -20,8 +19,8 @@ const (
 
 type (
 	messageReceiver interface {
-		ReceiveMessageWithContext(ctx aws.Context, input *sqs.ReceiveMessageInput, opts ...request.Option) (*sqs.ReceiveMessageOutput, error)
-		DeleteMessageWithContext(ctx aws.Context, input *sqs.DeleteMessageInput, opts ...request.Option) (*sqs.DeleteMessageOutput, error)
+		ReceiveMessage(ctx context.Context, input *sqs.ReceiveMessageInput, optFns ...func(*sqs.Options)) (*sqs.ReceiveMessageOutput, error)
+		DeleteMessage(ctx context.Context, input *sqs.DeleteMessageInput, optFns ...func(*sqs.Options)) (*sqs.DeleteMessageOutput, error)
 	}
 
 	sqsConsumer struct {
@@ -63,10 +62,10 @@ func (c *sqsConsumer) Consume(stopChan chan bool, errs chan error) {
 	}()
 
 	for ctx.Err() == nil {
-		output, err := c.receiver.ReceiveMessageWithContext(ctx, &sqs.ReceiveMessageInput{
+		output, err := c.receiver.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 			QueueUrl:            aws.String(c.queueURL),
-			MaxNumberOfMessages: aws.Int64(maxNumberOfMessages),
-			WaitTimeSeconds:     aws.Int64(longPollWaitSeconds),
+			MaxNumberOfMessages: maxNumberOfMessages,
+			WaitTimeSeconds:     longPollWaitSeconds,
 		})
 		if err != nil {
 			if ctx.Err() != nil {
@@ -79,11 +78,12 @@ func (c *sqsConsumer) Consume(stopChan chan bool, errs chan error) {
 			continue
 		}
 
-		for _, msg := range output.Messages {
+		for i := range output.Messages {
+			msg := &output.Messages[i]
 			if msg.Body == nil {
 				continue
 			}
-			body := []byte(aws.StringValue(msg.Body))
+			body := []byte(aws.ToString(msg.Body))
 			if err = c.handlerFunc(ctx, body); err != nil {
 				c.logger.Error("handling SQS message", err)
 				if errs != nil {
@@ -92,7 +92,7 @@ func (c *sqsConsumer) Consume(stopChan chan bool, errs chan error) {
 				continue
 			}
 
-			if _, err = c.receiver.DeleteMessageWithContext(ctx, &sqs.DeleteMessageInput{
+			if _, err = c.receiver.DeleteMessage(ctx, &sqs.DeleteMessageInput{
 				QueueUrl:      aws.String(c.queueURL),
 				ReceiptHandle: msg.ReceiptHandle,
 			}); err != nil {
@@ -113,11 +113,12 @@ type consumerProvider struct {
 }
 
 // ProvideSQSConsumerProvider returns a ConsumerProvider for SQS.
-func ProvideSQSConsumerProvider(logger logging.Logger, _ Config) messagequeue.ConsumerProvider {
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-	svc := sqs.New(sess)
+func ProvideSQSConsumerProvider(ctx context.Context, logger logging.Logger, _ Config) messagequeue.ConsumerProvider {
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		panic("sqs consumer provider: load default config: " + err.Error())
+	}
+	svc := sqs.NewFromConfig(cfg)
 
 	return &consumerProvider{
 		logger:        logging.EnsureLogger(logger),
