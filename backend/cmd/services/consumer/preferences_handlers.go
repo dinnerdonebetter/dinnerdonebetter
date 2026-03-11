@@ -50,7 +50,7 @@ func (s *ConsumerFrontendServer) PreferencesPage(res http.ResponseWriter, req *h
 	}
 
 	accountID := activeRes.Result.Id
-	filter := &filtering.QueryFilter{MaxResponseSize: ptrUint32(100)}
+	filter := &filtering.QueryFilter{MaxResponseSize: new(uint32(100))}
 
 	settingsRes, err := c.GetServiceSettings(ctx, &settingssvc.GetServiceSettingsRequest{Filter: filter})
 	if err != nil {

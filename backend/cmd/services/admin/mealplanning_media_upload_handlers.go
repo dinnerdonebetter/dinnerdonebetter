@@ -52,10 +52,7 @@ func (s *AdminFrontendServer) streamFileToPreparationMedia(ctx context.Context, 
 
 	// Stream chunks
 	for offset := 0; offset < len(fileData); offset += uploadChunkSize {
-		end := offset + uploadChunkSize
-		if end > len(fileData) {
-			end = len(fileData)
-		}
+		end := min(offset+uploadChunkSize, len(fileData))
 		chunk := fileData[offset:end]
 		if err = stream.Send(&mealplanningsvc.UploadPreparationMediaRequest{
 			Upload: &uploadedmediagrpc.UploadRequest{
@@ -105,10 +102,7 @@ func (s *AdminFrontendServer) streamFileToIngredientMedia(ctx context.Context, v
 
 	// Stream chunks
 	for offset := 0; offset < len(fileData); offset += uploadChunkSize {
-		end := offset + uploadChunkSize
-		if end > len(fileData) {
-			end = len(fileData)
-		}
+		end := min(offset+uploadChunkSize, len(fileData))
 		chunk := fileData[offset:end]
 		if err = stream.Send(&mealplanningsvc.UploadIngredientMediaRequest{
 			Upload: &uploadedmediagrpc.UploadRequest{
@@ -159,10 +153,7 @@ func (s *AdminFrontendServer) streamFileToRecipeStepImage(ctx context.Context, r
 
 	// Stream chunks
 	for offset := 0; offset < len(fileData); offset += uploadChunkSize {
-		end := offset + uploadChunkSize
-		if end > len(fileData) {
-			end = len(fileData)
-		}
+		end := min(offset+uploadChunkSize, len(fileData))
 		chunk := fileData[offset:end]
 		if err = stream.Send(&mealplanningsvc.UploadRecipeStepImageRequest{
 			Upload: &uploadedmediagrpc.UploadRequest{

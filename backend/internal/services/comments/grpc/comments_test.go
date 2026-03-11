@@ -84,7 +84,7 @@ func TestServiceImpl_AddCommentToRecipe(T *testing.T) {
 		fakeComment.TargetType = comments.CommentTargetTypeRecipes
 		fakeComment.ReferencedID = recipeID
 
-		mcm.On(reflection.GetMethodName(mcm.CreateComment), testutils.ContextMatcher, mock.MatchedBy(func(in interface{}) bool {
+		mcm.On(reflection.GetMethodName(mcm.CreateComment), testutils.ContextMatcher, mock.MatchedBy(func(in any) bool {
 			ci, ok := in.(*comments.CommentCreationRequestInput)
 			return ok && ci != nil && ci.TargetType == comments.CommentTargetTypeRecipes && ci.ReferencedID == recipeID && ci.BelongsToUser == userID
 		})).Return(fakeComment, nil)
@@ -126,7 +126,7 @@ func TestServiceImpl_AddCommentToMeal(T *testing.T) {
 		fakeComment := commentsfakes.BuildFakeComment()
 		fakeComment.TargetType = comments.CommentTargetTypeMeals
 		fakeComment.ReferencedID = mealID
-		mcm.On(reflection.GetMethodName(mcm.CreateComment), testutils.ContextMatcher, mock.MatchedBy(func(in interface{}) bool {
+		mcm.On(reflection.GetMethodName(mcm.CreateComment), testutils.ContextMatcher, mock.MatchedBy(func(in any) bool {
 			ci, ok := in.(*comments.CommentCreationRequestInput)
 			return ok && ci != nil && ci.TargetType == comments.CommentTargetTypeMeals && ci.ReferencedID == mealID && ci.BelongsToUser == userID
 		})).Return(fakeComment, nil)

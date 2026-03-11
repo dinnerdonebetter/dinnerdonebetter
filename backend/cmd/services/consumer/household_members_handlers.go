@@ -84,7 +84,7 @@ func (s *ConsumerFrontendServer) HouseholdMembersPage(res http.ResponseWriter, r
 
 	var invitations []*identitysvc.AccountInvitation
 	invRes, err := c.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{
-		Filter: &filtering.QueryFilter{MaxResponseSize: ptrUint32(50)},
+		Filter: &filtering.QueryFilter{MaxResponseSize: new(uint32(50))},
 	})
 	if err == nil && invRes != nil {
 		for _, inv := range invRes.Results {
@@ -302,8 +302,6 @@ func buildBaseURL(req *http.Request) string {
 	}
 	return fmt.Sprintf("%s://%s", scheme, req.Host)
 }
-
-func ptrUint32(v uint32) *uint32 { return &v }
 
 const copyInviteLinkScript = `
 document.querySelectorAll('.copy-invite-link').forEach(function(btn) {

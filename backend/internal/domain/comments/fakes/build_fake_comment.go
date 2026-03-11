@@ -27,7 +27,7 @@ func BuildFakeCommentWithParent(parentID string) *comments.Comment {
 // BuildFakeCommentList builds a faked Comment list.
 func BuildFakeCommentList(targetType, referencedID string) *filtering.QueryFilteredResult[comments.Comment] {
 	var examples []*comments.Comment
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		examples = append(examples, BuildFakeComment())
 	}
 

@@ -215,7 +215,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
-				RecipeStepProductRecipeSlug:     pointer.To("caesar-dressing"),
+				RecipeStepProductRecipeSlug:     new("caesar-dressing"),
 				Name:                            "Caesar dressing",
 				QuantityNotes:                   "add more if desired",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -328,7 +328,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
-				RecipeStepProductRecipeSlug:     pointer.To("garlic-parmesan-croutons"),
+				RecipeStepProductRecipeSlug:     new("garlic-parmesan-croutons"),
 				Name:                            "garlic parmesan croutons",
 				QuantityNotes:                   "three-quarters of croutons",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -426,7 +426,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
-				RecipeStepProductRecipeSlug:     pointer.To("garlic-parmesan-croutons"),
+				RecipeStepProductRecipeSlug:     new("garlic-parmesan-croutons"),
 				Name:                            "garlic parmesan croutons",
 				QuantityNotes:                   "remaining croutons",
 				Quantity: types.Float32RangeWithOptionalMax{

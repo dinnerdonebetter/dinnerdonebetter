@@ -166,7 +166,7 @@ func TestQuerier_Integration_QueueTestMessages_Prune(t *testing.T) {
 	queueName := "prune-test-" + identifiers.New()[:8]
 
 	// Create several messages
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		err = dbc.CreateQueueTestMessage(ctx, identifiers.New(), queueName)
 		require.NoError(t, err)
 	}

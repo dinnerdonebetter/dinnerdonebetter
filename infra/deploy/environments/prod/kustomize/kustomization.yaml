@@ -19,9 +19,6 @@ resources:
   - root_site_deployment.yaml
   - root_site_service.yaml
 
-commonLabels:
-  app.kubernetes.io/version: "RELEASE_VERSION"
-
 generatorOptions:
   disableNameSuffixHash: true
   labels:

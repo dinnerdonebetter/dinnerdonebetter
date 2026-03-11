@@ -14,7 +14,7 @@ func TestNoopRateLimiter_Allow(t *testing.T) {
 	limiter := NewNoopRateLimiter()
 	ctx := context.Background()
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		allowed, err := limiter.Allow(ctx, "any")
 		require.NoError(t, err)
 		assert.True(t, allowed)

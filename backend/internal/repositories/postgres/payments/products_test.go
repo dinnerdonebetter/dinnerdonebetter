@@ -221,7 +221,7 @@ func TestQuerier_Integration_Products_GetProducts(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		product := fakes.BuildFakeProduct()
 		product.Name = fmt.Sprintf("Product %d", i)
 		input := &payments.ProductDatabaseCreationInput{
@@ -237,10 +237,8 @@ func TestQuerier_Integration_Products_GetProducts(t *testing.T) {
 		createProductForTest(t, ctx, input, dbc)
 	}
 
-	result, err := dbc.GetProducts(ctx, &filtering.QueryFilter{MaxResponseSize: ptr(uint8(10))})
+	result, err := dbc.GetProducts(ctx, &filtering.QueryFilter{MaxResponseSize: new(uint8(10))})
 	require.NoError(t, err)
 	require.NotNil(t, result)
 	assert.GreaterOrEqual(t, len(result.Data), exampleQuantity)
 }
-
-func ptr[T any](v T) *T { return &v }

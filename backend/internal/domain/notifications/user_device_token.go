@@ -98,7 +98,7 @@ func (x *UserDeviceTokenDatabaseCreationInput) ValidateWithContext(ctx context.C
 }
 
 func validateDeviceTokenFormat(platform string) validation.RuleFunc {
-	return func(value interface{}) error {
+	return func(value any) error {
 		if s, ok := value.(string); ok {
 			switch platform {
 			case UserDeviceTokenPlatformIOS:

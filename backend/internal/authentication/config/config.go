@@ -58,7 +58,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&cfg.MinimumUsernameLength, validation.Required),
 		validation.Field(&cfg.MinimumPasswordLength, validation.Required),
 		validation.Field(&cfg.Tokens, validation.Required),
-		validation.Field(&cfg.SessionStore, validation.By(func(value interface{}) error {
+		validation.Field(&cfg.SessionStore, validation.By(func(value any) error {
 			if c, ok := value.(webauthncfg.Config); ok {
 				return (&c).ValidateWithContext(ctx)
 			}

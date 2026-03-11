@@ -251,10 +251,7 @@ func runIndex(
 	}
 
 	filter := filtering.DefaultQueryFilter()
-	pageSize := uint8(batchSize)
-	if pageSize > filtering.MaxQueryFilterLimit {
-		pageSize = filtering.MaxQueryFilterLimit
-	}
+	pageSize := min(uint8(batchSize), filtering.MaxQueryFilterLimit)
 	filter.MaxResponseSize = &pageSize
 
 	var cursor *string

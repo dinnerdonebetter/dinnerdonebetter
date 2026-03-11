@@ -119,17 +119,17 @@ func main() {
 			fileContent.WriteString(query.Render())
 		}
 
-		fileOutput := ""
+		var fileOutput strings.Builder
 		for line := range strings.SplitSeq(strings.TrimSpace(fileContent.String()), "\n") {
-			fileOutput += strings.TrimSuffix(line, " ") + "\n"
+			fileOutput.WriteString(strings.TrimSuffix(line, " ") + "\n")
 		}
 
-		if string(existingFile) != fileOutput && checkOnly {
+		if string(existingFile) != fileOutput.String() && checkOnly {
 			runErrors = multierror.Append(runErrors, fmt.Errorf("files don't match: %s", filePath))
 		}
 
 		if !checkOnly {
-			if err = os.WriteFile(filePath, []byte(fileOutput), 0o600); err != nil {
+			if err = os.WriteFile(filePath, []byte(fileOutput.String()), 0o600); err != nil {
 				runErrors = multierror.Append(runErrors, err)
 			}
 		}

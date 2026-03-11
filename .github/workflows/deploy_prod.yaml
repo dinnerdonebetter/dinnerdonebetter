@@ -192,12 +192,6 @@ jobs:
       - name: setup Skaffold
         run: gcloud components update --quiet && gcloud components install skaffold --quiet
 
-      - name: Substitute RELEASE_VERSION in kustomization files
-        run: |
-          VER="${{ github.event.release.tag_name }}"
-          sed -i "s/RELEASE_VERSION/${VER}/g" infra/deploy/environments/prod/kustomize/kustomization.yaml
-          sed -i "s/RELEASE_VERSION/${VER}/g" backend/deploy/environments/prod/kustomize/kustomization.yaml
-
       - name: deploy kubernetes deps
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
