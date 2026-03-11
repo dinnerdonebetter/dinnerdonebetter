@@ -115,7 +115,7 @@ require (
 	google.golang.org/api v0.252.0
 	google.golang.org/genai v1.45.0
 	google.golang.org/grpc v1.76.0
-	google.golang.org/protobuf v1.36.10
+	google.golang.org/protobuf v1.36.11
 	maragu.dev/gomponents v1.2.0
 	resenje.org/schulze v0.6.1
 )
