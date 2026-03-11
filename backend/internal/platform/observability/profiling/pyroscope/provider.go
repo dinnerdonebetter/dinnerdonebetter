@@ -3,6 +3,7 @@ package pyroscope
 import (
 	"context"
 	"fmt"
+	"maps"
 	"runtime"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -33,9 +34,7 @@ func ProvideProfilingProvider(ctx context.Context, logger logging.Logger, servic
 	}
 
 	tags := make(map[string]string)
-	for k, v := range cfg.Tags {
-		tags[k] = v
-	}
+	maps.Copy(tags, cfg.Tags)
 
 	pyroCfg := pyroscope.Config{
 		ApplicationName:   serviceName,

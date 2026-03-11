@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -108,7 +107,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: new(float32(2)),
 				},
 			},
 		},
@@ -121,8 +120,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		ExplicitInstructions: "Wash the inner romaine leaves in several changes of water until no dirt or grit remains.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(0)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "inner romaine leaves",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
@@ -145,7 +144,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: new(float32(2)),
 				},
 			},
 			{
@@ -163,8 +162,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		ExplicitInstructions: "Carefully dry the washed romaine leaves using a salad spinner or paper towels.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(1)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "washed inner romaine leaves",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
@@ -187,7 +186,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: new(float32(2)),
 				},
 			},
 		},
@@ -200,8 +199,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		ExplicitInstructions: "Toss the lettuce with a few tablespoons of dressing, adding more if desired. Large leaves should be torn into smaller pieces, smaller leaves left intact.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(2)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "romaine lettuce, inner leaves only, washed and carefully dried",
 				QuantityNotes:                   "large leaves torn into smaller pieces, smaller leaves left intact",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -212,22 +211,22 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				// RecipeStepProductRecipeID references the "Caesar Dressing" recipe (slug: "caesar-dressing")
 				// The product "Caesar dressing" is from step 6 (index 6), product index 0
 				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
-				RecipeStepProductRecipeSlug:     pointer.To("caesar-dressing"),
+				RecipeStepProductRecipeSlug:     new("caesar-dressing"),
 				Name:                            "Caesar dressing",
 				QuantityNotes:                   "add more if desired",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
-					Max: pointer.To[float32](6),
+					Max: new(float32(6)),
 				},
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(1)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -241,7 +240,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -292,7 +291,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -305,16 +304,16 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		ExplicitInstructions: "Once the lettuce is coated, add half of the remaining cheese and three-quarters of the croutons and toss again.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dressed lettuce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "half of remaining cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -325,10 +324,10 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
 				// The product "garlic parmesan croutons" is from step 9 (index 9), product index 0
 				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(9)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
-				RecipeStepProductRecipeSlug:     pointer.To("garlic-parmesan-croutons"),
+				RecipeStepProductRecipeSlug:     new("garlic-parmesan-croutons"),
 				Name:                            "garlic parmesan croutons",
 				QuantityNotes:                   "three-quarters of croutons",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -338,8 +337,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -353,7 +352,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -366,8 +365,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		ExplicitInstructions: "Transfer to a salad bowl.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "tossed Caesar salad",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -390,7 +389,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -403,16 +402,16 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		ExplicitInstructions: "Sprinkle with the remaining cheese and croutons.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "Caesar salad in serving bowl",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "remaining cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -423,10 +422,10 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
 				// The product "garlic parmesan croutons" is from step 9 (index 9), product index 0
 				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(9)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
-				RecipeStepProductRecipeSlug:     pointer.To("garlic-parmesan-croutons"),
+				RecipeStepProductRecipeSlug:     new("garlic-parmesan-croutons"),
 				Name:                            "garlic parmesan croutons",
 				QuantityNotes:                   "remaining croutons",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -450,7 +449,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
+					Min: new(float32(4)),
 				},
 			},
 		},
@@ -464,11 +463,11 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		ExplicitStorageInstructions: "Store the washed and dried romaine leaves in an airtight container lined with paper towels in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](172800), // 2 days
+			Max: new(uint32(172800)), // 2 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},

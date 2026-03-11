@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
@@ -97,7 +96,7 @@ func convertPreparationMediaToRow(r *generated.PreparationMedia) *mealplanning.P
 		CreatedAt:          r.CreatedAt,
 	}
 	if r.ForIngredientID.Valid {
-		row.ForIngredientID = pointer.To(r.ForIngredientID.String)
+		row.ForIngredientID = new(r.ForIngredientID.String)
 	}
 	if r.ArchivedAt.Valid {
 		row.ArchivedAt = &r.ArchivedAt.Time

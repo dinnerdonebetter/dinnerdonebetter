@@ -47,7 +47,7 @@ To run the application deploy locally (e.g., for debugging or manual rollouts), 
 
 **Prerequisites**: Docker, gcloud, kubectl, skaffold. Your `kubectl` context must point at the prod GKE cluster.
 
-This script only runs the Skaffold application deploy. It does **not** run Terraform or update infrastructure. The `VERSION` env var is not set when running locally, so the version package reports `"unknown"` for the version field and the Kubernetes `app.kubernetes.io/version` label remains the placeholder `RELEASE_VERSION` unless you add optional logic (e.g. `VERSION` env or `git describe --tags`) to substitute a value.
+This script only runs the Skaffold application deploy. It does **not** run Terraform or update infrastructure. Version is embedded in binaries via ldflags (set `VERSION` to override the default `local`).
 
 ---
 

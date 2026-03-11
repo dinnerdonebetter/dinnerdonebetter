@@ -16,7 +16,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 
@@ -42,7 +41,7 @@ func TestAuth_LoginForToken_DesiredAccount(T *testing.T) {
 		// Create invitee user + client; invitee gets account B (their default from registration).
 		inviteeEmailAddress := fmt.Sprintf("invitee%d@testing.com", time.Now().UnixMicro())
 		input := &identity.UserRegistrationInput{
-			Birthday:              pointer.To(time.Now()),
+			Birthday:              new(time.Now()),
 			EmailAddress:          inviteeEmailAddress,
 			FirstName:             fmt.Sprintf("invitee_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			AccountName:           fmt.Sprintf("invitee_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
@@ -928,7 +927,7 @@ func insertWebAuthnCredentialForTest(t *testing.T, userID, friendlyName string) 
 	t.Helper()
 
 	credID := identifiers.New()
-	credentialIDBytes := []byte(fmt.Sprintf("test-cred-%s-%d", credID, time.Now().UnixNano()))
+	credentialIDBytes := fmt.Appendf(nil, "test-cred-%s-%d", credID, time.Now().UnixNano())
 	publicKeyBytes := []byte("test-public-key-data")
 
 	_, err := databaseClient.WriteDB().ExecContext(

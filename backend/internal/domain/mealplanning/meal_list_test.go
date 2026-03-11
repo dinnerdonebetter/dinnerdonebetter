@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	"github.com/stretchr/testify/require"
 )
 
@@ -45,5 +43,5 @@ func TestMealListValidation(t *testing.T) {
 	}).ValidateWithContext(ctx))
 	require.Error(t, (&MealListDatabaseCreationInput{}).ValidateWithContext(ctx))
 
-	require.NoError(t, (&MealListUpdateRequestInput{Name: pointer.To("x")}).ValidateWithContext(ctx))
+	require.NoError(t, (&MealListUpdateRequestInput{Name: new("x")}).ValidateWithContext(ctx))
 }

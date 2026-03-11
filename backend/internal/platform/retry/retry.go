@@ -61,10 +61,7 @@ func (e *exponentialBackoff) Execute(ctx context.Context, operation func(ctx con
 		case <-time.After(sleepDuration):
 		}
 
-		delay = time.Duration(float64(delay) * e.config.Multiplier)
-		if delay > e.config.MaxDelay {
-			delay = e.config.MaxDelay
-		}
+		delay = min(time.Duration(float64(delay)*e.config.Multiplier), e.config.MaxDelay)
 	}
 
 	return lastErr

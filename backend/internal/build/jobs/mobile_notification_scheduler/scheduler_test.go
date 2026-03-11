@@ -50,7 +50,7 @@ func TestScheduler_ScheduleNotifications_publishesMobileNotificationRequest(t *t
 	mealPlanRepo.On(reflection.GetMethodName(mealPlanRepo.GetMealPlanTaskNotificationContext), mock.Anything, taskID).Return(notificationCtx, nil).Once()
 	// With AssignedToUser set, GetMealPlanTaskAccountID and GetUsersForAccount are not called
 
-	var publishedPayload interface{}
+	var publishedPayload any
 	publisher.On(reflection.GetMethodName(publisher.Publish), mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
 		publishedPayload = args.Get(1)
 	}).Return(nil).Once()

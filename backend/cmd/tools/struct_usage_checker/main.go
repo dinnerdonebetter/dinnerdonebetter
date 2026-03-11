@@ -74,8 +74,8 @@ func loadPackageAST(importPath string) ([]fileWithPath, *token.FileSet, error) {
 			continue // e.g. cgo-generated file with no syntax
 		}
 		path := fullPath
-		if idx := strings.Index(fullPath, "backend/"); idx >= 0 {
-			path = fullPath[idx+len("backend/"):]
+		if _, after, ok := strings.Cut(fullPath, "backend/"); ok {
+			path = after
 		}
 		result = append(result, fileWithPath{file: f, path: path})
 	}
@@ -410,9 +410,7 @@ func main() {
 	var wg sync.WaitGroup
 	for _, config := range configs {
 		for _, targetPkg := range config.TargetPkgs {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
+			wg.Go(func() {
 				count, pkgErr := comparePackages(config, targetPkg)
 				mu.Lock()
 				totalCount += count
@@ -420,7 +418,7 @@ func main() {
 					errors = multierror.Append(errors, pkgErr)
 				}
 				mu.Unlock()
-			}()
+			})
 		}
 	}
 	wg.Wait()

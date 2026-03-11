@@ -51,7 +51,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 	getMainPortions := func(recipe *mealplanning.Recipe) (minimum float32, maximum *float32) {
 		minimum = recipe.EstimatedPortions.Min
 		if recipe.EstimatedPortions.Max != nil {
-			maximum = pointer.To(pointer.Dereference(recipe.EstimatedPortions.Max))
+			maximum = new(pointer.Dereference(recipe.EstimatedPortions.Max))
 		}
 		return minimum, maximum
 	}

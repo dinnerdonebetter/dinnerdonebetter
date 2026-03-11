@@ -19,8 +19,8 @@ func GetModulePath(dir string) (string, error) {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.HasPrefix(line, "module ") {
-			return strings.TrimSpace(strings.TrimPrefix(line, "module ")), nil
+		if after, ok := strings.CutPrefix(line, "module "); ok {
+			return strings.TrimSpace(after), nil
 		}
 	}
 
@@ -68,8 +68,8 @@ func FilterModuleImports(imports map[string]string, modulePath string) map[strin
 	prefix := modulePath + "/"
 
 	for localName, importPath := range imports {
-		if strings.HasPrefix(importPath, prefix) {
-			result[localName] = strings.TrimPrefix(importPath, prefix)
+		if after, ok := strings.CutPrefix(importPath, prefix); ok {
+			result[localName] = after
 		}
 	}
 

@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -86,7 +84,7 @@ func TestRecipeRatingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 		x := &RecipeRatingUpdateRequestInput{
 			ByUser:     new(t.Name()),
 			RecipeID:   new(t.Name()),
-			Difficulty: pointer.To[float32](1.0),
+			Difficulty: new(float32(1.0)),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

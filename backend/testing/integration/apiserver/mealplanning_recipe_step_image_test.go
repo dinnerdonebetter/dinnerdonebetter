@@ -37,10 +37,7 @@ func uploadRecipeStepImageForTest(t *testing.T, recipeID, recipeStepID, filename
 
 	// Stream chunks
 	for offset := 0; offset < len(fileData); offset += recipeStepImageUploadChunkSize {
-		end := offset + recipeStepImageUploadChunkSize
-		if end > len(fileData) {
-			end = len(fileData)
-		}
+		end := min(offset+recipeStepImageUploadChunkSize, len(fileData))
 		chunk := fileData[offset:end]
 		err = stream.Send(&mealplanningsvc.UploadRecipeStepImageRequest{
 			Upload: &uploadedmediagrpc.UploadRequest{

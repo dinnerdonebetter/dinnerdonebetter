@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -65,7 +63,7 @@ func TestAccountInstrumentOwnershipUpdateRequestInput_ValidateWithContext(T *tes
 
 		ctx := t.Context()
 		x := &AccountInstrumentOwnershipUpdateRequestInput{
-			Quantity:          pointer.To[uint16](1),
+			Quantity:          new(uint16(1)),
 			ValidInstrumentID: new(t.Name()),
 		}
 

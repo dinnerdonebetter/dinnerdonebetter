@@ -3,7 +3,6 @@ package grpcconverters
 import (
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 )
 
 func ConvertGRPCQueryFilterToQueryFilter(qf *grpcfiltering.QueryFilter) *filtering.QueryFilter {
@@ -12,7 +11,7 @@ func ConvertGRPCQueryFilterToQueryFilter(qf *grpcfiltering.QueryFilter) *filteri
 	}
 
 	filter := &filtering.QueryFilter{
-		MaxResponseSize: pointer.To[uint8](50),
+		MaxResponseSize: new(uint8(50)),
 		IncludeArchived: qf.IncludeArchived,
 		Cursor:          qf.Cursor,
 		SortBy:          qf.SortBy,

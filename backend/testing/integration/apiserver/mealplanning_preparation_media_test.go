@@ -36,10 +36,7 @@ func uploadPreparationMediaForTest(t *testing.T, validPreparationID, filename, c
 
 	// Stream chunks
 	for offset := 0; offset < len(fileData); offset += preparationMediaUploadChunkSize {
-		end := offset + preparationMediaUploadChunkSize
-		if end > len(fileData) {
-			end = len(fileData)
-		}
+		end := min(offset+preparationMediaUploadChunkSize, len(fileData))
 		chunk := fileData[offset:end]
 		err = stream.Send(&mealplanningsvc.UploadPreparationMediaRequest{
 			Upload: &uploadedmediagrpc.UploadRequest{

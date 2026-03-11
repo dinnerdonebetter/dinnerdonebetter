@@ -261,6 +261,10 @@ linters:
           - cyclop
           - contextcheck
         path: (.+)_test\.go # test files
+      # //go:fix is valid in Go 1.23+; gocheckcompilerdirectives does not recognize it yet
+      - linters:
+          - gocheckcompilerdirectives
+        text: '//go:fix'
     paths:
       - cmd/playground
       - tests/integration

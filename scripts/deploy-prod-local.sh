@@ -16,7 +16,7 @@ echo "=== Fetching GKE credentials ==="
 gcloud container clusters get-credentials prod --region us-central1
 
 echo "=== Running Skaffold deploy (profile prod) ==="
-KOCACHE="${KOCACHE:-$HOME/.cache/ko}" skaffold run \
+KOCACHE="${KOCACHE:-$HOME/.cache/ko}" VERSION="${VERSION:-local}" skaffold run \
   --filename=skaffold.yaml \
   --build-concurrency 0 \
   --profile prod \
