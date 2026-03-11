@@ -67,12 +67,7 @@
 			"serviceName": "api_server"
 		},
 		"tracing": {
-			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces"
-			},
-			"service_name": "api_server",
-			"provider": "otelgrpc",
-			"spanCollectionProbability": 1
+			"service_name": "api_server"
 		}
 	},
 	"grpc": {

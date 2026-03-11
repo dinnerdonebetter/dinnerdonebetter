@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
+	metricnoop "go.opentelemetry.io/otel/metric/noop"
 )
 
 func NewNoopMetricsProvider() Provider {
@@ -114,9 +115,10 @@ func (m *noopProvider) NewInt64Histogram(name string, options ...metric.Int64His
 	return x, nil
 }
 
-// MeterProvider satisfies our interface.
+// MeterProvider satisfies our interface. Returns the otel noop MeterProvider so
+// consumers (e.g. otelsql) never receive nil.
 func (m *noopProvider) MeterProvider() metric.MeterProvider {
-	return nil
+	return metricnoop.NewMeterProvider()
 }
 
 // Shutdown satisfies our interface.
