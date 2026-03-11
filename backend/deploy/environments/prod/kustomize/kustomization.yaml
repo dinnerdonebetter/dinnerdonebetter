@@ -12,6 +12,9 @@ resources:
   - ../../../kustomize/components/admin_webapp
   # - ../../../kustomize/components/mcp_server
 
+commonLabels:
+  app.kubernetes.io/version: "RELEASE_VERSION"
+
 images:
   - name: dinner-done-better-service-api
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-service-api

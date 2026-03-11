@@ -1,23 +1,28 @@
 # Deployment Guide
 
-## Branch Strategy
+## Release-based deployment
 
-- **Default branch**: `dev` — clone and work from `dev` by default.
-- **Deployment branch**: `prod` — production deploys are triggered by pushing to `prod`.
+- **Default branch:** `main` — clone and work from `main`. All PRs and CI target `main`.
+- **Production deploy trigger:** **Publishing a GitHub Release** (with a semver tag, e.g. `v1.2.3`) runs the deploy pipeline. The workflow checks out the tag, so the build and deploy use the exact commit that was released.
 
-To deploy to production, open a pull request from `dev` into `prod`, then merge it. Merging the PR pushes to `prod` and triggers the deployment pipeline.
+To deploy to production:
 
-**Important**: Never merge directly into `prod` from any branch other than `dev`. All production changes must first land in `dev`.
+1. Ensure the code you want to ship is merged into `main`.
+2. Create a git tag (e.g. `v1.2.3`) on the commit you want to deploy.
+3. Create a GitHub Release from that tag and **publish** it. Publishing the release triggers [`.github/workflows/deploy_prod.yaml`](.github/workflows/deploy_prod.yaml).
 
-### Enforcing “prod only from dev”
+**Where the version appears:** The release tag is embedded in backend binaries (exposed via version/health endpoints and JSON), included in Grafana deployment and Terraform annotations, and set on Kubernetes resources as the `app.kubernetes.io/version` label.
 
-This repo includes [`.github/workflows/require_dev_for_prod.yaml`](.github/workflows/require_dev_for_prod.yaml), which runs on PRs targeting `prod` and fails unless the source branch is `dev`. In **Settings → Branches → Branch protection rules** for `prod`, add the "check-source-branch" job as a required status check.
+### Repository settings
+
+- In **Settings → General**, set the default branch to `main`. Create `main` from your current default (e.g. rename `dev` or create from it) and update any open PRs.
+- Remove or relax branch protection on `prod` if it exists; you can delete the `prod` branch after cutting over to release-based deploys.
 
 ---
 
-## What Happens on Deploy
+## What happens on deploy
 
-Pushing to `prod` triggers [`.github/workflows/deploy_prod.yaml`](.github/workflows/deploy_prod.yaml). The pipeline runs three jobs in sequence:
+Publishing a GitHub Release triggers [`.github/workflows/deploy_prod.yaml`](.github/workflows/deploy_prod.yaml). The pipeline runs three jobs in sequence:
 
 | Job                | Description                                                                                           |
 |--------------------|-------------------------------------------------------------------------------------------------------|
@@ -32,7 +37,7 @@ Infrastructure is split into:
 
 ---
 
-## Local Production Deploy (Applications Only)
+## Local production deploy (applications only)
 
 To run the application deploy locally (e.g., for debugging or manual rollouts), use:
 
@@ -42,11 +47,11 @@ To run the application deploy locally (e.g., for debugging or manual rollouts), 
 
 **Prerequisites**: Docker, gcloud, kubectl, skaffold. Your `kubectl` context must point at the prod GKE cluster.
 
-This script only runs the Skaffold application deploy. It does **not** run Terraform or update infrastructure.
+This script only runs the Skaffold application deploy. It does **not** run Terraform or update infrastructure. The `VERSION` env var is not set when running locally, so the version package reports `"unknown"` for the version field and the Kubernetes `app.kubernetes.io/version` label remains the placeholder `RELEASE_VERSION` unless you add optional logic (e.g. `VERSION` env or `git describe --tags`) to substitute a value.
 
 ---
 
-## Post-Deployment Verification
+## Post-deployment verification
 
 After each deploy, run verification to ensure the deployment is useful:
 
@@ -57,10 +62,10 @@ make verify_prod
 
 Or manually: `skaffold verify --filename=skaffold.yaml --profile prod` followed by `./scripts/post-deploy-verify.sh`.
 
-The CI pipeline runs these verification steps automatically after `skaffold run`. See [post-deployment-checklist.md](post-deployment-checklist.md) for manual checks (observability, queues, etc.).
+The CI pipeline runs these verification steps automatically after `skaffold run`. See [post-deployment-checklist.md](post-deployment-checklist.md) for manual checks (observability, queues, etc.) if that file exists.
 
 ---
 
-## Configuration and Secrets
+## Configuration and secrets
 
 Backend configuration and secrets are documented in [backend/docs/configuration.md](backend/docs/configuration.md). Terraform uses Terraform Cloud for variables; application secrets are synced from GCP Secret Manager into the cluster.

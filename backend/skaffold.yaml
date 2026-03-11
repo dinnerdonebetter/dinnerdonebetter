@@ -27,6 +27,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/services/api
             fromImage: golang:1.26-trixie
 
@@ -41,6 +42,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/db_cleaner
             fromImage: golang:1.26-trixie
 
@@ -55,6 +57,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/email_deliverability_test
             fromImage: golang:1.26-trixie
 
@@ -69,6 +72,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/queue_test
             fromImage: golang:1.26-trixie
 
@@ -83,6 +87,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/meal_plan_finalizer
             fromImage: golang:1.26-trixie
 
@@ -97,6 +102,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/meal_plan_grocery_list_initializer
             fromImage: golang:1.26-trixie
 
@@ -111,6 +117,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/meal_plan_task_creator
             fromImage: golang:1.26-trixie
 
@@ -125,6 +132,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/search_data_index_scheduler
             fromImage: golang:1.26-trixie
 
@@ -139,6 +147,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/mobile_notification_scheduler
             fromImage: golang:1.26-trixie
 
@@ -153,6 +162,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/services/admin
             fromImage: golang:1.26-trixie
 
@@ -167,6 +177,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/services/mcp
             fromImage: golang:1.26-trixie
 
@@ -207,6 +218,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/services/api
             fromImage: golang:1.26-trixie
 
@@ -221,6 +233,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/db_cleaner
             fromImage: golang:1.26-trixie
 
@@ -235,6 +248,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/email_deliverability_test
             fromImage: golang:1.26-trixie
 
@@ -249,6 +263,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/queue_test
             fromImage: golang:1.26-trixie
 
@@ -263,6 +278,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/meal_plan_finalizer
             fromImage: golang:1.26-trixie
 
@@ -277,6 +293,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/meal_plan_grocery_list_initializer
             fromImage: golang:1.26-trixie
 
@@ -291,6 +308,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/meal_plan_task_creator
             fromImage: golang:1.26-trixie
 
@@ -305,6 +323,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/search_data_index_scheduler
             fromImage: golang:1.26-trixie
 
@@ -319,6 +338,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/workers/mobile_notification_scheduler
             fromImage: golang:1.26-trixie
 
@@ -333,6 +353,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/functions/async_message_handler
             fromImage: golang:1.26-trixie
 
@@ -347,6 +368,7 @@ profiles:
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitHash={{ trim (cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.CommitTime={{ trim (cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown") }}
               - -X github.com/dinnerdonebetter/backend/internal/platform/version.BuildTime={{ trim (cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown") }}
+              - -X github.com/dinnerdonebetter/backend/internal/platform/version.Version={{.VERSION}}
             main: ./cmd/services/admin
             fromImage: golang:1.26-trixie
 
