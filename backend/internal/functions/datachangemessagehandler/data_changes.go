@@ -450,11 +450,15 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case mealplanning.MealPlanCreatedServiceEventType:
 		emailType = "meal plan created"
-		mealPlan, parseError := parseValueFromEventContext[mealplanning.MealPlan](ctx, changeMessage, a.decoder, mealplanningkeys.MealPlanKey)
-		if parseError != nil {
-			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
+		mealPlanID, _ := changeMessage.Context[mealplanningkeys.MealPlanIDKey].(string)
+		if mealPlanID == "" || changeMessage.AccountID == "" {
+			return observability.PrepareError(fmt.Errorf("meal plan created event requires meal_plan.id and accountID in context"), span, "publishing meal plan created email")
 		}
 
+		mealPlan, err := a.mealPlanRepo.GetMealPlan(ctx, mealPlanID, changeMessage.AccountID)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "getting meal plan for created email")
+		}
 		if mealPlan == nil {
 			return observability.PrepareError(fmt.Errorf("meal plan is nil"), span, "publishing meal plan created email")
 		}
@@ -467,7 +471,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 		for _, member := range account.Members {
 			if member.BelongsToUser.EmailAddressVerifiedAt != nil {
-				msg, err = eatingemails.BuildMealPlanCreatedEmail(user, mealPlan, envCfg)
+				msg, err = eatingemails.BuildMealPlanCreatedEmail(member.BelongsToUser, mealPlan, envCfg)
 				if err != nil {
 					return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
 				}
