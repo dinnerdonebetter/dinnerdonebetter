@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -17,13 +15,13 @@ const (
 
 var (
 	// InfoLevel describes a info-level log.
-	InfoLevel Level = pointer.To[level]("info")
+	InfoLevel Level = new(level("info"))
 	// DebugLevel describes a debug-level log.
-	DebugLevel Level = pointer.To[level]("debug")
+	DebugLevel Level = new(level("debug"))
 	// ErrorLevel describes a error-level log.
-	ErrorLevel Level = pointer.To[level]("error")
+	ErrorLevel Level = new(level("error"))
 	// WarnLevel describes a warn-level log.
-	WarnLevel Level = pointer.To[level]("warn")
+	WarnLevel Level = new(level("warn"))
 )
 
 func AllLevels() []Level {

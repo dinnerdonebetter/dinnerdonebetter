@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -151,7 +150,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: new(float32(2)),
 				},
 			},
 		},
@@ -201,7 +200,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -242,7 +241,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cloveMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: new(float32(2)),
 				},
 			},
 		},
@@ -266,8 +265,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			},
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(0)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "onion half (left whole)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -275,8 +274,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			},
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(2)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "peeled garlic cloves",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
@@ -286,8 +285,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(1)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "large pot with beans covered with water",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -301,7 +300,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -316,8 +315,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "beans with aromatics in pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -331,7 +330,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -345,8 +344,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "boiling beans with aromatics",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -360,7 +359,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -369,7 +368,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             1,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 		},
@@ -382,13 +381,13 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Index:                6,
 		ExplicitInstructions: "Simmer until the beans are very tender, about 1 to 2 hours.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](3600), // 1 hour
-			Max: pointer.To[uint32](7200), // 2 hours
+			Min: new(uint32(3600)), // 1 hour
+			Max: new(uint32(7200)), // 2 hours
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "beans ready to simmer",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -398,8 +397,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "beans ready to simmer",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -414,7 +413,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 			{
@@ -423,7 +422,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -445,8 +444,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "very tender cooked beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -465,8 +464,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot with cooked beans and cooking liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -481,7 +480,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 		},
@@ -495,8 +494,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(7)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned cooked beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -506,8 +505,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot with cooked beans and cooking liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -530,7 +529,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 			{
@@ -540,7 +539,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             1,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -555,8 +554,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "drained cooked beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -581,7 +580,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 		},
@@ -624,8 +623,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot with cooked beans and cooking liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -638,7 +637,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -652,8 +651,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(0)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "onion half",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -688,7 +687,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](0.5),
+					Min: new(float32(0.5)),
 				},
 			},
 		},
@@ -728,7 +727,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -749,12 +748,12 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Index:                13,
 		ExplicitInstructions: "Add the minced onion and cook, stirring occasionally, until translucent and lightly golden, about 7 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](420), // 7 minutes
+			Min: new(uint32(420)), // 7 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(11)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "minced white onion",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -764,8 +763,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(12)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated fat in skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -780,7 +779,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](0.5),
+					Min: new(float32(0.5)),
 				},
 			},
 		},
@@ -802,8 +801,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(9)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "3 cups of cooked beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -811,8 +810,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			},
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(13)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cooked minced onion",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -822,8 +821,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(12)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated fat in skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -838,7 +837,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 			{
@@ -846,7 +845,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -858,12 +857,12 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Index:                15,
 		ExplicitInstructions: "Cook for 2 minutes, stirring occasionally.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](120), // 2 minutes
+			Min: new(uint32(120)), // 2 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(14)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "beans and onion in skillet",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -872,8 +871,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(12)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated fat in skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -887,7 +886,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 			{
@@ -895,7 +894,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -909,8 +908,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "reserved bean-cooking liquid",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
@@ -920,8 +919,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(15)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with beans and onion",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -936,7 +935,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 			{
@@ -944,7 +943,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -958,8 +957,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(16)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "beans with liquid in skillet",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -979,8 +978,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(16)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with beans and liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -995,7 +994,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 			{
@@ -1003,7 +1002,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -1017,8 +1016,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		ExplicitInstructions: "Thin with more bean cooking water until the desired consistency is reached. Add bean-cooking liquid, 1 tablespoon at a time, as needed if the beans become too dry.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(17)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "mashed beans",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
@@ -1026,8 +1025,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 			},
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "reserved bean-cooking liquid",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
@@ -1037,8 +1036,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(17)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with mashed beans",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -1053,7 +1052,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
+					Min: new(float32(4)),
 				},
 			},
 			{
@@ -1061,7 +1060,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -1083,8 +1082,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(18)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "refried beans at desired consistency",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
@@ -1103,8 +1102,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
-				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(18)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with refried beans at desired consistency",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -1119,7 +1118,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
+					Min: new(float32(4)),
 				},
 			},
 		},
@@ -1133,11 +1132,11 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		ExplicitStorageInstructions: "Store the drained cooked beans and reserved bean-cooking liquid in separate airtight containers in the refrigerator for up to 5 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](432000), // 5 days
+			Max: new(uint32(432000)), // 5 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
@@ -1162,11 +1161,11 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		ExplicitStorageInstructions: "Store the minced onion in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](259200), // 3 days
+			Max: new(uint32(259200)), // 3 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 11, SatisfiesRecipeStep: true},

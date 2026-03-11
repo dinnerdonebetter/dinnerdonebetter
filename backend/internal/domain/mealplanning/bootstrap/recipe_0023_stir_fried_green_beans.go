@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -196,7 +195,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](0.5)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(0.5))},
 			},
 		},
 	}
@@ -208,8 +207,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Snap each green bean in half; set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(0)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(snapGreenBeansVIP),
 				Name:                            "stemmed green beans",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.5},
@@ -228,7 +227,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](0.5)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(0.5))},
 			},
 		},
 	}
@@ -266,7 +265,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cloveMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(2))},
 			},
 		},
 	}
@@ -277,8 +276,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Index:                3,
 		ExplicitInstructions: "Place your wok over the highest flame and let heat for 3 to 4 minutes, until the wok is smoking.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](180),
-			Max: pointer.To[uint32](240),
+			Min: new(uint32(180)),
+			Max: new(uint32(240)),
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -319,8 +318,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        vpvID(swirlWokVPV),
 				Name:                            "preheated wok",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -332,7 +331,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:  "wok with oil",
@@ -349,14 +348,14 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Toss in the smashed garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "oil in wok",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(2)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(addGarlicVIP),
 				Name:                            "smashed garlic",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 2},
@@ -364,8 +363,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(addWokVPV),
 				Name:                            "wok with oil",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -377,7 +376,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:  "wok with garlic",
@@ -393,12 +392,12 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Index:                6,
 		ExplicitInstructions: "Move the garlic around in the oil for about 5 seconds.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](5),
+			Min: new(uint32(5)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(stirGarlicVIP),
 				Name:                            "garlic in wok",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -413,8 +412,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(stirWokVPV),
 				Name:                            "wok with garlic",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -426,7 +425,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:  "wok with stirred garlic",
@@ -443,14 +442,14 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Toss all the green beans into the wok.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "stirred garlic in wok",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(1)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(tossGreenBeansVIP),
 				Name:                            "snapped green beans",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.5},
@@ -458,8 +457,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(tossWokVPV),
 				Name:                            "wok with stirred garlic",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -471,7 +470,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:  "wok with green beans",
@@ -487,13 +486,13 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Index:                8,
 		ExplicitInstructions: "Rapidly stir the vegetables with a spatula or wooden spoon. Stir-fry for 2 to 4 minutes, until the green beans are still crisp and barely raw in the center. To check the doneness, taste a green bean after 2 minutes into the cooking.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](120),
-			Max: pointer.To[uint32](240),
+			Min: new(uint32(120)),
+			Max: new(uint32(240)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(7)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(stirGreenBeansVIP),
 				Name:                            "green beans in wok",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -513,8 +512,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(7)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(stirWokVPV),
 				Name:                            "wok with green beans",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -534,7 +533,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:  "wok with stir-fried green beans",
@@ -551,8 +550,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Toss in the salt and the stock.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "stir-fried green beans",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
@@ -571,8 +570,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(addWokVPV),
 				Name:                            "wok with stir-fried green beans",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -584,7 +583,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:  "wok with seasoned green beans",
@@ -601,8 +600,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Stir to coat the green beans with the liquid.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(9)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(stirGreenBeansVIP),
 				Name:                            "green beans with salt and stock",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -617,8 +616,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(9)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(stirWokVPV),
 				Name:                            "wok with seasoned green beans",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -630,7 +629,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:  "wok with coated green beans",
@@ -647,16 +646,16 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Place a lid on the wok and turn off the heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(10)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "coated green beans",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(10)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(coverWokVPV),
 				Name:                            "wok with coated green beans",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -668,7 +667,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:  "covered wok",
@@ -685,8 +684,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Let the stock gently finish cooking the green beans. The green beans will be done when they are still crisp and just cooked through in the center. Serve piping hot.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(11)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(restGreenBeansVIP),
 				Name:                            "covered green beans",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -694,8 +693,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(11)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(restWokVPV),
 				Name:                            "covered wok",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -715,7 +714,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2), Max: pointer.To[float32](3)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(2)), Max: new(float32(3))},
 			},
 		},
 	}
@@ -728,11 +727,11 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitStorageInstructions: "Store the trimmed and snapped green beans in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](259200), // 3 days
+			Max: new(uint32(259200)), // 3 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
@@ -749,7 +748,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			YieldsComponentType: mealplanning.MealComponentTypesSide,
 			EstimatedPortions: types.Float32RangeWithOptionalMax{
 				Min: 2,
-				Max: pointer.To[float32](3),
+				Max: new(float32(3)),
 			},
 			PortionName:       "serving",
 			PluralPortionName: "servings",

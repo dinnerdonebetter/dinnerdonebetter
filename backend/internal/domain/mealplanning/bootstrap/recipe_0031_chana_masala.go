@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -188,7 +187,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -242,7 +241,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: new(float32(2)),
 				},
 			},
 		},
@@ -288,7 +287,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
+					Min: new(float32(4)),
 				},
 			},
 		},
@@ -307,7 +306,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 0,
 			},
 			{
@@ -317,7 +316,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 1,
 			},
 		},
@@ -346,7 +345,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: new(float32(2)),
 				},
 			},
 		},
@@ -392,7 +391,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: new(float32(2)),
 				},
 			},
 		},
@@ -411,7 +410,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 0,
 			},
 			{
@@ -421,7 +420,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 1,
 			},
 		},
@@ -449,7 +448,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -461,13 +460,13 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Index:                6,
 		ExplicitInstructions: "Stir in the garlic, ginger, and onion. Continue cooking, stirring occasionally, until the onion softens, 5 to 7 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](300),
-			Max: pointer.To[uint32](420),
+			Min: new(uint32(300)),
+			Max: new(uint32(420)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(1)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addGarlicVIP.ID,
 				Name:                            "minced garlic and ginger",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -475,8 +474,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(0)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addOnionVIP.ID,
 				Name:                            "finely chopped onion",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -495,8 +494,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot with melted ghee",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -519,7 +518,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -527,7 +526,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -539,13 +538,13 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Index:                7,
 		ExplicitInstructions: "Stir in the green chiles, cumin seeds, turmeric, ground coriander, and chile powder. Continue stirring for 30 seconds so the spices don't burn.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](30),
-			Max: pointer.To[uint32](30),
+			Min: new(uint32(30)),
+			Max: new(uint32(30)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addChilesVIP.ID,
 				Name:                            "chopped green chiles",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -596,8 +595,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot with cooked aromatics",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -612,7 +611,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -620,7 +619,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -633,8 +632,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "Add the tomatoes and their juices and salt to the pot.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(2)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addRomaTomatoVIP.ID,
 				Name:                            "finely chopped tomatoes",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -661,8 +660,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(7)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot with spiced aromatics",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -677,7 +676,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -685,7 +684,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -698,8 +697,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "Increase the heat to high.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &adjustPotVPV.ID,
 				Name:                            "pot with tomato mixture",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -722,13 +721,13 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Index:                10,
 		ExplicitInstructions: "Cook, stirring often, until the mixture is jammy, 5 to 7 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](300),
-			Max: pointer.To[uint32](420),
+			Min: new(uint32(300)),
+			Max: new(uint32(420)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &cookRomaTomatoVIP.ID,
 				Name:                            "tomato mixture in pot",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -747,8 +746,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(9)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &cookPotVPV.ID,
 				Name:                            "pot with tomato mixture (high heat)",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -771,7 +770,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -779,7 +778,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -799,7 +798,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 					Min: 3,
 				},
 				QuantityNotes: "2 (15-ounce) cans or 3 cups cooked",
-				Index:         pointer.To[uint16](0),
+				Index:         new(uint16(0)),
 			},
 			{
 				ValidIngredientPreparationID:     &addChickenStockVIP.ID,
@@ -808,7 +807,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
-				Index:       pointer.To[uint16](1),
+				Index:       new(uint16(1)),
 				OptionIndex: 0,
 			},
 			{
@@ -818,7 +817,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
-				Index:       pointer.To[uint16](1),
+				Index:       new(uint16(1)),
 				OptionIndex: 1,
 			},
 			{
@@ -828,7 +827,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
-				Index:       pointer.To[uint16](1),
+				Index:       new(uint16(1)),
 				OptionIndex: 2,
 			},
 		},
@@ -843,8 +842,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(10)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot with jammy tomato masala",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -859,7 +858,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](5),
+					Min: new(float32(5)),
 				},
 			},
 			{
@@ -867,7 +866,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -880,8 +879,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "Bring the mixture to a boil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(11)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &boilChickpeasVIP.ID,
 				Name:                            "chickpeas in masala",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -891,8 +890,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(11)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &boilPotVPV.ID,
 				Name:                            "pot with chickpeas and stock",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -924,8 +923,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "Reduce heat to maintain a gentle simmer.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(12)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &reducePotVPV.ID,
 				Name:                            "pot with chickpeas at boil",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -948,13 +947,13 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Index:                14,
 		ExplicitInstructions: "Simmer until the mixture has thickened slightly, 5 to 7 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](300),
-			Max: pointer.To[uint32](420),
+			Min: new(uint32(300)),
+			Max: new(uint32(420)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(11)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &simmerChickpeasVIP.ID,
 				Name:                            "chickpeas in masala",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -964,8 +963,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(13)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &simmerPotVPV.ID,
 				Name:                            "pot with chickpeas at simmer",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -987,7 +986,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -1000,8 +999,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "With the back of a spoon, smash some of the chickpeas against the inside of the pot to thicken the mixture; continue smashing until it reaches the desired thickness.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(11)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &smashChickpeasVIP.ID,
 				Name:                            "chickpeas in masala",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -1020,8 +1019,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(14)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &smashPotVPV.ID,
 				Name:                            "pot with simmering chickpeas",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -1044,7 +1043,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -1052,7 +1051,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -1065,8 +1064,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitInstructions: "Sprinkle with garam masala and top with cilantro and ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(15)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "thickened chana masala",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -1081,8 +1080,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &topCilantroVIP.ID,
 				Name:                            "chopped cilantro",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -1101,8 +1100,8 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(15)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &topPotVPV.ID,
 				Name:                            "pot with chana masala",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -1117,7 +1116,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -1131,11 +1130,11 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitStorageInstructions: "Store the diced onion and minced garlic and ginger in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](259200), // 3 days
+			Max: new(uint32(259200)), // 3 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
@@ -1151,11 +1150,11 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitStorageInstructions: "Store the chopped tomatoes and chiles in separate airtight containers in the refrigerator for up to 2 days (tomatoes) or 3 days (chiles).",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](259200), // 3 days
+			Max: new(uint32(259200)), // 3 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
@@ -1171,11 +1170,11 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		ExplicitStorageInstructions: "Wrap the chopped cilantro in a damp paper towel and store in an airtight container in the refrigerator, or store stems-down in a glass of water with a plastic bag over the leaves.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](172800), // 2 days
+			Max: new(uint32(172800)), // 2 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: true},

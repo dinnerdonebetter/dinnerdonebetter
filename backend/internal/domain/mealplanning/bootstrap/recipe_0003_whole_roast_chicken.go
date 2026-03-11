@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -135,7 +134,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 0,
 			},
 			{
@@ -144,7 +143,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 1,
 			},
 		},
@@ -155,7 +154,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](6),
+					Min: new(float32(6)),
 				},
 			},
 		},
@@ -174,16 +173,16 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 30, // ~6g per pound for 5 lb chicken (dry brine ratio)
 				},
-				Index: pointer.To[uint16](0),
+				Index: new(uint16(0)),
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(0)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 6, // ~1.2g per pound for 5 lb chicken
 				},
-				Index: pointer.To[uint16](1),
+				Index: new(uint16(1)),
 			},
 			{
 				ValidIngredientPreparationID:     &mixBakingPowderVIP.ID,
@@ -193,7 +192,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 					Min: 20, // ~1 tsp (4g) per pound for 5 lb chicken (crispy skin)
 				},
 				Optional: true,
-				Index:    pointer.To[uint16](2),
+				Index:    new(uint16(2)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -212,7 +211,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](36), // 30g salt + 6g pepper; 56g with optional baking powder
+					Min: new(float32(36)), // 30g salt + 6g pepper; 56g with optional baking powder
 				},
 			},
 		},
@@ -230,12 +229,12 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Name:                             "whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
-					Max: pointer.To[float32](5),
+					Max: new(float32(5)),
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(1)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoning mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 36,
@@ -258,8 +257,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
-					Max: pointer.To[float32](5),
+					Min: new(float32(4)),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -272,12 +271,12 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Set the chicken, breast side up, on a work surface and tuck the wings behind the back. Using butcher's twine, run the center of the twine under the tip of the tail end and truss the chicken by tying the drumsticks together at their bony ends, securing the legs and the tip of the tail together in a bundle. Criss-cross the twine and pass along the crevasse where the legs meet the breast; pass the twine over the wings to hold them into place, then tie securely around the stump of the neck.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(2)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
-					Max: pointer.To[float32](5),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -297,8 +296,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
-					Max: pointer.To[float32](5),
+					Min: new(float32(4)),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -310,17 +309,17 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Index:                4,
 		ExplicitInstructions: "Place the chicken, back side down, on a wire rack set in a rimmed baking sheet and refrigerate, uncovered, for at least 1 hour and up to 2 days.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](3600),   // 1 hour minimum
-			Max: pointer.To[uint32](172800), // 2 days maximum
+			Min: new(uint32(3600)),   // 1 hour minimum
+			Max: new(uint32(172800)), // 2 days maximum
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "trussed seasoned whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
-					Max: pointer.To[float32](5),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -347,8 +346,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
-					Max: pointer.To[float32](5),
+					Min: new(float32(4)),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -360,7 +359,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Index:                5,
 		ExplicitInstructions: "Adjust the oven rack to the middle position and preheat the oven to 425°F (220°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
-			Min: pointer.To[float32](220), // 425°F
+			Min: new(float32(220)), // 425°F
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -393,7 +392,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 0,
 			},
 			{
@@ -403,7 +402,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 1,
 			},
 		},
@@ -423,7 +422,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &milliliterMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](15),
+					Min: new(float32(15)),
 				},
 			},
 			{
@@ -431,8 +430,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
-					Max: pointer.To[float32](1),
+					Min: new(float32(1)),
+					Max: new(float32(1)),
 				},
 			},
 		},
@@ -445,12 +444,12 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Rub the chicken lightly with oil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dry-brined whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
-					Max: pointer.To[float32](5),
+					Max: new(float32(5)),
 				},
 			},
 			{
@@ -460,7 +459,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
-				Index:       pointer.To[uint16](1),
+				Index:       new(uint16(1)),
 				OptionIndex: 0,
 			},
 			{
@@ -470,7 +469,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
-				Index:       pointer.To[uint16](1),
+				Index:       new(uint16(1)),
 				OptionIndex: 1,
 			},
 		},
@@ -490,8 +489,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
-					Max: pointer.To[float32](5),
+					Min: new(float32(4)),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -503,22 +502,22 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Index:                8,
 		ExplicitInstructions: "Set the chicken on its side in the skillet so that the full thigh and drumstick are in contact with the pan; the wing will also be touching, but the breast should have little to no contact with the skillet. Cook until the leg is well browned, 8 to 10 minutes, then flip the bird so the other leg is touching the pan and repeat; lower the heat at any point if the chicken skin begins to burn.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](960),  // 16 minutes minimum (8 min per side)
-			Max: pointer.To[uint32](1200), // 20 minutes maximum (10 min per side)
+			Min: new(uint32(960)),  // 16 minutes minimum (8 min per side)
+			Max: new(uint32(1200)), // 20 minutes maximum (10 min per side)
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(7)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "oiled whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
-					Max: pointer.To[float32](5),
+					Max: new(float32(5)),
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated oil in skillet",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 15,
@@ -536,12 +535,12 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "stainless steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
-					Max: pointer.To[uint16](1),
+					Max: new(uint16(1)),
 				},
 			},
 		},
@@ -552,8 +551,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
-					Max: pointer.To[float32](5),
+					Min: new(float32(4)),
+					Max: new(float32(5)),
 				},
 			},
 			{
@@ -578,20 +577,20 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Index:                9,
 		ExplicitInstructions: "Using your hands and a spatula if needed, rotate the chicken so it is breast side up in the skillet and transfer to the oven. Roast until the breast registers 150°F (65°C) in the center of its thickest part and the thighs register 165°F (75°C) near (but not touching) the bone, about 40 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](2400), // 40 minutes
+			Min: new(uint32(2400)), // 40 minutes
 		},
 		TemperatureInCelsius: types.OptionalFloat32Range{
-			Min: pointer.To[float32](65), // 150°F for breast
-			Max: pointer.To[float32](75), // 165°F for thighs
+			Min: new(float32(65)), // 150°F for breast
+			Max: new(float32(75)), // 165°F for thighs
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "leg-browned whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
-					Max: pointer.To[float32](5),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -606,8 +605,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &roastOvenVPV.ID,
 				Name:                            "preheated oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -615,8 +614,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "stainless steel skillet with browned chicken",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -630,8 +629,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
-					Max: pointer.To[float32](5),
+					Min: new(float32(4)),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -651,17 +650,17 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Index:                10,
 		ExplicitInstructions: "Remove from the oven and transfer the chicken to a carving board. Let rest for 10 to 20 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](600),  // 10 minutes
-			Max: pointer.To[uint32](1200), // 20 minutes
+			Min: new(uint32(600)),  // 10 minutes
+			Max: new(uint32(1200)), // 20 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(9)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "roasted whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
-					Max: pointer.To[float32](5),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -681,8 +680,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
-					Max: pointer.To[float32](5),
+					Min: new(float32(4)),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -695,13 +694,13 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitInstructions: "Carve the chicken.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(10)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &carveWholeChickenVIP.ID,
 				Name:                            "rested roast chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
-					Max: pointer.To[float32](5),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -730,8 +729,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
-					Max: pointer.To[float32](5),
+					Min: new(float32(4)),
+					Max: new(float32(5)),
 				},
 			},
 		},
@@ -745,11 +744,11 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		ExplicitStorageInstructions: "Store the seasoned, trussed chicken on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 1 hour and up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
-			Min: 3600,                       // 1 hour
-			Max: pointer.To[uint32](172800), // 2 days
+			Min: 3600,                // 1 hour
+			Max: new(uint32(172800)), // 2 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},

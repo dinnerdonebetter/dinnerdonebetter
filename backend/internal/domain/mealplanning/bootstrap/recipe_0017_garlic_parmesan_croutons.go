@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -125,7 +124,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 0,
 			},
 			{
@@ -134,7 +133,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
-				Index:       pointer.To[uint16](0),
+				Index:       new(uint16(0)),
 				OptionIndex: 1,
 			},
 		},
@@ -145,7 +144,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -157,7 +156,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		Index:                1,
 		ExplicitInstructions: "Adjust the oven rack to the middle position and preheat the oven to 375°F (190°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
-			Min: pointer.To[float32](190),
+			Min: new(float32(190)),
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -217,7 +216,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 		},
@@ -233,8 +232,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				// RecipeStepProductRecipeID references the "Caesar Dressing" recipe (slug: "caesar-dressing")
 				// The product "garlic-infused olive oil" is from step 3 (index 3) after grind was added at step 0, product index 0
 				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
-				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:         new(uint64(3)),
+				ProductOfRecipeStepProductIndex:  new(uint64(0)),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
 				RecipeStepProductRecipeSlug:      new("caesar-dressing"),
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
@@ -244,8 +243,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(2)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addBreadVIP.ID,
 				Name:                            "hearty bread, cut into 3/4-inch cubes",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -269,7 +268,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -320,7 +319,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
+					Min: new(float32(4)),
 				},
 			},
 		},
@@ -333,8 +332,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		ExplicitInstructions: "Add 2 tablespoons grated parmesan cheese, toss again, and season to taste with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &tossBreadVIP.ID,
 				Name:                            "oiled bread cubes",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -342,8 +341,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &tossParmesanVIP.ID,
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "2 tablespoons",
@@ -354,8 +353,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -369,7 +368,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -387,8 +386,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		ExplicitInstructions: "Season to taste with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cheesy bread cubes",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -405,8 +404,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Optional: true,
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(0)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
 				QuantityNotes:                   "to taste",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -417,8 +416,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -432,7 +431,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -450,8 +449,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		ExplicitInstructions: "Transfer to a rimmed baking sheet.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &transferBreadVIP.ID,
 				Name:                            "seasoned bread cubes",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -475,7 +474,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -492,15 +491,15 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		Index:                8,
 		ExplicitInstructions: "Bake until the croutons are pale golden brown and crisp, about 15 minutes.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
-			Min: pointer.To[float32](190),
+			Min: new(float32(190)),
 		},
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](900), // 15 minutes
+			Min: new(uint32(900)), // 15 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(7)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &bakeBreadVIP.ID,
 				Name:                            "bread cubes on baking sheet",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -510,16 +509,16 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(7)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(1)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &bakeOvenVPV.ID,
 				Name:                            "preheated oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -542,7 +541,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 			{
@@ -560,8 +559,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		ExplicitInstructions: "Remove from the oven and toss with 2 more tablespoons grated parmesan.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &tossBreadVIP.ID,
 				Name:                            "baked croutons",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -569,8 +568,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &tossParmesanVIP.ID,
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "2 tablespoons",
@@ -581,8 +580,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -596,7 +595,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -608,12 +607,12 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		Index:                10,
 		ExplicitInstructions: "Allow the croutons to cool.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](600), // 10 minutes
+			Min: new(uint32(600)), // 10 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(9)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &coolBreadVIP.ID,
 				Name:                            "parmesan croutons",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -623,8 +622,8 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
@@ -638,7 +637,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](3),
+					Min: new(float32(3)),
 				},
 			},
 		},

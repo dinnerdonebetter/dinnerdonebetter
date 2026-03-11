@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -198,7 +197,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                0,
 		ExplicitInstructions: "In a small skillet, toast the fenugreek leaves (or fenugreek seeds, if using) over medium heat, tossing them constantly, until quite fragrant, about 30 seconds.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](30),
+			Min: new(uint32(30)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -226,7 +225,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -239,8 +238,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Transfer the toasted leaves to a spice grinder or mortar and pestle and grind to a fine powder. Set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(0)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &grindKasuriMethiVIP.ID,
 				Name:                            "toasted fenugreek",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -264,7 +263,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -300,7 +299,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -347,7 +346,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -360,8 +359,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Finely grate the peeled ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(3)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &grateGingerVIP.ID,
 				Name:                            "peeled ginger",
 				QuantityNotes:                   "1-inch piece",
@@ -395,7 +394,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -433,8 +432,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(4)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &combineGingerVIP.ID,
 				Name:                            "grated ginger",
 				QuantityNotes:                   "1-inch piece",
@@ -443,8 +442,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(1)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &combineKasuriMethiVIP.ID,
 				Name:                            "ground fenugreek for marinade",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -475,7 +474,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](0.5),
+					Min: new(float32(0.5)),
 				},
 			},
 			{
@@ -483,7 +482,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: new(float32(1)),
 				},
 			},
 		},
@@ -502,8 +501,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Quantity:                         types.Float32RangeWithOptionalMax{Min: 2},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "yogurt marinade",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.5},
 			},
@@ -517,8 +516,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(5)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &coatMediumBowlVPV.ID,
 				Name:                            "bowl with marinade",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -530,7 +529,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(2))},
 			},
 		},
 	}
@@ -542,8 +541,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Transfer the chicken to the prepared baking sheet, arranging pieces in a single, even layer in the aluminum-foil boat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(6)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &transferChickenVIP.ID,
 				Name:                            "marinated chicken",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 2},
@@ -551,8 +550,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(2)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &transferBakingSheetVPV.ID,
 				Name:                            "prepared baking sheet with foil boat",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -563,14 +562,14 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Name:                "prepared baking sheet",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "marinated chicken",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(2))},
 			},
 		},
 	}
@@ -581,8 +580,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                8,
 		ExplicitInstructions: "Add the fenugreek leaves (or seeds, if using), chiles de arbol, brown cardamom (or green cardamom, if using), and clove to a small skillet and place it over medium heat. Toast, tossing frequently, until the spices are quite fragrant, about 1 to 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](60),
-			Max: pointer.To[uint32](120),
+			Min: new(uint32(60)),
+			Max: new(uint32(120)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -624,7 +623,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -636,8 +635,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Transfer the spices to a spice grinder or mortar and pestle along with garam masala and salt and grind to a fine powder. Set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(8)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &grindChilesVIP.ID,
 				Name:                            "toasted spices for sauce",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -668,7 +667,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -706,13 +705,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "bowl with cashews",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -723,12 +722,12 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                11,
 		ExplicitInstructions: "Microwave on high until the cashews look plump and have softened slightly, about 1 minute. Set aside.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](60),
+			Min: new(uint32(60)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(10)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &microwaveCashewsVIP.ID,
 				Name:                            "cashews in water",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -736,8 +735,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(10)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &microwaveMicrowaveBowlVPV.ID,
 				Name:                            "bowl with cashews",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -749,7 +748,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -766,7 +765,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				ValidIngredientMeasurementUnitID: &canolaOilTablespoonVIMU.ID,
 				Name:                             "canola oil",
 				Quantity:                         types.Float32RangeWithOptionalMax{Min: 2},
-				Index:                            pointer.To[uint16](0),
+				Index:                            new(uint16(0)),
 				OptionIndex:                      0,
 			},
 			{
@@ -774,7 +773,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
 				Name:                             "vegetable oil",
 				Quantity:                         types.Float32RangeWithOptionalMax{Min: 2},
-				Index:                            pointer.To[uint16](0),
+				Index:                            new(uint16(0)),
 				OptionIndex:                      1,
 			},
 		},
@@ -790,7 +789,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Name:                "Dutch oven with hot oil",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -836,7 +835,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -848,8 +847,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Cut the peeled onion into 1/2-inch dice.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(13)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &diceOnionVIP.ID,
 				Name:                            "peeled onion",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -875,7 +874,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -886,13 +885,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                15,
 		ExplicitInstructions: "Add the onions and baking soda and, using a wooden spoon, stir to coat the onions in oil and distribute the baking soda. Cook, stirring occasionally, until the onions have completely broken down, most of their moisture has cooked off, and they begin to brown, 14 to 17 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](840),
-			Max: pointer.To[uint32](1020),
+			Min: new(uint32(840)),
+			Max: new(uint32(1020)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(14)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &cookOnionVIP.ID,
 				Name:                            "diced onion",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -913,8 +912,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(12)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &cookDutchOvenVPV.ID,
 				Name:                            "Dutch oven with hot oil",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -926,13 +925,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "Dutch oven with browned onions",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -971,7 +970,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -983,8 +982,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Thinly slice the peeled ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(16)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &sliceGingerVIP.ID,
 				Name:                            "peeled ginger",
 				QuantityNotes:                   "1-inch piece",
@@ -1011,7 +1010,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1049,7 +1048,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cloveMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(4))},
 			},
 		},
 	}
@@ -1061,8 +1060,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Smash the peeled garlic cloves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(18)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &smashGarlicVIP.ID,
 				Name:                            "peeled garlic cloves",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 4},
@@ -1088,7 +1087,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cloveMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(4))},
 			},
 		},
 	}
@@ -1100,8 +1099,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Roughly chop the smashed garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](19),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(19)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &chopGarlicVIP.ID,
 				Name:                            "smashed garlic",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 4},
@@ -1127,7 +1126,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cloveMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(4))},
 			},
 		},
 	}
@@ -1138,20 +1137,20 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                21,
 		ExplicitInstructions: "Reduce the heat to medium low. Add the ginger and garlic to the pot and cook, stirring constantly, until quite fragrant, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](60),
+			Min: new(uint32(60)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(17)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &cookGingerVIP.ID,
 				Name:                            "sliced ginger",
 				QuantityNotes:                   "1-inch piece",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](20),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(20)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &cookGarlicVIP.ID,
 				Name:                            "chopped garlic",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 4},
@@ -1166,8 +1165,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(15)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &cookDutchOvenVPV.ID,
 				Name:                            "Dutch oven with browned onions",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -1179,13 +1178,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "Dutch oven with aromatics",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1196,12 +1195,12 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                22,
 		ExplicitInstructions: "Using a wooden spoon, push the onions into the center of the pot to form a mound. Add the ground spice mixture to the mounded onions to prevent the spices from scorching. Cook, stirring constantly, until the onions are coated in spices and the mixture is very fragrant, about 30 seconds.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](30),
+			Min: new(uint32(30)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(9)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "ground spice mixture for sauce",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
@@ -1215,8 +1214,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](21),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(21)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addDutchOvenVPV.ID,
 				Name:                            "Dutch oven with aromatics",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -1228,13 +1227,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "Dutch oven with spiced onions",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1246,8 +1245,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Add the cashews and their soaking liquid, scraping up any bits stuck to the bottom of the pot. Add the tomatoes and their juices plus 1 cup water and, using the back of a wooden spoon, crush the tomatoes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(11)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addCashewsVIP.ID,
 				Name:                            "softened cashews with soaking liquid",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -1274,8 +1273,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](22),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(22)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addDutchOvenVPV.ID,
 				Name:                            "Dutch oven with spiced onions",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -1287,13 +1286,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "Dutch oven with sauce base",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1304,12 +1303,12 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                24,
 		ExplicitInstructions: "Bring to a boil, then reduce the heat to maintain a gentle simmer. Cook, stirring occasionally, until the tomatoes are completely broken down and the liquid has reduced, about 40 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](2400),
+			Min: new(uint32(2400)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](23),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(23)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &simmerTomatoesVIP.ID,
 				Name:                            "sauce base",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -1317,8 +1316,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](23),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(23)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &simmerDutchOvenVPV.ID,
 				Name:                            "Dutch oven with sauce base",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -1330,13 +1329,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "Dutch oven with simmered sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1358,7 +1357,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Name:                "preheated broiler",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1369,12 +1368,12 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                26,
 		ExplicitInstructions: "Transfer the chicken to the broiler. Cook, checking the chicken frequently to ensure it's not burning, until the chicken is charred in spots and is fully cooked through, about 14 minutes. Remove the chicken from the broiler and set aside.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](840),
+			Min: new(uint32(840)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(7)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidIngredientPreparationID:    &broilChickenVIP.ID,
 				Name:                            "marinated chicken",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 2},
@@ -1382,14 +1381,14 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(7)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "prepared baking sheet",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](25),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(25)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &broilOvenVPV.ID,
 				Name:                            "preheated broiler",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -1401,7 +1400,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(2))},
 			},
 		},
 	}
@@ -1412,12 +1411,12 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                27,
 		ExplicitInstructions: "Using an immersion blender and off the heat, blend the contents of the Dutch oven until completely smooth, about 2 minutes. Alternatively, transfer the contents of the pot to a blender and blend until completely smooth.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](120),
+			Min: new(uint32(120)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](24),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(24)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &blendTomatoesVIP.ID,
 				Name:                            "simmered sauce",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -1432,8 +1431,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](24),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(24)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &blendDutchOvenVPV.ID,
 				Name:                            "Dutch oven with simmered sauce",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -1445,13 +1444,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "Dutch oven with blended sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1489,7 +1488,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &tablespoonMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(4))},
 			},
 		},
 	}
@@ -1500,19 +1499,19 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Index:                29,
 		ExplicitInstructions: "Add the butter and cream, and blend until completely smooth and emulsified, about 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](120),
+			Min: new(uint32(120)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](27),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(27)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &blendTomatoesVIP.ID,
 				Name:                            "blended sauce",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](28),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(28)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &blendButterVIP.ID,
 				Name:                            "butter, cut into 4 pieces",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 4},
@@ -1533,8 +1532,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](27),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(27)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &blendDutchOvenVPV.ID,
 				Name:                            "Dutch oven with blended sauce",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -1546,13 +1545,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "Dutch oven with makhani sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1564,8 +1563,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Add the reserved broiled chicken along with any juices in the sheet pan to the sauce and stir until the chicken is well incorporated and warmed through.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](26),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(26)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addChickenVIP.ID,
 				Name:                            "broiled chicken",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 2},
@@ -1580,8 +1579,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](29),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        new(uint64(29)),
+				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addDutchOvenVPV.ID,
 				Name:                            "Dutch oven with makhani sauce",
 				Quantity:                        types.Uint16RangeWithOptionalMax{Min: 1},
@@ -1593,13 +1592,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 			{
 				Name:                "Dutch oven with butter chicken",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1611,8 +1610,8 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitInstructions: "Ladle the chicken and sauce into a serving bowl and drizzle with additional heavy cream.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](30),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        new(uint64(30)),
+				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &transferChickenVIP.ID,
 				Name:                            "butter chicken",
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
@@ -1631,7 +1630,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 			},
 		},
 	}
@@ -1645,11 +1644,11 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitStorageInstructions: "Cover the baking sheet with the marinated chicken and store in the refrigerator for up to 24 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeCovered,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](86400), // 24 hours
+			Max: new(uint32(86400)), // 24 hours
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
@@ -1671,12 +1670,12 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitStorageInstructions: "Store the ground spice mixture in an airtight container at room temperature for up to 7 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Min: pointer.To[float32](18),
-			Max: pointer.To[float32](25),
+			Min: new(float32(18)),
+			Max: new(float32(25)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](604800), // 7 days
+			Max: new(uint32(604800)), // 7 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 8, SatisfiesRecipeStep: false},
@@ -1692,11 +1691,11 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		ExplicitStorageInstructions: "Store the prepared aromatics in separate airtight containers in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
-			Max: pointer.To[float32](4),
+			Max: new(float32(4)),
 		},
 		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
 			Min: 0,
-			Max: pointer.To[uint32](259200), // 3 days
+			Max: new(uint32(259200)), // 3 days
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 13, SatisfiesRecipeStep: false},
@@ -1718,7 +1717,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
 			EstimatedPortions: types.Float32RangeWithOptionalMax{
 				Min: 4,
-				Max: pointer.To[float32](6),
+				Max: new(float32(6)),
 			},
 			PortionName:       "serving",
 			PluralPortionName: "servings",
