@@ -2,6 +2,7 @@ package multisource
 
 import (
 	"context"
+	"maps"
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
@@ -9,7 +10,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
-const name = "multisource_event_reporter"
+const (
+	name = "multisource_event_reporter"
+	// SourcePropertyKey is the event property used to identify the analytics source (e.g. ios, web).
+	// For PostHog, where a single API key is shared across sources, this property distinguishes events.
+	SourcePropertyKey = "source"
+)
 
 // MultiSourceEventReporter delegates events to per-source EventReporters.
 type MultiSourceEventReporter struct {
@@ -54,12 +60,21 @@ func (m *MultiSourceEventReporter) knownSources() []string {
 	return sources
 }
 
+// withSourceProperty returns a copy of properties with the source property set.
+// For PostHog (single API key across sources), the source property distinguishes events.
+func withSourceProperty(source string, properties map[string]any) map[string]any {
+	merged := make(map[string]any, len(properties)+1)
+	maps.Copy(merged, properties)
+	merged[SourcePropertyKey] = source
+	return merged
+}
+
 // TrackEvent records an event for an identified user.
 func (m *MultiSourceEventReporter) TrackEvent(ctx context.Context, source, event, userID string, properties map[string]any) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return m.getReporter(source).EventOccurred(ctx, event, userID, properties)
+	return m.getReporter(source).EventOccurred(ctx, event, userID, withSourceProperty(source, properties))
 }
 
 // TrackAnonymousEvent records an event for an anonymous user.
@@ -67,5 +82,5 @@ func (m *MultiSourceEventReporter) TrackAnonymousEvent(ctx context.Context, sour
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return m.getReporter(source).EventOccurredAnonymous(ctx, event, anonymousID, properties)
+	return m.getReporter(source).EventOccurredAnonymous(ctx, event, anonymousID, withSourceProperty(source, properties))
 }
