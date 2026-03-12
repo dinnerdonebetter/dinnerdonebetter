@@ -232,7 +232,7 @@ patches:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-finalizer
 
-  ### Meal Plan Grocery List Init CronJob - needs database, pubsub, segment
+  ### Meal Plan Grocery List Init CronJob - needs database, pubsub, posthog
   - path: patches/cronjob-database-env.yaml
     target:
       kind: CronJob
@@ -241,12 +241,12 @@ patches:
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-grocery-list-init
-  - path: patches/cronjob-segment-env.yaml
+  - path: patches/cronjob-posthog-env.yaml
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-grocery-list-init
 
-  ### Meal Plan Task Creator CronJob - needs database, pubsub, segment
+  ### Meal Plan Task Creator CronJob - needs database, pubsub, posthog
   - path: patches/cronjob-database-env.yaml
     target:
       kind: CronJob
@@ -255,7 +255,7 @@ patches:
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-task-creator
-  - path: patches/cronjob-segment-env.yaml
+  - path: patches/cronjob-posthog-env.yaml
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-task-creator

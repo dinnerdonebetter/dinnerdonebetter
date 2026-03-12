@@ -125,15 +125,39 @@
 	},
 	"analytics": {
 		"proxySources": {
-			"ios": null,
-			"web": null
+			"ios": {
+				"segment": null,
+				"posthog": {
+					"apiKey": "placeholder"
+				},
+				"rudderstack": null,
+				"provider": "posthog",
+				"circuitBreaker": {
+					"name": "ios_analytics",
+					"circuitBreakerErrorPercentage": 0.5,
+					"circuitBreakerMinimumOccurrenceThreshold": 100
+				}
+			},
+			"web": {
+				"segment": null,
+				"posthog": {
+					"apiKey": "placeholder"
+				},
+				"rudderstack": null,
+				"provider": "posthog",
+				"circuitBreaker": {
+					"name": "web_analytics",
+					"circuitBreakerErrorPercentage": 0.5,
+					"circuitBreakerMinimumOccurrenceThreshold": 100
+				}
+			}
 		},
-		"segment": {
-			"apiToken": "placeholder"
+		"segment": null,
+		"posthog": {
+			"apiKey": "placeholder"
 		},
-		"posthog": null,
 		"rudderstack": null,
-		"provider": "segment",
+		"provider": "posthog",
 		"circuitBreaker": {
 			"name": "prod_analytics",
 			"circuitBreakerErrorPercentage": 0.5,
