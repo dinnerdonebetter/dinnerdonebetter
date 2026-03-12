@@ -104,8 +104,8 @@ func BuildStreamServerInterceptors(authInterceptor *interceptors.AuthInterceptor
 }
 
 // ProvideAnalyticsProxySources extracts proxy sources config for the multisource reporter.
-func ProvideAnalyticsProxySources(cfg *config.APIServiceConfig) analyticscfg.ProxySourcesConfig {
-	return cfg.Analytics.ProxySources
+func ProvideAnalyticsProxySources(cfg *config.APIServiceConfig) map[string]*analyticscfg.SourceConfig {
+	return cfg.Analytics.ProxySources.ToMap()
 }
 
 func ProvideUserTextSearcher(

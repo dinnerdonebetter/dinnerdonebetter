@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -69,8 +70,8 @@ func (j *Job) Do(ctx context.Context) error {
 	msg := &email.OutboundEmailMessage{
 		ToAddress:   j.recipientEmail,
 		FromAddress: fromAddress,
-		FromName:    "Dinner Done Better",
-		Subject:     "Dinner Done Better – Email Deliverability Test",
+		FromName:    branding.CompanyName,
+		Subject:     fmt.Sprintf("%s – Email Deliverability Test", branding.CompanyName),
 		HTMLContent: fmt.Sprintf("<p>Test sent at %s</p>", sentAt),
 	}
 

@@ -12,7 +12,7 @@ data "google_container_cluster" "prod_cluster" {
   location = local.gcp_region
 }
 
-resource "kubernetes_namespace" "prod" {
+resource "kubernetes_namespace_v1" "prod" {
   metadata {
     name = local.k8s_namespace
     labels = {
@@ -40,7 +40,7 @@ resource "kubernetes_secret" "apns_credentials" {
     }
   }
 
-  depends_on = [kubernetes_namespace.prod]
+  depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
     # Key becomes filename when mounted; value is p8 content (Terraform base64-encodes automatically)
@@ -62,7 +62,7 @@ resource "kubernetes_secret" "cloudflare_api_key" {
     }
   }
 
-  depends_on = [kubernetes_namespace.prod]
+  depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
     "token" = var.CLOUDFLARE_API_TOKEN
@@ -83,7 +83,7 @@ resource "kubernetes_config_map_v1" "pubsub_topics" {
     }
   }
 
-  depends_on = [kubernetes_namespace.prod]
+  depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
     data_changes               = google_pubsub_topic.data_changes_topic.id
@@ -109,7 +109,7 @@ resource "kubernetes_secret" "api_service_config" {
     }
   }
 
-  depends_on = [kubernetes_namespace.prod]
+  depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
     OAUTH2_TOKEN_ENCRYPTION_KEY        = random_string.oauth2_token_encryption_key.result
@@ -119,7 +119,8 @@ resource "kubernetes_secret" "api_service_config" {
     DATABASE_USERNAME                  = local.api_database_username
     DATABASE_PASSWORD                  = random_password.api_user_database_password.result
     SENDGRID_API_TOKEN                 = var.SENDGRID_API_KEY
-    SEGMENT_API_TOKEN                  = var.SEGMENT_API_TOKEN
+    SEGMENT_API_TOKEN                  = var.API_SERVER_SEGMENT_WRITE_KEY
+    IOS_SEGMENT_API_TOKEN              = var.IOS_APP_SEGMENT_WRITE_KEY
     POSTHOG_API_KEY                    = var.POSTHOG_API_KEY
     POSTHOG_PERSONAL_API_KEY           = var.POSTHOG_PERSONAL_API_KEY
     ALGOLIA_APPLICATION_ID             = var.ALGOLIA_APPLICATION_ID
@@ -154,7 +155,7 @@ resource "kubernetes_secret" "admin_webapp_config" {
     }
   }
 
-  depends_on = [kubernetes_namespace.prod]
+  depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
     OAUTH2_CLIENT_ID     = var.ADMIN_WEBAPP_OAUTH2_CLIENT_ID
@@ -183,7 +184,7 @@ resource "kubernetes_secret" "consumer_webapp_config" {
     }
   }
 
-  depends_on = [kubernetes_namespace.prod]
+  depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
     OAUTH2_CLIENT_ID     = var.CONSUMER_WEBAPP_OAUTH2_CLIENT_ID
@@ -210,7 +211,7 @@ resource "kubernetes_secret" "mcp_server_config" {
     }
   }
 
-  depends_on = [kubernetes_namespace.prod]
+  depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
     OAUTH2_CLIENT_ID     = var.MCP_SERVICE_OAUTH2_CLIENT_ID
@@ -235,7 +236,7 @@ resource "kubernetes_secret" "grafana_cloud_creds" {
     }
   }
 
-  depends_on = [kubernetes_namespace.prod]
+  depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
     GRAFANA_CLOUD_PROMETHEUS_USERNAME = var.GRAFANA_CLOUD_PROMETHEUS_USERNAME

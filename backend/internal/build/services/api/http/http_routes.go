@@ -41,7 +41,7 @@ func ProvideAPIRouter(
 			res.WriteHeader(http.StatusOK)
 		})
 
-		metaRouter.Get("/commit", func(res http.ResponseWriter, req *http.Request) {
+		metaRouter.Get("/version", func(res http.ResponseWriter, req *http.Request) {
 			encoder.EncodeResponseWithStatus(req.Context(), res, version.Get(), http.StatusOK)
 		})
 	})

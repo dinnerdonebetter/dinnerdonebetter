@@ -27,34 +27,54 @@ const (
 )
 
 type (
-	// Config is the configuration structure.
-	Config struct {
-		Segment        *segment.Config        `env:"init"          envPrefix:"SEGMENT_"         json:"segment"`
-		Posthog        *posthog.Config        `env:"init"          envPrefix:"POSTHOG_"         json:"posthog"`
-		Rudderstack    *rudderstack.Config    `env:"init"          envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
-		ProxySources   ProxySourcesConfig     `json:"proxySources"`
-		Provider       string                 `env:"PROVIDER"      json:"provider"`
-		CircuitBreaker circuitbreaking.Config `env:"init"          envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
+	// SourceConfig is the per-source analytics config (provider + credentials). Used for proxy sources; no ProxySources to avoid recursion.
+	SourceConfig struct {
+		Segment        *segment.Config        `env:",init"                  envPrefix:"SEGMENT_"     json:"segment"`
+		Posthog        *posthog.Config        `env:",init"                  envPrefix:"POSTHOG_"     json:"posthog"`
+		Rudderstack    *rudderstack.Config    `env:",init"                  envPrefix:"RUDDERSTACK_" json:"rudderstack"`
+		Provider       string                 `env:"PROVIDER"               json:"provider"`
+		CircuitBreaker circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
 	}
 
-	// ProxySourcesConfig maps source names (e.g. "ios", "web") to per-source analytics config for the analytics proxy gRPC service.
-	ProxySourcesConfig map[string]*Config
+	// ProxySourcesConfig holds per-source analytics config for the analytics proxy gRPC service. Sources are codified: ios and web.
+	ProxySourcesConfig struct {
+		IOS *SourceConfig `env:",init" envPrefix:"IOS_" json:"ios"`
+		Web *SourceConfig `env:",init" envPrefix:"WEB_" json:"web"`
+	}
+
+	// Config is the configuration structure.
+	Config struct {
+		ProxySources ProxySourcesConfig `envPrefix:"PROXY_SOURCES_" json:"proxySources"`
+		SourceConfig
+	}
 )
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
+
+// ToMap returns a map of source name to config for use by the multisource reporter. Skips nil entries.
+func (p ProxySourcesConfig) ToMap() map[string]*SourceConfig {
+	m := make(map[string]*SourceConfig)
+	if p.IOS != nil {
+		m["ios"] = p.IOS
+	}
+	if p.Web != nil {
+		m["web"] = p.Web
+	}
+	return m
+}
 
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
 		validation.Field(&cfg.Provider, validation.In(ProviderSegment, ProviderRudderstack, ProviderPostHog)),
-		validation.Field(&cfg.Segment, validation.When(cfg.Provider == ProviderSegment, validation.Required), validation.When(cfg.Provider != ProviderSegment, validation.Nil)),
-		validation.Field(&cfg.Posthog, validation.When(cfg.Provider == ProviderPostHog, validation.Required), validation.When(cfg.Provider != ProviderPostHog, validation.Nil)),
-		validation.Field(&cfg.Rudderstack, validation.When(cfg.Provider == ProviderRudderstack, validation.Required), validation.When(cfg.Provider != ProviderRudderstack, validation.Nil)),
+		validation.Field(&cfg.Segment, validation.When(cfg.Provider == ProviderSegment, validation.Required)),
+		validation.Field(&cfg.Posthog, validation.When(cfg.Provider == ProviderPostHog, validation.Required)),
+		validation.Field(&cfg.Rudderstack, validation.When(cfg.Provider == ProviderRudderstack, validation.Required)),
 	)
 }
 
 // ProvideCollector provides a collector.
-func (cfg *Config) ProvideCollector(
+func (cfg *SourceConfig) ProvideCollector(
 	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
@@ -67,12 +87,22 @@ func (cfg *Config) ProvideCollector(
 
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSegment:
+		if cfg.Segment == nil {
+			return nil, fmt.Errorf("segment provider configured but segment config is nil")
+		}
 		return segment.NewSegmentEventReporter(logger, tracerProvider, cfg.Segment.APIToken, cb)
 	case ProviderRudderstack:
+		if cfg.Rudderstack == nil {
+			return nil, fmt.Errorf("rudderstack provider configured but rudderstack config is nil")
+		}
 		return rudderstack.NewRudderstackEventReporter(logger, tracerProvider, cfg.Rudderstack, cb)
 	case ProviderPostHog:
+		if cfg.Posthog == nil {
+			return nil, fmt.Errorf("posthog provider configured but posthog config is nil")
+		}
 		return posthog.NewPostHogEventReporter(logger, tracerProvider, cfg.Posthog.APIKey, cb)
 	default:
+		logging.EnsureLogger(logger).WithValue("provider", cfg.Provider).Info("no analytics provider configured or unrecognized provider, using noop")
 		return analytics.NewNoopEventReporter(), nil
 	}
 }

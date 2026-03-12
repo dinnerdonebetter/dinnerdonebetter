@@ -28,7 +28,7 @@ func (s *ConsumerFrontendServer) setupRoutes(router routing.Router) {
 		metaRouter.Get("/ready", func(res http.ResponseWriter, _ *http.Request) {
 			res.WriteHeader(http.StatusOK)
 		})
-		metaRouter.Get("/commit", func(res http.ResponseWriter, req *http.Request) {
+		metaRouter.Get("/version", func(res http.ResponseWriter, req *http.Request) {
 			s.encoder.EncodeResponseWithStatus(req.Context(), res, version.Get(), http.StatusOK)
 		})
 	})

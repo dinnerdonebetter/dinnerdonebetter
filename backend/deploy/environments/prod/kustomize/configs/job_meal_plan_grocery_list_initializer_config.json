@@ -8,12 +8,15 @@
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
 	"analytics": {
+		"proxySources": {
+			"ios": null,
+			"web": null
+		},
 		"segment": {
 			"apiToken": "placeholder"
 		},
 		"posthog": null,
 		"rudderstack": null,
-		"proxySources": null,
 		"provider": "segment",
 		"circuitBreaker": {
 			"name": "prod_analytics",

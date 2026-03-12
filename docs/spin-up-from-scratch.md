@@ -100,7 +100,7 @@ Each service requires sign-up, credentials, and (where applicable) Terraform Clo
 | **Grafana Cloud** | Observability (Prometheus, Loki, Tempo) | Username/password per stack         | `GRAFANA_CLOUD_PROMETHEUS_USERNAME`, `GRAFANA_CLOUD_PROMETHEUS_PASSWORD`, `GRAFANA_CLOUD_LOKI_*`, `GRAFANA_CLOUD_TEMPO_*`                     |
 | **Resend**        | Email (prod)                            | API key                             | `RESEND_API_KEY`                                                                                                                              |
 | **SendGrid**      | Email (domain auth, infra Terraform)    | API key                             | `SENDGRID_API_KEY`                                                                                                                            |
-| **Segment**       | Analytics (backend events)              | API token                           | `SEGMENT_API_TOKEN`                                                                                                                           |
+| **Segment**       | Analytics (backend events)              | API server + iOS write keys         | `API_SERVER_SEGMENT_WRITE_KEY`, `IOS_APP_SEGMENT_WRITE_KEY`                                                                                   |
 | **PostHog**       | Analytics + feature flags               | Project + Personal API keys         | `POSTHOG_API_KEY`, `POSTHOG_PERSONAL_API_KEY`                                                                                                 |
 | **Stripe**        | Web payments                            | API key, webhook secret             | (in app config, not Terraform vars)                                                                                                           |
 | **RevenueCat**    | Mobile IAP                              | API key, webhook auth               | (iOS build secrets)                                                                                                                           |
@@ -163,7 +163,8 @@ Add all variables to Terraform Cloud. Sources: `secrets.tf`, `meta_variables.tf`
 | `MCP_SERVICE_OAUTH2_CLIENT_SECRET`     | MCP server OAuth2 client secret      |
 | `SENDGRID_API_KEY`                     | SendGrid API token                   |
 | `RESEND_API_KEY`                       | Resend API key                       |
-| `SEGMENT_API_TOKEN`                    | Segment API token                    |
+| `API_SERVER_SEGMENT_WRITE_KEY`         | Segment write key (main analytics)   |
+| `IOS_APP_SEGMENT_WRITE_KEY`            | Segment write key (iOS proxy source) |
 | `POSTHOG_API_KEY`                      | PostHog Project API Key              |
 | `POSTHOG_PERSONAL_API_KEY`             | PostHog Personal API Key             |
 | `ALGOLIA_APPLICATION_ID`               | Algolia app ID                       |

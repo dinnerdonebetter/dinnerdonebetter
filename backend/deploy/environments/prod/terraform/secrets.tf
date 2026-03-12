@@ -44,8 +44,9 @@ variable "SENDGRID_API_KEY" {}
 # Resend API key
 variable "RESEND_API_KEY" {}
 
-# Segment API token
-variable "SEGMENT_API_TOKEN" {}
+# Segment write keys: API server (main analytics); iOS app (proxy source when iOS sends events via backend).
+variable "API_SERVER_SEGMENT_WRITE_KEY" {}
+variable "IOS_APP_SEGMENT_WRITE_KEY" {}
 
 # PostHog API tokens: Project API Key (events); Personal API Key (feature flags API).
 # Add both to Terraform Cloud: Workspace → Variables → Add variable.

@@ -31,7 +31,7 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 			res.WriteHeader(http.StatusOK)
 		})
 
-		metaRouter.Get("/commit", func(res http.ResponseWriter, req *http.Request) {
+		metaRouter.Get("/version", func(res http.ResponseWriter, req *http.Request) {
 			s.encoder.EncodeResponseWithStatus(req.Context(), res, version.Get(), http.StatusOK)
 		})
 	})
@@ -209,6 +209,10 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	// Queue Test
 	r.Get("/queue_test", ghttp.Adapt(s.QueueTestPage))
 	r.Post("/api/queue_test", ghttp.Adapt(s.QueueTestSubmit))
+
+	// Analytics Test
+	r.Get("/analytics_test", ghttp.Adapt(s.AnalyticsTestPage))
+	r.Post("/api/analytics_test", ghttp.Adapt(s.AnalyticsTestSubmit))
 
 	// Association delete routes
 	r.Delete("/api/valid_preparation_instruments/{associationID}", ghttp.Adapt(s.DeletePreparationInstrument))

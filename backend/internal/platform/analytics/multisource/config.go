@@ -2,6 +2,7 @@ package multisource
 
 import (
 	"context"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
@@ -13,9 +14,12 @@ import (
 // ProvideMultiSourceEventReporter builds a MultiSourceEventReporter from proxy sources config.
 // For each source, attempts to create an EventReporter via ProvideCollector.
 // If creation fails (e.g. missing credentials) or provider is unset, uses Noop for that source.
+//
+// For PostHog: a single API key is shared across all sources. One PostHog client is created and
+// reused for every PostHog source; the source name is logged as a property on each event.
 func ProvideMultiSourceEventReporter(
 	ctx context.Context,
-	proxySources analyticscfg.ProxySourcesConfig,
+	proxySources map[string]*analyticscfg.SourceConfig,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
@@ -24,22 +28,42 @@ func ProvideMultiSourceEventReporter(
 	log := logging.EnsureLogger(logger).WithName(name)
 
 	if len(proxySources) == 0 {
-		return NewMultiSourceEventReporter(reporters), nil
+		log.Info("no analytics proxy sources configured, multisource reporter will be empty")
+		return NewMultiSourceEventReporter(reporters, logger, tracerProvider), nil
 	}
 
+	var sharedPostHogReporter analytics.EventReporter
+
 	for source, sourceCfg := range proxySources {
+		log.WithValue("source", source).WithValue("provider", sourceCfg.Provider).Info("configuring analytics reporter for proxy source")
+
+		provider := strings.ToLower(strings.TrimSpace(sourceCfg.Provider))
+		if provider == analyticscfg.ProviderPostHog && sharedPostHogReporter != nil {
+			// PostHog uses one API key for all sources; reuse the shared client.
+			log.WithValue("source", source).Info("reusing shared PostHog reporter for proxy source")
+			reporters[source] = sharedPostHogReporter
+			continue
+		}
+
 		r, err := sourceCfg.ProvideCollector(ctx, log, tracerProvider, metricsProvider)
 		if err != nil {
-			log.WithValue("source", source).WithValue("reason", err.Error()).Info("using noop for source")
+			log.WithValue("source", source).WithValue("reason", err.Error()).Error("failed to create reporter for proxy source, using noop", err)
 			reporters[source] = analytics.NewNoopEventReporter()
 			continue
 		}
 		if r == nil {
+			log.WithValue("source", source).WithValue("provider", sourceCfg.Provider).Info("ProvideCollector returned nil reporter, using noop")
 			reporters[source] = analytics.NewNoopEventReporter()
 			continue
 		}
+
+		if provider == analyticscfg.ProviderPostHog {
+			sharedPostHogReporter = r
+		}
+
+		log.WithValue("source", source).WithValue("provider", sourceCfg.Provider).Info("analytics reporter configured for proxy source")
 		reporters[source] = r
 	}
 
-	return NewMultiSourceEventReporter(reporters), nil
+	return NewMultiSourceEventReporter(reporters, logger, tracerProvider), nil
 }

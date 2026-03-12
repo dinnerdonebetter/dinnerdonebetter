@@ -131,8 +131,10 @@ func (s *Server) Serve() {
 }
 
 func LoggingInterceptor(logger logging.Logger) grpc.UnaryServerInterceptor {
+	l := logging.EnsureLogger(logger)
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-		logger.WithValue("rpc.method", info.FullMethod).Info("rpc invoked")
-		return handler(ctx, req)
+		result, err := handler(ctx, req)
+		l.WithValue("rpc.method", info.FullMethod).WithValue("errored", err != nil).Info("rpc invoked")
+		return result, err
 	}
 }

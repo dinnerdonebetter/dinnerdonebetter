@@ -6,6 +6,7 @@ import (
 
 	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics/segment"
@@ -197,12 +198,14 @@ func buildProdConfig() *config.APIServiceConfig {
 			},
 		},
 		Analytics: analyticscfg.Config{
-			Provider: analyticscfg.ProviderSegment,
-			Segment:  &segment.Config{APIToken: "placeholder"}, // overridden by env from CSI secret
-			CircuitBreaker: circuitbreaking.Config{
-				Name:                   "prod_analytics",
-				ErrorRate:              .5,
-				MinimumSampleThreshold: 100,
+			SourceConfig: analyticscfg.SourceConfig{
+				Provider: analyticscfg.ProviderSegment,
+				Segment:  &segment.Config{APIToken: "placeholder"}, // overridden by env from CSI secret
+				CircuitBreaker: circuitbreaking.Config{
+					Name:                   "prod_analytics",
+					ErrorRate:              .5,
+					MinimumSampleThreshold: 100,
+				},
 			},
 		},
 		TextSearch: textsearchcfg.Config{
@@ -227,7 +230,7 @@ func buildProdConfig() *config.APIServiceConfig {
 			SSO: authcfg.SSOConfigs{Google: authcfg.GoogleSSOConfig{}},
 			Passkey: authcfg.PasskeyConfig{
 				RPID:          "dinnerdonebetter.com",
-				RPDisplayName: "Dinner Done Better",
+				RPDisplayName: branding.CompanyName,
 				RPOrigins:     []string{"https://dinnerdonebetter.com", "https://www.dinnerdonebetter.com", "https://admin.dinnerdonebetter.com"},
 			},
 			Tokens: tokenscfg.Config{

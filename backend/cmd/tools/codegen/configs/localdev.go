@@ -156,10 +156,12 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		},
 		Analytics: analyticscfg.Config{
 			// we're using a noop version of this in localdev right now, but it still tries to instantiate a circuit breaker.
-			CircuitBreaker: circuitbreaking.Config{
-				Name:                   "feature_flagger",
-				ErrorRate:              .5,
-				MinimumSampleThreshold: 100,
+			SourceConfig: analyticscfg.SourceConfig{
+				CircuitBreaker: circuitbreaking.Config{
+					Name:                   "feature_flagger",
+					ErrorRate:              .5,
+					MinimumSampleThreshold: 100,
+				},
 			},
 		},
 		TextSearch: textsearchcfg.Config{

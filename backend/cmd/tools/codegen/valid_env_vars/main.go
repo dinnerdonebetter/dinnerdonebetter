@@ -57,7 +57,7 @@ func main() {
 
 	for _, structName := range structsToEvaluate {
 		if entry, found := structs[structName]; found {
-			visited := make(map[*ast.TypeSpec]bool)
+			visited := make(map[string]bool)
 			extractedEnvVars := extractEnvVars(entry, structs, "", "", visited)
 			for envVar, fieldPath := range extractedEnvVars {
 				if slices.Contains(generatedEnvVars, kace.Pascal(envVar)) {
@@ -158,7 +158,7 @@ func mustRel(basePath, targetPath string) string {
 }
 
 // handleIdent resolves an unqualified type name (same-package reference).
-func handleIdent(currentEntry *structEntry, structs map[string]*structEntry, fieldType *ast.Ident, envVars map[string]string, prefixValue, fieldNamePrefix, fieldName string, visited map[*ast.TypeSpec]bool) {
+func handleIdent(currentEntry *structEntry, structs map[string]*structEntry, fieldType *ast.Ident, envVars map[string]string, prefixValue, fieldNamePrefix, fieldName string, visited map[string]bool) {
 	key := fmt.Sprintf("%s.%s", currentEntry.relDir, fieldType.Name)
 	if nestedEntry, found := structs[key]; found {
 		maps.Copy(envVars, extractEnvVars(nestedEntry, structs, prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName), visited))
@@ -167,7 +167,7 @@ func handleIdent(currentEntry *structEntry, structs map[string]*structEntry, fie
 
 // handleSelectorExpr resolves a qualified type name (cross-package reference like pkg.Type)
 // using the current struct's file-level imports.
-func handleSelectorExpr(currentEntry *structEntry, structs map[string]*structEntry, fieldType *ast.SelectorExpr, envVars map[string]string, prefixValue, fieldNamePrefix, fieldName string, visited map[*ast.TypeSpec]bool) {
+func handleSelectorExpr(currentEntry *structEntry, structs map[string]*structEntry, fieldType *ast.SelectorExpr, envVars map[string]string, prefixValue, fieldNamePrefix, fieldName string, visited map[string]bool) {
 	pkgIdent, isIdentifier := fieldType.X.(*ast.Ident)
 	if !isIdentifier {
 		return
@@ -185,13 +185,16 @@ func handleSelectorExpr(currentEntry *structEntry, structs map[string]*structEnt
 }
 
 // extractEnvVars traverses a struct definition and collects environment variables, resolving nested structs.
-func extractEnvVars(entry *structEntry, structs map[string]*structEntry, envVarPrefix, fieldNamePrefix string, visited map[*ast.TypeSpec]bool) map[string]string {
+// visited keys by (typeKey, prefix) so the same type can be processed when reached via different paths (e.g. IOS vs Web).
+func extractEnvVars(entry *structEntry, structs map[string]*structEntry, envVarPrefix, fieldNamePrefix string, visited map[string]bool) map[string]string {
 	envVars := map[string]string{}
 
-	if visited[entry.typeSpec] {
+	typeKey := fmt.Sprintf("%s.%s", entry.relDir, entry.typeSpec.Name.Name)
+	visitedKey := typeKey + "|" + envVarPrefix
+	if visited[visitedKey] {
 		return envVars
 	}
-	visited[entry.typeSpec] = true
+	visited[visitedKey] = true
 
 	structType, ok := entry.typeSpec.Type.(*ast.StructType)
 	if !ok {
