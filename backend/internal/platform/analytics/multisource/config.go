@@ -24,22 +24,26 @@ func ProvideMultiSourceEventReporter(
 	log := logging.EnsureLogger(logger).WithName(name)
 
 	if len(proxySources) == 0 {
-		return NewMultiSourceEventReporter(reporters), nil
+		log.Info("no analytics proxy sources configured, multisource reporter will be empty")
+		return NewMultiSourceEventReporter(reporters, logger, tracerProvider), nil
 	}
 
 	for source, sourceCfg := range proxySources {
+		log.WithValue("source", source).WithValue("provider", sourceCfg.Provider).Info("configuring analytics reporter for proxy source")
 		r, err := sourceCfg.ProvideCollector(ctx, log, tracerProvider, metricsProvider)
 		if err != nil {
-			log.WithValue("source", source).WithValue("reason", err.Error()).Info("using noop for source")
+			log.WithValue("source", source).WithValue("reason", err.Error()).Error("failed to create reporter for proxy source, using noop", err)
 			reporters[source] = analytics.NewNoopEventReporter()
 			continue
 		}
 		if r == nil {
+			log.WithValue("source", source).WithValue("provider", sourceCfg.Provider).Info("ProvideCollector returned nil reporter, using noop")
 			reporters[source] = analytics.NewNoopEventReporter()
 			continue
 		}
+		log.WithValue("source", source).WithValue("provider", sourceCfg.Provider).Info("analytics reporter configured for proxy source")
 		reporters[source] = r
 	}
 
-	return NewMultiSourceEventReporter(reporters), nil
+	return NewMultiSourceEventReporter(reporters, logger, tracerProvider), nil
 }
