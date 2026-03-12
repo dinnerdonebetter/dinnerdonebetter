@@ -86,15 +86,21 @@ struct TaskListView: View {
     }
   }
 
+  private var isPast: Bool {
+    MealPlanningHomeHelpers.isMealPlanInPast(viewModel.mealPlan)
+  }
+
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       Text(MealPlanningHomeHelpers.formatMealPlanTimeRange(viewModel.mealPlan))
         .font(DSTheme.Typography.body)
         .foregroundColor(DSTheme.Colors.textSecondary)
+        .strikethrough(isPast)
 
       Text("\(viewModel.tasks.count) task\(viewModel.tasks.count == 1 ? "" : "s")")
         .font(DSTheme.Typography.caption)
         .foregroundColor(DSTheme.Colors.textSecondary)
+        .strikethrough(isPast)
     }
   }
 
@@ -115,6 +121,7 @@ struct TaskListView: View {
       Text(title)
         .font(DSTheme.Typography.label)
         .foregroundColor(color)
+        .strikethrough(isPast)
 
       ForEach(groups, id: \.parent.id) { group in
         TaskGroupRow(
@@ -135,6 +142,7 @@ struct TaskListView: View {
       Text("Later")
         .font(DSTheme.Typography.label)
         .foregroundColor(.secondary)
+        .strikethrough(isPast)
 
       ForEach(buckets, id: \.label) { bucket in
         VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
@@ -142,6 +150,7 @@ struct TaskListView: View {
             .font(DSTheme.Typography.caption)
             .fontWeight(.semibold)
             .foregroundColor(.orange)
+            .strikethrough(isPast)
 
           ForEach(bucket.groups, id: \.parent.id) { group in
             TaskGroupRow(

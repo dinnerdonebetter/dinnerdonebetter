@@ -2,6 +2,11 @@
 
 Event capture follows the same architecture as the Go backend: a generic interface with flexible implementations and rigid exclusive use.
 
+## Implementations
+
+- **SegmentEventReporter**: Sends directly to Segment via Analytics-Swift (default when `SegmentWriteKey` is set).
+- **BackendEventReporter**: Sends to the backend's analytics passthrough gRPC service (source `ios`). Enable by adding `USE_ANALYTICS_BACKEND = 1` to `Secrets.xcconfig`. When the key is absent, Segment is used. Requires backend `proxySources.ios` to be configured.
+
 ## Deployment
 
 The deploy workflow (`.github/workflows/deploy_ios.yaml`) creates `Secrets.xcconfig` at build time by writing values from GitHub Actions secrets. Add **`PROD_IOS_SEGMENT_WRITE_KEY`** to your repository secrets (Settings → Secrets and variables → Actions). The value comes from Segment: Connections → Sources → [Apple source] → Write Key.

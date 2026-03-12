@@ -212,6 +212,8 @@ struct StepCardView: View {
   var isCompletedOverride: Bool?
   var canCheckOverride: Bool?
   var onToggleOverride: (() -> Void)?
+  /// Called when user completes a step (for dismissing wash-hands reminder)
+  var onStepCompleted: (() -> Void)?
   /// For merged meal steps: ingredient key -> "2g from Recipe A, 3g from Recipe B"
   var ingredientBreakdownBySource: [String: String]?
   /// When set, show elapsed timer (for merged steps where parent computes from multiple sources)
@@ -403,6 +405,7 @@ struct StepCardView: View {
               } else {
                 viewModel.markStepComplete(recipeID: recipeID, stepID: step.id)
               }
+              onStepCompleted?()
             } else if hasConditionsOrTimer {
               UIImpactFeedbackGenerator(style: .light).impactOccurred()
               showCompletionConditionsHint = true

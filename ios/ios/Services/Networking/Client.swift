@@ -53,6 +53,9 @@ internal struct Client<Transport> where Transport: GRPCCore.ClientTransport {
   /// Uploaded media service client
   internal let uploadedMedia: UploadedMedia_UploadedMediaService.Client<Transport>
 
+  /// Analytics service client
+  internal let analytics: Analytics_AnalyticsService.Client<Transport>
+
   /// Internal gRPC client - shared across all service clients
   private let grpcClient: GRPCCore.GRPCClient<Transport>
 
@@ -76,6 +79,7 @@ internal struct Client<Transport> where Transport: GRPCCore.ClientTransport {
     self.settings = Settings_SettingsService.Client(wrapping: grpcClient)
     self.webhooks = Webhooks_WebhooksService.Client(wrapping: grpcClient)
     self.uploadedMedia = UploadedMedia_UploadedMediaService.Client(wrapping: grpcClient)
+    self.analytics = Analytics_AnalyticsService.Client(wrapping: grpcClient)
   }
 
   /// Start the connection for this client.

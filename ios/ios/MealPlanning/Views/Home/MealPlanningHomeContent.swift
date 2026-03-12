@@ -213,7 +213,12 @@ struct MealPlanningHomeContent: View {
             userSettingsService: userSettingsService
           )
         ) {
-          DSInfoRow(icon: "checklist", text: summary.text, color: summary.color)
+          DSInfoRow(
+            icon: "checklist",
+            text: summary.text,
+            color: summary.color,
+            strikethrough: MealPlanningHomeHelpers.isMealPlanInPast(mealPlan)
+          )
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
@@ -241,7 +246,8 @@ struct MealPlanningHomeContent: View {
             text: neededCount > 0
               ? "Grocery List (\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed)"
               : "All ingredients acquired",
-            color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
+            color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success,
+            strikethrough: MealPlanningHomeHelpers.isMealPlanInPast(mealPlan)
           )
         }
         .buttonStyle(.plain)
@@ -303,7 +309,12 @@ struct MealPlanningHomeContent: View {
               userSettingsService: userSettingsService
             )
           ) {
-            DSInfoRow(icon: "checklist", text: summary.text, color: summary.color)
+            DSInfoRow(
+              icon: "checklist",
+              text: summary.text,
+              color: summary.color,
+              strikethrough: MealPlanningHomeHelpers.isMealPlanInPast(mealPlan)
+            )
           }
           .buttonStyle(.plain)
           .simultaneousGesture(
@@ -332,7 +343,8 @@ struct MealPlanningHomeContent: View {
               text: neededCount > 0
                 ? "Grocery List (\(neededCount) ingredient\(neededCount == 1 ? "" : "s") needed)"
                 : "All ingredients acquired",
-              color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success
+              color: neededCount > 0 ? DSTheme.Colors.primary : DSTheme.Colors.success,
+              strikethrough: MealPlanningHomeHelpers.isMealPlanInPast(mealPlan)
             )
           }
           .buttonStyle(.plain)
@@ -544,6 +556,10 @@ struct PendingVoteCardContent: View {
 struct UpcomingMealCardContent: View {
   let mealPlan: Mealplanning_MealPlan
 
+  private var isPast: Bool {
+    MealPlanningHomeHelpers.isMealPlanInPast(mealPlan)
+  }
+
   private var usesDerivedTitle: Bool {
     let notes = mealPlan.notes.trimmingCharacters(in: .whitespacesAndNewlines)
     return notes.isEmpty
@@ -563,11 +579,13 @@ struct UpcomingMealCardContent: View {
           Text(MealPlanningHomeHelpers.mealPlanDisplayTitle(mealPlan, fallback: "Meal Plan"))
             .font(DSTheme.Typography.label)
             .foregroundColor(DSTheme.Colors.textPrimary)
+            .strikethrough(isPast)
 
           if !subtitleText.isEmpty {
             Text(subtitleText)
               .font(DSTheme.Typography.caption)
               .foregroundColor(DSTheme.Colors.textSecondary)
+              .strikethrough(isPast)
           }
         }
 
@@ -591,12 +609,14 @@ struct UpcomingMealCardContent: View {
               Text(eventDisplayLabel(event))
                 .font(DSTheme.Typography.body)
                 .foregroundColor(DSTheme.Colors.textPrimary)
+                .strikethrough(isPast)
 
               Spacer()
 
               Text(formatEventDate(event, compact: mealPlan.status == .finalized))
                 .font(DSTheme.Typography.caption)
                 .foregroundColor(DSTheme.Colors.textSecondary)
+                .strikethrough(isPast)
             }
           }
         }
@@ -605,6 +625,7 @@ struct UpcomingMealCardContent: View {
           Text("+ \(mealPlan.events.count - 3) more")
             .font(DSTheme.Typography.caption)
             .foregroundColor(DSTheme.Colors.textTertiary)
+            .strikethrough(isPast)
         }
       }
     }

@@ -122,6 +122,14 @@ enum MealPlanningHomeHelpers {
     return false
   }
 
+  /// Whether the meal plan's date range is entirely in the past (end date < now).
+  static func isMealPlanInPast(_ mealPlan: Mealplanning_MealPlan) -> Bool {
+    guard !mealPlan.events.isEmpty else { return false }
+    let latestEnd =
+      mealPlan.events.map { timestampToDate($0.endsAt) }.max() ?? Date.distantFuture
+    return latestEnd < Date()
+  }
+
   static func mealPlanDisplayTitle(_ mealPlan: Mealplanning_MealPlan, fallback: String) -> String {
     let title = mealPlan.notes.trimmingCharacters(in: .whitespacesAndNewlines)
 
