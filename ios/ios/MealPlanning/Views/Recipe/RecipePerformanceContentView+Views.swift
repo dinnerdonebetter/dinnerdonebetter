@@ -10,6 +10,188 @@
 import SwiftProtobuf
 import SwiftUI
 
+// MARK: - Timer Condition Row
+
+struct TimerConditionRow: View {
+  let viewModel: PerformRecipeViewModel
+  let recipeID: String
+  let stepID: String
+  let minSeconds: UInt32
+  let maxSeconds: UInt32?
+  var canStartStep: Bool = true
+  var timerElapsedSeconds: TimeInterval?
+  var onSkipTimerOverride: (() -> Void)?
+  var canSkipTimerOverride: Bool?
+  var timerMinSeconds: UInt32?
+  var timerMaxSeconds: UInt32?
+
+  private var isTimerCompleted: Bool {
+    viewModel.isTimerConditionCompleted(recipeID: recipeID, stepID: stepID)
+  }
+
+  private var isTimerActive: Bool {
+    viewModel.isStepTimerActive(recipeID: recipeID, stepID: stepID)
+  }
+
+  private var elapsed: TimeInterval {
+    timerElapsedSeconds ?? viewModel.stepTimerElapsedSeconds(recipeID: recipeID, stepID: stepID)
+      ?? 0
+  }
+
+  private var effectiveMin: UInt32 {
+    timerMinSeconds ?? viewModel.stepTimerMinSeconds(recipeID: recipeID, stepID: stepID)
+      ?? minSeconds
+  }
+
+  private var effectiveMax: UInt32? {
+    timerMaxSeconds ?? viewModel.stepTimerMaxSeconds(recipeID: recipeID, stepID: stepID)
+      ?? maxSeconds
+  }
+
+  private var canMarkDone: Bool {
+    canSkipTimerOverride ?? viewModel.canSkipStepTimer(recipeID: recipeID, stepID: stepID)
+  }
+
+  private var durationLabel: String {
+    if let max = maxSeconds, max > minSeconds {
+      return RecipeTimeEstimation.format(minSeconds: minSeconds, maxSeconds: max)
+    }
+    return RecipeTimeEstimation.format(minSeconds: minSeconds, maxSeconds: minSeconds)
+  }
+
+  var body: some View {
+    if isTimerCompleted {
+      completedState
+    } else if isTimerActive {
+      runningState
+    } else {
+      notStartedState
+    }
+  }
+
+  private var notStartedState: some View {
+    HStack(alignment: .center, spacing: 12) {
+      Button {
+        guard canStartStep else { return }
+        viewModel.startStepTimer(recipeID: recipeID, stepID: stepID)
+      } label: {
+        HStack(spacing: 6) {
+          Image(systemName: "play.fill")
+            .font(.subheadline)
+          Text("Start")
+            .font(.subheadline)
+            .fontWeight(.semibold)
+        }
+        .foregroundColor(canStartStep ? .white : .gray)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(canStartStep ? Color.orange : Color.gray.opacity(0.5))
+        .cornerRadius(8)
+      }
+      .buttonStyle(.plain)
+      .disabled(!canStartStep)
+
+      Text(durationLabel)
+        .font(.caption)
+        .foregroundColor(.secondary)
+
+      Spacer()
+    }
+  }
+
+  private var runningState: some View {
+    TimelineView(.periodic(from: .now, by: 1.0)) { _ in
+      let displayText: String = {
+        RecipeTimeEstimation.formatElapsedWithRange(
+          elapsedSeconds: elapsed,
+          minSeconds: effectiveMin,
+          maxSeconds: effectiveMax
+        )
+      }()
+      let timerColor: Color = canMarkDone ? .green : .orange
+
+      HStack(alignment: .center, spacing: 12) {
+        HStack(spacing: 8) {
+          Image(systemName: "clock.fill")
+            .font(.title3)
+            .foregroundColor(timerColor)
+          Text(displayText)
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundColor(timerColor)
+            .monospacedDigit()
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(timerColor.opacity(0.15))
+        .cornerRadius(8)
+
+        Spacer()
+
+        if canMarkDone {
+          Button {
+            viewModel.completeTimerCondition(recipeID: recipeID, stepID: stepID)
+          } label: {
+            Text("Done")
+              .font(.subheadline)
+              .fontWeight(.semibold)
+              .foregroundColor(.white)
+              .padding(.horizontal, 14)
+              .padding(.vertical, 8)
+              .background(Color.green)
+              .cornerRadius(8)
+          }
+          .buttonStyle(.plain)
+        }
+
+        Button {
+          if let onSkip = onSkipTimerOverride {
+            onSkip()
+          } else {
+            viewModel.skipStepTimer(recipeID: recipeID, stepID: stepID)
+          }
+        } label: {
+          Text("Skip")
+            .font(.subheadline)
+            .fontWeight(.medium)
+            .foregroundColor(.secondary)
+        }
+        .buttonStyle(.plain)
+
+        Button {
+          viewModel.cancelStepTimer(recipeID: recipeID, stepID: stepID)
+        } label: {
+          Text("Cancel")
+            .font(.subheadline)
+            .fontWeight(.medium)
+            .foregroundColor(.secondary)
+        }
+        .buttonStyle(.plain)
+      }
+    }
+  }
+
+  private var completedState: some View {
+    HStack(alignment: .top, spacing: 12) {
+      Button {
+        viewModel.toggleTimerCondition(recipeID: recipeID, stepID: stepID)
+      } label: {
+        Image(systemName: "checkmark.circle.fill")
+          .font(.title3)
+          .foregroundColor(.green)
+      }
+      .buttonStyle(.plain)
+
+      Text(durationLabel)
+        .font(.caption)
+        .foregroundColor(.secondary)
+        .strikethrough(true)
+
+      Spacer()
+    }
+  }
+}
+
 // MARK: - Step Card View
 
 struct StepCardView: View {
@@ -57,20 +239,20 @@ struct StepCardView: View {
   var body: some View {
     // Use overrides for merged steps, otherwise use viewModel
     let isCompleted: Bool
-    let canCheck: Bool
     let prerequisiteStepKeys: [String]
     let isTimerActive: Bool
 
+    let canCheckStep: Bool
     if let overrideCompleted = isCompletedOverride, let overrideCanCheck = canCheckOverride {
       isCompleted = overrideCompleted
-      canCheck = overrideCanCheck
+      canCheckStep = overrideCanCheck
       prerequisiteStepKeys = []
       isTimerActive = timerElapsedSeconds != nil
     } else {
       isCompleted = viewModel.isStepCompleted(recipeID: recipeID, stepID: step.id)
-      let canCheckStep = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
+      let canStartStep = viewModel.canStartStep(recipeID: recipeID, stepID: step.id)
+      canCheckStep = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
       isTimerActive = viewModel.isStepTimerActive(recipeID: recipeID, stepID: step.id)
-      canCheck = canCheckStep || isTimerActive  // Allow tap to cancel when timer active
       prerequisiteStepKeys = viewModel.getPrerequisiteStepKeys(recipeID: recipeID, stepID: step.id)
     }
 
@@ -93,45 +275,28 @@ struct StepCardView: View {
       : false
     let timerIconColor: Color = canSkipTimer ? .green : .orange
 
+    let hasTimerCondition =
+      step.estimatedTimeInSeconds.hasMin && step.estimatedTimeInSeconds.min > 0
+    let hasConditionsOrTimer = hasCompletionConditions || hasTimerCondition
+
     return VStack(alignment: .leading, spacing: 12) {
-      // Step header with checkbox
+      // Step header: step number badge, optional checkbox (simple steps only), title
       HStack(alignment: .top, spacing: 12) {
-        // Checkbox (works for both main and associated recipe steps)
-        Button(
-          action: {
-            let stepName = step.hasPreparation ? step.preparation.name : step.id
-            print(
-              "👆 StepCardView TAPPED '\(stepName)' | isCompleted=\(isCompleted) canCheck=\(canCheck) hasOverride=\(onToggleOverride != nil)"
-            )
-            if canCheck, let onToggle = onToggleOverride {
-              onToggle()
-            } else if canCheck {
-              viewModel.toggleStep(recipeID: recipeID, stepID: step.id)
-            } else if hasCompletionConditions {
-              UIImpactFeedbackGenerator(style: .light).impactOccurred()
-              showCompletionConditionsHint = true
-              Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 2_500_000_000)
-                showCompletionConditionsHint = false
-              }
-            }
-          },
-          label: {
-            Image(
-              systemName: isTimerActive
-                ? "clock.fill"
-                : (isCompleted ? "checkmark.circle.fill" : "circle")
-            )
+        if !isAssociatedRecipeStep {
+          Text("\(index + 1)")
+            .font(.caption)
+            .fontWeight(.bold)
+            .foregroundColor(.secondary)
+            .frame(width: 24, height: 24)
+            .background(Color(.systemGray5))
+            .clipShape(Circle())
+        }
+
+        if isCompleted {
+          Image(systemName: "checkmark.circle.fill")
             .font(.title2)
-            .foregroundColor(
-              canCheck
-                ? (isTimerActive
-                  ? timerIconColor
-                  : (isCompleted ? .green : (isAssociatedRecipeStep ? .purple : .blue)))
-                : .gray
-            )
-          }
-        )
+            .foregroundColor(.green)
+        }
 
         // Step title with preparation and ingredients
         VStack(alignment: .leading, spacing: 4) {
@@ -199,38 +364,66 @@ struct StepCardView: View {
         )
       }
 
-      if isTimerActive {
-        let elapsed =
-          timerElapsedSeconds ?? viewModel.stepTimerElapsedSeconds(
-            recipeID: recipeID, stepID: step.id) ?? 0
-        let minSec =
-          timerMinSeconds
-          ?? viewModel.stepTimerMinSeconds(
-            recipeID: recipeID, stepID: step.id)
-        let maxSec =
-          timerMaxSeconds
-          ?? viewModel.stepTimerMaxSeconds(
-            recipeID: recipeID, stepID: step.id)
-        stepTimerSection(
-          elapsed: elapsed,
-          minSeconds: minSec,
-          maxSeconds: maxSec,
-          canSkip: canSkipTimer,
-          onSkip: {
-            if let onSkip = onSkipTimerOverride {
-              onSkip()
-            } else {
-              viewModel.skipStepTimer(recipeID: recipeID, stepID: step.id)
-            }
-          }
+      if hasCompletionConditions || hasTimerCondition {
+        completionConditionsSection(
+          completionConditions: completionConditions,
+          hasTimerCondition: hasTimerCondition,
+          timerMinSeconds: hasTimerCondition
+            ? (timerMinSeconds ?? viewModel.stepTimerMinSeconds(recipeID: recipeID, stepID: step.id))
+            : nil,
+          timerMaxSeconds: hasTimerCondition
+            ? (timerMaxSeconds ?? viewModel.stepTimerMaxSeconds(recipeID: recipeID, stepID: step.id))
+            : nil,
+          isHighlighted: showCompletionConditionsHint
         )
       }
 
-      if hasCompletionConditions {
-        completionConditionsSection(
-          completionConditions: completionConditions,
-          isHighlighted: showCompletionConditionsHint
-        )
+      if !(isCompletedOverride ?? false) {
+        if isCompleted {
+          Button {
+            if let onToggle = onToggleOverride {
+              onToggle()
+            } else {
+              viewModel.toggleStep(recipeID: recipeID, stepID: step.id)
+            }
+          } label: {
+            Text("Undo")
+              .font(.subheadline)
+              .fontWeight(.medium)
+              .foregroundColor(.secondary)
+          }
+          .buttonStyle(.plain)
+        } else {
+          let canComplete =
+            canCheckOverride ?? viewModel.canCompleteStep(recipeID: recipeID, stepID: step.id)
+          Button {
+            if canComplete {
+              if let onToggle = onToggleOverride {
+                onToggle()
+              } else {
+                viewModel.markStepComplete(recipeID: recipeID, stepID: step.id)
+              }
+            } else if hasConditionsOrTimer {
+              UIImpactFeedbackGenerator(style: .light).impactOccurred()
+              showCompletionConditionsHint = true
+              Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 2_500_000_000)
+                showCompletionConditionsHint = false
+              }
+            }
+          } label: {
+            Text("Complete Step")
+              .font(.headline)
+              .fontWeight(.semibold)
+              .foregroundColor(.white)
+              .frame(maxWidth: .infinity)
+              .padding(.vertical, 12)
+              .background(canComplete ? Color.green : Color.gray)
+              .cornerRadius(10)
+          }
+          .buttonStyle(.plain)
+          .disabled(!canComplete)
+        }
       }
     }
     .padding()
@@ -248,7 +441,10 @@ struct StepCardView: View {
           stepBorderColor(
             isCompleted: isCompleted,
             isTimerActive: isTimerActive,
-            canSkipTimer: canSkipTimer
+            canSkipTimer: canSkipTimer,
+            canCompleteStep: canCheckOverride
+              ?? viewModel.canCompleteStep(recipeID: recipeID, stepID: step.id),
+            hasConditionsOrTimer: hasConditionsOrTimer
           ),
           lineWidth: isHighlighted && highlightedStepIDs != nil ? 2.5 : 2
         )
@@ -311,7 +507,9 @@ struct StepCardView: View {
   private func stepBorderColor(
     isCompleted: Bool,
     isTimerActive: Bool,
-    canSkipTimer: Bool
+    canSkipTimer: Bool,
+    canCompleteStep: Bool,
+    hasConditionsOrTimer: Bool
   ) -> Color {
     if isHighlighted && highlightedStepIDs != nil {
       return .blue.opacity(0.6)
@@ -325,20 +523,47 @@ struct StepCardView: View {
     if isCompleted {
       return Color.green.opacity(0.3)
     }
+    if hasConditionsOrTimer && canCompleteStep {
+      return Color.green.opacity(0.4)
+    }
+    if hasConditionsOrTimer {
+      return Color.blue.opacity(0.3)
+    }
     return Color.clear
   }
 
   @ViewBuilder
   private func completionConditionsSection(
     completionConditions: [Mealplanning_RecipeStepCompletionCondition],
+    hasTimerCondition: Bool,
+    timerMinSeconds: UInt32?,
+    timerMaxSeconds: UInt32?,
     isHighlighted: Bool = false
   ) -> some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text("Completion checks")
+      Text("Complete when")
         .font(.caption)
         .fontWeight(.semibold)
         .foregroundColor(.secondary)
         .padding(.leading, 44)
+
+      if hasTimerCondition, let minSec = timerMinSeconds {
+        TimerConditionRow(
+          viewModel: viewModel,
+          recipeID: recipeID,
+          stepID: step.id,
+          minSeconds: minSec,
+          maxSeconds: timerMaxSeconds,
+          canStartStep: canCheckOverride
+            ?? viewModel.canStartStep(recipeID: recipeID, stepID: step.id),
+          timerElapsedSeconds: timerElapsedSeconds,
+          onSkipTimerOverride: onSkipTimerOverride,
+          canSkipTimerOverride: canSkipTimerOverride,
+          timerMinSeconds: timerMinSeconds,
+          timerMaxSeconds: timerMaxSeconds
+        )
+        .padding(.leading, 44)
+      }
 
       ForEach(Array(completionConditions.enumerated()), id: \.offset) { conditionIndex, condition in
         let conditionIdentifier = viewModel.stepCompletionConditionIdentifier(
@@ -452,27 +677,28 @@ struct StepDetailsView: View {
   }
 
   var body: some View {
-    Group {
+    VStack(alignment: .leading, spacing: 20) {
       if horizontalSizeClass == .regular {
-        VStack(alignment: .leading, spacing: 10) {
-          HStack(alignment: .top, spacing: 20) {
-            ingredientSection
-              .frame(maxWidth: .infinity, alignment: .topLeading)
-            instrumentsAndVesselsSection
-              .frame(maxWidth: .infinity, alignment: .topLeading)
-          }
-
-          notesSection
+        HStack(alignment: .top, spacing: 32) {
+          ingredientSection
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+          instrumentsAndVesselsSection
+            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
       } else {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 20) {
           ingredientSection
           instrumentsAndVesselsSection
-          notesSection
         }
       }
+
+      notesSection
     }
-    .padding(.leading, 44)  // Align with step content
+    .padding(16)
+    .padding(.leading, 28)  // Align with step content (44 - 16)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(Color(.systemGray6).opacity(0.6))
+    .cornerRadius(10)
   }
 
   @ViewBuilder
@@ -532,7 +758,7 @@ struct StepDetailsView: View {
   private var notesSection: some View {
     if !step.notes.isEmpty {
       Text(step.notes)
-        .font(.caption)
+        .font(.subheadline)
         .foregroundColor(.secondary)
         .italic()
         .padding(.top, 4)
@@ -995,7 +1221,7 @@ struct StepItemsSectionView: View {
   var scale: Float = 1.0
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 4) {
+    VStack(alignment: .leading, spacing: 12) {
       Text(title)
         .font(.subheadline)
         .fontWeight(.semibold)
@@ -1007,46 +1233,48 @@ struct StepItemsSectionView: View {
         && vesselOptionGroups.isEmpty
       {
         Text("none")
-          .font(.caption)
+          .font(.subheadline)
           .foregroundColor(.secondary)
       }
 
       // Regular items
-      ForEach(Array(items.enumerated()), id: \.offset) { _, item in
-        itemRow(item)
-      }
+      VStack(alignment: .leading, spacing: 8) {
+        ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+          itemRow(item)
+        }
 
-      // Ingredient option groups
-      ForEach(ingredientOptionGroups) { group in
-        OptionGroupView(group: group, scale: scale)
-      }
+        // Ingredient option groups
+        ForEach(ingredientOptionGroups) { group in
+          OptionGroupView(group: group, scale: scale)
+        }
 
-      // Instrument option groups
-      ForEach(instrumentOptionGroups) { group in
-        InstrumentOptionGroupView(group: group, scale: scale)
-      }
+        // Instrument option groups
+        ForEach(instrumentOptionGroups) { group in
+          InstrumentOptionGroupView(group: group, scale: scale)
+        }
 
-      // Vessel option groups
-      ForEach(vesselOptionGroups) { group in
-        VesselOptionGroupView(group: group, scale: scale)
+        // Vessel option groups
+        ForEach(vesselOptionGroups) { group in
+          VesselOptionGroupView(group: group, scale: scale)
+        }
       }
     }
   }
 
   @ViewBuilder
   private func itemRow(_ item: StepItem) -> some View {
-    HStack(spacing: 6) {
+    HStack(alignment: .top, spacing: 8) {
       if item.isProduct && !item.prerequisiteCompleted {
         Image(systemName: "clock.fill")
-          .font(.caption)
+          .font(.subheadline)
           .foregroundColor(.orange)
       }
       Text(item.name)
-        .font(.caption)
+        .font(.subheadline)
         .foregroundColor(
-          (item.isProduct && !item.prerequisiteCompleted) ? .orange : .secondary
+          (item.isProduct && !item.prerequisiteCompleted) ? .orange : .primary
         )
-        .lineLimit(2)
+        .lineLimit(3)
       if let label = item.prerequisiteStepLabel {
         let referenceText = "(from \(label))"
         if let stepID = item.prerequisiteStepID {
@@ -1085,47 +1313,47 @@ struct OptionGroupView: View {
       let option = group.options.first
     {
       // Selected option - show like a regular ingredient (no indentation, no "one of:" label)
-      HStack(alignment: .top, spacing: 6) {
+      HStack(alignment: .top, spacing: 8) {
         if let quantityText = option.aggregated.quantityText(scale: scale) {
           Text(quantityText)
-            .font(.caption)
+            .font(.subheadline)
             .foregroundColor(.secondary)
         }
 
         VStack(alignment: .leading, spacing: 2) {
           Text(option.ingredient.name)
-            .font(.caption)
-            .foregroundColor(.secondary)
+            .font(.subheadline)
+            .foregroundColor(.primary)
           if !option.aggregated.quantityNotes.isEmpty {
             Text(option.aggregated.quantityNotes)
-              .font(.caption2)
+              .font(.caption)
               .foregroundColor(.secondary)
           }
         }
       }
     } else {
       // No selection - show all options with "one of:" label (indented)
-      VStack(alignment: .leading, spacing: 4) {
+      VStack(alignment: .leading, spacing: 8) {
         Text("one of:")
-          .font(.caption)
+          .font(.subheadline)
           .foregroundColor(.secondary)
           .padding(.leading, 16)
 
         ForEach(group.options) { option in
-          HStack(alignment: .top, spacing: 6) {
+          HStack(alignment: .top, spacing: 8) {
             if let quantityText = option.aggregated.quantityText(scale: scale) {
               Text(quantityText)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundColor(.secondary)
             }
 
             VStack(alignment: .leading, spacing: 2) {
               Text(option.ingredient.name)
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(.subheadline)
+                .foregroundColor(.primary)
               if !option.aggregated.quantityNotes.isEmpty {
                 Text(option.aggregated.quantityNotes)
-                  .font(.caption2)
+                  .font(.caption)
                   .foregroundColor(.secondary)
               }
             }
@@ -1148,24 +1376,24 @@ struct InstrumentOptionGroupView: View {
       let option = group.options.first
     {
       // Selected option - show like a regular instrument (no indentation, no "one of:" label)
-      HStack(spacing: 6) {
+      HStack(spacing: 8) {
         Text(option.instrument.name)
-          .font(.caption)
-          .foregroundColor(.secondary)
+          .font(.subheadline)
+          .foregroundColor(.primary)
       }
     } else {
       // No selection - show all options with "one of:" label (indented)
-      VStack(alignment: .leading, spacing: 4) {
+      VStack(alignment: .leading, spacing: 8) {
         Text("one of:")
-          .font(.caption)
+          .font(.subheadline)
           .foregroundColor(.secondary)
           .padding(.leading, 16)
 
         ForEach(group.options) { option in
-          HStack(spacing: 6) {
+          HStack(spacing: 8) {
             Text(option.instrument.name)
-              .font(.caption)
-              .foregroundColor(.secondary)
+              .font(.subheadline)
+              .foregroundColor(.primary)
           }
           .padding(.leading, 16)
         }
@@ -1185,24 +1413,24 @@ struct VesselOptionGroupView: View {
       let option = group.options.first
     {
       // Selected option - show like a regular vessel (no indentation, no "one of:" label)
-      HStack(spacing: 6) {
+      HStack(spacing: 8) {
         Text(option.vessel.name)
-          .font(.caption)
-          .foregroundColor(.secondary)
+          .font(.subheadline)
+          .foregroundColor(.primary)
       }
     } else {
       // No selection - show all options with "one of:" label (indented)
-      VStack(alignment: .leading, spacing: 4) {
+      VStack(alignment: .leading, spacing: 8) {
         Text("one of:")
-          .font(.caption)
+          .font(.subheadline)
           .foregroundColor(.secondary)
           .padding(.leading, 16)
 
         ForEach(group.options) { option in
-          HStack(spacing: 6) {
+          HStack(spacing: 8) {
             Text(option.vessel.name)
-              .font(.caption)
-              .foregroundColor(.secondary)
+              .font(.subheadline)
+              .foregroundColor(.primary)
           }
           .padding(.leading, 16)
         }

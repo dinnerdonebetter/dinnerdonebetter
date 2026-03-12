@@ -10,6 +10,7 @@ resources:
   - ../../../kustomize/components/workers
   - ../../../kustomize/components/async_functions
   - ../../../kustomize/components/admin_webapp
+  - ../../../kustomize/components/consumer_webapp
   # - ../../../kustomize/components/mcp_server
 
 images:
@@ -55,6 +56,10 @@ images:
 
   - name: dinner-done-better-admin-webapp
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-admin-webapp
+    newTag: latest
+
+  - name: dinner-done-better-consumer-webapp
+    newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-consumer-webapp
     newTag: latest
 
   # - name: dinner-done-better-mcp-server
@@ -275,6 +280,104 @@ patches:
       kind: CronJob
       name: dinner-done-better-job-mobile-notification-scheduler
 
+  ### Consumer Webapp - needs cookie and API service config
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_COOKIE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: COOKIE_NAME
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_HASH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: COOKIE_HASH_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_BLOCK_KEY
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: COOKIE_BLOCK_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: COOKIE_DOMAIN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_LIFETIME
+          value: "168h"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_COOKIES_SECURE_ONLY
+          value: "true"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL
+          value: "https://http-api.dinnerdonebetter.com"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL
+          value: "api.dinnerdonebetter.com:443"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: dinner-done-better-consumer-webapp-secrets
+              key: OAUTH2_CLIENT_SECRET
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-consumer-webapp-deployment
+
+  # ### Consumer Webapp - Pyroscope (Grafana Cloud)
+  # - patch: |-
+  #     - op: add
+  #       path: "/spec/template/spec/containers/0/env/-"
+  #       value:
+  #         name: DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_BASIC_AUTH_USER
+  #         valueFrom:
+  #           secretKeyRef:
+  #             name: grafana-cloud-creds
+  #             key: GRAFANA_CLOUD_PYROSCOPE_USERNAME
+  #     - op: add
+  #       path: "/spec/template/spec/containers/0/env/-"
+  #       value:
+  #         name: DINNER_DONE_BETTER_OBSERVABILITY_PROFILING_PYROSCOPE_BASIC_AUTH_PASSWORD
+  #         valueFrom:
+  #           secretKeyRef:
+  #             name: grafana-cloud-creds
+  #             key: GRAFANA_CLOUD_PYROSCOPE_PASSWORD
+  #   target:
+  #     version: v1
+  #     kind: Deployment
+  #     name: dinner-done-better-consumer-webapp-deployment
+
   ### Admin Webapp - needs cookie and API service config
   - patch: |-
       - op: add
@@ -454,6 +557,11 @@ configMapGenerator:
     namespace: prod
     files:
       - config.json=./configs/admin_webapp_config.json
+
+  - name: dinner-done-better-consumer-webapp-config
+    namespace: prod
+    files:
+      - config.json=./configs/consumer_webapp_config.json
 
   # - name: dinner-done-better-mcp-server-config
   #   namespace: prod
