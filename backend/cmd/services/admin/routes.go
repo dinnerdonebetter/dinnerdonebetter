@@ -210,6 +210,10 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/queue_test", ghttp.Adapt(s.QueueTestPage))
 	r.Post("/api/queue_test", ghttp.Adapt(s.QueueTestSubmit))
 
+	// Analytics Test
+	r.Get("/analytics_test", ghttp.Adapt(s.AnalyticsTestPage))
+	r.Post("/api/analytics_test", ghttp.Adapt(s.AnalyticsTestSubmit))
+
 	// Association delete routes
 	r.Delete("/api/valid_preparation_instruments/{associationID}", ghttp.Adapt(s.DeletePreparationInstrument))
 	r.Delete("/api/valid_preparation_vessels/{associationID}", ghttp.Adapt(s.DeletePreparationVessel))
