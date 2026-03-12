@@ -31,9 +31,11 @@ func TestProvideCollector(T *testing.T) {
 
 		ctx := t.Context()
 		cfg := &Config{
-			Provider: ProviderSegment,
-			Segment: &segment.Config{
-				APIToken: t.Name(),
+			SourceConfig: SourceConfig{
+				Provider: ProviderSegment,
+				Segment: &segment.Config{
+					APIToken: t.Name(),
+				},
 			},
 		}
 		logger := logging.NewNoopLogger()

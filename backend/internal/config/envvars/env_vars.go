@@ -31,29 +31,53 @@ const (
 	// AasaTeamIDEnvVarKey is the environment variable name to set to override `ConsumerWebappConfig.AppleAppSiteAssociation.TeamID`.
 	AasaTeamIDEnvVarKey = "DINNER_DONE_BETTER_AASA_TEAM_ID"
 
-	// AnalyticsCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `MealPlanGroceryListInitializerConfig.Analytics.CircuitBreaker.ErrorRate`.
-	AnalyticsCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_ERROR_RATE"
+	// AnalyticsProxySourcesIosCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.IOS.CircuitBreaker.ErrorRate`.
+	AnalyticsProxySourcesIosCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_IOS_CIRCUIT_BREAKER_ERROR_RATE"
 
-	// AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `MealPlanGroceryListInitializerConfig.Analytics.CircuitBreaker.MinimumSampleThreshold`.
-	AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
+	// AnalyticsProxySourcesIosCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.IOS.CircuitBreaker.MinimumSampleThreshold`.
+	AnalyticsProxySourcesIosCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_IOS_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
 
-	// AnalyticsCircuitBreakerNameEnvVarKey is the environment variable name to set to override `MealPlanGroceryListInitializerConfig.Analytics.CircuitBreaker.Name`.
-	AnalyticsCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_NAME"
+	// AnalyticsProxySourcesIosCircuitBreakerNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.IOS.CircuitBreaker.Name`.
+	AnalyticsProxySourcesIosCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_IOS_CIRCUIT_BREAKER_NAME"
 
-	// AnalyticsPosthogAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.Posthog.APIKey`.
-	AnalyticsPosthogAPIKeyEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_POSTHOG_API_KEY"
+	// AnalyticsProxySourcesIosPosthogAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.IOS.Posthog.APIKey`.
+	AnalyticsProxySourcesIosPosthogAPIKeyEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_IOS_POSTHOG_API_KEY"
 
-	// AnalyticsProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.Provider`.
-	AnalyticsProviderEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROVIDER"
+	// AnalyticsProxySourcesIosProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.IOS.Provider`.
+	AnalyticsProxySourcesIosProviderEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_IOS_PROVIDER"
 
-	// AnalyticsRudderstackAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.Rudderstack.APIKey`.
-	AnalyticsRudderstackAPIKeyEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_RUDDERSTACK_API_KEY"
+	// AnalyticsProxySourcesIosRudderstackAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.IOS.Rudderstack.APIKey`.
+	AnalyticsProxySourcesIosRudderstackAPIKeyEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_IOS_RUDDERSTACK_API_KEY"
 
-	// AnalyticsRudderstackDataPlaneURLEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.Rudderstack.DataPlaneURL`.
-	AnalyticsRudderstackDataPlaneURLEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_RUDDERSTACK_DATA_PLANE_URL"
+	// AnalyticsProxySourcesIosRudderstackDataPlaneURLEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.IOS.Rudderstack.DataPlaneURL`.
+	AnalyticsProxySourcesIosRudderstackDataPlaneURLEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_IOS_RUDDERSTACK_DATA_PLANE_URL"
 
-	// AnalyticsSegmentAPITokenEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.Segment.APIToken`.
-	AnalyticsSegmentAPITokenEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN"
+	// AnalyticsProxySourcesIosSegmentAPITokenEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.IOS.Segment.APIToken`.
+	AnalyticsProxySourcesIosSegmentAPITokenEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_IOS_SEGMENT_API_TOKEN"
+
+	// AnalyticsProxySourcesWebCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.Web.CircuitBreaker.ErrorRate`.
+	AnalyticsProxySourcesWebCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_WEB_CIRCUIT_BREAKER_ERROR_RATE"
+
+	// AnalyticsProxySourcesWebCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.Web.CircuitBreaker.MinimumSampleThreshold`.
+	AnalyticsProxySourcesWebCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_WEB_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
+
+	// AnalyticsProxySourcesWebCircuitBreakerNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.Web.CircuitBreaker.Name`.
+	AnalyticsProxySourcesWebCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_WEB_CIRCUIT_BREAKER_NAME"
+
+	// AnalyticsProxySourcesWebPosthogAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.Web.Posthog.APIKey`.
+	AnalyticsProxySourcesWebPosthogAPIKeyEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_WEB_POSTHOG_API_KEY"
+
+	// AnalyticsProxySourcesWebProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.Web.Provider`.
+	AnalyticsProxySourcesWebProviderEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_WEB_PROVIDER"
+
+	// AnalyticsProxySourcesWebRudderstackAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.Web.Rudderstack.APIKey`.
+	AnalyticsProxySourcesWebRudderstackAPIKeyEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_WEB_RUDDERSTACK_API_KEY"
+
+	// AnalyticsProxySourcesWebRudderstackDataPlaneURLEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.Web.Rudderstack.DataPlaneURL`.
+	AnalyticsProxySourcesWebRudderstackDataPlaneURLEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_WEB_RUDDERSTACK_DATA_PLANE_URL"
+
+	// AnalyticsProxySourcesWebSegmentAPITokenEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.Web.Segment.APIToken`.
+	AnalyticsProxySourcesWebSegmentAPITokenEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_WEB_SEGMENT_API_TOKEN"
 
 	// AuthDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Debug`.
 	AuthDebugEnvVarKey = "DINNER_DONE_BETTER_AUTH_DEBUG"
@@ -169,6 +193,24 @@ const (
 	// DatabaseUserDeviceTokenEncryptionKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.UserDeviceTokenEncryptionKey`.
 	DatabaseUserDeviceTokenEncryptionKeyEnvVarKey = "DINNER_DONE_BETTER_DATABASE_USER_DEVICE_TOKEN_ENCRYPTION_KEY"
 
+	// DatabaseWriteConnectionDatabaseEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.WriteConnection.Database`.
+	DatabaseWriteConnectionDatabaseEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DATABASE"
+
+	// DatabaseWriteConnectionDisableSslEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.WriteConnection.DisableSSL`.
+	DatabaseWriteConnectionDisableSslEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DISABLE_SSL"
+
+	// DatabaseWriteConnectionHostEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.WriteConnection.Host`.
+	DatabaseWriteConnectionHostEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_HOST"
+
+	// DatabaseWriteConnectionPasswordEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.WriteConnection.Password`.
+	DatabaseWriteConnectionPasswordEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_PASSWORD"
+
+	// DatabaseWriteConnectionPortEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.WriteConnection.Port`.
+	DatabaseWriteConnectionPortEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_PORT"
+
+	// DatabaseWriteConnectionUsernameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.WriteConnection.Username`.
+	DatabaseWriteConnectionUsernameEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_USERNAME"
+
 	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.CircuitBreaker.ErrorRate`.
 	EmailCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_ERROR_RATE"
 
@@ -226,11 +268,56 @@ const (
 	// EventsConsumerSqsQueueAddressEnvVarKey is the environment variable name to set to override `APIServiceConfig.Events.Consumer.SQS.QueueAddress`.
 	EventsConsumerSqsQueueAddressEnvVarKey = "DINNER_DONE_BETTER_EVENTS_CONSUMER_SQS_QUEUE_ADDRESS"
 
+	// EventsPublisherProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Events.Publisher.Provider`.
+	EventsPublisherProviderEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_PROVIDER"
+
+	// EventsPublisherPubsubProjectIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.Events.Publisher.PubSub.ProjectID`.
+	EventsPublisherPubsubProjectIDEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_PUBSUB_PROJECT_ID"
+
+	// EventsPublisherRedisPasswordEnvVarKey is the environment variable name to set to override `APIServiceConfig.Events.Publisher.Redis.Password`.
+	EventsPublisherRedisPasswordEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_REDIS_PASSWORD"
+
+	// EventsPublisherRedisQueueAddressesEnvVarKey is the environment variable name to set to override `APIServiceConfig.Events.Publisher.Redis.QueueAddresses`.
+	EventsPublisherRedisQueueAddressesEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_REDIS_QUEUE_ADDRESSES"
+
+	// EventsPublisherRedisUsernameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Events.Publisher.Redis.Username`.
+	EventsPublisherRedisUsernameEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_REDIS_USERNAME"
+
+	// EventsPublisherSqsQueueAddressEnvVarKey is the environment variable name to set to override `APIServiceConfig.Events.Publisher.SQS.QueueAddress`.
+	EventsPublisherSqsQueueAddressEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_SQS_QUEUE_ADDRESS"
+
+	// FeatureFlagsCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.CircuitBreaker.ErrorRate`.
+	FeatureFlagsCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_ERROR_RATE"
+
+	// FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.CircuitBreaker.MinimumSampleThreshold`.
+	FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// FeatureFlagsCircuitBreakingNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.CircuitBreaker.Name`.
+	FeatureFlagsCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_NAME"
+
+	// FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.ErrorRate`.
+	FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_ERROR_RATE"
+
+	// FeatureFlagsLaunchDarklycircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.MinimumSampleThreshold`.
+	FeatureFlagsLaunchDarklycircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// FeatureFlagsLaunchDarklycircuitBreakingNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.Name`.
+	FeatureFlagsLaunchDarklycircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_NAME"
+
 	// FeatureFlagsLaunchDarklyinitTimeoutEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.LaunchDarkly.InitTimeout`.
 	FeatureFlagsLaunchDarklyinitTimeoutEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYINIT_TIMEOUT"
 
 	// FeatureFlagsLaunchDarklysdkKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.LaunchDarkly.SDKKey`.
 	FeatureFlagsLaunchDarklysdkKeyEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYSDK_KEY"
+
+	// FeatureFlagsPosthogCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.PostHog.CircuitBreakerConfig.ErrorRate`.
+	FeatureFlagsPosthogCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_CIRCUIT_BREAKING_ERROR_RATE"
+
+	// FeatureFlagsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.PostHog.CircuitBreakerConfig.MinimumSampleThreshold`.
+	FeatureFlagsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// FeatureFlagsPosthogCircuitBreakingNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.PostHog.CircuitBreakerConfig.Name`.
+	FeatureFlagsPosthogCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_CIRCUIT_BREAKING_NAME"
 
 	// FeatureFlagsPosthogPersonalAPIKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.FeatureFlags.PostHog.PersonalAPIKey`.
 	FeatureFlagsPosthogPersonalAPIKeyEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY"
@@ -445,6 +532,15 @@ const (
 	// SearchAlgoliaTimeoutEnvVarKey is the environment variable name to set to override `APIServiceConfig.TextSearch.Algolia.Timeout`.
 	SearchAlgoliaTimeoutEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ALGOLIA_TIMEOUT"
 
+	// SearchCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.TextSearch.CircuitBreaker.ErrorRate`.
+	SearchCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_ERROR_RATE"
+
+	// SearchCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set to override `APIServiceConfig.TextSearch.CircuitBreaker.MinimumSampleThreshold`.
+	SearchCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
+
+	// SearchCircuitBreakerNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.TextSearch.CircuitBreaker.Name`.
+	SearchCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_NAME"
+
 	// SearchElasticsearchAddressEnvVarKey is the environment variable name to set to override `APIServiceConfig.TextSearch.Elasticsearch.Address`.
 	SearchElasticsearchAddressEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_ADDRESS"
 
@@ -514,11 +610,74 @@ const (
 	// ServiceAuthSsoConfigGoogleClientSecretEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.SSO.Google.ClientSecret`.
 	ServiceAuthSsoConfigGoogleClientSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET"
 
+	// ServiceAuthTokensAudienceEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.Tokens.Audience`.
+	ServiceAuthTokensAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_AUDIENCE"
+
+	// ServiceAuthTokensMaxAccessTokenLifetimeEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.Tokens.MaxAccessTokenLifetime`.
+	ServiceAuthTokensMaxAccessTokenLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_MAX_ACCESS_TOKEN_LIFETIME"
+
+	// ServiceAuthTokensMaxRefreshTokenLifetimeEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.Tokens.MaxRefreshTokenLifetime`.
+	ServiceAuthTokensMaxRefreshTokenLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_MAX_REFRESH_TOKEN_LIFETIME"
+
+	// ServiceAuthTokensProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.Tokens.Provider`.
+	ServiceAuthTokensProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_PROVIDER"
+
+	// ServiceAuthTokensSigningKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.Tokens.Base64EncodedSigningKey`.
+	ServiceAuthTokensSigningKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_SIGNING_KEY"
+
+	// ServiceDataPrivacyUploadsDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.DataPrivacy.Uploads.Debug`.
+	ServiceDataPrivacyUploadsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_DEBUG"
+
+	// ServiceDataPrivacyUploadsStorageBucketNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.DataPrivacy.Uploads.Storage.BucketName`.
+	ServiceDataPrivacyUploadsStorageBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_BUCKET_NAME"
+
+	// ServiceDataPrivacyUploadsStorageBucketPrefixEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.DataPrivacy.Uploads.Storage.BucketPrefix`.
+	ServiceDataPrivacyUploadsStorageBucketPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_BUCKET_PREFIX"
+
+	// ServiceDataPrivacyUploadsStorageFilesystemRootDirectoryEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.DataPrivacy.Uploads.Storage.FilesystemConfig.RootDirectory`.
+	ServiceDataPrivacyUploadsStorageFilesystemRootDirectoryEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_FILESYSTEM_ROOT_DIRECTORY"
+
+	// ServiceDataPrivacyUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.DataPrivacy.Uploads.Storage.GCP.BucketName`.
+	ServiceDataPrivacyUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_GCP_BUCKET_NAME"
+
+	// ServiceDataPrivacyUploadsStorageProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.DataPrivacy.Uploads.Storage.Provider`.
+	ServiceDataPrivacyUploadsStorageProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_PROVIDER"
+
+	// ServiceDataPrivacyUploadsStorageS3BucketNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.DataPrivacy.Uploads.Storage.S3Config.BucketName`.
+	ServiceDataPrivacyUploadsStorageS3BucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_S3_BUCKET_NAME"
+
+	// ServiceDataPrivacyUploadsStorageUploadFilenameKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.DataPrivacy.Uploads.Storage.UploadFilenameKey`.
+	ServiceDataPrivacyUploadsStorageUploadFilenameKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_UPLOAD_FILENAME_KEY"
+
 	// ServiceEnvironmentEnvVarKey is the environment variable name to set to override `EmailDeliverabilityTestConfigServiceEnvironment`.
 	ServiceEnvironmentEnvVarKey = "DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"
 
 	// ServiceMealPlanningPublicMediaURLPrefixEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.PublicMediaURLPrefix`.
 	ServiceMealPlanningPublicMediaURLPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_PUBLIC_MEDIA_URL_PREFIX"
+
+	// ServiceMealPlanningUploadsDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.Uploads.Debug`.
+	ServiceMealPlanningUploadsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_UPLOADS_DEBUG"
+
+	// ServiceMealPlanningUploadsStorageBucketNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.Uploads.Storage.BucketName`.
+	ServiceMealPlanningUploadsStorageBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_UPLOADS_STORAGE_BUCKET_NAME"
+
+	// ServiceMealPlanningUploadsStorageBucketPrefixEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.Uploads.Storage.BucketPrefix`.
+	ServiceMealPlanningUploadsStorageBucketPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_UPLOADS_STORAGE_BUCKET_PREFIX"
+
+	// ServiceMealPlanningUploadsStorageFilesystemRootDirectoryEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.Uploads.Storage.FilesystemConfig.RootDirectory`.
+	ServiceMealPlanningUploadsStorageFilesystemRootDirectoryEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_UPLOADS_STORAGE_FILESYSTEM_ROOT_DIRECTORY"
+
+	// ServiceMealPlanningUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.Uploads.Storage.GCP.BucketName`.
+	ServiceMealPlanningUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_UPLOADS_STORAGE_GCP_BUCKET_NAME"
+
+	// ServiceMealPlanningUploadsStorageProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.Uploads.Storage.Provider`.
+	ServiceMealPlanningUploadsStorageProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_UPLOADS_STORAGE_PROVIDER"
+
+	// ServiceMealPlanningUploadsStorageS3BucketNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.Uploads.Storage.S3Config.BucketName`.
+	ServiceMealPlanningUploadsStorageS3BucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_UPLOADS_STORAGE_S3_BUCKET_NAME"
+
+	// ServiceMealPlanningUploadsStorageUploadFilenameKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.Uploads.Storage.UploadFilenameKey`.
+	ServiceMealPlanningUploadsStorageUploadFilenameKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_UPLOADS_STORAGE_UPLOAD_FILENAME_KEY"
 
 	// ServiceMealPlanningUseSearchServiceEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.MealPlanning.UseSearchService`.
 	ServiceMealPlanningUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_USE_SEARCH_SERVICE"
@@ -537,6 +696,30 @@ const (
 
 	// ServicePaymentsStripeWebhookSecretEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Payments.Stripe.WebhookSecret`.
 	ServicePaymentsStripeWebhookSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_PAYMENTS_STRIPE_WEBHOOK_SECRET"
+
+	// ServiceUploadedMediaUploadsDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.UploadedMedia.Uploads.Debug`.
+	ServiceUploadedMediaUploadsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_UPLOADED_MEDIA_UPLOADS_DEBUG"
+
+	// ServiceUploadedMediaUploadsStorageBucketNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.UploadedMedia.Uploads.Storage.BucketName`.
+	ServiceUploadedMediaUploadsStorageBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_UPLOADED_MEDIA_UPLOADS_STORAGE_BUCKET_NAME"
+
+	// ServiceUploadedMediaUploadsStorageBucketPrefixEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.UploadedMedia.Uploads.Storage.BucketPrefix`.
+	ServiceUploadedMediaUploadsStorageBucketPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_UPLOADED_MEDIA_UPLOADS_STORAGE_BUCKET_PREFIX"
+
+	// ServiceUploadedMediaUploadsStorageFilesystemRootDirectoryEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.UploadedMedia.Uploads.Storage.FilesystemConfig.RootDirectory`.
+	ServiceUploadedMediaUploadsStorageFilesystemRootDirectoryEnvVarKey = "DINNER_DONE_BETTER_SERVICE_UPLOADED_MEDIA_UPLOADS_STORAGE_FILESYSTEM_ROOT_DIRECTORY"
+
+	// ServiceUploadedMediaUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.UploadedMedia.Uploads.Storage.GCP.BucketName`.
+	ServiceUploadedMediaUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_UPLOADED_MEDIA_UPLOADS_STORAGE_GCP_BUCKET_NAME"
+
+	// ServiceUploadedMediaUploadsStorageProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.UploadedMedia.Uploads.Storage.Provider`.
+	ServiceUploadedMediaUploadsStorageProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_UPLOADED_MEDIA_UPLOADS_STORAGE_PROVIDER"
+
+	// ServiceUploadedMediaUploadsStorageS3BucketNameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.UploadedMedia.Uploads.Storage.S3Config.BucketName`.
+	ServiceUploadedMediaUploadsStorageS3BucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_UPLOADED_MEDIA_UPLOADS_STORAGE_S3_BUCKET_NAME"
+
+	// ServiceUploadedMediaUploadsStorageUploadFilenameKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.UploadedMedia.Uploads.Storage.UploadFilenameKey`.
+	ServiceUploadedMediaUploadsStorageUploadFilenameKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_UPLOADED_MEDIA_UPLOADS_STORAGE_UPLOAD_FILENAME_KEY"
 
 	// ServiceUsersPublicMediaURLPrefixEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Users.PublicMediaURLPrefix`.
 	ServiceUsersPublicMediaURLPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_PUBLIC_MEDIA_URL_PREFIX"

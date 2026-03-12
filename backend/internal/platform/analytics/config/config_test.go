@@ -22,8 +22,10 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := t.Context()
 		cfg := &Config{
-			Provider: ProviderSegment,
-			Segment:  &segment.Config{APIToken: t.Name()},
+			SourceConfig: SourceConfig{
+				Provider: ProviderSegment,
+				Segment:  &segment.Config{APIToken: t.Name()},
+			},
 		}
 
 		require.NoError(t, cfg.ValidateWithContext(ctx))
@@ -34,7 +36,9 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := t.Context()
 		cfg := &Config{
-			Provider: ProviderSegment,
+			SourceConfig: SourceConfig{
+				Provider: ProviderSegment,
+			},
 		}
 
 		require.Error(t, cfg.ValidateWithContext(ctx))
@@ -57,11 +61,13 @@ func TestConfig_ProvideCollector(T *testing.T) {
 
 		for _, provider := range allProviders {
 			cfg := &Config{
-				Provider:       provider,
-				Segment:        &segment.Config{APIToken: t.Name()},
-				Rudderstack:    &rudderstack.Config{DataPlaneURL: t.Name(), APIKey: t.Name()},
-				Posthog:        &posthog.Config{APIKey: t.Name()},
-				CircuitBreaker: circuitbreaking.Config{},
+				SourceConfig: SourceConfig{
+					Provider:       provider,
+					Segment:        &segment.Config{APIToken: t.Name()},
+					Rudderstack:    &rudderstack.Config{DataPlaneURL: t.Name(), APIKey: t.Name()},
+					Posthog:        &posthog.Config{APIKey: t.Name()},
+					CircuitBreaker: circuitbreaking.Config{},
+				},
 			}
 
 			_, err := cfg.ProvideCollector(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
@@ -76,10 +82,12 @@ func TestConfig_ProvideCollector(T *testing.T) {
 
 		for _, provider := range allProviders {
 			cfg := &Config{
-				Provider:    provider,
-				Segment:     &segment.Config{},
-				Rudderstack: &rudderstack.Config{},
-				Posthog:     &posthog.Config{},
+				SourceConfig: SourceConfig{
+					Provider:    provider,
+					Segment:     &segment.Config{},
+					Rudderstack: &rudderstack.Config{},
+					Posthog:     &posthog.Config{},
+				},
 			}
 
 			_, err := cfg.ProvideCollector(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())

@@ -198,12 +198,14 @@ func buildProdConfig() *config.APIServiceConfig {
 			},
 		},
 		Analytics: analyticscfg.Config{
-			Provider: analyticscfg.ProviderSegment,
-			Segment:  &segment.Config{APIToken: "placeholder"}, // overridden by env from CSI secret
-			CircuitBreaker: circuitbreaking.Config{
-				Name:                   "prod_analytics",
-				ErrorRate:              .5,
-				MinimumSampleThreshold: 100,
+			SourceConfig: analyticscfg.SourceConfig{
+				Provider: analyticscfg.ProviderSegment,
+				Segment:  &segment.Config{APIToken: "placeholder"}, // overridden by env from CSI secret
+				CircuitBreaker: circuitbreaking.Config{
+					Name:                   "prod_analytics",
+					ErrorRate:              .5,
+					MinimumSampleThreshold: 100,
+				},
 			},
 		},
 		TextSearch: textsearchcfg.Config{

@@ -83,7 +83,8 @@ Backend Terraform (`backend/deploy/environments/prod/terraform`) requires these 
 | `POSTHOG_API_KEY`                      | PostHog Project API Key (for event ingestion)                                                                                                      |
 | `POSTHOG_PERSONAL_API_KEY`             | PostHog Personal API Key (for feature flags API; create in [PostHog Settings → Personal API Keys](https://app.posthog.com/settings/user-api-keys)) |
 | `SENDGRID_API_KEY`                     | SendGrid API token                                                                                                                                 |
-| `SEGMENT_API_TOKEN`                    | Segment API token                                                                                                                                  |
+| `API_SERVER_SEGMENT_WRITE_KEY`         | Segment write key for main analytics (API server, CronJobs, async handler)                                                                         |
+| `IOS_APP_SEGMENT_WRITE_KEY`            | Segment write key for iOS proxy source (when iOS sends events via backend)                                                                         |
 | `ALGOLIA_APPLICATION_ID`               | Algolia app ID                                                                                                                                     |
 | `ALGOLIA_API_KEY`                      | Algolia write API key                                                                                                                              |
 | `GOOGLE_SSO_OAUTH2_CLIENT_ID`          | Google OAuth2 client ID                                                                                                                            |

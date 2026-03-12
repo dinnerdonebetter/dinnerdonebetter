@@ -61,17 +61,22 @@ These variables must be configured in Terraform Cloud for each relevant workspac
 
 | Variable                   | Description                                                                                                                                       |
 |----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| `SEGMENT_API_TOKEN`        | Segment API token for event ingestion and analytics pipeline.                                                                                     |
+| `API_SERVER_SEGMENT_WRITE_KEY` | Segment write key for main analytics (API server, CronJobs, async handler).                                                                        |
+| `IOS_APP_SEGMENT_WRITE_KEY`    | Segment write key for iOS proxy source (when iOS app sends events via backend gRPC). Connections → Sources → [Apple source] → Write Key.            |
 | `POSTHOG_API_KEY`          | PostHog project API key for event ingestion.                                                                                                      |
 | `POSTHOG_PERSONAL_API_KEY` | PostHog personal API key for feature flags API. Create in [PostHog Settings → Personal API Keys](https://app.posthog.com/settings/user-api-keys). |
 
 #### Analytics Proxy (Multi-Source)
 
-The analytics proxy gRPC service forwards client events (e.g. from iOS, web) to analytics providers. Each **source** (e.g. `ios`, `web`) has its own config: provider (Segment, Rudderstack, PostHog) and credentials.
+The analytics proxy gRPC service forwards client events (e.g. from iOS, web) to analytics providers. Each **source** (`ios`, `web`) has its own config: provider (Segment, Rudderstack, PostHog) and credentials.
 
-- **Per-source secrets**: Add secrets as needed for each source. Example: `segment-ios-write-key` for the `ios` source when using Segment. Store in GCP Secret Manager, add to `SecretProviderClass` and `secret_sync.yaml`, and wire into the API service config JSON. Each source's config is self-contained.
+- **Environment variables**: Per-source config is fully overridable via env vars. Use `ANALYTICS_PROXY_SOURCES_IOS_*` for iOS and `ANALYTICS_PROXY_SOURCES_WEB_*` for web. Examples:
+  - `ANALYTICS_PROXY_SOURCES_IOS_PROVIDER` – Provider for iOS (segment, posthog, rudderstack)
+  - `ANALYTICS_PROXY_SOURCES_IOS_SEGMENT_API_TOKEN` – Segment write key for iOS
+  - `ANALYTICS_PROXY_SOURCES_IOS_POSTHOG_API_KEY` – PostHog key for iOS
+  - `ANALYTICS_PROXY_SOURCES_WEB_PROVIDER`, `ANALYTICS_PROXY_SOURCES_WEB_SEGMENT_API_TOKEN`, etc. – Same pattern for web
+- **Per-source secrets**: Add secrets as needed for each source. Example: `segment-ios-write-key` for the `ios` source when using Segment. Store in GCP Secret Manager, add to `SecretProviderClass` and `secret_sync.yaml`, and wire via env var overrides (e.g. `ANALYTICS_PROXY_SOURCES_IOS_SEGMENT_API_TOKEN`).
 - **Missing credentials**: If a source has no config or invalid/missing credentials, that source uses a Noop reporter (events are dropped for that source only).
-- **Config**: `ProxySources` in analytics config maps source names to full analytics config (provider + credentials). See `backend/docs/configuration.md` for structure.
 
 ### Observability (Grafana Cloud)
 

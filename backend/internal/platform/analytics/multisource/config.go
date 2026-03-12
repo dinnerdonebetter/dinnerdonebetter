@@ -15,7 +15,7 @@ import (
 // If creation fails (e.g. missing credentials) or provider is unset, uses Noop for that source.
 func ProvideMultiSourceEventReporter(
 	ctx context.Context,
-	proxySources analyticscfg.ProxySourcesConfig,
+	proxySources map[string]*analyticscfg.SourceConfig,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,

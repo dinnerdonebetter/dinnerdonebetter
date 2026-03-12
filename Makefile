@@ -91,13 +91,8 @@ regit:
 # Deploy to Docker Desktop Kubernetes cluster (no Helm required)
 .PHONY: deploy_localdev
 deploy_localdev:
-	@echo "Deploying infrastructure to Docker Desktop Kubernetes..."
 	skaffold run --filename=infra/skaffold.yaml --build-concurrency 1 --profile localdev
-	@echo "Deploying backend services to Docker Desktop Kubernetes..."
 	KO_DOCKER_REPO=ko.local skaffold run --filename=backend/skaffold.yaml --build-concurrency 1 --profile localdev
-	@echo "Deployment complete! Services available at:"
-	@echo "  - API Server: http://localhost:8000"
-	@echo "  - Admin Webapp: http://localhost:8888"
 
 # Deploy prod Terraform: infra first (GKE, networking), then backend. Run from repo root.
 # Pass args through, e.g. make deploy_terraform_prod ARGS="-auto-approve"
@@ -114,16 +109,9 @@ deploy_prod:
 .PHONY: verify_prod
 verify_prod:
 	skaffold verify --filename=skaffold.yaml --profile prod
-	
-.PHONY: deploy_prod_verify
-deploy_prod_verify: deploy_prod
-	@echo "Waiting 60s for load balancer..."
-	@sleep 60
-	$(MAKE) verify_prod
 
-.PHONY: nuke_localdev
-nuke_localdev:
-	kubectl delete namespace localdev --ignore-not-found
+.PHONY: full_prod_deploy
+full_prod_deploy: deploy_terraform_prod deploy_prod verify_prod
 
 .PHONY: format_proto
 format_proto:
