@@ -54,8 +54,9 @@ struct MealDetailView: View {
   @State private var isIngredientsExpanded = false
   @State private var checkedIngredients: Set<String> = []
   @State private var checkedInstrumentsVessels: Set<String> = []
-  @State private var mealWashHandsCompleted = false
   @State private var componentViewModels: [String: PerformRecipeViewModel] = [:]
+  /// Dismisses wash-hands reminder when user completes any step in this session
+  @State private var hasDismissedWashHandsReminder = false
   @State private var mealFlowMode: MealFlowMode = .unified
   @State private var showMealCompletedSteps = false
   @State private var customUpNextOrder: [String] = []
@@ -113,13 +114,9 @@ struct MealDetailView: View {
                     }
                   }
 
-                  // Keep screen awake (before wash hands)
+                  // Keep screen awake
                   if !meal.components.isEmpty {
                     DSKeepScreenAwakeButton(inline: true)
-                  }
-
-                  if !meal.components.isEmpty && !mealWashHandsCompleted {
-                    mealWashHandsSection
                   }
 
                   if !meal.components.isEmpty {
@@ -428,63 +425,20 @@ struct MealDetailView: View {
     }
   }
 
-  private var mealWashHandsSection: some View {
-    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
-      HStack(alignment: .top, spacing: DSTheme.Spacing.md) {
-        Button(
-          action: {
-            setMealWashHandsCompleted(!mealWashHandsCompleted)
-          },
-          label: {
-            Image(systemName: mealWashHandsCompleted ? "checkmark.circle.fill" : "circle")
-              .font(.title2)
-              .foregroundColor(
-                mealWashHandsCompleted
-                  ? DSTheme.Colors.success
-                  : DSTheme.Colors.primary
-              )
-          }
-        )
-        .buttonStyle(.plain)
-
-        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
-          HStack(spacing: DSTheme.Spacing.sm) {
-            Image(systemName: "hands.sparkles")
-              .font(DSTheme.Typography.title3)
-            Text("Wash your hands")
-              .font(DSTheme.Typography.title3)
-          }
-          .foregroundColor(
-            mealWashHandsCompleted
-              ? DSTheme.Colors.textSecondary
-              : DSTheme.Colors.textPrimary
-          )
-          .italic(mealWashHandsCompleted)
-
-          Text("Complete this once to unlock all component steps.")
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-        }
-
-        Spacer()
-      }
+  private var washHandsReminderText: some View {
+    HStack(spacing: DSTheme.Spacing.sm) {
+      Image(systemName: "hands.sparkles")
+        .font(DSTheme.Typography.body)
+        .foregroundColor(DSTheme.Colors.textSecondary)
+      Text("Wash your hands before cooking.")
+        .font(DSTheme.Typography.body)
+        .foregroundColor(DSTheme.Colors.textPrimary)
     }
-    .padding(DSTheme.Spacing.lg)
-    .background(
-      mealWashHandsCompleted
-        ? DSTheme.Colors.cardBackground
-        : Color(.systemBackground)
-    )
-    .cornerRadius(DSTheme.Radius.lg)
-    .overlay(
-      RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
-        .stroke(
-          mealWashHandsCompleted
-            ? DSTheme.Colors.success.opacity(0.3)
-            : Color.clear,
-          lineWidth: 2
-        )
-    )
+    .padding(.vertical, DSTheme.Spacing.md)
+    .padding(.horizontal, DSTheme.Spacing.sm)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.sm)
   }
 
   private var mealFlowModeSection: some View {
@@ -755,7 +709,7 @@ struct MealDetailView: View {
       focusedGroups: focusedGroups,
       allStepsTitle: "All Steps",
       emptyMessage: "Loading component steps...",
-      showStepsOverlay: !mealWashHandsCompleted,
+      showStepsOverlay: false,
       onReorder: { groupId, source, destination in
         let items = groupId == "Up Next" ? orderedUpNext : orderedForLater
         var mutable = items
@@ -777,10 +731,14 @@ struct MealDetailView: View {
           .font(DSTheme.Typography.title2)
       },
       allModeLeadingContent: {
-        EmptyView()
+        if !hasDismissedWashHandsReminder {
+          washHandsReminderText
+        }
       },
       focusModeLeadingContent: {
-        EmptyView()
+        if !hasDismissedWashHandsReminder {
+          washHandsReminderText
+        }
       },
       rowContent: { item in
         VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
@@ -829,6 +787,7 @@ struct MealDetailView: View {
                 }
               }
               : nil,
+            onStepCompleted: { hasDismissedWashHandsReminder = true },
             ingredientBreakdownBySource: item.ingredientBreakdownBySource,
             timerElapsedSeconds: item.isMerged
               ? mergedStepTimerElapsed(sources: item.sources)
@@ -983,7 +942,7 @@ struct MealDetailView: View {
       }
 
       let recipeViewModel = PerformRecipeViewModel(recipeID: recipeID, authManager: authManager)
-      recipeViewModel.washHandsCompleted = mealWashHandsCompleted
+      recipeViewModel.washHandsCompleted = true  // No gate in meal plan view
       recipeViewModel.completedSteps = completedStepsFromTasks[recipeID] ?? []
       componentViewModels[recipeID] = recipeViewModel
 
@@ -1064,22 +1023,6 @@ struct MealDetailView: View {
       }
     }
     return nil
-  }
-
-  private func setMealWashHandsCompleted(_ isCompleted: Bool) {
-    print(
-      "🧼 setMealWashHandsCompleted(\(isCompleted)) | componentViewModels count=\(componentViewModels.count)"
-    )
-    mealWashHandsCompleted = isCompleted
-    for (recipeID, viewModel) in componentViewModels {
-      viewModel.washHandsCompleted = isCompleted
-      print("🧼   set washHands=\(isCompleted) on viewModel for recipe \(recipeID.suffix(6))")
-      if !isCompleted {
-        viewModel.completedSteps.removeAll()
-        viewModel.stepTimerStartTimes.removeAll()
-        viewModel.clearStepCompletionConditionProgress()
-      }
-    }
   }
 
   private var aggregatedIngredientsSection: some View {
@@ -1322,6 +1265,10 @@ extension MealDetailView {
       Text("Components")
         .font(DSTheme.Typography.title2)
 
+      if !hasDismissedWashHandsReminder {
+        washHandsReminderText
+      }
+
       ForEach(meal.components, id: \.recipe.id) { component in
         EmbeddedRecipeView(
           recipeID: component.recipe.id,
@@ -1336,11 +1283,10 @@ extension MealDetailView {
           ),
           componentType: component.componentType,
           sharedViewModel: componentViewModels[component.recipe.id],
-          globalWashHandsCompleted: mealWashHandsCompleted,
+          globalWashHandsCompleted: true,  // No gate in meal plan view
           sharedShowCompletedSteps: $showMealCompletedSteps,
-          onGlobalWashHandsToggle: { isCompleted in
-            setMealWashHandsCompleted(isCompleted)
-          },
+          onGlobalWashHandsToggle: nil,
+          onStepCompleted: { hasDismissedWashHandsReminder = true },
           onViewModelReady: { recipeViewModel in
             componentViewModels[component.recipe.id] = recipeViewModel
           },
@@ -1392,6 +1338,7 @@ struct EmbeddedRecipeView: View {
   let globalWashHandsCompleted: Bool
   let sharedShowCompletedSteps: Binding<Bool>?
   let onGlobalWashHandsToggle: ((Bool) -> Void)?
+  let onStepCompleted: (() -> Void)?
   let onViewModelReady: ((PerformRecipeViewModel) -> Void)?
   let onRecipeLoaded: ((Mealplanning_Recipe) -> Void)?
 
@@ -1485,7 +1432,8 @@ struct EmbeddedRecipeView: View {
                 }
               ),
               sharedCompletedStepsVisibility: sharedShowCompletedSteps,
-              allowCompletedStepsToggle: true
+              allowCompletedStepsToggle: true,
+              onStepCompleted: onStepCompleted
             )
             .onAppear {
               onRecipeLoaded?(recipe)

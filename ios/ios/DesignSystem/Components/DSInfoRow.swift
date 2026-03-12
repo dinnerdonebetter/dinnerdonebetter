@@ -24,6 +24,7 @@ struct DSInfoRow: View {
   let text: String
   let color: Color
   var showChevron: Bool = true
+  var strikethrough: Bool = false
 
   var body: some View {
     HStack(spacing: DSTheme.Spacing.md) {
@@ -40,6 +41,7 @@ struct DSInfoRow: View {
       Text(text)
         .font(DSTheme.Typography.label)
         .foregroundColor(DSTheme.Colors.textPrimary)
+        .strikethrough(strikethrough)
 
       Spacer()
 

@@ -51,7 +51,7 @@ struct GroceryListView: View {
             Section {
               itemRows(items: viewModel.needsItems, section: GroceryItemSection.need)
             } header: {
-              DSRuleFlankedHeader(title: "Need", color: .orange)
+              DSRuleFlankedHeader(title: "Need", color: .orange, strikethrough: isPast)
             }
           }
 
@@ -59,7 +59,7 @@ struct GroceryListView: View {
             Section {
               itemRows(items: viewModel.unavailableItems, section: GroceryItemSection.unavailable)
             } header: {
-              DSRuleFlankedHeader(title: "Unavailable", color: .red)
+              DSRuleFlankedHeader(title: "Unavailable", color: .red, strikethrough: isPast)
             }
           }
 
@@ -67,7 +67,7 @@ struct GroceryListView: View {
             Section {
               itemRows(items: viewModel.haveItems, section: GroceryItemSection.have)
             } header: {
-              DSRuleFlankedHeader(title: "Have", color: .green)
+              DSRuleFlankedHeader(title: "Have", color: .green, strikethrough: isPast)
             }
           }
         }
@@ -118,15 +118,21 @@ struct GroceryListView: View {
     }
   }
 
+  private var isPast: Bool {
+    MealPlanningHomeHelpers.isMealPlanInPast(viewModel.mealPlan)
+  }
+
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       Text(MealPlanningHomeHelpers.formatMealPlanTimeRange(viewModel.mealPlan))
         .font(DSTheme.Typography.body)
         .foregroundColor(DSTheme.Colors.textSecondary)
+        .strikethrough(isPast)
 
       Text("\(viewModel.items.count) item\(viewModel.items.count == 1 ? "" : "s")")
         .font(DSTheme.Typography.caption)
         .foregroundColor(DSTheme.Colors.textSecondary)
+        .strikethrough(isPast)
     }
   }
 
@@ -148,6 +154,7 @@ struct GroceryListView: View {
           item: item,
           section: section,
           isUpdating: viewModel.isUpdating,
+          strikethrough: isPast,
           onMarkAsAcquired: {
             Task { await viewModel.markAsAcquired(item) }
           },
@@ -247,6 +254,7 @@ private struct GroceryListItemRow: View {
   let item: Mealplanning_MealPlanGroceryListItem
   let section: GroceryItemSection
   let isUpdating: Bool
+  var strikethrough: Bool = false
   let onMarkAsAcquired: () -> Void
   let onMarkAsNeeds: () -> Void
   let onEditQuantity: () -> Void
@@ -282,6 +290,7 @@ private struct GroceryListItemRow: View {
               .fontWeight(.medium)
               .foregroundColor(.primary)
               .multilineTextAlignment(.leading)
+              .strikethrough(strikethrough)
             Spacer(minLength: 0)
           }
           .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -306,6 +315,7 @@ private struct GroceryListItemRow: View {
           .fontWeight(.medium)
           .foregroundColor(.primary)
           .frame(maxWidth: .infinity, alignment: .leading)
+          .strikethrough(strikethrough)
 
       case .unavailable:
         Button {
@@ -323,6 +333,7 @@ private struct GroceryListItemRow: View {
           .fontWeight(.medium)
           .foregroundColor(.secondary)
           .frame(maxWidth: .infinity, alignment: .leading)
+          .strikethrough(strikethrough)
       }
     }
     .padding()

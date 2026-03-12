@@ -36,6 +36,10 @@ class PerformRecipeViewModel {
   // Track which completion conditions are checked (by key: "recipeID:stepID:conditionID")
   var completedStepCompletionConditions: Set<String> = []
 
+  // Track which step timers are completed (by key: "recipeID:stepID")
+  // Timer is a synthetic completion condition; when done, user can mark step complete
+  var completedStepTimers: Set<String> = []
+
   // Special step: wash hands (index -1)
   var washHandsCompleted: Bool = false
 
@@ -181,37 +185,23 @@ class PerformRecipeViewModel {
   private func buildProductIDToStepIndexMapping() {
     guard let recipe = recipe else { return }
 
-    let recipeName = recipe.name
-    print("📋 [\(recipeName)] Building product→step mapping")
-
     // Map products from main recipe
-    for (stepIdx, step) in recipe.steps.enumerated() {
+    for step in recipe.steps {
       let stepKey = "\(recipe.id):\(step.id)"
-      let prepName = step.hasPreparation ? step.preparation.name : "???"
       for product in step.products {
         productIDToStepKey[product.id] = stepKey
-        print(
-          "  📦 step[\(stepIdx)](\(prepName)) product '\(product.name)' id=\(product.id) → \(stepKey)"
-        )
       }
     }
 
     // Map products from associated recipes
     for associatedRecipe in recipe.associatedRecipes {
-      print("  🔗 Associated recipe: \(associatedRecipe.name) (\(associatedRecipe.id))")
-      for (stepIdx, step) in associatedRecipe.steps.enumerated() {
+      for step in associatedRecipe.steps {
         let stepKey = "\(associatedRecipe.id):\(step.id)"
-        let prepName = step.hasPreparation ? step.preparation.name : "???"
         for product in step.products {
           productIDToStepKey[product.id] = stepKey
-          print(
-            "    📦 step[\(stepIdx)](\(prepName)) product '\(product.name)' id=\(product.id) → \(stepKey)"
-          )
         }
       }
     }
-
-    print("📋 [\(recipeName)] Total product mappings: \(productIDToStepKey.count)")
   }
 
   // Helper to create a step key from recipeID and stepID
@@ -310,21 +300,8 @@ class PerformRecipeViewModel {
       conditionIdentifier: conditionIdentifier
     )
 
-    let recipeName = recipe?.name ?? "???"
-    let stepName: String = {
-      if let step = stepFor(recipeID: recipeID, stepID: stepID),
-        step.hasPreparation
-      {
-        return step.preparation.name
-      }
-      return stepID
-    }()
-
     if completedStepCompletionConditions.contains(key) {
       completedStepCompletionConditions.remove(key)
-      print(
-        "✅ [\(recipeName)] UNCHECKED condition '\(conditionIdentifier)' for '\(stepName)' | key=\(key) | conditions now=\(completedStepCompletionConditions)"
-      )
 
       let stepKey = stepKey(recipeID: recipeID, stepID: stepID)
       if completedSteps.contains(stepKey) {
@@ -334,18 +311,55 @@ class PerformRecipeViewModel {
     }
 
     completedStepCompletionConditions.insert(key)
+  }
+
+  // MARK: - Timer as completion condition
+
+  func isTimerConditionCompleted(recipeID: String, stepID: String) -> Bool {
+    completedStepTimers.contains(stepKey(recipeID: recipeID, stepID: stepID))
+  }
+
+  func completeTimerCondition(recipeID: String, stepID: String) {
+    let key = stepKey(recipeID: recipeID, stepID: stepID)
+    stepTimerStartTimes.removeValue(forKey: key)
+    StepTimerNotificationService.cancelNotification(stepKey: key)
+    completedStepTimers.insert(key)
+  }
+
+  func toggleTimerCondition(recipeID: String, stepID: String) {
+    let key = stepKey(recipeID: recipeID, stepID: stepID)
+    guard completedStepTimers.contains(key) else { return }
+    completedStepTimers.remove(key)
+
+    if completedSteps.contains(key) {
+      uncheckStepAndDependents(stepKey: key)
+    }
+  }
+
+  func startStepTimer(recipeID: String, stepID: String) {
+    let key = stepKey(recipeID: recipeID, stepID: stepID)
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID), stepHasTimer(step) else { return }
+    stepTimerStartTimes[key] = Date()
+    let recipeName = recipe?.name ?? "???"
+    let stepName = step.hasPreparation ? step.preparation.name : stepID
+    if let minSeconds = stepTimerMinSeconds(step) {
+      StepTimerNotificationService.scheduleNotification(
+        stepKey: key,
+        recipeName: recipeName,
+        stepName: stepName,
+        minSeconds: minSeconds
+      )
+    }
     print(
-      "✅ [\(recipeName)] CHECKED condition '\(conditionIdentifier)' for '\(stepName)' | key=\(key) | conditions now=\(completedStepCompletionConditions)"
+      "⏱ [\(recipeName)] startStepTimer '\(stepName)' → timer started"
     )
   }
 
   func areStepCompletionConditionsCompleted(recipeID: String, stepID: String) -> Bool {
     guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
-      print("⚠️ areStepCompletionConditionsCompleted: step not found for \(recipeID):\(stepID)")
       return false
     }
 
-    let recipeName = recipe?.name ?? "???"
     let stepName = step.hasPreparation ? step.preparation.name : stepID
     let nonOptionalConditions = step.completionConditions.enumerated().filter {
       !$0.element.optional
@@ -362,9 +376,6 @@ class PerformRecipeViewModel {
         recipeID: recipeID, stepID: stepID, conditionIdentifier: conditionIdentifier)
       let isCompleted = completedStepCompletionConditions.contains(key)
       if !isCompleted {
-        print(
-          "❌ [\(recipeName)] '\(stepName)' condition[\(index)] id='\(conditionIdentifier)' key='\(key)' → NOT completed | allKeys=\(completedStepCompletionConditions.sorted())"
-        )
         return false
       }
     }
@@ -396,6 +407,10 @@ class PerformRecipeViewModel {
         )
         completedStepCompletionConditions.insert(key)
       }
+
+      if stepHasTimer(step) {
+        completedStepTimers.insert(currentStepKey)
+      }
     }
     print(
       "✅ [\(recipe?.name ?? "???")] markAssociatedRecipeAsCompleted '\(recipeName)' → \(associatedRecipe.steps.count) steps marked done"
@@ -417,7 +432,9 @@ class PerformRecipeViewModel {
     return canCheckStep(recipeID: recipe.id, stepID: step.id)
   }
 
-  func canCheckStep(recipeID: String, stepID: String) -> Bool {
+  /// Can the user press "Complete Step" to mark this step done?
+  /// Requires: wash hands + prerequisites + all non-optional conditions + timer condition (if step has timer)
+  func canCompleteStep(recipeID: String, stepID: String) -> Bool {
     let recipeName = recipe?.name ?? "???"
     let stepName: String = {
       if let step = stepFor(recipeID: recipeID, stepID: stepID),
@@ -427,16 +444,12 @@ class PerformRecipeViewModel {
       }
       return stepID
     }()
-    let logPrefix =
-      "🔍 [\(recipeName)] canCheck '\(stepName)' (\(recipeID.suffix(6)):\(stepID.suffix(6)))"
 
     if !washHandsCompleted {
-      print("\(logPrefix) → false (wash hands not done)")
       return false
     }
 
     guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
-      print("\(logPrefix) → false (step not found)")
       return false
     }
 
@@ -444,15 +457,8 @@ class PerformRecipeViewModel {
       let productID = ingredient.recipeStepProductID
       if let prerequisiteStepKey = productIDToStepKey[productID] {
         if !completedSteps.contains(prerequisiteStepKey) {
-          print(
-            "\(logPrefix) → false (ingredient '\(ingredient.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)"
-          )
           return false
         }
-      } else {
-        print(
-          "\(logPrefix) ⚠️ ingredient '\(ingredient.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!"
-        )
       }
     }
 
@@ -460,15 +466,8 @@ class PerformRecipeViewModel {
       let productID = instrument.recipeStepProductID
       if let prerequisiteStepKey = productIDToStepKey[productID] {
         if !completedSteps.contains(prerequisiteStepKey) {
-          print(
-            "\(logPrefix) → false (instrument '\(instrument.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)"
-          )
           return false
         }
-      } else {
-        print(
-          "\(logPrefix) ⚠️ instrument '\(instrument.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!"
-        )
       }
     }
 
@@ -476,23 +475,64 @@ class PerformRecipeViewModel {
       let productID = vessel.recipeStepProductID
       if let prerequisiteStepKey = productIDToStepKey[productID] {
         if !completedSteps.contains(prerequisiteStepKey) {
-          print(
-            "\(logPrefix) → false (vessel '\(vessel.name)' needs product \(productID.suffix(6)), step \(prerequisiteStepKey.suffix(12)) not done)"
-          )
           return false
         }
-      } else {
-        print(
-          "\(logPrefix) ⚠️ vessel '\(vessel.name)' has productID \(productID.suffix(6)) but NO mapping in productIDToStepKey!"
-        )
       }
     }
 
     let conditionsOk = areStepCompletionConditionsCompleted(recipeID: recipeID, stepID: stepID)
     if !conditionsOk {
-      print("\(logPrefix) → false (completion conditions not met)")
+      return false
     }
-    return conditionsOk
+
+    if stepHasTimer(step) && !isTimerConditionCompleted(recipeID: recipeID, stepID: stepID) {
+      return false
+    }
+
+    return true
+  }
+
+  func markStepComplete(recipeID: String, stepID: String) {
+    let currentStepKey = stepKey(recipeID: recipeID, stepID: stepID)
+    guard canCompleteStep(recipeID: recipeID, stepID: stepID) else { return }
+    completedSteps.insert(currentStepKey)
+  }
+
+  func canCheckStep(recipeID: String, stepID: String) -> Bool {
+    canCompleteStep(recipeID: recipeID, stepID: stepID)
+  }
+
+  /// Prerequisites only (wash hands + step dependencies). Does NOT require completion conditions.
+  /// Use for starting/canceling timers. Use canCheckStep when marking a step complete without a timer.
+  func canStartStep(recipeID: String, stepID: String) -> Bool {
+    if !washHandsCompleted { return false }
+    guard let step = stepFor(recipeID: recipeID, stepID: stepID) else { return false }
+
+    for ingredient in step.ingredients where ingredient.hasRecipeStepProductID {
+      let productID = ingredient.recipeStepProductID
+      if let prerequisiteStepKey = productIDToStepKey[productID],
+        !completedSteps.contains(prerequisiteStepKey)
+      {
+        return false
+      }
+    }
+    for instrument in step.instruments where instrument.hasRecipeStepProductID {
+      let productID = instrument.recipeStepProductID
+      if let prerequisiteStepKey = productIDToStepKey[productID],
+        !completedSteps.contains(prerequisiteStepKey)
+      {
+        return false
+      }
+    }
+    for vessel in step.vessels where vessel.hasRecipeStepProductID {
+      let productID = vessel.recipeStepProductID
+      if let prerequisiteStepKey = productIDToStepKey[productID],
+        !completedSteps.contains(prerequisiteStepKey)
+      {
+        return false
+      }
+    }
+    return true
   }
 
   // Toggle step completion
@@ -505,6 +545,7 @@ class PerformRecipeViewModel {
       if !washHandsCompleted {
         completedSteps.removeAll()
         stepTimerStartTimes.removeAll()
+        completedStepTimers.removeAll()
         clearStepCompletionConditionProgress()
       }
       return
@@ -529,45 +570,23 @@ class PerformRecipeViewModel {
       return stepID
     }()
 
-    print(
-      "🔘 [\(recipeName)] toggleStep '\(stepName)' key=\(currentStepKey.suffix(12)) | completedSteps=\(completedSteps.count) | washHands=\(washHandsCompleted)"
-    )
-
-    guard canCheckStep(recipeID: recipeID, stepID: stepID) else {
-      print("🔘 [\(recipeName)] toggleStep '\(stepName)' → BLOCKED by canCheckStep")
+    // Basic checks: wash hands + prerequisites (NOT completion conditions)
+    guard canStartStep(recipeID: recipeID, stepID: stepID) else {
       return
     }
 
     if stepTimerStartTimes[currentStepKey] != nil {
-      print("🔘 [\(recipeName)] toggleStep '\(stepName)' → CANCEL timer")
       stepTimerStartTimes.removeValue(forKey: currentStepKey)
       StepTimerNotificationService.cancelNotification(stepKey: currentStepKey)
     } else if completedSteps.contains(currentStepKey) {
-      print("🔘 [\(recipeName)] toggleStep '\(stepName)' → UNCHECKING (and dependents)")
       uncheckStepAndDependents(stepKey: currentStepKey)
     } else {
       if let step = stepFor(recipeID: recipeID, stepID: stepID), stepHasTimer(step) {
-        stepTimerStartTimes[currentStepKey] = Date()
-        if let minSeconds = stepTimerMinSeconds(step) {
-          StepTimerNotificationService.scheduleNotification(
-            stepKey: currentStepKey,
-            recipeName: recipeName,
-            stepName: stepName,
-            minSeconds: minSeconds
-          )
-        }
-        print(
-          "🔘 [\(recipeName)] toggleStep '\(stepName)' → TIMER STARTED ⏱ | stepTimerStartTimes now=\(stepTimerStartTimes.count)"
-        )
+        startStepTimer(recipeID: recipeID, stepID: stepID)
       } else {
-        completedSteps.insert(currentStepKey)
-        print(
-          "🔘 [\(recipeName)] toggleStep '\(stepName)' → CHECKED ✅ | completedSteps now=\(completedSteps.count)"
-        )
+        markStepComplete(recipeID: recipeID, stepID: stepID)
       }
     }
-
-    print("🔘 [\(recipeName)] completedSteps after toggle: \(completedSteps.sorted())")
   }
 
   // Recursively uncheck a step and all steps that depend on it
@@ -575,6 +594,7 @@ class PerformRecipeViewModel {
     guard let recipe = recipe else { return }
     completedSteps.remove(stepKey)
     stepTimerStartTimes.removeValue(forKey: stepKey)
+    completedStepTimers.remove(stepKey)
     StepTimerNotificationService.cancelNotification(stepKey: stepKey)
 
     // Parse recipeID and stepID from stepKey
@@ -694,14 +714,21 @@ class PerformRecipeViewModel {
   // MARK: - Step timer state (for UI)
 
   func isStepTimerActive(recipeID: String, stepID: String) -> Bool {
+    let key = stepKey(recipeID: recipeID, stepID: stepID)
     guard let step = stepFor(recipeID: recipeID, stepID: stepID),
       stepHasTimer(step),
-      let startDate = stepTimerStartTimes[stepKey(recipeID: recipeID, stepID: stepID)],
-      let doneThreshold = stepTimerDoneThresholdSeconds(step)
+      stepTimerStartTimes[key] != nil
     else {
       return false
     }
-    return Date().timeIntervalSince(startDate) < Double(doneThreshold)
+    // If step has max time, auto-expire the timer when max is reached
+    if step.estimatedTimeInSeconds.hasMax,
+      let doneThreshold = stepTimerDoneThresholdSeconds(step),
+      let startDate = stepTimerStartTimes[key]
+    {
+      return Date().timeIntervalSince(startDate) < Double(doneThreshold)
+    }
+    return true  // No max: timer active until explicitly skipped
   }
 
   func stepTimerElapsedSeconds(recipeID: String, stepID: String) -> TimeInterval? {
@@ -752,10 +779,13 @@ class PerformRecipeViewModel {
   func skipStepTimer(recipeID: String, stepID: String) {
     let currentStepKey = stepKey(recipeID: recipeID, stepID: stepID)
     guard stepTimerStartTimes[currentStepKey] != nil else { return }
-    guard canSkipStepTimer(recipeID: recipeID, stepID: stepID) else { return }
-    stepTimerStartTimes.removeValue(forKey: currentStepKey)
-    StepTimerNotificationService.cancelNotification(stepKey: currentStepKey)
-    completedSteps.insert(currentStepKey)
+    completeTimerCondition(recipeID: recipeID, stepID: stepID)
+  }
+
+  func cancelStepTimer(recipeID: String, stepID: String) {
+    let key = stepKey(recipeID: recipeID, stepID: stepID)
+    stepTimerStartTimes.removeValue(forKey: key)
+    StepTimerNotificationService.cancelNotification(stepKey: key)
   }
 
   var hasActiveStepTimers: Bool {
@@ -767,13 +797,18 @@ class PerformRecipeViewModel {
       else {
         continue
       }
-      guard let step = stepFor(recipeID: recipeID, stepID: stepID),
-        let doneThreshold = stepTimerDoneThresholdSeconds(step)
-      else {
+      guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
         continue
       }
-      if Date().timeIntervalSince(startDate) < Double(doneThreshold) {
-        return true
+      // If step has max time, check elapsed; otherwise it's always active until explicitly skipped
+      if step.estimatedTimeInSeconds.hasMax,
+        let doneThreshold = stepTimerDoneThresholdSeconds(step)
+      {
+        if Date().timeIntervalSince(startDate) < Double(doneThreshold) {
+          return true
+        }
+      } else {
+        return true  // No max: always active until explicitly skipped
       }
     }
     return false
@@ -818,10 +853,14 @@ class PerformRecipeViewModel {
       let doneThreshold = stepTimerDoneThresholdSeconds(step)
     {
       let elapsed = Date().timeIntervalSince(startDate)
-      if elapsed >= Double(doneThreshold) {
-        stepTimerStartTimes.removeValue(forKey: currentStepKey)
-        completedSteps.insert(currentStepKey)
-        return .done
+      // Only auto-complete timer if step has a defined max time; steps with only min require explicit skip
+      if elapsed >= Double(doneThreshold) && step.estimatedTimeInSeconds.hasMax {
+        completeTimerCondition(recipeID: recipeID, stepID: stepID)
+        if canCompleteStep(recipeID: recipeID, stepID: stepID) {
+          markStepComplete(recipeID: recipeID, stepID: stepID)
+          return .done
+        }
+        return .upNext  // Timer done but other conditions not met
       }
       return .upNext  // Timer still running - stay in Up Next
     }

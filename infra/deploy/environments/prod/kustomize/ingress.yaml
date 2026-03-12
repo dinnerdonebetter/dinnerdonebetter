@@ -54,7 +54,7 @@ spec:
             path: "/"
             backend:
               service:
-                name: dinner-done-better-root-site-svc
+                name: dinner-done-better-consumer-webapp-svc
                 port:
                   number: 80
     - host: "www.dinnerdonebetter.com"
@@ -64,7 +64,7 @@ spec:
             path: "/"
             backend:
               service:
-                name: dinner-done-better-root-site-svc
+                name: dinner-done-better-consumer-webapp-svc
                 port:
                   number: 80
 ---

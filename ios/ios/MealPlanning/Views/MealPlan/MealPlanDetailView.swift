@@ -308,6 +308,10 @@ struct MealPlanDetailView: View {
     }
   }
 
+  private var isPast: Bool {
+    MealPlanningHomeHelpers.isMealPlanInPast(mealPlan)
+  }
+
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 8) {
       // Title with status badge and range inline
@@ -315,6 +319,7 @@ struct MealPlanDetailView: View {
         Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
           .font(.title2)
           .fontWeight(.bold)
+          .strikethrough(isPast)
 
         statusBadge
 
@@ -325,6 +330,7 @@ struct MealPlanDetailView: View {
       Text(MealPlanningHomeHelpers.formatMealPlanTimeRange(mealPlan))
         .font(.subheadline)
         .foregroundColor(.secondary)
+        .strikethrough(isPast)
     }
   }
 
@@ -340,6 +346,7 @@ struct MealPlanDetailView: View {
     return Text(text)
       .font(.caption)
       .fontWeight(.semibold)
+      .strikethrough(isPast)
       .padding(.horizontal, 8)
       .padding(.vertical, 4)
       .background(color.opacity(0.2))
@@ -359,6 +366,7 @@ struct MealPlanDetailView: View {
       Text("Voting deadline: \(formatter.string(from: deadline))")
         .font(.subheadline)
         .foregroundColor(.secondary)
+        .strikethrough(isPast)
     }
   }
 
@@ -389,6 +397,7 @@ struct MealPlanDetailView: View {
         Text("Upcoming")
           .font(.title2)
           .fontWeight(.bold)
+          .strikethrough(isPast)
 
         ForEach(upcomingEvents, id: \.id) { event in
           EventCard(
@@ -415,6 +424,7 @@ struct MealPlanDetailView: View {
           .font(.title2)
           .fontWeight(.bold)
           .foregroundColor(.secondary)
+          .strikethrough(isPast)
 
         ForEach(pastEvents, id: \.id) { event in
           EventCard(
@@ -475,6 +485,7 @@ struct MealPlanDetailView: View {
         .foregroundColor(.blue)
       Text("View Grocery List\(count > 0 ? " (\(count))" : "")")
         .font(.headline)
+        .strikethrough(isPast)
       Spacer()
       if count > 0 {
         Image(systemName: "chevron.right")
@@ -524,6 +535,7 @@ struct MealPlanDetailView: View {
         .foregroundColor(.blue)
       Text("Prep Tasks (\(count))")
         .font(.headline)
+        .strikethrough(isPast)
       Spacer()
       if count > 0 {
         Image(systemName: "chevron.right")
@@ -557,6 +569,11 @@ struct EventCard: View {
   var onSwap: (() -> Void)?
   var onCancel: (() -> Void)?
 
+  /// True when this specific event is in the past (startsAt < now).
+  private var isPast: Bool {
+    HomeViewModel.timestampToDate(event.startsAt) < Date()
+  }
+
   private var canSwap: Bool {
     guard let plan = mealPlan else { return false }
     return plan.events.filter { $0.id != event.id }.count >= 1
@@ -571,6 +588,7 @@ struct EventCard: View {
     return Text(formatter.string(from: startDate))
       .font(.caption)
       .foregroundColor(.secondary)
+      .strikethrough(isPast)
   }
 
   var body: some View {
@@ -580,6 +598,7 @@ struct EventCard: View {
         VStack(alignment: .leading, spacing: 4) {
           Text(MealPlanningUtils.formatMealName(event.mealName))
             .font(.headline)
+            .strikethrough(isPast)
 
           eventTimeRange(event: event)
         }
@@ -620,11 +639,6 @@ struct EventCard: View {
       // Selected meals
       if !event.options.isEmpty {
         VStack(alignment: .leading, spacing: 8) {
-          Text("Meals")
-            .font(.subheadline)
-            .fontWeight(.medium)
-            .foregroundColor(.secondary)
-
           ForEach(event.options.filter { $0.chosen }, id: \.id) { option in
             NavigationLink(
               destination: MealDetailView(
@@ -635,7 +649,7 @@ struct EventCard: View {
                 mealPlanOptionID: option.id
               )
             ) {
-              MealOptionCard(option: option, isChosen: true)
+              MealOptionCard(option: option, isChosen: true, strikethrough: isPast)
             }
             .buttonStyle(.plain)
             .simultaneousGesture(
@@ -650,6 +664,7 @@ struct EventCard: View {
         Text("No meals selected")
           .font(.subheadline)
           .foregroundColor(.secondary)
+          .strikethrough(isPast)
       }
     }
     .padding()
@@ -663,6 +678,7 @@ struct EventCard: View {
 struct MealOptionCard: View {
   let option: Mealplanning_MealPlanOption
   var isChosen: Bool = true
+  var strikethrough: Bool = false
 
   var body: some View {
     HStack {
@@ -677,6 +693,7 @@ struct MealOptionCard: View {
           Text(option.meal.name.isEmpty ? "Unnamed Meal" : option.meal.name)
             .font(.subheadline)
             .fontWeight(isChosen ? .semibold : .regular)
+            .strikethrough(strikethrough)
 
           // Tiebroken indicator
           if isChosen && option.tieBroken {
@@ -703,6 +720,7 @@ struct MealOptionCard: View {
               .font(.caption)
               .foregroundColor(.secondary)
               .lineLimit(2)
+              .strikethrough(strikethrough)
           }
         }
 
@@ -710,6 +728,7 @@ struct MealOptionCard: View {
           Text("Scale: \(String(format: "%.1f", option.mealScale))x")
             .font(.caption2)
             .foregroundColor(.secondary)
+            .strikethrough(strikethrough)
         }
       }
 

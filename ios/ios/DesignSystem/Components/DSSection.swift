@@ -242,10 +242,12 @@ extension DSSectionHeader where Trailing == EmptyView {
 struct DSRuleFlankedHeader: View {
   let title: String
   let color: Color
+  var strikethrough: Bool = false
 
-  init(title: String, color: Color) {
+  init(title: String, color: Color, strikethrough: Bool = false) {
     self.title = title
     self.color = color
+    self.strikethrough = strikethrough
   }
 
   var body: some View {
@@ -258,6 +260,7 @@ struct DSRuleFlankedHeader: View {
         .font(.headline)
         .fontWeight(.semibold)
         .foregroundColor(color)
+        .strikethrough(strikethrough)
       Rectangle()
         .fill(Color.secondary.opacity(0.5))
         .frame(height: 1)

@@ -1,5 +1,7 @@
-# Dependabot configuration for Dinner Done Better
-# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# NOTE: 
+#
+# This service fucking sucks ass. It issues PRs for updates that it can't verify, i.e. updating the version of a github action without testing or triggering the upgrade.
+# As a consequence, please don't use this service. There be dragons. That said, you could activate this once to get a good picture of what all needs to be updated, but you should do the updates manually.
 
 version: 2
 updates:

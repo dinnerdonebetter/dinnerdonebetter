@@ -31,6 +31,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   var sharedWashHandsCompleted: Binding<Bool>?
   var sharedCompletedStepsVisibility: Binding<Bool>?
   var allowCompletedStepsToggle: Bool = false
+  var onStepCompleted: (() -> Void)?
 
   // State for option selections (for interactive selection outside meal plan context)
   @State private var selectedIngredientOptions: [String: UInt32] = [:]  // optionGroupID -> selectedOptionIndex
@@ -105,7 +106,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     showWashHandsStepCard: Bool = true,
     sharedWashHandsCompleted: Binding<Bool>? = nil,
     sharedCompletedStepsVisibility: Binding<Bool>? = nil,
-    allowCompletedStepsToggle: Bool = false
+    allowCompletedStepsToggle: Bool = false,
+    onStepCompleted: (() -> Void)? = nil
   ) {
     self._checkedIngredients = checkedIngredients
     self._checkedInstrumentsVessels = checkedInstrumentsVessels
@@ -122,6 +124,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     self.sharedWashHandsCompleted = sharedWashHandsCompleted
     self.sharedCompletedStepsVisibility = sharedCompletedStepsVisibility
     self.allowCompletedStepsToggle = allowCompletedStepsToggle
+    self.onStepCompleted = onStepCompleted
   }
 
   @Environment(AuthenticationManager.self) private var authManager
@@ -1439,7 +1442,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           selectedIngredientOptions: selectedIngredientOptions,
           selectedInstrumentOptions: selectedInstrumentOptions,
           selectedVesselOptions: selectedVesselOptions,
-          scale: scale
+          scale: scale,
+          onStepCompleted: onStepCompleted
         )
       }
     )

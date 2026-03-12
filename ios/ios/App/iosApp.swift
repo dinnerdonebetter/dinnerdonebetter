@@ -11,8 +11,8 @@ import SwiftUI
 @main
 struct IOSApp: App {
   @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-  @State private var eventReporterService = EventReporterService()
-  @State private var authManager = AuthenticationManager()
+  @State private var authManager: AuthenticationManager
+  @State private var eventReporterService: EventReporterService
   @State private var userSettingsService = UserSettingsService()
   @State private var deepLinkHandler = DeepLinkHandler()
 
@@ -23,6 +23,9 @@ struct IOSApp: App {
     if RevenueCatConfiguration.isConfigured {
       Purchases.configure(withAPIKey: RevenueCatConfiguration.revenueCatAPIKey)
     }
+    let am = AuthenticationManager()
+    _authManager = State(initialValue: am)
+    _eventReporterService = State(initialValue: EventReporterService(authManager: am))
   }
 
   var body: some Scene {
@@ -45,7 +48,6 @@ struct IOSApp: App {
           }
         }
         .onOpenURL { url in
-          print("Received Universal Link: \(url)")
           deepLinkHandler.handleURL(url)
         }
     }
