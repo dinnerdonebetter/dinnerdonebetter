@@ -164,7 +164,7 @@ Add all variables to Terraform Cloud. Sources: `secrets.tf`, `meta_variables.tf`
 | `SENDGRID_API_KEY`                     | SendGrid API token                   |
 | `RESEND_API_KEY`                       | Resend API key                       |
 | `API_SERVER_SEGMENT_WRITE_KEY`         | Segment write key (main analytics)   |
-| `IOS_APP_SEGMENT_WRITE_KEY`           | Segment write key (iOS proxy source)|
+| `IOS_APP_SEGMENT_WRITE_KEY`            | Segment write key (iOS proxy source) |
 | `POSTHOG_API_KEY`                      | PostHog Project API Key              |
 | `POSTHOG_PERSONAL_API_KEY`             | PostHog Personal API Key             |
 | `ALGOLIA_APPLICATION_ID`               | Algolia app ID                       |

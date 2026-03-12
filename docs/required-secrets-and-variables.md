@@ -59,12 +59,12 @@ These variables must be configured in Terraform Cloud for each relevant workspac
 
 ### Analytics & Feature Flags
 
-| Variable                   | Description                                                                                                                                       |
-|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| `API_SERVER_SEGMENT_WRITE_KEY` | Segment write key for main analytics (API server, CronJobs, async handler).                                                                        |
-| `IOS_APP_SEGMENT_WRITE_KEY`    | Segment write key for iOS proxy source (when iOS app sends events via backend gRPC). Connections → Sources → [Apple source] → Write Key.            |
-| `POSTHOG_API_KEY`          | PostHog project API key for event ingestion.                                                                                                      |
-| `POSTHOG_PERSONAL_API_KEY` | PostHog personal API key for feature flags API. Create in [PostHog Settings → Personal API Keys](https://app.posthog.com/settings/user-api-keys). |
+| Variable                       | Description                                                                                                                                       |
+|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `API_SERVER_SEGMENT_WRITE_KEY` | Segment write key for main analytics (API server, CronJobs, async handler).                                                                       |
+| `IOS_APP_SEGMENT_WRITE_KEY`    | Segment write key for iOS proxy source (when iOS app sends events via backend gRPC). Connections → Sources → [Apple source] → Write Key.          |
+| `POSTHOG_API_KEY`              | PostHog project API key for event ingestion.                                                                                                      |
+| `POSTHOG_PERSONAL_API_KEY`     | PostHog personal API key for feature flags API. Create in [PostHog Settings → Personal API Keys](https://app.posthog.com/settings/user-api-keys). |
 
 #### Analytics Proxy (Multi-Source)
 
