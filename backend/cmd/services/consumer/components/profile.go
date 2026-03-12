@@ -1,6 +1,7 @@
 package components
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/branding"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 
 	g "maragu.dev/gomponents"
@@ -84,7 +85,7 @@ func (r *ComponentRenderer) ProfileContent(
 			ghtml.Class("p-4 rounded-lg border border-gray-200 bg-gray-50"),
 			ghtml.P(
 				ghtml.Class("text-sm text-gray-600"),
-				g.Text("Profile photo can be updated in the Dinner Done Better app."),
+				g.Textf("Profile photo can be updated in the %s app.", branding.CompanyName),
 			),
 		),
 	)

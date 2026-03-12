@@ -5,12 +5,11 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/consumer/design"
+	"github.com/dinnerdonebetter/backend/internal/branding"
 
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
-
-const appName = "Dinner Done Better"
 
 var (
 	tailwindImport = ghtml.Script(ghtml.Src("https://cdn.tailwindcss.com?plugins=typography"))
@@ -36,7 +35,7 @@ func page(title string, children ...g.Node) g.Node {
 		ghtml.Head(
 			ghtml.Meta(ghtml.Charset("utf-8")),
 			ghtml.Meta(ghtml.Name("viewport"), ghtml.Content("width=device-width, initial-scale=1")),
-			ghtml.Title(fmt.Sprintf("%s - %s", title, appName)),
+			ghtml.Title(fmt.Sprintf("%s - %s", title, branding.CompanyName)),
 			tailwindImport,
 			htmxImport,
 		),
@@ -68,7 +67,7 @@ func legalPage(title string, children ...g.Node) g.Node {
 		ghtml.Head(
 			ghtml.Meta(ghtml.Charset("utf-8")),
 			ghtml.Meta(ghtml.Name("viewport"), ghtml.Content("width=device-width, initial-scale=1")),
-			ghtml.Title(fmt.Sprintf("%s - %s", title, appName)),
+			ghtml.Title(fmt.Sprintf("%s - %s", title, branding.CompanyName)),
 			tailwindImport,
 			htmxImport,
 		),
@@ -104,7 +103,7 @@ func footer() g.Node {
 				ghtml.Class("flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0"),
 				ghtml.P(
 					ghtml.Class(fmt.Sprintf("text-sm %s", design.TextColor(palette.Text))),
-					g.Textf("© %d %s. All rights reserved.", time.Now().Year(), appName),
+					g.Textf("© %d %s. All rights reserved.", time.Now().Year(), branding.CompanyName),
 				),
 				ghtml.Div(
 					ghtml.Class("flex space-x-4 text-sm"),
@@ -146,7 +145,7 @@ func header() g.Node {
 					ghtml.Href("/"),
 					ghtml.H1(
 						ghtml.Class(fmt.Sprintf("text-xl font-bold %s hover:opacity-80 transition-opacity duration-200 cursor-pointer", design.TextColor(palette.Primary))),
-						g.Text(appName),
+						g.Text(branding.CompanyName),
 					),
 				),
 				ghtml.Nav(

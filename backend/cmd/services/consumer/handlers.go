@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/consumer/components"
+	"github.com/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
@@ -17,18 +18,13 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-const (
-	appStoreURL     = "https://apps.apple.com/app/dinner-done-better/id0000000000" // TODO: replace with actual App Store URL
-	acceptInviteMsg = "To accept this invitation, open the Dinner Done Better app. If you don't have the app, download it from the App Store."
-)
-
 func (s *ConsumerFrontendServer) HomePage(_ http.ResponseWriter, _ *http.Request) (g.Node, error) {
 	return page("Home",
 		ghtml.Div(
 			ghtml.Class("text-center space-y-4"),
 			ghtml.H2(
 				ghtml.Class("text-2xl font-bold"),
-				g.Text("Welcome to Dinner Done Better"),
+				g.Textf("Welcome to %s", branding.CompanyName),
 			),
 			ghtml.P(
 				ghtml.Class("text-gray-600"),
@@ -38,7 +34,7 @@ func (s *ConsumerFrontendServer) HomePage(_ http.ResponseWriter, _ *http.Request
 	), nil
 }
 
-func (s *ConsumerFrontendServer) AccountSettingsPage(res http.ResponseWriter, req *http.Request) (g.Node, error) {
+func (s *ConsumerFrontendServer) AccountSettingsPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -124,10 +120,10 @@ func (s *ConsumerFrontendServer) AcceptInvitationPage(res http.ResponseWriter, r
 				),
 				ghtml.P(
 					ghtml.Class("text-gray-600"),
-					g.Text(acceptInviteMsg),
+					g.Text(fmt.Sprintf("To accept this invitation, open the %s app. If you don't have the app, download it from the App Store.", branding.CompanyName)),
 				),
 				ghtml.A(
-					ghtml.Href(appStoreURL),
+					ghtml.Href(branding.AppStoreURL),
 					ghtml.Class("inline-block px-6 py-3 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700"),
 					g.Text("Open in App Store"),
 				),
@@ -145,10 +141,10 @@ func (s *ConsumerFrontendServer) AcceptInvitationPage(res http.ResponseWriter, r
 			),
 			ghtml.P(
 				ghtml.Class("text-gray-600"),
-				g.Text("This invitation link is for the Dinner Done Better mobile app. Open this link on your iPhone or iPad to accept the invitation."),
+				g.Textf("This invitation link is for the %s mobile app. Open this link on your iPhone or iPad to accept the invitation.", branding.CompanyName),
 			),
 			ghtml.A(
-				ghtml.Href(appStoreURL),
+				ghtml.Href(branding.AppStoreURL),
 				ghtml.Class("inline-block px-6 py-3 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700"),
 				g.Text("Get the App"),
 			),

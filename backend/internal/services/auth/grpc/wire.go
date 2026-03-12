@@ -3,6 +3,7 @@ package grpc
 import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/webauthn"
 	webauthncfg "github.com/dinnerdonebetter/backend/internal/authentication/webauthn/config"
+	"github.com/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/backend/internal/config"
 
 	"github.com/google/wire"
@@ -20,7 +21,7 @@ func ProvidePasskeyConfig(cfg *config.APIServiceConfig) webauthn.Config {
 	if p.RPID == "" {
 		return webauthn.Config{
 			RPID:          "localhost",
-			RPDisplayName: "Dinner Done Better",
+			RPDisplayName: branding.CompanyName,
 			RPOrigins:     []string{"https://localhost:8080", "http://localhost:8080"},
 		}
 	}
@@ -30,7 +31,7 @@ func ProvidePasskeyConfig(cfg *config.APIServiceConfig) webauthn.Config {
 	}
 	return webauthn.Config{
 		RPID:          p.RPID,
-		RPDisplayName: orDefault(p.RPDisplayName, "Dinner Done Better"),
+		RPDisplayName: orDefault(p.RPDisplayName, branding.CompanyName),
 		RPOrigins:     origins,
 	}
 }
