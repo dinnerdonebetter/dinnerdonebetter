@@ -95,9 +95,9 @@ deploy_localdev:
 	KO_DOCKER_REPO=ko.local skaffold run --filename=backend/skaffold.yaml --build-concurrency 1 --profile localdev
 
 # Deploy prod Terraform: infra first (GKE, networking), then backend. Run from repo root.
-# Pass args through, e.g. make deploy_prod_software_infra ARGS="-auto-approve"
-.PHONY: deploy_prod_software_infra
-deploy_prod_software_infra:
+# Pass args through, e.g. make deploy_prod_infra ARGS="-auto-approve"
+.PHONY: deploy_prod_infra
+deploy_prod_infra:
 	./infra/scripts/terraform_apply_prod.sh -auto-approve
 	(cd backend && ./scripts/terraform_apply_prod.sh -auto-approve)
 
@@ -111,7 +111,7 @@ verify_prod:
 	skaffold verify --filename=skaffold.yaml --profile prod
 
 .PHONY: full_prod_deploy
-full_prod_deploy: deploy_prod_software_infra deploy_prod_software verify_prod
+full_prod_deploy: deploy_prod_infra deploy_prod_software verify_prod
 
 .PHONY: format_proto
 format_proto:

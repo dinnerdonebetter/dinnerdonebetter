@@ -29,11 +29,11 @@ const (
 type (
 	// SourceConfig is the per-source analytics config (provider + credentials). Used for proxy sources; no ProxySources to avoid recursion.
 	SourceConfig struct {
-		Segment        *segment.Config        `env:",init"    envPrefix:"SEGMENT_"         json:"segment"`
-		Posthog        *posthog.Config        `env:",init"    envPrefix:"POSTHOG_"         json:"posthog"`
-		Rudderstack    *rudderstack.Config    `env:",init"    envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
-		Provider       string                 `env:"PROVIDER" json:"provider"`
-		CircuitBreaker circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKER_"               json:"circuitBreaker"`
+		Segment        *segment.Config        `env:",init"                  envPrefix:"SEGMENT_"     json:"segment"`
+		Posthog        *posthog.Config        `env:",init"                  envPrefix:"POSTHOG_"     json:"posthog"`
+		Rudderstack    *rudderstack.Config    `env:",init"                  envPrefix:"RUDDERSTACK_" json:"rudderstack"`
+		Provider       string                 `env:"PROVIDER"               json:"provider"`
+		CircuitBreaker circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
 	}
 
 	// ProxySourcesConfig holds per-source analytics config for the analytics proxy gRPC service. Sources are codified: ios and web.
