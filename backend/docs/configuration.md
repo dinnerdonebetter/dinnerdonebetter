@@ -80,7 +80,7 @@ Backend Terraform (`backend/deploy/environments/prod/terraform`) requires these 
 
 | Variable                               | Description                                                                                                                                        |
 |----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `POSTHOG_API_KEY`                      | PostHog Project API Key (for event ingestion: main analytics and proxy sources)                                                                   |
+| `POSTHOG_API_KEY`                      | PostHog Project API Key (for event ingestion: main analytics and proxy sources)                                                                    |
 | `POSTHOG_PERSONAL_API_KEY`             | PostHog Personal API Key (for feature flags API; create in [PostHog Settings → Personal API Keys](https://app.posthog.com/settings/user-api-keys)) |
 | `SENDGRID_API_KEY`                     | SendGrid API token                                                                                                                                 |
 | `ALGOLIA_APPLICATION_ID`               | Algolia app ID                                                                                                                                     |
