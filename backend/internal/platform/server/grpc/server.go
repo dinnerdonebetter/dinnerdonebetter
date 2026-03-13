@@ -133,8 +133,13 @@ func (s *Server) Serve() {
 func LoggingInterceptor(logger logging.Logger) grpc.UnaryServerInterceptor {
 	l := logging.EnsureLogger(logger)
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+		var ev uint8
 		result, err := handler(ctx, req)
-		l.WithValue("rpc.method", info.FullMethod).WithValue("errored", err != nil).Info("rpc invoked")
+		if err != nil {
+			ev = 1
+		}
+		l.WithValue("rpc.method", info.FullMethod).WithValue("err", ev).Info("rpc invoked")
+
 		return result, err
 	}
 }
