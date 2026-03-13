@@ -54,6 +54,10 @@ func (s *ConsumerFrontendServer) setupRoutes(router routing.Router) {
 	router.Get("/accept_invitation", ghttp.Adapt(s.AcceptInvitationPage))
 	router.Get("/accept_invitation/*", ghttp.Adapt(s.AcceptInvitationPage))
 
+	// Meal plan links from email - show "Open in app" when opened in browser (e.g. Mail in-app browser on iOS)
+	router.Get("/meal_plans", ghttp.Adapt(s.MealPlanLandingPage))
+	router.Get("/meal_plans/*", ghttp.Adapt(s.MealPlanLandingPage))
+
 	// Legal (public)
 	router.Get("/terms-of-service", ghttp.Adapt(s.TermsPage))
 	router.Get("/privacy-policy", ghttp.Adapt(s.PrivacyPage))

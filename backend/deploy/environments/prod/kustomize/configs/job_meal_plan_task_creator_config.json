@@ -43,7 +43,7 @@
 		"rudderstack": null,
 		"provider": "posthog",
 		"circuitBreaker": {
-			"name": "prod_analytics",
+			"name": "api_analytics",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
