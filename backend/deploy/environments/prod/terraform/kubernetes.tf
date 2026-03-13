@@ -119,8 +119,6 @@ resource "kubernetes_secret" "api_service_config" {
     DATABASE_USERNAME                  = local.api_database_username
     DATABASE_PASSWORD                  = random_password.api_user_database_password.result
     SENDGRID_API_TOKEN                 = var.SENDGRID_API_KEY
-    SEGMENT_API_TOKEN                  = var.API_SERVER_SEGMENT_WRITE_KEY
-    IOS_SEGMENT_API_TOKEN              = var.IOS_APP_SEGMENT_WRITE_KEY
     POSTHOG_API_KEY                    = var.POSTHOG_API_KEY
     POSTHOG_PERSONAL_API_KEY           = var.POSTHOG_PERSONAL_API_KEY
     ALGOLIA_APPLICATION_ID             = var.ALGOLIA_APPLICATION_ID

@@ -157,6 +157,51 @@ func isIOSWebBrowser(userAgent string) bool {
 		strings.Contains(strings.ToLower(userAgent), "ipad")
 }
 
+// MealPlanLandingPage serves the /meal_plans and /meal_plans/* paths when opened in a browser.
+// When the user taps the meal plan link from email on iOS, Mail often opens it in an in-app browser
+// instead of triggering a Universal Link. This page directs them to open the app or get it from the App Store.
+func (s *ConsumerFrontendServer) MealPlanLandingPage(res http.ResponseWriter, req *http.Request) (g.Node, error) {
+	userAgent := req.Header.Get("User-Agent")
+	if isIOSWebBrowser(userAgent) {
+		return page("View Meal Plan",
+			ghtml.Div(
+				ghtml.Class("space-y-6 text-center"),
+				ghtml.H2(
+					ghtml.Class("text-xl font-semibold"),
+					g.Text("View Meal Plan"),
+				),
+				ghtml.P(
+					ghtml.Class("text-gray-600"),
+					g.Text(fmt.Sprintf("To view this meal plan, open the %s app. If you don't have the app, download it from the App Store.", branding.CompanyName)),
+				),
+				ghtml.A(
+					ghtml.Href(branding.AppStoreURL),
+					ghtml.Class("inline-block px-6 py-3 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700"),
+					g.Text("Open in App Store"),
+				),
+			),
+		), nil
+	}
+	return page("View Meal Plan",
+		ghtml.Div(
+			ghtml.Class("space-y-6 text-center"),
+			ghtml.H2(
+				ghtml.Class("text-xl font-semibold"),
+				g.Text("View Meal Plan"),
+			),
+			ghtml.P(
+				ghtml.Class("text-gray-600"),
+				g.Textf("This meal plan link is for the %s mobile app. Open this link on your iPhone or iPad to view the meal plan.", branding.CompanyName),
+			),
+			ghtml.A(
+				ghtml.Href(branding.AppStoreURL),
+				ghtml.Class("inline-block px-6 py-3 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700"),
+				g.Text("Get the App"),
+			),
+		),
+	), nil
+}
+
 // VerifyEmailAddressPage handles email verification links (e.g., from signup emails).
 // Token is passed via query param ?t=TOKEN. No authentication required.
 func (s *ConsumerFrontendServer) VerifyEmailAddressPage(res http.ResponseWriter, req *http.Request) (g.Node, error) {

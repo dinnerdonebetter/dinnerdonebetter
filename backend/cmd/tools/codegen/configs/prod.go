@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/analytics/segment"
+	analyticsposthog "github.com/dinnerdonebetter/backend/internal/platform/analytics/posthog"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
@@ -198,11 +198,31 @@ func buildProdConfig() *config.APIServiceConfig {
 			},
 		},
 		Analytics: analyticscfg.Config{
+			ProxySources: analyticscfg.ProxySourcesConfig{
+				IOS: &analyticscfg.SourceConfig{
+					Provider: analyticscfg.ProviderPostHog,
+					Posthog:  &analyticsposthog.Config{APIKey: "placeholder"}, // overridden by env from api-service-config secret
+					CircuitBreaker: circuitbreaking.Config{
+						Name:                   "ios_analytics",
+						ErrorRate:              .5,
+						MinimumSampleThreshold: 100,
+					},
+				},
+				Web: &analyticscfg.SourceConfig{
+					Provider: analyticscfg.ProviderPostHog,
+					Posthog:  &analyticsposthog.Config{APIKey: "placeholder"}, // overridden by env from api-service-config secret
+					CircuitBreaker: circuitbreaking.Config{
+						Name:                   "web_analytics",
+						ErrorRate:              .5,
+						MinimumSampleThreshold: 100,
+					},
+				},
+			},
 			SourceConfig: analyticscfg.SourceConfig{
-				Provider: analyticscfg.ProviderSegment,
-				Segment:  &segment.Config{APIToken: "placeholder"}, // overridden by env from CSI secret
+				Provider: analyticscfg.ProviderPostHog,
+				Posthog:  &analyticsposthog.Config{APIKey: "placeholder"}, // overridden by env from api-service-config secret
 				CircuitBreaker: circuitbreaking.Config{
-					Name:                   "prod_analytics",
+					Name:                   "api_analytics",
 					ErrorRate:              .5,
 					MinimumSampleThreshold: 100,
 				},

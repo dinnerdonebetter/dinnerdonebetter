@@ -198,7 +198,7 @@ env_vars:
 	$(MAKE) format_golang
 
 .PHONY: generated_files
-generated_files: configs queries env_vars format_golang
+generated_files: rewire configs queries env_vars format_golang
 
 ## INTEGRATION TESTING
 

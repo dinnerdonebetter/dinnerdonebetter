@@ -300,12 +300,9 @@ func (q *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access
 		return observability.PrepareError(err, span, "encrypting oauth2 token access")
 	}
 
-	_, err = q.generatedQuerier.DeleteOAuth2ClientTokenByAccess(ctx, q.writeDB, encryptedAccess)
-	if err != nil {
+	if _, err = q.generatedQuerier.DeleteOAuth2ClientTokenByAccess(ctx, q.writeDB, encryptedAccess); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "deleting oauth2 client token by access")
 	}
-
-	logger.Info("oauth2 client token deleted by access")
 
 	return nil
 }
@@ -328,12 +325,9 @@ func (q *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code str
 		return observability.PrepareError(err, span, "encrypting oauth2 token code")
 	}
 
-	_, err = q.generatedQuerier.DeleteOAuth2ClientTokenByCode(ctx, q.writeDB, encryptedCode)
-	if err != nil {
+	if _, err = q.generatedQuerier.DeleteOAuth2ClientTokenByCode(ctx, q.writeDB, encryptedCode); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "deleting oauth2 client token by code")
 	}
-
-	logger.Info("oauth2 client token deleted by code")
 
 	return nil
 }
@@ -360,8 +354,6 @@ func (q *repository) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refre
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "deleting oauth2 client token by refresh")
 	}
-
-	logger.Info("oauth2 client token deleted by refresh")
 
 	return nil
 }
