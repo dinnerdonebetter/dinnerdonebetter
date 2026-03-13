@@ -287,15 +287,15 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	authInterceptor := interceptors.ProvideAuthInterceptor(tracerProvider, logger, identityDataManager, manageManager, issuer, methodPermissionsMap)
 	v2 := BuildUnaryServerInterceptors(authInterceptor)
 	v3 := BuildStreamServerInterceptors(authInterceptor)
-	proxySourcesConfig := ProvideAnalyticsProxySources(cfg)
-	multiSourceEventReporter, err := multisource.ProvideMultiSourceEventReporter(ctx, proxySourcesConfig, logger, tracerProvider, provider)
+	v4 := ProvideAnalyticsProxySources(cfg)
+	multiSourceEventReporter, err := multisource.ProvideMultiSourceEventReporter(ctx, v4, logger, tracerProvider, provider)
 	if err != nil {
 		return nil, err
 	}
 	analyticsServiceServer := grpc15.NewService(logger, tracerProvider, multiSourceEventReporter)
 	commentsServiceServer := grpc16.NewService(logger, tracerProvider, commentsDataManager, mealPlanningManager)
-	v4 := BuildRegistrationFuncs(analyticsServiceServer, auditServiceServer, authServiceServer, commentsServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, issueReportsServiceServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, paymentsServiceServer, settingsServiceServer, uploadedMediaServiceServer, waitlistsServiceServer, webhooksServiceServer)
-	server, err := grpc17.NewGRPCServer(grpcConfig, logger, tracerProvider, v2, v3, v4...)
+	v5 := BuildRegistrationFuncs(analyticsServiceServer, auditServiceServer, authServiceServer, commentsServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, issueReportsServiceServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, paymentsServiceServer, settingsServiceServer, uploadedMediaServiceServer, waitlistsServiceServer, webhooksServiceServer)
+	server, err := grpc17.NewGRPCServer(grpcConfig, logger, tracerProvider, v2, v3, v5...)
 	if err != nil {
 		return nil, err
 	}
