@@ -12,15 +12,15 @@
 
 <div class="layout-root">
 	<header class="layout-header">
-	<nav class="layout-nav">
-		<span class="layout-logo"><Link href="/">Dinner Done Better</Link></span>
-		<div class="layout-links">
-			<Link href="/recipes/new">Create Recipe</Link>
-			<Link href="/account/settings">Account</Link>
-			<Link href="/logout">Sign Out</Link>
+		<div class="container">
+			<div><Link href="/">Dinner Done Better</Link></div>
+			<div class="layout-links">
+				<Link href="/recipes/new">Create Recipe</Link>
+				<Link href="/account/settings">Account</Link>
+				<Link href="/logout">Sign Out</Link>
+			</div>
 		</div>
-	</nav>
-</header>
+	</header>
 
 <main class="layout-main">
 	{@render children()}
@@ -49,14 +49,24 @@
 		border-bottom: 1px solid var(--color-border);
 		padding: var(--space-md);
 	}
-	.layout-nav {
-		max-width: var(--content-max-width);
-		margin: 0 auto;
+	.container {
+		max-width: 70vw;
+		margin-left: 15vw;
+		margin-right: auto;
 		display: flex;
-		align-items: center;
 		justify-content: space-between;
+		align-items: center;
+		align-content: space-between;
 	}
-	.layout-logo {
+
+	@media (max-width: 768px) {
+		.container {
+			max-width: 100%;
+			margin-left: 0;
+			margin-right: 0;
+		}
+	}
+	.container > div:first-child {
 		font-weight: var(--font-weight-medium);
 		font-size: 1.25rem;
 	}

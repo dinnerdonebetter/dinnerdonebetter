@@ -12,7 +12,11 @@
 		NumberInput,
 		Card
 	} from '$lib/components';
-	import { createRecipeCreatorState } from '$lib/recipes/RecipeCreatorState';
+	import {
+		createRecipeCreatorState,
+		type RecipeCreatorState,
+		type StepHelper
+	} from '$lib/recipes/RecipeCreatorState';
 	import { renderMermaidForRecipeCreationInput } from '$lib/recipes/recipeMermaid';
 	import type {
 		ValidPreparation,
@@ -20,7 +24,9 @@
 		ValidIngredientPreparation,
 		ValidIngredientMeasurementUnit,
 		ValidPreparationVessel,
-		ValidMeasurementUnit
+		ValidPreparationInstrument,
+		ValidMeasurementUnit,
+		RecipePrepTaskStepWithinRecipeCreationRequestInput
 	} from '$lib/recipes/client-types';
 	import { RecipeStepProductType, MealComponentType } from '$lib/recipes/client-enums';
 	import type { RecipeStepCreationRequestInput, RecipeStepProductCreationRequestInput } from '$lib/recipes/client-types';
@@ -94,9 +100,11 @@
 
 	let { data, form } = $props();
 
-	const state = $state(createRecipeCreatorState());
+	// Svelte 5 runes: typings can treat $state as store-based; assert so state is RecipeCreatorState in template.
+	// @ts-expect-error - runes vs store typings: state is reactive rune state, not a Svelte store
+	const state = $state(createRecipeCreatorState()) as unknown as RecipeCreatorState;
 
-	let mermaidContainer = $state<HTMLDivElement | null>(null);
+	let mermaidContainer: HTMLDivElement | null = $state(null);
 	function useMermaidContainer(node: HTMLDivElement) {
 		mermaidContainer = node;
 		return {
@@ -108,16 +116,17 @@
 	const mermaidCode = $derived(
 		renderMermaidForRecipeCreationInput(
 			state.recipe,
-			state.stepHelpers.map((h) => h.selectedPreparation?.name)
+			state.stepHelpers.map((h: StepHelper) => h.selectedPreparation?.name)
 		)
 	);
 
 	/** Serialized recipe for form submission and dumps – derived so it always reflects current state. */
 	const recipePayload = $derived(JSON.stringify(state.recipe));
 
-	function debounce<T extends (...args: unknown[]) => void>(fn: T, ms: number) {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	function debounce<F extends (...args: any[]) => any>(fn: F, ms: number): (...args: Parameters<F>) => void {
 		let timer: ReturnType<typeof setTimeout> | null = null;
-		return (...args: Parameters<T>) => {
+		return (...args: Parameters<F>) => {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => fn(...args), ms);
 		};
@@ -201,10 +210,27 @@
 	}
 
 	type RecipeSearchHit = { id: string; name: string; slug: string };
-	let recipeSearchBySlot = $state<Record<string, string>>({});
-	let recipeSuggestionsBySlot = $state<Record<string, RecipeSearchHit[]>>({});
+	let recipeSearchBySlot: Record<string, string> = $state({});
+	let recipeSuggestionsBySlot: Record<string, RecipeSearchHit[]> = $state({});
 	function recipeSlotKey(stepIndex: number, ingIdx: number) {
 		return `${stepIndex}-${ingIdx}`;
+	}
+
+	/** Keys for optional UI: "stepIndex-type-idx" e.g. "0-instrument-0", "1-ingredient-2". */
+	function optionalKey(stepIndex: number, type: 'instrument' | 'vessel' | 'ingredient', idx: number) {
+		return `${stepIndex}-${type}-${idx}`;
+	}
+	let showFromProductByKey: Record<string, boolean> = $state({});
+	let showOptionGroupByKey: Record<string, boolean> = $state({});
+	let showFromRecipeByKey: Record<string, boolean> = $state({});
+	function toggleShowFromProduct(key: string) {
+		showFromProductByKey = { ...showFromProductByKey, [key]: !showFromProductByKey[key] };
+	}
+	function toggleShowOptionGroup(key: string) {
+		showOptionGroupByKey = { ...showOptionGroupByKey, [key]: !showOptionGroupByKey[key] };
+	}
+	function toggleShowFromRecipe(key: string) {
+		showFromRecipeByKey = { ...showFromRecipeByKey, [key]: !showFromRecipeByKey[key] };
 	}
 	async function fetchRecipeSuggestions(stepIndex: number, ingIdx: number, query: string) {
 		const key = recipeSlotKey(stepIndex, ingIdx);
@@ -269,7 +295,7 @@
 	});
 
 	let debugLoadJson = $state('');
-	let debugLoadError = $state<string | null>(null);
+	let debugLoadError: string | null = $state(null);
 	let debugCopied = $state(false);
 	let debugPanelExpanded = $state(false);
 
@@ -447,21 +473,18 @@
 					</FormField>
 				</section>
 
-				<section class="recipe-section recipe-section--media-placeholder">
-					<h2>Media</h2>
-					<p class="recipe-section__hint">Recipe and step images: coming soon.</p>
-				</section>
-
 				<section class="recipe-section recipe-section--prep-tasks">
-					<h2>Prep tasks</h2>
-					<p class="recipe-section__hint">Advance prep (e.g. make dressing ahead). Optionally link which steps each task satisfies.</p>
+					<div class="recipe-section--prep-tasks__header">
+						<h2>Prep tasks</h2>
+						<p class="recipe-section__hint">Advance prep (e.g. make dressing ahead). Optionally link which steps each task satisfies.</p>
+					</div>
 					{#each state.recipe.prepTasks ?? [] as prepTask, taskIdx}
-						<Card title={prepTask.name || `Prep task ${taskIdx + 1}`} collapsible class="prep-task-card">
+						<Card title={prepTask.name || `Prep task ${taskIdx + 1}`} collapsible>
 							<FormField label="Name">
 								<Input
 									value={prepTask.name}
 									placeholder="e.g. Make dressing"
-									data-testid={"prep-task-" + taskIdx + "-name"}
+									dataTestId={"prep-task-" + taskIdx + "-name"}
 									oninput={(e) => state.updatePrepTaskField(taskIdx, 'name', e.currentTarget.value)}
 								/>
 							</FormField>
@@ -492,7 +515,7 @@
 								<Input
 									value={prepTask.explicitStorageInstructions}
 									placeholder="e.g. Refrigerate up to 3 days"
-									data-testid={"prep-task-" + taskIdx + "-storage-instructions"}
+									dataTestId={"prep-task-" + taskIdx + "-storage-instructions"}
 									oninput={(e) => state.updatePrepTaskField(taskIdx, 'explicitStorageInstructions', e.currentTarget.value)}
 								/>
 							</FormField>
@@ -500,7 +523,7 @@
 								<Input
 									value={prepTask.notes}
 									placeholder="Optional notes"
-									data-testid={"prep-task-" + taskIdx + "-notes"}
+									dataTestId={"prep-task-" + taskIdx + "-notes"}
 									oninput={(e) => state.updatePrepTaskField(taskIdx, 'notes', e.currentTarget.value)}
 								/>
 							</FormField>
@@ -510,18 +533,18 @@
 										<label class="checkbox-label">
 											<input
 												type="checkbox"
-												checked={(prepTask.recipeSteps ?? []).some((rs) => rs.belongsToRecipeStepIndex === stepIdx)}
+												checked={(prepTask.recipeSteps ?? []).some((rs: RecipePrepTaskStepWithinRecipeCreationRequestInput) => rs.belongsToRecipeStepIndex === stepIdx)}
 												data-testid={"prep-task-" + taskIdx + "-step-" + stepIdx}
 												onchange={(e) => {
 													const checked = (e.currentTarget as HTMLInputElement).checked;
 													const current = prepTask.recipeSteps ?? [];
 													if (checked) {
 														state.setPrepTaskRecipeSteps(taskIdx, [
-															...current.filter((rs) => rs.belongsToRecipeStepIndex !== stepIdx),
+															...current.filter((rs: RecipePrepTaskStepWithinRecipeCreationRequestInput) => rs.belongsToRecipeStepIndex !== stepIdx),
 															{ belongsToRecipeStepIndex: stepIdx, satisfiesRecipeStep: true }
 														]);
 													} else {
-														state.setPrepTaskRecipeSteps(taskIdx, current.filter((rs) => rs.belongsToRecipeStepIndex !== stepIdx));
+														state.setPrepTaskRecipeSteps(taskIdx, current.filter((rs: RecipePrepTaskStepWithinRecipeCreationRequestInput) => rs.belongsToRecipeStepIndex !== stepIdx));
 													}
 												}}
 											/>
@@ -601,14 +624,14 @@
 								bind:value={state.stepHelpers[stepIndex].preparationQuery}
 							placeholder="Search preparation (e.g. dice, chop)"
 							dataTestId={"recipe-step-" + stepIndex + "-preparation"}
-							suggestions={state.stepHelpers[stepIndex].preparationSuggestions.map((p) => ({
+							suggestions={state.stepHelpers[stepIndex].preparationSuggestions.map((p: ValidPreparation) => ({
 								id: p.id,
-								label: p.name
+								label: p.name ?? ''
 							}))}
 							onInput={(query: string) => debouncedPrepSearch(stepIndex, query)}
-							onSelect={async (item) => {
+							onSelect={async (item: { id: string; label: string }) => {
 								const prep = state.stepHelpers[stepIndex].preparationSuggestions.find(
-									(p) => p.id === item.id
+									(p: ValidPreparation) => p.id === item.id
 								) ?? { id: item.id, name: item.label };
 								state.setPreparation(stepIndex, prep as ValidPreparation);
 								const res = await fetch(
@@ -624,12 +647,14 @@
 						<div class="step-section">
 							<h3>Instruments</h3>
 							{#each step.instruments as instrument, instIdx}
+								{@const instKey = optionalKey(stepIndex, 'instrument', instIdx)}
 								{@const availableForStepInst = getAvailablePreviousProducts(state.recipe.steps, stepIndex)}
 								{@const availableInstrumentProducts = availableForStepInst.filter(
 									(p) => p.type === RecipeStepProductType.RECIPE_STEP_PRODUCT_TYPE_INSTRUMENT
 								)}
 								{@const instrumentFromProduct = instrument.productOfRecipeStepIndex != null}
 								{@const instFromStepNum = instrument.productOfRecipeStepIndex != null ? instrument.productOfRecipeStepIndex + 1 : 0}
+								{@const showInstOptionGroup = showOptionGroupByKey[instKey] || ((instrument.optionIndex ?? 0) !== 0)}
 								<div class="step-item">
 									<FormField label="Instrument {instIdx + 1}">
 										{#if instrumentFromProduct}
@@ -666,64 +691,76 @@
 												</div>
 											</div>
 										{:else}
-											{#if availableInstrumentProducts.length > 0}
-												<div class="from-product-option">
-													<span class="from-product-option__label">Or use product from earlier step:</span>
-													<select
-														class="select-input select-input--narrow"
-														value=""
-														data-testid={"recipe-step-" + stepIndex + "-instrument-" + instIdx + "-from-product"}
-														onchange={(e) => {
-															const v = (e.currentTarget as HTMLSelectElement).value;
-															if (v) {
-																const [si, pi] = v.split(':').map(Number);
-																if (!Number.isNaN(si) && !Number.isNaN(pi)) {
-																	state.setInstrumentFromProduct(stepIndex, instIdx, si, pi);
-																}
-																(e.currentTarget as HTMLSelectElement).value = '';
-															}
-														}}
-													>
-														<option value="">— Select from step…</option>
-														{#each availableInstrumentProducts as opt}
-															<option value="{opt.stepIndex}:{opt.productIndex}">
-																Step {opt.stepIndex + 1}: {opt.name || 'Product'}
-															</option>
-														{/each}
-													</select>
-												</div>
-											{/if}
 											<Autocomplete
 												value={instrument.name}
 												placeholder="Search instrument"
 												dataTestId={"recipe-step-" + stepIndex + "-instrument-" + instIdx}
 												suggestions={state.stepHelpers[stepIndex].instrumentSuggestions.map(
-													(vpi) => ({ id: vpi.id, label: vpi.instrument?.name ?? vpi.id })
+													(vpi: ValidPreparationInstrument) => ({ id: vpi.id, label: (vpi as { instrument?: { name?: string } }).instrument?.name ?? vpi.id })
 												)}
-												onSelect={(item) => {
+												onSelect={(item: { id: string; label: string }) => {
 													const vpi = state.stepHelpers[stepIndex].instrumentSuggestions.find(
-														(x) => x.id === item.id
+														(x: ValidPreparationInstrument) => x.id === item.id
 													);
 													if (vpi) state.setInstrument(stepIndex, instIdx, vpi);
 												}}
 											/>
+											{#if availableInstrumentProducts.length > 0}
+												{#if showFromProductByKey[instKey]}
+													<div class="from-product-option">
+														<span class="from-product-option__label">Use product from earlier step:</span>
+														<select
+															class="select-input select-input--narrow"
+															value=""
+															data-testid={"recipe-step-" + stepIndex + "-instrument-" + instIdx + "-from-product"}
+															onchange={(e) => {
+																const v = (e.currentTarget as HTMLSelectElement).value;
+																if (v) {
+																	const [si, pi] = v.split(':').map(Number);
+																	if (!Number.isNaN(si) && !Number.isNaN(pi)) {
+																		state.setInstrumentFromProduct(stepIndex, instIdx, si, pi);
+																	}
+																	(e.currentTarget as HTMLSelectElement).value = '';
+																}
+															}}
+														>
+															<option value="">— Select from step…</option>
+															{#each availableInstrumentProducts as opt}
+																<option value="{opt.stepIndex}:{opt.productIndex}">
+																	Step {opt.stepIndex + 1}: {opt.name || 'Product'}
+																</option>
+															{/each}
+														</select>
+													</div>
+												{:else}
+													<button type="button" class="reveal-link" onclick={() => toggleShowFromProduct(instKey)}>
+														Use product from earlier step…
+													</button>
+												{/if}
+											{/if}
 										{/if}
 									</FormField>
-									<FormField label="Option group">
-										<select
-											class="select-input select-input--narrow"
-											value={String(instrument.optionIndex ?? 0)}
-											data-testid={"recipe-step-" + stepIndex + "-instrument-" + instIdx + "-option-group"}
-											onchange={(e) => {
-												const v = parseInt((e.currentTarget as HTMLSelectElement).value, 10);
-												if (!Number.isNaN(v)) state.setInstrumentOptionIndex(stepIndex, instIdx, v);
-											}}
-										>
-											{#each optionGroupOptions as opt}
-												<option value={opt.value}>{opt.label}</option>
-											{/each}
-										</select>
-									</FormField>
+									{#if showInstOptionGroup}
+										<FormField label="Option group">
+											<select
+												class="select-input select-input--narrow"
+												value={String(instrument.optionIndex ?? 0)}
+												data-testid={"recipe-step-" + stepIndex + "-instrument-" + instIdx + "-option-group"}
+												onchange={(e) => {
+													const v = parseInt((e.currentTarget as HTMLSelectElement).value, 10);
+													if (!Number.isNaN(v)) state.setInstrumentOptionIndex(stepIndex, instIdx, v);
+												}}
+											>
+												{#each optionGroupOptions as opt}
+													<option value={opt.value}>{opt.label}</option>
+												{/each}
+											</select>
+										</FormField>
+									{:else}
+										<button type="button" class="reveal-link" onclick={() => toggleShowOptionGroup(instKey)}>
+											Set option group (OR)…
+										</button>
+									{/if}
 									<Button
 										type="button"
 										variant="default"
@@ -745,12 +782,14 @@
 						<div class="step-section">
 							<h3>Vessels</h3>
 							{#each (step.vessels ?? []) as vessel, vesselIdx}
+								{@const vesselKey = optionalKey(stepIndex, 'vessel', vesselIdx)}
 								{@const availableForStepVessel = getAvailablePreviousProducts(state.recipe.steps, stepIndex)}
 								{@const availableVesselProducts = availableForStepVessel.filter(
 									(p) => p.type === RecipeStepProductType.RECIPE_STEP_PRODUCT_TYPE_VESSEL
 								)}
 								{@const vesselFromProduct = vessel.productOfRecipeStepIndex != null}
 								{@const vesselFromStepNum = vessel.productOfRecipeStepIndex != null ? vessel.productOfRecipeStepIndex + 1 : 0}
+								{@const showVesselOptionGroup = showOptionGroupByKey[vesselKey] || ((vessel.optionIndex ?? 0) !== 0)}
 								<div class="step-item">
 									<FormField label="Vessel {vesselIdx + 1}">
 										{#if vesselFromProduct}
@@ -787,66 +826,78 @@
 												</div>
 											</div>
 										{:else}
-											{#if availableVesselProducts.length > 0}
-												<div class="from-product-option">
-													<span class="from-product-option__label">Or use product from earlier step:</span>
-													<select
-														class="select-input select-input--narrow"
-														value=""
-														data-testid={"recipe-step-" + stepIndex + "-vessel-" + vesselIdx + "-from-product"}
-														onchange={(e) => {
-															const v = (e.currentTarget as HTMLSelectElement).value;
-															if (v) {
-																const [si, pi] = v.split(':').map(Number);
-																if (!Number.isNaN(si) && !Number.isNaN(pi)) {
-																	state.setVesselFromProduct(stepIndex, vesselIdx, si, pi);
-																}
-																(e.currentTarget as HTMLSelectElement).value = '';
-															}
-														}}
-													>
-														<option value="">— Select from step…</option>
-														{#each availableVesselProducts as opt}
-															<option value="{opt.stepIndex}:{opt.productIndex}">
-																Step {opt.stepIndex + 1}: {opt.name || 'Product'}
-															</option>
-														{/each}
-													</select>
-												</div>
-											{/if}
 											<Autocomplete
 												bind:value={state.stepHelpers[stepIndex].vesselQueries[vesselIdx]}
 												placeholder="Search vessel"
 												dataTestId={"recipe-step-" + stepIndex + "-vessel-" + vesselIdx}
 												suggestions={(state.stepHelpers[stepIndex].vesselSuggestions[vesselIdx] ?? []).map(
-													(vpv) => ({ id: vpv.id, label: (vpv as { vessel?: { name?: string } }).vessel?.name ?? vpv.id })
+													(vpv: ValidPreparationVessel) => ({ id: vpv.id, label: (vpv as { vessel?: { name?: string } }).vessel?.name ?? vpv.id })
 												)}
 												onInput={(query: string) =>
 													debouncedVesselSearch(stepIndex, vesselIdx, query)}
-												onSelect={(item) => {
+												onSelect={(item: { id: string; label: string }) => {
 													const vpv = state.stepHelpers[stepIndex].vesselSuggestions[vesselIdx]?.find(
-														(x) => x.id === item.id
+														(x: ValidPreparationVessel) => x.id === item.id
 													);
 													if (vpv) state.setVessel(stepIndex, vesselIdx, vpv);
 												}}
 											/>
+											{#if availableVesselProducts.length > 0}
+												{#if showFromProductByKey[vesselKey]}
+													<div class="from-product-option">
+														<span class="from-product-option__label">Use product from earlier step:</span>
+														<select
+															class="select-input select-input--narrow"
+															value=""
+															data-testid={"recipe-step-" + stepIndex + "-vessel-" + vesselIdx + "-from-product"}
+															onchange={(e) => {
+																const v = (e.currentTarget as HTMLSelectElement).value;
+																if (v) {
+																	const [si, pi] = v.split(':').map(Number);
+																	if (!Number.isNaN(si) && !Number.isNaN(pi)) {
+																		state.setVesselFromProduct(stepIndex, vesselIdx, si, pi);
+																	}
+																	(e.currentTarget as HTMLSelectElement).value = '';
+																}
+															}}
+														>
+															<option value="">— Select from step…</option>
+															{#each availableVesselProducts as opt}
+																<option value="{opt.stepIndex}:{opt.productIndex}">
+																	Step {opt.stepIndex + 1}: {opt.name || 'Product'}
+																</option>
+															{/each}
+														</select>
+													</div>
+												{:else}
+													<button type="button" class="reveal-link" onclick={() => toggleShowFromProduct(vesselKey)}>
+														Use product from earlier step…
+													</button>
+												{/if}
+											{/if}
 										{/if}
 									</FormField>
-									<FormField label="Option group">
-										<select
-											class="select-input select-input--narrow"
-											value={String(vessel.optionIndex ?? 0)}
-											data-testid={"recipe-step-" + stepIndex + "-vessel-" + vesselIdx + "-option-group"}
-											onchange={(e) => {
-												const v = parseInt((e.currentTarget as HTMLSelectElement).value, 10);
-												if (!Number.isNaN(v)) state.setVesselOptionIndex(stepIndex, vesselIdx, v);
-											}}
-										>
-											{#each optionGroupOptions as opt}
-												<option value={opt.value}>{opt.label}</option>
-											{/each}
-										</select>
-									</FormField>
+									{#if showVesselOptionGroup}
+										<FormField label="Option group">
+											<select
+												class="select-input select-input--narrow"
+												value={String(vessel.optionIndex ?? 0)}
+												data-testid={"recipe-step-" + stepIndex + "-vessel-" + vesselIdx + "-option-group"}
+												onchange={(e) => {
+													const v = parseInt((e.currentTarget as HTMLSelectElement).value, 10);
+													if (!Number.isNaN(v)) state.setVesselOptionIndex(stepIndex, vesselIdx, v);
+												}}
+											>
+												{#each optionGroupOptions as opt}
+													<option value={opt.value}>{opt.label}</option>
+												{/each}
+											</select>
+										</FormField>
+									{:else}
+										<button type="button" class="reveal-link" onclick={() => toggleShowOptionGroup(vesselKey)}>
+											Set option group (OR)…
+										</button>
+									{/if}
 									<Button
 										type="button"
 										variant="default"
@@ -868,6 +919,7 @@
 						<div class="step-section">
 							<h3>Ingredients</h3>
 							{#each step.ingredients as ingredient, ingIdx}
+								{@const ingKey = optionalKey(stepIndex, 'ingredient', ingIdx)}
 								{@const availableForStep = getAvailablePreviousProducts(state.recipe.steps, stepIndex)}
 								{@const availableIngredientProducts = availableForStep.filter(
 									(p) => p.type === RecipeStepProductType.RECIPE_STEP_PRODUCT_TYPE_INGREDIENT
@@ -875,6 +927,7 @@
 								{@const isFromProduct = ingredient.productOfRecipeStepIndex != null}
 								{@const isFromRecipe = ingredient.recipeStepProductRecipeId != null}
 								{@const fromStepNum = ingredient.productOfRecipeStepIndex != null ? ingredient.productOfRecipeStepIndex + 1 : 0}
+								{@const showIngOptionGroup = showOptionGroupByKey[ingKey] || ((ingredient.optionIndex ?? 0) !== 0)}
 								<div class="step-item step-item--ingredient">
 									<FormField label="Ingredient {ingIdx + 1}">
 										{#if isFromProduct}
@@ -924,71 +977,23 @@
 												</div>
 											</div>
 										{:else}
-											{#if availableIngredientProducts.length > 0}
-												<div class="from-product-option">
-													<span class="from-product-option__label">Or use product from earlier step:</span>
-													<select
-														class="select-input select-input--narrow"
-														value=""
-														data-testid={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx + "-from-product"}
-														onchange={(e) => {
-															const v = (e.currentTarget as HTMLSelectElement).value;
-															if (v) {
-																const [si, pi] = v.split(':').map(Number);
-																if (!Number.isNaN(si) && !Number.isNaN(pi)) {
-																	state.setIngredientFromProduct(stepIndex, ingIdx, si, pi);
-																}
-																(e.currentTarget as HTMLSelectElement).value = '';
-															}
-														}}
-													>
-														<option value="">— Select from step…</option>
-														{#each availableIngredientProducts as opt}
-															<option value="{opt.stepIndex}:{opt.productIndex}">
-																Step {opt.stepIndex + 1}: {opt.name || 'Product'}
-															</option>
-														{/each}
-													</select>
-												</div>
-											{/if}
-											<div class="from-product-option">
-												<span class="from-product-option__label">Or use recipe:</span>
-												<Autocomplete
-													value={recipeSearchBySlot[recipeSlotKey(stepIndex, ingIdx)] ?? ''}
-													placeholder="Search recipe by name"
-													dataTestId={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx + "-from-recipe"}
-													suggestions={(recipeSuggestionsBySlot[recipeSlotKey(stepIndex, ingIdx)] ?? []).map((r) => ({ id: r.id, label: r.name }))}
-													onInput={(query: string) => {
-														recipeSearchBySlot = { ...recipeSearchBySlot, [recipeSlotKey(stepIndex, ingIdx)]: query };
-														debouncedRecipeSearch(stepIndex, ingIdx, query);
-													}}
-													onSelect={(item) => {
-														const hit = (recipeSuggestionsBySlot[recipeSlotKey(stepIndex, ingIdx)] ?? []).find((r) => r.id === item.id);
-														if (hit) {
-															state.setIngredientRecipeRef(stepIndex, ingIdx, hit.id, hit.name, hit.slug);
-															recipeSearchBySlot = { ...recipeSearchBySlot, [recipeSlotKey(stepIndex, ingIdx)]: '' };
-															recipeSuggestionsBySlot = { ...recipeSuggestionsBySlot, [recipeSlotKey(stepIndex, ingIdx)]: [] };
-														}
-													}}
-												/>
-											</div>
 											<Autocomplete
 												bind:value={state.stepHelpers[stepIndex].ingredientQueries[ingIdx]}
 												placeholder="Search ingredient"
 												dataTestId={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx}
 												suggestions={(state.stepHelpers[stepIndex].ingredientSuggestions[ingIdx] ?? []).map(
-													(ing) => ({ id: ing.id, label: ing.name })
+													(ing: ValidIngredient) => ({ id: ing.id, label: ing.name ?? '' })
 												)}
 												onInput={(query: string) =>
 													debouncedIngredientSearch(stepIndex, ingIdx, query)}
-												onSelect={async (item) => {
+												onSelect={async (item: { id: string; label: string }) => {
 													const vips = await fetchIngredientPreparations(
 														state.stepHelpers[stepIndex].selectedPreparation!.id
 													);
-													const vip = vips.find((v) => v.ingredient?.id === item.id);
+													const vip = vips.find((v: ValidIngredientPreparation) => (v.ingredient as { id?: string } | undefined)?.id === item.id);
 													const vimus = await fetch(
 														`/api/recipes/search-measurement-units?ingredientId=${encodeURIComponent(item.id)}`
-													).then((r) => r.json());
+													).then((r: Response) => r.json());
 													const vimuList: ValidIngredientMeasurementUnit[] = vimus.results ?? [];
 													state.setIngredientMeasurementUnitSuggestions(stepIndex, ingIdx, vimuList);
 													const ing = {
@@ -1005,23 +1010,89 @@
 													);
 												}}
 											/>
+											{#if availableIngredientProducts.length > 0}
+												{#if showFromProductByKey[ingKey]}
+													<div class="from-product-option">
+														<span class="from-product-option__label">Use product from earlier step:</span>
+														<select
+															class="select-input select-input--narrow"
+															value=""
+															data-testid={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx + "-from-product"}
+															onchange={(e) => {
+																const v = (e.currentTarget as HTMLSelectElement).value;
+																if (v) {
+																	const [si, pi] = v.split(':').map(Number);
+																	if (!Number.isNaN(si) && !Number.isNaN(pi)) {
+																		state.setIngredientFromProduct(stepIndex, ingIdx, si, pi);
+																	}
+																	(e.currentTarget as HTMLSelectElement).value = '';
+																}
+															}}
+														>
+															<option value="">— Select from step…</option>
+															{#each availableIngredientProducts as opt}
+																<option value="{opt.stepIndex}:{opt.productIndex}">
+																	Step {opt.stepIndex + 1}: {opt.name || 'Product'}
+																</option>
+															{/each}
+														</select>
+													</div>
+												{:else}
+													<button type="button" class="reveal-link" onclick={() => toggleShowFromProduct(ingKey)}>
+														Use product from earlier step…
+													</button>
+												{/if}
+											{/if}
+											{#if showFromRecipeByKey[ingKey]}
+												<div class="from-product-option">
+													<span class="from-product-option__label">Use recipe as ingredient:</span>
+													<Autocomplete
+														value={recipeSearchBySlot[recipeSlotKey(stepIndex, ingIdx)] ?? ''}
+														placeholder="Search recipe by name"
+														dataTestId={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx + "-from-recipe"}
+														suggestions={(recipeSuggestionsBySlot[recipeSlotKey(stepIndex, ingIdx)] ?? []).map((r: RecipeSearchHit) => ({ id: r.id, label: r.name }))}
+														onInput={(query: string) => {
+															recipeSearchBySlot = { ...recipeSearchBySlot, [recipeSlotKey(stepIndex, ingIdx)]: query };
+															debouncedRecipeSearch(stepIndex, ingIdx, query);
+														}}
+														onSelect={(item: { id: string; label: string }) => {
+															const hit = (recipeSuggestionsBySlot[recipeSlotKey(stepIndex, ingIdx)] ?? []).find((r: RecipeSearchHit) => r.id === item.id);
+															if (hit) {
+																state.setIngredientRecipeRef(stepIndex, ingIdx, hit.id, hit.name, hit.slug);
+																recipeSearchBySlot = { ...recipeSearchBySlot, [recipeSlotKey(stepIndex, ingIdx)]: '' };
+																recipeSuggestionsBySlot = { ...recipeSuggestionsBySlot, [recipeSlotKey(stepIndex, ingIdx)]: [] };
+															}
+														}}
+													/>
+												</div>
+											{:else}
+												<button type="button" class="reveal-link" onclick={() => toggleShowFromRecipe(ingKey)}>
+													Use recipe as ingredient…
+												</button>
+											{/if}
 										{/if}
 									</FormField>
-									<FormField label="Option group">
-										<select
-											class="select-input select-input--narrow"
-											value={String(ingredient.optionIndex ?? 0)}
-											data-testid={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx + "-option-group"}
-											onchange={(e) => {
-												const v = parseInt((e.currentTarget as HTMLSelectElement).value, 10);
-												if (!Number.isNaN(v)) state.setIngredientOptionIndex(stepIndex, ingIdx, v);
-											}}
-										>
-											{#each optionGroupOptions as opt}
-												<option value={opt.value}>{opt.label}</option>
-											{/each}
-										</select>
-									</FormField>
+									{#if showIngOptionGroup}
+										<FormField label="Option group">
+											<select
+												class="select-input select-input--narrow"
+												value={String(ingredient.optionIndex ?? 0)}
+												data-testid={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx + "-option-group"}
+												onchange={(e) => {
+													const v = parseInt((e.currentTarget as HTMLSelectElement).value, 10);
+													if (!Number.isNaN(v)) state.setIngredientOptionIndex(stepIndex, ingIdx, v);
+												}}
+											>
+												{#each optionGroupOptions as opt}
+													<option value={opt.value}>{opt.label}</option>
+												{/each}
+											</select>
+										</FormField>
+									{:else}
+										<button type="button" class="reveal-link" onclick={() => toggleShowOptionGroup(ingKey)}>
+											Set option group (OR)…
+										</button>
+									{/if}
 									{#if !isFromProduct && (state.stepHelpers[stepIndex].ingredientMeasurementUnitSuggestions[ingIdx] ?? []).length > 0}
 										<FormField label="Measurement Unit" required>
 											<select
@@ -1031,7 +1102,7 @@
 												onchange={(e) => {
 													const id = (e.currentTarget as HTMLSelectElement).value;
 													const vimu = (state.stepHelpers[stepIndex].ingredientMeasurementUnitSuggestions[ingIdx] ?? []).find(
-														(v) => v.id === id
+														(v: ValidIngredientMeasurementUnit) => v.id === id
 													);
 													if (vimu) state.setIngredientMeasurementUnit(stepIndex, ingIdx, vimu);
 												}}
@@ -1499,8 +1570,11 @@
 		flex-direction: column;
 		gap: var(--space-md);
 	}
-	.prep-task-card {
-		margin-bottom: var(--space-sm);
+	.recipe-section--prep-tasks__header h2 {
+		margin-bottom: var(--space-xs);
+	}
+	.recipe-section--prep-tasks__header .recipe-section__hint {
+		margin-bottom: 0;
 	}
 	.prep-task-steps {
 		display: flex;
@@ -1713,5 +1787,20 @@
 		font-size: var(--font-size-sm);
 		color: var(--color-text-muted);
 		margin-bottom: var(--space-xs);
+	}
+
+	.reveal-link {
+		display: inline-block;
+		margin-top: var(--space-xs);
+		padding: 0;
+		border: none;
+		background: none;
+		font-size: var(--font-size-sm);
+		color: var(--color-primary, #2563eb);
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	.reveal-link:hover {
+		text-decoration: none;
 	}
 </style>

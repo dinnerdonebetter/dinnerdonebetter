@@ -11,13 +11,13 @@
 	import type { Account, AccountInvitation, AccountUserMembershipWithUser } from '$lib/generated/identity/identity_messages';
 
 	let { data } = $props();
-	const account = data?.account as Account | null | undefined;
-	const invitations = (data?.invitations ?? []) as AccountInvitation[];
-	const currentUserId = data?.currentUserId ?? '';
-	const isAdmin = data?.isAdmin ?? false;
-	const baseUrl = data?.baseUrl ?? '';
-	const error = data?.error as string | null | undefined;
-	const invited = data?.invited ?? false;
+	const account = $derived(data?.account as Account | null | undefined);
+	const invitations = $derived((data?.invitations ?? []) as AccountInvitation[]);
+	const currentUserId = $derived(data?.currentUserId ?? '');
+	const isAdmin = $derived(data?.isAdmin ?? false);
+	const baseUrl = $derived(data?.baseUrl ?? '');
+	const error = $derived(data?.error as string | null | undefined);
+	const invited = $derived(data?.invited ?? false);
 
 	const errorMessages: Record<string, string> = {
 		invalid: 'Invalid input. Please check your entries.',
@@ -28,7 +28,7 @@
 		role_update_failed: 'Failed to update member role.',
 		server: 'Something went wrong. Please try again.'
 	};
-	const displayError = error ? errorMessages[error] ?? 'Something went wrong.' : null;
+	const displayError = $derived(error ? errorMessages[error] ?? 'Something went wrong.' : null);
 
 	function memberDisplayName(m: AccountUserMembershipWithUser): string {
 		const u = m.belongsToUser;
@@ -42,7 +42,7 @@
 
 <PageContainer>
 	<h1>Household Members</h1>
-	<p><Link href="/account/settings" class="back-link">Back to Account Settings</Link></p>
+	<p class="back-link"><Link href="/account/settings">Back to Account Settings</Link></p>
 
 	{#if invited}
 		<Alert variant="info">Invitation sent successfully.</Alert>
@@ -66,7 +66,7 @@
 							{@const roleLabel = m.accountRole === 'account_admin' ? 'Admin' : 'Member'}
 							<div class="member-card">
 								<div class="member-info">
-									<span class="member-name">{memberDisplayName(m)}</span>
+									<span class="member-name" title={memberDisplayName(m)}>{memberDisplayName(m)}</span>
 									{#if isYou}
 										<span class="member-you">(You)</span>
 									{/if}
@@ -79,29 +79,32 @@
 										class="role-form"
 									>
 										<input type="hidden" name="user_id" value={m.belongsToUser.id} data-testid="member-user-id" />
-										<select name="new_role" class="role-select" data-testid="member-role">
-											<option
-												value="account_member"
-												selected={m.accountRole === 'account_member'}
-											>
-												Member
-											</option>
-											<option
-												value="account_admin"
-												selected={m.accountRole === 'account_admin'}
-											>
-												Admin
-											</option>
-										</select>
-										<Input
-											name="reason"
-											type="text"
-											placeholder="Reason (required)"
-											required
-											class="reason-input"
-											dataTestId="member-reason"
-										/>
-										<Button type="submit" variant="default">Update</Button>
+										<div class="role-form-row">
+											<select name="new_role" class="role-select" data-testid="member-role">
+												<option
+													value="account_member"
+													selected={m.accountRole === 'account_member'}
+												>
+													Member
+												</option>
+												<option
+													value="account_admin"
+													selected={m.accountRole === 'account_admin'}
+												>
+													Admin
+												</option>
+											</select>
+											<span class="reason-input">
+												<Input
+													name="reason"
+													type="text"
+													placeholder="Reason (required)"
+													required
+													dataTestId="member-reason"
+												/>
+											</span>
+											<Button type="submit" variant="default">Update</Button>
+										</div>
 									</form>
 								{:else}
 									<span class="role-badge">{roleLabel}</span>
@@ -169,7 +172,7 @@
 										{#if isAdmin}
 											<form method="POST" action="?/cancel-invitation" use:enhance class="inline-form">
 												<input type="hidden" name="invitation_id" value={inv.id} data-testid="cancel-invitation-id" />
-												<Button type="submit" variant="default" class="cancel-btn">Cancel</Button>
+												<span class="cancel-btn"><Button type="submit" variant="default">Cancel</Button></span>
 											</form>
 										{/if}
 									</div>
@@ -184,7 +187,7 @@
 </PageContainer>
 
 <style>
-	.back-link {
+	.back-link :global(a) {
 		font-size: 0.875rem;
 	}
 	.sections {
@@ -220,12 +223,28 @@
 		border-radius: var(--radius-md);
 		background: var(--color-surface);
 	}
+	.member-card {
+		flex-wrap: wrap;
+		align-items: flex-start;
+	}
 	.member-info {
-		flex: 1;
+		flex: 1 1 0;
+		min-width: 0;
+	}
+	.member-card .role-badge {
+		flex: 0 0 auto;
+	}
+	.member-card .role-form {
+		flex: 1 1 100%;
 		min-width: 0;
 	}
 	.member-name {
 		font-weight: var(--font-weight-medium);
+		display: inline-block;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 	.member-you {
 		font-size: 0.75rem;
@@ -239,19 +258,30 @@
 		background: var(--color-surface-muted, #eee);
 	}
 	.role-form {
-		display: inline-flex;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+		align-items: flex-start;
+		width: 100%;
+		max-width: 24rem;
+	}
+	.role-form-row {
+		display: flex;
 		align-items: center;
 		gap: var(--space-sm);
 		flex-wrap: wrap;
+		width: 100%;
 	}
 	.role-select {
 		font-size: 0.875rem;
-		padding: 0.25rem 0.5rem;
+		padding: 0.35rem 0.5rem;
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-sm);
+		flex-shrink: 0;
 	}
 	.reason-input {
-		min-width: 120px;
+		min-width: 12rem;
+		flex: 1;
 	}
 	.invite-form {
 		display: flex;
@@ -298,7 +328,7 @@
 	.inline-form {
 		display: inline;
 	}
-	.cancel-btn {
+	.cancel-btn :global(button) {
 		font-size: 0.875rem;
 		padding: 0.25rem 0.5rem;
 	}
