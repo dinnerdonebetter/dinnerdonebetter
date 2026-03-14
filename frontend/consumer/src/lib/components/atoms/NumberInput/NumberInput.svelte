@@ -10,6 +10,7 @@
 		disabled?: boolean;
 		required?: boolean;
 		class?: string;
+		dataTestId?: string;
 	}
 
 	let {
@@ -22,7 +23,8 @@
 		placeholder,
 		disabled = false,
 		required = false,
-		class: className = ''
+		class: className = '',
+		dataTestId
 	}: Props = $props();
 
 	function handleInput(e: Event) {
@@ -47,6 +49,7 @@
 	class="number-input {className}"
 	bind:value
 	oninput={handleInput}
+	data-testid={dataTestId}
 />
 
 <style>

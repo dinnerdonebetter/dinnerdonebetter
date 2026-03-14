@@ -50,15 +50,16 @@
 				{#if item.setting.enumeration?.length}
 					<div class="setting-card">
 						<form method="POST" action="?/update" use:enhance class="setting-form">
-							<input type="hidden" name="setting_id" value={item.setting.id} />
+							<input type="hidden" name="setting_id" value={item.setting.id} data-testid="preference-setting-id" />
 							{#if item.config?.id}
-								<input type="hidden" name="config_id" value={item.config.id} />
+								<input type="hidden" name="config_id" value={item.config.id} data-testid="preference-config-id" />
 							{/if}
 							<FormField id="pref-{item.setting.id}" label={humanReadableName(item.setting.name) + (item.setting.description ? ` — ${item.setting.description}` : '')}>
 								<select
 									name="value"
 									id="pref-{item.setting.id}"
 									class="pref-select"
+									data-testid="preference-value-{item.setting.id}"
 									onchange={(e) => (e.currentTarget as HTMLSelectElement).form?.requestSubmit()}
 								>
 									{#each item.setting.enumeration ?? [] as opt}

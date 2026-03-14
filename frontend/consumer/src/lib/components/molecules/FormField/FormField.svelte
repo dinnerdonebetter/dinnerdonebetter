@@ -26,6 +26,7 @@
 <style>
 	.form-field {
 		margin-bottom: var(--space-md);
+		padding-right: var(--space-md);
 	}
 
 	.required {

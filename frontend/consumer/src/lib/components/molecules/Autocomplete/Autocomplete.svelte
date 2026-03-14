@@ -6,6 +6,7 @@
 		disabled?: boolean;
 		required?: boolean;
 		class?: string;
+		dataTestId?: string;
 		suggestions?: { id: string; label: string }[];
 		loading?: boolean;
 		onInput?: (value: string) => void;
@@ -20,6 +21,7 @@
 		disabled = false,
 		required = false,
 		class: className = '',
+		dataTestId,
 		suggestions = [],
 		loading = false,
 		onInput,
@@ -92,6 +94,7 @@
 		aria-expanded={open}
 		aria-autocomplete="list"
 		aria-controls="autocomplete-list-{id ?? 'default'}"
+		data-testid={dataTestId}
 	/>
 	{#if loading}
 		<span class="autocomplete-loading" aria-hidden="true">...</span>

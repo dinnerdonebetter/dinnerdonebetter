@@ -9,6 +9,8 @@
 		autocomplete?: string;
 		disabled?: boolean;
 		class?: string;
+		dataTestId?: string;
+		oninput?: (e: Event & { currentTarget: HTMLInputElement }) => void;
 	}
 
 	let {
@@ -20,7 +22,9 @@
 		required = false,
 		autocomplete,
 		disabled = false,
-		class: className = ''
+		class: className = '',
+		dataTestId,
+		oninput
 	}: Props = $props();
 </script>
 
@@ -34,6 +38,8 @@
 	{disabled}
 	class="input {className}"
 	{value}
+	data-testid={dataTestId}
+	oninput={oninput}
 />
 
 <style>

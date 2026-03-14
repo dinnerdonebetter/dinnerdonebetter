@@ -52,6 +52,7 @@
 							autocomplete="username"
 							value={username}
 							required
+							dataTestId="profile-username"
 						/>
 					</FormField>
 					<Button type="submit">Update Username</Button>
@@ -70,6 +71,7 @@
 							autocomplete="given-name"
 							value={firstName}
 							required
+							dataTestId="profile-first-name"
 						/>
 					</FormField>
 					<FormField id="last_name" label="Last Name">
@@ -79,6 +81,7 @@
 							type="text"
 							autocomplete="family-name"
 							value={lastName}
+							dataTestId="profile-last-name"
 						/>
 					</FormField>
 					<FormField id="birthday" label="Birthday">
@@ -87,6 +90,7 @@
 							name="birthday"
 							type="date"
 							value={birthdayStr}
+							dataTestId="profile-birthday"
 						/>
 					</FormField>
 					<FormField id="current_password" label="Current Password" required>
@@ -96,6 +100,7 @@
 							type="password"
 							autocomplete="current-password"
 							required
+							dataTestId="profile-current-password"
 						/>
 					</FormField>
 					<FormField id="totp_token" label="Authenticator Code (if enabled)">
@@ -105,6 +110,7 @@
 							type="text"
 							autocomplete="one-time-code"
 							placeholder="Optional"
+							dataTestId="profile-totp-token"
 						/>
 					</FormField>
 					<Button type="submit">Update Details</Button>

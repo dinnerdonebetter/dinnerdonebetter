@@ -49,6 +49,7 @@
 			autocomplete="username"
 			value={username}
 			required
+			dataTestId="login-username"
 		/>
 	</FormField>
 	<FormField id="password" label="Password" required>
@@ -58,6 +59,7 @@
 			type="password"
 			autocomplete="current-password"
 			required
+			dataTestId="login-password"
 		/>
 	</FormField>
 	{#if showTotp}
@@ -68,6 +70,7 @@
 				type="text"
 				autocomplete="one-time-code"
 				placeholder="Optional"
+				dataTestId="login-totp-token"
 			/>
 		</FormField>
 	{/if}

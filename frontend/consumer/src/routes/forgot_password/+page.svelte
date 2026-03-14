@@ -26,6 +26,7 @@
 					type="email"
 					autocomplete="email"
 					required
+					dataTestId="forgot-password-email"
 				/>
 			</FormField>
 			<Button type="submit">Send Reset Link</Button>

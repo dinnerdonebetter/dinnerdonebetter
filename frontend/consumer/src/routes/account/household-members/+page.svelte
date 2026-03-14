@@ -78,8 +78,8 @@
 										use:enhance
 										class="role-form"
 									>
-										<input type="hidden" name="user_id" value={m.belongsToUser.id} />
-										<select name="new_role" class="role-select">
+										<input type="hidden" name="user_id" value={m.belongsToUser.id} data-testid="member-user-id" />
+										<select name="new_role" class="role-select" data-testid="member-role">
 											<option
 												value="account_member"
 												selected={m.accountRole === 'account_member'}
@@ -99,6 +99,7 @@
 											placeholder="Reason (required)"
 											required
 											class="reason-input"
+											dataTestId="member-reason"
 										/>
 										<Button type="submit" variant="default">Update</Button>
 									</form>
@@ -122,13 +123,14 @@
 								name="email"
 								type="email"
 								required
+								dataTestId="invite-email"
 							/>
 						</FormField>
 						<FormField id="name" label="Name (Optional)">
-							<Input id="name" name="name" type="text" />
+							<Input id="name" name="name" type="text" dataTestId="invite-name" />
 						</FormField>
 						<FormField id="note" label="Note (Optional)">
-							<Input id="note" name="note" type="text" />
+							<Input id="note" name="note" type="text" dataTestId="invite-note" />
 						</FormField>
 						<Button type="submit">Send Invitation</Button>
 					</form>
@@ -166,7 +168,7 @@
 										</button>
 										{#if isAdmin}
 											<form method="POST" action="?/cancel-invitation" use:enhance class="inline-form">
-												<input type="hidden" name="invitation_id" value={inv.id} />
+												<input type="hidden" name="invitation_id" value={inv.id} data-testid="cancel-invitation-id" />
 												<Button type="submit" variant="default" class="cancel-btn">Cancel</Button>
 											</form>
 										{/if}

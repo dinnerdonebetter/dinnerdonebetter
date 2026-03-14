@@ -20,7 +20,7 @@
 				<Alert variant="error">{error}</Alert>
 			{/if}
 			<form method="POST" use:enhance>
-				<input type="hidden" name="token" value={token} />
+				<input type="hidden" name="token" value={token} data-testid="reset-password-token" />
 				<FormField id="new_password" label="New Password" required>
 					<Input
 						id="new_password"
@@ -29,6 +29,7 @@
 						autocomplete="new-password"
 						required
 						minlength={8}
+						dataTestId="reset-password-new"
 					/>
 				</FormField>
 				<FormField id="confirm_password" label="Confirm Password" required>
@@ -39,6 +40,7 @@
 						autocomplete="new-password"
 						required
 						minlength={8}
+						dataTestId="reset-password-confirm"
 					/>
 				</FormField>
 				<Button type="submit">Reset Password</Button>

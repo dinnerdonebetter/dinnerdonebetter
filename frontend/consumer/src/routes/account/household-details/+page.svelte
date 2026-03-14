@@ -42,6 +42,7 @@
 					type="text"
 					value={account.name ?? ''}
 					required
+					dataTestId="household-details-name"
 				/>
 			</FormField>
 			<FormField id="contact_phone" label="Contact Phone">
@@ -50,6 +51,7 @@
 					name="contact_phone"
 					type="tel"
 					value={account.contactPhone ?? ''}
+					dataTestId="household-details-contact-phone"
 				/>
 			</FormField>
 			<fieldset class="address-section">
@@ -60,6 +62,7 @@
 						name="address_line_1"
 						type="text"
 						value={account.addressLine1 ?? ''}
+						dataTestId="household-details-address-line-1"
 					/>
 				</FormField>
 				<FormField id="address_line_2" label="Address Line 2">
@@ -68,6 +71,7 @@
 						name="address_line_2"
 						type="text"
 						value={account.addressLine2 ?? ''}
+						dataTestId="household-details-address-line-2"
 					/>
 				</FormField>
 				<FormField id="city" label="City">
@@ -76,6 +80,7 @@
 						name="city"
 						type="text"
 						value={account.city ?? ''}
+						dataTestId="household-details-city"
 					/>
 				</FormField>
 				<FormField id="state" label="State / Province">
@@ -84,6 +89,7 @@
 						name="state"
 						type="text"
 						value={account.state ?? ''}
+						dataTestId="household-details-state"
 					/>
 				</FormField>
 				<FormField id="zip_code" label="ZIP / Postal Code">
@@ -92,6 +98,7 @@
 						name="zip_code"
 						type="text"
 						value={account.zipCode ?? ''}
+						dataTestId="household-details-zip-code"
 					/>
 				</FormField>
 				<FormField id="country" label="Country">
@@ -100,6 +107,7 @@
 						name="country"
 						type="text"
 						value={account.country ?? ''}
+						dataTestId="household-details-country"
 					/>
 				</FormField>
 			</fieldset>

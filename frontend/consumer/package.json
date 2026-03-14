@@ -14,7 +14,8 @@
 	"dependencies": {
 		"@dinnerdonebetter/logger": "file:../packages/logger",
 		"@grpc/grpc-js": "^1.12.4",
-		"marked": "^17.0.4"
+		"marked": "^17.0.4",
+		"mermaid": "^11.4.0"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^5.2.0",

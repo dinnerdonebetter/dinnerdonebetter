@@ -133,7 +133,7 @@
 								</span>
 							</div>
 							<form method="POST" action="?/delete" use:enhance class="delete-form">
-								<input type="hidden" name="credential_id" value={pk.id} />
+								<input type="hidden" name="credential_id" value={pk.id} data-testid="passkey-credential-id" />
 								<Button type="submit" variant="default" class="remove-btn">Remove</Button>
 							</form>
 						</div>
