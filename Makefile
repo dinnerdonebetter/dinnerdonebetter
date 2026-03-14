@@ -148,20 +148,20 @@ proto_swift: ensure_protoc-gen-swift_installed ensure_protoc-gen-grpc-swift_inst
 		$(PROTO_FILES_PATH)
 	(cd ios && $(MAKE) format)
 
-PROTO_TS_OUTPUT_PATH := frontend/consumer/src/lib/generated
-PROTO_TS_PLUGIN      := frontend/consumer/node_modules/.bin/protoc-gen-ts_proto
+PROTO_TS_OUTPUT_PATH := frontend/packages/api-client/src
+PROTO_TS_PLUGIN      := frontend/packages/api-client/node_modules/.bin/protoc-gen-ts_proto
 
 .PHONY: ensure_proto_ts_plugin_installed
 ensure_proto_ts_plugin_installed:
 	@if [ ! -f $(PROTO_TS_PLUGIN) ]; then \
-		echo "Installing frontend/consumer dependencies for ts-proto..."; \
-		(cd frontend/consumer && npm install); \
+		echo "Installing frontend dependencies for ts-proto..."; \
+		(cd frontend && npm install); \
 	fi
 
 .PHONY: proto_typescript
 proto_typescript: ensure_protoc_installed ensure_proto_ts_plugin_installed
 	mkdir -p $(PROTO_TS_OUTPUT_PATH)
-	PATH="$(PWD)/frontend/consumer/node_modules/.bin:$$PATH" protoc \
+	PATH="$(PWD)/frontend/packages/api-client/node_modules/.bin:$$PATH" protoc \
 		--ts_proto_out=$(PROTO_TS_OUTPUT_PATH) \
 		--ts_proto_opt=outputServices=grpc-js \
 		--ts_proto_opt=esModuleInterop=true \

@@ -1,7 +1,10 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { PageContainer, FormField, Button, Alert, Link } from '$lib/components';
-  import type { ServiceSetting, ServiceSettingConfiguration } from '$lib/generated/settings/settings_messages';
+  import { PageContainer, FormField, Button, Alert, Link } from '@dinnerdonebetter/ui';
+  import type {
+    ServiceSetting,
+    ServiceSettingConfiguration,
+  } from '@dinnerdonebetter/api-client/settings/settings_messages';
 
   interface ConfigurableSetting {
     setting: ServiceSetting;

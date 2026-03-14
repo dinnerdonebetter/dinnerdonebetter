@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PageContainer, Link } from '$lib/components';
+  import { PageContainer, Link } from '@dinnerdonebetter/ui';
 
   let { data } = $props();
   const hasAccount = data?.hasAccount ?? false;

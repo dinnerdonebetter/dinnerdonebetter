@@ -7,7 +7,10 @@ import {
   createServiceSettingConfiguration,
   updateServiceSettingConfiguration,
 } from '$lib/grpc/clients';
-import type { ServiceSetting, ServiceSettingConfiguration } from '$lib/generated/settings/settings_messages';
+import type {
+  ServiceSetting,
+  ServiceSettingConfiguration,
+} from '@dinnerdonebetter/api-client/settings/settings_messages';
 
 interface ConfigurableSetting {
   setting: ServiceSetting;

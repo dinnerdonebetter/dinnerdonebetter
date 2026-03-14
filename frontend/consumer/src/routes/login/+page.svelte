@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { PageContainer, LoginForm, Button, Alert, Link } from '$lib/components';
+  import { PageContainer, LoginForm, Button, Alert, Link } from '@dinnerdonebetter/ui';
 
   let { data, form } = $props();
   const supportsPasskey = browser && typeof PublicKeyCredential !== 'undefined';

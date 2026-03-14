@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PageContainer, Link, Alert } from '$lib/components';
+  import { PageContainer, Link, Alert } from '@dinnerdonebetter/ui';
 
   let { data } = $props();
 </script>

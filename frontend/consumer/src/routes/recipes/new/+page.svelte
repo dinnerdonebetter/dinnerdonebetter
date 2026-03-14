@@ -11,7 +11,7 @@
     Autocomplete,
     NumberInput,
     Card,
-  } from '$lib/components';
+  } from '@dinnerdonebetter/ui';
   import { createRecipeCreatorState, type RecipeCreatorState, type StepHelper } from '$lib/recipes/RecipeCreatorState';
   import { renderMermaidForRecipeCreationInput } from '$lib/recipes/recipeMermaid';
   import type {

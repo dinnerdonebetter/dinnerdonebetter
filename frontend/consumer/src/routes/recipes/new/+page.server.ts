@@ -2,7 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { createRecipe } from '$lib/grpc/clients';
 import { logger } from '$lib/logger';
-import type { RecipeCreationRequestInput } from '$lib/generated/mealplanning/mealplanning_service_types';
+import type { RecipeCreationRequestInput } from '@dinnerdonebetter/api-client/mealplanning/mealplanning_service_types';
 
 export const load: PageServerLoad = async ({ locals }) => {
   const token = locals.oauthToken;

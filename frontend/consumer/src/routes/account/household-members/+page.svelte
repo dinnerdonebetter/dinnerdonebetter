@@ -1,11 +1,11 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { PageContainer, FormField, Input, Button, Alert, Link } from '$lib/components';
+  import { PageContainer, FormField, Input, Button, Alert, Link } from '@dinnerdonebetter/ui';
   import type {
     Account,
     AccountInvitation,
     AccountUserMembershipWithUser,
-  } from '$lib/generated/identity/identity_messages';
+  } from '@dinnerdonebetter/api-client/identity/identity_messages';
 
   let { data } = $props();
   const account = $derived(data?.account as Account | null | undefined);

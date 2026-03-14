@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { PageContainer, Button, Alert, Link } from '$lib/components';
-  import type { PasskeyCredential } from '$lib/generated/auth/auth_service_types';
+  import { PageContainer, Button, Alert, Link } from '@dinnerdonebetter/ui';
+  import type { PasskeyCredential } from '@dinnerdonebetter/api-client/auth/auth_service_types';
 
   let { data } = $props();
   const passkeys = $derived((data?.passkeys ?? []) as PasskeyCredential[]);

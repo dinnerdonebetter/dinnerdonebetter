@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { PageContainer } from '$lib/components';
+  import { PageContainer } from '@dinnerdonebetter/ui';
 
   const COMPANY_NAME = 'Dinner Done Better';
   const APP_STORE_URL = 'https://apps.apple.com/app/dinner-done-better/id0000000000';

@@ -5,10 +5,9 @@ yarn.lock
 bun.lock
 bun.lockb
 
-# Build and generated
+# Build
 .svelte-kit/
 build/
-src/lib/generated/
 
 # Miscellaneous
 /static/

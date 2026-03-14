@@ -2,8 +2,8 @@
   import { enhance, applyAction } from '$app/forms';
   import { goto, invalidateAll } from '$app/navigation';
   import { env as publicEnv } from '$env/dynamic/public';
-  import { PageContainer, FormField, Input, Button, Alert, Link } from '$lib/components';
-  import type { User } from '$lib/generated/identity/identity_messages';
+  import { PageContainer, FormField, Input, Button, Alert, Link } from '@dinnerdonebetter/ui';
+  import type { User } from '@dinnerdonebetter/api-client/identity/identity_messages';
 
   let { data, form } = $props();
   const user = data?.user as User | null | undefined;

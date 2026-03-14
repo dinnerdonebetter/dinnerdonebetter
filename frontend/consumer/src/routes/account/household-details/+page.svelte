@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { PageContainer, FormField, Input, Button, Alert, Link } from '$lib/components';
-  import type { Account } from '$lib/generated/identity/identity_messages';
+  import { PageContainer, FormField, Input, Button, Alert, Link } from '@dinnerdonebetter/ui';
+  import type { Account } from '@dinnerdonebetter/api-client/identity/identity_messages';
 
   let { data } = $props();
   const account = data?.account as Account | null | undefined;

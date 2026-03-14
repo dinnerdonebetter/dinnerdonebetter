@@ -2,7 +2,7 @@ import type {
   RecipeCreationRequestInput,
   RecipeStepCreationRequestInput,
   RecipeStepProductCreationRequestInput,
-} from '$lib/generated/mealplanning/mealplanning_service_types';
+} from '@dinnerdonebetter/api-client/mealplanning/mealplanning_service_types';
 import type {
   Recipe,
   RecipeStep,
@@ -10,8 +10,8 @@ import type {
   RecipeStepInstrument,
   RecipeStepProduct,
   RecipeStepVessel,
-} from '$lib/generated/mealplanning/mealplanning_messages';
-import { RecipeStepProductType } from '$lib/generated/mealplanning/mealplanning_messages';
+} from '@dinnerdonebetter/api-client/mealplanning/mealplanning_messages';
+import { RecipeStepProductType } from '@dinnerdonebetter/api-client/mealplanning/mealplanning_messages';
 
 export const englishListFormatter = new Intl.ListFormat('en');
 

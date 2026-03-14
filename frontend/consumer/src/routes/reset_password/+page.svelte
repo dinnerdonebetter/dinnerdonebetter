@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { PageContainer, FormField, Input, Button, Alert, Link } from '$lib/components';
+  import { PageContainer, FormField, Input, Button, Alert, Link } from '@dinnerdonebetter/ui';
 
   let { data, form } = $props();
   const token = data?.token ?? form?.token ?? '';
