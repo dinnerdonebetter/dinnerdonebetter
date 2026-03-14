@@ -4,7 +4,8 @@ Last updated: March 2025
 
 ## 1. Introduction
 
-Dinner Done Better ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our meal planning and grocery list application.
+Dinner Done Better ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we
+collect, use, disclose, and safeguard your information when you use our meal planning and grocery list application.
 
 ## 2. Information We Collect
 
@@ -67,7 +68,8 @@ We do not sell your personal information to third parties.
 
 ## 5. Data Retention
 
-We retain your data for as long as your account is active or as needed to provide the Service. You may request deletion of your data at any time (see Your Rights below).
+We retain your data for as long as your account is active or as needed to provide the Service. You may request deletion
+of your data at any time (see Your Rights below).
 
 ## 6. Your Rights
 
@@ -83,23 +85,29 @@ To exercise these rights, contact us at <privacy@dinnerdonebetter.com> or throug
 
 ## 7. Cookies and Similar Technologies
 
-We use cookies and similar technologies to maintain your session, remember your preferences, and improve the Service. You can manage cookie settings in your browser.
+We use cookies and similar technologies to maintain your session, remember your preferences, and improve the Service.
+You can manage cookie settings in your browser.
 
 ## 8. Children's Privacy
 
-The Service is not intended for children under 13. We do not knowingly collect personal information from children under 13. If you believe we have collected such information, please contact us immediately.
+The Service is not intended for children under 13. We do not knowingly collect personal information from children
+under 13. If you believe we have collected such information, please contact us immediately.
 
 ## 9. Security
 
-We implement appropriate technical and organizational measures to protect your data, including encryption and access controls.
+We implement appropriate technical and organizational measures to protect your data, including encryption and access
+controls.
 
 ## 10. International Transfers
 
-Your data may be processed in the United States or other countries where our service providers operate. By using the Service, you consent to such transfers.
+Your data may be processed in the United States or other countries where our service providers operate. By using the
+Service, you consent to such transfers.
 
 ## 11. Changes to This Policy
 
-We may update this Privacy Policy from time to time. We will notify you of material changes by posting the updated policy and updating the "Last updated" date. Continued use of the Service after changes constitutes acceptance of the new policy.
+We may update this Privacy Policy from time to time. We will notify you of material changes by posting the updated
+policy and updating the "Last updated" date. Continued use of the Service after changes constitutes acceptance of the
+new policy.
 
 ## 12. Contact
 

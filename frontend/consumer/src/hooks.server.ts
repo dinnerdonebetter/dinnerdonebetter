@@ -8,78 +8,71 @@ import { ServerTiming, ServerTimingHeaderName } from '$lib/server-timing';
 const LOGIN_PATH = '/login';
 
 const PUBLIC_PATHS = [
-	LOGIN_PATH,
-	'/logout',
-	'/forgot_password',
-	'/reset_password',
-	'/verify_email_address',
-	'/terms-of-service',
-	'/privacy-policy',
-	'/accept_invitation',
-	'/meal_plans',
-	'/_ops_',
-	'/.well-known',
-	'/auth/passkey/authentication'
+  LOGIN_PATH,
+  '/logout',
+  '/forgot_password',
+  '/reset_password',
+  '/verify_email_address',
+  '/terms-of-service',
+  '/privacy-policy',
+  '/accept_invitation',
+  '/meal_plans',
+  '/_ops_',
+  '/.well-known',
+  '/auth/passkey/authentication',
 ];
 
 function isPublicPath(pathname: string): boolean {
-	return PUBLIC_PATHS.some(
-		(p) => pathname === p || pathname.startsWith(`${p}/`)
-	);
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const timing = new ServerTiming();
-	const totalEvent = timing.addEvent('total', 'Total request time');
+  const timing = new ServerTiming();
+  const totalEvent = timing.addEvent('total', 'Total request time');
 
-	if (isPublicPath(event.url.pathname)) {
-		const response = await resolve(event);
-		totalEvent.end();
-		response.headers.set(ServerTimingHeaderName, timing.headerValue());
-		return response;
-	}
+  if (isPublicPath(event.url.pathname)) {
+    const response = await resolve(event);
+    totalEvent.end();
+    response.headers.set(ServerTimingHeaderName, timing.headerValue());
+    return response;
+  }
 
-	const cookieName = getCookieName();
-	const cookieValue = event.cookies.get(cookieName);
+  const cookieName = getCookieName();
+  const cookieValue = event.cookies.get(cookieName);
 
-	if (!cookieValue) {
-		throw redirect(302, LOGIN_PATH);
-	}
+  if (!cookieValue) {
+    throw redirect(302, LOGIN_PATH);
+  }
 
-	let payload;
-	try {
-		payload = decodeSession(cookieValue);
-	} catch {
-		event.cookies.delete(cookieName, { path: '/' });
-		throw redirect(302, LOGIN_PATH);
-	}
+  let payload;
+  try {
+    payload = decodeSession(cookieValue);
+  } catch {
+    event.cookies.delete(cookieName, { path: '/' });
+    throw redirect(302, LOGIN_PATH);
+  }
 
-	const httpApiUrl = env.HTTP_API_SERVER_URL;
-	const clientId = env.OAUTH2_CLIENT_ID;
-	const clientSecret = env.OAUTH2_CLIENT_SECRET;
+  const httpApiUrl = env.HTTP_API_SERVER_URL;
+  const clientId = env.OAUTH2_CLIENT_ID;
+  const clientSecret = env.OAUTH2_CLIENT_SECRET;
 
-	if (!httpApiUrl || !clientId || !clientSecret) {
-		throw new Error('HTTP_API_SERVER_URL, OAUTH2_CLIENT_ID, OAUTH2_CLIENT_SECRET are required');
-	}
+  if (!httpApiUrl || !clientId || !clientSecret) {
+    throw new Error('HTTP_API_SERVER_URL, OAUTH2_CLIENT_ID, OAUTH2_CLIENT_SECRET are required');
+  }
 
-	const authEvent = timing.addEvent('auth', 'OAuth2 token exchange');
-	try {
-		const { accessToken } = await exchangeJwtForOAuth2Token(
-			httpApiUrl,
-			clientId,
-			clientSecret,
-			payload.accessToken
-		);
-		event.locals.oauthToken = accessToken;
-	} catch {
-		event.cookies.delete(cookieName, { path: '/' });
-		throw redirect(302, LOGIN_PATH);
-	} finally {
-		authEvent.end();
-	}
+  const authEvent = timing.addEvent('auth', 'OAuth2 token exchange');
+  try {
+    const { accessToken } = await exchangeJwtForOAuth2Token(httpApiUrl, clientId, clientSecret, payload.accessToken);
+    event.locals.oauthToken = accessToken;
+  } catch {
+    event.cookies.delete(cookieName, { path: '/' });
+    throw redirect(302, LOGIN_PATH);
+  } finally {
+    authEvent.end();
+  }
 
-	const response = await resolve(event);
-	totalEvent.end();
-	response.headers.set(ServerTimingHeaderName, timing.headerValue());
-	return response;
+  const response = await resolve(event);
+  totalEvent.end();
+  response.headers.set(ServerTimingHeaderName, timing.headerValue());
+  return response;
 };

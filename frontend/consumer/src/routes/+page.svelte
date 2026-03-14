@@ -1,24 +1,24 @@
 <script lang="ts">
-	import { PageContainer, Link, Alert } from '$lib/components';
+  import { PageContainer, Link, Alert } from '$lib/components';
 
-	let { data } = $props();
+  let { data } = $props();
 </script>
 
 <PageContainer>
-	<h1>Welcome to Dinner Done Better</h1>
-	<p>Manage your meal plans and grocery lists.</p>
+  <h1>Welcome to Dinner Done Better</h1>
+  <p>Manage your meal plans and grocery lists.</p>
 
-	{#if data?.flash}
-		<Alert variant={data.flash.type === 'error' ? 'error' : 'info'}>{data.flash.message}</Alert>
-	{/if}
+  {#if data?.flash}
+    <Alert variant={data.flash.type === 'error' ? 'error' : 'info'}>{data.flash.message}</Alert>
+  {/if}
 
-	{#if data?.user}
-		<p>Hello, {data.user.username ?? data.user.firstName ?? 'there'}!</p>
-		{#if data.account}
-			<p>Account: {data.account.name}</p>
-		{/if}
-		<p><Link href="/logout">Sign out</Link></p>
-	{:else}
-		<p><Link href="/login">Sign in</Link></p>
-	{/if}
+  {#if data?.user}
+    <p>Hello, {data.user.username ?? data.user.firstName ?? 'there'}!</p>
+    {#if data.account}
+      <p>Account: {data.account.name}</p>
+    {/if}
+    <p><Link href="/logout">Sign out</Link></p>
+  {:else}
+    <p><Link href="/login">Sign in</Link></p>
+  {/if}
 </PageContainer>

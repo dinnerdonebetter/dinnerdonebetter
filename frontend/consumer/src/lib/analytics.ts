@@ -12,15 +12,12 @@ import { logger } from '$lib/logger';
  * Track an event for an identified user.
  * Call from server-side only (load, form action, API route).
  */
-export async function trackEvent(
-	event: string,
-	properties: Record<string, string> = {}
-): Promise<void> {
-	try {
-		await grpcTrackEvent(event, properties);
-	} catch (err) {
-		logger.error('Analytics trackEvent failed:', err);
-	}
+export async function trackEvent(event: string, properties: Record<string, string> = {}): Promise<void> {
+  try {
+    await grpcTrackEvent(event, properties);
+  } catch (err) {
+    logger.error('Analytics trackEvent failed:', err);
+  }
 }
 
 /**
@@ -28,13 +25,13 @@ export async function trackEvent(
  * Call from server-side only (load, form action, API route).
  */
 export async function trackAnonymousEvent(
-	event: string,
-	anonymousId: string,
-	properties: Record<string, string> = {}
+  event: string,
+  anonymousId: string,
+  properties: Record<string, string> = {},
 ): Promise<void> {
-	try {
-		await grpcTrackAnonymousEvent(event, anonymousId, properties);
-	} catch (err) {
-		logger.error('Analytics trackAnonymousEvent failed:', err);
-	}
+  try {
+    await grpcTrackAnonymousEvent(event, anonymousId, properties);
+  } catch (err) {
+    logger.error('Analytics trackAnonymousEvent failed:', err);
+  }
 }
