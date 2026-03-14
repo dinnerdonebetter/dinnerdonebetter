@@ -82,11 +82,11 @@ func TestQuerier_Integration_ValidPreparationInstruments(t *testing.T) {
 
 	// create more (each with unique prep+instrument pair to satisfy uniqueness constraint)
 	for range exampleQuantity {
-		exampleValidInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
-		exampleValidPreparation := createValidPreparationForTest(t, ctx, nil, dbc)
+		tempValidInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+		tempValidPreparation := createValidPreparationForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeValidPreparationInstrument()
-		input.Preparation = *exampleValidPreparation
-		input.Instrument = *exampleValidInstrument
+		input.Preparation = *tempValidPreparation
+		input.Instrument = *tempValidInstrument
 		createdValidPreparationInstruments = append(createdValidPreparationInstruments, createValidPreparationInstrumentForTest(t, ctx, input, dbc))
 	}
 

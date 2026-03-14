@@ -72,7 +72,7 @@ func TestUploadRecipeStepImage(T *testing.T) {
 		uploadedMediaID := uploadRecipeStepImageForTest(t, createdRecipe.ID, firstStep.ID, filename, contentType, fileData)
 		assert.NotEmpty(t, uploadedMediaID)
 
-		// Verify recipe step is enriched with step images when step is read (GetRecipeStep enriches; GetRecipe does not)
+		// Verify recipe step is enriched with step images when step is read via GetRecipeStep
 		retrieved, err := adminClient.GetRecipeStep(ctx, &mealplanningsvc.GetRecipeStepRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: firstStep.ID,
@@ -82,6 +82,14 @@ func TestUploadRecipeStepImage(T *testing.T) {
 		require.Len(t, retrieved.Result.StepImages, 1)
 		assert.Equal(t, uploadedMediaID, retrieved.Result.StepImages[0].Id)
 		assert.Equal(t, uploadedmediagrpc.UploadedMediaMimeType_UPLOADED_MEDIA_MIME_TYPE_IMAGE_JPEG, retrieved.Result.StepImages[0].MimeType)
+
+		// Verify GetRecipe also returns step images for each step
+		fullRecipe, err := adminClient.GetRecipe(ctx, &mealplanningsvc.GetRecipeRequest{RecipeId: createdRecipe.ID})
+		require.NoError(t, err)
+		require.NotNil(t, fullRecipe)
+		require.NotEmpty(t, fullRecipe.Result.Steps)
+		require.Len(t, fullRecipe.Result.Steps[0].StepImages, 1)
+		assert.Equal(t, uploadedMediaID, fullRecipe.Result.Steps[0].StepImages[0].Id)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

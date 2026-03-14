@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/google/uuid"
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
@@ -23,6 +22,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 	uploadedmediaconverters "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )

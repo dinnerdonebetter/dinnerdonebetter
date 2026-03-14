@@ -1362,7 +1362,6 @@ message RecipeCreationRequestInput {
   repeated RecipeStepCreationRequestInput steps = 11;
   bool also_create_meal = 12;
   bool eligible_for_meals = 13;
-  repeated RecipeMediaCreationRequestInput media = 14;
 }
 
 message RecipeMediaCreationRequestInput {

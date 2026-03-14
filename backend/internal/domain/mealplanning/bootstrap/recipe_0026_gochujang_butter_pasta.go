@@ -870,7 +870,6 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11,
 			},
 			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
-			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}
 }

@@ -25,11 +25,6 @@ func ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(input *me
 		prepTasks = append(prepTasks, ConvertGRPCRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskWithinRecipeCreationRequestInput(task))
 	}
 
-	var media []*mealplanning.RecipeMediaCreationRequestInput
-	for _, m := range input.Media {
-		media = append(media, ConvertGRPCRecipeMediaCreationRequestInputToRecipeMediaCreationRequestInput(m))
-	}
-
 	return &mealplanning.RecipeCreationRequestInput{
 		InspiredByRecipeID:  input.InspiredByRecipeId,
 		Name:                input.Name,
@@ -48,7 +43,6 @@ func ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(input *me
 		EligibleForMeals: input.EligibleForMeals,
 		PrepTasks:        prepTasks,
 		Steps:            steps,
-		Media:            media,
 	}
 }
 
@@ -61,11 +55,6 @@ func ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input *me
 	var prepTasks []*mealplanningsvc.RecipePrepTaskWithinRecipeCreationRequestInput
 	for _, task := range input.PrepTasks {
 		prepTasks = append(prepTasks, ConvertRecipePrepTaskWithinRecipeCreationRequestInputToGRPCRecipePrepTaskWithinRecipeCreationRequestInput(task))
-	}
-
-	var media []*mealplanningsvc.RecipeMediaCreationRequestInput
-	for _, m := range input.Media {
-		media = append(media, ConvertRecipeMediaCreationRequestInputToGRPCRecipeMediaCreationRequestInput(m))
 	}
 
 	return &mealplanningsvc.RecipeCreationRequestInput{
@@ -86,7 +75,6 @@ func ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input *me
 		EligibleForMeals: input.EligibleForMeals,
 		PrepTasks:        prepTasks,
 		Steps:            steps,
-		Media:            media,
 	}
 }
 

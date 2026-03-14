@@ -80,10 +80,11 @@ func TestQuerier_Integration_ValidIngredientStateIngredients(t *testing.T) {
 	updatedValidIngredientStateIngredient.Ingredient = createdValidIngredientStateIngredients[0].Ingredient
 	assert.NoError(t, dbc.UpdateValidIngredientStateIngredient(ctx, updatedValidIngredientStateIngredient))
 
-	// create more
+	// create more (each must have unique ingredient+state per active row)
 	for range exampleQuantity {
+		extraState := createValidIngredientStateForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeValidIngredientStateIngredient()
-		input.IngredientState = createdValidIngredientStateIngredients[0].IngredientState
+		input.IngredientState = *extraState
 		input.Ingredient = createdValidIngredientStateIngredients[0].Ingredient
 		createdValidIngredientStateIngredients = append(createdValidIngredientStateIngredients, createValidIngredientStateIngredientForTest(t, ctx, input, dbc))
 	}

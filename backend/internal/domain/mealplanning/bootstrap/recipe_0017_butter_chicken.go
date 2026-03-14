@@ -1728,7 +1728,6 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				step20, step21,
 			},
 			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2, prepTask3},
-			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}
 }

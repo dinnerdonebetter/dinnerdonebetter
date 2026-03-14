@@ -659,7 +659,6 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 			crStep0, crStep1, crStep2, crStep3, crStep4, crStep5, crStep6, crStep7, crStep8, crStep9, crStep10,
 		},
 		PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
-		Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 	}
 
 	return []*mealplanning.RecipeCreationRequestInput{

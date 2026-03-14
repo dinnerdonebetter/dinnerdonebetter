@@ -762,7 +762,6 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				step0, step1, step2a, step2b, step2c, step2, step3, step4, step5, step6, step7, step8,
 			},
 			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
-			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}
 }

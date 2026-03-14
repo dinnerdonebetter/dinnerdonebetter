@@ -612,7 +612,6 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			drStep0, drStep1, drStep2, drStep3, drStep4, drStep5, drStep6, drStep7,
 		},
 		PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
-		Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 	}
 
 	return []*mealplanning.RecipeCreationRequestInput{

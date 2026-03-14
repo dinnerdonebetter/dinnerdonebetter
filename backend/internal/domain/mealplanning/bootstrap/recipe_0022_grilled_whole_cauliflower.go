@@ -487,7 +487,6 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		EligibleForMeals:    true,
 		Steps:               []*mealplanning.RecipeStepCreationRequestInput{gc0, gc1, gc2, gc3, gc4, gc5, gc6, gc7, gc8, gc9, gc10, gc11, gc12, gc13, gc14, gc15, gc16, gc17, gc18, gc19},
 		PrepTasks:           []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
-		Media:               []*mealplanning.RecipeMediaCreationRequestInput{},
 	}
 
 	_ = []*mealplanning.RecipeCreationRequestInput{
