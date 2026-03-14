@@ -2034,6 +2034,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		if ing == nil {
 			return fmt.Errorf("ingredient is nil when creating VIP for preparation '%s'", prep.Name)
 		}
+		// Check if it already exists
+		if prepMap, ok := enums.IngredientPreparations[prep.ID]; ok {
+			if _, exists := prepMap[ing.ID]; exists {
+				return nil // Already exists
+			}
+		}
 		vip, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -2056,6 +2062,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		}
 		if unit == nil {
 			return fmt.Errorf("measurement unit is nil")
+		}
+		// Check if it already exists
+		if ingMap, ok := enums.IngredientMeasurementUnits[ing.ID]; ok {
+			if _, exists := ingMap[unit.ID]; exists {
+				return nil // Already exists
+			}
 		}
 		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 			ID:                     identifiers.New(),
@@ -2080,6 +2092,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		if inst == nil {
 			return fmt.Errorf("instrument is nil when creating VPI for preparation '%s'", prep.Name)
 		}
+		// Check if it already exists
+		if prepMap, ok := enums.PreparationInstruments[prep.ID]; ok {
+			if _, exists := prepMap[inst.ID]; exists {
+				return nil // Already exists
+			}
+		}
 		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -2102,6 +2120,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		}
 		if vessel == nil {
 			return fmt.Errorf("vessel is nil when creating VPV for preparation '%s'", prep.Name)
+		}
+		// Check if it already exists
+		if prepMap, ok := enums.PreparationVessels[prep.ID]; ok {
+			if _, exists := prepMap[vessel.ID]; exists {
+				return nil // Already exists
+			}
 		}
 		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
 			ID:                 identifiers.New(),
@@ -9734,6 +9758,12 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 		if ingredient == nil {
 			return fmt.Errorf("ingredient is nil when creating VIP for preparation '%s'", prep.Name)
 		}
+		// Check if it already exists
+		if prepMap, ok := enums.IngredientPreparations[prep.ID]; ok {
+			if _, exists := prepMap[ingredient.ID]; exists {
+				return nil // Already exists
+			}
+		}
 		vip, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -9755,6 +9785,12 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 		}
 		if unit == nil {
 			return fmt.Errorf("measurement unit is nil")
+		}
+		// Check if it already exists
+		if ingMap, ok := enums.IngredientMeasurementUnits[ingredient.ID]; ok {
+			if _, exists := ingMap[unit.ID]; exists {
+				return nil // Already exists
+			}
 		}
 		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 			ID:                     identifiers.New(),
@@ -9778,6 +9814,12 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 		if vessel == nil {
 			return fmt.Errorf("vessel is nil when creating VPV for preparation '%s'", prep.Name)
 		}
+		// Check if it already exists
+		if prepMap, ok := enums.PreparationVessels[prep.ID]; ok {
+			if _, exists := prepMap[vessel.ID]; exists {
+				return nil // Already exists
+			}
+		}
 		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -9799,6 +9841,12 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 		}
 		if instrument == nil {
 			return fmt.Errorf("instrument is nil when creating VPI for preparation '%s'", prep.Name)
+		}
+		// Check if it already exists
+		if prepMap, ok := enums.PreparationInstruments[prep.ID]; ok {
+			if _, exists := prepMap[instrument.ID]; exists {
+				return nil // Already exists
+			}
 		}
 		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
 			ID:                 identifiers.New(),
@@ -11208,6 +11256,12 @@ func createChickenFlorentineBridgeEntries(ctx context.Context, repo mealplanning
 		if prep == nil || ing == nil {
 			return fmt.Errorf("nil prep or ingredient")
 		}
+		// Check if it already exists
+		if prepMap, ok := enums.IngredientPreparations[prep.ID]; ok {
+			if _, exists := prepMap[ing.ID]; exists {
+				return nil // Already exists
+			}
+		}
 		vip, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -11225,6 +11279,12 @@ func createChickenFlorentineBridgeEntries(ctx context.Context, repo mealplanning
 	createVIMU := func(ing *mealplanning.ValidIngredient, unit *mealplanning.ValidMeasurementUnit) error {
 		if ing == nil || unit == nil {
 			return fmt.Errorf("nil ingredient or unit")
+		}
+		// Check if it already exists
+		if ingMap, ok := enums.IngredientMeasurementUnits[ing.ID]; ok {
+			if _, exists := ingMap[unit.ID]; exists {
+				return nil // Already exists
+			}
 		}
 		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 			ID:                     identifiers.New(),
@@ -11244,6 +11304,12 @@ func createChickenFlorentineBridgeEntries(ctx context.Context, repo mealplanning
 		if prep == nil || vessel == nil {
 			return fmt.Errorf("nil prep or vessel")
 		}
+		// Check if it already exists
+		if prepMap, ok := enums.PreparationVessels[prep.ID]; ok {
+			if _, exists := prepMap[vessel.ID]; exists {
+				return nil // Already exists
+			}
+		}
 		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -11261,6 +11327,12 @@ func createChickenFlorentineBridgeEntries(ctx context.Context, repo mealplanning
 	createVPI := func(prep *mealplanning.ValidPreparation, inst *mealplanning.ValidInstrument) error {
 		if prep == nil || inst == nil {
 			return fmt.Errorf("nil prep or instrument")
+		}
+		// Check if it already exists
+		if prepMap, ok := enums.PreparationInstruments[prep.ID]; ok {
+			if _, exists := prepMap[inst.ID]; exists {
+				return nil // Already exists
+			}
 		}
 		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
 			ID:                 identifiers.New(),
@@ -11709,6 +11781,12 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		if ing == nil || unit == nil {
 			return fmt.Errorf("ing or unit is nil")
 		}
+		// Check if it already exists
+		if ingMap, ok := enums.IngredientMeasurementUnits[ing.ID]; ok {
+			if _, exists := ingMap[unit.ID]; exists {
+				return nil // Already exists
+			}
+		}
 		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 			ID:                     identifiers.New(),
 			ValidIngredientID:      ing.ID,
@@ -11727,6 +11805,12 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		if prep == nil || inst == nil {
 			return fmt.Errorf("prep or inst is nil")
 		}
+		// Check if it already exists
+		if prepMap, ok := enums.PreparationInstruments[prep.ID]; ok {
+			if _, exists := prepMap[inst.ID]; exists {
+				return nil // Already exists
+			}
+		}
 		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -11744,6 +11828,12 @@ func createChanaMasalaBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	createVPV := func(prep *mealplanning.ValidPreparation, vessel *mealplanning.ValidVessel) error {
 		if prep == nil || vessel == nil {
 			return fmt.Errorf("prep or vessel is nil")
+		}
+		// Check if it already exists
+		if prepMap, ok := enums.PreparationVessels[prep.ID]; ok {
+			if _, exists := prepMap[vessel.ID]; exists {
+				return nil // Already exists
+			}
 		}
 		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
 			ID:                 identifiers.New(),

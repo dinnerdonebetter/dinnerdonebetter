@@ -112,14 +112,14 @@ func TestRecipeSteps_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(t, nil)
+		createdValidIngredients, _, createdRecipe := createRecipeForTest(t, nil)
+		createdValidPreparation := createValidPreparationForTest(t) // Use a new preparation to avoid duplicate VIP/VPI/VPV (createRecipeForTest already creates bridge entries)
 		createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
 		createdValidInstrument := createValidInstrumentForTest(t)
 		createdValidIngredientState := createValidIngredientStateForTest(t)
 		createdValidVessel := createValidVesselForTest(t)
 
-		// Create bridge table entries for the new preparation
-		// ValidIngredientPreparation entries for each ingredient
+		// Create bridge table entries for the new preparation (unique from createRecipeForTest's)
 		var validIngredientPreparations []*mealplanning.ValidIngredientPreparation
 		var validIngredientMeasurementUnits []*mealplanning.ValidIngredientMeasurementUnit
 		for _, ingredient := range createdValidIngredients {

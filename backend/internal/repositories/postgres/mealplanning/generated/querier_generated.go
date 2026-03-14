@@ -217,6 +217,7 @@ type Querier interface {
 	GetRecipesCreatedByUser(ctx context.Context, db DBTX, arg *GetRecipesCreatedByUserParams) ([]*GetRecipesCreatedByUserRow, error)
 	GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetRecipesWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetRecipesWithIDsRow, error)
+	GetUniversalValidMeasurementUnits(ctx context.Context, db DBTX, arg *GetUniversalValidMeasurementUnitsParams) ([]*GetUniversalValidMeasurementUnitsRow, error)
 	GetUploadedMediaWithIDs(ctx context.Context, db DBTX, ids []string) ([]*UploadedMedia, error)
 	GetUserIngredientPreference(ctx context.Context, db DBTX, arg *GetUserIngredientPreferenceParams) (*GetUserIngredientPreferenceRow, error)
 	GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error)

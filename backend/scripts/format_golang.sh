@@ -5,10 +5,9 @@ set -euo pipefail
 # Usage: format_golang.sh <project_root> <gofmt_command>
 
 PROJECT_ROOT="${1:-$(pwd)}"
-GO_FORMAT="${2:-gofmt -s -w}"
 
 while IFS= read -r -d '' file; do
   # GO_FORMAT contains a command with arguments, so we use eval
   # shellcheck disable=SC2086
-  eval "${GO_FORMAT} \"${file}\""
+  eval "gofmt -s -w \"${file}\""
 done < <(find "${PROJECT_ROOT}" -type f -not -path '*/vendor/*' -name "*.go" -print0)

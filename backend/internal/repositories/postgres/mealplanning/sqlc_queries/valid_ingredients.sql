@@ -438,10 +438,7 @@ FROM valid_ingredient_preparations
 WHERE valid_ingredient_preparations.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
-	AND (
-		valid_ingredient_preparations.valid_preparation_id = sqlc.arg(valid_preparation_id)
-		OR valid_preparations.restrict_to_ingredients IS FALSE
-	)
+	AND valid_ingredient_preparations.valid_preparation_id = sqlc.arg(valid_preparation_id)
 	AND valid_ingredients.name ILIKE '%' || sqlc.arg(name_query)::text || '%';
 
 -- name: UpdateValidIngredient :execrows

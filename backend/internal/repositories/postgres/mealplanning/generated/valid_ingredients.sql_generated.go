@@ -1118,10 +1118,7 @@ FROM valid_ingredient_preparations
 WHERE valid_ingredient_preparations.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
-	AND (
-		valid_ingredient_preparations.valid_preparation_id = $1
-		OR valid_preparations.restrict_to_ingredients IS FALSE
-	)
+	AND valid_ingredient_preparations.valid_preparation_id = $1
 	AND valid_ingredients.name ILIKE '%' || $2::text || '%'
 `
 

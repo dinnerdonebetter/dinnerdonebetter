@@ -85,17 +85,11 @@ func TestValidPreparationInstruments_Listing(T *testing.T) {
 	createdValidPreparationInstruments := []*types.ValidPreparationInstrument{}
 	validPreparation, validInstrument, created := createValidPreparationInstrumentForTest(T)
 	createdValidPreparationInstruments = append(createdValidPreparationInstruments, created)
+	// Create more VPIs, each with unique (preparation, instrument) pairs to satisfy
+	// idx_valid_preparation_instruments_prep_instrument_active unique constraint.
 	for range exampleQuantity - 1 {
-		exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
-		exampleValidPreparationInstrumentInput := mealplanningconverters.ConvertCreateValidPreparationInstrumentRequestToGRPCValidPreparationInstrumentCreationRequestInput(converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput(exampleValidPreparationInstrument))
-		exampleValidPreparationInstrumentInput.ValidInstrumentId = validInstrument.ID
-		exampleValidPreparationInstrumentInput.ValidPreparationId = validPreparation.ID
-
-		createdValidPreparationInstrument, err := adminClient.CreateValidPreparationInstrument(T.Context(), &mealplanningsvc.CreateValidPreparationInstrumentRequest{Input: exampleValidPreparationInstrumentInput})
-		require.NoError(T, err)
-		require.NotNil(T, createdValidPreparationInstrument)
-
-		createdValidPreparationInstruments = append(createdValidPreparationInstruments, mealplanningconverters.ConvertGRPCValidPreparationInstrumentToValidPreparationInstrument(createdValidPreparationInstrument.Result))
+		_, _, vpi := createValidPreparationInstrumentForTest(T)
+		createdValidPreparationInstruments = append(createdValidPreparationInstruments, vpi)
 	}
 
 	T.Run("happy path", func(t *testing.T) {
@@ -115,7 +109,7 @@ func TestValidPreparationInstruments_Listing(T *testing.T) {
 		results, err := adminClient.GetValidPreparationInstrumentsByInstrument(ctx, &mealplanningsvc.GetValidPreparationInstrumentsByInstrumentRequest{ValidInstrumentId: validInstrument.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
-		assert.True(t, len(results.Results) >= len(createdValidPreparationInstruments))
+		assert.True(t, len(results.Results) >= 1, "filter by instrument should return at least the created VPI")
 	})
 
 	T.Run("by preparation", func(t *testing.T) {
@@ -125,6 +119,6 @@ func TestValidPreparationInstruments_Listing(T *testing.T) {
 		results, err := adminClient.GetValidPreparationInstrumentsByPreparation(ctx, &mealplanningsvc.GetValidPreparationInstrumentsByPreparationRequest{ValidPreparationId: validPreparation.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
-		assert.True(t, len(results.Results) >= len(createdValidPreparationInstruments))
+		assert.True(t, len(results.Results) >= 1, "filter by preparation should return at least the created VPI")
 	})
 }

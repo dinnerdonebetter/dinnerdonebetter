@@ -1,0 +1,753 @@
+import {
+	MealComponentType,
+	RecipeStepProductType
+} from '$lib/recipes/client-enums';
+import type {
+	RecipeCreationRequestInput,
+	RecipeStepCreationRequestInput,
+	RecipeStepIngredientCreationRequestInput,
+	RecipeStepInstrumentCreationRequestInput,
+	RecipeStepProductCreationRequestInput,
+	RecipeStepVesselCreationRequestInput,
+	RecipeStepCompletionConditionCreationRequestInput,
+	ValidPreparation,
+	ValidIngredient,
+	ValidMeasurementUnit,
+	ValidIngredientState,
+	ValidPreparationInstrument,
+	ValidPreparationVessel,
+	ValidIngredientPreparation,
+	ValidIngredientMeasurementUnit,
+	ValidVessel
+} from '$lib/recipes/client-types';
+
+function createEmptyStep(index: number): RecipeStepCreationRequestInput {
+	return {
+		preparationId: '',
+		explicitInstructions: '',
+		notes: '',
+		conditionExpression: '',
+		estimatedTimeInSeconds: undefined,
+		temperatureInCelsius: undefined,
+		instruments: [createEmptyInstrument()],
+		vessels: [],
+		ingredients: [createEmptyIngredient()],
+		products: [createEmptyProduct(0)],
+		completionConditions: [],
+		index,
+		optional: false,
+		startTimerAutomatically: false
+	};
+}
+
+function createEmptyIngredient(): RecipeStepIngredientCreationRequestInput {
+	return {
+		name: '',
+		ingredientNotes: '',
+		quantityNotes: '',
+		quantity: { min: 1 },
+		optionIndex: 0,
+		optional: false,
+		toTaste: false
+	};
+}
+
+function createEmptyInstrument(): RecipeStepInstrumentCreationRequestInput {
+	return {
+		name: '',
+		notes: '',
+		quantity: { min: 1 },
+		optionIndex: 0,
+		optional: false,
+		preferenceRank: 0
+	};
+}
+
+function createEmptyVessel(): RecipeStepVesselCreationRequestInput {
+	return {
+		name: '',
+		notes: '',
+		quantity: { min: 1 },
+		vesselPreposition: 'in',
+		unavailableAfterStep: false,
+		optionIndex: 0
+	};
+}
+
+function createEmptyProduct(index: number): RecipeStepProductCreationRequestInput {
+	return {
+		name: '',
+		type: RecipeStepProductType.RECIPE_STEP_PRODUCT_TYPE_INGREDIENT,
+		quantityNotes: '',
+		storageInstructions: '',
+		storageTemperatureInCelsius: undefined,
+		storageDurationInSeconds: undefined,
+		measurementQuantity: undefined,
+		itemQuantity: undefined,
+		index,
+		compostable: false,
+		isLiquid: false,
+		isWaste: false
+	};
+}
+
+export interface StepHelper {
+	show: boolean;
+	preparationQuery: string;
+	preparationSuggestions: ValidPreparation[];
+	selectedPreparation: ValidPreparation | null;
+	ingredientQueries: string[];
+	ingredientSuggestions: (ValidIngredient & { validIngredientPreparationId?: string })[][];
+	selectedIngredients: (ValidIngredient & { validIngredientPreparationId?: string; validIngredientMeasurementUnitId?: string } | null)[];
+	ingredientMeasurementUnitSuggestions: ValidIngredientMeasurementUnit[][];
+	selectedMeasurementUnits: (ValidIngredientMeasurementUnit | null)[];
+	instrumentSuggestions: ValidPreparationInstrument[];
+	selectedInstruments: (ValidPreparationInstrument | null)[];
+	vesselQueries: string[];
+	vesselSuggestions: ValidPreparationVessel[][];
+	selectedVessels: (ValidPreparationVessel | null)[];
+	productMeasurementUnitSuggestions: ValidMeasurementUnit[][];
+	selectedProductMeasurementUnits: (ValidMeasurementUnit | null)[];
+	ingredientIsProduct: boolean[];
+	instrumentIsProduct: boolean[];
+	vesselIsProduct: boolean[];
+	ingredientIsRanged: boolean[];
+	instrumentIsRanged: boolean[];
+	vesselIsRanged: boolean[];
+	productIsRanged: boolean[];
+	productIsNamedManually: boolean[];
+	completionConditionQueries: string[];
+	completionConditionSuggestions: ValidIngredientState[][];
+}
+
+function createStepHelper(): StepHelper {
+	return {
+		show: true,
+		preparationQuery: '',
+		preparationSuggestions: [],
+		selectedPreparation: null,
+		ingredientQueries: [''],
+		ingredientSuggestions: [[]],
+		selectedIngredients: [null],
+		ingredientMeasurementUnitSuggestions: [[]],
+		selectedMeasurementUnits: [null],
+		instrumentSuggestions: [],
+		selectedInstruments: [null],
+		vesselQueries: [''],
+		vesselSuggestions: [[]],
+		selectedVessels: [null],
+		productMeasurementUnitSuggestions: [[]],
+		selectedProductMeasurementUnits: [null],
+		ingredientIsProduct: [false],
+		instrumentIsProduct: [false],
+		vesselIsProduct: [false],
+		ingredientIsRanged: [false],
+		instrumentIsRanged: [false],
+		vesselIsRanged: [false],
+		productIsRanged: [false],
+		productIsNamedManually: [false],
+		completionConditionQueries: [],
+		completionConditionSuggestions: []
+	};
+}
+
+export type RecipeCreatorState = ReturnType<typeof createRecipeCreatorState>;
+
+export function createRecipeCreatorState() {
+	const state = {
+		submissionError: null as string | null,
+		recipe: {
+			name: '',
+			slug: '',
+			source: '',
+			sourceIsbn: '',
+			description: '',
+			portionName: 'portion',
+			pluralPortionName: 'portions',
+			yieldsComponentType: MealComponentType.MEAL_COMPONENT_TYPE_MAIN,
+			estimatedPortions: { min: 1 },
+			prepTasks: [],
+			steps: [createEmptyStep(0)],
+			alsoCreateMeal: false,
+			eligibleForMeals: true,
+			media: []
+		} as RecipeCreationRequestInput,
+		stepHelpers: [createStepHelper()] as StepHelper[],
+
+		addStep() {
+			const idx = this.recipe.steps.length;
+			this.recipe = {
+				...this.recipe,
+				steps: [...this.recipe.steps, createEmptyStep(idx)]
+			};
+			this.stepHelpers = [...this.stepHelpers, createStepHelper()];
+		},
+
+		removeStep(stepIndex: number) {
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.filter((_, i) => i !== stepIndex)
+			};
+			this.stepHelpers = this.stepHelpers.filter((_, i) => i !== stepIndex);
+			this.recipe.steps = this.recipe.steps.map((s, i) => ({ ...s, index: i }));
+		},
+
+		addIngredientToStep(stepIndex: number) {
+			this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						ingredientQueries: [...h.ingredientQueries, ''],
+						ingredientSuggestions: [...h.ingredientSuggestions, []],
+						selectedIngredients: [...h.selectedIngredients, null],
+						ingredientMeasurementUnitSuggestions: [...h.ingredientMeasurementUnitSuggestions, []],
+						selectedMeasurementUnits: [...h.selectedMeasurementUnits, null],
+						ingredientIsProduct: [...h.ingredientIsProduct, false],
+						ingredientIsRanged: [...h.ingredientIsRanged, false]
+					}
+				: h
+		);
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, ingredients: [...s.ingredients, createEmptyIngredient()] } : s
+			)
+		};
+		},
+
+		removeIngredientFromStep(stepIndex: number, ingredientIndex: number) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						ingredientQueries: h.ingredientQueries.filter((_, j) => j !== ingredientIndex),
+						ingredientSuggestions: h.ingredientSuggestions.filter((_, j) => j !== ingredientIndex),
+						selectedIngredients: h.selectedIngredients.filter((_, j) => j !== ingredientIndex),
+						ingredientMeasurementUnitSuggestions: h.ingredientMeasurementUnitSuggestions.filter(
+							(_, j) => j !== ingredientIndex
+						),
+						selectedMeasurementUnits: h.selectedMeasurementUnits.filter((_, j) => j !== ingredientIndex),
+						ingredientIsProduct: h.ingredientIsProduct.filter((_, j) => j !== ingredientIndex),
+						ingredientIsRanged: h.ingredientIsRanged.filter((_, j) => j !== ingredientIndex)
+					}
+				: h
+		);
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, ingredients: s.ingredients.filter((_, j) => j !== ingredientIndex) } : s
+			)
+		};
+		},
+
+		addInstrumentToStep(stepIndex: number) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						selectedInstruments: [...h.selectedInstruments, null],
+						instrumentIsProduct: [...h.instrumentIsProduct, false],
+						instrumentIsRanged: [...h.instrumentIsRanged, false]
+					}
+				: h
+		);
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, instruments: [...s.instruments, createEmptyInstrument()] } : s
+			)
+		};
+		},
+
+		removeInstrumentFromStep(stepIndex: number, instrumentIndex: number) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						selectedInstruments: h.selectedInstruments.filter((_, j) => j !== instrumentIndex),
+						instrumentIsProduct: h.instrumentIsProduct.filter((_, j) => j !== instrumentIndex),
+						instrumentIsRanged: h.instrumentIsRanged.filter((_, j) => j !== instrumentIndex)
+					}
+				: h
+		);
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, instruments: s.instruments.filter((_, j) => j !== instrumentIndex) } : s
+			)
+		};
+		},
+
+		addVesselToStep(stepIndex: number) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						vesselQueries: [...h.vesselQueries, ''],
+						vesselSuggestions: [...h.vesselSuggestions, []],
+						selectedVessels: [...h.selectedVessels, null],
+						vesselIsProduct: [...h.vesselIsProduct, false],
+						vesselIsRanged: [...h.vesselIsRanged, false]
+					}
+				: h
+		);
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, vessels: [...(s.vessels ?? []), createEmptyVessel()] } : s
+			)
+		};
+		},
+
+		removeVesselFromStep(stepIndex: number, vesselIndex: number) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						vesselQueries: h.vesselQueries.filter((_, j) => j !== vesselIndex),
+						vesselSuggestions: h.vesselSuggestions.filter((_, j) => j !== vesselIndex),
+						selectedVessels: h.selectedVessels.filter((_, j) => j !== vesselIndex),
+						vesselIsProduct: h.vesselIsProduct.filter((_, j) => j !== vesselIndex),
+						vesselIsRanged: h.vesselIsRanged.filter((_, j) => j !== vesselIndex)
+					}
+				: h
+		);
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, vessels: (s.vessels ?? []).filter((_, j) => j !== vesselIndex) } : s
+			)
+		};
+		},
+
+		addProductToStep(stepIndex: number) {
+		const step = this.recipe.steps[stepIndex];
+		const productIndex = step.products.length;
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						productMeasurementUnitSuggestions: [...h.productMeasurementUnitSuggestions, []],
+						selectedProductMeasurementUnits: [...h.selectedProductMeasurementUnits, null],
+						productIsRanged: [...h.productIsRanged, false],
+						productIsNamedManually: [...h.productIsNamedManually, false]
+					}
+				: h
+		);
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, products: [...s.products, createEmptyProduct(productIndex)] } : s
+			)
+		};
+		},
+
+		removeProductFromStep(stepIndex: number, productIndex: number) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						productMeasurementUnitSuggestions: h.productMeasurementUnitSuggestions.filter(
+							(_, j) => j !== productIndex
+						),
+						selectedProductMeasurementUnits: h.selectedProductMeasurementUnits.filter(
+							(_, j) => j !== productIndex
+						),
+						productIsRanged: h.productIsRanged.filter((_, j) => j !== productIndex),
+						productIsNamedManually: h.productIsNamedManually.filter((_, j) => j !== productIndex)
+					}
+				: h
+		);
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, products: s.products.filter((_, j) => j !== productIndex) } : s
+			)
+		};
+		},
+
+		setPreparation(stepIndex: number, preparation: ValidPreparation | null) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						selectedPreparation: preparation,
+						preparationQuery: preparation?.name ?? '',
+						preparationSuggestions: []
+					}
+				: h
+		);
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, preparationId: preparation?.id ?? '' } : s
+			)
+		};
+		if (preparation) {
+			// Reset step instruments/ingredients/vessels when preparation changes
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								instruments: [createEmptyInstrument()],
+								ingredients: [createEmptyIngredient()],
+								vessels: [],
+								products: [createEmptyProduct(0)],
+								completionConditions: []
+							}
+						: s
+				)
+			};
+			const freshHelper = createStepHelper();
+			freshHelper.selectedPreparation = preparation;
+			freshHelper.preparationQuery = preparation.name;
+			this.stepHelpers = this.stepHelpers.map((h, i) => (i === stepIndex ? freshHelper : h));
+		}
+		},
+
+		setPreparationSuggestions(stepIndex: number, suggestions: ValidPreparation[]) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex ? { ...h, preparationSuggestions: suggestions } : h
+		);
+		},
+
+		setPreparationQuery(stepIndex: number, query: string) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex ? { ...h, preparationQuery: query } : h
+		);
+		},
+
+		setInstrumentSuggestions(stepIndex: number, suggestions: ValidPreparationInstrument[]) {
+			this.stepHelpers = this.stepHelpers.map((h, i) =>
+				i === stepIndex ? { ...h, instrumentSuggestions: suggestions } : h
+			);
+		},
+
+		setInstrument(stepIndex: number, instrumentIndex: number, vpi: ValidPreparationInstrument | null) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						selectedInstruments: h.selectedInstruments.map((sel, j) =>
+							j === instrumentIndex ? vpi : sel
+						)
+					}
+				: h
+		);
+		if (vpi) {
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								instruments: s.instruments.map((inst, j) =>
+									j === instrumentIndex
+										? {
+												...inst,
+												name: vpi.instrument?.name ?? '',
+												validPreparationInstrumentId: vpi.id
+											}
+										: inst
+								)
+							}
+						: s
+				)
+			};
+		}
+		},
+
+		setIngredient(
+		stepIndex: number,
+		ingredientIndex: number,
+		ingredient: (ValidIngredient & { validIngredientPreparationId?: string }) | null,
+		measurementUnit: ValidIngredientMeasurementUnit | null
+	) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						selectedIngredients: h.selectedIngredients.map((sel, j) =>
+							j === ingredientIndex ? ingredient : sel
+						),
+						selectedMeasurementUnits: h.selectedMeasurementUnits.map((sel, j) =>
+							j === ingredientIndex ? measurementUnit : sel
+						),
+						ingredientQueries: h.ingredientQueries.map((q, j) =>
+							j === ingredientIndex ? (ingredient?.name ?? '') : q
+						),
+						ingredientSuggestions: h.ingredientSuggestions.map((sug, j) =>
+							j === ingredientIndex ? [] : sug
+						)
+					}
+				: h
+		);
+		if (ingredient) {
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								ingredients: s.ingredients.map((ing, j) =>
+									j === ingredientIndex
+										? {
+												...ing,
+												name: ingredient.name,
+												validIngredientPreparationId: ingredient.validIngredientPreparationId,
+												validIngredientMeasurementUnitId: measurementUnit?.id
+											}
+										: ing
+								)
+							}
+						: s
+				)
+			};
+		}
+		},
+
+		setIngredientSuggestions(stepIndex: number, ingredientIndex: number, suggestions: ValidIngredient[]) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						ingredientSuggestions: h.ingredientSuggestions.map((sug, j) =>
+							j === ingredientIndex ? suggestions : sug
+						)
+					}
+				: h
+		);
+		},
+
+		setIngredientQuery(stepIndex: number, ingredientIndex: number, query: string) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						ingredientQueries: h.ingredientQueries.map((q, j) =>
+							j === ingredientIndex ? query : q
+						)
+					}
+				: h
+		);
+		},
+
+		setIngredientMeasurementUnitSuggestions(
+		stepIndex: number,
+		ingredientIndex: number,
+		suggestions: ValidIngredientMeasurementUnit[]
+	) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						ingredientMeasurementUnitSuggestions: h.ingredientMeasurementUnitSuggestions.map(
+							(sug, j) => (j === ingredientIndex ? suggestions : sug)
+						)
+					}
+				: h
+		);
+		},
+
+		setIngredientMeasurementUnit(
+		stepIndex: number,
+		ingredientIndex: number,
+		vimu: ValidIngredientMeasurementUnit | null
+	) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						selectedMeasurementUnits: h.selectedMeasurementUnits.map((sel, j) =>
+							j === ingredientIndex ? vimu : sel
+						)
+					}
+				: h
+		);
+		if (vimu) {
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								ingredients: s.ingredients.map((ing, j) =>
+									j === ingredientIndex
+										? { ...ing, validIngredientMeasurementUnitId: vimu.id }
+										: ing
+								)
+							}
+						: s
+				)
+			};
+		}
+		},
+
+		setVessel(stepIndex: number, vesselIndex: number, vpv: ValidPreparationVessel | null) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						selectedVessels: h.selectedVessels.map((sel, j) => (j === vesselIndex ? vpv : sel)),
+						vesselQueries: h.vesselQueries.map((q, j) =>
+							j === vesselIndex ? (vpv?.vessel?.name ?? '') : q
+						)
+					}
+				: h
+		);
+		if (vpv) {
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								vessels: (s.vessels ?? []).map((v, j) =>
+									j === vesselIndex
+										? {
+												...v,
+												name: vpv.vessel?.name ?? '',
+												validPreparationVesselId: vpv.id
+											}
+										: v
+								)
+							}
+						: s
+				)
+			};
+		}
+		},
+
+		setVesselSuggestions(stepIndex: number, vesselIndex: number, suggestions: ValidPreparationVessel[]) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						vesselSuggestions: h.vesselSuggestions.map((sug, j) =>
+							j === vesselIndex ? suggestions : sug
+						)
+					}
+				: h
+		);
+		},
+
+		setVesselQuery(stepIndex: number, vesselIndex: number, query: string) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						vesselQueries: h.vesselQueries.map((q, j) => (j === vesselIndex ? query : q))
+					}
+				: h
+		);
+		},
+
+		updateRecipeField<K extends keyof RecipeCreationRequestInput>(
+		field: K,
+		value: RecipeCreationRequestInput[K]
+	) {
+		this.recipe = { ...this.recipe, [field]: value };
+		},
+
+		updateStepField(
+		stepIndex: number,
+		field: keyof RecipeStepCreationRequestInput,
+		value: unknown
+	) {
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex ? { ...s, [field]: value } : s
+			)
+		};
+		},
+
+		updateIngredientQuantity(
+		stepIndex: number,
+		ingredientIndex: number,
+		min: number,
+		max?: number
+	) {
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex
+					? {
+							...s,
+							ingredients: s.ingredients.map((ing, j) =>
+								j === ingredientIndex ? { ...ing, quantity: { min, max } } : ing
+							)
+						}
+					: s
+			)
+		};
+		},
+
+		updateProduct(
+		stepIndex: number,
+		productIndex: number,
+		updates: Partial<RecipeStepProductCreationRequestInput>
+	) {
+		this.recipe = {
+			...this.recipe,
+			steps: this.recipe.steps.map((s, i) =>
+				i === stepIndex
+					? {
+							...s,
+							products: s.products.map((p, j) =>
+								j === productIndex ? { ...p, ...updates } : p
+							)
+						}
+					: s
+			)
+		};
+		},
+
+		toggleIngredientProduct(stepIndex: number, ingredientIndex: number) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						ingredientIsProduct: h.ingredientIsProduct.map((v, j) =>
+							j === ingredientIndex ? !v : v
+						)
+					}
+				: h
+		);
+		},
+
+		toggleInstrumentProduct(stepIndex: number, instrumentIndex: number) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						instrumentIsProduct: h.instrumentIsProduct.map((v, j) =>
+							j === instrumentIndex ? !v : v
+						)
+					}
+				: h
+		);
+		},
+
+		toggleVesselProduct(stepIndex: number, vesselIndex: number) {
+		this.stepHelpers = this.stepHelpers.map((h, i) =>
+			i === stepIndex
+				? {
+						...h,
+						vesselIsProduct: h.vesselIsProduct.map((v, j) =>
+							j === vesselIndex ? !v : v
+						)
+					}
+				: h
+		);
+		},
+
+		setSubmissionError(error: string | null) {
+			this.submissionError = error;
+		}
+	};
+
+	return state;
+}

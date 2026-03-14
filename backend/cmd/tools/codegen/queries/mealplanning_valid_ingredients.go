@@ -283,10 +283,7 @@ FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s IS NULL
-	AND (
-		%s.%s = sqlc.arg(%s)
-		OR %s.%s IS FALSE
-	)
+	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s %s;`,
 					strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
 						if i == 0 {
@@ -301,7 +298,6 @@ WHERE %s.%s IS NULL
 					validIngredientsTableName, archivedAtColumn,
 					validPreparationsTableName, archivedAtColumn,
 					validIngredientPreparationsTableName, validPreparationIDColumn, validPreparationIDColumn,
-					validPreparationsTableName, restrictToIngredientsColumn,
 					validIngredientsTableName, nameColumn, buildILIKEForArgument("name_query"),
 				)),
 			},
