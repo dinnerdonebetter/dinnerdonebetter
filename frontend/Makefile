@@ -1,8 +1,12 @@
-.PHONY: check test lint lint-fix format format-check install
+.PHONY: check test build lint lint-fix format format-check install
 
-# Run svelte-check in both consumer and admin
+# Run svelte-check in both consumer and admin (type-check only, no artifacts)
 check:
 	npm run check
+
+# Build both apps for production
+build:
+	npm run build
 
 # Run unit tests in both consumer and admin
 test:
