@@ -1,0 +1,27 @@
+{
+	"apiServiceConfig": {
+		"httpAPIServerURL": "http://localhost:8000",
+		"grpcAPIServerURL": ":8001",
+		"oauth2APIClientID": "",
+		"oauth2APIClientSecret": ""
+	},
+	"observability": {
+		"logging": {
+			"serviceName": "mcp_server",
+			"level": "debug",
+			"provider": "otelslog"
+		},
+		"metrics": {
+			"serviceName": "mcp_server",
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"service_name": "mcp_server",
+			"provider": "otelgrpc"
+		}
+	},
+	"meta": {
+		"runMode": "development",
+		"debug": true
+	}
+}

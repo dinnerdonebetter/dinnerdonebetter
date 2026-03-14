@@ -187,7 +187,6 @@ func TestEnvironmentConfigSet_Render(T *testing.T) {
 			"job_search_data_index_scheduler_config.json",
 			"job_mobile_notification_scheduler_config.json",
 			"async_message_handler_config.json",
-			"admin_webapp_config.json",
 		}
 
 		for _, fileName := range expectedFiles {
@@ -236,10 +235,9 @@ func TestEnvironmentConfigSet_Render(T *testing.T) {
 		}
 
 		configSet := &EnvironmentConfigSet{
-			RootConfig:            rootConfig,
-			APIServiceConfigPath:  "custom_api.json",
-			DBCleanerConfigPath:   "custom_db_cleaner.json",
-			AdminWebappConfigPath: "custom_admin.json",
+			RootConfig:           rootConfig,
+			APIServiceConfigPath: "custom_api.json",
+			DBCleanerConfigPath:  "custom_db_cleaner.json",
 		}
 
 		err := configSet.Render(tmpDir, false, false)
@@ -248,7 +246,6 @@ func TestEnvironmentConfigSet_Render(T *testing.T) {
 		// Verify custom files were created
 		assert.FileExists(t, filepath.Join(tmpDir, "custom_api.json"))
 		assert.FileExists(t, filepath.Join(tmpDir, "custom_db_cleaner.json"))
-		assert.FileExists(t, filepath.Join(tmpDir, "custom_admin.json"))
 	})
 
 	T.Run("with validation enabled", func(t *testing.T) {

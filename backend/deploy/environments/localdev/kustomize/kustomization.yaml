@@ -8,8 +8,6 @@ resources:
   - namespace.yaml
   - ../../../kustomize/components/api_server
   - ../../../kustomize/components/workers
-  - ../../../kustomize/components/admin_webapp
-  - ../../../kustomize/components/consumer_webapp
   # Uncomment to enable MCP server deployment
   # - ../../../kustomize/components/mcp_server
 
@@ -26,30 +24,6 @@ patches:
       version: v1
       kind: Deployment
       name: dinner-done-better-service-api-deployment
-
-  # Admin Webapp - override hostnames for K8s and use local images
-  - path: patches/deployment-k8s-hostnames.yaml
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-admin-webapp-deployment
-  - path: patches/deployment-local-image-pull.yaml
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-admin-webapp-deployment
-
-  # Consumer Webapp - override hostnames for K8s and use local images
-  - path: patches/deployment-k8s-hostnames.yaml
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-consumer-webapp-deployment
-  - path: patches/deployment-local-image-pull.yaml
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-consumer-webapp-deployment
 
   # DB Cleaner CronJob
   - path: patches/cronjob-k8s-hostnames.yaml
@@ -183,16 +157,6 @@ configMapGenerator:
     namespace: localdev
     files:
       - config.json=configs/job_mobile_notification_scheduler_config.json
-
-  - name: dinner-done-better-admin-webapp-config
-    namespace: localdev
-    files:
-      - config.json=configs/admin_webapp_config.json
-
-  - name: dinner-done-better-consumer-webapp-config
-    namespace: localdev
-    files:
-      - config.json=configs/consumer_webapp_config.json
 
   # Uncomment to enable MCP server deployment
   # - name: dinner-done-better-mcp-server-config

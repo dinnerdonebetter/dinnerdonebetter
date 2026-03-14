@@ -2,21 +2,21 @@
 
 package envvars
 
-/*
+/* 
 This file contains a reference of all valid service environment variables.
 */
 
 const (
-	// APIServiceGrpcAPIServerURLEnvVarKey is the environment variable name to set to override `AdminWebappConfig.APIServiceConnection.GRPCAPIServerURL`.
+	// APIServiceGrpcAPIServerURLEnvVarKey is the environment variable name to set to override `MCPServiceConfig.APIServiceConnection.GRPCAPIServerURL`.
 	APIServiceGrpcAPIServerURLEnvVarKey = "DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL"
 
-	// APIServiceHTTPAPIServerURLEnvVarKey is the environment variable name to set to override `AdminWebappConfig.APIServiceConnection.HTTPAPIServerURL`.
+	// APIServiceHTTPAPIServerURLEnvVarKey is the environment variable name to set to override `MCPServiceConfig.APIServiceConnection.HTTPAPIServerURL`.
 	APIServiceHTTPAPIServerURLEnvVarKey = "DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL"
 
-	// APIServiceOauth2APIClientIDEnvVarKey is the environment variable name to set to override `AdminWebappConfig.APIServiceConnection.OAuth2APIClientID`.
+	// APIServiceOauth2APIClientIDEnvVarKey is the environment variable name to set to override `MCPServiceConfig.APIServiceConnection.OAuth2APIClientID`.
 	APIServiceOauth2APIClientIDEnvVarKey = "DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID"
 
-	// APIServiceOauth2APIClientSecretEnvVarKey is the environment variable name to set to override `AdminWebappConfig.APIServiceConnection.OAuth2APIClientSecret`.
+	// APIServiceOauth2APIClientSecretEnvVarKey is the environment variable name to set to override `MCPServiceConfig.APIServiceConnection.OAuth2APIClientSecret`.
 	APIServiceOauth2APIClientSecretEnvVarKey = "DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET"
 
 	// APIServicePasswordEnvVarKey is the environment variable name to set to override `MCPServiceConfig.APIServiceConnection.Password`.
@@ -24,12 +24,6 @@ const (
 
 	// APIServiceUsernameEnvVarKey is the environment variable name to set to override `MCPServiceConfig.APIServiceConnection.Username`.
 	APIServiceUsernameEnvVarKey = "DINNER_DONE_BETTER_API_SERVICE_USERNAME"
-
-	// AasaBundleIDEnvVarKey is the environment variable name to set to override `ConsumerWebappConfig.AppleAppSiteAssociation.BundleID`.
-	AasaBundleIDEnvVarKey = "DINNER_DONE_BETTER_AASA_BUNDLE_ID"
-
-	// AasaTeamIDEnvVarKey is the environment variable name to set to override `ConsumerWebappConfig.AppleAppSiteAssociation.TeamID`.
-	AasaTeamIDEnvVarKey = "DINNER_DONE_BETTER_AASA_TEAM_ID"
 
 	// AnalyticsProxySourcesIosCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Analytics.ProxySources.IOS.CircuitBreaker.ErrorRate`.
 	AnalyticsProxySourcesIosCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROXY_SOURCES_IOS_CIRCUIT_BREAKER_ERROR_RATE"
@@ -126,24 +120,6 @@ const (
 
 	// AuthTokensSigningKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Tokens.Base64EncodedSigningKey`.
 	AuthTokensSigningKeyEnvVarKey = "DINNER_DONE_BETTER_AUTH_TOKENS_SIGNING_KEY"
-
-	// CookiesBlockKeyEnvVarKey is the environment variable name to set to override `AdminWebappConfig.Cookies.Base64EncodedBlockKey`.
-	CookiesBlockKeyEnvVarKey = "DINNER_DONE_BETTER_COOKIES_BLOCK_KEY"
-
-	// CookiesCookieNameEnvVarKey is the environment variable name to set to override `AdminWebappConfig.Cookies.CookieName`.
-	CookiesCookieNameEnvVarKey = "DINNER_DONE_BETTER_COOKIES_COOKIE_NAME"
-
-	// CookiesDomainEnvVarKey is the environment variable name to set to override `AdminWebappConfig.Cookies.Domain`.
-	CookiesDomainEnvVarKey = "DINNER_DONE_BETTER_COOKIES_DOMAIN"
-
-	// CookiesHashKeyEnvVarKey is the environment variable name to set to override `AdminWebappConfig.Cookies.Base64EncodedHashKey`.
-	CookiesHashKeyEnvVarKey = "DINNER_DONE_BETTER_COOKIES_HASH_KEY"
-
-	// CookiesLifetimeEnvVarKey is the environment variable name to set to override `AdminWebappConfig.Cookies.Lifetime`.
-	CookiesLifetimeEnvVarKey = "DINNER_DONE_BETTER_COOKIES_LIFETIME"
-
-	// CookiesSecureOnlyEnvVarKey is the environment variable name to set to override `AdminWebappConfig.Cookies.SecureOnly`.
-	CookiesSecureOnlyEnvVarKey = "DINNER_DONE_BETTER_COOKIES_SECURE_ONLY"
 
 	// DatabaseDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.Debug`.
 	DatabaseDebugEnvVarKey = "DINNER_DONE_BETTER_DATABASE_DEBUG"
@@ -559,21 +535,6 @@ const (
 	// SearchProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.TextSearch.Provider`.
 	SearchProviderEnvVarKey = "DINNER_DONE_BETTER_SEARCH_PROVIDER"
 
-	// ServerDebugEnvVarKey is the environment variable name to set to override `AdminWebappConfig.HTTPServer.Debug`.
-	ServerDebugEnvVarKey = "DINNER_DONE_BETTER_SERVER_DEBUG"
-
-	// ServerPortEnvVarKey is the environment variable name to set to override `AdminWebappConfig.HTTPServer.Port`.
-	ServerPortEnvVarKey = "DINNER_DONE_BETTER_SERVER_PORT"
-
-	// ServerSslCertificateFilepathEnvVarKey is the environment variable name to set to override `AdminWebappConfig.HTTPServer.SSLCertificateFile`.
-	ServerSslCertificateFilepathEnvVarKey = "DINNER_DONE_BETTER_SERVER_SSL_CERTIFICATE_FILEPATH"
-
-	// ServerSslCertificateKeyFilepathEnvVarKey is the environment variable name to set to override `AdminWebappConfig.HTTPServer.SSLCertificateKeyFile`.
-	ServerSslCertificateKeyFilepathEnvVarKey = "DINNER_DONE_BETTER_SERVER_SSL_CERTIFICATE_KEY_FILEPATH"
-
-	// ServerStartupDeadlineEnvVarKey is the environment variable name to set to override `AdminWebappConfig.HTTPServer.StartupDeadline`.
-	ServerStartupDeadlineEnvVarKey = "DINNER_DONE_BETTER_SERVER_STARTUP_DEADLINE"
-
 	// ServiceAuthDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.Debug`.
 	ServiceAuthDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_DEBUG"
 
@@ -768,4 +729,6 @@ const (
 
 	// StorageUploadFilenameKeyEnvVarKey is the environment variable name to set to override `AsyncMessageHandlerConfig.Storage.UploadFilenameKey`.
 	StorageUploadFilenameKeyEnvVarKey = "DINNER_DONE_BETTER_STORAGE_UPLOAD_FILENAME_KEY"
+
+
 )

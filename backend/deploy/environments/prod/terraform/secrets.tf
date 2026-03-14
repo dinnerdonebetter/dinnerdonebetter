@@ -16,24 +16,14 @@ resource "random_string" "jwt_signing_key" {
   special = false
 }
 
-# Admin webapp cookie encryption keys (base64-encoded for COOKIE_HASH_KEY / COOKIE_BLOCK_KEY)
-resource "random_string" "admin_webapp_cookie_hash_key" {
-  length  = 32
-  special = false
-}
-resource "random_string" "admin_webapp_cookie_block_key" {
-  length  = 32
-  special = false
+# Admin webapp cookie encryption key (base64-encoded 32-byte key for SvelteKit COOKIE_ENCRYPTION_KEY)
+resource "random_bytes" "admin_webapp_cookie_encryption_key" {
+  length = 32
 }
 
-# Consumer webapp cookie encryption keys (base64-encoded for COOKIE_HASH_KEY / COOKIE_BLOCK_KEY)
-resource "random_string" "consumer_webapp_cookie_hash_key" {
-  length  = 32
-  special = false
-}
-resource "random_string" "consumer_webapp_cookie_block_key" {
-  length  = 32
-  special = false
+# Consumer webapp cookie encryption key (base64-encoded 32-byte key for SvelteKit COOKIE_ENCRYPTION_KEY)
+resource "random_bytes" "consumer_webapp_cookie_encryption_key" {
+  length = 32
 }
 
 ### External API services ###

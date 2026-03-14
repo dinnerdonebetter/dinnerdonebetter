@@ -7,22 +7,14 @@ import (
 	"os"
 	"path"
 	"strings"
-	"time"
-
-	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
 
-// defaultCookieLifetime is used when no override is provided; must satisfy cookies.Config validation (>= 5 min).
-const defaultCookieLifetime = 24 * time.Hour
-
 // EnvironmentConfigSet contains a way of rendering a set of every config for a given environment to a given folder.
 type EnvironmentConfigSet struct {
 	RootConfig                               *APIServiceConfig
-	ConsumerWebappCookiesOverride            *cookies.Config
-	AdminWebappCookiesOverride               *cookies.Config
 	SearchDataIndexSchedulerConfigPath       string
 	MealPlanFinalizerConfigPath              string
 	MealPlanGroceryListInitializerConfigPath string
@@ -32,11 +24,7 @@ type EnvironmentConfigSet struct {
 	AsyncMessageHandlerConfigPath            string
 	EmailDeliverabilityTestConfigPath        string
 	QueueTestJobConfigPath                   string
-	AdminWebappConfigPath                    string
-	ConsumerWebappConfigPath                 string
 	APIServiceConfigPath                     string
-	ConsumerWebappPortOverride               uint16
-	AdminWebappPortOverride                  uint16
 }
 
 func stringOrDefault(s, defaultStr string) string {
@@ -80,8 +68,6 @@ const (
 	amhConfigObservabilityServiceName   = "async_message_handler"
 	edtConfigObservabilityServiceName   = "email_deliverability_test"
 	qtConfigObservabilityServiceName    = "queue_test"
-	awaConfigObservabilityServiceName   = "admin_webapp"
-	cwaConfigObservabilityServiceName   = "consumer_webapp"
 )
 
 func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) error {
@@ -217,68 +203,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	qtConfig.Observability.Logging.ServiceName = qtConfigObservabilityServiceName
 	qtConfig.Observability.Profiling.ServiceName = qtConfigObservabilityServiceName
 
-	awaHTTPServer := s.RootConfig.HTTPServer
-	if s.AdminWebappPortOverride != 0 {
-		awaHTTPServer.Port = s.AdminWebappPortOverride
-	}
-	awaCookies := cookies.Config{
-		CookieName:            "admin_webapp",
-		Base64EncodedHashKey:  " ",
-		Base64EncodedBlockKey: " ",
-		Lifetime:              defaultCookieLifetime,
-	}
-	if s.AdminWebappCookiesOverride != nil {
-		awaCookies = *s.AdminWebappCookiesOverride
-	}
-	awaConfig := &AdminWebappConfig{
-		Cookies:       awaCookies,
-		Encoding:      s.RootConfig.Encoding,
-		Observability: s.RootConfig.Observability,
-		Meta:          s.RootConfig.Meta,
-		Routing:       s.RootConfig.Routing,
-		HTTPServer:    awaHTTPServer,
-	}
-	awaConfig.Observability.Tracing.ServiceName = awaConfigObservabilityServiceName
-	awaConfig.Observability.Metrics.ServiceName = awaConfigObservabilityServiceName
-	awaConfig.Observability.Logging.ServiceName = awaConfigObservabilityServiceName
-	awaConfig.Observability.Profiling.ServiceName = awaConfigObservabilityServiceName
-	if awaConfig.Routing.Chi != nil {
-		chiCopy := *awaConfig.Routing.Chi
-		chiCopy.ServiceName = awaConfigObservabilityServiceName
-		awaConfig.Routing.Chi = &chiCopy
-	}
-
-	cwaHTTPServer := s.RootConfig.HTTPServer
-	if s.ConsumerWebappPortOverride != 0 {
-		cwaHTTPServer.Port = s.ConsumerWebappPortOverride
-	}
-	cwaCookies := cookies.Config{
-		CookieName:            "consumer_webapp",
-		Base64EncodedHashKey:  " ",
-		Base64EncodedBlockKey: " ",
-		Lifetime:              defaultCookieLifetime,
-	}
-	if s.ConsumerWebappCookiesOverride != nil {
-		cwaCookies = *s.ConsumerWebappCookiesOverride
-	}
-	cwaConfig := &ConsumerWebappConfig{
-		Cookies:       cwaCookies,
-		Encoding:      s.RootConfig.Encoding,
-		Observability: s.RootConfig.Observability,
-		Meta:          s.RootConfig.Meta,
-		Routing:       s.RootConfig.Routing,
-		HTTPServer:    cwaHTTPServer,
-	}
-	cwaConfig.Observability.Tracing.ServiceName = cwaConfigObservabilityServiceName
-	cwaConfig.Observability.Metrics.ServiceName = cwaConfigObservabilityServiceName
-	cwaConfig.Observability.Logging.ServiceName = cwaConfigObservabilityServiceName
-	cwaConfig.Observability.Profiling.ServiceName = cwaConfigObservabilityServiceName
-	if cwaConfig.Routing.Chi != nil {
-		chiCopy := *cwaConfig.Routing.Chi
-		chiCopy.ServiceName = cwaConfigObservabilityServiceName
-		cwaConfig.Routing.Chi = &chiCopy
-	}
-
 	if validate {
 		allConfigs := []validation.ValidatableWithContext{
 			s.RootConfig,
@@ -291,8 +215,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 			amhConfig,
 			edtConfig,
 			qtConfig,
-			awaConfig,
-			cwaConfig,
 		}
 		for i, cfg := range allConfigs {
 			if err := cfg.ValidateWithContext(context.Background()); err != nil {
@@ -316,8 +238,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                             renderJSON(amhConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.EmailDeliverabilityTestConfigPath, "job_email_deliverability_test_config.json")):                 renderJSON(edtConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.QueueTestJobConfigPath, "job_queue_test_config.json")):                                           renderJSON(qtConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.AdminWebappConfigPath, "admin_webapp_config.json")):                                              renderJSON(awaConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.ConsumerWebappConfigPath, "consumer_webapp_config.json")):                                        renderJSON(cwaConfig, pretty),
 	}
 
 	for p, b := range pathToConfigMap {

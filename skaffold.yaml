@@ -13,6 +13,11 @@ requires:
     activeProfiles:
       - name: prod
 
+  - configs: ["dinner-done-better-frontend"]
+    path: ./frontend/skaffold.yaml
+    activeProfiles:
+      - name: prod
+
 profiles:
   - name: prod
     verify:

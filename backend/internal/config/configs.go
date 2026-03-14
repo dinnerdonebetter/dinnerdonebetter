@@ -11,7 +11,6 @@ import (
 	"time"
 
 	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
-	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
@@ -65,8 +64,6 @@ type (
 			AsyncMessageHandlerConfig |
 			EmailDeliverabilityTestConfig |
 			QueueTestJobConfig |
-			AdminWebappConfig |
-			ConsumerWebappConfig |
 			MCPServiceConfig
 	}
 
@@ -227,33 +224,6 @@ type (
 		TeamID string `env:"TEAM_ID" json:"teamID,omitempty"`
 		// BundleID is the iOS app bundle identifier (e.g., "com.dinnerdonebetter.ios").
 		BundleID string `env:"BUNDLE_ID" json:"bundleID,omitempty"`
-	}
-
-	// AdminWebappConfig configures an instance of the service. It is composed of all the other setting structs.
-	AdminWebappConfig struct {
-		_ struct{} `json:"-"`
-
-		Cookies              cookies.Config                   `env:"init"                 envPrefix:"COOKIES_"    json:"cookies"`
-		APIServiceConnection APIServiceOAuth2ConnectionConfig `envPrefix:"API_SERVICE_"   json:"apiServiceConfig"`
-		Routing              routingcfg.Config                `envPrefix:"ROUTING_"       json:"routing"`
-		Encoding             encoding.Config                  `envPrefix:"ENCODING_"      json:"encoding"`
-		Observability        observability.Config             `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Meta                 MetaSettings                     `envPrefix:"META_"          json:"meta"`
-		HTTPServer           http.Config                      `envPrefix:"SERVER_"        json:"server"`
-	}
-
-	// ConsumerWebappConfig configures the consumer web app (root site replacement).
-	ConsumerWebappConfig struct {
-		_ struct{} `json:"-"`
-
-		Cookies                 cookies.Config                   `env:"init"                 envPrefix:"COOKIES_"           json:"cookies"`
-		APIServiceConnection    APIServiceOAuth2ConnectionConfig `envPrefix:"API_SERVICE_"   json:"apiServiceConfig"`
-		AppleAppSiteAssociation AppleAppSiteAssociationConfig    `envPrefix:"AASA_"          json:"appleAppSiteAssociation"`
-		Routing                 routingcfg.Config                `envPrefix:"ROUTING_"       json:"routing"`
-		Encoding                encoding.Config                  `envPrefix:"ENCODING_"      json:"encoding"`
-		Observability           observability.Config             `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Meta                    MetaSettings                     `envPrefix:"META_"          json:"meta"`
-		HTTPServer              http.Config                      `envPrefix:"SERVER_"        json:"server"`
 	}
 
 	// MCPServiceConfig configures an instance of the service. It is composed of all the other setting structs.
@@ -514,55 +484,7 @@ func (cfg *QueueTestJobConfig) ValidateWithContext(ctx context.Context) error {
 	return result.ErrorOrNil()
 }
 
-var _ validation.ValidatableWithContext = (*AdminWebappConfig)(nil)
-
-// ValidateWithContext validates a AdminWebappConfig struct.
-func (cfg *AdminWebappConfig) ValidateWithContext(ctx context.Context) error {
-	result := &multierror.Error{}
-
-	validators := map[string]func(context.Context) error{
-		"Cookies":       cfg.Cookies.ValidateWithContext,
-		"Encoding":      cfg.Encoding.ValidateWithContext,
-		"Observability": cfg.Observability.ValidateWithContext,
-		"Meta":          cfg.Meta.ValidateWithContext,
-		"Routing":       cfg.Routing.ValidateWithContext,
-		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
-	}
-
-	for name, validator := range validators {
-		if err := validator(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
-		}
-	}
-
-	return result.ErrorOrNil()
-}
-
-var _ validation.ValidatableWithContext = (*ConsumerWebappConfig)(nil)
-
-// ValidateWithContext validates a ConsumerWebappConfig struct.
-func (cfg *ConsumerWebappConfig) ValidateWithContext(ctx context.Context) error {
-	result := &multierror.Error{}
-
-	validators := map[string]func(context.Context) error{
-		"Cookies":       cfg.Cookies.ValidateWithContext,
-		"Encoding":      cfg.Encoding.ValidateWithContext,
-		"Observability": cfg.Observability.ValidateWithContext,
-		"Meta":          cfg.Meta.ValidateWithContext,
-		"Routing":       cfg.Routing.ValidateWithContext,
-		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
-	}
-
-	for name, validator := range validators {
-		if err := validator(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
-		}
-	}
-
-	return result.ErrorOrNil()
-}
-
-var _ validation.ValidatableWithContext = (*APIServiceConfig)(nil)
+var _ validation.ValidatableWithContext = (*MCPServiceConfig)(nil)
 
 // ValidateWithContext validates a MCPServiceConfig struct.
 func (cfg *MCPServiceConfig) ValidateWithContext(ctx context.Context) error {
