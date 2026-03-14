@@ -53,11 +53,11 @@ export const actions: Actions = {
 						? 'Cannot reach API server. Check GRPC_API_SERVER_URL and ensure the API is reachable (or port-forward for local dev).'
 						: err.message;
 			}
+			const errMsg = err instanceof Error ? err.message : String(err);
 			const totpRequired =
-				err instanceof Error &&
-				(err.message.includes('TOTP') ||
-					err.message.includes('two factor') ||
-					err.message.includes('2FA'));
+				errMsg.toLowerCase().includes('totp') ||
+				errMsg.toLowerCase().includes('two factor') ||
+				errMsg.toLowerCase().includes('2fa');
 			return fail(401, { error: message, username, totpRequired });
 		}
 

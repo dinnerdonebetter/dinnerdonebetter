@@ -19,9 +19,10 @@
 		ValidIngredient,
 		ValidIngredientPreparation,
 		ValidIngredientMeasurementUnit,
-		ValidPreparationVessel
+		ValidPreparationVessel,
+		ValidMeasurementUnit
 	} from '$lib/recipes/client-types';
-	import { RecipeStepProductType } from '$lib/recipes/client-enums';
+	import { RecipeStepProductType, MealComponentType } from '$lib/recipes/client-enums';
 	import type { RecipeStepCreationRequestInput, RecipeStepProductCreationRequestInput } from '$lib/recipes/client-types';
 	import mermaid from 'mermaid';
 
@@ -191,10 +192,48 @@
 		return json.results ?? [];
 	}
 
+	async function fetchProductMeasurementUnits(query = ''): Promise<ValidMeasurementUnit[]> {
+		const res = await fetch(
+			`/api/recipes/search-measurement-units?q=${encodeURIComponent(query)}`
+		);
+		const json = await res.json();
+		return (json.results ?? []) as ValidMeasurementUnit[];
+	}
+
+	type RecipeSearchHit = { id: string; name: string; slug: string };
+	let recipeSearchBySlot = $state<Record<string, string>>({});
+	let recipeSuggestionsBySlot = $state<Record<string, RecipeSearchHit[]>>({});
+	function recipeSlotKey(stepIndex: number, ingIdx: number) {
+		return `${stepIndex}-${ingIdx}`;
+	}
+	async function fetchRecipeSuggestions(stepIndex: number, ingIdx: number, query: string) {
+		const key = recipeSlotKey(stepIndex, ingIdx);
+		if (query.length < 2) {
+			recipeSuggestionsBySlot = { ...recipeSuggestionsBySlot, [key]: [] };
+			return;
+		}
+		const res = await fetch(`/api/recipes/search-recipes?q=${encodeURIComponent(query)}`);
+		const json = await res.json();
+		recipeSuggestionsBySlot = { ...recipeSuggestionsBySlot, [key]: json.results ?? [] };
+	}
+	const debouncedRecipeSearch = debounce(
+		async (stepIndex: number, ingIdx: number, query: string) => {
+			await fetchRecipeSuggestions(stepIndex, ingIdx, query);
+		},
+		300
+	);
+
 	const productTypeOptions = [
 		{ value: '0', label: 'Ingredient' },
 		{ value: '1', label: 'Instrument' },
 		{ value: '2', label: 'Vessel' }
+	];
+	const optionGroupOptions = [
+		{ value: 0, label: '—' },
+		{ value: 1, label: 'Option A (OR)' },
+		{ value: 2, label: 'Option B (OR)' },
+		{ value: 3, label: 'Option C (OR)' },
+		{ value: 4, label: 'Option D (OR)' }
 	];
 
 	function slugify(s: string): string {
@@ -269,6 +308,9 @@
 	{#if state.submissionError}
 		<Alert variant="error">{state.submissionError}</Alert>
 	{/if}
+	{#if state.recipe.steps.length < 2}
+		<Alert variant="error">Recipe must have at least 2 steps.</Alert>
+	{/if}
 
 	<form
 		method="POST"
@@ -304,13 +346,33 @@
 						</div>
 						<div class="info-row__portions">
 							<FormField id="portions" label="Est. Portions" required>
-								<NumberInput
-									id="portions"
-									bind:value={state.recipe.estimatedPortions!.min}
-									min={1}
-									required
-									dataTestId="recipe-portions"
-								/>
+								<div class="portions-range">
+									<NumberInput
+										id="portions"
+										bind:value={state.recipe.estimatedPortions!.min}
+										min={1}
+										required
+										dataTestId="recipe-portions"
+									/>
+									<span class="portions-range__sep" aria-hidden="true">–</span>
+									<input
+										type="number"
+										id="portions-max"
+										min={1}
+										placeholder="max"
+										class="number-input"
+										data-testid="recipe-portions-max"
+										value={state.recipe.estimatedPortions?.max ?? ''}
+										oninput={(e) => {
+											const v = (e.currentTarget as HTMLInputElement).value;
+											const n = v === '' ? undefined : parseInt(v, 10);
+											state.recipe.estimatedPortions = {
+												...state.recipe.estimatedPortions!,
+												max: n !== undefined && !Number.isNaN(n) ? n : undefined
+											};
+										}}
+									/>
+								</div>
 							</FormField>
 						</div>
 					</div>
@@ -350,6 +412,145 @@
 							/>
 						</div>
 					</FormField>
+					<FormField id="yieldsComponentType" label="Yields (component type)">
+						<select
+							class="select-input"
+							aria-label="Recipe component type"
+							value={state.recipe.yieldsComponentType}
+							data-testid="recipe-yields-component-type"
+							onchange={(e) => {
+								const v = (e.currentTarget as HTMLSelectElement).value;
+								const n = parseInt(v, 10);
+								if (!Number.isNaN(n)) state.recipe.yieldsComponentType = n as typeof state.recipe.yieldsComponentType;
+							}}
+						>
+							<option value={MealComponentType.MEAL_COMPONENT_TYPE_APPETIZER}>Appetizer</option>
+							<option value={MealComponentType.MEAL_COMPONENT_TYPE_SOUP}>Soup</option>
+							<option value={MealComponentType.MEAL_COMPONENT_TYPE_MAIN}>Main</option>
+							<option value={MealComponentType.MEAL_COMPONENT_TYPE_SALAD}>Salad</option>
+							<option value={MealComponentType.MEAL_COMPONENT_TYPE_SIDE}>Side</option>
+							<option value={MealComponentType.MEAL_COMPONENT_TYPE_DESSERT}>Dessert</option>
+							<option value={MealComponentType.MEAL_COMPONENT_TYPE_BEVERAGE}>Beverage</option>
+							<option value={MealComponentType.MEAL_COMPONENT_TYPE_AMUSE_BOUCHE}>Amuse bouche</option>
+							<option value={MealComponentType.MEAL_COMPONENT_TYPE_UNSPECIFIED}>Unspecified</option>
+						</select>
+					</FormField>
+					<FormField id="eligibleForMeals" label="">
+						<label class="checkbox-label">
+							<input
+								type="checkbox"
+								bind:checked={state.recipe.eligibleForMeals}
+								data-testid="recipe-eligible-for-meals"
+							/>
+							<span>Eligible for meal plans</span>
+						</label>
+					</FormField>
+				</section>
+
+				<section class="recipe-section recipe-section--media-placeholder">
+					<h2>Media</h2>
+					<p class="recipe-section__hint">Recipe and step images: coming soon.</p>
+				</section>
+
+				<section class="recipe-section recipe-section--prep-tasks">
+					<h2>Prep tasks</h2>
+					<p class="recipe-section__hint">Advance prep (e.g. make dressing ahead). Optionally link which steps each task satisfies.</p>
+					{#each state.recipe.prepTasks ?? [] as prepTask, taskIdx}
+						<Card title={prepTask.name || `Prep task ${taskIdx + 1}`} collapsible class="prep-task-card">
+							<FormField label="Name">
+								<Input
+									value={prepTask.name}
+									placeholder="e.g. Make dressing"
+									data-testid={"prep-task-" + taskIdx + "-name"}
+									oninput={(e) => state.updatePrepTaskField(taskIdx, 'name', e.currentTarget.value)}
+								/>
+							</FormField>
+							<FormField label="Description">
+								<textarea
+									class="textarea textarea--compact"
+									placeholder="What to do"
+									rows="2"
+									data-testid={"prep-task-" + taskIdx + "-description"}
+									value={prepTask.description}
+									oninput={(e) => state.updatePrepTaskField(taskIdx, 'description', (e.currentTarget as HTMLTextAreaElement).value)}
+								></textarea>
+							</FormField>
+							<FormField label="Storage type">
+								<select
+									class="select-input"
+									value={prepTask.storageType}
+									data-testid={"prep-task-" + taskIdx + "-storage-type"}
+									onchange={(e) => state.updatePrepTaskField(taskIdx, 'storageType', (e.currentTarget as HTMLSelectElement).value)}
+								>
+									<option value="">—</option>
+									<option value="AirtightContainer">Airtight container</option>
+									<option value="Covered">Covered</option>
+									<option value="WireRack">Wire rack</option>
+								</select>
+							</FormField>
+							<FormField label="Storage instructions">
+								<Input
+									value={prepTask.explicitStorageInstructions}
+									placeholder="e.g. Refrigerate up to 3 days"
+									data-testid={"prep-task-" + taskIdx + "-storage-instructions"}
+									oninput={(e) => state.updatePrepTaskField(taskIdx, 'explicitStorageInstructions', e.currentTarget.value)}
+								/>
+							</FormField>
+							<FormField label="Notes">
+								<Input
+									value={prepTask.notes}
+									placeholder="Optional notes"
+									data-testid={"prep-task-" + taskIdx + "-notes"}
+									oninput={(e) => state.updatePrepTaskField(taskIdx, 'notes', e.currentTarget.value)}
+								/>
+							</FormField>
+							<FormField label="Satisfies steps">
+								<div class="prep-task-steps">
+									{#each state.recipe.steps as _, stepIdx}
+										<label class="checkbox-label">
+											<input
+												type="checkbox"
+												checked={(prepTask.recipeSteps ?? []).some((rs) => rs.belongsToRecipeStepIndex === stepIdx)}
+												data-testid={"prep-task-" + taskIdx + "-step-" + stepIdx}
+												onchange={(e) => {
+													const checked = (e.currentTarget as HTMLInputElement).checked;
+													const current = prepTask.recipeSteps ?? [];
+													if (checked) {
+														state.setPrepTaskRecipeSteps(taskIdx, [
+															...current.filter((rs) => rs.belongsToRecipeStepIndex !== stepIdx),
+															{ belongsToRecipeStepIndex: stepIdx, satisfiesRecipeStep: true }
+														]);
+													} else {
+														state.setPrepTaskRecipeSteps(taskIdx, current.filter((rs) => rs.belongsToRecipeStepIndex !== stepIdx));
+													}
+												}}
+											/>
+											<span>Step {stepIdx + 1}</span>
+										</label>
+									{/each}
+								</div>
+							</FormField>
+							<FormField label="">
+								<label class="checkbox-label">
+									<input
+										type="checkbox"
+										checked={prepTask.optional}
+										data-testid={"prep-task-" + taskIdx + "-optional"}
+										onchange={(e) => state.updatePrepTaskField(taskIdx, 'optional', (e.currentTarget as HTMLInputElement).checked)}
+									/>
+									<span>Optional</span>
+								</label>
+							</FormField>
+							<div class="prep-task-actions">
+								<Button type="button" variant="default" onclick={() => state.removePrepTask(taskIdx)}>
+									Remove prep task
+								</Button>
+							</div>
+						</Card>
+					{/each}
+					<Button type="button" variant="default" onclick={() => state.addPrepTask()}>
+						Add prep task
+					</Button>
 				</section>
 
 				<section class="recipe-section recipe-section--debug">
@@ -508,6 +709,21 @@
 											/>
 										{/if}
 									</FormField>
+									<FormField label="Option group">
+										<select
+											class="select-input select-input--narrow"
+											value={String(instrument.optionIndex ?? 0)}
+											data-testid={"recipe-step-" + stepIndex + "-instrument-" + instIdx + "-option-group"}
+											onchange={(e) => {
+												const v = parseInt((e.currentTarget as HTMLSelectElement).value, 10);
+												if (!Number.isNaN(v)) state.setInstrumentOptionIndex(stepIndex, instIdx, v);
+											}}
+										>
+											{#each optionGroupOptions as opt}
+												<option value={opt.value}>{opt.label}</option>
+											{/each}
+										</select>
+									</FormField>
 									<Button
 										type="button"
 										variant="default"
@@ -616,6 +832,21 @@
 											/>
 										{/if}
 									</FormField>
+									<FormField label="Option group">
+										<select
+											class="select-input select-input--narrow"
+											value={String(vessel.optionIndex ?? 0)}
+											data-testid={"recipe-step-" + stepIndex + "-vessel-" + vesselIdx + "-option-group"}
+											onchange={(e) => {
+												const v = parseInt((e.currentTarget as HTMLSelectElement).value, 10);
+												if (!Number.isNaN(v)) state.setVesselOptionIndex(stepIndex, vesselIdx, v);
+											}}
+										>
+											{#each optionGroupOptions as opt}
+												<option value={opt.value}>{opt.label}</option>
+											{/each}
+										</select>
+									</FormField>
 									<Button
 										type="button"
 										variant="default"
@@ -642,6 +873,7 @@
 									(p) => p.type === RecipeStepProductType.RECIPE_STEP_PRODUCT_TYPE_INGREDIENT
 								)}
 								{@const isFromProduct = ingredient.productOfRecipeStepIndex != null}
+								{@const isFromRecipe = ingredient.recipeStepProductRecipeId != null}
 								{@const fromStepNum = ingredient.productOfRecipeStepIndex != null ? ingredient.productOfRecipeStepIndex + 1 : 0}
 								<div class="step-item step-item--ingredient">
 									<FormField label="Ingredient {ingIdx + 1}">
@@ -678,6 +910,19 @@
 													</Button>
 												</div>
 											</div>
+										{:else if isFromRecipe}
+											<div class="from-product-summary" data-testid={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx + "-from-recipe-summary"}>
+												<span class="from-product-summary__label">Recipe: <strong>{ingredient.name || 'Unnamed recipe'}</strong>{#if ingredient.recipeStepProductRecipeSlug} <span class="from-product-summary__slug">({ingredient.recipeStepProductRecipeSlug})</span>{/if}</span>
+												<div class="from-product-summary__actions">
+													<Button
+														type="button"
+														variant="default"
+														onclick={() => state.clearIngredientRecipeRef(stepIndex, ingIdx)}
+													>
+														Clear
+													</Button>
+												</div>
+											</div>
 										{:else}
 											{#if availableIngredientProducts.length > 0}
 												<div class="from-product-option">
@@ -706,6 +951,27 @@
 													</select>
 												</div>
 											{/if}
+											<div class="from-product-option">
+												<span class="from-product-option__label">Or use recipe:</span>
+												<Autocomplete
+													value={recipeSearchBySlot[recipeSlotKey(stepIndex, ingIdx)] ?? ''}
+													placeholder="Search recipe by name"
+													dataTestId={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx + "-from-recipe"}
+													suggestions={(recipeSuggestionsBySlot[recipeSlotKey(stepIndex, ingIdx)] ?? []).map((r) => ({ id: r.id, label: r.name }))}
+													onInput={(query: string) => {
+														recipeSearchBySlot = { ...recipeSearchBySlot, [recipeSlotKey(stepIndex, ingIdx)]: query };
+														debouncedRecipeSearch(stepIndex, ingIdx, query);
+													}}
+													onSelect={(item) => {
+														const hit = (recipeSuggestionsBySlot[recipeSlotKey(stepIndex, ingIdx)] ?? []).find((r) => r.id === item.id);
+														if (hit) {
+															state.setIngredientRecipeRef(stepIndex, ingIdx, hit.id, hit.name, hit.slug);
+															recipeSearchBySlot = { ...recipeSearchBySlot, [recipeSlotKey(stepIndex, ingIdx)]: '' };
+															recipeSuggestionsBySlot = { ...recipeSuggestionsBySlot, [recipeSlotKey(stepIndex, ingIdx)]: [] };
+														}
+													}}
+												/>
+											</div>
 											<Autocomplete
 												bind:value={state.stepHelpers[stepIndex].ingredientQueries[ingIdx]}
 												placeholder="Search ingredient"
@@ -740,6 +1006,21 @@
 												}}
 											/>
 										{/if}
+									</FormField>
+									<FormField label="Option group">
+										<select
+											class="select-input select-input--narrow"
+											value={String(ingredient.optionIndex ?? 0)}
+											data-testid={"recipe-step-" + stepIndex + "-ingredient-" + ingIdx + "-option-group"}
+											onchange={(e) => {
+												const v = parseInt((e.currentTarget as HTMLSelectElement).value, 10);
+												if (!Number.isNaN(v)) state.setIngredientOptionIndex(stepIndex, ingIdx, v);
+											}}
+										>
+											{#each optionGroupOptions as opt}
+												<option value={opt.value}>{opt.label}</option>
+											{/each}
+										</select>
 									</FormField>
 									{#if !isFromProduct && (state.stepHelpers[stepIndex].ingredientMeasurementUnitSuggestions[ingIdx] ?? []).length > 0}
 										<FormField label="Measurement Unit" required>
@@ -795,6 +1076,8 @@
 						<div class="step-section">
 							<h3>Products</h3>
 							{#each step.products as product, prodIdx}
+								{@const isContinuous = product.itemQuantity == null || (product.itemQuantity.min === undefined && product.itemQuantity.max === undefined)}
+								{@const productUnits = state.stepHelpers[stepIndex]?.productMeasurementUnitSuggestions[prodIdx] ?? []}
 								<div class="step-item">
 									<FormField label="Product {prodIdx + 1}">
 										<Input
@@ -821,6 +1104,183 @@
 											{/each}
 										</select>
 									</FormField>
+									<FormField label="Amount type">
+										<select
+											class="select-input select-input--narrow"
+											value={isContinuous ? 'continuous' : 'discrete'}
+											data-testid={"recipe-step-" + stepIndex + "-product-" + prodIdx + "-amount-type"}
+											onchange={(e) => {
+												const v = (e.currentTarget as HTMLSelectElement).value;
+												if (v === 'continuous') {
+													state.updateProduct(stepIndex, prodIdx, {
+														itemQuantity: undefined,
+														measurementQuantity: product.measurementQuantity ?? { min: 1 },
+														measurementUnitId: product.measurementUnitId
+													});
+												} else {
+													state.updateProduct(stepIndex, prodIdx, {
+														itemQuantity: product.itemQuantity ?? { min: 1 },
+														measurementQuantity: product.measurementQuantity ?? { min: 1 },
+														measurementUnitId: product.measurementUnitId
+													});
+												}
+											}}
+										>
+											<option value="continuous">Continuous (e.g. 2 cups sauce)</option>
+											<option value="discrete">Discrete (e.g. 4 patties, 4 oz each)</option>
+										</select>
+									</FormField>
+									{#if isContinuous}
+										<FormField label="Quantity">
+											<div class="product-qty-row">
+												<input
+													type="number"
+													min={0}
+													step={0.25}
+													class="number-input"
+													data-testid={"recipe-step-" + stepIndex + "-product-" + prodIdx + "-qty"}
+													value={product.measurementQuantity?.min ?? ''}
+													oninput={(e) => {
+														const v = (e.currentTarget as HTMLInputElement).value;
+														const n = v === '' ? undefined : parseFloat(v);
+														state.updateProduct(stepIndex, prodIdx, {
+															measurementQuantity: {
+																min: n ?? 0,
+																max: product.measurementQuantity?.max
+															}
+														});
+													}}
+												/>
+												<span class="product-qty-row__sep">–</span>
+												<input
+													type="number"
+													min={0}
+													step={0.25}
+													placeholder="max"
+													class="number-input product-qty-max"
+													data-testid={"recipe-step-" + stepIndex + "-product-" + prodIdx + "-qty-max"}
+													value={product.measurementQuantity?.max ?? ''}
+													oninput={(e) => {
+														const v = (e.currentTarget as HTMLInputElement).value;
+														const n = v === '' ? undefined : parseFloat(v);
+														state.updateProduct(stepIndex, prodIdx, {
+															measurementQuantity: {
+																min: product.measurementQuantity?.min ?? 0,
+																max: n !== undefined && !Number.isNaN(n) ? n : undefined
+															}
+														});
+													}}
+												/>
+											</div>
+										</FormField>
+										<FormField label="Unit">
+											<select
+												class="select-input select-input--narrow"
+												value={product.measurementUnitId ?? ''}
+												data-testid={"recipe-step-" + stepIndex + "-product-" + prodIdx + "-unit"}
+												onfocus={async () => {
+													if (productUnits.length === 0) {
+														const units = await fetchProductMeasurementUnits();
+														state.setProductMeasurementUnitSuggestions(stepIndex, prodIdx, units);
+													}
+												}}
+												onchange={(e) => {
+													const id = (e.currentTarget as HTMLSelectElement).value;
+													state.updateProduct(stepIndex, prodIdx, { measurementUnitId: id || undefined });
+												}}
+											>
+												<option value="">—</option>
+												{#each productUnits as mu}
+													<option value={mu.id}>{(mu as { name?: string }).name ?? mu.id}</option>
+												{/each}
+											</select>
+										</FormField>
+									{:else}
+										<FormField label="Item count">
+											<div class="product-qty-row">
+												<input
+													type="number"
+													min={0}
+													step={1}
+													class="number-input"
+													data-testid={"recipe-step-" + stepIndex + "-product-" + prodIdx + "-item-count"}
+													value={product.itemQuantity?.min ?? ''}
+													oninput={(e) => {
+														const v = (e.currentTarget as HTMLInputElement).value;
+														const n = v === '' ? undefined : parseFloat(v);
+														state.updateProduct(stepIndex, prodIdx, {
+															itemQuantity: {
+																min: n ?? 0,
+																max: product.itemQuantity?.max
+															}
+														});
+													}}
+												/>
+												<span class="product-qty-row__sep">–</span>
+												<input
+													type="number"
+													min={0}
+													step={1}
+													placeholder="max"
+													class="number-input product-qty-max"
+													data-testid={"recipe-step-" + stepIndex + "-product-" + prodIdx + "-item-count-max"}
+													value={product.itemQuantity?.max ?? ''}
+													oninput={(e) => {
+														const v = (e.currentTarget as HTMLInputElement).value;
+														const n = v === '' ? undefined : parseFloat(v);
+														state.updateProduct(stepIndex, prodIdx, {
+															itemQuantity: {
+																min: product.itemQuantity?.min ?? 0,
+																max: n !== undefined && !Number.isNaN(n) ? n : undefined
+															}
+														});
+													}}
+												/>
+											</div>
+										</FormField>
+										<FormField label="Per item">
+											<div class="product-qty-row">
+												<input
+													type="number"
+													min={0}
+													step={0.25}
+													class="number-input"
+													data-testid={"recipe-step-" + stepIndex + "-product-" + prodIdx + "-per-item"}
+													value={product.measurementQuantity?.min ?? ''}
+													oninput={(e) => {
+														const v = (e.currentTarget as HTMLInputElement).value;
+														const n = v === '' ? undefined : parseFloat(v);
+														state.updateProduct(stepIndex, prodIdx, {
+															measurementQuantity: {
+																min: n ?? 0,
+																max: product.measurementQuantity?.max
+															}
+														});
+													}}
+												/>
+												<select
+													class="select-input select-input--narrow"
+													value={product.measurementUnitId ?? ''}
+													data-testid={"recipe-step-" + stepIndex + "-product-" + prodIdx + "-per-item-unit"}
+													onfocus={async () => {
+														if (productUnits.length === 0) {
+															const units = await fetchProductMeasurementUnits();
+															state.setProductMeasurementUnitSuggestions(stepIndex, prodIdx, units);
+														}
+													}}
+													onchange={(e) => {
+														const id = (e.currentTarget as HTMLSelectElement).value;
+														state.updateProduct(stepIndex, prodIdx, { measurementUnitId: id || undefined });
+													}}
+												>
+													<option value="">—</option>
+													{#each productUnits as mu}
+														<option value={mu.id}>{(mu as { name?: string }).name ?? mu.id}</option>
+													{/each}
+												</select>
+											</div>
+										</FormField>
+									{/if}
 									<Button
 										type="button"
 										variant="default"
@@ -848,6 +1308,15 @@
 								data-testid={"recipe-step-" + stepIndex + "-instructions"}
 							></textarea>
 						</FormField>
+						<FormField label="Notes">
+							<textarea
+								class="textarea textarea--compact"
+								placeholder="Internal or structured notes (optional)"
+								bind:value={step.notes}
+								rows="2"
+								data-testid={"recipe-step-" + stepIndex + "-notes"}
+							></textarea>
+						</FormField>
 					{/if}
 
 					<div class="step-actions">
@@ -872,7 +1341,7 @@
 			</div>
 
 			<div class="form-actions">
-				<Button type="submit">Create Recipe</Button>
+				<Button type="submit" disabled={state.recipe.steps.length < 2}>Create Recipe</Button>
 			</div>
 		</div>
 	</form>
@@ -963,7 +1432,28 @@
 	}
 	.info-row__portions {
 		flex: 0 0 auto;
-		width: 5.5rem;
+		min-width: 10rem;
+	}
+	.portions-range {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+	}
+	.portions-range :global(.number-input),
+	.portions-range input.number-input {
+		width: 3.5rem;
+		min-width: 0;
+		box-sizing: border-box;
+		padding: var(--space-xs) var(--space-sm);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		font-size: var(--font-size-sm);
+	}
+	.portions-range__sep {
+		flex: 0 0 auto;
+		color: var(--color-text-muted);
+		font-size: var(--font-size-sm);
+		user-select: none;
 	}
 
 	.portion-name-row {
@@ -981,6 +1471,16 @@
 		font-size: var(--font-size-sm);
 		user-select: none;
 	}
+	.checkbox-label {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		font-size: var(--font-size-sm);
+		cursor: pointer;
+	}
+	.checkbox-label input[type='checkbox'] {
+		width: auto;
+	}
 
 	.textarea--compact {
 		min-height: 2.5rem;
@@ -989,6 +1489,27 @@
 		resize: vertical;
 	}
 
+	.recipe-section__hint {
+		margin: 0 0 var(--space-md);
+		font-size: var(--font-size-sm);
+		color: var(--color-text-muted);
+	}
+	.recipe-section--prep-tasks {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+	.prep-task-card {
+		margin-bottom: var(--space-sm);
+	}
+	.prep-task-steps {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-md);
+	}
+	.prep-task-actions {
+		margin-top: var(--space-sm);
+	}
 	.recipe-section--debug {
 		flex-shrink: 0;
 	}
@@ -1077,6 +1598,27 @@
 		flex: 1;
 		min-width: 12rem;
 	}
+	.product-qty-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+	}
+	.product-qty-row .number-input {
+		width: 4rem;
+		min-width: 0;
+		padding: var(--space-xs) var(--space-sm);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		font-size: var(--font-size-base);
+	}
+	.product-qty-row .product-qty-max {
+		width: 3.5rem;
+	}
+	.product-qty-row__sep {
+		color: var(--color-text-muted);
+		font-size: var(--font-size-sm);
+		user-select: none;
+	}
 
 	.step-actions {
 		margin-top: var(--space-md);
@@ -1145,6 +1687,10 @@
 		min-width: 10rem;
 		font-size: var(--font-size-base);
 		color: var(--color-text);
+	}
+	.from-product-summary__slug {
+		font-size: var(--font-size-sm);
+		color: var(--color-text-muted);
 	}
 
 	.from-product-summary__label strong {

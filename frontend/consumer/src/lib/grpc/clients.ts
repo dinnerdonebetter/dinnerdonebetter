@@ -48,8 +48,13 @@ import type {
 	UpdateUserUsernameRequest,
 	UpdateUserUsernameResponse,
 	UpdateUserDetailsRequest,
-	UpdateUserDetailsResponse
+	UpdateUserDetailsResponse,
+	UploadUserAvatarResponse
 } from '$lib/generated/identity/identity_service_types';
+import {
+	UploadRequest,
+	UploadMetadata
+} from '$lib/generated/uploaded_media/uploaded_media';
 import { SettingsServiceClient } from '$lib/generated/settings/settings_service';
 import type {
 	GetServiceSettingsRequest,
@@ -85,7 +90,9 @@ import type {
 	SearchForValidIngredientStatesRequest,
 	SearchForValidIngredientStatesResponse,
 	CreateRecipeRequest,
-	CreateRecipeResponse
+	CreateRecipeResponse,
+	SearchForRecipesRequest,
+	SearchForRecipesResponse
 } from '$lib/generated/mealplanning/mealplanning_service_types';
 import type { Metadata } from '@grpc/grpc-js';
 
@@ -371,6 +378,65 @@ export async function updateUserDetails(
 	)(request, authMetadata(oauth2Token));
 }
 
+const UPLOAD_AVATAR_CHUNK_SIZE = 64 * 1024; // 64 KB, match iOS
+
+export async function uploadUserAvatar(
+	oauth2Token: string,
+	fileBuffer: Buffer,
+	filename: string,
+	contentType: string
+): Promise<UploadUserAvatarResponse> {
+	const client = getIdentityClient();
+	const metadata = authMetadata(oauth2Token);
+
+	return new Promise((resolve, reject) => {
+		const stream = client.uploadUserAvatar(metadata, (err, response) => {
+			if (err) reject(err);
+			else if (response) resolve(response);
+			else reject(new Error('No response'));
+		});
+
+		const metadataReq = UploadRequest.create({
+			metadata: UploadMetadata.create({
+				bucket: 'avatars',
+				objectName: filename,
+				contentType
+			})
+		});
+
+		stream.write(metadataReq, (writeErr) => {
+			if (writeErr) {
+				stream.destroy(writeErr);
+				reject(writeErr);
+				return;
+			}
+
+			let offset = 0;
+			const writeNext = () => {
+				if (offset >= fileBuffer.length) {
+					stream.end();
+					return;
+				}
+				const end = Math.min(offset + UPLOAD_AVATAR_CHUNK_SIZE, fileBuffer.length);
+				const chunk = fileBuffer.subarray(offset, end);
+				offset = end;
+				stream.write(
+					UploadRequest.create({ chunk: new Uint8Array(chunk) }),
+					(chunkErr) => {
+						if (chunkErr) {
+							stream.destroy(chunkErr);
+							reject(chunkErr);
+							return;
+						}
+						writeNext();
+					}
+				);
+			};
+			writeNext();
+		});
+	});
+}
+
 // --- Settings (authenticated) ---
 
 export async function getServiceSettings(
@@ -573,6 +639,19 @@ export async function createRecipe(
 	return promisifyUnary<CreateRecipeRequest, CreateRecipeResponse>(
 		client.createRecipe.bind(client)
 	)(request, authMetadata(oauth2Token));
+}
+
+export async function searchForRecipes(
+	oauth2Token: string,
+	request: Omit<SearchForRecipesRequest, 'filter'> & { filter?: SearchForRecipesRequest['filter'] }
+): Promise<SearchForRecipesResponse> {
+	const client = getMealplanningClient();
+	return promisifyUnary<SearchForRecipesRequest, SearchForRecipesResponse>(
+		client.searchForRecipes.bind(client)
+	)(
+		{ ...request, filter: request.filter ?? defaultSearchFilter },
+		authMetadata(oauth2Token)
+	);
 }
 
 // --- Analytics (unauthenticated) ---

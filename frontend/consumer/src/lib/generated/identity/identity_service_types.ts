@@ -8,6 +8,7 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { ResponseDetails } from "../common";
 import { Pagination, QueryFilter } from "../filtering";
+import { UploadedMedia } from "../uploaded_media/uploaded_media";
 import { Timestamp } from "../google/protobuf/timestamp";
 import {
   Account,
@@ -273,6 +274,7 @@ export interface UpdateUserUsernameResponse {
 
 export interface UploadUserAvatarResponse {
   responseDetails: ResponseDetails | undefined;
+  created?: UploadedMedia | undefined;
 }
 
 export interface AccountCreationRequestInput {
@@ -4522,13 +4524,16 @@ export const UpdateUserUsernameResponse: MessageFns<UpdateUserUsernameResponse> 
 };
 
 function createBaseUploadUserAvatarResponse(): UploadUserAvatarResponse {
-  return { responseDetails: undefined };
+  return { responseDetails: undefined, created: undefined };
 }
 
 export const UploadUserAvatarResponse: MessageFns<UploadUserAvatarResponse> = {
   encode(message: UploadUserAvatarResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.responseDetails !== undefined) {
       ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    if (message.created !== undefined) {
+      UploadedMedia.encode(message.created, writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -4548,6 +4553,14 @@ export const UploadUserAvatarResponse: MessageFns<UploadUserAvatarResponse> = {
           message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.created = UploadedMedia.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -4564,6 +4577,7 @@ export const UploadUserAvatarResponse: MessageFns<UploadUserAvatarResponse> = {
         : isSet(object.response_details)
         ? ResponseDetails.fromJSON(object.response_details)
         : undefined,
+      created: isSet(object.created) ? UploadedMedia.fromJSON(object.created) : undefined,
     };
   },
 
@@ -4571,6 +4585,9 @@ export const UploadUserAvatarResponse: MessageFns<UploadUserAvatarResponse> = {
     const obj: any = {};
     if (message.responseDetails !== undefined) {
       obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    if (message.created !== undefined) {
+      obj.created = UploadedMedia.toJSON(message.created);
     }
     return obj;
   },
@@ -4582,6 +4599,9 @@ export const UploadUserAvatarResponse: MessageFns<UploadUserAvatarResponse> = {
     const message = createBaseUploadUserAvatarResponse();
     message.responseDetails = (object.responseDetails !== undefined && object.responseDetails !== null)
       ? ResponseDetails.fromPartial(object.responseDetails)
+      : undefined;
+    message.created = (object.created !== undefined && object.created !== null)
+      ? UploadedMedia.fromPartial(object.created)
       : undefined;
     return message;
   },

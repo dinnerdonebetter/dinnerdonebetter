@@ -1,12 +1,16 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { enhance, applyAction } from '$app/forms';
+	import { goto, invalidateAll } from '$app/navigation';
+	import { env as publicEnv } from '$env/dynamic/public';
 	import { PageContainer, FormField, Input, Button, Alert, Link } from '$lib/components';
 	import type { User } from '$lib/generated/identity/identity_messages';
 
-	let { data } = $props();
+	let { data, form } = $props();
 	const user = data?.user as User | null | undefined;
 	const error = data?.error as string | null | undefined;
-	const updated = data?.updated ?? false;
+	const updated = data?.updated ?? (form as { updated?: boolean } | undefined)?.updated ?? false;
+	// Prefer public env (available on client); fallback to server-passed value
+	const avatarMediaBaseUrl = publicEnv.PUBLIC_AVATAR_MEDIA_URL_PREFIX ?? data?.avatarMediaBaseUrl ?? '';
 
 	const errorMessages: Record<string, string> = {
 		invalid_username: 'Username is required.',
@@ -14,6 +18,7 @@
 		invalid_password: 'Password is required to update details.',
 		invalid_input: 'Invalid input. Please check your entries.',
 		update_failed: 'Failed to save. Please try again.',
+		avatar_upload_failed: 'Failed to upload profile photo. Use a PNG, JPEG, or GIF under 5 MB.',
 		server: 'Something went wrong. Please try again.'
 	};
 	const displayError = error ? errorMessages[error] ?? 'Something went wrong.' : null;
@@ -24,6 +29,59 @@
 	const birthdayStr = user?.birthday
 		? new Date(user.birthday).toISOString().slice(0, 10)
 		: '';
+
+	let avatarImageError = $state(false);
+	// Hold the latest path returned from upload so the avatar updates even if form prop doesn't propagate
+	let latestAvatarPath = $state<string | null>(null);
+
+	// Use path from upload result (latestAvatarPath), form, or loaded user — $derived so they update when latestAvatarPath changes
+	const avatarStoragePath = $derived(
+		latestAvatarPath ??
+			(form as { avatarStoragePath?: string } | undefined)?.avatarStoragePath ??
+			user?.avatar?.storagePath ??
+			(user?.avatar as { storage_path?: string } | undefined)?.storage_path ??
+			''
+	);
+	const avatarUrl = $derived(
+		avatarMediaBaseUrl && avatarStoragePath
+			? `${avatarMediaBaseUrl.replace(/\/$/, '')}/${avatarStoragePath}`
+			: null
+	);
+
+	const initials = user?.firstName && user?.lastName
+		? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+		: user?.username?.[0]?.toUpperCase() ?? '?';
+
+	function onAvatarImgError() {
+		avatarImageError = true;
+	}
+	$effect(() => {
+		if ((form as { avatarStoragePath?: string } | undefined)?.avatarStoragePath) {
+			avatarImageError = false;
+		}
+	});
+
+	function handleAvatarFormSubmit() {
+		return async (opts: { result: { type: string; location?: string; data?: unknown } }) => {
+			const { result } = opts;
+			console.log('[Profile avatar] enhance callback ran', { type: result?.type, data: (result as { data?: unknown })?.data });
+			if (result.type === 'redirect' && (result as { location?: string }).location) {
+				await goto((result as { location: string }).location, { invalidateAll: true });
+				return;
+			}
+			// Capture new path from result so we can show it immediately (form prop may not update in time)
+			if (result.type === 'success' && result.data && typeof result.data === 'object' && 'avatarStoragePath' in result.data) {
+				const path = (result.data as { avatarStoragePath: string }).avatarStoragePath;
+				console.log('[Profile avatar] setting latestAvatarPath', path);
+				latestAvatarPath = path;
+				avatarImageError = false;
+			}
+			await applyAction(opts.result as Parameters<typeof applyAction>[0]);
+			if (result.type === 'success') {
+				await invalidateAll();
+			}
+		};
+	}
 </script>
 
 <PageContainer>
@@ -117,8 +175,49 @@
 				</form>
 			</section>
 
-			<section class="profile-section profile-note">
-				<p>Profile photo can be updated in the Dinner Done Better app.</p>
+			<section class="profile-section">
+				<h2>Profile Photo</h2>
+				<div class="profile-avatar-row">
+					<div class="profile-avatar-preview" aria-hidden="true">
+						{#if avatarUrl && !avatarImageError}
+							<img
+								src={avatarUrl}
+								alt=""
+								class="profile-avatar-img"
+								onerror={onAvatarImgError}
+							/>
+						{:else}
+							<span class="profile-avatar-initials">{initials}</span>
+						{/if}
+					</div>
+					<form
+						id="avatar-form"
+						method="POST"
+						action="?/update-avatar"
+						enctype="multipart/form-data"
+						use:enhance={handleAvatarFormSubmit}
+						class="profile-avatar-form"
+					>
+						<FormField id="avatar" label="Choose a photo (PNG, JPEG, or GIF, max 5 MB)">
+							<input
+								id="avatar"
+								name="avatar"
+								type="file"
+								accept="image/png,image/jpeg,image/gif"
+								data-testid="profile-avatar-input"
+								class="profile-avatar-file-input"
+								onchange={(e) => {
+									const input = e.currentTarget as HTMLInputElement;
+									const formEl = document.getElementById('avatar-form') as HTMLFormElement;
+									console.log('[Profile avatar] file selected', { hasForm: !!formEl, fileCount: input.files?.length });
+									if (formEl && input.files?.length) {
+										formEl.requestSubmit();
+									}
+								}}
+							/>
+						</FormField>
+					</form>
+				</div>
 			</section>
 		</div>
 	{/if}
@@ -155,12 +254,44 @@
 		flex-direction: column;
 		gap: var(--space-md);
 	}
-	.profile-note {
-		background: var(--color-surface-muted, #f5f5f5);
+	.profile-avatar-row {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-lg);
+		flex-wrap: wrap;
 	}
-	.profile-note p {
-		font-size: 0.875rem;
+	.profile-avatar-preview {
+		width: 80px;
+		height: 80px;
+		border-radius: 50%;
+		overflow: hidden;
+		background: var(--color-surface-muted, #eee);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+	.profile-avatar-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.profile-avatar-initials {
+		font-size: 1.5rem;
+		font-weight: var(--font-weight-medium);
 		color: var(--color-muted, #666);
-		margin: 0;
+	}
+	.profile-avatar-form {
+		flex: 1;
+		min-width: 200px;
+	}
+	/* Hide the selected filename so only the browse button is visible */
+	.profile-avatar-file-input {
+		color: transparent;
+		width: min-content;
+	}
+	.profile-avatar-file-input::file-selector-button,
+	.profile-avatar-file-input::-webkit-file-upload-button {
+		color: initial;
 	}
 </style>

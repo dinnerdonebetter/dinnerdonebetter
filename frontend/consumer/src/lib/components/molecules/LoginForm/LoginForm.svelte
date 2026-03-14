@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { enhance } from '$app/forms';
+	import { enhance, applyAction } from '$app/forms';
 	import FormField from '../FormField/FormField.svelte';
 	import Input from '../../atoms/Input/Input.svelte';
 	import Button from '../../atoms/Button/Button.svelte';
@@ -34,6 +34,8 @@
 		return async ({ result }) => {
 			if (result.type === 'redirect') {
 				window.location.href = result.location;
+			} else {
+				await applyAction(result);
 			}
 		};
 	}}

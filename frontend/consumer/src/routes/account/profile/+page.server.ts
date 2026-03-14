@@ -1,11 +1,15 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getSelf, updateUserUsername, updateUserDetails } from '$lib/grpc/clients';
+import { getSelf, updateUserUsername, updateUserDetails, uploadUserAvatar } from '$lib/grpc/clients';
+import { env } from '$env/dynamic/private';
+
+const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_AVATAR_TYPES = ['image/png', 'image/jpeg', 'image/gif'];
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const token = locals.oauthToken;
 	if (!token) {
-		return { user: null, error: null, updated: false };
+		return { user: null, error: null, updated: false, avatarMediaBaseUrl: '' };
 	}
 
 	try {
@@ -13,9 +17,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		const user = selfRes.result ?? null;
 		const error = url.searchParams.get('error');
 		const updated = url.searchParams.get('updated') === '1';
-		return { user, error, updated };
+		const avatarMediaBaseUrl = env.PUBLIC_AVATAR_MEDIA_URL_PREFIX ?? '';
+		return { user, error, updated, avatarMediaBaseUrl };
 	} catch {
-		return { user: null, error: 'server', updated: false };
+		return { user: null, error: 'server', updated: false, avatarMediaBaseUrl: '' };
 	}
 };
 
@@ -87,6 +92,46 @@ export const actions: Actions = {
 				throw e;
 			}
 			throw redirect(302, '/account/profile?error=update_failed');
+		}
+	},
+	'update-avatar': async ({ request, locals }) => {
+		const token = locals.oauthToken;
+		if (!token) {
+			throw redirect(302, '/login');
+		}
+
+		const formData = await request.formData();
+		const file = formData.get('avatar') as File | null;
+		if (!file || !(file instanceof File) || file.size === 0) {
+			throw redirect(302, '/account/profile?error=avatar_upload_failed');
+		}
+
+		if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+			throw redirect(302, '/account/profile?error=avatar_upload_failed');
+		}
+		if (file.size > MAX_AVATAR_SIZE_BYTES) {
+			throw redirect(302, '/account/profile?error=avatar_upload_failed');
+		}
+
+		const arrayBuffer = await file.arrayBuffer();
+		const buffer = Buffer.from(arrayBuffer);
+		const filename = file.name || 'avatar';
+
+		try {
+			const apiResponse = await uploadUserAvatar(token, buffer, filename, file.type);
+			const storagePath =
+				apiResponse?.created?.storagePath ??
+				(apiResponse?.created as { storage_path?: string } | undefined)?.storage_path;
+			console.log('[Profile update-avatar] server returning', { storagePath: storagePath ?? null });
+			if (storagePath) {
+				return { updated: true, avatarStoragePath: storagePath };
+			}
+			return { updated: true };
+		} catch (e) {
+			if (e && typeof e === 'object' && 'status' in e && (e as { status: number }).status === 302) {
+				throw e;
+			}
+			throw redirect(302, '/account/profile?error=avatar_upload_failed');
 		}
 	}
 };

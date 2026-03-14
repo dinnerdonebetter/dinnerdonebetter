@@ -39,6 +39,9 @@ export const actions: Actions = {
 		if (!input.steps?.length) {
 			return fail(400, { error: 'At least one step is required' });
 		}
+		if (input.steps.length < 2) {
+			return fail(400, { error: 'Recipe must have at least 2 steps' });
+		}
 
 		try {
 			const res = await createRecipe(token, { input });

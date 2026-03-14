@@ -10,6 +10,8 @@ import type {
 	RecipeStepProductCreationRequestInput,
 	RecipeStepVesselCreationRequestInput,
 	RecipeStepCompletionConditionCreationRequestInput,
+	RecipePrepTaskWithinRecipeCreationRequestInput,
+	RecipePrepTaskStepWithinRecipeCreationRequestInput,
 	ValidPreparation,
 	ValidIngredient,
 	ValidMeasurementUnit,
@@ -91,6 +93,19 @@ function createEmptyProduct(index: number): RecipeStepProductCreationRequestInpu
 	};
 }
 
+function createEmptyPrepTask(): RecipePrepTaskWithinRecipeCreationRequestInput {
+	return {
+		name: '',
+		description: '',
+		storageType: '',
+		explicitStorageInstructions: '',
+		notes: '',
+		belongsToRecipe: '',
+		recipeSteps: [],
+		optional: false
+	};
+}
+
 export interface StepHelper {
 	show: boolean;
 	preparationQuery: string;
@@ -167,12 +182,12 @@ export function createRecipeCreatorState() {
 			yieldsComponentType: MealComponentType.MEAL_COMPONENT_TYPE_MAIN,
 			estimatedPortions: { min: 1 },
 			prepTasks: [],
-			steps: [createEmptyStep(0)],
+			steps: [createEmptyStep(0), createEmptyStep(1)],
 			alsoCreateMeal: false,
 			eligibleForMeals: true,
 			media: []
 		} as RecipeCreationRequestInput,
-		stepHelpers: [createStepHelper()] as StepHelper[],
+		stepHelpers: [createStepHelper(), createStepHelper()] as StepHelper[],
 
 		addStep() {
 			const idx = this.recipe.steps.length;
@@ -601,7 +616,89 @@ export function createRecipeCreatorState() {
 												...ing,
 												name: '',
 												productOfRecipeStepIndex: undefined,
+												productOfRecipeStepProductIndex: undefined,
+												recipeStepProductRecipeId: undefined,
+												recipeStepProductRecipeSlug: undefined
+											}
+										: ing
+								)
+							}
+						: s
+				)
+			};
+		},
+
+		setIngredientRecipeRef(
+			stepIndex: number,
+			ingredientIndex: number,
+			recipeId: string,
+			recipeName: string,
+			slug?: string
+		) {
+			this.stepHelpers = this.stepHelpers.map((h, i) =>
+				i === stepIndex
+					? {
+							...h,
+							ingredientQueries: h.ingredientQueries.map((q, j) =>
+								j === ingredientIndex ? recipeName : q
+							),
+							selectedIngredients: h.selectedIngredients.map((sel, j) =>
+								j === ingredientIndex ? null : sel
+							),
+							selectedMeasurementUnits: h.selectedMeasurementUnits.map((sel, j) =>
+								j === ingredientIndex ? null : sel
+							)
+						}
+					: h
+			);
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								ingredients: s.ingredients.map((ing, j) =>
+									j === ingredientIndex
+										? {
+												...ing,
+												name: recipeName,
+												recipeStepProductRecipeId: recipeId,
+												recipeStepProductRecipeSlug: slug,
+												productOfRecipeStepIndex: undefined,
 												productOfRecipeStepProductIndex: undefined
+											}
+										: ing
+								)
+							}
+						: s
+				)
+			};
+		},
+
+		clearIngredientRecipeRef(stepIndex: number, ingredientIndex: number) {
+			this.stepHelpers = this.stepHelpers.map((h, i) =>
+				i === stepIndex
+					? {
+							...h,
+							ingredientQueries: h.ingredientQueries.map((q, j) =>
+								j === ingredientIndex ? '' : q
+							)
+						}
+					: h
+			);
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								ingredients: s.ingredients.map((ing, j) =>
+									j === ingredientIndex
+										? {
+												...ing,
+												name: '',
+												recipeStepProductRecipeId: undefined,
+												recipeStepProductRecipeSlug: undefined
 											}
 										: ing
 								)
@@ -650,6 +747,8 @@ export function createRecipeCreatorState() {
 										? {
 												...ing,
 												name,
+												recipeStepProductRecipeId: undefined,
+												recipeStepProductRecipeSlug: undefined,
 												validIngredientPreparationId: undefined,
 												validIngredientMeasurementUnitId: undefined,
 												productOfRecipeStepIndex: fromStepIndex,
@@ -885,6 +984,85 @@ export function createRecipeCreatorState() {
 		this.recipe = { ...this.recipe, [field]: value };
 		},
 
+		addPrepTask() {
+			this.recipe = {
+				...this.recipe,
+				prepTasks: [...(this.recipe.prepTasks ?? []), createEmptyPrepTask()]
+			};
+		},
+
+		removePrepTask(taskIndex: number) {
+			this.recipe = {
+				...this.recipe,
+				prepTasks: (this.recipe.prepTasks ?? []).filter((_, i) => i !== taskIndex)
+			};
+		},
+
+		updatePrepTaskField<K extends keyof RecipePrepTaskWithinRecipeCreationRequestInput>(
+			taskIndex: number,
+			field: K,
+			value: RecipePrepTaskWithinRecipeCreationRequestInput[K]
+		) {
+			const tasks = [...(this.recipe.prepTasks ?? [])];
+			tasks[taskIndex] = { ...tasks[taskIndex]!, [field]: value };
+			this.recipe = { ...this.recipe, prepTasks: tasks };
+		},
+
+		setPrepTaskRecipeSteps(
+			taskIndex: number,
+			recipeSteps: RecipePrepTaskStepWithinRecipeCreationRequestInput[]
+		) {
+			this.updatePrepTaskField(taskIndex, 'recipeSteps', recipeSteps);
+		},
+
+		setIngredientOptionIndex(stepIndex: number, ingredientIndex: number, optionIndex: number) {
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								ingredients: s.ingredients.map((ing, j) =>
+									j === ingredientIndex ? { ...ing, optionIndex } : ing
+								)
+							}
+						: s
+				)
+			};
+		},
+
+		setInstrumentOptionIndex(stepIndex: number, instrumentIndex: number, optionIndex: number) {
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								instruments: s.instruments.map((inst, j) =>
+									j === instrumentIndex ? { ...inst, optionIndex } : inst
+								)
+							}
+						: s
+				)
+			};
+		},
+
+		setVesselOptionIndex(stepIndex: number, vesselIndex: number, optionIndex: number) {
+			this.recipe = {
+				...this.recipe,
+				steps: this.recipe.steps.map((s, i) =>
+					i === stepIndex
+						? {
+								...s,
+								vessels: (s.vessels ?? []).map((v, j) =>
+									j === vesselIndex ? { ...v, optionIndex } : v
+								)
+							}
+						: s
+				)
+			};
+		},
+
 		updateStepField(
 		stepIndex: number,
 		field: keyof RecipeStepCreationRequestInput,
@@ -937,6 +1115,23 @@ export function createRecipeCreatorState() {
 					: s
 			)
 		};
+		},
+
+		setProductMeasurementUnitSuggestions(
+			stepIndex: number,
+			productIndex: number,
+			units: ValidMeasurementUnit[]
+		) {
+			this.stepHelpers = this.stepHelpers.map((h, i) =>
+				i === stepIndex
+					? {
+							...h,
+							productMeasurementUnitSuggestions: h.productMeasurementUnitSuggestions.map(
+								(unitsForProd, j) => (j === productIndex ? units : unitsForProd)
+							)
+						}
+					: h
+			);
 		},
 
 		toggleIngredientProduct(stepIndex: number, ingredientIndex: number) {
