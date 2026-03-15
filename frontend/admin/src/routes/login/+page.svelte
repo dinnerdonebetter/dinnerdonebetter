@@ -89,20 +89,12 @@
 
 <PageContainer narrow>
   <h1>Admin Login</h1>
-  <LoginForm
-    action="?/login"
-    username={form?.username ?? ''}
-    error={form?.error}
-    showTotp={true}
-    totpRequired={true}
-  >
+  <LoginForm action="?/login" username={form?.username ?? ''} error={form?.error} showTotp={true} totpRequired={true}>
     {#snippet passkeySlot()}
       {#if supportsPasskey}
         <div class="passkey-section">
           <p class="divider">or</p>
-          <Button type="button" variant="default" onclick={signInWithPasskey}
-            >Sign in with passkey</Button
-          >
+          <Button type="button" variant="default" onclick={signInWithPasskey}>Sign in with passkey</Button>
         </div>
       {/if}
     {/snippet}

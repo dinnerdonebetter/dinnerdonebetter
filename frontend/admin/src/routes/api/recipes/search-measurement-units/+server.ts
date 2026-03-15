@@ -27,7 +27,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       const vimus = res.results ?? [];
       const filtered =
         q.length > 0
-          ? vimus.filter((vimu: { measurementUnit?: { name?: string } }) => vimu.measurementUnit?.name?.toLowerCase().includes(q.toLowerCase()))
+          ? vimus.filter((vimu: { measurementUnit?: { name?: string } }) =>
+              vimu.measurementUnit?.name?.toLowerCase().includes(q.toLowerCase()),
+            )
           : vimus;
       return json({ results: filtered });
     }

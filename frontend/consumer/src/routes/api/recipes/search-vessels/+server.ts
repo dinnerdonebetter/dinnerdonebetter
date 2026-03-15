@@ -1,10 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import {
-  getValidPreparationVesselsByPreparation,
-  getValidVessels,
-  searchForValidVessels,
-} from '$lib/grpc/clients';
+import { getValidPreparationVesselsByPreparation, getValidVessels, searchForValidVessels } from '$lib/grpc/clients';
 import { logger } from '$lib/logger';
 
 const DEFAULT_LIST_FILTER = { maxResponseSize: 100 };

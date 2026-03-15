@@ -474,10 +474,7 @@ export function createGrpcClients(config: GrpcClientConfig) {
         getMealplanningClient().searchForValidMeasurementUnits.bind(getMealplanningClient()),
       )({ ...request, filter: request.filter ?? defaultSearchFilter }, authMetadata(oauth2Token)),
 
-    getValidVessels: (
-      oauth2Token: string,
-      request: GetValidVesselsRequest,
-    ): Promise<GetValidVesselsResponse> =>
+    getValidVessels: (oauth2Token: string, request: GetValidVesselsRequest): Promise<GetValidVesselsResponse> =>
       promisifyUnary<GetValidVesselsRequest, GetValidVesselsResponse>(
         getMealplanningClient().getValidVessels.bind(getMealplanningClient()),
       )({ ...request, filter: request.filter ?? defaultSearchFilter }, authMetadata(oauth2Token)),

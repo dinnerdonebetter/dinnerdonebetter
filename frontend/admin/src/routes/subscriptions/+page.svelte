@@ -15,13 +15,7 @@
 
 <form method="get" action="/subscriptions" class="search-form">
   <label for="account_id">Account ID</label>
-  <input
-    id="account_id"
-    name="account_id"
-    type="text"
-    placeholder="Enter account ID…"
-    value={data?.accountId ?? ''}
-  />
+  <input id="account_id" name="account_id" type="text" placeholder="Enter account ID…" value={data?.accountId ?? ''} />
   <button type="submit">Load</button>
 </form>
 
@@ -52,7 +46,11 @@
             <td>{row.status ?? '-'}</td>
             <td><code class="id">{row.productId ?? '-'}</code></td>
             <td><code class="id">{(row.externalSubscriptionId as string) ?? '-'}</code></td>
-            <td>{formatDate(row.currentPeriodStart as Date | string)} → {formatDate(row.currentPeriodEnd as Date | string)}</td>
+            <td
+              >{formatDate(row.currentPeriodStart as Date | string)} → {formatDate(
+                row.currentPeriodEnd as Date | string,
+              )}</td
+            >
             <td><Link href="/subscriptions/{row.id}">View</Link></td>
           </tr>
         {/each}

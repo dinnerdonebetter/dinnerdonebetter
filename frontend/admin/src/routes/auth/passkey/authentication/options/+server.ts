@@ -18,8 +18,7 @@ export const POST: RequestHandler = async ({ request }) => {
       publicKeyCredentialRequestOptions: Uint8Array;
     };
     const optionsBytes = res.publicKeyCredentialRequestOptions;
-    const bytes =
-      optionsBytes instanceof Uint8Array ? optionsBytes : new Uint8Array(optionsBytes as ArrayBuffer);
+    const bytes = optionsBytes instanceof Uint8Array ? optionsBytes : new Uint8Array(optionsBytes as ArrayBuffer);
     const publicKeyCredentialRequestOptions = Buffer.from(bytes).toString('base64');
     return json({
       challenge: res.challenge,

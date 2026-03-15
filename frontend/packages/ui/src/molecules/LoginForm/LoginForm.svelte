@@ -69,7 +69,11 @@
     />
   </FormField>
   {#if showTotp}
-    <FormField id="totpToken" label={totpRequired ? 'Authentication code (2FA)' : 'TOTP (if enabled)'} required={totpRequired}>
+    <FormField
+      id="totpToken"
+      label={totpRequired ? 'Authentication code (2FA)' : 'TOTP (if enabled)'}
+      required={totpRequired}
+    >
       <Input
         id="totpToken"
         name="totpToken"

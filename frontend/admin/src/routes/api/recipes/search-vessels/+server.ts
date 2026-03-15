@@ -1,10 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import {
-  getValidPreparationVesselsByPreparation,
-  getValidVessels,
-  searchForValidVessels,
-} from '$lib/grpc/clients';
+import { getValidPreparationVesselsByPreparation, getValidVessels, searchForValidVessels } from '$lib/grpc/clients';
 import { logger } from '$lib/logger';
 
 const DEFAULT_LIST_FILTER = { maxResponseSize: 100 };
@@ -26,7 +22,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       })) as { results?: Array<{ vessel?: { name?: string } }> };
       const vpvs = res.results ?? [];
       const filtered =
-        q.length > 0 ? vpvs.filter((vpv: { vessel?: { name?: string } }) => vpv.vessel?.name?.toLowerCase().includes(q.toLowerCase())) : vpvs;
+        q.length > 0
+          ? vpvs.filter((vpv: { vessel?: { name?: string } }) =>
+              vpv.vessel?.name?.toLowerCase().includes(q.toLowerCase()),
+            )
+          : vpvs;
       return json({ results: filtered });
     }
     const res =

@@ -112,24 +112,18 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
     authMetadata,
 
     adminLoginForToken: (request: AdminLoginForTokenRequest): Promise<LoginForTokenResponse> =>
-      promisifyUnary<AdminLoginForTokenRequest, LoginForTokenResponse>(
-        get.auth().adminLoginForToken.bind(get.auth()),
-      )(request, emptyMetadata),
+      promisifyUnary<AdminLoginForTokenRequest, LoginForTokenResponse>(get.auth().adminLoginForToken.bind(get.auth()))(
+        request,
+        emptyMetadata,
+      ),
 
     beginPasskeyAuthentication: (request: { username?: string }) =>
       promisifyUnary(get.auth().beginPasskeyAuthentication.bind(get.auth()))(
         { username: request.username ?? '' },
         emptyMetadata,
       ),
-    finishPasskeyAuthentication: (request: {
-      challenge: string;
-      username: string;
-      assertionResponse: Uint8Array;
-    }) =>
-      promisifyUnary(get.auth().finishPasskeyAuthentication.bind(get.auth()))(
-        request,
-        emptyMetadata,
-      ),
+    finishPasskeyAuthentication: (request: { challenge: string; username: string; assertionResponse: Uint8Array }) =>
+      promisifyUnary(get.auth().finishPasskeyAuthentication.bind(get.auth()))(request, emptyMetadata),
 
     // Identity – request types are intentionally loose; callers pass proto-shaped objects
     getUser: (token: string, request: { userId: string }) =>
@@ -380,9 +374,10 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         authMetadata(token),
       ),
     getValidIngredientMeasurementUnitsByIngredient: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getValidIngredientMeasurementUnitsByIngredient.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getValidIngredientMeasurementUnitsByIngredient.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
     createValidIngredientMeasurementUnit: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.mealplanning().createValidIngredientMeasurementUnit.bind(get.mealplanning()))(
         request as any,
@@ -394,9 +389,10 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         authMetadata(token),
       ),
     getValidIngredientPreparationsByIngredient: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getValidIngredientPreparationsByIngredient.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getValidIngredientPreparationsByIngredient.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
     createValidIngredientPreparation: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.mealplanning().createValidIngredientPreparation.bind(get.mealplanning()))(
         request as any,
@@ -435,9 +431,10 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         authMetadata(token),
       ),
     getValidPreparationInstrumentsByInstrument: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getValidPreparationInstrumentsByInstrument.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getValidPreparationInstrumentsByInstrument.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
     createValidPreparationInstrument: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.mealplanning().createValidPreparationInstrument.bind(get.mealplanning()))(
         request as any,
@@ -451,20 +448,14 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
 
     // Meal planning - valid vessels
     getValidVessels: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(get.mealplanning().getValidVessels.bind(get.mealplanning()))(
-        request as any,
-        authMetadata(token),
-      ),
+      promisifyUnary(get.mealplanning().getValidVessels.bind(get.mealplanning()))(request as any, authMetadata(token)),
     searchForValidVessels: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.mealplanning().searchForValidVessels.bind(get.mealplanning()))(
         request as any,
         authMetadata(token),
       ),
     getValidVessel: (token: string, request: { validVesselId: string }) =>
-      promisifyUnary(get.mealplanning().getValidVessel.bind(get.mealplanning()))(
-        request as any,
-        authMetadata(token),
-      ),
+      promisifyUnary(get.mealplanning().getValidVessel.bind(get.mealplanning()))(request as any, authMetadata(token)),
     createValidVessel: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.mealplanning().createValidVessel.bind(get.mealplanning()))(
         request as any,
@@ -476,9 +467,10 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         authMetadata(token),
       ),
     getValidPreparationVesselsByVessel: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getValidPreparationVesselsByVessel.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getValidPreparationVesselsByVessel.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
     createValidPreparationVessel: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.mealplanning().createValidPreparationVessel.bind(get.mealplanning()))(
         request as any,
@@ -517,9 +509,10 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         authMetadata(token),
       ),
     getValidMeasurementUnitConversionsForUnit: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getValidMeasurementUnitConversionsForUnit.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getValidMeasurementUnitConversionsForUnit.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
     createValidMeasurementUnitConversion: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.mealplanning().createValidMeasurementUnitConversion.bind(get.mealplanning()))(
         request as any,
@@ -531,9 +524,10 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         authMetadata(token),
       ),
     getValidMeasurementUnitConversionsForIngredients: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getValidMeasurementUnitConversionsForIngredients.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getValidMeasurementUnitConversionsForIngredients.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
 
     // Meal planning - valid ingredient states
     getValidIngredientStates: (token: string, request: Record<string, unknown>) =>
@@ -589,17 +583,20 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         authMetadata(token),
       ),
     getValidPreparationInstrumentsByPreparation: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getValidPreparationInstrumentsByPreparation.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getValidPreparationInstrumentsByPreparation.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
     getValidPreparationVesselsByPreparation: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getValidPreparationVesselsByPreparation.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getValidPreparationVesselsByPreparation.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
     getValidIngredientPreparationsByPreparation: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getValidIngredientPreparationsByPreparation.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getValidIngredientPreparationsByPreparation.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
 
     // Meal planning - valid prep task configs
     getValidPrepTaskConfig: (token: string, request: { validPrepTaskConfigId: string }) =>
@@ -615,8 +612,9 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
 
     // Meal planning - conversion mismatches
     getMeasurementUnitConversionMismatches: (token: string, request: Record<string, unknown>) =>
-      promisifyUnary(
-        get.mealplanning().getMeasurementUnitConversionMismatches.bind(get.mealplanning()),
-      )(request as any, authMetadata(token)),
+      promisifyUnary(get.mealplanning().getMeasurementUnitConversionMismatches.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
   };
 }
