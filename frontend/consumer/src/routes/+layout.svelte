@@ -15,7 +15,6 @@
     <div class="container">
       <div><Link href="/">Dinner Done Better</Link></div>
       <div class="layout-links">
-        <Link href="/recipes/new">Create Recipe</Link>
         <Link href="/account/settings">Account</Link>
         <Link href="/logout">Sign Out</Link>
       </div>

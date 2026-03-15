@@ -2,7 +2,7 @@
 
 package envvars
 
-/* 
+/*
 This file contains a reference of all valid service environment variables.
 */
 
@@ -729,6 +729,4 @@ const (
 
 	// StorageUploadFilenameKeyEnvVarKey is the environment variable name to set to override `AsyncMessageHandlerConfig.Storage.UploadFilenameKey`.
 	StorageUploadFilenameKeyEnvVarKey = "DINNER_DONE_BETTER_STORAGE_UPLOAD_FILENAME_KEY"
-
-
 )

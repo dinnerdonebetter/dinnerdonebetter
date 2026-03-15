@@ -8,6 +8,5 @@
 <PageContainer>
   <h1>Recipe Created</h1>
   <p>Your recipe has been created successfully.</p>
-  <p><Link href="/recipes/new">Create another recipe</Link></p>
   <p><Link href="/meal_plans">Back to Meal Plans</Link></p>
 </PageContainer>

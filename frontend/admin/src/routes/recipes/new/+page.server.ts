@@ -5,7 +5,7 @@ import { logger } from '$lib/logger';
 import type { RecipeCreationRequestInput } from '@dinnerdonebetter/api-client/mealplanning/mealplanning_service_types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  const token = locals.oauthToken;
+  const token = locals.accessToken;
   if (!token) {
     throw redirect(302, '/login');
   }
@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   default: async ({ request, locals }) => {
-    const token = locals.oauthToken;
+    const token = locals.accessToken;
     if (!token) {
       throw redirect(302, '/login');
     }

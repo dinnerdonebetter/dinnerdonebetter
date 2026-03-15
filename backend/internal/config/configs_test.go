@@ -419,4 +419,3 @@ func TestAsyncMessageHandlerConfig_ValidateWithContext(T *testing.T) {
 		_ = err
 	})
 }
-

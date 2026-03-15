@@ -18,6 +18,7 @@ import { InternalOperationsClient } from './internal_ops/internal_ops_service.js
 import { AuditServiceClient } from './audit/audit_service.js';
 import { AnalyticsServiceClient } from './analytics/analytics_service.js';
 import { MealPlanningServiceClient } from './mealplanning/mealplanning_service.js';
+import type { CreateRecipeRequest, CreateRecipeResponse } from './mealplanning/mealplanning_service_types.js';
 import type { GrpcClientConfig } from './create-clients.js';
 
 function promisifyUnary<TRequest, TResponse>(
@@ -342,6 +343,10 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         request as unknown as Parameters<MealPlanningServiceClient['searchForRecipes']>[0],
         authMetadata(token),
       ),
+    createRecipe: (token: string, request: CreateRecipeRequest): Promise<CreateRecipeResponse> =>
+      promisifyUnary<CreateRecipeRequest, CreateRecipeResponse>(
+        get.mealplanning().createRecipe.bind(get.mealplanning()),
+      )(request, authMetadata(token)),
 
     // Meal planning - valid ingredients
     getValidIngredients: (token: string, request: Record<string, unknown>) =>
@@ -351,6 +356,11 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
       ),
     searchForValidIngredients: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.mealplanning().searchForValidIngredients.bind(get.mealplanning()))(
+        request as any,
+        authMetadata(token),
+      ),
+    searchValidIngredientsByPreparation: (token: string, request: Record<string, unknown>) =>
+      promisifyUnary(get.mealplanning().searchValidIngredientsByPreparation.bind(get.mealplanning()))(
         request as any,
         authMetadata(token),
       ),

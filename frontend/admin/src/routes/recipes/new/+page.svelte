@@ -304,7 +304,7 @@
 
 <PageContainer wide>
   <h1>Create Recipe</h1>
-  <p><Link href="/meal_plans">Back to Meal Plans</Link></p>
+  <p><Link href="/recipes">Back to Recipes</Link></p>
 
   {#if form?.error}
     <Alert variant="error">{form.error}</Alert>

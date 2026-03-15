@@ -41,4 +41,3 @@ var (
 func ProvideHTTPServerConfigFromAPIServiceConfig(cfg *APIServiceConfig) http.Config {
 	return cfg.HTTPServer
 }
-

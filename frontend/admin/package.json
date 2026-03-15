@@ -18,7 +18,8 @@
   "dependencies": {
     "@dinnerdonebetter/api-client": "file:../packages/api-client",
     "@dinnerdonebetter/logger": "file:../packages/logger",
-    "@dinnerdonebetter/ui": "file:../packages/ui"
+    "@dinnerdonebetter/ui": "file:../packages/ui",
+    "mermaid": "^11.4.0"
   },
   "devDependencies": {
     "@dinnerdonebetter/eslint-config-custom": "file:../packages/eslint-config-custom",

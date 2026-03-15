@@ -17,6 +17,7 @@
         <Link href="/accounts">Accounts</Link>
         <Link href="/oauth2_clients">OAuth2 Clients</Link>
         <Link href="/recipes">Recipes</Link>
+        <Link href="/recipes/new">Create Recipe</Link>
         <Link href="/waitlists">Waitlists</Link>
         <Link href="/issue_reports">Issue Reports</Link>
         <Link href="/settings">Settings</Link>
