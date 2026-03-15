@@ -222,7 +222,6 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		EligibleForMeals:    false,
 		Steps:               []*mealplanning.RecipeStepCreationRequestInput{ts0, ts1, ts2, ts3, ts4},
 		PrepTasks:           []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
-		Media:               []*mealplanning.RecipeMediaCreationRequestInput{},
 	}
 
 	return []*mealplanning.RecipeCreationRequestInput{

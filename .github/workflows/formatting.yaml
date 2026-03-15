@@ -5,6 +5,7 @@ on:
     paths:
       - backend/**/*.go
       - ios/**/*.swift
+      - frontend/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -17,6 +18,7 @@ jobs:
       pull-requests: read
     outputs:
       backend_golang: ${{ steps.filter.outputs.backend_golang }}
+      frontend: ${{ steps.filter.outputs.frontend }}
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v3
@@ -27,6 +29,8 @@ jobs:
               - backend/**/*.go
             ios_swift:
               - ios/**/*.swift
+            frontend:
+              - frontend/**
 
   golang:
     needs: [changes]
@@ -61,3 +65,27 @@ jobs:
       - name: check formatting
         working-directory: ios
         run: make format-check
+
+  frontend:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: check formatting
+        working-directory: frontend
+        run: npm run format:check

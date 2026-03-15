@@ -1198,7 +1198,6 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				step0, step1, step2, step2b, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16,
 			},
 			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1, prepTask2, prepTask3},
-			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}
 }

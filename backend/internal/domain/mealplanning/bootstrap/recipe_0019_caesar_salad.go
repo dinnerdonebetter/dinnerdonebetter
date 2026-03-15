@@ -492,7 +492,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			slStep0, slStep1, slStep2, slStep3, slStep4, slStep5, slStep6, slStep7,
 		},
 		PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
-		Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 	}
 
 	return []*mealplanning.RecipeCreationRequestInput{

@@ -4,16 +4,11 @@ MYSELF   := $(shell id -u)
 MY_GROUP := $(shell id -g)
 
 # PATHS
-THIS                   := github.com/dinnerdonebetter/backend
-ARTIFACTS_DIR          := artifacts
-SCRIPTS_DIR            := scripts
-COVERAGE_OUT           := $(ARTIFACTS_DIR)/coverage.out
-ENVIRONMENTS_DIR       := deploy/environments
-TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
-GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-PROTO_FILES_PATH       := proto/*.proto
-PROTO_OUTPUT_PATH      := internal/grpc
-WIRE_TARGETS           := internal/build/services/api/grpc \
+THIS          := github.com/dinnerdonebetter/backend
+ARTIFACTS_DIR := artifacts
+SCRIPTS_DIR   := scripts
+COVERAGE_OUT  := $(ARTIFACTS_DIR)/coverage.out
+WIRE_TARGETS  := internal/build/services/api/grpc \
 	 internal/build/services/api/http \
 	 internal/build/functions/data_change_message_handler \
 	 internal/build/jobs/db_cleaner \
@@ -26,8 +21,7 @@ WIRE_TARGETS           := internal/build/services/api/grpc \
 	 internal/build/jobs/meal_plan_task_creator
 
 # COMPUTED
-TOTAL_PACKAGE_LIST    := `go list $(THIS)/...`
-TESTABLE_PACKAGE_LIST := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)'`
+TOTAL_PACKAGE_LIST := `go list $(THIS)/...`
 
 # CONTAINER VERSIONS
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
@@ -37,14 +31,11 @@ SHELLCHECK_IMAGE       := koalaman/shellcheck:stable
 GO_IMAGE               := golang:1.26-trixie
 
 # COMMANDS
-GO_FORMAT             := gofmt -s -w
-GO_TEST               := CGO_ENABLED=1 go test -shuffle=on -race -vet=all
 CONTAINER_RUNNER      := docker
 RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --network=host
 RUN_CONTAINER_AS_USER := $(RUN_CONTAINER) --user $(MYSELF):$(MY_GROUP)
 LINTER                := $(RUN_CONTAINER) $(LINTER_IMAGE) golangci-lint
 SQL_GENERATOR         := $(RUN_CONTAINER_AS_USER) $(SQL_GENERATOR_IMAGE)
-CONTAINED_GO          := $(RUN_CONTAINER_AS_USER) --env HOME=/home/gouser --volume $(HOME)/.cache/go:/home/gouser $(GO_IMAGE) go
 
 ## non-PHONY folders/files
 
@@ -130,7 +121,7 @@ go_fix:
 
 .PHONY: format_golang
 format_golang: go_fix goimports format_imports format_go_fieldalignment format_go_tag_alignment
-	@$(SCRIPTS_DIR)/format_golang.sh $(PWD) "$(GO_FORMAT)"
+	@$(SCRIPTS_DIR)/format_golang.sh $(PWD)
 
 .PHONY: terraformat
 terraformat:

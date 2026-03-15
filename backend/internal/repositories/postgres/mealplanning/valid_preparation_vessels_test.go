@@ -80,11 +80,12 @@ func TestQuerier_Integration_ValidPreparationVessels(t *testing.T) {
 	updatedValidPreparationVessel.Vessel = createdValidPreparationVessels[0].Vessel
 	assert.NoError(t, dbc.UpdateValidPreparationVessel(ctx, updatedValidPreparationVessel))
 
-	// create more
+	// create more (each must have unique prep+vessel per active row)
 	for range exampleQuantity {
+		extraVessel := createValidVesselForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeValidPreparationVessel()
 		input.Preparation = createdValidPreparationVessels[0].Preparation
-		input.Vessel = createdValidPreparationVessels[0].Vessel
+		input.Vessel = *extraVessel
 		createdValidPreparationVessels = append(createdValidPreparationVessels, createValidPreparationVesselForTest(t, ctx, input, dbc))
 	}
 

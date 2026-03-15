@@ -156,6 +156,142 @@ func (q *Queries) GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*
 	return &i, err
 }
 
+const getUniversalValidMeasurementUnits = `-- name: GetUniversalValidMeasurementUnits :many
+SELECT
+	valid_measurement_units.id,
+	valid_measurement_units.name,
+	valid_measurement_units.description,
+	valid_measurement_units.volumetric,
+	valid_measurement_units.icon_path,
+	valid_measurement_units.universal,
+	valid_measurement_units.metric,
+	valid_measurement_units.imperial,
+	valid_measurement_units.slug,
+	valid_measurement_units.plural_name,
+	valid_measurement_units.last_indexed_at,
+	valid_measurement_units.created_at,
+	valid_measurement_units.last_updated_at,
+	valid_measurement_units.archived_at,
+	(
+		SELECT COUNT(valid_measurement_units.id)
+		FROM valid_measurement_units
+		WHERE valid_measurement_units.archived_at IS NULL
+			AND
+			valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_measurement_units.last_updated_at IS NULL
+				OR valid_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_measurement_units.last_updated_at IS NULL
+				OR valid_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR valid_measurement_units.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_measurement_units.id)
+		FROM valid_measurement_units
+		WHERE valid_measurement_units.archived_at IS NULL
+	) AS total_count
+FROM valid_measurement_units
+WHERE
+    valid_measurement_units.universal = TRUE AND
+	valid_measurement_units.archived_at IS NULL
+	AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_measurement_units.last_updated_at IS NULL
+		OR valid_measurement_units.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_measurement_units.last_updated_at IS NULL
+		OR valid_measurement_units.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR valid_measurement_units.archived_at = NULL)
+	AND valid_measurement_units.id > COALESCE($6, '')
+GROUP BY valid_measurement_units.id
+ORDER BY valid_measurement_units.id ASC
+LIMIT COALESCE($7, 50)
+`
+
+type GetUniversalValidMeasurementUnitsParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
+
+type GetUniversalValidMeasurementUnitsRow struct {
+	CreatedAt     time.Time
+	LastIndexedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	IconPath      string
+	Slug          string
+	PluralName    string
+	ID            string
+	Description   string
+	Name          string
+	FilteredCount int64
+	TotalCount    int64
+	Volumetric    sql.NullBool
+	Universal     bool
+	Metric        bool
+	Imperial      bool
+}
+
+func (q *Queries) GetUniversalValidMeasurementUnits(ctx context.Context, db DBTX, arg *GetUniversalValidMeasurementUnitsParams) ([]*GetUniversalValidMeasurementUnitsRow, error) {
+	rows, err := db.QueryContext(ctx, getUniversalValidMeasurementUnits,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetUniversalValidMeasurementUnitsRow{}
+	for rows.Next() {
+		var i GetUniversalValidMeasurementUnitsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Volumetric,
+			&i.IconPath,
+			&i.Universal,
+			&i.Metric,
+			&i.Imperial,
+			&i.Slug,
+			&i.PluralName,
+			&i.LastIndexedAt,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getValidMeasurementUnit = `-- name: GetValidMeasurementUnit :one
 SELECT
 	valid_measurement_units.id,

@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
@@ -245,6 +246,13 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 			return nil, observability.PrepareError(err, span, "fetching recipe media for recipe step")
 		}
 		x.Steps[i].Media = recipeMedia
+
+		var stepImages []*uploadedmedia.UploadedMedia
+		stepImages, err = q.enrichRecipeStepWithStepImages(ctx, step.ID)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "fetching recipe step images")
+		}
+		x.Steps[i].StepImages = stepImages
 	}
 
 	// Check for cross-recipe product references and collect all related recipe IDs
@@ -1072,25 +1080,6 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		}
 
 		x.PrepTasks = append(x.PrepTasks, pt)
-	}
-
-	for i, m := range input.Media {
-		var rm *mealplanning.RecipeMedia
-		rm, err = q.CreateRecipeMedia(ctx, &mealplanning.RecipeMediaDatabaseCreationInput{
-			ID:                  m.ID,
-			BelongsToRecipe:     m.BelongsToRecipe,
-			BelongsToRecipeStep: m.BelongsToRecipeStep,
-			MimeType:            m.MimeType,
-			InternalPath:        m.InternalPath,
-			ExternalPath:        m.ExternalPath,
-			Index:               m.Index,
-		})
-		if err != nil {
-			q.RollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(err, span, "creating recipe media #%d", i+1)
-		}
-
-		x.Media = append(x.Media, rm)
 	}
 
 	if input.AlsoCreateMeal {

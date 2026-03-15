@@ -419,26 +419,3 @@ func TestAsyncMessageHandlerConfig_ValidateWithContext(T *testing.T) {
 		_ = err
 	})
 }
-
-func TestAdminWebappConfig_ValidateWithContext(T *testing.T) {
-	T.Parallel()
-
-	T.Run("valid config", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		cfg := &AdminWebappConfig{
-			Meta: MetaSettings{
-				RunMode: DevelopmentRunMode,
-			},
-			Encoding: encoding.Config{
-				ContentType: "application/json",
-			},
-			Observability: observability.Config{},
-		}
-
-		err := cfg.ValidateWithContext(ctx)
-		// May have validation errors in various configs
-		_ = err
-	})
-}

@@ -625,7 +625,6 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		EligibleForMeals:  false, // This is a component, not a standalone meal
 		Steps:             []*mealplanning.RecipeStepCreationRequestInput{bcStep0, bcStep1, bcStep2, bcStep3, bcStep4, bcStep5, bcStep6, bcStep7, bcStep8, bcStep9, bcStep10},
 		PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
-		Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 		AlsoCreateMeal:    false,
 	}
 

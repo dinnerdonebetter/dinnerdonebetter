@@ -80,11 +80,13 @@ func TestQuerier_Integration_ValidPreparationInstruments(t *testing.T) {
 	updatedValidPreparationInstrument.Instrument = createdValidPreparationInstruments[0].Instrument
 	assert.NoError(t, dbc.UpdateValidPreparationInstrument(ctx, updatedValidPreparationInstrument))
 
-	// create more
+	// create more (each with unique prep+instrument pair to satisfy uniqueness constraint)
 	for range exampleQuantity {
+		tempValidInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+		tempValidPreparation := createValidPreparationForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeValidPreparationInstrument()
-		input.Preparation = createdValidPreparationInstruments[0].Preparation
-		input.Instrument = createdValidPreparationInstruments[0].Instrument
+		input.Preparation = *tempValidPreparation
+		input.Instrument = *tempValidInstrument
 		createdValidPreparationInstruments = append(createdValidPreparationInstruments, createValidPreparationInstrumentForTest(t, ctx, input, dbc))
 	}
 

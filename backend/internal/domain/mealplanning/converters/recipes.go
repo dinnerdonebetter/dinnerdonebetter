@@ -64,10 +64,6 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *mealp
 		x.PrepTasks = append(x.PrepTasks, prepTaskDatabaseCreationInput)
 	}
 
-	for _, m := range input.Media {
-		x.Media = append(x.Media, ConvertRecipeMediaCreationRequestInputToRecipeMediaDatabaseCreationInput(m))
-	}
-
 	return x, nil
 }
 
@@ -83,11 +79,6 @@ func ConvertRecipeToRecipeCreationRequestInput(input *mealplanning.Recipe) *meal
 		prepTasks = append(prepTasks, ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(input, prepTask))
 	}
 
-	media := []*mealplanning.RecipeMediaCreationRequestInput{}
-	for _, m := range input.Media {
-		media = append(media, ConvertRecipeMediaToRecipeMediaCreationRequestInput(m))
-	}
-
 	return &mealplanning.RecipeCreationRequestInput{
 		Name:               input.Name,
 		Slug:               input.Slug,
@@ -99,7 +90,6 @@ func ConvertRecipeToRecipeCreationRequestInput(input *mealplanning.Recipe) *meal
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
-		Media:               media,
 		PortionName:         input.PortionName,
 		PluralPortionName:   input.PluralPortionName,
 		Steps:               steps,

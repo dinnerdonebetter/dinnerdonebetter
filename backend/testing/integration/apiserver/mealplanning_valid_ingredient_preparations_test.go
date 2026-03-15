@@ -85,17 +85,11 @@ func TestValidIngredientPreparations_Listing(T *testing.T) {
 	createdValidIngredientPreparations := []*types.ValidIngredientPreparation{}
 	validIngredient, validPreparation, created := createValidIngredientPreparationForTest(T)
 	createdValidIngredientPreparations = append(createdValidIngredientPreparations, created)
+	// Create additional VIPs with unique (prep, ingredient) pairs - use same prep, different ingredients for "by Preparation" filter
 	for range exampleQuantity - 1 {
-		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparationInput := mealplanningconverters.ConvertCreateValidIngredientPreparationRequestToGRPCValidIngredientPreparationCreationRequestInput(converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation))
-		exampleValidIngredientPreparationInput.ValidPreparationId = validPreparation.ID
-		exampleValidIngredientPreparationInput.ValidIngredientId = validIngredient.ID
-
-		createdValidIngredientPreparation, err := adminClient.CreateValidIngredientPreparation(T.Context(), &mealplanningsvc.CreateValidIngredientPreparationRequest{Input: exampleValidIngredientPreparationInput})
-		require.NoError(T, err)
-		require.NotNil(T, createdValidIngredientPreparation)
-
-		createdValidIngredientPreparations = append(createdValidIngredientPreparations, mealplanningconverters.ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(createdValidIngredientPreparation.Result))
+		extraIngredient := createValidIngredientForTest(T)
+		createdVIP := createValidIngredientPreparationWithEntitiesForTest(T, extraIngredient, validPreparation)
+		createdValidIngredientPreparations = append(createdValidIngredientPreparations, createdVIP)
 	}
 
 	T.Run("happy path", func(t *testing.T) {
@@ -118,13 +112,13 @@ func TestValidIngredientPreparations_Listing(T *testing.T) {
 		assert.True(t, len(results.Results) >= len(createdValidIngredientPreparations))
 	})
 
-	T.Run("by preparation", func(t *testing.T) {
+	T.Run("by ingredient", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
 		results, err := adminClient.GetValidIngredientPreparationsByIngredient(ctx, &mealplanningsvc.GetValidIngredientPreparationsByIngredientRequest{ValidIngredientId: validIngredient.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
-		assert.True(t, len(results.Results) >= len(createdValidIngredientPreparations))
+		assert.True(t, len(results.Results) >= 1, "at least one VIP for this ingredient")
 	})
 }

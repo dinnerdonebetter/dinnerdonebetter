@@ -81,10 +81,11 @@ func TestQuerier_Integration_ValidIngredientPreparations(t *testing.T) {
 	updatedValidIngredientPreparation.Ingredient = createdValidIngredientPreparations[0].Ingredient
 	assert.NoError(t, dbc.UpdateValidIngredientPreparation(ctx, updatedValidIngredientPreparation))
 
-	// create more
+	// create more (each must have unique prep+ingredient per active row)
 	for range exampleQuantity {
+		extraPreparation := createValidPreparationForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeValidIngredientPreparation()
-		input.Preparation = createdValidIngredientPreparations[0].Preparation
+		input.Preparation = *extraPreparation
 		input.Ingredient = createdValidIngredientPreparations[0].Ingredient
 		createdValidIngredientPreparations = append(createdValidIngredientPreparations, createValidIngredientPreparationForTest(t, ctx, input, dbc))
 	}

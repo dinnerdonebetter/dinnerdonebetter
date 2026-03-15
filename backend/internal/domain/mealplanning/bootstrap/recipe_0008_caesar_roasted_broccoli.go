@@ -616,7 +616,6 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		EligibleForMeals:  true,
 		Steps:             []*mealplanning.RecipeStepCreationRequestInput{brStep0, brStep1, brStep2, brStep3, brStep4, brStep5, brStep6, brStep7, brStep8, brStep9, brStep10, brStep11},
 		PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
-		Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
 		AlsoCreateMeal:    false,
 	}
 

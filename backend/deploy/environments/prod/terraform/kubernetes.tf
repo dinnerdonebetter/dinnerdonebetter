@@ -156,12 +156,11 @@ resource "kubernetes_secret" "admin_webapp_config" {
   depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
-    OAUTH2_CLIENT_ID     = var.ADMIN_WEBAPP_OAUTH2_CLIENT_ID
-    OAUTH2_CLIENT_SECRET = var.ADMIN_WEBAPP_OAUTH2_CLIENT_SECRET
-    COOKIE_NAME          = var.ADMIN_WEBAPP_COOKIE_NAME
-    COOKIE_HASH_KEY      = base64encode(random_string.admin_webapp_cookie_hash_key.result)
-    COOKIE_BLOCK_KEY     = base64encode(random_string.admin_webapp_cookie_block_key.result)
-    COOKIE_DOMAIN        = var.ADMIN_WEBAPP_COOKIE_DOMAIN
+    OAUTH2_CLIENT_ID      = var.ADMIN_WEBAPP_OAUTH2_CLIENT_ID
+    OAUTH2_CLIENT_SECRET  = var.ADMIN_WEBAPP_OAUTH2_CLIENT_SECRET
+    COOKIE_NAME           = var.ADMIN_WEBAPP_COOKIE_NAME
+    COOKIE_ENCRYPTION_KEY = random_bytes.admin_webapp_cookie_encryption_key.base64
+    COOKIE_DOMAIN         = var.ADMIN_WEBAPP_COOKIE_DOMAIN
   }
 }
 
@@ -185,12 +184,11 @@ resource "kubernetes_secret" "consumer_webapp_config" {
   depends_on = [kubernetes_namespace_v1.prod]
 
   data = {
-    OAUTH2_CLIENT_ID     = var.CONSUMER_WEBAPP_OAUTH2_CLIENT_ID
-    OAUTH2_CLIENT_SECRET = var.CONSUMER_WEBAPP_OAUTH2_CLIENT_SECRET
-    COOKIE_NAME          = var.CONSUMER_WEBAPP_COOKIE_NAME
-    COOKIE_HASH_KEY      = base64encode(random_string.consumer_webapp_cookie_hash_key.result)
-    COOKIE_BLOCK_KEY     = base64encode(random_string.consumer_webapp_cookie_block_key.result)
-    COOKIE_DOMAIN        = var.CONSUMER_WEBAPP_COOKIE_DOMAIN
+    OAUTH2_CLIENT_ID      = var.CONSUMER_WEBAPP_OAUTH2_CLIENT_ID
+    OAUTH2_CLIENT_SECRET  = var.CONSUMER_WEBAPP_OAUTH2_CLIENT_SECRET
+    COOKIE_NAME           = var.CONSUMER_WEBAPP_COOKIE_NAME
+    COOKIE_ENCRYPTION_KEY = random_bytes.consumer_webapp_cookie_encryption_key.base64
+    COOKIE_DOMAIN         = var.CONSUMER_WEBAPP_COOKIE_DOMAIN
   }
 }
 

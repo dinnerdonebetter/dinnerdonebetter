@@ -159,7 +159,7 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 	}
 
 	if user.TwoFactorSecretVerifiedAt != nil && loginData.TOTPToken == "" {
-		return nil, observability.PrepareError(errors.New("TOTP code required but not provided"), span, "processing login")
+		return nil, observability.PrepareError(ErrTOTPRequired, span, "processing login")
 	}
 
 	var accountID string

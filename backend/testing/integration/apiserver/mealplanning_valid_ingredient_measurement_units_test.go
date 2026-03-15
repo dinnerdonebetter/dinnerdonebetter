@@ -85,17 +85,11 @@ func TestValidIngredientMeasurementUnits_Listing(T *testing.T) {
 	createdValidIngredientMeasurementUnits := []*types.ValidIngredientMeasurementUnit{}
 	validIngredient, validMeasurementUnit, created := createValidIngredientMeasurementUnitForTest(T)
 	createdValidIngredientMeasurementUnits = append(createdValidIngredientMeasurementUnits, created)
+	// Create additional VIMUs with unique (ingredient, unit) pairs - use same unit, different ingredients for "by MeasurementUnit" filter
 	for range exampleQuantity - 1 {
-		exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
-		exampleValidIngredientMeasurementUnitInput := mealplanningconverters.ConvertCreateValidIngredientMeasurementUnitRequestToGRPCValidIngredientMeasurementUnitCreationRequestInput(converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit))
-		exampleValidIngredientMeasurementUnitInput.ValidMeasurementUnitId = validMeasurementUnit.ID
-		exampleValidIngredientMeasurementUnitInput.ValidIngredientId = validIngredient.ID
-
-		createdValidIngredientMeasurementUnit, err := adminClient.CreateValidIngredientMeasurementUnit(T.Context(), &mealplanningsvc.CreateValidIngredientMeasurementUnitRequest{Input: exampleValidIngredientMeasurementUnitInput})
-		require.NoError(T, err)
-		require.NotNil(T, createdValidIngredientMeasurementUnit)
-
-		createdValidIngredientMeasurementUnits = append(createdValidIngredientMeasurementUnits, mealplanningconverters.ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(createdValidIngredientMeasurementUnit.Result))
+		extraIngredient := createValidIngredientForTest(T)
+		createdVIMU := createValidIngredientMeasurementUnitWithEntitiesForTest(T, extraIngredient, validMeasurementUnit)
+		createdValidIngredientMeasurementUnits = append(createdValidIngredientMeasurementUnits, createdVIMU)
 	}
 
 	T.Run("happy path", func(t *testing.T) {
@@ -118,13 +112,13 @@ func TestValidIngredientMeasurementUnits_Listing(T *testing.T) {
 		assert.True(t, len(results.Results) >= len(createdValidIngredientMeasurementUnits))
 	})
 
-	T.Run("by preparation", func(t *testing.T) {
+	T.Run("by ingredient", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
 		results, err := adminClient.GetValidIngredientMeasurementUnitsByIngredient(ctx, &mealplanningsvc.GetValidIngredientMeasurementUnitsByIngredientRequest{ValidIngredientId: validIngredient.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
-		assert.True(t, len(results.Results) >= len(createdValidIngredientMeasurementUnits))
+		assert.True(t, len(results.Results) >= 1, "at least one VIMU for this ingredient")
 	})
 }

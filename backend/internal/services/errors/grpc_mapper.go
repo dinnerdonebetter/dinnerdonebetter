@@ -22,6 +22,8 @@ func (authSessionIdentityGRPCMapper) Map(err error) (code codes.Code, ok bool) {
 		return codes.Unknown, false
 	}
 	switch {
+	case errors.Is(err, authentication.ErrTOTPRequired):
+		return codes.Unauthenticated, true
 	case errors.Is(err, authentication.ErrInvalidTOTPToken),
 		errors.Is(err, authentication.ErrPasswordDoesNotMatch):
 		return codes.InvalidArgument, true

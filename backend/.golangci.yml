@@ -268,7 +268,6 @@ linters:
     paths:
       - cmd/playground
       - tests/integration
-      - cmd/services/admin_webapp
       - third_party$
       - builtin$
       - examples$
@@ -298,7 +297,6 @@ formatters:
     paths:
       - cmd/playground
       - tests/integration
-      - cmd/services/admin_webapp
       - third_party$
       - builtin$
       - examples$

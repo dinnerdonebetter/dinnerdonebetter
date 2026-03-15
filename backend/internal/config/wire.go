@@ -26,10 +26,6 @@ var (
 			"Services",
 		),
 		wire.FieldsOf(
-			new(*AdminWebappConfig),
-			"Cookies",
-		),
-		wire.FieldsOf(
 			new(*ServicesConfig),
 			"Users",
 			"DataPrivacy",
@@ -39,14 +35,9 @@ var (
 			"Payments",
 		),
 		ProvideHTTPServerConfigFromAPIServiceConfig,
-		ProvideHTTPServerConfigFromAdminWebappConfig,
 	)
 )
 
 func ProvideHTTPServerConfigFromAPIServiceConfig(cfg *APIServiceConfig) http.Config {
-	return cfg.HTTPServer
-}
-
-func ProvideHTTPServerConfigFromAdminWebappConfig(cfg *AdminWebappConfig) http.Config {
 	return cfg.HTTPServer
 }

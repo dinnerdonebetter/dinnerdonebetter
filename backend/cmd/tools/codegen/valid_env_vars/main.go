@@ -49,8 +49,6 @@ func main() {
 		"internal/config.AsyncMessageHandlerConfig",
 		"internal/config.EmailDeliverabilityTestConfig",
 		"internal/config.QueueTestJobConfig",
-		"internal/config.AdminWebappConfig",
-		"internal/config.ConsumerWebappConfig",
 		"internal/config.MCPServiceConfig",
 	}
 	generatedEnvVars := []string{}

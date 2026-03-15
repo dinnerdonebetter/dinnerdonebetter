@@ -790,7 +790,6 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				step0, step1, step2, step2a, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13,
 			},
 			PrepTasks: []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
-			Media:     []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}
 }

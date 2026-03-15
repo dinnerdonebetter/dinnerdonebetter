@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
@@ -19,12 +20,28 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
+	uploadedmediaconverters "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
 const maxAvatarUploadSize = 5 * 1024 * 1024 // 5 MB for avatars
+
+// avatarObjectName returns a unique object name (UUID + extension) from the MIME type, matching iOS behavior.
+func avatarObjectName(mimeType string) string {
+	ext := ".jpg"
+	switch strings.ToLower(mimeType) {
+	case uploadedmedia.MimeTypeImagePNG:
+		ext = ".png"
+	case uploadedmedia.MimeTypeImageJPEG:
+		ext = ".jpg"
+	case uploadedmedia.MimeTypeImageGIF:
+		ext = ".gif"
+	}
+	return uuid.New().String() + ext
+}
 
 func (s *serviceImpl) CreateUser(ctx context.Context, request *identitysvc.CreateUserRequest) (*identitysvc.CreateUserResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
@@ -253,13 +270,6 @@ func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploade
 		)
 	}
 
-	if metadata.ObjectName == "" {
-		return errorsgrpc.PrepareAndLogGRPCStatus(
-			platformerrors.New("object_name is required"),
-			logger, span, codes.InvalidArgument, "object_name is required",
-		)
-	}
-
 	if metadata.ContentType == "" {
 		return errorsgrpc.PrepareAndLogGRPCStatus(
 			platformerrors.New("content_type is required"),
@@ -315,7 +325,8 @@ func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploade
 	}
 
 	fileID := identifiers.New()
-	storagePath := filepath.Join(userID, fileID, metadata.ObjectName)
+	objectName := avatarObjectName(mimeType)
+	storagePath := filepath.Join(userID, fileID, objectName)
 
 	if err = s.uploadManager.SaveFile(ctx, storagePath, fileData.Bytes()); err != nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
@@ -343,6 +354,7 @@ func (s *serviceImpl) UploadUserAvatar(stream grpc.ClientStreamingServer[uploade
 
 	response := &identitysvc.UploadUserAvatarResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Created:         uploadedmediaconverters.ConvertUploadedMediaToGRPCUploadedMedia(created),
 	}
 
 	if err = stream.SendAndClose(response); err != nil {

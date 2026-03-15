@@ -85,17 +85,11 @@ func TestValidPreparationVessels_Listing(T *testing.T) {
 	createdValidPreparationVessels := []*types.ValidPreparationVessel{}
 	validPreparation, validVessel, created := createValidPreparationVesselForTest(T)
 	createdValidPreparationVessels = append(createdValidPreparationVessels, created)
+	// Create additional VPVs with unique (prep, vessel) pairs - use same vessel, different preparations for "by vessel" filter
 	for range exampleQuantity - 1 {
-		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-		exampleValidPreparationVesselInput := mealplanningconverters.ConvertCreateValidPreparationVesselRequestToGRPCValidPreparationVesselCreationRequestInput(converters.ConvertValidPreparationVesselToValidPreparationVesselCreationRequestInput(exampleValidPreparationVessel))
-		exampleValidPreparationVesselInput.ValidVesselId = validVessel.ID
-		exampleValidPreparationVesselInput.ValidPreparationId = validPreparation.ID
-
-		createdValidPreparationVessel, err := adminClient.CreateValidPreparationVessel(T.Context(), &mealplanningsvc.CreateValidPreparationVesselRequest{Input: exampleValidPreparationVesselInput})
-		require.NoError(T, err)
-		require.NotNil(T, createdValidPreparationVessel)
-
-		createdValidPreparationVessels = append(createdValidPreparationVessels, mealplanningconverters.ConvertGRPCValidPreparationVesselToValidPreparationVessel(createdValidPreparationVessel.Result))
+		extraPreparation := createValidPreparationForTest(T)
+		createdVPV := createValidPreparationVesselWithEntitiesForTest(T, extraPreparation, validVessel)
+		createdValidPreparationVessels = append(createdValidPreparationVessels, createdVPV)
 	}
 
 	T.Run("happy path", func(t *testing.T) {
@@ -125,6 +119,6 @@ func TestValidPreparationVessels_Listing(T *testing.T) {
 		results, err := adminClient.GetValidPreparationVesselsByPreparation(ctx, &mealplanningsvc.GetValidPreparationVesselsByPreparationRequest{ValidPreparationId: validPreparation.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
-		assert.True(t, len(results.Results) >= len(createdValidPreparationVessels))
+		assert.True(t, len(results.Results) >= 1, "at least one VPV for this preparation")
 	})
 }

@@ -1548,7 +1548,6 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				prepTask0,
 				prepTask1,
 			},
-			Media: []*mealplanning.RecipeMediaCreationRequestInput{},
 		},
 	}
 }

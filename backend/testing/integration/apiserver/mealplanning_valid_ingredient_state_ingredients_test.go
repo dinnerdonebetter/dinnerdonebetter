@@ -78,16 +78,16 @@ func TestValidIngredientStateIngredients_Listing(T *testing.T) {
 	createdValidIngredientStateIngredients := []*types.ValidIngredientStateIngredient{}
 	validIngredientState, validIngredient, created := createValidIngredientStateIngredientForTest(T)
 	createdValidIngredientStateIngredients = append(createdValidIngredientStateIngredients, created)
+	// Create additional VSI entries with unique (ingredient, state) pairs - use same state, different ingredients for "by ingredient state" filter
 	for range exampleQuantity - 1 {
+		extraIngredient := createValidIngredientForTest(T)
 		exampleValidIngredientStateIngredient := fakes.BuildFakeValidIngredientStateIngredient()
+		exampleValidIngredientStateIngredient.Ingredient = *extraIngredient
+		exampleValidIngredientStateIngredient.IngredientState = *validIngredientState
 		exampleValidIngredientStateIngredientInput := mealplanningconverters.ConvertCreateValidIngredientStateIngredientRequestToGRPCValidIngredientStateIngredientCreationRequestInput(converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientCreationRequestInput(exampleValidIngredientStateIngredient))
-		exampleValidIngredientStateIngredientInput.ValidIngredientId = validIngredient.ID
-		exampleValidIngredientStateIngredientInput.ValidIngredientStateId = validIngredientState.ID
-
 		createdValidIngredientStateIngredient, err := adminClient.CreateValidIngredientStateIngredient(T.Context(), &mealplanningsvc.CreateValidIngredientStateIngredientRequest{Input: exampleValidIngredientStateIngredientInput})
 		require.NoError(T, err)
 		require.NotNil(T, createdValidIngredientStateIngredient)
-
 		createdValidIngredientStateIngredients = append(createdValidIngredientStateIngredients, mealplanningconverters.ConvertGRPCValidIngredientStateIngredientToValidIngredientStateIngredient(createdValidIngredientStateIngredient.Result))
 	}
 
@@ -108,7 +108,7 @@ func TestValidIngredientStateIngredients_Listing(T *testing.T) {
 		results, err := adminClient.GetValidIngredientStateIngredientsByIngredient(ctx, &mealplanningsvc.GetValidIngredientStateIngredientsByIngredientRequest{ValidIngredientId: validIngredient.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
-		assert.True(t, len(results.Results) >= len(createdValidIngredientStateIngredients))
+		assert.True(t, len(results.Results) >= 1, "at least one VSI for this ingredient")
 	})
 
 	T.Run("by ingredient state", func(t *testing.T) {

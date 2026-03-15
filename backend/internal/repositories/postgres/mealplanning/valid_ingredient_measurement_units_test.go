@@ -82,11 +82,12 @@ func TestQuerier_Integration_ValidIngredientMeasurementUnits(t *testing.T) {
 	updatedValidIngredientMeasurementUnit.Ingredient = createdValidIngredientMeasurementUnits[0].Ingredient
 	assert.NoError(t, dbc.UpdateValidIngredientMeasurementUnit(ctx, updatedValidIngredientMeasurementUnit))
 
-	// create more
+	// create more (each must have unique ingredient+unit per active row)
 	for range exampleQuantity {
+		extraIngredient := createValidIngredientForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeValidIngredientMeasurementUnit()
 		input.MeasurementUnit = createdValidIngredientMeasurementUnits[0].MeasurementUnit
-		input.Ingredient = createdValidIngredientMeasurementUnits[0].Ingredient
+		input.Ingredient = *extraIngredient
 		createdValidIngredientMeasurementUnits = append(createdValidIngredientMeasurementUnits, createValidIngredientMeasurementUnitForTest(t, ctx, input, dbc))
 	}
 

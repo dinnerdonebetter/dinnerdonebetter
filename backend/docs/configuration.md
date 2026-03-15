@@ -45,7 +45,7 @@ A canonical list of all valid environment variables is **programmatically genera
 internal/config/envvars/env_vars.go
 ```
 
-That file is produced by `cmd/tools/codegen/valid_env_vars`, which walks the config structs (`APIServiceConfig`, `AdminWebappConfig`, etc.) and extracts env var names from `env` and `envPrefix` tags. Regenerate it with:
+That file is produced by `cmd/tools/codegen/valid_env_vars`, which walks the config structs (`APIServiceConfig`, `MCPServiceConfig`, etc.) and extracts env var names from `env` and `envPrefix` tags. Regenerate it with:
 
 ```bash
 ./scripts/env_vars.sh

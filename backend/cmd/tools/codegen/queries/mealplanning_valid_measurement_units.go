@@ -123,6 +123,40 @@ GROUP BY %s.%s
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetUniversalValidMeasurementUnits",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+WHERE
+    %s.%s = TRUE AND
+	%s.%s IS NULL
+	%s
+GROUP BY %s.%s
+%s;`,
+					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(validMeasurementUnitsTableName, true, true, []string{}),
+					buildTotalCountSelect(validMeasurementUnitsTableName, true, []string{}),
+					validMeasurementUnitsTableName,
+					validMeasurementUnitsTableName, validMeasurementUnitsUniversalColumn,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+					buildFilterConditions(
+						validMeasurementUnitsTableName,
+						true,
+						true,
+					),
+					validMeasurementUnitsTableName, idColumn,
+					buildCursorLimitClause(validMeasurementUnitsTableName),
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetValidMeasurementUnitsNeedingIndexing",
 					Type: ManyType,
 				},
