@@ -1,7 +1,13 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getValidIngredientMeasurementUnitsByIngredient, searchForValidMeasurementUnits } from '$lib/grpc/clients';
+import {
+  getValidIngredientMeasurementUnitsByIngredient,
+  getValidMeasurementUnits,
+  searchForValidMeasurementUnits,
+} from '$lib/grpc/clients';
 import { logger } from '$lib/logger';
+
+const DEFAULT_LIST_FILTER = { maxResponseSize: 100 };
 
 export const GET: RequestHandler = async ({ url, locals }) => {
   const token = locals.oauthToken;
@@ -26,11 +32,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
           : vimus;
       return json({ results: filtered });
     }
-    // For products, use general measurement unit search
-    const res = await searchForValidMeasurementUnits(token, {
-      query: q,
-      useSearchService: q.length > 2,
-    });
+    const res =
+      q === ''
+        ? await getValidMeasurementUnits(token, { filter: DEFAULT_LIST_FILTER })
+        : await searchForValidMeasurementUnits(token, {
+            filter: DEFAULT_LIST_FILTER,
+            query: q,
+            useSearchService: q.length > 2,
+          });
     return json({ results: res.results ?? [] });
   } catch (e) {
     logger.error('measurement unit search failed:', e);

@@ -10,7 +10,10 @@
     action?: string;
     method?: 'POST' | 'GET';
     username?: string;
+    /** When true, TOTP field is always visible (e.g. admin login where 2FA is required). */
     showTotp?: boolean;
+    /** When true with showTotp, the TOTP field is required and labeled as such. */
+    totpRequired?: boolean;
     error?: string;
     submitLabel?: string;
     passkeySlot?: Snippet;
@@ -21,6 +24,7 @@
     method = 'POST',
     username = '',
     showTotp = false,
+    totpRequired = false,
     error,
     submitLabel = 'Sign In',
     passkeySlot,
@@ -65,13 +69,14 @@
     />
   </FormField>
   {#if showTotp}
-    <FormField id="totpToken" label="TOTP (if enabled)">
+    <FormField id="totpToken" label={totpRequired ? 'Authentication code (2FA)' : 'TOTP (if enabled)'} required={totpRequired}>
       <Input
         id="totpToken"
         name="totpToken"
         type="text"
         autocomplete="one-time-code"
-        placeholder="Optional"
+        placeholder={totpRequired ? 'Enter 6-digit code' : 'Optional'}
+        required={totpRequired}
         dataTestId="login-totp-token"
       />
     </FormField>

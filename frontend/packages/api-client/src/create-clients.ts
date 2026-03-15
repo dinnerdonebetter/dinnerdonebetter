@@ -85,6 +85,14 @@ import type {
   SearchForValidVesselsResponse,
   SearchForValidIngredientStatesRequest,
   SearchForValidIngredientStatesResponse,
+  GetValidVesselsRequest,
+  GetValidVesselsResponse,
+  GetValidPreparationsRequest,
+  GetValidPreparationsResponse,
+  GetValidMeasurementUnitsRequest,
+  GetValidMeasurementUnitsResponse,
+  GetValidIngredientStatesRequest,
+  GetValidIngredientStatesResponse,
   CreateRecipeRequest,
   CreateRecipeResponse,
   SearchForRecipesRequest,
@@ -370,6 +378,14 @@ export function createGrpcClients(config: GrpcClientConfig) {
         getSettingsClient().updateServiceSettingConfiguration.bind(getSettingsClient()),
       )(request, authMetadata(oauth2Token)),
 
+    getValidPreparations: (
+      oauth2Token: string,
+      request: GetValidPreparationsRequest,
+    ): Promise<GetValidPreparationsResponse> =>
+      promisifyUnary<GetValidPreparationsRequest, GetValidPreparationsResponse>(
+        getMealplanningClient().getValidPreparations.bind(getMealplanningClient()),
+      )({ ...request, filter: request.filter ?? defaultSearchFilter }, authMetadata(oauth2Token)),
+
     searchForValidPreparations: (
       oauth2Token: string,
       request: Omit<SearchForValidPreparationsRequest, 'filter'> & {
@@ -440,6 +456,14 @@ export function createGrpcClients(config: GrpcClientConfig) {
         authMetadata(oauth2Token),
       ),
 
+    getValidMeasurementUnits: (
+      oauth2Token: string,
+      request: GetValidMeasurementUnitsRequest,
+    ): Promise<GetValidMeasurementUnitsResponse> =>
+      promisifyUnary<GetValidMeasurementUnitsRequest, GetValidMeasurementUnitsResponse>(
+        getMealplanningClient().getValidMeasurementUnits.bind(getMealplanningClient()),
+      )({ ...request, filter: request.filter ?? defaultSearchFilter }, authMetadata(oauth2Token)),
+
     searchForValidMeasurementUnits: (
       oauth2Token: string,
       request: Omit<SearchForValidMeasurementUnitsRequest, 'filter'> & {
@@ -450,12 +474,28 @@ export function createGrpcClients(config: GrpcClientConfig) {
         getMealplanningClient().searchForValidMeasurementUnits.bind(getMealplanningClient()),
       )({ ...request, filter: request.filter ?? defaultSearchFilter }, authMetadata(oauth2Token)),
 
+    getValidVessels: (
+      oauth2Token: string,
+      request: GetValidVesselsRequest,
+    ): Promise<GetValidVesselsResponse> =>
+      promisifyUnary<GetValidVesselsRequest, GetValidVesselsResponse>(
+        getMealplanningClient().getValidVessels.bind(getMealplanningClient()),
+      )({ ...request, filter: request.filter ?? defaultSearchFilter }, authMetadata(oauth2Token)),
+
     searchForValidVessels: (
       oauth2Token: string,
       request: Omit<SearchForValidVesselsRequest, 'filter'> & { filter?: SearchForValidVesselsRequest['filter'] },
     ): Promise<SearchForValidVesselsResponse> =>
       promisifyUnary<SearchForValidVesselsRequest, SearchForValidVesselsResponse>(
         getMealplanningClient().searchForValidVessels.bind(getMealplanningClient()),
+      )({ ...request, filter: request.filter ?? defaultSearchFilter }, authMetadata(oauth2Token)),
+
+    getValidIngredientStates: (
+      oauth2Token: string,
+      request: GetValidIngredientStatesRequest,
+    ): Promise<GetValidIngredientStatesResponse> =>
+      promisifyUnary<GetValidIngredientStatesRequest, GetValidIngredientStatesResponse>(
+        getMealplanningClient().getValidIngredientStates.bind(getMealplanningClient()),
       )({ ...request, filter: request.filter ?? defaultSearchFilter }, authMetadata(oauth2Token)),
 
     searchForValidIngredientStates: (

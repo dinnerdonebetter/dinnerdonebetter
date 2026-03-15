@@ -1,7 +1,13 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getValidPreparationVesselsByPreparation, searchForValidVessels } from '$lib/grpc/clients';
+import {
+  getValidPreparationVesselsByPreparation,
+  getValidVessels,
+  searchForValidVessels,
+} from '$lib/grpc/clients';
 import { logger } from '$lib/logger';
+
+const DEFAULT_LIST_FILTER = { maxResponseSize: 100 };
 
 export const GET: RequestHandler = async ({ url, locals }) => {
   const token = locals.oauthToken;
@@ -23,10 +29,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         q.length > 0 ? vpvs.filter((vpv) => vpv.vessel?.name.toLowerCase().includes(q.toLowerCase())) : vpvs;
       return json({ results: filtered });
     }
-    const res = await searchForValidVessels(token, {
-      query: q,
-      useSearchService: q.length > 2,
-    });
+    const res =
+      q === ''
+        ? await getValidVessels(token, { filter: DEFAULT_LIST_FILTER })
+        : await searchForValidVessels(token, {
+            filter: DEFAULT_LIST_FILTER,
+            query: q,
+            useSearchService: q.length > 2,
+          });
     return json({ results: res.results ?? [] });
   } catch (e) {
     logger.error('vessel search failed:', e);

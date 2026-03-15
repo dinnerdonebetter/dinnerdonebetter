@@ -1,7 +1,9 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { searchForValidIngredientStates } from '$lib/grpc/clients';
+import { getValidIngredientStates, searchForValidIngredientStates } from '$lib/grpc/clients';
 import { logger } from '$lib/logger';
+
+const DEFAULT_LIST_FILTER = { maxResponseSize: 100 };
 
 export const GET: RequestHandler = async ({ url, locals }) => {
   const token = locals.oauthToken;
@@ -11,10 +13,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
   const q = url.searchParams.get('q') ?? '';
   try {
-    const res = await searchForValidIngredientStates(token, {
-      query: q,
-      useSearchService: q.length > 2,
-    });
+    const res =
+      q === ''
+        ? await getValidIngredientStates(token, { filter: DEFAULT_LIST_FILTER })
+        : await searchForValidIngredientStates(token, {
+            filter: DEFAULT_LIST_FILTER,
+            query: q,
+            useSearchService: q.length > 2,
+          });
     return json({ results: res.results ?? [] });
   } catch (e) {
     logger.error('searchForValidIngredientStates failed:', e);

@@ -7,6 +7,7 @@ import * as grpc from '@grpc/grpc-js';
 import type { Metadata } from '@grpc/grpc-js';
 
 export { createGrpcClients, type GrpcClientConfig } from './create-clients.js';
+export { createAdminGrpcClients } from './admin-clients.js';
 
 /**
  * Metadata with Bearer token for authenticated gRPC calls.
