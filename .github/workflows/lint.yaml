@@ -6,6 +6,7 @@ on:
       - backend/**/*.go
       - ios/**/*.swift
       - ./**/*.md
+      - frontend/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -21,6 +22,7 @@ jobs:
       backend: ${{ steps.filter.outputs.backend }}
       ios: ${{ steps.filter.outputs.ios }}
       markdown: ${{ steps.filter.outputs.markdown }}
+      frontend: ${{ steps.filter.outputs.frontend }}
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v3
@@ -35,6 +37,8 @@ jobs:
               - ios/Makefile
             markdown:
               - ./**/*.md
+            frontend:
+              - frontend/**
 
   markdown:
     needs: [ changes ]
@@ -86,3 +90,31 @@ jobs:
       - name: Run SwiftLint
         working-directory: ios
         run: make lint
+
+  frontend:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Type check
+        working-directory: frontend
+        run: npm run check
