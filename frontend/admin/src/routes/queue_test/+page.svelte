@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Heading, Text, Button } from '@dinnerdonebetter/ui';
+  import { Heading, Button } from '@dinnerdonebetter/ui';
 
   let { form } = $props();
 </script>

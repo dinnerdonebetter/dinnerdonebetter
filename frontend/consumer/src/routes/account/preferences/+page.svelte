@@ -49,7 +49,7 @@
     <p class="muted">No preferences to configure.</p>
   {:else}
     <div class="settings-list">
-      {#each configurableSettings as item}
+      {#each configurableSettings as item (item.setting.id)}
         {#if item.setting.enumeration?.length}
           <div class="setting-card">
             <form method="POST" action="?/update" use:enhance class="setting-form">
@@ -69,7 +69,7 @@
                   data-testid="preference-value-{item.setting.id}"
                   onchange={(e) => (e.currentTarget as HTMLSelectElement).form?.requestSubmit()}
                 >
-                  {#each item.setting.enumeration ?? [] as opt}
+                  {#each item.setting.enumeration ?? [] as opt (opt)}
                     <option value={opt} selected={opt === item.currentValue}>
                       {humanReadable(opt)}
                     </option>

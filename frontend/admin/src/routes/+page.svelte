@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Heading, Text, Card } from '@dinnerdonebetter/ui';
+  import { Heading, Card } from '@dinnerdonebetter/ui';
 
   let { data } = $props();
 </script>

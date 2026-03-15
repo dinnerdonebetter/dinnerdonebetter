@@ -39,7 +39,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.items as item}
+        {#each data.items as item ((item as Record<string, unknown>).id)}
           {@const row = item as Record<string, unknown>}
           <tr>
             <td><code>{row.id ?? '-'}</code></td>

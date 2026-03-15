@@ -7,6 +7,7 @@
 
 <PageContainer>
   <div class="legal-content">
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -- server-rendered legal content -->
     {@html html}
   </div>
   <p><Link href="/">Back to Home</Link></p>

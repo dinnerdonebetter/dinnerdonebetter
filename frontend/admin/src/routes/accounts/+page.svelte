@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.accounts as account}
+        {#each data.accounts as account (account.id)}
           <tr>
             <td><code>{account.id ?? '-'}</code></td>
             <td>{account.name ?? '-'}</td>

@@ -47,6 +47,8 @@
     steps: RecipeStepCreationRequestInput[],
     stepIndex: number,
   ): PreviousStepProductOption[] {
+    // Local computation only; not reactive state — built-in Set is appropriate
+    // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not used as reactive state
     const used = new Set<string>();
     for (let k = stepIndex; k < steps.length; k++) {
       const step = steps[k];
@@ -453,7 +455,7 @@
               Advance prep (e.g. make dressing ahead). Optionally link which steps each task satisfies.
             </p>
           </div>
-          {#each state.recipe.prepTasks ?? [] as prepTask, taskIdx}
+          {#each state.recipe.prepTasks ?? [] as prepTask, taskIdx (taskIdx)}
             <Card title={prepTask.name || `Prep task ${taskIdx + 1}`} collapsible>
               <FormField label="Name">
                 <Input
@@ -507,7 +509,7 @@
               </FormField>
               <FormField label="Satisfies steps">
                 <div class="prep-task-steps">
-                  {#each state.recipe.steps as _, stepIdx}
+                  {#each state.recipe.steps as _, stepIdx (stepIdx)}
                     <label class="checkbox-label">
                       <input
                         type="checkbox"
@@ -600,7 +602,7 @@
           <section class="recipe-section recipe-section--steps">
             <h2>Steps</h2>
             <div class="steps-list">
-              {#each state.recipe.steps as step, stepIndex}
+              {#each state.recipe.steps as step, stepIndex (stepIndex)}
                 <Card title="Step {stepIndex + 1}" collapsible bind:expanded={state.stepHelpers[stepIndex].show}>
                   <FormField label="Preparation" required>
                     <Autocomplete
@@ -629,7 +631,7 @@
                   {#if state.stepHelpers[stepIndex].selectedPreparation}
                     <div class="step-section">
                       <h3>Instruments</h3>
-                      {#each step.instruments as instrument, instIdx}
+                      {#each step.instruments as instrument, instIdx (`${stepIndex}-inst-${instIdx}`)}
                         {@const instKey = optionalKey(stepIndex, 'instrument', instIdx)}
                         {@const availableForStepInst = getAvailablePreviousProducts(state.recipe.steps, stepIndex)}
                         {@const availableInstrumentProducts = availableForStepInst.filter(
@@ -677,7 +679,7 @@
                                         }
                                       }}
                                     >
-                                      {#each availableInstrumentProducts as opt}
+                                      {#each availableInstrumentProducts as opt (`${opt.stepIndex}:${opt.productIndex}`)}
                                         <option value="{opt.stepIndex}:{opt.productIndex}">
                                           Step {opt.stepIndex + 1}: {opt.name || 'Product'}
                                         </option>
@@ -735,7 +737,7 @@
                                       }}
                                     >
                                       <option value="">— Select from step…</option>
-                                      {#each availableInstrumentProducts as opt}
+                                      {#each availableInstrumentProducts as opt (`${opt.stepIndex}:${opt.productIndex}`)}
                                         <option value="{opt.stepIndex}:{opt.productIndex}">
                                           Step {opt.stepIndex + 1}: {opt.name || 'Product'}
                                         </option>
@@ -765,7 +767,7 @@
                                   if (!Number.isNaN(v)) state.setInstrumentOptionIndex(stepIndex, instIdx, v);
                                 }}
                               >
-                                {#each optionGroupOptions as opt}
+                                {#each optionGroupOptions as opt (opt.value)}
                                   <option value={opt.value}>{opt.label}</option>
                                 {/each}
                               </select>
@@ -791,7 +793,7 @@
 
                     <div class="step-section">
                       <h3>Vessels</h3>
-                      {#each step.vessels ?? [] as vessel, vesselIdx}
+                      {#each step.vessels ?? [] as vessel, vesselIdx (`${stepIndex}-vessel-${vesselIdx}`)}
                         {@const vesselKey = optionalKey(stepIndex, 'vessel', vesselIdx)}
                         {@const availableForStepVessel = getAvailablePreviousProducts(state.recipe.steps, stepIndex)}
                         {@const availableVesselProducts = availableForStepVessel.filter(
@@ -839,7 +841,7 @@
                                         }
                                       }}
                                     >
-                                      {#each availableVesselProducts as opt}
+                                      {#each availableVesselProducts as opt (`${opt.stepIndex}:${opt.productIndex}`)}
                                         <option value="{opt.stepIndex}:{opt.productIndex}">
                                           Step {opt.stepIndex + 1}: {opt.name || 'Product'}
                                         </option>
@@ -898,7 +900,7 @@
                                       }}
                                     >
                                       <option value="">— Select from step…</option>
-                                      {#each availableVesselProducts as opt}
+                                      {#each availableVesselProducts as opt (`${opt.stepIndex}:${opt.productIndex}`)}
                                         <option value="{opt.stepIndex}:{opt.productIndex}">
                                           Step {opt.stepIndex + 1}: {opt.name || 'Product'}
                                         </option>
@@ -928,7 +930,7 @@
                                   if (!Number.isNaN(v)) state.setVesselOptionIndex(stepIndex, vesselIdx, v);
                                 }}
                               >
-                                {#each optionGroupOptions as opt}
+                                {#each optionGroupOptions as opt (opt.value)}
                                   <option value={opt.value}>{opt.label}</option>
                                 {/each}
                               </select>
@@ -954,7 +956,7 @@
 
                     <div class="step-section">
                       <h3>Ingredients</h3>
-                      {#each step.ingredients as ingredient, ingIdx}
+                      {#each step.ingredients as ingredient, ingIdx (`${stepIndex}-ing-${ingIdx}`)}
                         {@const ingKey = optionalKey(stepIndex, 'ingredient', ingIdx)}
                         {@const availableForStep = getAvailablePreviousProducts(state.recipe.steps, stepIndex)}
                         {@const availableIngredientProducts = availableForStep.filter(
@@ -1003,7 +1005,7 @@
                                         }
                                       }}
                                     >
-                                      {#each availableIngredientProducts as opt}
+                                      {#each availableIngredientProducts as opt (`${opt.stepIndex}:${opt.productIndex}`)}
                                         <option value="{opt.stepIndex}:{opt.productIndex}">
                                           Step {opt.stepIndex + 1}: {opt.name || 'Product'}
                                         </option>
@@ -1100,7 +1102,7 @@
                                       }}
                                     >
                                       <option value="">— Select from step…</option>
-                                      {#each availableIngredientProducts as opt}
+                                      {#each availableIngredientProducts as opt (`${opt.stepIndex}:${opt.productIndex}`)}
                                         <option value="{opt.stepIndex}:{opt.productIndex}">
                                           Step {opt.stepIndex + 1}: {opt.name || 'Product'}
                                         </option>
@@ -1170,7 +1172,7 @@
                                   if (!Number.isNaN(v)) state.setIngredientOptionIndex(stepIndex, ingIdx, v);
                                 }}
                               >
-                                {#each optionGroupOptions as opt}
+                                {#each optionGroupOptions as opt (opt.value)}
                                   <option value={opt.value}>{opt.label}</option>
                                 {/each}
                               </select>
@@ -1195,7 +1197,7 @@
                                 }}
                               >
                                 <option value="" disabled>Select unit</option>
-                                {#each state.stepHelpers[stepIndex].ingredientMeasurementUnitSuggestions[ingIdx] ?? [] as vimu}
+                                {#each state.stepHelpers[stepIndex].ingredientMeasurementUnitSuggestions[ingIdx] ?? [] as vimu (vimu.id)}
                                   <option value={vimu.id}>
                                     {vimu.measurementUnit?.name ?? vimu.id}
                                   </option>
@@ -1229,7 +1231,7 @@
 
                     <div class="step-section">
                       <h3>Products</h3>
-                      {#each step.products as product, prodIdx}
+                      {#each step.products as product, prodIdx (`${stepIndex}-prod-${prodIdx}`)}
                         {@const isContinuous =
                           product.itemQuantity == null ||
                           (product.itemQuantity.min === undefined && product.itemQuantity.max === undefined)}
@@ -1256,7 +1258,7 @@
                                 });
                               }}
                             >
-                              {#each productTypeOptions as opt}
+                              {#each productTypeOptions as opt (opt.value)}
                                 <option value={opt.value}>{opt.label}</option>
                               {/each}
                             </select>
@@ -1347,7 +1349,7 @@
                                 }}
                               >
                                 <option value="">—</option>
-                                {#each productUnits as mu}
+                                {#each productUnits as mu (mu.id)}
                                   <option value={mu.id}>{(mu as { name?: string }).name ?? mu.id}</option>
                                 {/each}
                               </select>
@@ -1431,7 +1433,7 @@
                                   }}
                                 >
                                   <option value="">—</option>
-                                  {#each productUnits as mu}
+                                  {#each productUnits as mu (mu.id)}
                                     <option value={mu.id}>{(mu as { name?: string }).name ?? mu.id}</option>
                                   {/each}
                                 </select>

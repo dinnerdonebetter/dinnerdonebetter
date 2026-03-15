@@ -27,7 +27,7 @@
     <Card>
       <h2 class="card-title">Users</h2>
       <ul>
-        {#each data.users as u}
+        {#each data.users as u ((u as Record<string, unknown>).id)}
           <li>
             <Link href="/users/{(u as Record<string, unknown>).id}">
               {(u as Record<string, unknown>).username ?? (u as Record<string, unknown>).id}
@@ -50,7 +50,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each data.auditLog as entry}
+            {#each data.auditLog as entry, i ((entry as Record<string, unknown>).id ?? i)}
               <tr>
                 <td>{(entry as Record<string, unknown>).createdAt ?? '-'}</td>
                 <td>{(entry as Record<string, unknown>).eventType ?? '-'}</td>

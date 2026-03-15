@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Heading, Text, Link, Card, Button } from '@dinnerdonebetter/ui';
+  import { Heading, Text, Link, Card } from '@dinnerdonebetter/ui';
 
   let { data } = $props();
 </script>
@@ -22,7 +22,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.users as user}
+        {#each data.users as user (user.id)}
           <tr>
             <td><code>{user.id ?? '-'}</code></td>
             <td>{user.username ?? '-'}</td>

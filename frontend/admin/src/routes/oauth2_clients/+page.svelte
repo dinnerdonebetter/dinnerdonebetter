@@ -21,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.clients as client}
+        {#each data.clients as client (client.id)}
           <tr>
             <td><code>{(client as Record<string, unknown>).id ?? '-'}</code></td>
             <td>{(client as Record<string, unknown>).clientId ?? '-'}</td>

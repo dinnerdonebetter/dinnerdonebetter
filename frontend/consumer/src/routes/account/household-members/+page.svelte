@@ -58,7 +58,7 @@
           <p class="muted">No members yet. Invite someone to join your household.</p>
         {:else}
           <div class="member-list">
-            {#each account.members ?? [] as m}
+            {#each account.members ?? [] as m (m.belongsToUser?.id ?? m.id ?? 'member')}
               {@const isYou = m.belongsToUser?.id === currentUserId}
               {@const roleLabel = m.accountRole === 'account_admin' ? 'Admin' : 'Member'}
               <div class="member-card">
@@ -121,7 +121,7 @@
           <h2>Invitations</h2>
           <p class="muted">Invitations you've sent for this household and their status.</p>
           <div class="invitation-list">
-            {#each invitations as inv}
+            {#each invitations as inv (inv.id)}
               {@const status = inv.status || 'pending'}
               {@const inviteUrl = `${baseUrl}/accept_invitation?i=${inv.id}&t=${inv.token}`}
               <div class="invitation-card">

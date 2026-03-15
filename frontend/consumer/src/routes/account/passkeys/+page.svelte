@@ -113,7 +113,7 @@
       <div class="list-section">
         <h2>Your passkeys</h2>
         <div class="passkey-list">
-          {#each passkeys as pk}
+          {#each passkeys as pk (pk.id)}
             <div class="passkey-card">
               <div class="passkey-info">
                 <span class="passkey-name">{pk.friendlyName || 'Passkey'}</span>

@@ -19,7 +19,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.reports as report}
+        {#each data.reports as report ((report as Record<string, unknown>).id)}
           <tr>
             <td><code>{(report as Record<string, unknown>).id ?? '-'}</code></td>
             <td><Link href="/issue_reports/{(report as Record<string, unknown>).id}">View</Link></td>

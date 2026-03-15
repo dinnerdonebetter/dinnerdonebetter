@@ -66,6 +66,8 @@
         data: (result as { data?: unknown })?.data,
       });
       if (result.type === 'redirect' && (result as { location?: string }).location) {
+        // Server redirect URL; no-app-paths resolve() available for dynamic redirect
+        // eslint-disable-next-line svelte/no-navigation-without-resolve -- redirect from form action
         await goto((result as { location: string }).location, { invalidateAll: true });
         return;
       }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Heading, Text, Link, Card, Button } from '@dinnerdonebetter/ui';
+  import { Heading, Text, Link, Card } from '@dinnerdonebetter/ui';
 
   let { data } = $props();
   const user = data?.user as Record<string, unknown> | null;
@@ -31,7 +31,7 @@
     <Card>
       <h2 class="card-title">Accounts</h2>
       <ul>
-        {#each data.accounts as acc}
+        {#each data.accounts as acc ((acc as Record<string, unknown>).id)}
           <li>
             <Link href="/accounts/{(acc as Record<string, unknown>).id}">
               {(acc as Record<string, unknown>).name ?? (acc as Record<string, unknown>).id}
@@ -54,7 +54,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each data.auditLog as entry}
+            {#each data.auditLog as entry, i ((entry as Record<string, unknown>).id ?? i)}
               <tr>
                 <td>{(entry as Record<string, unknown>).createdAt ?? '-'}</td>
                 <td>{(entry as Record<string, unknown>).eventType ?? '-'}</td>

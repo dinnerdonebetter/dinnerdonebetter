@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.waitlists as wl}
+        {#each data.waitlists as wl (wl.id)}
           <tr>
             <td><code>{(wl as Record<string, unknown>).id ?? '-'}</code></td>
             <td>{(wl as Record<string, unknown>).name ?? '-'}</td>

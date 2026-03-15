@@ -21,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.items as item}
+        {#each data.items as item, i ((item as Record<string, unknown>).id ?? i)}
           {@const row = item as Record<string, unknown>}
           {@const ing = row.ingredient as { name?: string } | undefined}
           {@const prep = row.preparation as { name?: string } | undefined}

@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.items as item}
+        {#each data.items as item, i ((item as Record<string, unknown>).id ?? i)}
           {@const row = item as Record<string, unknown>}
           {@const ing = row.ingredient as { id?: string; name?: string } | undefined}
           {@const from = row.fromUnit as { id?: string; name?: string } | undefined}

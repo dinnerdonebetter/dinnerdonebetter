@@ -26,7 +26,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.items as item}
+        {#each data.items as item, i ((item as Record<string, unknown>).id ?? i)}
           <tr>
             <td><code>{(item as Record<string, unknown>).id ?? '-'}</code></td>
             <td>{(item as Record<string, unknown>).name ?? '-'}</td>

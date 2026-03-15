@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Heading, Text, Link } from '@dinnerdonebetter/ui';
 
-  let { data } = $props();
+  let { data: _data } = $props();
 </script>
 
 <Heading level={1}>Waitlist</Heading>

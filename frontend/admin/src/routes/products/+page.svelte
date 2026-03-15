@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.products as product}
+        {#each data.products as product (product.id)}
           <tr>
             <td><code>{(product as Record<string, unknown>).id ?? '-'}</code></td>
             <td>{(product as Record<string, unknown>).name ?? '-'}</td>

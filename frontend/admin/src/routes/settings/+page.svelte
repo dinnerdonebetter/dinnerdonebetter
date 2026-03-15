@@ -26,7 +26,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.settings as setting}
+        {#each data.settings as setting (setting.id)}
           <tr>
             <td><code>{(setting as Record<string, unknown>).id ?? '-'}</code></td>
             <td>{(setting as Record<string, unknown>).name ?? '-'}</td>

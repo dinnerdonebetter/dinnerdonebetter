@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
     let accounts: unknown[] = [];
     let auditLog: unknown[] = [];
-    let subscriptions: unknown[] = [];
+    const subscriptions: unknown[] = [];
 
     if (user?.id) {
       try {

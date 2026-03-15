@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.recipes as recipe}
+        {#each data.recipes as recipe (recipe.id)}
           <tr>
             <td><code>{(recipe as Record<string, unknown>).id ?? '-'}</code></td>
             <td>{(recipe as Record<string, unknown>).name ?? '-'}</td>
