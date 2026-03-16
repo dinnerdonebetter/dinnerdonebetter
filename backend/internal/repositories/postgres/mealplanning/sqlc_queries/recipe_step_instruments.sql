@@ -14,8 +14,7 @@ INSERT INTO recipe_step_instruments (
 	maximum_quantity,
 	index,
 	option_index,
-	belongs_to_recipe_step,
-	scale_factor
+	belongs_to_recipe_step
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(instrument_id),
@@ -28,8 +27,7 @@ INSERT INTO recipe_step_instruments (
 	sqlc.arg(maximum_quantity),
 	sqlc.arg(index),
 	sqlc.arg(option_index),
-	sqlc.arg(belongs_to_recipe_step),
-	sqlc.arg(scale_factor)
+	sqlc.arg(belongs_to_recipe_step)
 );
 
 -- name: CheckRecipeStepInstrumentExistence :one
@@ -76,8 +74,7 @@ SELECT
 	recipe_step_instruments.created_at,
 	recipe_step_instruments.last_updated_at,
 	recipe_step_instruments.archived_at,
-	recipe_step_instruments.belongs_to_recipe_step,
-	recipe_step_instruments.scale_factor
+	recipe_step_instruments.belongs_to_recipe_step
 FROM recipe_step_instruments
 	LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
 	JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
@@ -116,8 +113,7 @@ SELECT
 	recipe_step_instruments.created_at,
 	recipe_step_instruments.last_updated_at,
 	recipe_step_instruments.archived_at,
-	recipe_step_instruments.belongs_to_recipe_step,
-	recipe_step_instruments.scale_factor
+	recipe_step_instruments.belongs_to_recipe_step
 FROM recipe_step_instruments
 	LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
 	JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
@@ -160,7 +156,6 @@ SELECT
 	recipe_step_instruments.last_updated_at,
 	recipe_step_instruments.archived_at,
 	recipe_step_instruments.belongs_to_recipe_step,
-	recipe_step_instruments.scale_factor,
 	(
 		SELECT COUNT(recipe_step_instruments.id)
 		FROM recipe_step_instruments
@@ -221,7 +216,6 @@ UPDATE recipe_step_instruments SET
 	maximum_quantity = sqlc.arg(maximum_quantity),
 	index = sqlc.arg(index),
 	option_index = sqlc.arg(option_index),
-	scale_factor = sqlc.arg(scale_factor),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step)

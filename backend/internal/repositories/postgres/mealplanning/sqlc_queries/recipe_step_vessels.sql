@@ -14,8 +14,7 @@ INSERT INTO recipe_step_vessels (
 	maximum_quantity,
 	unavailable_after_step,
 	index,
-	option_index,
-	scale_factor
+	option_index
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(name),
@@ -28,8 +27,7 @@ INSERT INTO recipe_step_vessels (
 	sqlc.arg(maximum_quantity),
 	sqlc.arg(unavailable_after_step),
 	sqlc.arg(index),
-	sqlc.arg(option_index),
-	sqlc.arg(scale_factor)
+	sqlc.arg(option_index)
 );
 
 -- name: CheckRecipeStepVesselExistence :one
@@ -95,8 +93,7 @@ SELECT
 	recipe_step_vessels.option_index,
 	recipe_step_vessels.created_at,
 	recipe_step_vessels.last_updated_at,
-	recipe_step_vessels.archived_at,
-	recipe_step_vessels.scale_factor
+	recipe_step_vessels.archived_at
 FROM recipe_step_vessels
 	LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
 	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
@@ -155,8 +152,7 @@ SELECT
 	recipe_step_vessels.option_index,
 	recipe_step_vessels.created_at,
 	recipe_step_vessels.last_updated_at,
-	recipe_step_vessels.archived_at,
-	recipe_step_vessels.scale_factor
+	recipe_step_vessels.archived_at
 FROM recipe_step_vessels
 	LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
 	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
@@ -219,7 +215,6 @@ SELECT
 	recipe_step_vessels.created_at,
 	recipe_step_vessels.last_updated_at,
 	recipe_step_vessels.archived_at,
-	recipe_step_vessels.scale_factor,
 	(
 		SELECT COUNT(recipe_step_vessels.id)
 		FROM recipe_step_vessels
@@ -281,7 +276,6 @@ UPDATE recipe_step_vessels SET
 	unavailable_after_step = sqlc.arg(unavailable_after_step),
 	index = sqlc.arg(index),
 	option_index = sqlc.arg(option_index),
-	scale_factor = sqlc.arg(scale_factor),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step)
