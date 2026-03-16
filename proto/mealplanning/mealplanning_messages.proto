@@ -402,6 +402,7 @@ message RecipeStepIngredient {
   bool optional = 17;
   bool to_taste = 18;
   uint32 index = 19;
+  float scale_factor = 20;
 }
 
 message RecipeStepInstrument {
@@ -419,6 +420,7 @@ message RecipeStepInstrument {
   uint32 preference_rank = 12;
   bool optional = 13;
   uint32 index = 14;
+  float scale_factor = 15;
 }
 
 message RecipeStepProduct {
@@ -458,6 +460,7 @@ message RecipeStepVessel {
   bool unavailable_after_step = 12;
   uint32 index = 13;
   uint32 option_index = 14;
+  float scale_factor = 15;
 }
 
 message Meal {

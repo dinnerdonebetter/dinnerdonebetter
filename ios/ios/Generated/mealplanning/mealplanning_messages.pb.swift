@@ -2666,6 +2666,11 @@ public struct Mealplanning_RecipeStepIngredient: @unchecked Sendable {
     set {_uniqueStorage()._index = newValue}
   }
 
+  public var scaleFactor: Float {
+    get {return _storage._scaleFactor}
+    set {_uniqueStorage()._scaleFactor = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -2770,6 +2775,11 @@ public struct Mealplanning_RecipeStepInstrument: @unchecked Sendable {
   public var index: UInt32 {
     get {return _storage._index}
     set {_uniqueStorage()._index = newValue}
+  }
+
+  public var scaleFactor: Float {
+    get {return _storage._scaleFactor}
+    set {_uniqueStorage()._scaleFactor = newValue}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -3019,6 +3029,11 @@ public struct Mealplanning_RecipeStepVessel: @unchecked Sendable {
   public var optionIndex: UInt32 {
     get {return _storage._optionIndex}
     set {_uniqueStorage()._optionIndex = newValue}
+  }
+
+  public var scaleFactor: Float {
+    get {return _storage._scaleFactor}
+    set {_uniqueStorage()._scaleFactor = newValue}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -7164,7 +7179,7 @@ extension Mealplanning_RecipeStepCompletionConditionIngredient: SwiftProtobuf.Me
 
 extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}recipe_step_product_recipe_id\0\u{3}archived_at\0\u{1}ingredient\0\u{3}last_updated_at\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_id\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{1}name\0\u{1}quantity\0\u{3}measurement_unit\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0\u{1}index\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}recipe_step_product_recipe_id\0\u{3}archived_at\0\u{1}ingredient\0\u{3}last_updated_at\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_id\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{1}name\0\u{1}quantity\0\u{3}measurement_unit\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0\u{1}index\0\u{3}scale_factor\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -7186,6 +7201,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
     var _optional: Bool = false
     var _toTaste: Bool = false
     var _index: UInt32 = 0
+    var _scaleFactor: Float = 0
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7215,6 +7231,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
       _optional = source._optional
       _toTaste = source._toTaste
       _index = source._index
+      _scaleFactor = source._scaleFactor
     }
   }
 
@@ -7252,6 +7269,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
         case 17: try { try decoder.decodeSingularBoolField(value: &_storage._optional) }()
         case 18: try { try decoder.decodeSingularBoolField(value: &_storage._toTaste) }()
         case 19: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
+        case 20: try { try decoder.decodeSingularFloatField(value: &_storage._scaleFactor) }()
         default: break
         }
       }
@@ -7321,6 +7339,9 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
       if _storage._index != 0 {
         try visitor.visitSingularUInt32Field(value: _storage._index, fieldNumber: 19)
       }
+      if _storage._scaleFactor.bitPattern != 0 {
+        try visitor.visitSingularFloatField(value: _storage._scaleFactor, fieldNumber: 20)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7349,6 +7370,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
         if _storage._optional != rhs_storage._optional {return false}
         if _storage._toTaste != rhs_storage._toTaste {return false}
         if _storage._index != rhs_storage._index {return false}
+        if _storage._scaleFactor != rhs_storage._scaleFactor {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -7360,7 +7382,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepInstrument"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}instrument\0\u{3}last_updated_at\0\u{3}recipe_step_product_id\0\u{3}archived_at\0\u{1}notes\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{1}quantity\0\u{3}option_index\0\u{3}preference_rank\0\u{1}optional\0\u{1}index\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}instrument\0\u{3}last_updated_at\0\u{3}recipe_step_product_id\0\u{3}archived_at\0\u{1}notes\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{1}quantity\0\u{3}option_index\0\u{3}preference_rank\0\u{1}optional\0\u{1}index\0\u{3}scale_factor\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -7377,6 +7399,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
     var _preferenceRank: UInt32 = 0
     var _optional: Bool = false
     var _index: UInt32 = 0
+    var _scaleFactor: Float = 0
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7401,6 +7424,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
       _preferenceRank = source._preferenceRank
       _optional = source._optional
       _index = source._index
+      _scaleFactor = source._scaleFactor
     }
   }
 
@@ -7433,6 +7457,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
         case 12: try { try decoder.decodeSingularUInt32Field(value: &_storage._preferenceRank) }()
         case 13: try { try decoder.decodeSingularBoolField(value: &_storage._optional) }()
         case 14: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
+        case 15: try { try decoder.decodeSingularFloatField(value: &_storage._scaleFactor) }()
         default: break
         }
       }
@@ -7487,6 +7512,9 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
       if _storage._index != 0 {
         try visitor.visitSingularUInt32Field(value: _storage._index, fieldNumber: 14)
       }
+      if _storage._scaleFactor.bitPattern != 0 {
+        try visitor.visitSingularFloatField(value: _storage._scaleFactor, fieldNumber: 15)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7510,6 +7538,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
         if _storage._preferenceRank != rhs_storage._preferenceRank {return false}
         if _storage._optional != rhs_storage._optional {return false}
         if _storage._index != rhs_storage._index {return false}
+        if _storage._scaleFactor != rhs_storage._scaleFactor {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -7717,7 +7746,7 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepVessel"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}quantity\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}recipe_step_product_id\0\u{1}vessel\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_preposition\0\u{1}name\0\u{3}unavailable_after_step\0\u{1}index\0\u{3}option_index\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}quantity\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}recipe_step_product_id\0\u{1}vessel\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_preposition\0\u{1}name\0\u{3}unavailable_after_step\0\u{1}index\0\u{3}option_index\0\u{3}scale_factor\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -7734,6 +7763,7 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
     var _unavailableAfterStep: Bool = false
     var _index: UInt32 = 0
     var _optionIndex: UInt32 = 0
+    var _scaleFactor: Float = 0
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7758,6 +7788,7 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
       _unavailableAfterStep = source._unavailableAfterStep
       _index = source._index
       _optionIndex = source._optionIndex
+      _scaleFactor = source._scaleFactor
     }
   }
 
@@ -7790,6 +7821,7 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
         case 12: try { try decoder.decodeSingularBoolField(value: &_storage._unavailableAfterStep) }()
         case 13: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
         case 14: try { try decoder.decodeSingularUInt32Field(value: &_storage._optionIndex) }()
+        case 15: try { try decoder.decodeSingularFloatField(value: &_storage._scaleFactor) }()
         default: break
         }
       }
@@ -7844,6 +7876,9 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
       if _storage._optionIndex != 0 {
         try visitor.visitSingularUInt32Field(value: _storage._optionIndex, fieldNumber: 14)
       }
+      if _storage._scaleFactor.bitPattern != 0 {
+        try visitor.visitSingularFloatField(value: _storage._scaleFactor, fieldNumber: 15)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7867,6 +7902,7 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
         if _storage._unavailableAfterStep != rhs_storage._unavailableAfterStep {return false}
         if _storage._index != rhs_storage._index {return false}
         if _storage._optionIndex != rhs_storage._optionIndex {return false}
+        if _storage._scaleFactor != rhs_storage._scaleFactor {return false}
         return true
       }
       if !storagesAreEqual {return false}

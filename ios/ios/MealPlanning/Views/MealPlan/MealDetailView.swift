@@ -1155,8 +1155,9 @@ extension MealDetailView {
                 }
 
                 if instrument.hasQuantity, var current = aggregated[itemID] {
+                  let effectiveScale = scale * (instrument.scaleFactor > 0 ? instrument.scaleFactor : 1.0)
                   let scaledQuantity = DiscreteQuantityScaling.scaled(
-                    instrument.quantity, scale: scale)
+                    instrument.quantity, scale: effectiveScale)
                   current.addQuantity(scaledQuantity)
                   aggregated[itemID] = current
                 }
@@ -1180,7 +1181,8 @@ extension MealDetailView {
                 }
 
                 if vessel.hasQuantity, var current = aggregated[itemID] {
-                  let scaledQuantity = DiscreteQuantityScaling.scaled(vessel.quantity, scale: scale)
+                  let effectiveScale = scale * (vessel.scaleFactor > 0 ? vessel.scaleFactor : 1.0)
+                  let scaledQuantity = DiscreteQuantityScaling.scaled(vessel.quantity, scale: effectiveScale)
                   current.addQuantity(scaledQuantity)
                   aggregated[itemID] = current
                 }
@@ -1232,10 +1234,11 @@ extension MealDetailView {
               }
 
               if ingredient.hasQuantity, var current = aggregated[key] {
+                let effectiveScale = scale * (ingredient.scaleFactor > 0 ? ingredient.scaleFactor : 1.0)
                 var scaledQuantity = ingredient.quantity
-                scaledQuantity.min *= scale
+                scaledQuantity.min *= effectiveScale
                 if scaledQuantity.hasMax {
-                  scaledQuantity.max *= scale
+                  scaledQuantity.max *= effectiveScale
                 }
                 current.addQuantity(scaledQuantity)
                 aggregated[key] = current

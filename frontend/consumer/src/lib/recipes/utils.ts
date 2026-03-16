@@ -191,10 +191,12 @@ export function buildRecipeStepText(recipe: Recipe, recipeStep: RecipeStep, reci
 
   const ingredientList = englishListFormatter.format(
     (recipeStep.ingredients ?? []).map((x: RecipeStepIngredient) => {
+      const scaleFactor = (x as { scaleFactor?: number }).scaleFactor ?? 1;
+      const effectiveScale = recipeScale * (scaleFactor > 0 ? scaleFactor : 1);
       const elementIsProduct = stepElementIsProduct(x);
       const mu = x.measurementUnit;
       let measurementUnit =
-        cleanFloat((x.quantity?.min ?? 0) * recipeScale) === 1 ? (mu?.name ?? '') : (mu?.pluralName ?? '');
+        cleanFloat((x.quantity?.min ?? 0) * effectiveScale) === 1 ? (mu?.name ?? '') : (mu?.pluralName ?? '');
       measurementUnit = ['unit', 'units'].includes(measurementUnit) ? '' : measurementUnit;
 
       const q = x.quantity;
@@ -202,10 +204,10 @@ export function buildRecipeStepText(recipe: Recipe, recipeStep: RecipeStep, reci
       const max = q?.max ?? -1;
       const intro = elementIsProduct
         ? ''
-        : `${cleanFloat(min * recipeScale)}${max > min ? ` to ${cleanFloat((max ?? 0) * recipeScale)} ` : ''} ${measurementUnit}`;
+        : `${cleanFloat(min * effectiveScale)}${max > min ? ` to ${cleanFloat((max ?? 0) * effectiveScale)} ` : ''} ${measurementUnit}`;
 
       const name =
-        cleanFloat(min * recipeScale) === 1 ? (x.ingredient?.name ?? x.name) : (x.ingredient?.pluralName ?? x.name);
+        cleanFloat(min * effectiveScale) === 1 ? (x.ingredient?.name ?? x.name) : (x.ingredient?.pluralName ?? x.name);
 
       return (
         `${intro} ${elementIsProduct ? 'the' : ''} ${name}` +
