@@ -71,7 +71,8 @@ INSERT INTO recipe_step_vessels (
 	maximum_quantity,
 	unavailable_after_step,
 	index,
-	option_index
+	option_index,
+	scale_factor
 ) VALUES (
 	$1,
 	$2,
@@ -84,16 +85,18 @@ INSERT INTO recipe_step_vessels (
 	$9,
 	$10,
 	$11,
-	$12
+	$12,
+	$13
 )
 `
 
 type CreateRecipeStepVesselParams struct {
-	ID                   string
+	VesselPredicate      string
 	Name                 string
 	Notes                string
 	BelongsToRecipeStep  string
-	VesselPredicate      string
+	ID                   string
+	ScaleFactor          string
 	RecipeStepProductID  sql.NullString
 	ValidVesselID        sql.NullString
 	MaximumQuantity      sql.NullInt32
@@ -117,6 +120,7 @@ func (q *Queries) CreateRecipeStepVessel(ctx context.Context, db DBTX, arg *Crea
 		arg.UnavailableAfterStep,
 		arg.Index,
 		arg.OptionIndex,
+		arg.ScaleFactor,
 	)
 	return err
 }
@@ -168,7 +172,8 @@ SELECT
 	recipe_step_vessels.option_index,
 	recipe_step_vessels.created_at,
 	recipe_step_vessels.last_updated_at,
-	recipe_step_vessels.archived_at
+	recipe_step_vessels.archived_at,
+	recipe_step_vessels.scale_factor
 FROM recipe_step_vessels
 	LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
 	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
@@ -204,38 +209,39 @@ type GetRecipeStepVesselRow struct {
 	ValidMeasurementUnitCreatedAt             sql.NullTime
 	Name                                      string
 	ID                                        string
+	ScaleFactor                               string
 	VesselPredicate                           string
 	BelongsToRecipeStep                       string
 	Notes                                     string
 	ValidVesselShape                          NullVesselShape
-	ValidVesselWidthInMillimeters             sql.NullString
-	ValidVesselID                             sql.NullString
+	ValidVesselDescription                    sql.NullString
 	ValidMeasurementUnitSlug                  sql.NullString
 	ValidMeasurementUnitPluralName            sql.NullString
 	ValidMeasurementUnitID                    sql.NullString
 	ValidVesselCapacity                       sql.NullString
-	ValidVesselName                           sql.NullString
-	ValidVesselPluralName                     sql.NullString
-	RecipeStepProductID                       sql.NullString
+	ValidMeasurementUnitDescription           sql.NullString
+	ValidVesselID                             sql.NullString
+	ValidVesselWidthInMillimeters             sql.NullString
 	ValidVesselLengthInMillimeters            sql.NullString
 	ValidVesselHeightInMillimeters            sql.NullString
 	ValidMeasurementUnitName                  sql.NullString
 	ValidVesselSlug                           sql.NullString
-	ValidMeasurementUnitIconPath              sql.NullString
+	ValidVesselName                           sql.NullString
 	ValidVesselIconPath                       sql.NullString
-	ValidVesselDescription                    sql.NullString
-	ValidMeasurementUnitDescription           sql.NullString
+	ValidVesselPluralName                     sql.NullString
+	RecipeStepProductID                       sql.NullString
+	ValidMeasurementUnitIconPath              sql.NullString
 	MaximumQuantity                           sql.NullInt32
 	MinimumQuantity                           int32
 	Index                                     int32
 	OptionIndex                               int32
-	ValidMeasurementUnitVolumetric            sql.NullBool
 	ValidMeasurementUnitUniversal             sql.NullBool
 	ValidMeasurementUnitMetric                sql.NullBool
+	ValidMeasurementUnitVolumetric            sql.NullBool
+	ValidMeasurementUnitImperial              sql.NullBool
 	ValidVesselUsableForStorage               sql.NullBool
 	ValidVesselDisplayInSummaryLists          sql.NullBool
 	ValidVesselIncludeInGeneratedInstructions sql.NullBool
-	ValidMeasurementUnitImperial              sql.NullBool
 	UnavailableAfterStep                      bool
 }
 
@@ -289,6 +295,7 @@ func (q *Queries) GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetReci
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
+		&i.ScaleFactor,
 	)
 	return &i, err
 }
@@ -341,6 +348,7 @@ SELECT
 	recipe_step_vessels.created_at,
 	recipe_step_vessels.last_updated_at,
 	recipe_step_vessels.archived_at,
+	recipe_step_vessels.scale_factor,
 	(
 		SELECT COUNT(recipe_step_vessels.id)
 		FROM recipe_step_vessels
@@ -404,35 +412,36 @@ type GetRecipeStepVesselsParams struct {
 
 type GetRecipeStepVesselsRow struct {
 	CreatedAt                                 time.Time
-	ValidVesselLastIndexedAt                  sql.NullTime
+	ValidVesselCreatedAt                      sql.NullTime
+	ValidMeasurementUnitCreatedAt             sql.NullTime
 	ArchivedAt                                sql.NullTime
 	LastUpdatedAt                             sql.NullTime
-	ValidMeasurementUnitLastIndexedAt         sql.NullTime
-	ValidMeasurementUnitCreatedAt             sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt         sql.NullTime
 	ValidMeasurementUnitArchivedAt            sql.NullTime
+	ValidVesselLastIndexedAt                  sql.NullTime
+	ValidMeasurementUnitLastIndexedAt         sql.NullTime
 	ValidVesselArchivedAt                     sql.NullTime
 	ValidVesselLastUpdatedAt                  sql.NullTime
-	ValidVesselCreatedAt                      sql.NullTime
-	VesselPredicate                           string
-	ID                                        string
 	Name                                      string
+	ID                                        string
 	Notes                                     string
 	BelongsToRecipeStep                       string
+	VesselPredicate                           string
+	ScaleFactor                               string
 	ValidMeasurementUnitName                  sql.NullString
-	ValidVesselHeightInMillimeters            sql.NullString
-	RecipeStepProductID                       sql.NullString
+	ValidMeasurementUnitID                    sql.NullString
 	ValidMeasurementUnitSlug                  sql.NullString
 	ValidMeasurementUnitPluralName            sql.NullString
-	ValidVesselIconPath                       sql.NullString
+	RecipeStepProductID                       sql.NullString
+	ValidVesselDescription                    sql.NullString
 	ValidMeasurementUnitIconPath              sql.NullString
 	ValidVesselID                             sql.NullString
-	ValidMeasurementUnitDescription           sql.NullString
 	ValidVesselWidthInMillimeters             sql.NullString
 	ValidVesselLengthInMillimeters            sql.NullString
-	ValidVesselDescription                    sql.NullString
+	ValidVesselHeightInMillimeters            sql.NullString
 	ValidVesselShape                          NullVesselShape
-	ValidMeasurementUnitID                    sql.NullString
+	ValidMeasurementUnitDescription           sql.NullString
+	ValidVesselIconPath                       sql.NullString
 	ValidVesselCapacity                       sql.NullString
 	ValidVesselName                           sql.NullString
 	ValidVesselPluralName                     sql.NullString
@@ -443,13 +452,13 @@ type GetRecipeStepVesselsRow struct {
 	MinimumQuantity                           int32
 	Index                                     int32
 	OptionIndex                               int32
-	ValidMeasurementUnitMetric                sql.NullBool
+	ValidMeasurementUnitImperial              sql.NullBool
 	ValidVesselUsableForStorage               sql.NullBool
 	ValidVesselDisplayInSummaryLists          sql.NullBool
 	ValidVesselIncludeInGeneratedInstructions sql.NullBool
 	ValidMeasurementUnitVolumetric            sql.NullBool
 	ValidMeasurementUnitUniversal             sql.NullBool
-	ValidMeasurementUnitImperial              sql.NullBool
+	ValidMeasurementUnitMetric                sql.NullBool
 	UnavailableAfterStep                      bool
 }
 
@@ -519,6 +528,7 @@ func (q *Queries) GetRecipeStepVessels(ctx context.Context, db DBTX, arg *GetRec
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.ScaleFactor,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {
@@ -582,7 +592,8 @@ SELECT
 	recipe_step_vessels.option_index,
 	recipe_step_vessels.created_at,
 	recipe_step_vessels.last_updated_at,
-	recipe_step_vessels.archived_at
+	recipe_step_vessels.archived_at,
+	recipe_step_vessels.scale_factor
 FROM recipe_step_vessels
 	LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
 	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
@@ -609,38 +620,39 @@ type GetRecipeStepVesselsForRecipeRow struct {
 	ValidMeasurementUnitCreatedAt             sql.NullTime
 	Name                                      string
 	ID                                        string
+	ScaleFactor                               string
 	VesselPredicate                           string
 	BelongsToRecipeStep                       string
 	Notes                                     string
 	ValidVesselShape                          NullVesselShape
-	ValidVesselWidthInMillimeters             sql.NullString
-	ValidVesselID                             sql.NullString
+	ValidVesselDescription                    sql.NullString
 	ValidMeasurementUnitSlug                  sql.NullString
 	ValidMeasurementUnitPluralName            sql.NullString
 	ValidMeasurementUnitID                    sql.NullString
 	ValidVesselCapacity                       sql.NullString
-	ValidVesselName                           sql.NullString
-	ValidVesselPluralName                     sql.NullString
-	RecipeStepProductID                       sql.NullString
+	ValidMeasurementUnitDescription           sql.NullString
+	ValidVesselID                             sql.NullString
+	ValidVesselWidthInMillimeters             sql.NullString
 	ValidVesselLengthInMillimeters            sql.NullString
 	ValidVesselHeightInMillimeters            sql.NullString
 	ValidMeasurementUnitName                  sql.NullString
 	ValidVesselSlug                           sql.NullString
-	ValidMeasurementUnitIconPath              sql.NullString
+	ValidVesselName                           sql.NullString
 	ValidVesselIconPath                       sql.NullString
-	ValidVesselDescription                    sql.NullString
-	ValidMeasurementUnitDescription           sql.NullString
+	ValidVesselPluralName                     sql.NullString
+	RecipeStepProductID                       sql.NullString
+	ValidMeasurementUnitIconPath              sql.NullString
 	MaximumQuantity                           sql.NullInt32
 	MinimumQuantity                           int32
 	Index                                     int32
 	OptionIndex                               int32
-	ValidMeasurementUnitVolumetric            sql.NullBool
 	ValidMeasurementUnitUniversal             sql.NullBool
 	ValidMeasurementUnitMetric                sql.NullBool
+	ValidMeasurementUnitVolumetric            sql.NullBool
+	ValidMeasurementUnitImperial              sql.NullBool
 	ValidVesselUsableForStorage               sql.NullBool
 	ValidVesselDisplayInSummaryLists          sql.NullBool
 	ValidVesselIncludeInGeneratedInstructions sql.NullBool
-	ValidMeasurementUnitImperial              sql.NullBool
 	UnavailableAfterStep                      bool
 }
 
@@ -700,6 +712,7 @@ func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, re
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.ScaleFactor,
 		); err != nil {
 			return nil, err
 		}
@@ -727,24 +740,26 @@ UPDATE recipe_step_vessels SET
 	unavailable_after_step = $9,
 	index = $10,
 	option_index = $11,
+	scale_factor = $12,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_recipe_step = $3
-	AND id = $12
+	AND id = $13
 `
 
 type UpdateRecipeStepVesselParams struct {
-	Name                 string
+	ScaleFactor          string
 	Notes                string
 	BelongsToRecipeStep  string
 	VesselPredicate      string
+	Name                 string
 	ID                   string
 	RecipeStepProductID  sql.NullString
 	ValidVesselID        sql.NullString
 	MaximumQuantity      sql.NullInt32
 	MinimumQuantity      int32
-	Index                int32
 	OptionIndex          int32
+	Index                int32
 	UnavailableAfterStep bool
 }
 
@@ -761,6 +776,7 @@ func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *Upda
 		arg.UnavailableAfterStep,
 		arg.Index,
 		arg.OptionIndex,
+		arg.ScaleFactor,
 		arg.ID,
 	)
 	if err != nil {

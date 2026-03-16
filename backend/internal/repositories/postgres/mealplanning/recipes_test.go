@@ -138,6 +138,7 @@ func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *mealp
 
 		for j := range recipe.Steps[i].Ingredients {
 			exampleRecipe.Steps[i].Ingredients[j].CreatedAt = recipe.Steps[i].Ingredients[j].CreatedAt
+			exampleRecipe.Steps[i].Ingredients[j].ScaleFactor = recipe.Steps[i].Ingredients[j].ScaleFactor
 
 			assert.Equal(t, exampleRecipe.Steps[i].Ingredients[j].Ingredient.ID, recipe.Steps[i].Ingredients[j].Ingredient.ID)
 			exampleRecipe.Steps[i].Ingredients[j].Ingredient = recipe.Steps[i].Ingredients[j].Ingredient
@@ -147,12 +148,14 @@ func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *mealp
 		}
 		for j := range recipe.Steps[i].Instruments {
 			exampleRecipe.Steps[i].Instruments[j].CreatedAt = recipe.Steps[i].Instruments[j].CreatedAt
+			exampleRecipe.Steps[i].Instruments[j].ScaleFactor = recipe.Steps[i].Instruments[j].ScaleFactor
 
 			assert.Equal(t, exampleRecipe.Steps[i].Instruments[j].Instrument.ID, recipe.Steps[i].Instruments[j].Instrument.ID)
 			exampleRecipe.Steps[i].Instruments[j].Instrument = recipe.Steps[i].Instruments[j].Instrument
 		}
 		for j := range recipe.Steps[i].Vessels {
 			exampleRecipe.Steps[i].Vessels[j].CreatedAt = recipe.Steps[i].Vessels[j].CreatedAt
+			exampleRecipe.Steps[i].Vessels[j].ScaleFactor = recipe.Steps[i].Vessels[j].ScaleFactor
 
 			assert.Equal(t, exampleRecipe.Steps[i].Vessels[j].Vessel.ID, recipe.Steps[i].Vessels[j].Vessel.ID)
 			exampleRecipe.Steps[i].Vessels[j].Vessel = recipe.Steps[i].Vessels[j].Vessel

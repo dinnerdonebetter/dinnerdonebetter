@@ -29,6 +29,17 @@ func TestRecipeStepInstrument_Update(T *testing.T) {
 
 		x.Update(input)
 	})
+
+	T.Run("with scale_factor", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepInstrument{ScaleFactor: 1.0}
+		input := &RecipeStepInstrumentUpdateRequestInput{
+			ScaleFactor: new(float32(0.5)),
+		}
+		x.Update(input)
+		assert.Equal(t, float32(0.5), x.ScaleFactor)
+	})
 }
 
 func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
@@ -48,6 +59,7 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 				Max: new(fake.Uint32()),
 				Min: fake.Uint32(),
 			},
+			ScaleFactor: 0.5,
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -128,6 +140,7 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 				Min: new(fake.Uint32()),
 				Max: new(fake.Uint32()),
 			},
+			ScaleFactor: new(float32(0.5)),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

@@ -90,6 +90,10 @@ func (q *repository) GetRecipeStepVessel(ctx context.Context, recipeID, recipeSt
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step vessel")
 	}
 
+	scaleFactor := database.Float32FromString(result.ScaleFactor)
+	if scaleFactor <= 0 {
+		scaleFactor = 1.0
+	}
 	recipeStepVessel := &mealplanning.RecipeStepVessel{
 		CreatedAt: result.CreatedAt,
 		Quantity: types.Uint16RangeWithOptionalMax{
@@ -108,6 +112,7 @@ func (q *repository) GetRecipeStepVessel(ctx context.Context, recipeID, recipeSt
 		Index:                uint16(result.Index),
 		OptionIndex:          uint16(result.OptionIndex),
 		UnavailableAfterStep: result.UnavailableAfterStep,
+		ScaleFactor:          scaleFactor,
 	}
 
 	if result.ValidVesselID.Valid {
@@ -205,6 +210,10 @@ func (q *repository) GetRecipeStepVessels(ctx context.Context, recipeID, recipeS
 			filteredCount = uint64(result.FilteredCount)
 			totalCount = uint64(result.TotalCount)
 		}
+		scaleFactor := database.Float32FromString(result.ScaleFactor)
+		if scaleFactor <= 0 {
+			scaleFactor = 1.0
+		}
 		recipeStepVessel := &mealplanning.RecipeStepVessel{
 			CreatedAt: result.CreatedAt,
 			Quantity: types.Uint16RangeWithOptionalMax{
@@ -221,7 +230,9 @@ func (q *repository) GetRecipeStepVessels(ctx context.Context, recipeID, recipeS
 			VesselPreposition:    result.VesselPredicate,
 			Name:                 result.Name,
 			Index:                uint16(result.Index),
+			OptionIndex:          uint16(result.OptionIndex),
 			UnavailableAfterStep: result.UnavailableAfterStep,
+			ScaleFactor:          scaleFactor,
 		}
 
 		if result.ValidVesselID.Valid {
@@ -299,6 +310,10 @@ func (q *repository) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID
 
 	recipeStepVessels := []*mealplanning.RecipeStepVessel{}
 	for _, result := range results {
+		scaleFactor := database.Float32FromString(result.ScaleFactor)
+		if scaleFactor <= 0 {
+			scaleFactor = 1.0
+		}
 		recipeStepVessel := &mealplanning.RecipeStepVessel{
 			CreatedAt: result.CreatedAt,
 			Quantity: types.Uint16RangeWithOptionalMax{
@@ -317,6 +332,7 @@ func (q *repository) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID
 			Index:                uint16(result.Index),
 			OptionIndex:          uint16(result.OptionIndex),
 			UnavailableAfterStep: result.UnavailableAfterStep,
+			ScaleFactor:          scaleFactor,
 		}
 
 		if result.ValidVesselID.Valid {
@@ -391,6 +407,7 @@ func (q *repository) createRecipeStepVessel(ctx context.Context, querier databas
 		Index:                int32(input.Index),
 		OptionIndex:          int32(input.OptionIndex),
 		UnavailableAfterStep: input.UnavailableAfterStep,
+		ScaleFactor:          database.StringFromFloat32(input.ScaleFactor),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step vessel creation query")
 	}
@@ -409,6 +426,7 @@ func (q *repository) createRecipeStepVessel(ctx context.Context, querier databas
 		Index:                input.Index,
 		OptionIndex:          input.OptionIndex,
 		UnavailableAfterStep: input.UnavailableAfterStep,
+		ScaleFactor:          input.ScaleFactor,
 		CreatedAt:            q.CurrentTime(),
 	}
 
@@ -456,6 +474,7 @@ func (q *repository) UpdateRecipeStepVessel(ctx context.Context, updated *mealpl
 		Index:                int32(updated.Index),
 		OptionIndex:          int32(updated.OptionIndex),
 		UnavailableAfterStep: updated.UnavailableAfterStep,
+		ScaleFactor:          database.StringFromFloat32(updated.ScaleFactor),
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step vessel")
 	}

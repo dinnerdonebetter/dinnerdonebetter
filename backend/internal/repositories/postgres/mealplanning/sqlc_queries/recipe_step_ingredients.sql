@@ -19,7 +19,8 @@ INSERT INTO recipe_step_ingredients (
 	product_percentage_to_use,
 	vessel_index,
 	recipe_step_product_recipe_id,
-	belongs_to_recipe_step
+	belongs_to_recipe_step,
+	scale_factor
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(name),
@@ -37,7 +38,8 @@ INSERT INTO recipe_step_ingredients (
 	sqlc.arg(product_percentage_to_use),
 	sqlc.arg(vessel_index),
 	sqlc.arg(recipe_step_product_recipe_id),
-	sqlc.arg(belongs_to_recipe_step)
+	sqlc.arg(belongs_to_recipe_step),
+	sqlc.arg(scale_factor)
 );
 
 -- name: CheckRecipeStepIngredientExistence :one
@@ -128,7 +130,8 @@ SELECT
 	recipe_step_ingredients.last_updated_at,
 	recipe_step_ingredients.archived_at,
 	recipe_step_ingredients.recipe_step_product_recipe_id,
-	recipe_step_ingredients.belongs_to_recipe_step
+	recipe_step_ingredients.belongs_to_recipe_step,
+	recipe_step_ingredients.scale_factor
 FROM recipe_step_ingredients
 	JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
 	JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
@@ -212,6 +215,7 @@ SELECT
 	recipe_step_ingredients.archived_at,
 	recipe_step_ingredients.recipe_step_product_recipe_id,
 	recipe_step_ingredients.belongs_to_recipe_step,
+	recipe_step_ingredients.scale_factor,
 	(
 		SELECT COUNT(recipe_step_ingredients.id)
 		FROM recipe_step_ingredients
@@ -343,7 +347,8 @@ SELECT
 	recipe_step_ingredients.last_updated_at,
 	recipe_step_ingredients.archived_at,
 	recipe_step_ingredients.recipe_step_product_recipe_id,
-	recipe_step_ingredients.belongs_to_recipe_step
+	recipe_step_ingredients.belongs_to_recipe_step,
+	recipe_step_ingredients.scale_factor
 FROM recipe_step_ingredients
 	JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
 	JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
@@ -375,6 +380,7 @@ UPDATE recipe_step_ingredients SET
 	product_percentage_to_use = sqlc.arg(product_percentage_to_use),
 	vessel_index = sqlc.arg(vessel_index),
 	recipe_step_product_recipe_id = sqlc.arg(recipe_step_product_recipe_id),
+	scale_factor = sqlc.arg(scale_factor),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step)

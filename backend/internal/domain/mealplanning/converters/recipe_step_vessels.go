@@ -22,6 +22,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *mealplan
 		OptionIndex:          &input.OptionIndex,
 		VesselPreposition:    &input.VesselPreposition,
 		UnavailableAfterStep: &input.UnavailableAfterStep,
+		ScaleFactor:          &input.ScaleFactor,
 	}
 
 	return x
@@ -48,6 +49,7 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
 		VesselPreposition:               input.VesselPreposition,
 		UnavailableAfterStep:            input.UnavailableAfterStep,
+		ScaleFactor:                     scaleFactorOrDefault(input.ScaleFactor),
 	}
 
 	return x
@@ -70,6 +72,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *mealpl
 		Index:                indexPtr,
 		OptionIndex:          input.OptionIndex,
 		Quantity:             input.Quantity,
+		ScaleFactor:          input.ScaleFactor,
 	}
 }
 
@@ -92,5 +95,6 @@ func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(input *mealp
 		Index:                input.Index,
 		OptionIndex:          input.OptionIndex,
 		Quantity:             input.Quantity,
+		ScaleFactor:          scaleFactorOrDefault(input.ScaleFactor),
 	}
 }

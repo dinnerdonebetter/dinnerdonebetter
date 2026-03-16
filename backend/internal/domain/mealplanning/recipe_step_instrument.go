@@ -52,6 +52,7 @@ type (
 		OptionIndex         uint16                           `json:"optionIndex"`
 		PreferenceRank      uint8                            `json:"preferenceRank"`
 		Optional            bool                             `json:"optional"`
+		ScaleFactor         float32                          `json:"scaleFactor"`
 	}
 
 	// RecipeStepInstrumentCreationRequestInput represents what a user could set as input for creating recipe step instruments.
@@ -69,6 +70,7 @@ type (
 		OptionIndex                     uint16                           `json:"optionIndex"`
 		Optional                        bool                             `json:"optional"`
 		PreferenceRank                  uint8                            `json:"preferenceRank"`
+		ScaleFactor                     float32                          `json:"scaleFactor"`
 	}
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
@@ -89,6 +91,7 @@ type (
 		OptionIndex                     uint16                           `json:"-"`
 		Optional                        bool                             `json:"-"`
 		PreferenceRank                  uint8                            `json:"-"`
+		ScaleFactor                     float32                          `json:"-"`
 	}
 
 	// RecipeStepInstrumentUpdateRequestInput represents what a user could set as input for updating recipe step instruments.
@@ -105,6 +108,7 @@ type (
 		Index               *uint16                                            `json:"index,omitempty"`
 		OptionIndex         *uint16                                            `json:"optionIndex,omitempty"`
 		Quantity            types.Uint32RangeWithOptionalMaxUpdateRequestInput `json:"quantity"`
+		ScaleFactor         *float32                                           `json:"scaleFactor,omitempty"`
 	}
 
 	// RecipeStepInstrumentDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -167,6 +171,10 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 
 	if input.OptionIndex != nil && *input.OptionIndex != x.OptionIndex {
 		x.OptionIndex = *input.OptionIndex
+	}
+
+	if input.ScaleFactor != nil && *input.ScaleFactor != x.ScaleFactor {
+		x.ScaleFactor = *input.ScaleFactor
 	}
 }
 

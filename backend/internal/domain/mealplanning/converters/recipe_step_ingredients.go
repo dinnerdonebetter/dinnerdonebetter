@@ -34,6 +34,7 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 		VesselIndex:                     input.VesselIndex,
 		ToTaste:                         input.ToTaste,
 		ProductPercentageToUse:          input.ProductPercentageToUse,
+		ScaleFactor:                     scaleFactorOrDefault(input.ScaleFactor),
 	}
 
 	return x
@@ -59,6 +60,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 		VesselIndex:            input.VesselIndex,
 		ToTaste:                &input.ToTaste,
 		ProductPercentageToUse: input.ProductPercentageToUse,
+		ScaleFactor:            &input.ScaleFactor,
 	}
 
 	return x
@@ -86,6 +88,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input
 		VesselIndex:            input.VesselIndex,
 		ToTaste:                input.ToTaste,
 		ProductPercentageToUse: input.ProductPercentageToUse,
+		ScaleFactor:            input.ScaleFactor,
 	}
 }
 
@@ -109,5 +112,6 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(inpu
 		VesselIndex:            input.VesselIndex,
 		ToTaste:                input.ToTaste,
 		ProductPercentageToUse: input.ProductPercentageToUse,
+		ScaleFactor:            scaleFactorOrDefault(input.ScaleFactor),
 	}
 }

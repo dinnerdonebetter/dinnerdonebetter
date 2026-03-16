@@ -52,6 +52,7 @@ type (
 		Index                uint16                           `json:"index"`
 		OptionIndex          uint16                           `json:"optionIndex"`
 		UnavailableAfterStep bool                             `json:"unavailableAfterStep"`
+		ScaleFactor          float32                          `json:"scaleFactor"`
 	}
 
 	// RecipeStepVesselCreationRequestInput represents what a user could set as input for creating recipe step instruments.
@@ -68,6 +69,7 @@ type (
 		VesselPreposition               string                           `json:"vesselPreposition"`
 		OptionIndex                     uint16                           `json:"optionIndex"`
 		UnavailableAfterStep            bool                             `json:"unavailableAfterStep"`
+		ScaleFactor                     float32                          `json:"scaleFactor"`
 	}
 
 	// RecipeStepVesselDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
@@ -88,6 +90,7 @@ type (
 		Index                           uint16                           `json:"-"`
 		OptionIndex                     uint16                           `json:"-"`
 		UnavailableAfterStep            bool                             `json:"-"`
+		ScaleFactor                     float32                          `json:"-"`
 	}
 
 	// RecipeStepVesselUpdateRequestInput represents what a user could set as input for updating recipe step instruments.
@@ -104,6 +107,7 @@ type (
 		OptionIndex          *uint16                                            `json:"optionIndex,omitempty"`
 		VesselPreposition    *string                                            `json:"vesselPreposition,omitempty"`
 		UnavailableAfterStep *bool                                              `json:"unavailableAfterStep,omitempty"`
+		ScaleFactor          *float32                                           `json:"scaleFactor,omitempty"`
 	}
 
 	// RecipeStepVesselDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -170,6 +174,10 @@ func (x *RecipeStepVessel) Update(input *RecipeStepVesselUpdateRequestInput) {
 
 	if input.VesselID != nil && x.Vessel != nil && *input.VesselID != x.Vessel.ID {
 		x.Vessel = &ValidVessel{ID: *input.VesselID}
+	}
+
+	if input.ScaleFactor != nil && *input.ScaleFactor != x.ScaleFactor {
+		x.ScaleFactor = *input.ScaleFactor
 	}
 }
 
