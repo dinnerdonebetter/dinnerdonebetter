@@ -92,8 +92,9 @@ struct UnifiedMealStep: Identifiable {
         let key = "\(ing.ingredient.id)|\(ing.hasMeasurementUnit ? ing.measurementUnit.id : "")"
         let unit = ing.hasMeasurementUnit ? ing.measurementUnit : nil
         if ing.hasQuantity {
-          let min = ing.quantity.min * source.scale
-          let max = ing.quantity.hasMax ? ing.quantity.max * source.scale : nil
+          let effectiveScale = source.scale * (ing.scaleFactor > 0 ? ing.scaleFactor : 1.0)
+          let min = ing.quantity.min * effectiveScale
+          let max = ing.quantity.hasMax ? ing.quantity.max * effectiveScale : nil
           breakdown[key, default: []].append(
             MergedIngredientSourcePart(sourceName: sourceName, min: min, max: max, unit: unit)
           )
@@ -193,20 +194,22 @@ private func mergeStepIngredients(
       if mergedByKey[key] == nil {
         var copy = ing
         if ing.hasQuantity {
+          let effectiveScale = scale * (ing.scaleFactor > 0 ? ing.scaleFactor : 1.0)
           var scaledQuantity = ing.quantity
-          scaledQuantity.min *= scale
+          scaledQuantity.min *= effectiveScale
           if scaledQuantity.hasMax {
-            scaledQuantity.max *= scale
+            scaledQuantity.max *= effectiveScale
           }
           copy.quantity = scaledQuantity
           totals[key] = (scaledQuantity.min, scaledQuantity.hasMax ? scaledQuantity.max : nil)
         }
         mergedByKey[key] = copy
       } else if ing.hasQuantity {
+        let effectiveScale = scale * (ing.scaleFactor > 0 ? ing.scaleFactor : 1.0)
         var (totalMin, totalMax) = totals[key] ?? (0, nil)
-        totalMin += ing.quantity.min * scale
+        totalMin += ing.quantity.min * effectiveScale
         if ing.quantity.hasMax {
-          totalMax = (totalMax ?? totalMin) + ing.quantity.max * scale
+          totalMax = (totalMax ?? totalMin) + ing.quantity.max * effectiveScale
         } else {
           totalMax = nil
         }

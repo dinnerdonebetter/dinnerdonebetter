@@ -1248,11 +1248,21 @@ public struct Identity_UploadUserAvatarResponse: Sendable {
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
   public mutating func clearResponseDetails() {self._responseDetails = nil}
 
+  public var created: UploadedMedia_UploadedMedia {
+    get {return _created ?? UploadedMedia_UploadedMedia()}
+    set {_created = newValue}
+  }
+  /// Returns true if `created` has been explicitly set.
+  public var hasCreated: Bool {return self._created != nil}
+  /// Clears the value of `created`. Subsequent reads from it will return its default value.
+  public mutating func clearCreated() {self._created = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _created: UploadedMedia_UploadedMedia? = nil
 }
 
 public struct Identity_AccountCreationRequestInput: Sendable {
@@ -3580,7 +3590,7 @@ extension Identity_UpdateUserUsernameResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Identity_UploadUserAvatarResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UploadUserAvatarResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3589,6 +3599,7 @@ extension Identity_UploadUserAvatarResponse: SwiftProtobuf.Message, SwiftProtobu
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._created) }()
       default: break
       }
     }
@@ -3602,11 +3613,15 @@ extension Identity_UploadUserAvatarResponse: SwiftProtobuf.Message, SwiftProtobu
     try { if let v = self._responseDetails {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     } }()
+    try { if let v = self._created {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Identity_UploadUserAvatarResponse, rhs: Identity_UploadUserAvatarResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._created != rhs._created {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -22,6 +22,7 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 			Min: &input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		ScaleFactor: &input.ScaleFactor,
 	}
 
 	return x
@@ -48,9 +49,17 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 		Quantity:                        input.Quantity,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
+		ScaleFactor:                     scaleFactorOrDefault(input.ScaleFactor),
 	}
 
 	return x
+}
+
+func scaleFactorOrDefault(v float32) float32 {
+	if v <= 0 {
+		return 1.0
+	}
+	return v
 }
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput builds a RecipeStepInstrumentCreationRequestInput from a RecipeStepInstrument.
@@ -70,6 +79,7 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(input
 		Index:               indexPtr,
 		OptionIndex:         input.OptionIndex,
 		Quantity:            input.Quantity,
+		ScaleFactor:         input.ScaleFactor,
 	}
 }
 
@@ -92,5 +102,6 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(inpu
 		Index:               input.Index,
 		OptionIndex:         input.OptionIndex,
 		Quantity:            input.Quantity,
+		ScaleFactor:         scaleFactorOrDefault(input.ScaleFactor),
 	}
 }

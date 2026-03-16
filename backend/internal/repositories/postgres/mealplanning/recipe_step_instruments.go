@@ -90,6 +90,10 @@ func (q *repository) GetRecipeStepInstrument(ctx context.Context, recipeID, reci
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step instrument get")
 	}
 
+	scaleFactor := database.Float32FromString(result.ScaleFactor)
+	if scaleFactor <= 0 {
+		scaleFactor = 1.0
+	}
 	recipeStepInstrument := &mealplanning.RecipeStepInstrument{
 		CreatedAt:           result.CreatedAt,
 		Instrument:          nil,
@@ -108,6 +112,7 @@ func (q *repository) GetRecipeStepInstrument(ctx context.Context, recipeID, reci
 		OptionIndex:         uint16(result.OptionIndex),
 		PreferenceRank:      uint8(result.PreferenceRank),
 		Optional:            result.Optional,
+		ScaleFactor:         scaleFactor,
 	}
 
 	if result.ValidInstrumentID.Valid {
@@ -181,6 +186,10 @@ func (q *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 			filteredCount = uint64(result.FilteredCount)
 			totalCount = uint64(result.TotalCount)
 		}
+		scaleFactor := database.Float32FromString(result.ScaleFactor)
+		if scaleFactor <= 0 {
+			scaleFactor = 1.0
+		}
 		recipeStepInstrument := &mealplanning.RecipeStepInstrument{
 			CreatedAt:           result.CreatedAt,
 			Instrument:          nil,
@@ -199,6 +208,7 @@ func (q *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 			OptionIndex:    uint16(result.OptionIndex),
 			PreferenceRank: uint8(result.PreferenceRank),
 			Optional:       result.Optional,
+			ScaleFactor:    scaleFactor,
 		}
 
 		if result.ValidInstrumentID.Valid {
@@ -252,6 +262,10 @@ func (q *repository) getRecipeStepInstrumentsForRecipe(ctx context.Context, reci
 
 	recipeStepInstruments := []*mealplanning.RecipeStepInstrument{}
 	for _, result := range results {
+		scaleFactor := database.Float32FromString(result.ScaleFactor)
+		if scaleFactor <= 0 {
+			scaleFactor = 1.0
+		}
 		recipeStepInstrument := &mealplanning.RecipeStepInstrument{
 			CreatedAt:           result.CreatedAt,
 			Instrument:          nil,
@@ -270,6 +284,7 @@ func (q *repository) getRecipeStepInstrumentsForRecipe(ctx context.Context, reci
 			OptionIndex:    uint16(result.OptionIndex),
 			PreferenceRank: uint8(result.PreferenceRank),
 			Optional:       result.Optional,
+			ScaleFactor:    scaleFactor,
 		}
 
 		if result.ValidInstrumentID.Valid {
@@ -321,6 +336,7 @@ func (q *repository) createRecipeStepInstrument(ctx context.Context, querier dat
 		OptionIndex:         int32(input.OptionIndex),
 		MinimumQuantity:     int32(input.Quantity.Min),
 		Optional:            input.Optional,
+		ScaleFactor:         database.StringFromFloat32(input.ScaleFactor),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step instrument creation query")
 	}
@@ -337,6 +353,7 @@ func (q *repository) createRecipeStepInstrument(ctx context.Context, querier dat
 		Index:               input.Index,
 		OptionIndex:         input.OptionIndex,
 		Quantity:            input.Quantity,
+		ScaleFactor:         input.ScaleFactor,
 		CreatedAt:           q.CurrentTime(),
 	}
 
@@ -383,6 +400,7 @@ func (q *repository) UpdateRecipeStepInstrument(ctx context.Context, updated *me
 		MaximumQuantity:     database.NullInt32FromUint32Pointer(updated.Quantity.Max),
 		BelongsToRecipeStep: updated.BelongsToRecipeStep,
 		ID:                  updated.ID,
+		ScaleFactor:         database.StringFromFloat32(updated.ScaleFactor),
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step instrument")
 	}

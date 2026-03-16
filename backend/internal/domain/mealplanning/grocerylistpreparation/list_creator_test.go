@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
@@ -493,6 +494,74 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		}
 
 		assert.Equal(t, expectedMap, actualMap)
+	})
+
+	T.Run("with ingredient scale_factor", func(t *testing.T) {
+		t.Parallel()
+
+		listGenerator := &groceryListCreator{
+			logger: logging.NewNoopLogger(),
+			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+		}
+
+		onion := fakes.BuildFakeValidIngredient()
+		grams := fakes.BuildFakeValidMeasurementUnit()
+		optionID := fakes.BuildFakeID()
+		recipeID := fakes.BuildFakeID()
+		stepID := fakes.BuildFakeID()
+
+		// Recipe scaled 2x; ingredient has scale_factor 0.5 so effective scale = 2 * 0.5 = 1.0
+		// Quantity min 100 -> 100 (unchanged). Without scale_factor it would be 200.
+		expectedMealPlan := &mealplanning.MealPlan{
+			ID: fakes.BuildFakeID(),
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        optionID,
+							Chosen:    true,
+							MealScale: 1.0,
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 2.0,
+										Recipe: mealplanning.Recipe{
+											ID: recipeID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: stepID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														{
+															Ingredient: onion,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: new(float32(100)),
+																Min: 100,
+															},
+															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
+															ScaleFactor:     0.5,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		ctx := t.Context()
+		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
+		assert.NoError(t, err)
+		require.Len(t, actual, 1)
+		// effectiveScale = 2.0 * 0.5 = 1.0, so 100 * 1.0 = 100
+		assert.Equal(t, float32(100), actual[0].QuantityNeeded.Min)
+		assert.Equal(t, float32(100), *actual[0].QuantityNeeded.Max)
 	})
 
 	T.Run("with option groups", func(t *testing.T) {

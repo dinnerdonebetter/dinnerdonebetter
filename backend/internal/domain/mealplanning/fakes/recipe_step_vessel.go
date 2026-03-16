@@ -23,6 +23,7 @@ func BuildFakeRecipeStepVessel() *types.RecipeStepVessel {
 		Quantity:             BuildFakeUint16RangeWithOptionalMax(),
 		VesselPreposition:    buildUniqueString(),
 		UnavailableAfterStep: fake.Bool(),
+		ScaleFactor:          1.0,
 	}
 }
 

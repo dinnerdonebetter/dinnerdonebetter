@@ -90,6 +90,10 @@ func (q *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step ingredient")
 	}
 
+	scaleFactor := database.Float32FromString(result.ScaleFactor)
+	if scaleFactor <= 0 {
+		scaleFactor = 1.0
+	}
 	recipeStepIngredient := &mealplanning.RecipeStepIngredient{
 		CreatedAt:                 result.CreatedAt,
 		RecipeStepProductID:       database.StringPointerFromNullString(result.RecipeStepProductID),
@@ -103,6 +107,7 @@ func (q *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 		BelongsToRecipeStep:       result.BelongsToRecipeStep,
 		IngredientNotes:           result.IngredientNotes,
 		Name:                      result.Name,
+		ScaleFactor:               scaleFactor,
 		MeasurementUnit: mealplanning.ValidMeasurementUnit{
 			CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
@@ -195,6 +200,10 @@ func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 
 	recipeStepIngredients := []*mealplanning.RecipeStepIngredient{}
 	for _, result := range results {
+		scaleFactor := database.Float32FromString(result.ScaleFactor)
+		if scaleFactor <= 0 {
+			scaleFactor = 1.0
+		}
 		recipeStepIngredient := &mealplanning.RecipeStepIngredient{
 			CreatedAt:                 result.CreatedAt,
 			RecipeStepProductID:       database.StringPointerFromNullString(result.RecipeStepProductID),
@@ -208,6 +217,7 @@ func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 			BelongsToRecipeStep:       result.BelongsToRecipeStep,
 			IngredientNotes:           result.IngredientNotes,
 			Name:                      result.Name,
+			ScaleFactor:               scaleFactor,
 			MeasurementUnit: mealplanning.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
@@ -328,6 +338,10 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 		filteredCount, totalCount uint64
 	)
 	for _, result := range results {
+		scaleFactor := database.Float32FromString(result.ScaleFactor)
+		if scaleFactor <= 0 {
+			scaleFactor = 1.0
+		}
 		recipeStepIngredient := &mealplanning.RecipeStepIngredient{
 			CreatedAt:                 result.CreatedAt,
 			RecipeStepProductID:       database.StringPointerFromNullString(result.RecipeStepProductID),
@@ -341,6 +355,7 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 			BelongsToRecipeStep:       result.BelongsToRecipeStep,
 			IngredientNotes:           result.IngredientNotes,
 			Name:                      result.Name,
+			ScaleFactor:               scaleFactor,
 			MeasurementUnit: mealplanning.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
@@ -466,6 +481,7 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 		OptionIndex:               int32(input.OptionIndex),
 		ToTaste:                   input.ToTaste,
 		Optional:                  input.Optional,
+		ScaleFactor:               database.StringFromFloat32(input.ScaleFactor),
 	}); err != nil {
 		return nil, observability.PrepareError(err, span, "performing recipe step ingredient creation query")
 	}
@@ -489,6 +505,7 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 		ProductPercentageToUse:    input.ProductPercentageToUse,
 		VesselIndex:               input.VesselIndex,
 		RecipeStepProductRecipeID: input.RecipeStepProductRecipeID,
+		ScaleFactor:               input.ScaleFactor,
 		CreatedAt:                 q.CurrentTime(),
 	}
 
@@ -569,6 +586,7 @@ func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *me
 		RecipeStepProductRecipeID: database.NullStringFromStringPointer(updated.RecipeStepProductRecipeID),
 		BelongsToRecipeStep:       updated.BelongsToRecipeStep,
 		ID:                        updated.ID,
+		ScaleFactor:               database.StringFromFloat32(updated.ScaleFactor),
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step ingredient")
 	}

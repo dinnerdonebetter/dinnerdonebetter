@@ -324,6 +324,10 @@ func ConvertRecipePrepTaskStepWithinRecipeCreationRequestInputToGRPCRecipePrepTa
 }
 
 func ConvertGRPCRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentCreationRequestInput(input *mealplanningsvc.RecipeStepInstrumentCreationRequestInput) *mealplanning.RecipeStepInstrumentCreationRequestInput {
+	scaleFactor := input.GetScaleFactor()
+	if scaleFactor <= 0 {
+		scaleFactor = 1.0
+	}
 	return &mealplanning.RecipeStepInstrumentCreationRequestInput{
 		RecipeStepProductID:             input.RecipeStepProductId,
 		ValidPreparationInstrumentID:    input.ValidPreparationInstrumentId,
@@ -339,6 +343,7 @@ func ConvertGRPCRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentCr
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		ScaleFactor: scaleFactor,
 	}
 }
 
@@ -358,10 +363,15 @@ func ConvertRecipeStepInstrumentCreationRequestInputToGRPCRecipeStepInstrumentCr
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		ScaleFactor: &input.ScaleFactor,
 	}
 }
 
 func ConvertGRPCRecipeStepVesselCreationRequestInputToRecipeStepVesselCreationRequestInput(input *mealplanningsvc.RecipeStepVesselCreationRequestInput) *mealplanning.RecipeStepVesselCreationRequestInput {
+	scaleFactor := input.GetScaleFactor()
+	if scaleFactor <= 0 {
+		scaleFactor = 1.0
+	}
 	return &mealplanning.RecipeStepVesselCreationRequestInput{
 		RecipeStepProductID:             input.RecipeStepProductId,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
@@ -377,6 +387,7 @@ func ConvertGRPCRecipeStepVesselCreationRequestInputToRecipeStepVesselCreationRe
 			Min: uint16(input.Quantity.Min),
 			Max: grpcconverters.ConvertUint32PointerToUint16Pointer(input.Quantity.Max),
 		},
+		ScaleFactor: scaleFactor,
 	}
 }
 
@@ -396,6 +407,7 @@ func ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRe
 			Min: uint32(input.Quantity.Min),
 			Max: grpcconverters.ConvertUint16PointerToUint32Pointer(input.Quantity.Max),
 		},
+		ScaleFactor: &input.ScaleFactor,
 	}
 }
 
@@ -490,6 +502,10 @@ func ConvertRecipeStepProductCreationRequestInputToGRPCRecipeStepProductCreation
 }
 
 func ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCreationRequestInput(input *mealplanningsvc.RecipeStepIngredientCreationRequestInput) *mealplanning.RecipeStepIngredientCreationRequestInput {
+	scaleFactor := input.GetScaleFactor()
+	if scaleFactor <= 0 {
+		scaleFactor = 1.0
+	}
 	return &mealplanning.RecipeStepIngredientCreationRequestInput{
 		ValidIngredientPreparationID:     input.ValidIngredientPreparationId,
 		ValidIngredientMeasurementUnitID: input.ValidIngredientMeasurementUnitId,
@@ -510,6 +526,7 @@ func ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCr
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		ScaleFactor: scaleFactor,
 	}
 }
 
@@ -533,6 +550,7 @@ func ConvertRecipeStepIngredientCreationRequestInputToGRPCRecipeStepIngredientCr
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		ScaleFactor: &input.ScaleFactor,
 	}
 }
 
@@ -918,6 +936,7 @@ func ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(input *mealplanning.R
 		OptionIndex:         uint32(input.OptionIndex),
 		PreferenceRank:      uint32(input.PreferenceRank),
 		Optional:            input.Optional,
+		ScaleFactor:         input.ScaleFactor,
 	}
 }
 
@@ -927,6 +946,10 @@ func ConvertGRPCRecipeStepInstrumentToRecipeStepInstrument(input *mealplanningsv
 		convertedInstrument = ConvertGRPCValidInstrumentToValidInstrument(input.Instrument)
 	}
 
+	scaleFactor := input.ScaleFactor
+	if scaleFactor <= 0 {
+		scaleFactor = 1.0
+	}
 	return &mealplanning.RecipeStepInstrument{
 		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
 		Instrument:    convertedInstrument,
@@ -945,6 +968,7 @@ func ConvertGRPCRecipeStepInstrumentToRecipeStepInstrument(input *mealplanningsv
 		OptionIndex:         uint16(input.OptionIndex),
 		PreferenceRank:      uint8(input.PreferenceRank),
 		Optional:            input.Optional,
+		ScaleFactor:         scaleFactor,
 	}
 }
 
@@ -972,6 +996,7 @@ func ConvertRecipeStepVesselToGRPCRecipeStepVessel(input *mealplanning.RecipeSte
 		UnavailableAfterStep: input.UnavailableAfterStep,
 		Index:                uint32(input.Index),
 		OptionIndex:          uint32(input.OptionIndex),
+		ScaleFactor:          input.ScaleFactor,
 	}
 }
 
@@ -981,6 +1006,10 @@ func ConvertGRPCRecipeStepVesselToRecipeStepVessel(input *mealplanningsvc.Recipe
 		validVessel = ConvertGRPCValidVesselToValidVessel(input.Vessel)
 	}
 
+	scaleFactor := input.ScaleFactor
+	if scaleFactor <= 0 {
+		scaleFactor = 1.0
+	}
 	return &mealplanning.RecipeStepVessel{
 		Vessel: validVessel,
 		Quantity: types.Uint16RangeWithOptionalMax{
@@ -999,6 +1028,7 @@ func ConvertGRPCRecipeStepVesselToRecipeStepVessel(input *mealplanningsvc.Recipe
 		UnavailableAfterStep: input.UnavailableAfterStep,
 		Index:                uint16(input.Index),
 		OptionIndex:          uint16(input.OptionIndex),
+		ScaleFactor:          scaleFactor,
 	}
 }
 
@@ -1097,6 +1127,7 @@ func ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(input *mealplanning.R
 		RecipeStepProductRecipeId: input.RecipeStepProductRecipeID,
 		RecipeStepProductId:       input.RecipeStepProductID,
 		VesselIndex:               grpcconverters.ConvertUint16PointerToUint32Pointer(input.VesselIndex),
+		ScaleFactor:               input.ScaleFactor,
 	}
 
 	return ingredient
@@ -1108,6 +1139,10 @@ func ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(input *mealplanningsv
 		validIngredient = ConvertGRPCValidIngredientToValidIngredient(input.Ingredient)
 	}
 
+	scaleFactor := input.ScaleFactor
+	if scaleFactor <= 0 {
+		scaleFactor = 1.0
+	}
 	ingredient := &mealplanning.RecipeStepIngredient{
 		MeasurementUnit: *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.MeasurementUnit),
 		CreatedAt:       grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
@@ -1131,6 +1166,7 @@ func ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(input *mealplanningsv
 		RecipeStepProductRecipeID: input.RecipeStepProductRecipeId,
 		RecipeStepProductID:       input.RecipeStepProductId,
 		VesselIndex:               grpcconverters.ConvertUint32PointerToUint16Pointer(input.VesselIndex),
+		ScaleFactor:               scaleFactor,
 	}
 
 	return ingredient
@@ -1593,7 +1629,15 @@ func ConvertRecipeStepCompletionConditionUpdateRequestInputToGRPCRecipeStepCompl
 }
 
 func ConvertGRPCRecipeStepIngredientUpdateRequestInputToRecipeStepIngredientUpdateRequestInput(input *mealplanningsvc.RecipeStepIngredientUpdateRequestInput) *mealplanning.RecipeStepIngredientUpdateRequestInput {
-	return &mealplanning.RecipeStepIngredientUpdateRequestInput{
+	scaleFactor := new(float32(1.0))
+	if input.ScaleFactor != nil {
+		sf := input.GetScaleFactor()
+		if sf > 0 {
+			scaleFactor = &sf
+		}
+	}
+
+	out := &mealplanning.RecipeStepIngredientUpdateRequestInput{
 		IngredientID:              input.IngredientId,
 		RecipeStepProductID:       input.RecipeStepProductId,
 		Name:                      input.Name,
@@ -1612,7 +1656,9 @@ func ConvertGRPCRecipeStepIngredientUpdateRequestInputToRecipeStepIngredientUpda
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		ScaleFactor: scaleFactor,
 	}
+	return out
 }
 
 func ConvertRecipeStepIngredientUpdateRequestInputToGRPCRecipeStepIngredientUpdateRequestInput(input *mealplanning.RecipeStepIngredientUpdateRequestInput) *mealplanningsvc.RecipeStepIngredientUpdateRequestInput {
@@ -1635,11 +1681,20 @@ func ConvertRecipeStepIngredientUpdateRequestInputToGRPCRecipeStepIngredientUpda
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		ScaleFactor: input.ScaleFactor,
 	}
 }
 
 func ConvertGRPCRecipeStepInstrumentUpdateRequestInputToRecipeStepInstrumentUpdateRequestInput(input *mealplanningsvc.RecipeStepInstrumentUpdateRequestInput) *mealplanning.RecipeStepInstrumentUpdateRequestInput {
-	return &mealplanning.RecipeStepInstrumentUpdateRequestInput{
+	scaleFactor := new(float32(1.0))
+	if input.ScaleFactor != nil {
+		sf := input.GetScaleFactor()
+		if sf > 0 {
+			scaleFactor = &sf
+		}
+	}
+
+	out := &mealplanning.RecipeStepInstrumentUpdateRequestInput{
 		InstrumentID:        input.InstrumentId,
 		RecipeStepProductID: input.RecipeStepProductId,
 		Notes:               input.Notes,
@@ -1653,7 +1708,10 @@ func ConvertGRPCRecipeStepInstrumentUpdateRequestInputToRecipeStepInstrumentUpda
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		ScaleFactor: scaleFactor,
 	}
+
+	return out
 }
 
 func ConvertRecipeStepInstrumentUpdateRequestInputToGRPCRecipeStepInstrumentUpdateRequestInput(input *mealplanning.RecipeStepInstrumentUpdateRequestInput) *mealplanningsvc.RecipeStepInstrumentUpdateRequestInput {
@@ -1671,6 +1729,7 @@ func ConvertRecipeStepInstrumentUpdateRequestInputToGRPCRecipeStepInstrumentUpda
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		ScaleFactor: input.ScaleFactor,
 	}
 }
 
@@ -1749,7 +1808,15 @@ func ConvertRecipeStepProductUpdateRequestInputToGRPCRecipeStepProductUpdateRequ
 }
 
 func ConvertGRPCRecipeStepVesselUpdateRequestInputToRecipeStepVesselUpdateRequestInput(input *mealplanningsvc.RecipeStepVesselUpdateRequestInput) *mealplanning.RecipeStepVesselUpdateRequestInput {
-	return &mealplanning.RecipeStepVesselUpdateRequestInput{
+	scaleFactor := new(float32(1.0))
+	if input.ScaleFactor != nil {
+		sf := input.GetScaleFactor()
+		if sf > 0 {
+			scaleFactor = &sf
+		}
+	}
+
+	out := &mealplanning.RecipeStepVesselUpdateRequestInput{
 		RecipeStepProductID:  input.RecipeStepProductId,
 		Name:                 input.Name,
 		Notes:                input.Notes,
@@ -1763,7 +1830,10 @@ func ConvertGRPCRecipeStepVesselUpdateRequestInputToRecipeStepVesselUpdateReques
 			Min: grpcconverters.ConvertUint32PointerToUint16Pointer(input.Quantity.Min),
 			Max: grpcconverters.ConvertUint32PointerToUint16Pointer(input.Quantity.Max),
 		},
+		ScaleFactor: scaleFactor,
 	}
+
+	return out
 }
 
 func ConvertRecipeStepVesselUpdateRequestInputToGRPCRecipeStepVesselUpdateRequestInput(input *mealplanning.RecipeStepVesselUpdateRequestInput) *mealplanningsvc.RecipeStepVesselUpdateRequestInput {
@@ -1781,5 +1851,6 @@ func ConvertRecipeStepVesselUpdateRequestInputToGRPCRecipeStepVesselUpdateReques
 			Min: grpcconverters.ConvertUint16PointerToUint32Pointer(input.Quantity.Min),
 			Max: grpcconverters.ConvertUint16PointerToUint32Pointer(input.Quantity.Max),
 		},
+		ScaleFactor: input.ScaleFactor,
 	}
 }

@@ -62,10 +62,15 @@ func (g *groceryListCreator) processRecipeIngredients(
 
 			logger = logger.WithValue(mealplanningkeys.RecipeStepIngredientIDKey, ingredient.ID)
 
-			minQty := float32(recipeScale.Mul(decimal.NewFromFloat32(ingredient.Quantity.Min)).Truncate(2).InexactFloat64())
+			scaleFactor := ingredient.ScaleFactor
+			if scaleFactor <= 0 {
+				scaleFactor = 1.0
+			}
+			effectiveScale := recipeScale.Mul(decimal.NewFromFloat32(scaleFactor))
+			minQty := float32(effectiveScale.Mul(decimal.NewFromFloat32(ingredient.Quantity.Min)).Truncate(2).InexactFloat64())
 			var maxQty *float32
 			if ingredient.Quantity.Max != nil {
-				maximum := float32(recipeScale.Mul(decimal.NewFromFloat32(*ingredient.Quantity.Max)).Truncate(2).InexactFloat64())
+				maximum := float32(effectiveScale.Mul(decimal.NewFromFloat32(*ingredient.Quantity.Max)).Truncate(2).InexactFloat64())
 				maxQty = &maximum
 			}
 

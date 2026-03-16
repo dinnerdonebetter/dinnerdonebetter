@@ -16,14 +16,15 @@ This is a **monorepo**. Main areas:
 | Path | Description |
 | ------ | ------------- |
 | **`backend/`** | Go API server, workers, and tooling. gRPC + HTTP, PostgreSQL, Pub/Sub, Wire, sqlc. See [backend/README.md](backend/README.md). |
+| **`frontend/`** | Web apps: **admin** and **consumer** (SvelteKit + Vite). Shared packages: `api-client` (proto-generated TS), `ui`, `logger`. Built and deployed via own Skaffold/Docker/Kustomize. |
 | **`ios/`** | Native iOS app (Swift). Xcode project, Fastlane, tests. |
-| **`proto/`** | Shared API definitions (Protocol Buffers). Generated Go and Swift code used by backend and iOS. |
+| **`proto/`** | Shared API definitions (Protocol Buffers). Generated Go, Swift, and TypeScript code used by backend, frontend, and iOS. |
 | **`infra/`** | Infrastructure and deploy: Terraform (GCP, GKE, networking, DNS), Skaffold, scripts. |
 | **`docs/`** | Design and runbooks: auth, identity, meal planning, recipes, deployment, spin-up, secrets. |
 
 ### Backend at a glance
 
-- **Services** (in `backend/cmd/services/`): `api` (main gRPC/HTTP), `admin` and `consumer` webapps, `mcp`.
+- **Services** (in `backend/cmd/services/`): `api` (main gRPC/HTTP), `mcp`. Admin and consumer **webapps** live in **`frontend/`** (SvelteKit).
 - **Workers** (in `backend/cmd/workers/`): meal plan finalizer, grocery list initializer, task creator, search index scheduler, mobile notification scheduler, DB cleaner, etc.
 - **Functions**: async handlers (e.g. data-change message handler) for Pub/Sub and queues.
 - **Stack**: Go 1.26, Chi, Wire, sqlc, PostgreSQL, Redis, GCP (Cloud SQL, Pub/Sub, Secret Manager, etc.), Algolia, Stripe, Resend, Firebase/APNs.
@@ -32,7 +33,7 @@ This is a **monorepo**. Main areas:
 
 ## Quick start
 
-**Prerequisites:** Go 1.26, Make, Docker & Docker Compose. See [docs/spin-up-from-scratch.md](docs/spin-up-from-scratch.md) for a full list (Terraform, sqlc, wire, etc.).
+**Prerequisites:** Go 1.26, Node.js (for frontend), Make, Docker & Docker Compose. See [docs/spin-up-from-scratch.md](docs/spin-up-from-scratch.md) for a full list (Terraform, sqlc, wire, etc.).
 
 ```bash
 # One-time setup (root)
@@ -41,15 +42,28 @@ make setup
 # Backend: vendor, wire, configs, codegen
 cd backend && make setup
 
+# Frontend: install dependencies (from repo root)
+cd frontend && npm install
+
 # Run local dev server (API + workers, local Postgres via compose)
 cd backend && make dev
 ```
 
-- **API:** <http://localhost:8000> (HTTP) · `localhost:8001` (gRPC)
-- **Admin webapp:** `make admin` (from `backend/`) → typically <http://localhost:8888>
-- **Consumer webapp:** `make consumer` (from `backend/`)
+In separate terminals, run the web apps (with the API already running):
 
-See [backend/README.md](backend/README.md) for backend-only quick start and targets.
+```bash
+# Admin webapp (from frontend/)
+cd frontend && npm run dev -w admin
+
+# Consumer webapp (from frontend/)
+cd frontend && npm run dev -w consumer
+```
+
+- **API:** <http://localhost:8000> (HTTP) · `localhost:8001` (gRPC)
+- **Admin webapp:** Vite dev server (default <http://localhost:5173> when run alone)
+- **Consumer webapp:** Vite dev server (use a different port if both run, e.g. `--port 5174` for the second)
+
+See [backend/README.md](backend/README.md) for backend-only quick start. Frontend apps use `.env` in `frontend/admin` and `frontend/consumer` for API URLs and auth (see `.env.example` there).
 
 ---
 
@@ -61,11 +75,13 @@ See [backend/README.md](backend/README.md) for backend-only quick start and targ
 | `make format` | Format YAML, Go, Terraform, Swift. |
 | `make lint` | Lint backend and iOS. |
 | `make test` | Run backend and iOS tests. |
-| `make proto` | Format protos, generate Go and Swift from `proto/`. |
+| `make proto` | Format protos, generate Go, Swift, and TypeScript from `proto/`. |
 | `make deploy_localdev` | Deploy to Docker Desktop Kubernetes (infra + backend via Skaffold). |
 | `make deploy_terraform_prod` | Apply prod Terraform (infra then backend). |
 | `make deploy_prod` | Run prod application deploy (Skaffold) via `./scripts/deploy-prod-local.sh`. |
 | `make verify_prod` | Post-deploy verification (Skaffold verify + scripts). |
+
+**Frontend** (from `frontend/`): `npm install`, `npm run dev -w admin` / `npm run dev -w consumer`, `npm run build`, `npm run lint`, `npm run test`.
 
 ---
 
@@ -103,8 +119,8 @@ Deploy pipeline (see [docs/deployment.md](docs/deployment.md)):
 ## Protobuf and code generation
 
 - **Source:** `proto/` — per-domain `.proto` files (e.g. `mealplanning/`, `auth/`, `identity/`).
-- **Generate:** `make proto` (format with buf, then `proto_golang` and `proto_swift`).
-- **Output:** Go → `backend/internal/grpc`, Swift → `ios/ios/Generated`.
+- **Generate:** `make proto` (format with buf, then `proto_golang` and `proto_swift`). For the frontend API client: `make proto_typescript` (outputs to `frontend/packages/api-client/src`).
+- **Output:** Go → `backend/internal/grpc`, Swift → `ios/ios/Generated`, TypeScript → `frontend/packages/api-client/src`.
 
 Requires `protoc`, `protoc-gen-go`, `protoc-gen-go-grpc`, and for Swift `protoc-gen-swift` and `protoc-gen-grpc-swift`. The root Makefile has `ensure_*` targets; see `make proto` and [Makefile](Makefile) around the `PROTO_*` variables.
 
@@ -116,10 +132,10 @@ Requires `protoc`, `protoc-gen-go`, `protoc-gen-go-grpc`, and for Swift `protoc-
 make deploy_localdev
 ```
 
-Uses Skaffold to deploy infra and backend to a `localdev` namespace. Afterward:
+Uses Skaffold to deploy infra and backend to a `localdev` namespace. The **admin** and **consumer** webapps are built and deployed from **`frontend/`** (see `frontend/skaffold.yaml`); run that separately if you want them in the cluster. Afterward:
 
 - API: <http://localhost:8000>
-- Admin webapp: <http://localhost:8888>
+- Admin and consumer webapps: as configured by frontend deploy (e.g. port-forward from the `dinner-done-better-admin-webapp-svc` / `dinner-done-better-consumer-webapp-svc` services).
 
 Teardown: `make nuke_localdev`.
 

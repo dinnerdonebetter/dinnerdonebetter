@@ -58,6 +58,7 @@ type (
 		OptionIndex               uint16                            `json:"optionIndex"`
 		Optional                  bool                              `json:"optional"`
 		ToTaste                   bool                              `json:"toTaste"`
+		ScaleFactor               float32                           `json:"scaleFactor"`
 	}
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
@@ -80,6 +81,7 @@ type (
 		OptionIndex                      uint16                            `json:"optionIndex"`
 		Optional                         bool                              `json:"optional"`
 		ToTaste                          bool                              `json:"toTaste"`
+		ScaleFactor                      float32                           `json:"scaleFactor"`
 	}
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
@@ -106,6 +108,7 @@ type (
 		OptionIndex                      uint16                            `json:"-"`
 		Optional                         bool                              `json:"-"`
 		ToTaste                          bool                              `json:"-"`
+		ScaleFactor                      float32                           `json:"-"`
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
@@ -127,6 +130,7 @@ type (
 		ToTaste                   *bool                                               `json:"toTaste,omitempty"`
 		ProductPercentageToUse    *float32                                            `json:"productPercentageToUse,omitempty"`
 		RecipeStepProductRecipeID *string                                             `json:"productOfRecipeID"`
+		ScaleFactor               *float32                                            `json:"scaleFactor,omitempty"`
 	}
 
 	// RecipeStepIngredientDataManager describes a structure capable of storing recipe step ingredients permanently.
@@ -209,6 +213,10 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 
 	if input.ProductPercentageToUse != nil && ((x.ProductPercentageToUse != nil && *input.ProductPercentageToUse != *x.ProductPercentageToUse) || x.ProductPercentageToUse == nil) {
 		x.ProductPercentageToUse = input.ProductPercentageToUse
+	}
+
+	if input.ScaleFactor != nil && *input.ScaleFactor != x.ScaleFactor {
+		x.ScaleFactor = *input.ScaleFactor
 	}
 }
 

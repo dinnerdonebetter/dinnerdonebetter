@@ -19,10 +19,11 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		PreferenceRank:      fake.Uint8(),
 		CreatedAt:           BuildFakeTime(),
 		BelongsToRecipeStep: fake.UUID(),
-		Index:               0, // Will be set from array index during recipe creation
-		OptionIndex:         0, // Default to 0 for single-option items
+		Index:               0,
+		OptionIndex:         0,
 		Optional:            fake.Bool(),
 		Quantity:            BuildFakeUint32RangeWithOptionalMax(),
+		ScaleFactor:         1.0,
 	}
 }
 

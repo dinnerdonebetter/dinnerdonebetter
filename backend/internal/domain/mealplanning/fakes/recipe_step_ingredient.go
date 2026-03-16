@@ -27,6 +27,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		VesselIndex:            new(fake.Uint16()),
 		ToTaste:                fake.Bool(),
 		ProductPercentageToUse: new(float32(buildFakeNumber())),
+		ScaleFactor:            1.0,
 	}
 }
 
