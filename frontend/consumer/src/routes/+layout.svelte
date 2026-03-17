@@ -1,15 +1,21 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { afterNavigate } from '$app/navigation';
   import '../app.css';
   import favicon from '$lib/assets/favicon.svg';
   import { Link } from '@dinnerdonebetter/ui';
-  import { initClientOtel } from '$lib/otel/client';
+  import { initClientOtel, initClientOtelMetrics, recordPageView } from '$lib/otel/client';
 
   let { children } = $props();
 
   if (browser) {
     initClientOtel();
+    initClientOtelMetrics();
   }
+
+  afterNavigate(({ to }) => {
+    if (browser && to) recordPageView(to.url.pathname);
+  });
 </script>
 
 <svelte:head>
