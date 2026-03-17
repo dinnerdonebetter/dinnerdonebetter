@@ -3,7 +3,10 @@ import { redirect } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit';
 import { decodeSession, getCookieName } from '$lib/auth/session';
 import { exchangeJwtForOAuth2Token } from '$lib/grpc/oauth2';
+import { initServerOtel } from '$lib/otel/server';
 import { ServerTiming, ServerTimingHeaderName } from '$lib/server-timing';
+
+initServerOtel();
 
 const LOGIN_PATH = '/login';
 
@@ -20,6 +23,7 @@ const PUBLIC_PATHS = [
   '/_ops_',
   '/.well-known',
   '/auth/passkey/authentication',
+  '/api/otel',
 ];
 
 function isPublicPath(pathname: string): boolean {

@@ -4,6 +4,8 @@ receivers:
     protocols:
       grpc:
         endpoint: "0.0.0.0:4317"
+      http:
+        endpoint: "0.0.0.0:4318"
 
   # kube-state-metrics with severe allowlist: only deployment + pod phase metrics (~100-300 series vs 5k+ unfiltered).
   # Add more metric names to the regex if you need them; remove to disable entirely.

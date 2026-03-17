@@ -26,6 +26,13 @@
     "@dinnerdonebetter/logger": "file:../packages/logger",
     "@dinnerdonebetter/ui": "file:../packages/ui",
     "@grpc/grpc-js": "^1.12.4",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.57.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.57.0",
+    "@opentelemetry/resources": "^1.29.0",
+    "@opentelemetry/sdk-node": "^0.57.0",
+    "@opentelemetry/sdk-trace-web": "^1.29.0",
+    "@opentelemetry/semantic-conventions": "^1.29.0",
     "marked": "^17.0.4",
     "mermaid": "^11.4.0"
   },

@@ -46,6 +46,8 @@ spec:
           ports:
             - containerPort: 4317
               name: otlp-grpc
+            - containerPort: 4318
+              name: otlp-http
             - containerPort: 13133
               name: health
           volumeMounts:
@@ -85,6 +87,10 @@ spec:
       port: 4317
       protocol: TCP
       targetPort: otlp-grpc
+    - name: otlp-http
+      port: 4318
+      protocol: TCP
+      targetPort: otlp-http
     - name: health
       port: 13133
       protocol: TCP

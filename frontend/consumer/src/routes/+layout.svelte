@@ -1,9 +1,15 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import '../app.css';
   import favicon from '$lib/assets/favicon.svg';
   import { Link } from '@dinnerdonebetter/ui';
+  import { initClientOtel } from '$lib/otel/client';
 
   let { children } = $props();
+
+  if (browser) {
+    initClientOtel();
+  }
 </script>
 
 <svelte:head>

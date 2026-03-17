@@ -82,6 +82,16 @@ patches:
         value:
           name: DEVELOPING_LOCALLY
           value: "true"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: OTEL_COLLECTOR_GRPC_URL
+          value: "otel-collector-svc.localdev.svc.cluster.local:4317"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: OTEL_COLLECTOR_HTTP_URL
+          value: "http://otel-collector-svc.localdev.svc.cluster.local:4318"
 
   - target:
       version: v1
