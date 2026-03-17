@@ -8,6 +8,8 @@ import (
 	"path"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -57,6 +59,18 @@ func writeFile(p string, content []byte) error {
 	return os.WriteFile(p, content, 0o0644)
 }
 
+// disableWorkerOtelMetrics turns off runtime and host metrics for worker configs to reduce cardinality.
+// It clones the Otel config so the root config (API server, async message handler) is not mutated.
+func disableWorkerOtelMetrics(obs *observability.Config) {
+	if obs == nil || obs.Metrics.Otel == nil {
+		return
+	}
+	copied := *obs.Metrics.Otel
+	copied.EnableRuntimeMetrics = false
+	copied.EnableHostMetrics = false
+	obs.Metrics.Otel = &copied
+}
+
 const (
 	apiConfigObservabilityServiceName   = "api_server"
 	dbcConfigObservabilityServiceName   = "db_cleaner"
@@ -101,6 +115,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	dbcConfig.Observability.Metrics.ServiceName = dbcConfigObservabilityServiceName
 	dbcConfig.Observability.Logging.ServiceName = dbcConfigObservabilityServiceName
 	dbcConfig.Observability.Profiling.ServiceName = dbcConfigObservabilityServiceName
+	disableWorkerOtelMetrics(&dbcConfig.Observability)
 
 	mpfConfig := &MealPlanFinalizerConfig{
 		Observability: s.RootConfig.Observability,
@@ -112,6 +127,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mpfConfig.Observability.Metrics.ServiceName = mpfConfigObservabilityServiceName
 	mpfConfig.Observability.Logging.ServiceName = mpfConfigObservabilityServiceName
 	mpfConfig.Observability.Profiling.ServiceName = mpfConfigObservabilityServiceName
+	disableWorkerOtelMetrics(&mpfConfig.Observability)
 
 	mpgliConfig := &MealPlanGroceryListInitializerConfig{
 		Observability: s.RootConfig.Observability,
@@ -124,6 +140,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mpgliConfig.Observability.Metrics.ServiceName = mpgliConfigObservabilityServiceName
 	mpgliConfig.Observability.Logging.ServiceName = mpgliConfigObservabilityServiceName
 	mpgliConfig.Observability.Profiling.ServiceName = mpgliConfigObservabilityServiceName
+	disableWorkerOtelMetrics(&mpgliConfig.Observability)
 
 	mptcConfig := &MealPlanTaskCreatorConfig{
 		Observability: s.RootConfig.Observability,
@@ -136,6 +153,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mptcConfig.Observability.Metrics.ServiceName = mptcConfigObservabilityServiceName
 	mptcConfig.Observability.Logging.ServiceName = mptcConfigObservabilityServiceName
 	mptcConfig.Observability.Profiling.ServiceName = mptcConfigObservabilityServiceName
+	disableWorkerOtelMetrics(&mptcConfig.Observability)
 
 	sdisConfig := &SearchDataIndexSchedulerConfig{
 		Observability: s.RootConfig.Observability,
@@ -147,6 +165,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	sdisConfig.Observability.Metrics.ServiceName = sdisConfigObservabilityServiceName
 	sdisConfig.Observability.Logging.ServiceName = sdisConfigObservabilityServiceName
 	sdisConfig.Observability.Profiling.ServiceName = sdisConfigObservabilityServiceName
+	disableWorkerOtelMetrics(&sdisConfig.Observability)
 
 	mnsConfig := &MobileNotificationSchedulerConfig{
 		Observability: s.RootConfig.Observability,
@@ -158,6 +177,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mnsConfig.Observability.Metrics.ServiceName = mnsConfigObservabilityServiceName
 	mnsConfig.Observability.Logging.ServiceName = mnsConfigObservabilityServiceName
 	mnsConfig.Observability.Profiling.ServiceName = mnsConfigObservabilityServiceName
+	disableWorkerOtelMetrics(&mnsConfig.Observability)
 
 	amhConfig := &AsyncMessageHandlerConfig{
 		Storage:           s.RootConfig.Services.DataPrivacy.Uploads.Storage,
@@ -191,6 +211,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	edtConfig.Observability.Metrics.ServiceName = edtConfigObservabilityServiceName
 	edtConfig.Observability.Logging.ServiceName = edtConfigObservabilityServiceName
 	edtConfig.Observability.Profiling.ServiceName = edtConfigObservabilityServiceName
+	disableWorkerOtelMetrics(&edtConfig.Observability)
 
 	qtConfig := &QueueTestJobConfig{
 		Observability: s.RootConfig.Observability,
@@ -202,6 +223,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	qtConfig.Observability.Metrics.ServiceName = qtConfigObservabilityServiceName
 	qtConfig.Observability.Logging.ServiceName = qtConfigObservabilityServiceName
 	qtConfig.Observability.Profiling.ServiceName = qtConfigObservabilityServiceName
+	disableWorkerOtelMetrics(&qtConfig.Observability)
 
 	if validate {
 		allConfigs := []validation.ValidatableWithContext{
