@@ -22,13 +22,15 @@ jobs:
         go-version: ['1.26.x']
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: '${{ matrix.go-version }}'
-
-      - name: Checkout code
-        uses: actions/checkout@v6
+          cache: true
+          cache-dependency-path: backend/go.sum
 
       - name: Install wire
         run: go install github.com/google/wire/cmd/wire@latest
@@ -47,13 +49,15 @@ jobs:
         go-version: ['1.26.x']
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: '${{ matrix.go-version }}'
-
-      - name: Checkout code
-        uses: actions/checkout@v6
+          cache: true
+          cache-dependency-path: backend/go.sum
 
       - name: Ensure configs can be generated
         working-directory: backend
@@ -69,13 +73,15 @@ jobs:
         go-version: ['1.26.x']
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: '${{ matrix.go-version }}'
-
-      - name: Checkout code
-        uses: actions/checkout@v6
+          cache: true
+          cache-dependency-path: backend/go.sum
 
       - name: Ensure queries and querier can be generated
         working-directory: backend
@@ -91,13 +97,15 @@ jobs:
         go-version: ['1.26.x']
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: '${{ matrix.go-version }}'
-
-      - name: Checkout code
-        uses: actions/checkout@v6
+          cache: true
+          cache-dependency-path: backend/go.sum
 
       - name: generate env vars file
         working-directory: backend
@@ -113,13 +121,15 @@ jobs:
         go-version: ['1.26.x']
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: '${{ matrix.go-version }}'
-
-      - name: Checkout code
-        uses: actions/checkout@v6
+          cache: true
+          cache-dependency-path: backend/go.sum
 
       - name: Ensure go.mod and go.sum are tidy
         working-directory: backend

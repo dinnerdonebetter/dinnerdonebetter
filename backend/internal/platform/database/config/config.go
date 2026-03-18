@@ -42,7 +42,7 @@ type (
 		MaxPingAttempts              uint64               `env:"MAX_PING_ATTEMPTS"                json:"maxPingAttempts"`
 		ConnMaxLifetime              time.Duration        `env:"CONN_MAX_LIFETIME"                envDefault:"30m"                    json:"connMaxLifetime"`
 		MaxIdleConns                 uint16               `env:"MAX_IDLE_CONNS"                   envDefault:"5"                      json:"maxIdleConns"`
-		MaxOpenConns                 uint16               `env:"MAX_OPEN_CONNS"                   envDefault:"7"                      envDefault:""          json:"maxOpenConns"`
+		MaxOpenConns                 uint16               `env:"MAX_OPEN_CONNS"                   envDefault:"7"                      json:"maxOpenConns"`
 		Debug                        bool                 `env:"DEBUG"                            json:"debug"`
 		LogQueries                   bool                 `env:"LOG_QUERIES"                      json:"logQueries"`
 		RunMigrations                bool                 `env:"RUN_MIGRATIONS"                   json:"runMigrations"`

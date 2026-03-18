@@ -62,7 +62,7 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 	db.SetConnMaxLifetime(cfg.GetConnMaxLifetime())
 
 	if metricsProvider != nil {
-		if _, err := otelsql.RegisterDBStatsMetrics(db, otelsql.WithAttributes(
+		if _, err = otelsql.RegisterDBStatsMetrics(db, otelsql.WithAttributes(
 			semconv.DBSystemPostgreSQL,
 		)); err != nil {
 			return nil, fmt.Errorf("registering db stats metrics: %w", err)
