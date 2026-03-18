@@ -12,7 +12,7 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { metrics } from '@opentelemetry/api';
-import { normalizePathForMetrics } from './normalize-path';
+import { shouldRecordPathForMetrics } from './utils';
 
 const SERVICE_NAME = 'consumer-web';
 const METER_NAME = 'consumer-web-client';
@@ -28,7 +28,7 @@ export function initClientOtel(): void {
   tracingInitialized = true;
 
   const exporter = new OTLPTraceExporter({
-    url: '/api/otel/v1/traces',
+    url: `${window.location.origin}/api/otel/v1/traces`,
   });
 
   const resource = new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME });
@@ -53,7 +53,7 @@ export function initClientOtelMetrics(): void {
 
   const resource = new Resource({ [ATTR_SERVICE_NAME]: SERVICE_NAME });
   const exporter = new OTLPMetricExporter({
-    url: '/api/otel/v1/metrics',
+    url: `${window.location.origin}/api/otel/v1/metrics`,
   });
 
   const reader = new PeriodicExportingMetricReader({
@@ -79,9 +79,10 @@ let _pageViewCounter: { add: (value: number, attributes?: Record<string, string>
 
 /**
  * Record a page view for metrics. Call from the client after navigation (e.g. afterNavigate).
- * No-op if metrics are not initialized.
+ * No-op if metrics are not initialized. Single counter (no route label) to keep cardinality low.
  */
 export function recordPageView(route: string): void {
   if (typeof window === 'undefined') return;
-  _pageViewCounter?.add(1, { route: normalizePathForMetrics(route) });
+  if (!shouldRecordPathForMetrics(route)) return;
+  _pageViewCounter?.add(1);
 }
