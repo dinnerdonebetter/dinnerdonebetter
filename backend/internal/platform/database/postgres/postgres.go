@@ -57,9 +57,17 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
 
-	db.SetMaxIdleConns(5)
-	db.SetMaxOpenConns(7)
-	db.SetConnMaxLifetime(30 * time.Minute)
+	db.SetMaxIdleConns(cfg.GetMaxIdleConns())
+	db.SetMaxOpenConns(cfg.GetMaxOpenConns())
+	db.SetConnMaxLifetime(cfg.GetConnMaxLifetime())
+
+	if metricsProvider != nil {
+		if _, err = otelsql.RegisterDBStatsMetrics(db, otelsql.WithAttributes(
+			semconv.DBSystemPostgreSQL,
+		)); err != nil {
+			return nil, fmt.Errorf("registering db stats metrics: %w", err)
+		}
+	}
 
 	c := &Client{
 		db:       db,

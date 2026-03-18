@@ -199,8 +199,11 @@
 			"port": 5432,
 			"disableSSL": true
 		},
-		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1000000000,
+		"maxPingAttempts": 50,
+		"connMaxLifetime": 1800000000000,
+		"maxIdleConns": 5,
+		"maxOpenConns": 7,
 		"debug": true,
 		"logQueries": true,
 		"runMigrations": true,

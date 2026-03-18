@@ -35,18 +35,18 @@ type (
 		Encryption                   encryptioncfg.Config `env:"init"                             envPrefix:"ENCRYPTION_"             json:"encryption"`
 		OAuth2TokenEncryptionKey     string               `env:"OAUTH2_TOKEN_ENCRYPTION_KEY"      json:"oauth2TokenEncryptionKey"`
 		UserDeviceTokenEncryptionKey string               `env:"USER_DEVICE_TOKEN_ENCRYPTION_KEY" json:"userDeviceTokenEncryptionKey"`
-		Provider                     string               `env:"PROVIDER"                         json:"provider"`
+		Provider                     string               `env:"PROVIDER"                         envDefault:"postgres"               json:"provider"`
 		ReadConnection               ConnectionDetails    `envPrefix:"READ_CONNECTION_"           json:"readConnection"`
 		WriteConnection              ConnectionDetails    `envPrefix:"WRITE_CONNECTION_"          json:"writeConnection"`
+		PingWaitPeriod               time.Duration        `env:"PING_WAIT_PERIOD"                 envDefault:"1s"                     json:"pingWaitPeriod"`
 		MaxPingAttempts              uint64               `env:"MAX_PING_ATTEMPTS"                json:"maxPingAttempts"`
-		PingWaitPeriod               time.Duration        `env:"PING_WAIT_PERIOD"                 json:"pingWaitPeriod"`
+		ConnMaxLifetime              time.Duration        `env:"CONN_MAX_LIFETIME"                envDefault:"30m"                    json:"connMaxLifetime"`
+		MaxIdleConns                 uint16               `env:"MAX_IDLE_CONNS"                   envDefault:"5"                      json:"maxIdleConns"`
+		MaxOpenConns                 uint16               `env:"MAX_OPEN_CONNS"                   envDefault:"7"                      json:"maxOpenConns"`
 		Debug                        bool                 `env:"DEBUG"                            json:"debug"`
 		LogQueries                   bool                 `env:"LOG_QUERIES"                      json:"logQueries"`
 		RunMigrations                bool                 `env:"RUN_MIGRATIONS"                   json:"runMigrations"`
-		// EnableDatabaseMetrics turns on db.sql.* metrics (latency, etc.) from otelsql. When true, every
-		// service that uses the DB emits these metrics, which can significantly increase active series count
-		// (e.g. 3.6k → 12k+). Set to true only if you need DB-level metrics and can afford the cardinality.
-		EnableDatabaseMetrics bool `env:"ENABLE_DATABASE_METRICS" json:"enableDatabaseMetrics"`
+		EnableDatabaseMetrics        bool                 `env:"ENABLE_DATABASE_METRICS"          json:"enableDatabaseMetrics"`
 	}
 
 	ConnectionDetails struct {
@@ -86,6 +86,33 @@ func (cfg *Config) GetPingWaitPeriod() time.Duration {
 	return cfg.PingWaitPeriod
 }
 
+// GetMaxIdleConns implements database.ClientConfig.
+// Returns 5 when unset (zero).
+func (cfg *Config) GetMaxIdleConns() int {
+	if cfg.MaxIdleConns == 0 {
+		return 5
+	}
+	return int(cfg.MaxIdleConns)
+}
+
+// GetMaxOpenConns implements database.ClientConfig.
+// Returns 7 when unset (zero).
+func (cfg *Config) GetMaxOpenConns() int {
+	if cfg.MaxOpenConns == 0 {
+		return 7
+	}
+	return int(cfg.MaxOpenConns)
+}
+
+// GetConnMaxLifetime implements database.ClientConfig.
+// Returns 30m when unset (zero).
+func (cfg *Config) GetConnMaxLifetime() time.Duration {
+	if cfg.ConnMaxLifetime <= 0 {
+		return 30 * time.Minute
+	}
+	return cfg.ConnMaxLifetime
+}
+
 // ValidateWithContext validates an DatabaseSettings struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
@@ -111,9 +138,9 @@ func (cfg *Config) ConnectToDatabase() (*sql.DB, error) {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
 
-	db.SetMaxIdleConns(5)
-	db.SetMaxOpenConns(7)
-	db.SetConnMaxLifetime(30 * time.Minute)
+	db.SetMaxIdleConns(cfg.GetMaxIdleConns())
+	db.SetMaxOpenConns(cfg.GetMaxOpenConns())
+	db.SetConnMaxLifetime(cfg.GetConnMaxLifetime())
 
 	return db, nil
 }

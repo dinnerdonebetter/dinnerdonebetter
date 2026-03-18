@@ -41,6 +41,18 @@ func (c *testClientConfig) GetPingWaitPeriod() time.Duration {
 	return c.pingWaitPeriod
 }
 
+func (c *testClientConfig) GetMaxIdleConns() int {
+	return 5
+}
+
+func (c *testClientConfig) GetMaxOpenConns() int {
+	return 7
+}
+
+func (c *testClientConfig) GetConnMaxLifetime() time.Duration {
+	return 30 * time.Minute
+}
+
 type sqlmockExpecterWrapper struct {
 	sqlmock.Sqlmock
 }

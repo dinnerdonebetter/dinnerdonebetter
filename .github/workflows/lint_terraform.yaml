@@ -39,13 +39,15 @@ jobs:
       matrix:
         go-version: ['1.26.x']
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
-
-      - name: Checkout code
-        uses: actions/checkout@v6
+          cache: true
+          cache-dependency-path: backend/go.sum
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -72,13 +74,15 @@ jobs:
       matrix:
         go-version: ['1.26.x']
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
-
-      - name: Checkout code
-        uses: actions/checkout@v6
+          cache: true
+          cache-dependency-path: backend/go.sum
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

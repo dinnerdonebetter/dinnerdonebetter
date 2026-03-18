@@ -151,7 +151,7 @@
   async function fetchVessels(query: string, preparationId: string): Promise<ValidPreparationVessel[]> {
     if (!preparationId) return [];
     const res = await fetch(
-      `/api/recipes/search-vessels?q=${encodeURIComponent(query)}&preparationId=${encodeURIComponent(preparationId)}`,
+      `/api/mealplanning/search-vessels?q=${encodeURIComponent(query)}&preparationId=${encodeURIComponent(preparationId)}`,
     );
     const json = await res.json();
     return json.results ?? [];
@@ -166,7 +166,7 @@
 
   async function fetchPreparations(query: string): Promise<{ id: string; label: string }[]> {
     if (query.length < 2) return [];
-    const res = await fetch(`/api/recipes/search-preparations?q=${encodeURIComponent(query)}`);
+    const res = await fetch(`/api/mealplanning/search-preparations?q=${encodeURIComponent(query)}`);
     const json = await res.json();
     return (json.results ?? []).map((p: ValidPreparation) => ({ id: p.id, label: p.name }));
   }
@@ -174,20 +174,22 @@
   async function fetchIngredients(query: string, preparationId: string): Promise<ValidIngredient[]> {
     if (query.length < 2 || !preparationId) return [];
     const res = await fetch(
-      `/api/recipes/search-ingredients?q=${encodeURIComponent(query)}&preparationId=${encodeURIComponent(preparationId)}`,
+      `/api/mealplanning/search-ingredients?q=${encodeURIComponent(query)}&preparationId=${encodeURIComponent(preparationId)}`,
     );
     const json = await res.json();
     return json.results ?? [];
   }
 
   async function fetchIngredientPreparations(preparationId: string): Promise<ValidIngredientPreparation[]> {
-    const res = await fetch(`/api/recipes/ingredient-preparations?preparationId=${encodeURIComponent(preparationId)}`);
+    const res = await fetch(
+      `/api/mealplanning/ingredient-preparations?preparationId=${encodeURIComponent(preparationId)}`,
+    );
     const json = await res.json();
     return json.results ?? [];
   }
 
   async function fetchProductMeasurementUnits(query = ''): Promise<ValidMeasurementUnit[]> {
-    const res = await fetch(`/api/recipes/search-measurement-units?q=${encodeURIComponent(query)}`);
+    const res = await fetch(`/api/mealplanning/search-measurement-units?q=${encodeURIComponent(query)}`);
     const json = await res.json();
     return (json.results ?? []) as ValidMeasurementUnit[];
   }
@@ -221,7 +223,7 @@
       recipeSuggestionsBySlot = { ...recipeSuggestionsBySlot, [key]: [] };
       return;
     }
-    const res = await fetch(`/api/recipes/search-recipes?q=${encodeURIComponent(query)}`);
+    const res = await fetch(`/api/mealplanning/search-recipes?q=${encodeURIComponent(query)}`);
     const json = await res.json();
     recipeSuggestionsBySlot = { ...recipeSuggestionsBySlot, [key]: json.results ?? [] };
   }
@@ -620,7 +622,7 @@
                         ) ?? { id: item.id, name: item.label };
                         state.setPreparation(stepIndex, prep as ValidPreparation);
                         const res = await fetch(
-                          `/api/recipes/search-instruments?preparationId=${encodeURIComponent(prep.id)}`,
+                          `/api/mealplanning/search-instruments?preparationId=${encodeURIComponent(prep.id)}`,
                         );
                         const json = await res.json();
                         state.setInstrumentSuggestions(stepIndex, json.results ?? []);
@@ -1065,7 +1067,7 @@
                                       (v.ingredient as { id?: string } | undefined)?.id === item.id,
                                   );
                                   const vimus = await fetch(
-                                    `/api/recipes/search-measurement-units?ingredientId=${encodeURIComponent(item.id)}`,
+                                    `/api/mealplanning/search-measurement-units?ingredientId=${encodeURIComponent(item.id)}`,
                                   ).then((r: Response) => r.json());
                                   const vimuList: ValidIngredientMeasurementUnit[] = vimus.results ?? [];
                                   state.setIngredientMeasurementUnitSuggestions(stepIndex, ingIdx, vimuList);

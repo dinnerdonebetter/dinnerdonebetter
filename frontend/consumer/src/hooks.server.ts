@@ -3,7 +3,11 @@ import { redirect } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit';
 import { decodeSession, getCookieName } from '$lib/auth/session';
 import { exchangeJwtForOAuth2Token } from '$lib/grpc/oauth2';
+import { initServerOtel } from '$lib/otel/server';
+import { recordRequest } from '$lib/otel/server-metrics';
 import { ServerTiming, ServerTimingHeaderName } from '$lib/server-timing';
+
+initServerOtel();
 
 const LOGIN_PATH = '/login';
 
@@ -34,6 +38,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     const response = await resolve(event);
     totalEvent.end();
     response.headers.set(ServerTimingHeaderName, timing.headerValue());
+    recordRequest(event.url.pathname, response.status, totalEvent.duration);
     return response;
   }
 
@@ -74,5 +79,6 @@ export const handle: Handle = async ({ event, resolve }) => {
   const response = await resolve(event);
   totalEvent.end();
   response.headers.set(ServerTimingHeaderName, timing.headerValue());
+  recordRequest(event.url.pathname, response.status, totalEvent.duration);
   return response;
 };

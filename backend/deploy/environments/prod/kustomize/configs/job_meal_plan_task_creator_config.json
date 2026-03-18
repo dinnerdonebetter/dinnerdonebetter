@@ -103,8 +103,8 @@
 				"metricsCollectorEndpoint": "otel-collector-svc.prod.svc.cluster.local:4317",
 				"collectionInterval": 30000000000,
 				"insecure": true,
-				"enableRuntimeMetrics": true,
-				"enableHostMetrics": true
+				"enableRuntimeMetrics": false,
+				"enableHostMetrics": false
 			},
 			"serviceName": "meal_plan_task_creator",
 			"provider": "otelgrpc"
@@ -142,8 +142,11 @@
 			"port": 5432,
 			"disableSSL": false
 		},
-		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1000000000,
+		"maxPingAttempts": 50,
+		"connMaxLifetime": 1800000000000,
+		"maxIdleConns": 5,
+		"maxOpenConns": 7,
 		"debug": false,
 		"logQueries": false,
 		"runMigrations": true,

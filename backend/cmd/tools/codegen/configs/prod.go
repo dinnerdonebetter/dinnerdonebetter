@@ -172,6 +172,9 @@ func buildProdConfig() *config.APIServiceConfig {
 			LogQueries:                   false,
 			MaxPingAttempts:              maxAttempts,
 			PingWaitPeriod:               time.Second,
+			MaxIdleConns:                 5,
+			MaxOpenConns:                 7,
+			ConnMaxLifetime:              30 * time.Minute,
 			ReadConnection: databasecfg.ConnectionDetails{
 				Username:   "api_db_user",
 				Database:   "dinner-done-better",

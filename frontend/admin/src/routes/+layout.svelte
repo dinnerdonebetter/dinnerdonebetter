@@ -1,10 +1,15 @@
 <script lang="ts">
   import '../app.css';
+  import { page } from '$app/state';
   import { Link, PageContainer } from '@dinnerdonebetter/ui';
 
   let { children } = $props();
 
   let mobileMenuOpen = $state(false);
+
+  /** Routes that use their own width (e.g. recipe creator with PageContainer wide) — don't wrap in layout PageContainer */
+  const fullWidthRoutes = ['/recipes/new'];
+  const useLayoutContainer = $derived(!fullWidthRoutes.some((p) => page.url.pathname === p));
 </script>
 
 <div class="layout-root">
@@ -54,9 +59,13 @@
   </header>
 
   <main class="layout-main">
-    <PageContainer>
+    {#if useLayoutContainer}
+      <PageContainer>
+        {@render children()}
+      </PageContainer>
+    {:else}
       {@render children()}
-    </PageContainer>
+    {/if}
   </main>
 </div>
 
