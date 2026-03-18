@@ -24,7 +24,6 @@ const PUBLIC_PATHS = [
   '/_ops_',
   '/.well-known',
   '/auth/passkey/authentication',
-  '/api/otel',
 ];
 
 function isPublicPath(pathname: string): boolean {
