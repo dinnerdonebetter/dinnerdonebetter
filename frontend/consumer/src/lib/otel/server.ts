@@ -2,11 +2,13 @@
  * Server-side OpenTelemetry tracing and metrics for SvelteKit (Node).
  * Import this module from hooks.server.ts so it runs at startup.
  * When OTEL_COLLECTOR_GRPC_URL is unset, tracing and metrics are no-op.
+ * HTTP server instrumentation creates a span per incoming request so traces appear in Tempo.
  */
 
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
+import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
@@ -44,6 +46,7 @@ export function initServerOtel(): void {
     resource,
     traceExporter,
     metricReader,
+    instrumentations: [new HttpInstrumentation()],
     // Rely on collector for sampling in prod; trace everything when collector is configured for now.
     sampler: undefined,
   });
