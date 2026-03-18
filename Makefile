@@ -106,6 +106,11 @@ deploy_prod_infra:
 deploy_prod_software:
 	./scripts/deploy-prod-local.sh
 
+# Deploy only the frontend (consumer + admin webapps) to prod. Run from repo root.
+.PHONY: deploy_prod_frontend
+deploy_prod_frontend:
+	./scripts/deploy-prod-frontend.sh
+
 .PHONY: verify_prod
 verify_prod:
 	skaffold verify --filename=skaffold.yaml --profile prod
