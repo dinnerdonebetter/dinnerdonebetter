@@ -30,18 +30,19 @@ const (
 type (
 	// Config represents our database configuration.
 	Config struct {
-		_                            struct{}             `json:"-"`
+		_ struct{} `json:"-"`
+
 		Encryption                   encryptioncfg.Config `env:"init"                             envPrefix:"ENCRYPTION_"             json:"encryption"`
 		OAuth2TokenEncryptionKey     string               `env:"OAUTH2_TOKEN_ENCRYPTION_KEY"      json:"oauth2TokenEncryptionKey"`
 		UserDeviceTokenEncryptionKey string               `env:"USER_DEVICE_TOKEN_ENCRYPTION_KEY" json:"userDeviceTokenEncryptionKey"`
-		Provider                     string               `env:"PROVIDER"                         json:"provider"`
+		Provider                     string               `env:"PROVIDER"                         envDefault:"postgres"               json:"provider"`
 		ReadConnection               ConnectionDetails    `envPrefix:"READ_CONNECTION_"           json:"readConnection"`
 		WriteConnection              ConnectionDetails    `envPrefix:"WRITE_CONNECTION_"          json:"writeConnection"`
-		PingWaitPeriod               time.Duration        `env:"PING_WAIT_PERIOD"                 json:"pingWaitPeriod"`
+		PingWaitPeriod               time.Duration        `env:"PING_WAIT_PERIOD"                 envDefault:"1s"                     json:"pingWaitPeriod"`
 		MaxPingAttempts              uint64               `env:"MAX_PING_ATTEMPTS"                json:"maxPingAttempts"`
-		ConnMaxLifetime              time.Duration        `env:"CONN_MAX_LIFETIME"                json:"connMaxLifetime"`
-		MaxIdleConns                 uint16               `env:"MAX_IDLE_CONNS"                   json:"maxIdleConns"`
-		MaxOpenConns                 uint16               `env:"MAX_OPEN_CONNS"                   json:"maxOpenConns"`
+		ConnMaxLifetime              time.Duration        `env:"CONN_MAX_LIFETIME"                envDefault:"30m"                    json:"connMaxLifetime"`
+		MaxIdleConns                 uint16               `env:"MAX_IDLE_CONNS"                   envDefault:"5"                      json:"maxIdleConns"`
+		MaxOpenConns                 uint16               `env:"MAX_OPEN_CONNS"                   envDefault:"7"                      envDefault:""          json:"maxOpenConns"`
 		Debug                        bool                 `env:"DEBUG"                            json:"debug"`
 		LogQueries                   bool                 `env:"LOG_QUERIES"                      json:"logQueries"`
 		RunMigrations                bool                 `env:"RUN_MIGRATIONS"                   json:"runMigrations"`
