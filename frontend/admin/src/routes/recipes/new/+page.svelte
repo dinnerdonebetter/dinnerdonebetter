@@ -181,7 +181,9 @@
   }
 
   async function fetchIngredientPreparations(preparationId: string): Promise<ValidIngredientPreparation[]> {
-    const res = await fetch(`/api/mealplanning/ingredient-preparations?preparationId=${encodeURIComponent(preparationId)}`);
+    const res = await fetch(
+      `/api/mealplanning/ingredient-preparations?preparationId=${encodeURIComponent(preparationId)}`,
+    );
     const json = await res.json();
     return json.results ?? [];
   }
