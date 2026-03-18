@@ -20,4 +20,7 @@ type ClientConfig interface {
 	GetWriteConnectionString() string
 	GetMaxPingAttempts() uint64
 	GetPingWaitPeriod() time.Duration
+	GetMaxIdleConns() int
+	GetMaxOpenConns() int
+	GetConnMaxLifetime() time.Duration
 }

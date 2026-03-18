@@ -235,3 +235,15 @@ func (b *bootstrapClientConfig) GetMaxPingAttempts() uint64 {
 func (b *bootstrapClientConfig) GetPingWaitPeriod() time.Duration {
 	return time.Second
 }
+
+func (b *bootstrapClientConfig) GetMaxIdleConns() int {
+	return 5
+}
+
+func (b *bootstrapClientConfig) GetMaxOpenConns() int {
+	return 7
+}
+
+func (b *bootstrapClientConfig) GetConnMaxLifetime() time.Duration {
+	return 30 * time.Minute
+}

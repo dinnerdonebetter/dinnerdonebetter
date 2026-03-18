@@ -121,6 +121,9 @@ const (
 	// AuthTokensSigningKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Tokens.Base64EncodedSigningKey`.
 	AuthTokensSigningKeyEnvVarKey = "DINNER_DONE_BETTER_AUTH_TOKENS_SIGNING_KEY"
 
+	// DatabaseConnMaxLifetimeEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.ConnMaxLifetime`.
+	DatabaseConnMaxLifetimeEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONN_MAX_LIFETIME"
+
 	// DatabaseDebugEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.Debug`.
 	DatabaseDebugEnvVarKey = "DINNER_DONE_BETTER_DATABASE_DEBUG"
 
@@ -132,6 +135,12 @@ const (
 
 	// DatabaseLogQueriesEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.LogQueries`.
 	DatabaseLogQueriesEnvVarKey = "DINNER_DONE_BETTER_DATABASE_LOG_QUERIES"
+
+	// DatabaseMaxIdleConnsEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.MaxIdleConns`.
+	DatabaseMaxIdleConnsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_MAX_IDLE_CONNS"
+
+	// DatabaseMaxOpenConnsEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.MaxOpenConns`.
+	DatabaseMaxOpenConnsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_MAX_OPEN_CONNS"
 
 	// DatabaseMaxPingAttemptsEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.MaxPingAttempts`.
 	DatabaseMaxPingAttemptsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_MAX_PING_ATTEMPTS"
