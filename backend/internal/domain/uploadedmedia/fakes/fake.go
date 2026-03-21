@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	uploadedmedia "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	uploadedmedia "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"

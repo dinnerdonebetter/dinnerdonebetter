@@ -4,11 +4,11 @@ import (
 	"errors"
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
-	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
-	waitlistkeys "github.com/dinnerdonebetter/backend/internal/domain/waitlists/keys"
-	waitlistmock "github.com/dinnerdonebetter/backend/internal/domain/waitlists/mock"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
+	waitlistkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/keys"
+	waitlistmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

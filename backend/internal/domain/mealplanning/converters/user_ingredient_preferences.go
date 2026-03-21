@@ -1,6 +1,6 @@
 package converters
 
-import types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+import types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 // ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput creates a UserIngredientPreferenceUpdateRequestInput from a UserIngredientPreferences.
 func ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput(input *types.UserIngredientPreference) *types.UserIngredientPreferenceUpdateRequestInput {

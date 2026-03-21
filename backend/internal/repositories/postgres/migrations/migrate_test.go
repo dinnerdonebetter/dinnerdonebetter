@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
+	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

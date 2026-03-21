@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
-	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/converters"
+	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"

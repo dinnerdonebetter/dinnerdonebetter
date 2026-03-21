@@ -3,9 +3,9 @@ package manager
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"

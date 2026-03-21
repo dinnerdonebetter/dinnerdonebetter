@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	types "github.com/dinnerdonebetter/backend/internal/domain/comments"
-	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
-	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/comments/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
+	commentskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/keys"
+	generated "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/comments/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

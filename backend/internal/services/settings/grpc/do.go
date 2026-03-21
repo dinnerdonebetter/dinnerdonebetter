@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	settingsmanager "github.com/dinnerdonebetter/backend/internal/domain/settings/manager"
-	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	settingsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/manager"
+	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"

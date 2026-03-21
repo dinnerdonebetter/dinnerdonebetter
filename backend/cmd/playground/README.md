@@ -26,9 +26,9 @@ import (
  "net/url"
  "time"
 
- "github.com/dinnerdonebetter/backend/internal/observability/tracing"
- "github.com/dinnerdonebetter/backend/pkg/apiclient"
- "github.com/dinnerdonebetter/backend/pkg/types"
+ "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/observability/tracing"
+ "github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/apiclient"
+ "github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/types"
 
  "github.com/pquerna/otp/totp"
 )
@@ -74,10 +74,10 @@ import (
  "log"
  "time"
  
- databasecfg "github.com/dinnerdonebetter/backend/internal/database/routingcfg"
- "github.com/dinnerdonebetter/backend/internal/database/postgres"
- "github.com/dinnerdonebetter/backend/internal/observability/logging"
- "github.com/dinnerdonebetter/backend/internal/observability/tracing"
+ databasecfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/database/routingcfg"
+ "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/database/postgres"
+ "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/observability/logging"
+ "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
 const dbString = `user=%s password=%s database=%s host=127.0.0.1 port=5434 sslmode=disable`

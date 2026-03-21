@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	authconverters "github.com/dinnerdonebetter/backend/internal/domain/auth/converters"
-	authfakes "github.com/dinnerdonebetter/backend/internal/domain/auth/fakes"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	authconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/converters"
+	authfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/fakes"
+	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

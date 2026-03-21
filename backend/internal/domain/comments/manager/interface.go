@@ -3,7 +3,7 @@ package manager
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/comments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )

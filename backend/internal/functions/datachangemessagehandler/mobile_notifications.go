@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
-	mealplanningnotifications "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
-	domainnotifications "github.com/dinnerdonebetter/backend/internal/domain/notifications"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	mealplanningnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
+	domainnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 	"github.com/verygoodsoftwarenotvirus/platform/notifications"

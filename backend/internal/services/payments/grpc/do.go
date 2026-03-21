@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	paymentsmanager "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
-	paymentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
+	paymentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/manager"
+	paymentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

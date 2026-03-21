@@ -1,8 +1,8 @@
 package interceptors
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
-	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
+	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/samber/do/v2"

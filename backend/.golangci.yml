@@ -234,7 +234,7 @@ formatters:
     gci:
       sections:
         - standard
-        - prefix(github.com/dinnerdonebetter/backend)
+        - prefix(github.com/dinnerdonebetter/dinnerdonebetter/backend)
         - prefix(github.com/dinnerdonebetter)
         - default
       custom-order: true
@@ -242,7 +242,7 @@ formatters:
       simplify: true
     goimports:
       local-prefixes:
-        - github.com/dinnerdonebetter/backend
+        - github.com/dinnerdonebetter/dinnerdonebetter/backend
   exclusions:
     generated: lax
     paths:

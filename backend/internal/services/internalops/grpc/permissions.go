@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	internalopssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	internalopssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 )
 
 // InternalOpsMethodPermissions is a named type for Wire dependency injection.

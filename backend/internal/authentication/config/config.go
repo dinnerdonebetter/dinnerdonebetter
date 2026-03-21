@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
-	webauthncfg "github.com/dinnerdonebetter/backend/internal/authentication/webauthn/config"
+	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	webauthncfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/webauthn/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

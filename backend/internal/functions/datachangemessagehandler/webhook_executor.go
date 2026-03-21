@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"
 	"github.com/verygoodsoftwarenotvirus/platform/httpclient"

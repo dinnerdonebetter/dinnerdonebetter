@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
-	mealplanningnotifications "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
-	domainnotifications "github.com/dinnerdonebetter/backend/internal/domain/notifications"
-	notificationsmock "github.com/dinnerdonebetter/backend/internal/domain/notifications/mock"
+	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	mealplanningnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
+	domainnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
+	notificationsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

@@ -1,7 +1,7 @@
 package internalops
 
 import (
-	domaininternalops "github.com/dinnerdonebetter/backend/internal/domain/internalops"
+	domaininternalops "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

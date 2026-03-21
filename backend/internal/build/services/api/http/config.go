@@ -1,10 +1,10 @@
 package api
 
 import (
-	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
-	paymentscfg "github.com/dinnerdonebetter/backend/internal/services/payments/config"
+	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	paymentscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/config"
 
 	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"

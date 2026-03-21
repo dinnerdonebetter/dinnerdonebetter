@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	domaininternalops "github.com/dinnerdonebetter/backend/internal/domain/internalops"
-	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
+	domaininternalops "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops"
+	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 
 	"github.com/samber/do/v2"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 )
 
 // PreparationMediaRow represents a row from preparation_media table.

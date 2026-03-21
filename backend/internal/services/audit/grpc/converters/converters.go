@@ -1,9 +1,9 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	auditsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 
 	"github.com/verygoodsoftwarenotvirus/platform/pointer"
 )

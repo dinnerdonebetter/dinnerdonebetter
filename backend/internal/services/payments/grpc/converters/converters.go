@@ -1,9 +1,9 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/payments"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	paymentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	paymentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
 )
 
 func ConvertProductCreationRequestInputToDomain(input *paymentssvc.ProductCreationRequestInput) *payments.ProductCreationRequestInput {

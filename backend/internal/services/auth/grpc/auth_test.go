@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	identityfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	grpcapi "github.com/dinnerdonebetter/backend/internal/build/services/api/grpc"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	grpcapi "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api/grpc"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"
 )

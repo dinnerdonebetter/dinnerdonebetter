@@ -3,8 +3,8 @@ package mock
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/manager"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

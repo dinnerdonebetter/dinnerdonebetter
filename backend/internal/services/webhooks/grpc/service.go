@@ -3,9 +3,9 @@ package grpc
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
-	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/manager"
+	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"

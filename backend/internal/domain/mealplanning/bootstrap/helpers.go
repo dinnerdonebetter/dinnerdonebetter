@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 )
 
 // getRecipeIDBySlug returns the recipe ID for the given slug, or a pointer to an empty string if not found.

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"

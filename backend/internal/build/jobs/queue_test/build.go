@@ -3,9 +3,9 @@ package queuetest
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
-	queuetest "github.com/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
+	queuetest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
 
 	"github.com/samber/do/v2"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"

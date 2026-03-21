@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
-	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/fakes"
+	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

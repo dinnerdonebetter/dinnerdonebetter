@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

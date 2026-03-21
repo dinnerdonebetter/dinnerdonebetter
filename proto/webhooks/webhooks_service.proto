@@ -4,7 +4,7 @@ package webhooks;
 
 import "webhooks/webhooks_service_types.proto";
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks";
+option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks";
 
 service WebhooksService {
   rpc ArchiveWebhook(ArchiveWebhookRequest) returns (ArchiveWebhookResponse);

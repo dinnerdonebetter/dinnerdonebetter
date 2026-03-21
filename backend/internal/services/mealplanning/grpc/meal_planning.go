@@ -3,12 +3,12 @@ package grpc
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/comments"
-	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
+	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
+	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"

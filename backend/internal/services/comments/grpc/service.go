@@ -3,10 +3,10 @@ package grpc
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	commentsmanager "github.com/dinnerdonebetter/backend/internal/domain/comments/manager"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
-	commentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	commentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
+	commentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"

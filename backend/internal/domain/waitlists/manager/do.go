@@ -3,8 +3,8 @@ package manager
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/waitlists"
-	waitlistsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
+	waitlistsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"

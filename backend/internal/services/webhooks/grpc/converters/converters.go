@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"

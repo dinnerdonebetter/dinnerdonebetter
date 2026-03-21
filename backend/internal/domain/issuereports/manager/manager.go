@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/issuereports"
-	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports"
+	issuereportkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/keys"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"

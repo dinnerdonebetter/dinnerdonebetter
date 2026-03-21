@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
-	waitlistkeys "github.com/dinnerdonebetter/backend/internal/domain/waitlists/keys"
-	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
+	waitlistkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/keys"
+	generated "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/waitlists/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

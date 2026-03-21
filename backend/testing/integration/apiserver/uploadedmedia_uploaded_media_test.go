@@ -3,13 +3,13 @@ package integration
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/converters"
-	uploadedmediafakes "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/fakes"
-	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
-	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
-	"github.com/dinnerdonebetter/backend/pkg/client"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia/converters"
+	uploadedmediafakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia/fakes"
+	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	uploadedmediasvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

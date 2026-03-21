@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 	pointer "github.com/verygoodsoftwarenotvirus/platform/pointer"

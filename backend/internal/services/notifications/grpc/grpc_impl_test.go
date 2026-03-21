@@ -3,8 +3,8 @@ package grpc
 import (
 	"testing"
 
-	notificationsmock "github.com/dinnerdonebetter/backend/internal/domain/notifications/mock"
-	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
+	notificationsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/mock"
+	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

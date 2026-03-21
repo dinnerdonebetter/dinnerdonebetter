@@ -3,8 +3,8 @@ package webhooks
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/webhooks/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

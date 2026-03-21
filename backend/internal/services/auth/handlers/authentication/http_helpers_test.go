@@ -6,12 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	authfakes "github.com/dinnerdonebetter/backend/internal/domain/auth/fakes"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	authfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/fakes"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 
 	"github.com/stretchr/testify/require"
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"

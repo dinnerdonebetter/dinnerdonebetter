@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	auditsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 )
 
 // AuditMethodPermissions is a named type for Wire dependency injection.

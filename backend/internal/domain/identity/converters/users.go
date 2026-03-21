@@ -1,7 +1,7 @@
 package converters
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 )
 
 // ConvertUserToUserCreationResponse builds a UserCreationResponse from a user.

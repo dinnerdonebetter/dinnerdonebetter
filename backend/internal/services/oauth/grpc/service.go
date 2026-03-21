@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
-	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/manager"
+	oauthsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"

@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/domain/waitlists"
-	waitlistfakes "github.com/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
-	waitlistmock "github.com/dinnerdonebetter/backend/internal/domain/waitlists/mock"
-	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
-	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
+	waitlistfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
+	waitlistmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/mock"
+	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	waitlistssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

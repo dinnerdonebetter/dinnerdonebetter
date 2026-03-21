@@ -3,8 +3,8 @@ package manager
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/settings"
-	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
+	settingsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/settings"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"

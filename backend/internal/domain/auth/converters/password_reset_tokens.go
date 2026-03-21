@@ -1,7 +1,7 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 )
 
 // ConvertPasswordResetTokenToPasswordResetTokenDatabaseCreationInput builds a PasswordResetTokenDatabaseCreationInput from a PasswordResetToken.

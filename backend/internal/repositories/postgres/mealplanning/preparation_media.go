@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"

@@ -3,7 +3,7 @@ package integration
 import (
 	"testing"
 
-	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

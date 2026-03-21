@@ -1,8 +1,8 @@
 package oauth
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	domainoauth "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	domainoauth "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

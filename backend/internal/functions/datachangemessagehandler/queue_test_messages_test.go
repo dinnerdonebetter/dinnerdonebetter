@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	internalopsmock "github.com/dinnerdonebetter/backend/internal/domain/internalops/mock"
+	internalopsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

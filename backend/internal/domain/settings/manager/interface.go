@@ -1,7 +1,7 @@
 package manager
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/settings"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
 )
 
 // SettingsDataManager defines the interface for settings business logic.

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

@@ -1,7 +1,7 @@
 package config
 
 import (
-	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
+	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
 
 	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"

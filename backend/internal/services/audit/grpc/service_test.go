@@ -4,11 +4,11 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	auditfakes "github.com/dinnerdonebetter/backend/internal/domain/audit/fakes"
-	auditmock "github.com/dinnerdonebetter/backend/internal/domain/audit/mock"
-	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
-	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	auditfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/fakes"
+	auditmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/mock"
+	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	auditsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

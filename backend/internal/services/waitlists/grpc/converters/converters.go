@@ -1,9 +1,9 @@
 package converters
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	waitlistssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )

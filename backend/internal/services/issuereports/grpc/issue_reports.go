@@ -3,12 +3,12 @@ package grpc
 import (
 	"context"
 
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	issuereportssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
-	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	issuereportkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/keys"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	issuereportssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
 
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"

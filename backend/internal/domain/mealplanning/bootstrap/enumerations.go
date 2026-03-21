@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
 
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

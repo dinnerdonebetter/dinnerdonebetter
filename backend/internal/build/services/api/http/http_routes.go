@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	paymentswebhook "github.com/dinnerdonebetter/backend/internal/services/payments/http"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	paymentswebhook "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

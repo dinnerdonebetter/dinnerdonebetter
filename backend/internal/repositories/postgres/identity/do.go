@@ -1,8 +1,8 @@
 package identity
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	domainidentity "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	domainidentity "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

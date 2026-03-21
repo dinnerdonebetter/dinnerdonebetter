@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/branding"
-	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
+	identityfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	mealplanningfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -3,9 +3,9 @@ package oauth
 import (
 	"context"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
+	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
 
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"

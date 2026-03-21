@@ -3,7 +3,7 @@ package dbcleaner
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"

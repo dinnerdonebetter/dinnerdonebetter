@@ -3,10 +3,10 @@ package mealplanfinalizer
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
-	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"

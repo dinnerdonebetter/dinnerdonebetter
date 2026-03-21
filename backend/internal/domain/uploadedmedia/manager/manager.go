@@ -3,8 +3,8 @@ package manager
 import (
 	"context"
 
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"

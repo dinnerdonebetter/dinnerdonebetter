@@ -3,8 +3,8 @@ package grpc
 import (
 	"testing"
 
-	waitlistmock "github.com/dinnerdonebetter/backend/internal/domain/waitlists/mock"
-	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
+	waitlistmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/mock"
+	waitlistssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

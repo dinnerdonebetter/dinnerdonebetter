@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	mobilenotificationscheduler "github.com/dinnerdonebetter/backend/internal/build/jobs/mobile_notification_scheduler"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	mobilenotificationscheduler "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/mobile_notification_scheduler"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"
 )

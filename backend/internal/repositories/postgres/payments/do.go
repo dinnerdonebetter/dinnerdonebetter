@@ -1,8 +1,8 @@
 package payments
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	domainpayments "github.com/dinnerdonebetter/backend/internal/domain/payments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	domainpayments "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

@@ -3,13 +3,13 @@ package grpc
 import (
 	"context"
 
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	webhookkeys "github.com/dinnerdonebetter/backend/internal/domain/webhooks/keys"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
+	webhookkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/keys"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
 
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
 	"google.golang.org/grpc/codes"

@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	authenticationmock "github.com/dinnerdonebetter/backend/internal/authentication/mock"
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	authmock "github.com/dinnerdonebetter/backend/internal/domain/auth/mock"
-	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
-	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	authenticationmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	authmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/mock"
+	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
+	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"

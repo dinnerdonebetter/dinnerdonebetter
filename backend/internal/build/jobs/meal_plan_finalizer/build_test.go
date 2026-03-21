@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	"github.com/stretchr/testify/assert"
 )

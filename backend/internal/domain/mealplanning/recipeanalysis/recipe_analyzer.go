@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 
 	"github.com/dustin/go-humanize/english"
 	"github.com/hako/durafmt"

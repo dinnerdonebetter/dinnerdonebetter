@@ -3,7 +3,7 @@ package grpc
 import (
 	"testing"
 
-	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
+	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 
 	"github.com/stretchr/testify/assert"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"

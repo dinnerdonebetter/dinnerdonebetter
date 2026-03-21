@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	webhooksconverters "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	webhooksgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+	webhooksconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

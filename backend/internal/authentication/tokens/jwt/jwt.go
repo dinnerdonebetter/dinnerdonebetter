@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"

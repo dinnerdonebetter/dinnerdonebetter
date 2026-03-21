@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"

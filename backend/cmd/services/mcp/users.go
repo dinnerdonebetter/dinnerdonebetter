@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	identitygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
-	identityconverters "github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	identitygrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	identityconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

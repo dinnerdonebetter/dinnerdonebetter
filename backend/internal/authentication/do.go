@@ -3,9 +3,9 @@ package authentication
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
+	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"

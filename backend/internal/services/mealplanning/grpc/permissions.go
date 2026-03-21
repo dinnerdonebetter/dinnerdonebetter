@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 )
 
 // MealPlanningMethodPermissions is a named type for Wire dependency injection.

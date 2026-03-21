@@ -1,7 +1,7 @@
 package tokenscfg
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

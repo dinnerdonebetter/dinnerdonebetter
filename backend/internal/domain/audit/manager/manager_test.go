@@ -3,10 +3,10 @@ package manager
 import (
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/audit/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/audit/fakes"
-	auditmock "github.com/dinnerdonebetter/backend/internal/domain/audit/mock"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/fakes"
+	auditmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

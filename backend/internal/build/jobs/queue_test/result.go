@@ -3,7 +3,7 @@ package queuetest
 import (
 	"context"
 
-	queuetest "github.com/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
+	queuetest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
 )

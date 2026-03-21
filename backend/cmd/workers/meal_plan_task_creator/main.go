@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_task_creator"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	mealplantaskcreator "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/meal_plan_task_creator"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"
 )

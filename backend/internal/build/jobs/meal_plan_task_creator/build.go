@@ -3,12 +3,12 @@ package mealplantaskcreator
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
-	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+	mealplantaskcreator "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 
 	"github.com/samber/do/v2"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"

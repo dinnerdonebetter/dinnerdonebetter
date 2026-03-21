@@ -3,8 +3,8 @@ package datachangemessagehandler
 import (
 	"context"
 
-	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
+	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
+	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

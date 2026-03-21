@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth/fakes"
-	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/fakes"
+	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	datachangemessagehandler "github.com/dinnerdonebetter/backend/internal/build/functions/data_change_message_handler"
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	datachangemessagehandler "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/functions/data_change_message_handler"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
 	_ "go.uber.org/automaxprocs"
 )

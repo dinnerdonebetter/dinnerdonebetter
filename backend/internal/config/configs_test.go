@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/config/envvars"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config/envvars"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

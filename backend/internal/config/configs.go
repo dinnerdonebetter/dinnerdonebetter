@@ -10,7 +10,7 @@ import (
 	"runtime/debug"
 	"time"
 
-	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
+	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"

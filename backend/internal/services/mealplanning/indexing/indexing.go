@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

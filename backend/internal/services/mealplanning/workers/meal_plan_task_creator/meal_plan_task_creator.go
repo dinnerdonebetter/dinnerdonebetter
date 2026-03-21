@@ -3,11 +3,11 @@ package mealplantaskcreator
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
-	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"

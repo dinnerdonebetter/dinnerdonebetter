@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
+	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"

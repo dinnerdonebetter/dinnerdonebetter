@@ -3,8 +3,8 @@ package mockauthn
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 
 	"github.com/stretchr/testify/mock"
 )

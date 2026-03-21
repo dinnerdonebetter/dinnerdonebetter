@@ -1,7 +1,7 @@
 package indexing
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/verygoodsoftwarenotvirus/platform/search/text/indexing"
 )

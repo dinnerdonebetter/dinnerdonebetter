@@ -3,11 +3,11 @@ package authentication
 import (
 	"context"
 
-	authn "github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	authn "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"

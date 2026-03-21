@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 )
 
 // NotificationsMethodPermissions is a named type for Wire dependency injection.

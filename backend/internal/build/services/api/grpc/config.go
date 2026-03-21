@@ -1,16 +1,16 @@
 package grpcapi
 
 import (
-	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
-	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
-	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
-	mealplanningcfg "github.com/dinnerdonebetter/backend/internal/services/mealplanning/config"
-	oauthcfg "github.com/dinnerdonebetter/backend/internal/services/oauth/config"
-	paymentscfg "github.com/dinnerdonebetter/backend/internal/services/payments/config"
-	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
+	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
+	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	dataprivacycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/dataprivacy/config"
+	identitycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/config"
+	mealplanningcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/config"
+	oauthcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/oauth/config"
+	paymentscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/config"
+	uploadedmediacfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 
 	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"

@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
 	"github.com/stripe/stripe-go/v75"
 	"github.com/stripe/stripe-go/v75/webhook"

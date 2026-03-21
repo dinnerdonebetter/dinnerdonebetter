@@ -3,9 +3,9 @@ package errors
 import (
 	"errors"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 
 	"github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
 	"google.golang.org/grpc/codes"

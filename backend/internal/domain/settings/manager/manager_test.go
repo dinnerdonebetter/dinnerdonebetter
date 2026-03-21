@@ -3,11 +3,11 @@ package manager
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/settings"
-	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
-	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
-	settingsmock "github.com/dinnerdonebetter/backend/internal/domain/settings/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/fakes"
+	settingskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/keys"
+	settingsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

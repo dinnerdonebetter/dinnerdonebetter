@@ -3,9 +3,9 @@ package grpc
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	analyticspb "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
-	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	analyticspb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
+	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 
 	"github.com/verygoodsoftwarenotvirus/platform/analytics/multisource"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"

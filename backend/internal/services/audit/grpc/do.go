@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	auditmanager "github.com/dinnerdonebetter/backend/internal/domain/audit/manager"
-	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
+	auditmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/manager"
+	auditsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

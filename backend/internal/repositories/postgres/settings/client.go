@@ -3,8 +3,8 @@ package settings
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

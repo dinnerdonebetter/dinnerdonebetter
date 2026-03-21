@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

@@ -12,12 +12,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/config/envvars"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	"github.com/dinnerdonebetter/backend/internal/localdev"
-	"github.com/dinnerdonebetter/backend/pkg/client"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config/envvars"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
+	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/localdev"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pquerna/otp/totp"

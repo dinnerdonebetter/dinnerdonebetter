@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/issuereports"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	issuereportsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
-	issuereportsconverters "github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	issuereportsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
+	issuereportsconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

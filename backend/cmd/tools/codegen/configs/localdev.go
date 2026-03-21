@@ -4,12 +4,12 @@ import (
 	"encoding/base64"
 	"time"
 
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
-	"github.com/dinnerdonebetter/backend/internal/config"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
-	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
-	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
-	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
+	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	authservice "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	dataprivacycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/dataprivacy/config"
+	identitycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/config"
+	uploadedmediacfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"
 	"github.com/verygoodsoftwarenotvirus/platform/circuitbreaking"

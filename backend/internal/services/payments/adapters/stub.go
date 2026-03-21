@@ -3,7 +3,7 @@ package adapters
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
 )

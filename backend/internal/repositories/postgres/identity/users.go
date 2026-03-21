@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

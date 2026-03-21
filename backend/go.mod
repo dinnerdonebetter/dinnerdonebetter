@@ -1,4 +1,4 @@
-module github.com/dinnerdonebetter/backend
+module github.com/dinnerdonebetter/dinnerdonebetter/backend
 
 go 1.26
 

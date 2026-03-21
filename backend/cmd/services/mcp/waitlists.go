@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/waitlists"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
-	waitlistsconverters "github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	waitlistsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
+	waitlistsconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/waitlists/grpc/converters"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

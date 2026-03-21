@@ -1,8 +1,8 @@
 package comments
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	domaincomments "github.com/dinnerdonebetter/backend/internal/domain/comments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	domaincomments "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

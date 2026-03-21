@@ -1,8 +1,8 @@
 package adapters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/payments"
-	paymentscfg "github.com/dinnerdonebetter/backend/internal/services/payments/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
+	paymentscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/config"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

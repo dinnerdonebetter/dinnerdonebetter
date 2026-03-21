@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/cookies"
 )
 
 // BuildCookie provides a consistent way of constructing an HTTP cookie for session auth.

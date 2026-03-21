@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
-	dataprivacymock "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
+	dataprivacymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

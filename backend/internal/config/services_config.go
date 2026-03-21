@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
-	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
-	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
-	mealplanningcfg "github.com/dinnerdonebetter/backend/internal/services/mealplanning/config"
-	oauthcfg "github.com/dinnerdonebetter/backend/internal/services/oauth/config"
-	paymentscfg "github.com/dinnerdonebetter/backend/internal/services/payments/config"
-	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	dataprivacycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/dataprivacy/config"
+	identitycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/config"
+	mealplanningcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/config"
+	oauthcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/oauth/config"
+	paymentscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/config"
+	uploadedmediacfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 
 	"github.com/hashicorp/go-multierror"
 )

@@ -3,8 +3,8 @@ package manager
 import (
 	"context"
 
-	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
-	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"

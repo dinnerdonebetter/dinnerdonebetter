@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	types "github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
+	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

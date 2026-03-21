@@ -3,8 +3,8 @@ package fakes
 import (
 	"time"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
-	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/converters"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )

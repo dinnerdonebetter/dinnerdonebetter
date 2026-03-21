@@ -3,9 +3,9 @@ package integration
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
-	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	uploadedmediagrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

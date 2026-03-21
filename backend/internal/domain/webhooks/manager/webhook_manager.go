@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	webhookkeys "github.com/dinnerdonebetter/backend/internal/domain/webhooks/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
+	webhookkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/keys"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"

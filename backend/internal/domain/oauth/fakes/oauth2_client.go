@@ -3,7 +3,7 @@ package fakes
 import (
 	"time"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

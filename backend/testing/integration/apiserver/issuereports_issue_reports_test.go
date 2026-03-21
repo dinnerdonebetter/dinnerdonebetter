@@ -3,13 +3,13 @@ package integration
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/issuereports"
-	"github.com/dinnerdonebetter/backend/internal/domain/issuereports/converters"
-	issuereportfakes "github.com/dinnerdonebetter/backend/internal/domain/issuereports/fakes"
-	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	issuereportssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
-	"github.com/dinnerdonebetter/backend/pkg/client"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/converters"
+	issuereportfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/fakes"
+	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	issuereportssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

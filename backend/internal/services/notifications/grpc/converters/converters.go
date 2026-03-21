@@ -3,9 +3,9 @@ package converters
 import (
 	"log"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 )
 
 func ConvertStringToUserNotificationStatus(s string) notificationssvc.UserNotificationStatus {

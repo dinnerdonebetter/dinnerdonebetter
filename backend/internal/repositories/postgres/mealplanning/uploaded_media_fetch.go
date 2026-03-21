@@ -3,8 +3,8 @@ package mealplanning
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"

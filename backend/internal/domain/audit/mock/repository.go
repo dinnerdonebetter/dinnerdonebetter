@@ -3,7 +3,7 @@ package mock
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

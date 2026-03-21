@@ -3,10 +3,10 @@ package manager
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/comments"
-	"github.com/dinnerdonebetter/backend/internal/domain/comments/fakes"
-	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
-	commentsmock "github.com/dinnerdonebetter/backend/internal/domain/comments/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/fakes"
+	commentskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/keys"
+	commentsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
