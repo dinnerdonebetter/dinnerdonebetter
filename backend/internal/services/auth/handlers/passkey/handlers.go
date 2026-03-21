@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	webappauth "github.com/dinnerdonebetter/backend/internal/webapp/auth"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"
@@ -155,14 +155,14 @@ func (h *Handlers) AuthVerifyHandler(res http.ResponseWriter, req *http.Request)
 		return
 	}
 
-	encodedCookie, err := h.cookieManager.Encode(ctx, h.cookieConfig.CookieName, &webappauth.AuthPayload{AccessToken: tokenRes.Result.AccessToken})
+	encodedCookie, err := h.cookieManager.Encode(ctx, h.cookieConfig.CookieName, &identity.TokenResponse{AccessToken: tokenRes.Result.AccessToken})
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "encoding auth cookie")
 		h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"error": "failed to complete login"}, http.StatusInternalServerError)
 		return
 	}
 
-	http.SetCookie(res, webappauth.BuildCookie(h.cookieConfig, encodedCookie))
+	http.SetCookie(res, BuildCookie(h.cookieConfig, encodedCookie))
 
 	res.Header().Set("HX-Redirect", "/")
 	h.encoder.EncodeResponseWithStatus(ctx, res, map[string]string{"redirect": "/"}, http.StatusOK)

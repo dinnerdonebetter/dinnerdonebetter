@@ -1,4 +1,4 @@
-package auth
+package passkey
 
 import (
 	"net/http"
