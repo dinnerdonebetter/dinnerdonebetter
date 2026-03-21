@@ -312,5 +312,42 @@ func (h *mcpToolManager) setupServer() *mcp.Server {
 	mcp.AddTool(mcpServer, recipeCreationTool, h.CreateRecipe())
 	mcp.AddTool(mcpServer, recipeUpdateTool, h.UpdateRecipe())
 
+	// Issue Reports
+	mcp.AddTool(mcpServer, getIssueReportTool, h.GetIssueReport())
+	mcp.AddTool(mcpServer, getIssueReportsTool, h.GetIssueReports())
+	mcp.AddTool(mcpServer, getIssueReportsForAccountTool, h.GetIssueReportsForAccount())
+	mcp.AddTool(mcpServer, createIssueReportTool, h.CreateIssueReport())
+	mcp.AddTool(mcpServer, updateIssueReportTool, h.UpdateIssueReport())
+	mcp.AddTool(mcpServer, archiveIssueReportTool, h.ArchiveIssueReport())
+
+	// Users / Identity
+	mcp.AddTool(mcpServer, getUserTool, h.GetUser())
+	mcp.AddTool(mcpServer, getUsersTool, h.GetUsers())
+	mcp.AddTool(mcpServer, searchForUsersTool, h.SearchForUsers())
+	mcp.AddTool(mcpServer, getAccountTool, h.GetAccount())
+	mcp.AddTool(mcpServer, getAccountsForUserTool, h.GetAccountsForUser())
+	mcp.AddTool(mcpServer, updateUserDetailsTool, h.UpdateUserDetails())
+
+	// Webhooks
+	mcp.AddTool(mcpServer, getWebhookTool, h.GetWebhook())
+	mcp.AddTool(mcpServer, getWebhooksTool, h.GetWebhooks())
+	mcp.AddTool(mcpServer, createWebhookTool, h.CreateWebhook())
+	mcp.AddTool(mcpServer, archiveWebhookTool, h.ArchiveWebhook())
+	mcp.AddTool(mcpServer, getWebhookTriggerEventsTool, h.GetWebhookTriggerEvents())
+	mcp.AddTool(mcpServer, createWebhookTriggerEventTool, h.CreateWebhookTriggerEvent())
+	mcp.AddTool(mcpServer, addWebhookTriggerConfigTool, h.AddWebhookTriggerConfig())
+	mcp.AddTool(mcpServer, archiveWebhookTriggerConfigTool, h.ArchiveWebhookTriggerConfig())
+
+	// Waitlists
+	mcp.AddTool(mcpServer, getWaitlistTool, h.GetWaitlist())
+	mcp.AddTool(mcpServer, getWaitlistsTool, h.GetWaitlists())
+	mcp.AddTool(mcpServer, getActiveWaitlistsTool, h.GetActiveWaitlists())
+	mcp.AddTool(mcpServer, createWaitlistTool, h.CreateWaitlist())
+	mcp.AddTool(mcpServer, archiveWaitlistTool, h.ArchiveWaitlist())
+	mcp.AddTool(mcpServer, getWaitlistSignupTool, h.GetWaitlistSignup())
+	mcp.AddTool(mcpServer, getWaitlistSignupsForWaitlistTool, h.GetWaitlistSignupsForWaitlist())
+	mcp.AddTool(mcpServer, createWaitlistSignupTool, h.CreateWaitlistSignup())
+	mcp.AddTool(mcpServer, archiveWaitlistSignupTool, h.ArchiveWaitlistSignup())
+
 	return mcpServer
 }
