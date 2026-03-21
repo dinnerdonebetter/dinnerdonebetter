@@ -5,14 +5,13 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-
 	"github.com/go-webauthn/webauthn/webauthn"
+	"github.com/verygoodsoftwarenotvirus/platform/database"
+	"github.com/verygoodsoftwarenotvirus/platform/encoding"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 const (

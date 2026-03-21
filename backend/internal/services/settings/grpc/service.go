@@ -6,8 +6,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	settingsmanager "github.com/dinnerdonebetter/backend/internal/domain/settings/manager"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 const (

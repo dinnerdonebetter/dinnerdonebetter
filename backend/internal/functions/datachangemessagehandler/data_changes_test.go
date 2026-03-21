@@ -14,14 +14,14 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	webhooksfakes "github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
-	msgqueuemock "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
-	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
 )
 
 func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
@@ -111,7 +111,7 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 	t.Run("with analytics event reporting", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, analyticsEventReporter, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, identityRepo, _, _, _, analyticsEventReporter, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -126,6 +126,8 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 		handler.SetNonWebhookEventTypes([]string{dataChangeMessage.EventType})
 
 		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.EventOccurred), mock.Anything, dataChangeMessage.EventType, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil)
+		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.AddUser), mock.Anything, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil).Maybe()
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, dataChangeMessage.UserID).Return(identityfakes.BuildFakeUser(), nil).Maybe()
 
 		// Mock the search index publisher (handleDataChangeMessage calls handleSearchIndexUpdates in a goroutine)
 		mockSearchPublisher := &msgqueuemock.Publisher{}
@@ -135,13 +137,13 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 		err := handler.handleDataChangeMessage(ctx, dataChangeMessage, "data_changes")
 		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, analyticsEventReporter, mockSearchPublisher)
+		mock.AssertExpectationsForObjects(t, analyticsEventReporter, identityRepo, mockSearchPublisher)
 	})
 
 	t.Run("with webhook execution", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, webhookRepo, _, _, analyticsEventReporter, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, identityRepo, webhookRepo, _, _, analyticsEventReporter, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -158,7 +160,9 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 		handler.SetNonWebhookEventTypes([]string{})
 
 		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.EventOccurred), mock.Anything, dataChangeMessage.EventType, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil)
+		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.AddUser), mock.Anything, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil).Maybe()
 		webhookRepo.On(reflection.GetMethodName(webhookRepo.GetWebhooksForAccountAndEvent), mock.Anything, dataChangeMessage.AccountID, dataChangeMessage.EventType).Return([]*webhooks.Webhook{webhook}, nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, dataChangeMessage.UserID).Return(identityfakes.BuildFakeUser(), nil).Maybe()
 
 		// Mock the webhook execution request publisher
 		mockWebhookPublisher := &msgqueuemock.Publisher{}
@@ -175,7 +179,7 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 		err := handler.handleDataChangeMessage(ctx, dataChangeMessage, "data_changes")
 		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, analyticsEventReporter, webhookRepo, mockWebhookPublisher, mockSearchPublisher)
+		mock.AssertExpectationsForObjects(t, analyticsEventReporter, webhookRepo, identityRepo, mockWebhookPublisher, mockSearchPublisher)
 	})
 }
 

@@ -1,4 +1,5 @@
 {
+	"httpClient": null,
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -30,6 +31,7 @@
 	"encoding": {
 		"contentType": "application/json"
 	},
+	"baseURL": "",
 	"events": {
 		"consumers": {
 			"provider": "pubsub",
@@ -108,21 +110,6 @@
 		"runMode": "production",
 		"debug": false
 	},
-	"email": {
-		"sendgrid": null,
-		"mailgun": null,
-		"mailjet": null,
-		"resend": {
-			"apiToken": "placeholder"
-		},
-		"postmark": null,
-		"provider": "resend",
-		"circuitBreakerConfig": {
-			"name": "prod_emailer",
-			"circuitBreakerErrorPercentage": 0.5,
-			"circuitBreakerMinimumOccurrenceThreshold": 100
-		}
-	},
 	"analytics": {
 		"proxySources": {
 			"ios": {
@@ -164,16 +151,21 @@
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
 	},
-	"search": {
-		"algolia": {
-			"appID": "",
-			"writeAPIKey": "",
-			"timeout": 0
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"resend": {
+			"apiToken": "placeholder"
 		},
-		"elasticsearch": null,
-		"provider": "algolia",
+		"postmark": null,
+		"provider": "resend",
+		"baseURL": "",
+		"outboundInvitesEmailAddress": "",
+		"passwordResetCreationEmailAddress": "",
+		"passwordResetRedemptionEmailAddress": "",
 		"circuitBreakerConfig": {
-			"name": "prod_text_searcher",
+			"name": "prod_emailer",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
@@ -196,7 +188,20 @@
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
 	},
-	"httpClient": null,
+	"search": {
+		"algolia": {
+			"appID": "",
+			"writeAPIKey": "",
+			"timeout": 0
+		},
+		"elasticsearch": null,
+		"provider": "algolia",
+		"circuitBreakerConfig": {
+			"name": "prod_text_searcher",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
+	},
 	"http": {
 		"startupDeadline": 60000000000,
 		"port": 8000,

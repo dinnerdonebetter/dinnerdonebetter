@@ -2,7 +2,8 @@ package converters
 
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 func ConvertOAuth2ClientCreationRequestInputToOAuth2ClientDatabaseCreationInput(x *types.OAuth2ClientCreationRequestInput) *types.OAuth2ClientDatabaseCreationInput {

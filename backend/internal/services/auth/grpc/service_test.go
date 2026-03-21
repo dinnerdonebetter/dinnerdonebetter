@@ -10,12 +10,12 @@ import (
 	authmock "github.com/dinnerdonebetter/backend/internal/domain/auth/mock"
 	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	"github.com/dinnerdonebetter/backend/internal/platform/featureflags/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/verygoodsoftwarenotvirus/platform/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/featureflags/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.IdentityDataManager, *authmock.AuthManager, *authenticationmock.Manager, *mock.FeatureFlagManager) {

@@ -8,11 +8,11 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc/converters"
 
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 	"google.golang.org/grpc/codes"
 )
 

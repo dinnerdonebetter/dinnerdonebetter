@@ -25,16 +25,17 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	identitygenerated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+
+	"github.com/verygoodsoftwarenotvirus/platform/database"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
 )
 
 const (

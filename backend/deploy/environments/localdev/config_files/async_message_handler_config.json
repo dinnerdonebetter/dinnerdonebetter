@@ -1,9 +1,5 @@
 {
-	"pushNotifications": {
-		"apns": null,
-		"fcm": null,
-		"provider": "noop"
-	},
+	"httpClient": null,
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -19,9 +15,15 @@
 		"bucketName": "userdata",
 		"provider": "filesystem"
 	},
+	"pushNotifications": {
+		"apns": null,
+		"fcm": null,
+		"provider": "noop"
+	},
 	"encoding": {
 		"contentType": ""
 	},
+	"baseURL": "",
 	"events": {
 		"consumers": {
 			"provider": "redis",
@@ -95,20 +97,6 @@
 			"spanCollectionProbability": 1
 		}
 	},
-	"email": {
-		"sendgrid": null,
-		"mailgun": null,
-		"mailjet": null,
-		"resend": null,
-		"postmark": null,
-		"provider": "",
-		"circuitBreakerConfig": {
-			"name": "",
-			"circuitBreakerErrorPercentage": 0,
-			"circuitBreakerMinimumOccurrenceThreshold": 0
-		}
-	},
-	"httpClient": null,
 	"analytics": {
 		"proxySources": {
 			"ios": null,
@@ -122,6 +110,23 @@
 			"name": "feature_flagger",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
+	},
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"resend": null,
+		"postmark": null,
+		"provider": "",
+		"baseURL": "",
+		"outboundInvitesEmailAddress": "",
+		"passwordResetCreationEmailAddress": "",
+		"passwordResetRedemptionEmailAddress": "",
+		"circuitBreakerConfig": {
+			"name": "",
+			"circuitBreakerErrorPercentage": 0,
+			"circuitBreakerMinimumOccurrenceThreshold": 0
 		}
 	},
 	"search": {

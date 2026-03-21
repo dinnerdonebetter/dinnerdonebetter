@@ -14,11 +14,11 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
-	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 	"google.golang.org/grpc/codes"
 )
 

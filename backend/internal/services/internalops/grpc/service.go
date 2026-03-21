@@ -9,12 +9,12 @@ import (
 	domaininternalops "github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 	"google.golang.org/grpc/codes"
 )
 

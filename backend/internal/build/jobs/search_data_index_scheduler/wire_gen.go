@@ -10,16 +10,17 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/search/text/indexing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/logging/config"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/search/text/indexing"
 )
 
 // Injectors from build.go:

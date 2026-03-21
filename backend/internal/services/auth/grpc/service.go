@@ -10,10 +10,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
 	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	"github.com/verygoodsoftwarenotvirus/platform/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/featureflags"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 const (

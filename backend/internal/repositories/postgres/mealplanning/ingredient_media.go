@@ -5,11 +5,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
-	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 var _ mealplanning.IngredientMediaDataManager = (*repository)(nil)

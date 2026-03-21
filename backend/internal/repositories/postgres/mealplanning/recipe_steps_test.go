@@ -9,13 +9,13 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	platformtypes "github.com/dinnerdonebetter/backend/internal/platform/types"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	platformtypes "github.com/verygoodsoftwarenotvirus/platform/types"
 )
 
 func buildRecipeStepForTestCreation(t *testing.T, ctx context.Context, recipeID string, dbc *repository) *types.RecipeStep {

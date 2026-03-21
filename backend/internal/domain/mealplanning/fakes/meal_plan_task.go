@@ -3,7 +3,8 @@ package fakes
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 // BuildFakeMealPlanTask builds a faked meal plan task.

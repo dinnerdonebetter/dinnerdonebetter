@@ -6,9 +6,10 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/branding"
-	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	"github.com/verygoodsoftwarenotvirus/platform/email"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 const (
@@ -23,11 +24,10 @@ type JobParams struct {
 
 // Job sends a test email to verify deliverability.
 type Job struct {
-	emailer            email.Emailer
-	logger             logging.Logger
-	tracer             tracing.Tracer
-	recipientEmail     string
-	serviceEnvironment string
+	emailer        email.Emailer
+	logger         logging.Logger
+	tracer         tracing.Tracer
+	recipientEmail string
 }
 
 // NewJob creates a new email deliverability test job.
@@ -38,19 +38,15 @@ func NewJob(
 	params *JobParams,
 ) (*Job, error) {
 	recipientEmail := params.RecipientEmailAddress
-	serviceEnvironment := params.ServiceEnvironment
 	if recipientEmail == "" {
 		return nil, fmt.Errorf("recipient email is required")
 	}
-	if serviceEnvironment == "" {
-		serviceEnvironment = "prod"
-	}
+
 	return &Job{
-		emailer:            emailer,
-		logger:             logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		recipientEmail:     recipientEmail,
-		serviceEnvironment: serviceEnvironment,
+		emailer:        emailer,
+		logger:         logging.EnsureLogger(logger).WithName(serviceName),
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		recipientEmail: recipientEmail,
 	}, nil
 }
 
@@ -59,17 +55,11 @@ func (j *Job) Do(ctx context.Context) error {
 	ctx, span := j.tracer.StartSpan(ctx)
 	defer span.End()
 
-	envCfg := email.GetConfigForEnvironment(j.serviceEnvironment)
-	if envCfg == nil {
-		return fmt.Errorf("no email config for environment %q", j.serviceEnvironment)
-	}
-
-	fromAddress := envCfg.PasswordResetCreationEmailAddress()
 	sentAt := time.Now().UTC().Format(time.RFC3339)
 
 	msg := &email.OutboundEmailMessage{
 		ToAddress:   j.recipientEmail,
-		FromAddress: fromAddress,
+		FromAddress: branding.FromEmail,
 		FromName:    branding.CompanyName,
 		Subject:     fmt.Sprintf("%s – Email Deliverability Test", branding.CompanyName),
 		HTMLContent: fmt.Sprintf("<p>Test sent at %s</p>", sentAt),

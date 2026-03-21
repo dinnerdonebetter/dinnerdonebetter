@@ -1,10 +1,11 @@
 package repositories
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	postgresmigrations "github.com/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
+
+	"github.com/verygoodsoftwarenotvirus/platform/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
 )
 
 // ProvideMigrator returns a Migrator appropriate for the configured database provider.

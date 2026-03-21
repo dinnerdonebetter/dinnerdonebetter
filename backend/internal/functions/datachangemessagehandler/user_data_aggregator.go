@@ -9,9 +9,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	dataprivacykeys "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/keys"
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )

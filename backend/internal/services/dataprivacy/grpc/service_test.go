@@ -10,13 +10,13 @@ import (
 	dataprivacymock "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/mock"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	mockuploads "github.com/dinnerdonebetter/backend/internal/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	mockuploads "github.com/verygoodsoftwarenotvirus/platform/uploads/mock"
 )
 
 func buildTestService(t *testing.T) (*serviceImpl, *dataprivacymock.Repository, *mockuploads.MockUploadManager) {

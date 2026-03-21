@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 const (

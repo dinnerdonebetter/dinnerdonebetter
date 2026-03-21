@@ -2,7 +2,8 @@ package converters
 
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 // ConvertServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput creates a ServiceSettingDatabaseCreationInput from a ServiceSettingCreationRequestInput.

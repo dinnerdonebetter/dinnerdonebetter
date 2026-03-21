@@ -2,7 +2,8 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/types"
+
+	"github.com/verygoodsoftwarenotvirus/platform/types"
 )
 
 // GochujangButterPastaRecipe creates the Gochujang Butter Pasta recipe.

@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+
+	"github.com/verygoodsoftwarenotvirus/platform/encoding"
 )
 
 const (

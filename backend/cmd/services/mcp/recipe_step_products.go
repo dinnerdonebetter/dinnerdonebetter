@@ -6,10 +6,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	mealplanningconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 type (

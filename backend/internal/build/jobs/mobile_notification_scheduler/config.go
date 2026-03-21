@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 
 	"github.com/google/wire"
+	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
 )
 
 var (

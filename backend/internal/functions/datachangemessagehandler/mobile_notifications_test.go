@@ -9,12 +9,12 @@ import (
 	mealplanningnotifications "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 	domainnotifications "github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	notificationsmock "github.com/dinnerdonebetter/backend/internal/domain/notifications/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/notifications"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
 )
 
 func TestMobileNotificationsEventHandler(t *testing.T) {

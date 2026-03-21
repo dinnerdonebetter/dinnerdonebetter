@@ -5,9 +5,8 @@ import (
 	"encoding/gob"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 func init() {

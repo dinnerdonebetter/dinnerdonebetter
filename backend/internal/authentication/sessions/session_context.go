@@ -6,10 +6,11 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
-	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/routing"
+
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/routing"
 )
 
 func init() {

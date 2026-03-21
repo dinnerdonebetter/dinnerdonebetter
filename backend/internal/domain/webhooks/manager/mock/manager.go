@@ -5,9 +5,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 var _ manager.WebhookDataManager = (*WebhookDataManager)(nil)

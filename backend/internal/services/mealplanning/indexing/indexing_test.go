@@ -5,15 +5,15 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
-	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
-	mocksearch "github.com/dinnerdonebetter/backend/internal/platform/search/text/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
+	mocksearch "github.com/verygoodsoftwarenotvirus/platform/search/text/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/testutils"
 )
 
 func TestHandleIndexRequest(T *testing.T) {

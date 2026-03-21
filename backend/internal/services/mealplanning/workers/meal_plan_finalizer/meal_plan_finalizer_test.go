@@ -5,17 +5,17 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
-	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/testutils"
 )
 
 func buildNewMealPlanFinalizerForTest(t *testing.T) *Worker {

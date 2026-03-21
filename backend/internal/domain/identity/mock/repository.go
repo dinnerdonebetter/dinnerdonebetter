@@ -6,9 +6,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 var _ identity.Repository = (*RepositoryMock)(nil)

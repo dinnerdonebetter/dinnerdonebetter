@@ -2,11 +2,11 @@ package adapters
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	paymentscfg "github.com/dinnerdonebetter/backend/internal/services/payments/config"
 
 	"github.com/google/wire"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 var (

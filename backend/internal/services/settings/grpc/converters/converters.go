@@ -4,7 +4,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 func ConvertGPRCServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput(input *settingssvc.ServiceSettingCreationRequestInput) *settings.ServiceSettingDatabaseCreationInput {

@@ -8,12 +8,12 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
-	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 	"google.golang.org/grpc/codes"
 )
 

@@ -2,7 +2,8 @@ package converters
 
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/issuereports"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 // ConvertIssueReportToIssueReportUpdateRequestInput creates an IssueReportUpdateRequestInput from an IssueReport.

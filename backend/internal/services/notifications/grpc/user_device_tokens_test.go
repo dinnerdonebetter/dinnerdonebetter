@@ -9,12 +9,12 @@ import (
 	notificationsfakes "github.com/dinnerdonebetter/backend/internal/domain/notifications/fakes"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
-	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/testutils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

@@ -7,8 +7,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+
+	"github.com/verygoodsoftwarenotvirus/platform/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 func ConvertStringToWebhookContentType(s string) webhookssvc.WebhookContentType {

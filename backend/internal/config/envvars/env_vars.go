@@ -121,6 +121,9 @@ const (
 	// AuthTokensSigningKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Tokens.Base64EncodedSigningKey`.
 	AuthTokensSigningKeyEnvVarKey = "DINNER_DONE_BETTER_AUTH_TOKENS_SIGNING_KEY"
 
+	// BaseURLEnvVarKey is the environment variable name to set to override `APIServiceConfigBaseURL`.
+	BaseURLEnvVarKey = "DINNER_DONE_BETTER_BASE_URL"
+
 	// DatabaseConnMaxLifetimeEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.ConnMaxLifetime`.
 	DatabaseConnMaxLifetimeEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONN_MAX_LIFETIME"
 
@@ -196,6 +199,9 @@ const (
 	// DatabaseWriteConnectionUsernameEnvVarKey is the environment variable name to set to override `APIServiceConfig.Database.WriteConnection.Username`.
 	DatabaseWriteConnectionUsernameEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_USERNAME"
 
+	// EmailBaseURLEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.BaseURL`.
+	EmailBaseURLEnvVarKey = "DINNER_DONE_BETTER_EMAIL_BASE_URL"
+
 	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.CircuitBreaker.ErrorRate`.
 	EmailCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_ERROR_RATE"
 
@@ -216,6 +222,15 @@ const (
 
 	// EmailMailjetSecretKeyEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Mailjet.SecretKey`.
 	EmailMailjetSecretKeyEnvVarKey = "DINNER_DONE_BETTER_EMAIL_MAILJET_SECRET_KEY"
+
+	// EmailOutboundInvitesEmailAddressEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.OutboundInvitesEmailAddress`.
+	EmailOutboundInvitesEmailAddressEnvVarKey = "DINNER_DONE_BETTER_EMAIL_OUTBOUND_INVITES_EMAIL_ADDRESS"
+
+	// EmailPasswordResetCreationEmailAddressEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.PasswordResetCreationEmailAddress`.
+	EmailPasswordResetCreationEmailAddressEnvVarKey = "DINNER_DONE_BETTER_EMAIL_PASSWORD_RESET_CREATION_EMAIL_ADDRESS"
+
+	// EmailPasswordResetRedemptionEmailAddressEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.PasswordResetRedemptionEmailAddress`.
+	EmailPasswordResetRedemptionEmailAddressEnvVarKey = "DINNER_DONE_BETTER_EMAIL_PASSWORD_RESET_REDEMPTION_EMAIL_ADDRESS"
 
 	// EmailPostmarkBaseURLEnvVarKey is the environment variable name to set to override `APIServiceConfig.Email.Postmark.BaseURL`.
 	EmailPostmarkBaseURLEnvVarKey = "DINNER_DONE_BETTER_EMAIL_POSTMARK_BASE_URL"

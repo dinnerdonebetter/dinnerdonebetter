@@ -10,9 +10,8 @@ import (
 	"strings"
 	"sync"
 
-	reflast "github.com/dinnerdonebetter/backend/internal/platform/reflection/ast"
-
 	"github.com/hashicorp/go-multierror"
+	reflast "github.com/verygoodsoftwarenotvirus/platform/reflection/ast"
 	"golang.org/x/tools/go/packages"
 )
 

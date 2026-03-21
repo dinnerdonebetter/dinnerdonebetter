@@ -6,12 +6,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption"
-	"github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-
 	"github.com/spf13/cobra"
+	"github.com/verygoodsoftwarenotvirus/platform/cryptography/encryption"
+	"github.com/verygoodsoftwarenotvirus/platform/cryptography/encryption/config"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 const secretKeyLengthBytes = 32

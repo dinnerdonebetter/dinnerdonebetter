@@ -12,13 +12,13 @@ import (
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
 	"github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc/converters"
 
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/uploads"
 	"google.golang.org/grpc/codes"
 )
 

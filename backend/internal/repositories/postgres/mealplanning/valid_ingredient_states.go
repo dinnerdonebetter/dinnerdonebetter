@@ -6,13 +6,14 @@ import (
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+
+	"github.com/verygoodsoftwarenotvirus/platform/database"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 var (

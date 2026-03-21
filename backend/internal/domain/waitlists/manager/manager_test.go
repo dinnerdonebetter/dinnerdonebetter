@@ -9,17 +9,17 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
 	waitlistkeys "github.com/dinnerdonebetter/backend/internal/domain/waitlists/keys"
 	waitlistmock "github.com/dinnerdonebetter/backend/internal/domain/waitlists/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
-	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/testutils"
 )
 
 func buildWaitlistManagerForTest(t *testing.T) (*waitlistManager, *waitlistmock.Repository) {

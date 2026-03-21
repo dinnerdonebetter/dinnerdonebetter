@@ -4,9 +4,10 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
-	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops/generated"
+
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
 )
 
 func (q *repository) CreateQueueTestMessage(ctx context.Context, id, queueName string) error {

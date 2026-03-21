@@ -13,9 +13,9 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	reflast "github.com/dinnerdonebetter/backend/internal/platform/reflection/ast"
 
 	"github.com/codemodus/kace"
+	reflast "github.com/verygoodsoftwarenotvirus/platform/reflection/ast"
 )
 
 type structEntry struct {
@@ -104,7 +104,7 @@ func parseGoFiles(dir, modulePath string) map[string]*structEntry {
 			return nil
 		}
 
-		if strings.Contains(path, "vendor") {
+		if strings.Contains(path, "/vendor/") && !strings.Contains(path, "/vendor/github.com/verygoodsoftwarenotvirus/platform/") {
 			return filepath.SkipDir
 		}
 
@@ -115,7 +115,13 @@ func parseGoFiles(dir, modulePath string) map[string]*structEntry {
 		}
 
 		relDir := filepath.ToSlash(mustRel(dir, filepath.Dir(path)))
-		fileImports := reflast.FilterModuleImports(reflast.BuildImportMap(node), modulePath)
+		rawImports := reflast.BuildImportMap(node)
+		fileImports := reflast.FilterModuleImports(rawImports, modulePath)
+		for localName, importPath := range rawImports {
+			if !strings.HasPrefix(importPath, modulePath+"/") {
+				fileImports[localName] = "vendor/" + importPath
+			}
+		}
 
 		for _, decl := range node.Decls {
 			genDecl, ok := decl.(*ast.GenDecl)

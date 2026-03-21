@@ -7,11 +7,11 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
-	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/settings/grpc/converters"
 
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 	"google.golang.org/grpc/codes"
 )
 

@@ -6,13 +6,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
-	"github.com/dinnerdonebetter/backend/internal/platform/notifications/apns"
-	"github.com/dinnerdonebetter/backend/internal/platform/notifications/fcm"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-
 	"github.com/spf13/pflag"
+	"github.com/verygoodsoftwarenotvirus/platform/notifications"
+	"github.com/verygoodsoftwarenotvirus/platform/notifications/apns"
+	"github.com/verygoodsoftwarenotvirus/platform/notifications/fcm"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 const (

@@ -6,10 +6,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 func TestQuerier_Integration_AccountUserMemberships(t *testing.T) {

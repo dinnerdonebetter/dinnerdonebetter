@@ -5,11 +5,10 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-
 	"github.com/gorilla/securecookie"
+	"github.com/verygoodsoftwarenotvirus/platform/internalerrors"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 type Manager interface {

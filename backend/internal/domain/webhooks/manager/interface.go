@@ -4,7 +4,8 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 type (

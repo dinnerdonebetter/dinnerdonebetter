@@ -9,15 +9,15 @@ import (
 	mockmanagers "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
 	uploadedmediamock "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/mock"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	mockuploads "github.com/dinnerdonebetter/backend/internal/platform/uploads/mock"
 	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	mockuploads "github.com/verygoodsoftwarenotvirus/platform/uploads/mock"
 )
 
 // noopCommentsManager is a stub implementation for tests that only need service construction.

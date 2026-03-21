@@ -5,12 +5,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments/fakes"
-	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 // --- Unit tests ---

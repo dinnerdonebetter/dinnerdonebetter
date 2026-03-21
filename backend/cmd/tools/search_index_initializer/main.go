@@ -10,15 +10,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
-	"github.com/dinnerdonebetter/backend/internal/platform/search/text/algolia"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
@@ -26,6 +17,15 @@ import (
 	mealplanningindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/spf13/cobra"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
+	"github.com/verygoodsoftwarenotvirus/platform/search/text/algolia"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
 )
 
 const (

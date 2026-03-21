@@ -1,17 +1,5 @@
 {
-	"pushNotifications": {
-		"apns": {
-			"authKeyPath": "/mnt/apns/apns-auth-key.p8",
-			"keyID": "",
-			"teamID": "K8R2Q5UWQS",
-			"bundleID": "com.dinnerdonebetter.ios",
-			"production": true
-		},
-		"fcm": {
-			"credentialsPath": ""
-		},
-		"provider": "apns_fcm"
-	},
+	"httpClient": null,
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -27,9 +15,23 @@
 		"bucketName": "userdata.dinnerdonebetter.com",
 		"provider": "gcp"
 	},
+	"pushNotifications": {
+		"apns": {
+			"authKeyPath": "/mnt/apns/apns-auth-key.p8",
+			"keyID": "",
+			"teamID": "K8R2Q5UWQS",
+			"bundleID": "com.dinnerdonebetter.ios",
+			"production": true
+		},
+		"fcm": {
+			"credentialsPath": ""
+		},
+		"provider": "apns_fcm"
+	},
 	"encoding": {
 		"contentType": ""
 	},
+	"baseURL": "",
 	"events": {
 		"consumers": {
 			"provider": "pubsub",
@@ -101,22 +103,6 @@
 			"spanCollectionProbability": 1
 		}
 	},
-	"email": {
-		"sendgrid": null,
-		"mailgun": null,
-		"mailjet": null,
-		"resend": {
-			"apiToken": "placeholder"
-		},
-		"postmark": null,
-		"provider": "resend",
-		"circuitBreakerConfig": {
-			"name": "prod_emailer",
-			"circuitBreakerErrorPercentage": 0.5,
-			"circuitBreakerMinimumOccurrenceThreshold": 100
-		}
-	},
-	"httpClient": null,
 	"analytics": {
 		"proxySources": {
 			"ios": {
@@ -154,6 +140,25 @@
 		"provider": "posthog",
 		"circuitBreaker": {
 			"name": "api_analytics",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
+	},
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"resend": {
+			"apiToken": "placeholder"
+		},
+		"postmark": null,
+		"provider": "resend",
+		"baseURL": "",
+		"outboundInvitesEmailAddress": "",
+		"passwordResetCreationEmailAddress": "",
+		"passwordResetRedemptionEmailAddress": "",
+		"circuitBreakerConfig": {
+			"name": "prod_emailer",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}

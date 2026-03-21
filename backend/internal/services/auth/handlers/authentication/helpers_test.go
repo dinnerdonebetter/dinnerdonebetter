@@ -6,10 +6,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/testutils"
 )
 
 func TestAuthenticationService_validateLogin(T *testing.T) {

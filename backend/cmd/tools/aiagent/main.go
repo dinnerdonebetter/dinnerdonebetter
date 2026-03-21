@@ -5,9 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
-
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/verygoodsoftwarenotvirus/platform/httpclient"
 	"google.golang.org/adk/agent"
 	"google.golang.org/adk/agent/llmagent"
 	"google.golang.org/adk/cmd/launcher"

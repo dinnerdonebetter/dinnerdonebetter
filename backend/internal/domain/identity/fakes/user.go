@@ -6,9 +6,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	fake "github.com/brianvoe/gofakeit/v7"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 // BuildFakeUser builds a faked User.

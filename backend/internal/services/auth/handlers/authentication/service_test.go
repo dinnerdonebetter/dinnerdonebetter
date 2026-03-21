@@ -9,19 +9,19 @@ import (
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
-	mockrouting "github.com/dinnerdonebetter/backend/internal/platform/routing/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"github.com/verygoodsoftwarenotvirus/platform/analytics"
+	"github.com/verygoodsoftwarenotvirus/platform/encoding"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	mockrouting "github.com/verygoodsoftwarenotvirus/platform/routing/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/testutils"
 )
 
 func buildTestService(t *testing.T) *service {

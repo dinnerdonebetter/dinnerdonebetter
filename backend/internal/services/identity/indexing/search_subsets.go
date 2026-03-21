@@ -2,7 +2,8 @@ package indexing
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
+
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
 )
 
 type UserTextSearcher textsearch.Index[UserSearchSubset]

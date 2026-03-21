@@ -8,17 +8,17 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/issuereports/fakes"
 	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
 	issuereportsmock "github.com/dinnerdonebetter/backend/internal/domain/issuereports/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
-	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/testutils"
 )
 
 func buildIssueReportsManagerForTest(t *testing.T) (*issueReportsManager, *issuereportsmock.Repository) {

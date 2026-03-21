@@ -2,7 +2,8 @@ package fakes
 
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 // BuildFakeAuditLogEntry builds a faked valid instrument.

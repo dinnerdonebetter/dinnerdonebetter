@@ -3,8 +3,9 @@ package queuetest
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	queuetest "github.com/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
+
+	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
 )
 
 // BuildResult holds the queue test job and a cleanup that flushes metrics so
