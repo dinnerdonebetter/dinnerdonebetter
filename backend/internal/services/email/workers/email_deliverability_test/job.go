@@ -38,19 +38,15 @@ func NewJob(
 	params *JobParams,
 ) (*Job, error) {
 	recipientEmail := params.RecipientEmailAddress
-	serviceEnvironment := params.ServiceEnvironment
 	if recipientEmail == "" {
 		return nil, fmt.Errorf("recipient email is required")
 	}
-	if serviceEnvironment == "" {
-		serviceEnvironment = "prod"
-	}
+
 	return &Job{
-		emailer:            emailer,
-		logger:             logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		recipientEmail:     recipientEmail,
-		serviceEnvironment: serviceEnvironment,
+		emailer:        emailer,
+		logger:         logging.EnsureLogger(logger).WithName(serviceName),
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		recipientEmail: recipientEmail,
 	}, nil
 }
 
