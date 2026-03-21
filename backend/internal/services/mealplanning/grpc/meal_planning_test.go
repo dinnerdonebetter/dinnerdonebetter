@@ -1252,45 +1252,6 @@ func TestServiceImpl_GetUserIngredientPreferences(T *testing.T) {
 	})
 }
 
-func TestServiceImpl_RunFinalizeMealPlanWorker(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		// Note: This test requires actual worker instances which are complex to set up.
-		// For now, we skip this test as it would require full worker initialization.
-		// In a real scenario, you would create actual worker instances or use integration tests.
-		t.Skip("Worker tests require actual worker instances - use integration tests instead")
-	})
-}
-
-func TestServiceImpl_RunMealPlanGroceryListInitializerWorker(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		// Note: This test requires actual worker instances which are complex to set up.
-		// For now, we skip this test as it would require full worker initialization.
-		// In a real scenario, you would create actual worker instances or use integration tests.
-		t.Skip("Worker tests require actual worker instances - use integration tests instead")
-	})
-}
-
-func TestServiceImpl_RunMealPlanTaskCreatorWorker(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		// Note: This test requires actual worker instances which are complex to set up.
-		// For now, we skip this test as it would require full worker initialization.
-		// In a real scenario, you would create actual worker instances or use integration tests.
-		t.Skip("Worker tests require actual worker instances - use integration tests instead")
-	})
-}
-
 func TestServiceImpl_SearchForMeals(T *testing.T) {
 	T.Parallel()
 

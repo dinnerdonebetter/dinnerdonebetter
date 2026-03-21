@@ -346,16 +346,6 @@ func TestRecipeManager_RecipeEstimatedPrepSteps(T *testing.T) {
 	})
 }
 
-func TestRecipeManager_RecipeImageUpload(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		t.SkipNow()
-	})
-}
-
 func TestRecipeManager_MealMermaid(T *testing.T) {
 	T.Parallel()
 
@@ -837,16 +827,6 @@ func TestRecipeManager_ArchiveRecipeStep(T *testing.T) {
 		assert.NoError(t, rm.ArchiveRecipeStep(ctx, exampleRecipeID, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
-	})
-}
-
-func TestRecipeManager_RecipeStepImageUpload(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		t.SkipNow()
 	})
 }
 

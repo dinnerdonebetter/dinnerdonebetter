@@ -1,5 +1,3 @@
-//go:build wireinject
-
 package datachangemessagehandler
 
 import (
@@ -22,7 +20,7 @@ import (
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/google/wire"
+	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
@@ -38,43 +36,68 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/uploads/objectstorage"
 )
 
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
+	ctx context.Context,
+	cfg *config.AsyncMessageHandlerConfig,
+) *do.RootScope {
+	i := do.New()
+
+	do.ProvideValue(i, ctx)
+	do.ProvideValue(i, cfg)
+
+	// config field extraction
+	RegisterConfigs(i)
+
+	// platform providers
+	observability.RegisterO11yConfigs(i)
+	tracingcfg.RegisterTracerProvider(i)
+	loggingcfg.RegisterLogger(i)
+	metricscfg.RegisterMetricsProvider(i)
+	msgconfig.RegisterMessageQueue(i)
+	httpclient.RegisterHTTPClient(i)
+	encoding.RegisterServerEncoderDecoder(i)
+	analyticscfg.RegisterEventReporter(i)
+	emailcfg.RegisterEmailer(i)
+	databasecfg.RegisterClientConfig(i)
+	postgres.RegisterDatabaseClient(i)
+	objectstorage.RegisterUploadManager(i)
+	notificationscfg.RegisterPushSender(i)
+
+	// repos
+	auditlogentries.RegisterAuditLogRepository(i)
+	auth.RegisterAuthRepository(i)
+	dataprivacy.RegisterDataPrivacyRepository(i)
+	identity.RegisterIdentityRepository(i)
+	issue_reports.RegisterIssueReportsRepository(i)
+	mealplanning.RegisterMealPlanningRepository(i)
+	uploadedmedia.RegisterUploadedMediaRepository(i)
+	webhooks.RegisterWebhooksRepository(i)
+	internalopsrepo.RegisterInternalOpsRepository(i)
+
+	// managers
+	notificationsmanager.RegisterNotificationsDataManager(i)
+	settingsmanager.RegisterSettingsDataManager(i)
+	waitlistsmanager.RegisterWaitlistDataManager(i)
+
+	// indexing
+	identityindexing.RegisterCoreDataIndexer(i)
+	eatingindexing.RegisterMealPlanningDataIndexer(i)
+
+	// searchers
+	RegisterSearchers(i)
+
+	// main handler
+	datachangemessagehandler.RegisterAsyncDataChangeMessageHandler(i)
+
+	return i
+}
+
 // Build builds a server.
 func Build(
 	ctx context.Context,
 	cfg *config.AsyncMessageHandlerConfig,
 ) (*datachangemessagehandler.AsyncDataChangeMessageHandler, error) {
-	wire.Build(
-		datachangemessagehandler.Providers,
-		msgconfig.MessageQueueProviders,
-		databasecfg.ClientConfigProviders,
-		postgres.PGProviders,
-		auditlogentries.AuditRepoProviders,
-		auth.AuthRepoProviders,
-		dataprivacy.DataPrivProviders,
-		identity.IDRepoProviders,
-		issue_reports.IssueReportsRepoProviders,
-		mealplanning.MPRepoProviders,
-		notificationsmanager.NotificationsManagerProviders,
-		settingsmanager.SettingsManagerProviders,
-		uploadedmedia.UploadedMediaRepoProviders,
-		waitlistsmanager.WaitlistManagerProviders,
-		webhooks.WebhookProviders,
-		internalopsrepo.Providers,
-		analyticscfg.Providers,
-		emailcfg.Providers,
-		metricscfg.MetricsConfigProviders,
-		encoding.Providers,
-		loggingcfg.LogConfigProviders,
-		httpclient.Providers,
-		tracingcfg.TracingConfigProviders,
-		observability.O11yProviders,
-		objectstorage.Providers,
-		identityindexing.Providers,
-		eatingindexing.Providers,
-		ConfigProviders,
-		SearcherProviders,
-		notificationscfg.Providers,
-	)
-
-	return nil, nil
+	i := BuildInjector(ctx, cfg)
+	return do.MustInvoke[*datachangemessagehandler.AsyncDataChangeMessageHandler](i), nil
 }

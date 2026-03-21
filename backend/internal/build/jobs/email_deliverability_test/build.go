@@ -1,5 +1,3 @@
-//go:build wireinject
-
 package emaildeliverabilitytest
 
 import (
@@ -8,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	emaildeliverabilitytest "github.com/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
 
-	"github.com/google/wire"
+	"github.com/samber/do/v2"
 	emailcfg "github.com/verygoodsoftwarenotvirus/platform/email/config"
 	"github.com/verygoodsoftwarenotvirus/platform/httpclient"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
@@ -17,21 +15,34 @@ import (
 	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
 )
 
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
+	ctx context.Context,
+	cfg *config.EmailDeliverabilityTestConfig,
+) *do.RootScope {
+	i := do.New()
+
+	do.ProvideValue(i, ctx)
+	do.ProvideValue(i, cfg)
+
+	RegisterConfigs(i)
+
+	observability.RegisterO11yConfigs(i)
+	tracingcfg.RegisterTracerProvider(i)
+	loggingcfg.RegisterLogger(i)
+	metricscfg.RegisterMetricsProvider(i)
+	httpclient.RegisterHTTPClient(i)
+	emailcfg.RegisterEmailer(i)
+	emaildeliverabilitytest.RegisterEmailDeliverabilityTest(i)
+
+	return i
+}
+
 // Build builds the email deliverability test job.
 func Build(
 	ctx context.Context,
 	cfg *config.EmailDeliverabilityTestConfig,
 ) (*emaildeliverabilitytest.Job, error) {
-	wire.Build(
-		emaildeliverabilitytest.ProvidersEmailDeliverabilityTest,
-		tracingcfg.TracingConfigProviders,
-		observability.O11yProviders,
-		loggingcfg.LogConfigProviders,
-		metricscfg.MetricsConfigProviders,
-		httpclient.Providers,
-		emailcfg.Providers,
-		ConfigProviders,
-	)
-
-	return nil, nil
+	i := BuildInjector(ctx, cfg)
+	return do.MustInvoke[*emaildeliverabilitytest.Job](i), nil
 }

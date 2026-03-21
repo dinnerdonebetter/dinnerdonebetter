@@ -1,0 +1,33 @@
+package mealplanning
+
+import (
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	domainmealplanning "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+
+	"github.com/samber/do/v2"
+	"github.com/verygoodsoftwarenotvirus/platform/database"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+)
+
+// RegisterMealPlanningRepository registers the meal planning repository with the injector.
+func RegisterMealPlanningRepository(i do.Injector) {
+	do.Provide[domainmealplanning.Repository](i, func(i do.Injector) (domainmealplanning.Repository, error) {
+		return ProvideMealPlanningRepository(
+			do.MustInvoke[logging.Logger](i),
+			do.MustInvoke[tracing.TracerProvider](i),
+			do.MustInvoke[audit.Repository](i),
+			do.MustInvoke[identity.Repository](i),
+			do.MustInvoke[database.Client](i),
+		), nil
+	})
+
+	do.Provide[domainmealplanning.ValidEnumerationDataManager](i, func(i do.Injector) (domainmealplanning.ValidEnumerationDataManager, error) {
+		return ProvideValidEnumerationDataManager(do.MustInvoke[domainmealplanning.Repository](i)), nil
+	})
+}
+
+func ProvideValidEnumerationDataManager(x domainmealplanning.Repository) domainmealplanning.ValidEnumerationDataManager {
+	return x
+}

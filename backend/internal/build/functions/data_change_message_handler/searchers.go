@@ -6,24 +6,88 @@ import (
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/google/wire"
+	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
 )
 
-var SearcherProviders = wire.NewSet(
-	ProvideUserTextSearcher,
-	ProvideRecipeTextSearcher,
-	ProvideMealTextSearcher,
-	ProvideValidIngredientTextSearcher,
-	ProvideValidInstrumentTextSearcher,
-	ProvideValidMeasurementUnitTextSearcher,
-	ProvideValidPreparationTextSearcher,
-	ProvideValidIngredientStateTextSearcher,
-	ProvideValidVesselTextSearcher,
-)
+// RegisterSearchers registers all text searcher providers with the injector.
+func RegisterSearchers(i do.Injector) {
+	do.Provide(i, func(i do.Injector) (identityindexing.UserTextSearcher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		logger := do.MustInvoke[logging.Logger](i)
+		tp := do.MustInvoke[tracing.TracerProvider](i)
+		mp := do.MustInvoke[metrics.Provider](i)
+		cfg := do.MustInvoke[*textsearchcfg.Config](i)
+		return ProvideUserTextSearcher(ctx, logger, tp, mp, cfg)
+	})
+	do.Provide(i, func(i do.Injector) (eatingindexing.RecipeTextSearcher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		logger := do.MustInvoke[logging.Logger](i)
+		tp := do.MustInvoke[tracing.TracerProvider](i)
+		mp := do.MustInvoke[metrics.Provider](i)
+		cfg := do.MustInvoke[*textsearchcfg.Config](i)
+		return ProvideRecipeTextSearcher(ctx, logger, tp, mp, cfg)
+	})
+	do.Provide(i, func(i do.Injector) (eatingindexing.MealTextSearcher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		logger := do.MustInvoke[logging.Logger](i)
+		tp := do.MustInvoke[tracing.TracerProvider](i)
+		mp := do.MustInvoke[metrics.Provider](i)
+		cfg := do.MustInvoke[*textsearchcfg.Config](i)
+		return ProvideMealTextSearcher(ctx, logger, tp, mp, cfg)
+	})
+	do.Provide(i, func(i do.Injector) (eatingindexing.ValidIngredientTextSearcher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		logger := do.MustInvoke[logging.Logger](i)
+		tp := do.MustInvoke[tracing.TracerProvider](i)
+		mp := do.MustInvoke[metrics.Provider](i)
+		cfg := do.MustInvoke[*textsearchcfg.Config](i)
+		return ProvideValidIngredientTextSearcher(ctx, logger, tp, mp, cfg)
+	})
+	do.Provide(i, func(i do.Injector) (eatingindexing.ValidInstrumentTextSearcher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		logger := do.MustInvoke[logging.Logger](i)
+		tp := do.MustInvoke[tracing.TracerProvider](i)
+		mp := do.MustInvoke[metrics.Provider](i)
+		cfg := do.MustInvoke[*textsearchcfg.Config](i)
+		return ProvideValidInstrumentTextSearcher(ctx, logger, tp, mp, cfg)
+	})
+	do.Provide(i, func(i do.Injector) (eatingindexing.ValidMeasurementUnitTextSearcher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		logger := do.MustInvoke[logging.Logger](i)
+		tp := do.MustInvoke[tracing.TracerProvider](i)
+		mp := do.MustInvoke[metrics.Provider](i)
+		cfg := do.MustInvoke[*textsearchcfg.Config](i)
+		return ProvideValidMeasurementUnitTextSearcher(ctx, logger, tp, mp, cfg)
+	})
+	do.Provide(i, func(i do.Injector) (eatingindexing.ValidPreparationTextSearcher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		logger := do.MustInvoke[logging.Logger](i)
+		tp := do.MustInvoke[tracing.TracerProvider](i)
+		mp := do.MustInvoke[metrics.Provider](i)
+		cfg := do.MustInvoke[*textsearchcfg.Config](i)
+		return ProvideValidPreparationTextSearcher(ctx, logger, tp, mp, cfg)
+	})
+	do.Provide(i, func(i do.Injector) (eatingindexing.ValidIngredientStateTextSearcher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		logger := do.MustInvoke[logging.Logger](i)
+		tp := do.MustInvoke[tracing.TracerProvider](i)
+		mp := do.MustInvoke[metrics.Provider](i)
+		cfg := do.MustInvoke[*textsearchcfg.Config](i)
+		return ProvideValidIngredientStateTextSearcher(ctx, logger, tp, mp, cfg)
+	})
+	do.Provide(i, func(i do.Injector) (eatingindexing.ValidVesselTextSearcher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		logger := do.MustInvoke[logging.Logger](i)
+		tp := do.MustInvoke[tracing.TracerProvider](i)
+		mp := do.MustInvoke[metrics.Provider](i)
+		cfg := do.MustInvoke[*textsearchcfg.Config](i)
+		return ProvideValidVesselTextSearcher(ctx, logger, tp, mp, cfg)
+	})
+}
 
 func ProvideUserTextSearcher(
 	ctx context.Context,

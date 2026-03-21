@@ -18,7 +18,6 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-webauthn/webauthn v0.16.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
-	github.com/google/wire v0.7.0
 	github.com/gorilla/securecookie v1.1.2
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hashicorp/go-multierror v1.1.1
@@ -32,6 +31,7 @@ require (
 	github.com/modelcontextprotocol/go-sdk v1.4.0
 	github.com/o1egl/paseto/v2 v2.1.1
 	github.com/pquerna/otp v1.5.0
+	github.com/samber/do/v2 v2.0.0
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
@@ -39,7 +39,7 @@ require (
 	github.com/stripe/stripe-go/v75 v75.11.0
 	github.com/testcontainers/testcontainers-go v0.41.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.41.0
-	github.com/verygoodsoftwarenotvirus/platform v1.0.1
+	github.com/verygoodsoftwarenotvirus/platform v1.0.2
 	github.com/wagslane/go-password-validator v0.3.0
 	go.opentelemetry.io/otel v1.42.0
 	go.opentelemetry.io/otel/metric v1.42.0
@@ -87,6 +87,7 @@ require (
 	github.com/go-yaml/yaml v2.1.0+incompatible // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/google/go-tpm v0.9.8 // indirect
+	github.com/google/wire v0.7.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/grafana/jsonparser v0.0.0-20250909130937-5f438463be34 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
@@ -117,6 +118,7 @@ require (
 	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible // indirect
 	github.com/rudderlabs/analytics-go/v4 v4.2.3 // indirect
+	github.com/samber/go-type-to-string v1.8.0 // indirect
 	github.com/samber/slog-common v0.20.0 // indirect
 	github.com/samber/slog-multi v1.7.1 // indirect
 	github.com/segmentio/analytics-go/v3 v3.3.0 // indirect

@@ -1,5 +1,3 @@
-//go:build wireinject
-
 package mobilenotificationscheduler
 
 import (
@@ -10,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/google/wire"
+	"github.com/samber/do/v2"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
@@ -20,24 +18,37 @@ import (
 	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
 )
 
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
+	ctx context.Context,
+	cfg *config.MobileNotificationSchedulerConfig,
+) *do.RootScope {
+	i := do.New()
+
+	do.ProvideValue(i, ctx)
+	do.ProvideValue(i, cfg)
+
+	RegisterConfigs(i)
+
+	observability.RegisterO11yConfigs(i)
+	tracingcfg.RegisterTracerProvider(i)
+	loggingcfg.RegisterLogger(i)
+	metricscfg.RegisterMetricsProvider(i)
+	msgconfig.RegisterMessageQueue(i)
+	databasecfg.RegisterClientConfig(i)
+	postgres.RegisterDatabaseClient(i)
+	auditlogentries.RegisterAuditLogRepository(i)
+	identity.RegisterIdentityRepository(i)
+	mealplanning.RegisterMealPlanningRepository(i)
+
+	return i
+}
+
 // Build builds a mobile notification scheduler.
 func Build(
 	ctx context.Context,
 	cfg *config.MobileNotificationSchedulerConfig,
 ) (*Scheduler, error) {
-	wire.Build(
-		tracingcfg.TracingConfigProviders,
-		observability.O11yProviders,
-		metricscfg.MetricsConfigProviders,
-		msgconfig.MessageQueueProviders,
-		databasecfg.ClientConfigProviders,
-		postgres.PGProviders,
-		loggingcfg.LogConfigProviders,
-		auditlogentries.AuditRepoProviders,
-		identity.IDRepoProviders,
-		mealplanning.MPRepoProviders,
-		ConfigProviders,
-	)
-
-	return nil, nil
+	i := BuildInjector(ctx, cfg)
+	return do.MustInvoke[*Scheduler](i), nil
 }

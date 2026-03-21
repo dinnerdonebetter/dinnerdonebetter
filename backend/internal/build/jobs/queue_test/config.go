@@ -4,23 +4,35 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	queuetest "github.com/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
 
-	"github.com/google/wire"
+	"github.com/samber/do/v2"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
 )
 
-var (
-	// ConfigProviders represents this package's offering to the dependency injector.
-	ConfigProviders = wire.NewSet(
-		wire.FieldsOf(
-			new(*config.QueueTestJobConfig),
-			"Queues",
-			"Observability",
-			"Database",
-		),
-		ProvideJobParams,
-		ProvideEventsConfig,
-	)
-)
+// RegisterConfigs registers all config sub-fields with the injector.
+func RegisterConfigs(i do.Injector) {
+	do.Provide[*msgconfig.QueuesConfig](i, func(i do.Injector) (*msgconfig.QueuesConfig, error) {
+		cfg := do.MustInvoke[*config.QueueTestJobConfig](i)
+		return &cfg.Queues, nil
+	})
+	do.Provide[*observability.Config](i, func(i do.Injector) (*observability.Config, error) {
+		cfg := do.MustInvoke[*config.QueueTestJobConfig](i)
+		return &cfg.Observability, nil
+	})
+	do.Provide[*databasecfg.Config](i, func(i do.Injector) (*databasecfg.Config, error) {
+		cfg := do.MustInvoke[*config.QueueTestJobConfig](i)
+		return &cfg.Database, nil
+	})
+	do.Provide[*queuetest.JobParams](i, func(i do.Injector) (*queuetest.JobParams, error) {
+		cfg := do.MustInvoke[*config.QueueTestJobConfig](i)
+		return ProvideJobParams(cfg), nil
+	})
+	do.Provide[*msgconfig.Config](i, func(i do.Injector) (*msgconfig.Config, error) {
+		cfg := do.MustInvoke[*config.QueueTestJobConfig](i)
+		return ProvideEventsConfig(cfg), nil
+	})
+}
 
 // ProvideJobParams builds JobParams from the config.
 func ProvideJobParams(cfg *config.QueueTestJobConfig) *queuetest.JobParams {

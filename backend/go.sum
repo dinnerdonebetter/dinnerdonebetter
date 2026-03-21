@@ -644,6 +644,10 @@ github.com/rudderlabs/analytics-go/v4 v4.2.3/go.mod h1:84tpNtjazdbgJ9hIx3A0JXP5l
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/russross/blackfriday/v2 v2.1.0 h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf35Ld67mk=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
+github.com/samber/do/v2 v2.0.0 h1:tnunwWaoqSfJ9hxVIaJawIo7JXHQlqT9d9YBXlE9Keg=
+github.com/samber/do/v2 v2.0.0/go.mod h1:ZSBCE7Xr6nTNIOVo4DBrkl2+ydUbIOzJjjdV8En5XO4=
+github.com/samber/go-type-to-string v1.8.0 h1:5z6tDTjtXxkIAoAuHAZYMYR8mkBZjVgeSH7jcSLqc8w=
+github.com/samber/go-type-to-string v1.8.0/go.mod h1:jpU77vIDoIxkahknKDoEx9C8bQ1ADnh2sotZ8I4QqBU=
 github.com/samber/lo v1.53.0 h1:t975lj2py4kJPQ6haz1QMgtId2gtmfktACxIXArw3HM=
 github.com/samber/lo v1.53.0/go.mod h1:4+MXEGsJzbKGaUEQFKBq2xtfuznW9oz/WrgyzMzRoM0=
 github.com/samber/slog-common v0.20.0 h1:WaLnm/aCvBJSk5nR5aXZTFBaV0B47A+AEaEOiZDeUnc=
@@ -749,8 +753,8 @@ github.com/vanng822/css v1.0.1/go.mod h1:tcnB1voG49QhCrwq1W0w5hhGasvOg+VQp9i9H1r
 github.com/vanng822/go-premailer v0.0.0-20191214114701-be27abe028fe/go.mod h1:JTFJA/t820uFDoyPpErFQ3rb3amdZoPtxcKervG0OE4=
 github.com/vanng822/go-premailer v1.32.0 h1:dW1y2IKSBQyYIwMc9comDA2e+00/pJ1kVXf3v4sqAJo=
 github.com/vanng822/go-premailer v1.32.0/go.mod h1:4gVC6Hs+ESjSSfB1ohMwLqwuGoJ76cc0c2VM7DYqr0s=
-github.com/verygoodsoftwarenotvirus/platform v1.0.1 h1:stWVJdayOFo/OmmhQ2MOPEhlXFtZQ7/c6qKYVRckxVk=
-github.com/verygoodsoftwarenotvirus/platform v1.0.1/go.mod h1:SqjKJilXjQgP6/tzz1VIHpZECTSWFYiYwjMYwjE3CB0=
+github.com/verygoodsoftwarenotvirus/platform v1.0.2 h1:mTs9rPxog+x/4DlHolOxoItYH8bmjdgclfeMj51o2TI=
+github.com/verygoodsoftwarenotvirus/platform v1.0.2/go.mod h1:D4/+kZmIgdSwmkAs4IIamD1rqdNuGII6Mx9i1B8ZivY=
 github.com/wagslane/go-password-validator v0.3.0 h1:vfxOPzGHkz5S146HDpavl0cw1DSVP061Ry2PX0/ON6I=
 github.com/wagslane/go-password-validator v0.3.0/go.mod h1:TI1XJ6T5fRdRnHqHt14pvy1tNVnrwe7m3/f1f2fDphQ=
 github.com/wsxiaoys/terminal v0.0.0-20160513160801-0940f3fc43a0 h1:3UeQBvD0TFrlVjOeLOBz+CPAI8dnbqNSVwUwRrkp7vQ=
