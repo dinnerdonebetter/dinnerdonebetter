@@ -17,11 +17,11 @@ import (
 	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
 )
 
-// Build builds the queue test job and a cleanup that flushes metrics.
-func Build(
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
 	ctx context.Context,
 	cfg *config.QueueTestJobConfig,
-) (*BuildResult, error) {
+) *do.RootScope {
 	i := do.New()
 
 	do.ProvideValue(i, ctx)
@@ -45,5 +45,14 @@ func Build(
 		), nil
 	})
 
+	return i
+}
+
+// Build builds the queue test job and a cleanup that flushes metrics.
+func Build(
+	ctx context.Context,
+	cfg *config.QueueTestJobConfig,
+) (*BuildResult, error) {
+	i := BuildInjector(ctx, cfg)
 	return do.MustInvoke[*BuildResult](i), nil
 }

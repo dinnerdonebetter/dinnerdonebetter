@@ -35,11 +35,11 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/uploads/objectstorage"
 )
 
-// Build builds a server.
-func Build(
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
 	ctx context.Context,
 	cfg *config.AsyncMessageHandlerConfig,
-) (*datachangemessagehandler.AsyncDataChangeMessageHandler, error) {
+) *do.RootScope {
 	i := do.New()
 
 	do.ProvideValue(i, ctx)
@@ -88,5 +88,14 @@ func Build(
 	// main handler
 	datachangemessagehandler.RegisterAsyncDataChangeMessageHandler(i)
 
+	return i
+}
+
+// Build builds a server.
+func Build(
+	ctx context.Context,
+	cfg *config.AsyncMessageHandlerConfig,
+) (*datachangemessagehandler.AsyncDataChangeMessageHandler, error) {
+	i := BuildInjector(ctx, cfg)
 	return do.MustInvoke[*datachangemessagehandler.AsyncDataChangeMessageHandler](i), nil
 }

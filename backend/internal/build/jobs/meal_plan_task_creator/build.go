@@ -19,11 +19,11 @@ import (
 	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
 )
 
-// Build builds a server.
-func Build(
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
 	ctx context.Context,
 	cfg *config.MealPlanTaskCreatorConfig,
-) (*mealplantaskcreator.Worker, error) {
+) *do.RootScope {
 	i := do.New()
 
 	do.ProvideValue(i, ctx)
@@ -43,5 +43,14 @@ func Build(
 	mealplanning.RegisterMealPlanningRepository(i)
 	mealplantaskcreator.RegisterMealPlanTaskCreator(i)
 
+	return i
+}
+
+// Build builds a server.
+func Build(
+	ctx context.Context,
+	cfg *config.MealPlanTaskCreatorConfig,
+) (*mealplantaskcreator.Worker, error) {
+	i := BuildInjector(ctx, cfg)
 	return do.MustInvoke[*mealplantaskcreator.Worker](i), nil
 }

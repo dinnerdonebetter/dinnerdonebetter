@@ -31,11 +31,11 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/server/http"
 )
 
-// Build builds a server.
-func Build(
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
 	ctx context.Context,
 	cfg *config.APIServiceConfig,
-) (http.Server, error) {
+) *do.RootScope {
 	i := do.New()
 
 	do.ProvideValue(i, ctx)
@@ -81,5 +81,14 @@ func Build(
 	RegisterSearchers(i)
 	RegisterAPIRouter(i)
 
+	return i
+}
+
+// Build builds a server.
+func Build(
+	ctx context.Context,
+	cfg *config.APIServiceConfig,
+) (http.Server, error) {
+	i := BuildInjector(ctx, cfg)
 	return do.MustInvoke[http.Server](i), nil
 }

@@ -15,11 +15,11 @@ import (
 	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
 )
 
-// Build builds a server.
-func Build(
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
 	ctx context.Context,
 	cfg *config.DBCleanerConfig,
-) (*dbcleaner.Job, error) {
+) *do.RootScope {
 	i := do.New()
 
 	do.ProvideValue(i, ctx)
@@ -35,5 +35,14 @@ func Build(
 	internalops.RegisterInternalOpsRepository(i)
 	dbcleaner.RegisterDBCleaner(i)
 
+	return i
+}
+
+// Build builds a server.
+func Build(
+	ctx context.Context,
+	cfg *config.DBCleanerConfig,
+) (*dbcleaner.Job, error) {
+	i := BuildInjector(ctx, cfg)
 	return do.MustInvoke[*dbcleaner.Job](i), nil
 }

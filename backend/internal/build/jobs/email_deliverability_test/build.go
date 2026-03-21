@@ -15,11 +15,11 @@ import (
 	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
 )
 
-// Build builds the email deliverability test job.
-func Build(
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
 	ctx context.Context,
 	cfg *config.EmailDeliverabilityTestConfig,
-) (*emaildeliverabilitytest.Job, error) {
+) *do.RootScope {
 	i := do.New()
 
 	do.ProvideValue(i, ctx)
@@ -35,5 +35,14 @@ func Build(
 	emailcfg.RegisterEmailer(i)
 	emaildeliverabilitytest.RegisterEmailDeliverabilityTest(i)
 
+	return i
+}
+
+// Build builds the email deliverability test job.
+func Build(
+	ctx context.Context,
+	cfg *config.EmailDeliverabilityTestConfig,
+) (*emaildeliverabilitytest.Job, error) {
+	i := BuildInjector(ctx, cfg)
 	return do.MustInvoke[*emaildeliverabilitytest.Job](i), nil
 }

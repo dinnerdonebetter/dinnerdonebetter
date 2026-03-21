@@ -17,11 +17,11 @@ import (
 	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
 )
 
-// Build builds a mobile notification scheduler.
-func Build(
+// BuildInjector creates and configures the dependency injection container.
+func BuildInjector(
 	ctx context.Context,
 	cfg *config.MobileNotificationSchedulerConfig,
-) (*Scheduler, error) {
+) *do.RootScope {
 	i := do.New()
 
 	do.ProvideValue(i, ctx)
@@ -39,5 +39,14 @@ func Build(
 	identity.RegisterIdentityRepository(i)
 	mealplanning.RegisterMealPlanningRepository(i)
 
+	return i
+}
+
+// Build builds a mobile notification scheduler.
+func Build(
+	ctx context.Context,
+	cfg *config.MobileNotificationSchedulerConfig,
+) (*Scheduler, error) {
+	i := BuildInjector(ctx, cfg)
 	return do.MustInvoke[*Scheduler](i), nil
 }
