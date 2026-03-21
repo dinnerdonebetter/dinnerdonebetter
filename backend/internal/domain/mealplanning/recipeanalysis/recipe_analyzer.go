@@ -975,3 +975,44 @@ func (g *recipeAnalyzer) RenderGraphvizDiagramForMeal(ctx context.Context, meal 
 
 	return graphViz.String()
 }
+
+func FindUnitigsByLength(g *simple.DirectedGraph) map[int][][]graph.Node {
+	results := make(map[int][][]graph.Node)
+
+	nodes := g.Nodes()
+	for nodes.Next() {
+		n := nodes.Node()
+
+		// Start of a chain: In-degree is not 1, but Out-degree is exactly 1
+		if g.To(n.ID()).Len() != 1 && g.From(n.ID()).Len() == 1 {
+			chain := []graph.Node{n}
+			curr := n
+
+			for {
+				outputs := g.From(curr.ID())
+				if outputs.Len() != 1 {
+					break
+				}
+
+				outputs.Next()
+				next := outputs.Node()
+
+				if g.To(next.ID()).Len() != 1 {
+					chain = append(chain, next)
+					break
+				}
+
+				curr = next
+				chain = append(chain, curr)
+			}
+
+			// Filter by number of nodes
+			nodeCount := len(chain)
+			if nodeCount >= 3 {
+				results[nodeCount] = append(results[nodeCount], chain)
+			}
+		}
+	}
+
+	return results
+}

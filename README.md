@@ -79,6 +79,7 @@ See [backend/README.md](backend/README.md) for backend-only quick start. Fronten
 | `make deploy_localdev` | Deploy to Docker Desktop Kubernetes (infra + backend via Skaffold). |
 | `make deploy_terraform_prod` | Apply prod Terraform (infra then backend). |
 | `make deploy_prod` | Run prod application deploy (Skaffold) via `./scripts/deploy-prod-local.sh`. |
+| `make deploy_prod_frontend` | Deploy only the frontend (consumer + admin webapps) to prod via `./scripts/deploy-prod-frontend.sh`. |
 | `make verify_prod` | Post-deploy verification (Skaffold verify + scripts). |
 
 **Frontend** (from `frontend/`): `npm install`, `npm run dev -w admin` / `npm run dev -w consumer`, `npm run build`, `npm run lint`, `npm run test`.

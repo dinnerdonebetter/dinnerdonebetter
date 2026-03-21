@@ -1,4 +1,4 @@
-.PHONY: check test build lint lint-fix format format-check install
+.PHONY: check test build lint lint-fix format format-check install deploy_prod
 
 # Run svelte-check in both consumer and admin (type-check only, no artifacts)
 check:
@@ -31,3 +31,7 @@ format-check:
 # Install dependencies (from frontend root)
 install:
 	npm install
+
+# Deploy frontend (consumer + admin) to prod. Run from repo root: make deploy_prod_frontend
+deploy_prod:
+	$(MAKE) -C .. deploy_prod_frontend
