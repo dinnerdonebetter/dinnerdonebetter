@@ -1,0 +1,33 @@
+package grpc
+
+import (
+	"context"
+
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	uploadedmediamanager "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/manager"
+	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+
+	"github.com/samber/do/v2"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/uploads"
+)
+
+// RegisterIdentityService registers the identity gRPC service with the injector.
+func RegisterIdentityService(i do.Injector) {
+	do.Provide[IdentityMethodPermissions](i, func(i do.Injector) (IdentityMethodPermissions, error) {
+		return ProvideMethodPermissions(), nil
+	})
+
+	do.Provide[identitysvc.IdentityServiceServer](i, func(i do.Injector) (identitysvc.IdentityServiceServer, error) {
+		return NewService(
+			do.MustInvoke[logging.Logger](i),
+			do.MustInvoke[tracing.TracerProvider](i),
+			do.MustInvoke[func(context.Context) (*sessions.ContextData, error)](i),
+			do.MustInvoke[manager.IdentityDataManager](i),
+			do.MustInvoke[uploadedmediamanager.UploadedMediaManager](i),
+			do.MustInvoke[uploads.UploadManager](i),
+		), nil
+	})
+}

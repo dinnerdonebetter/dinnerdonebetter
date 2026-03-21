@@ -4,34 +4,57 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/google/wire"
+	"github.com/samber/do/v2"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
-var (
-	// ConfigProviders represents this package's offering to the dependency injector.
-	ConfigProviders = wire.NewSet(
-		wire.FieldsOf(
-			new(*config.MobileNotificationSchedulerConfig),
-			"Queues",
-			"Database",
-		),
-		ProvideObservabilityConfig,
-		ProvideEventsConfig,
-		ProvideMobileNotificationsPublisher,
-		NewScheduler,
-	)
-)
+// RegisterConfigs registers all config sub-fields with the injector.
+func RegisterConfigs(i do.Injector) {
+	do.Provide[*msgconfig.QueuesConfig](i, func(i do.Injector) (*msgconfig.QueuesConfig, error) {
+		cfg := do.MustInvoke[*config.MobileNotificationSchedulerConfig](i)
+		return &cfg.Queues, nil
+	})
+	do.Provide[*databasecfg.Config](i, func(i do.Injector) (*databasecfg.Config, error) {
+		cfg := do.MustInvoke[*config.MobileNotificationSchedulerConfig](i)
+		return &cfg.Database, nil
+	})
+	do.Provide[*observability.Config](i, func(i do.Injector) (*observability.Config, error) {
+		return ProvideObservabilityConfig(do.MustInvoke[*config.MobileNotificationSchedulerConfig](i)), nil
+	})
+	do.Provide[*msgconfig.Config](i, func(i do.Injector) (*msgconfig.Config, error) {
+		return ProvideEventsConfig(do.MustInvoke[*config.MobileNotificationSchedulerConfig](i)), nil
+	})
+	do.Provide[messagequeue.Publisher](i, func(i do.Injector) (messagequeue.Publisher, error) {
+		ctx := do.MustInvoke[context.Context](i)
+		publisherProvider := do.MustInvoke[messagequeue.PublisherProvider](i)
+		queues := do.MustInvoke[*msgconfig.QueuesConfig](i)
+		return ProvideMobileNotificationsPublisher(ctx, publisherProvider, queues)
+	})
+	do.Provide[*Scheduler](i, func(i do.Injector) (*Scheduler, error) {
+		return NewScheduler(
+			do.MustInvoke[logging.Logger](i),
+			do.MustInvoke[tracing.TracerProvider](i),
+			do.MustInvoke[mealplanning.Repository](i),
+			do.MustInvoke[identity.Repository](i),
+			do.MustInvoke[messagequeue.Publisher](i),
+		), nil
+	})
+}
 
-// ProvideObservabilityConfig provides the observability config for wire.
+// ProvideObservabilityConfig provides the observability config.
 func ProvideObservabilityConfig(cfg *config.MobileNotificationSchedulerConfig) *observability.Config {
 	return &cfg.Observability
 }
 
-// ProvideEventsConfig provides the message queue events config for wire.
+// ProvideEventsConfig provides the message queue events config.
 func ProvideEventsConfig(cfg *config.MobileNotificationSchedulerConfig) *msgconfig.Config {
 	return &cfg.Events
 }

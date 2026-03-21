@@ -1,5 +1,3 @@
-//go:build wireinject
-
 package grpcapi
 
 import (
@@ -62,11 +60,11 @@ import (
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
-	"github.com/google/wire"
+	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/analytics/multisource"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/featureflags/config"
-	httpclient "github.com/verygoodsoftwarenotvirus/platform/httpclient"
+	"github.com/verygoodsoftwarenotvirus/platform/httpclient"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
 	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/logging/config"
@@ -84,90 +82,99 @@ func Build(
 	ctx context.Context,
 	cfg *config.APIServiceConfig,
 ) (*GRPCService, error) {
-	wire.Build(ConfigProviders,
-		// core
-		metricscfg.MetricsConfigProviders,
-		loggingcfg.LogConfigProviders,
-		tracingcfg.TracingConfigProviders,
-		httpclient.Providers,
-		msgconfig.MessageQueueProviders,
-		authentication.AuthProviders,
-		sessions.SessionProviders,
-		observability.O11yProviders,
-		random.RandProviders,
-		databasecfg.DatabaseConfigProviders,
-		repositories.RepositoryProviders,
-		grpc.ProvidersGRPC,
-		qrcodes.QRCodeProviders,
-		tokenscfg.TokenIssuerProviders,
-		interceptors.InterceptorProviders,
-		uploadscfg.Providers,
-		objectstorage.Providers,
-		featureflagscfg.ProvidersFeatureFlags,
-		// repos
-		auditrepo.AuditRepoProviders,
-		auditmanager.AuditManagerProviders,
-		authrepo.AuthRepoProviders,
-		commentsrepo.CommentsRepoProviders,
-		identityrepo.IDRepoProviders,
-		issuereportsrepo.IssueReportsRepoProviders,
-		issuereportsmanager.IssueReportsManagerProviders,
-		uploadedmediarepo.UploadedMediaRepoProviders,
-		uploadedmediamanager.UploadedMediaManagerProviders,
-		webhooksrepo.WebhookProviders,
-		oauthrepo.OAuthRepoProviders,
-		paymentsrepo.PaymentsRepoProviders,
-		mealplanningrepo.MPRepoProviders,
-		dataprivacyrepo.DataPrivProviders,
-		dataprivacymanager.DataPrivacyManagerProviders,
-		internalopsrepo.Providers,
-		// services
-		authhttpsvc.AuthHTTPServiceProviders,
-		analyticssvc.AnalyticsSvcProviders,
-		auditsvc.AuditSvcProviders,
-		multisource.Providers,
-		commentssvc.CommentsSvcProviders,
-		authsvc.AuthSvcProviders,
-		dataprivacysvc.DataPrivSvcProviders,
-		identitysvc.IDSvcProviders,
-		internalopssvc.InternalOpsSvcProviders,
-		issuereportssvc.IssueReportSvcProviders,
-		notificationssvc.NotifsSvcProviders,
-		settingssvc.SettingSvcProviders,
-		uploadedmediasvc.UploadedMediaSvcProviders,
-		webhookssvc.WebhookSvcProviders,
-		oauthsvc.OAuthSvcProviders,
-		paymentssvc.PaymentsSvcProviders,
-		paymentsadapters.PaymentsAdapterProviders,
-		mealplanningsvc.MPSvcProviders,
-		waitlistssvc.WaitlistsSvcProviders,
-		uploadedmediacfg.UploadedMediaConfigProviders,
-		// manager
-		commentsmanager.CommentsManagerProviders,
-		identitymgr.IDManagerProviders,
-		notificationsmanager.NotificationsManagerProviders,
-		settingsmanager.SettingsManagerProviders,
-		paymentsmanager.PaymentsManagerProviders,
-		oauthmgr.OAuthManagerProviders,
-		mealplanningmgr.MPManagerProviders,
-		authmgr.AuthManagerProviders,
-		webhooksmanager.WebhookManagerProviders,
-		waitlistsmanager.WaitlistManagerProviders,
-		// workers
-		mealplanfinalizer.ProvidersMealPlanFinalizer,
-		mealplangrocerylistinitializer.ProvidersMealPlanGroceryListInitializer,
-		mealplantaskcreator.ProvidersMealPlanTaskCreator,
-		// misc
-		recipeanalysis.ProvidersRecipeAnalysis,
-		grocerylistpreparation.ProvidersGroceryListPreparation,
-		ProvideAnalyticsProxySources,
-		ProvideUserTextSearcher,
-		AggregateMethodPermissions,
-		BuildUnaryServerInterceptors,
-		BuildStreamServerInterceptors,
-		BuildRegistrationFuncs,
-		NewGRPCService,
-	)
+	i := do.New()
 
-	return nil, nil
+	do.ProvideValue(i, ctx)
+	do.ProvideValue(i, cfg)
+
+	// config field extraction
+	RegisterConfigs(i)
+
+	// platform providers
+	observability.RegisterO11yConfigs(i)
+	metricscfg.RegisterMetricsProvider(i)
+	loggingcfg.RegisterLogger(i)
+	tracingcfg.RegisterTracerProvider(i)
+	httpclient.RegisterHTTPClient(i)
+	msgconfig.RegisterMessageQueue(i)
+	random.RegisterGenerator(i)
+	postgres.RegisterDatabaseClient(i)
+	grpc.RegisterGRPCServer(i)
+	qrcodes.RegisterBuilder(i)
+	uploadscfg.RegisterStorageConfig(i)
+	objectstorage.RegisterUploadManager(i)
+	featureflagscfg.RegisterFeatureFlagManager(i)
+	multisource.RegisterMultiSourceEventReporter(i)
+
+	// authentication
+	authentication.RegisterAuth(i)
+	sessions.RegisterSessionProviders(i)
+	tokenscfg.RegisterTokenIssuer(i)
+	interceptors.RegisterAuthInterceptor(i)
+
+	// repositories
+	repositories.RegisterMigrator(i)
+	auditrepo.RegisterAuditLogRepository(i)
+	authrepo.RegisterAuthRepository(i)
+	commentsrepo.RegisterCommentsRepository(i)
+	identityrepo.RegisterIdentityRepository(i)
+	issuereportsrepo.RegisterIssueReportsRepository(i)
+	uploadedmediarepo.RegisterUploadedMediaRepository(i)
+	webhooksrepo.RegisterWebhooksRepository(i)
+	oauthrepo.RegisterOAuthRepository(i)
+	paymentsrepo.RegisterPaymentsRepository(i)
+	mealplanningrepo.RegisterMealPlanningRepository(i)
+	dataprivacyrepo.RegisterDataPrivacyRepository(i)
+	internalopsrepo.RegisterInternalOpsRepository(i)
+
+	// managers
+	auditmanager.RegisterAuditDataManager(i)
+	authmgr.RegisterAuthManager(i)
+	commentsmanager.RegisterCommentsDataManager(i)
+	identitymgr.RegisterIdentityDataManager(i)
+	notificationsmanager.RegisterNotificationsDataManager(i)
+	settingsmanager.RegisterSettingsDataManager(i)
+	paymentsmanager.RegisterPaymentsDataManager(i)
+	oauthmgr.RegisterOAuth2Manager(i)
+	mealplanningmgr.RegisterManagers(i)
+	webhooksmanager.RegisterWebhookDataManager(i)
+	waitlistsmanager.RegisterWaitlistDataManager(i)
+	issuereportsmanager.RegisterIssueReportsDataManager(i)
+	uploadedmediamanager.RegisterUploadedMediaManager(i)
+	dataprivacymanager.RegisterDataPrivacyManager(i)
+	paymentsadapters.RegisterPaymentProcessorRegistry(i)
+
+	// services
+	authsvc.RegisterAuthService(i)
+	authhttpsvc.RegisterAuthHTTPService(i)
+	analyticssvc.RegisterAnalyticsService(i)
+	auditsvc.RegisterAuditService(i)
+	commentssvc.RegisterCommentsService(i)
+	dataprivacysvc.RegisterDataPrivacyService(i)
+	identitysvc.RegisterIdentityService(i)
+	internalopssvc.RegisterInternalOpsService(i)
+	issuereportssvc.RegisterIssueReportsService(i)
+	notificationssvc.RegisterNotificationsService(i)
+	settingssvc.RegisterSettingsService(i)
+	uploadedmediasvc.RegisterUploadedMediaService(i)
+	webhookssvc.RegisterWebhooksService(i)
+	oauthsvc.RegisterOAuthService(i)
+	paymentssvc.RegisterPaymentsService(i)
+	mealplanningsvc.RegisterMealPlanningService(i)
+	waitlistssvc.RegisterWaitlistsService(i)
+	uploadedmediacfg.RegisterUploadedMediaConfig(i)
+
+	// workers
+	mealplanfinalizer.RegisterMealPlanFinalizer(i)
+	mealplangrocerylistinitializer.RegisterMealPlanGroceryListInitializer(i)
+	mealplantaskcreator.RegisterMealPlanTaskCreator(i)
+
+	// misc
+	recipeanalysis.RegisterRecipeAnalyzer(i)
+	grocerylistpreparation.RegisterGroceryListCreator(i)
+
+	// extras (functions from extras.go)
+	RegisterExtras(i)
+
+	return do.MustInvoke[*GRPCService](i), nil
 }

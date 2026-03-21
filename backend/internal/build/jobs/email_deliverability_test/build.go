@@ -1,5 +1,3 @@
-//go:build wireinject
-
 package emaildeliverabilitytest
 
 import (
@@ -8,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	emaildeliverabilitytest "github.com/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
 
-	"github.com/google/wire"
+	"github.com/samber/do/v2"
 	emailcfg "github.com/verygoodsoftwarenotvirus/platform/email/config"
 	"github.com/verygoodsoftwarenotvirus/platform/httpclient"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
@@ -22,16 +20,20 @@ func Build(
 	ctx context.Context,
 	cfg *config.EmailDeliverabilityTestConfig,
 ) (*emaildeliverabilitytest.Job, error) {
-	wire.Build(
-		emaildeliverabilitytest.ProvidersEmailDeliverabilityTest,
-		tracingcfg.TracingConfigProviders,
-		observability.O11yProviders,
-		loggingcfg.LogConfigProviders,
-		metricscfg.MetricsConfigProviders,
-		httpclient.Providers,
-		emailcfg.Providers,
-		ConfigProviders,
-	)
+	i := do.New()
 
-	return nil, nil
+	do.ProvideValue(i, ctx)
+	do.ProvideValue(i, cfg)
+
+	RegisterConfigs(i)
+
+	observability.RegisterO11yConfigs(i)
+	tracingcfg.RegisterTracerProvider(i)
+	loggingcfg.RegisterLogger(i)
+	metricscfg.RegisterMetricsProvider(i)
+	httpclient.RegisterHTTPClient(i)
+	emailcfg.RegisterEmailer(i)
+	emaildeliverabilitytest.RegisterEmailDeliverabilityTest(i)
+
+	return do.MustInvoke[*emaildeliverabilitytest.Job](i), nil
 }

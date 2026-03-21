@@ -1,11 +1,10 @@
-//go:build wireinject
-
 package api
 
 import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	identitymgr "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	paymentsmanager "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
@@ -18,9 +17,9 @@ import (
 	paymentsadapters "github.com/dinnerdonebetter/backend/internal/services/payments/adapters"
 	paymentshttp "github.com/dinnerdonebetter/backend/internal/services/payments/http"
 
-	"github.com/google/wire"
+	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
@@ -37,38 +36,50 @@ func Build(
 	ctx context.Context,
 	cfg *config.APIServiceConfig,
 ) (http.Server, error) {
-	wire.Build(
-		authentication.AuthProviders,
-		encoding.Providers,
-		msgconfig.MessageQueueProviders,
-		analyticscfg.Providers,
-		tracingcfg.TracingConfigProviders,
-		observability.O11yProviders,
-		databasecfg.DatabaseConfigProviders,
-		repositories.RepositoryProviders,
-		loggingcfg.LogConfigProviders,
-		authservice.AuthHTTPServiceProviders,
-		metricscfg.MetricsConfigProviders,
-		http.ProvidersHTTP,
-		routingcfg.RoutingConfigProviders,
-		// repos
-		auditrepo.AuditRepoProviders,
-		identityrepo.IDRepoProviders,
-		oauthrepo.OAuthRepoProviders,
-		paymentsrepo.PaymentsRepoProviders,
-		// manager
-		random.RandProviders,
-		identitymgr.IDManagerProviders,
-		paymentsmanager.PaymentsManagerProviders,
-		paymentsadapters.PaymentsAdapterProviders,
-		// payments http
-		paymentshttp.PaymentsHTTPProviders,
-		ProvideTextSearchConfig,
-		ProvideUserTextSearcher,
-		ConfigProviders,
-		ProvideAPIRouter,
-		wire.Value("api_server"), // HTTP server logger service name
-	)
+	i := do.New()
 
-	return nil, nil
+	do.ProvideValue(i, ctx)
+	do.ProvideValue(i, cfg)
+
+	// config field extraction
+	RegisterConfigs(i)
+
+	// platform providers
+	observability.RegisterO11yConfigs(i)
+	loggingcfg.RegisterLogger(i)
+	tracingcfg.RegisterTracerProvider(i)
+	metricscfg.RegisterMetricsProvider(i)
+	encoding.RegisterServerEncoderDecoder(i)
+	msgconfig.RegisterMessageQueue(i)
+	analyticscfg.RegisterEventReporter(i)
+	postgres.RegisterDatabaseClient(i)
+	routingcfg.RegisterRouteParamManager(i)
+	random.RegisterGenerator(i)
+	http.RegisterHTTPServer(i, "api_server")
+
+	// authentication
+	authentication.RegisterAuth(i)
+	authcfg.RegisterConfigs(i)
+
+	// repos
+	repositories.RegisterMigrator(i)
+	auditrepo.RegisterAuditLogRepository(i)
+	identityrepo.RegisterIdentityRepository(i)
+	oauthrepo.RegisterOAuthRepository(i)
+	paymentsrepo.RegisterPaymentsRepository(i)
+
+	// managers
+	identitymgr.RegisterIdentityDataManager(i)
+	paymentsmanager.RegisterPaymentsDataManager(i)
+	paymentsadapters.RegisterPaymentProcessorRegistry(i)
+
+	// services
+	authservice.RegisterAuthHTTPService(i)
+	paymentshttp.RegisterPaymentsHTTP(i)
+
+	// searchers & routes
+	RegisterSearchers(i)
+	RegisterAPIRouter(i)
+
+	return do.MustInvoke[http.Server](i), nil
 }

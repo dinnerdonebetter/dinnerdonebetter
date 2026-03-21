@@ -1,0 +1,23 @@
+package issue_reports
+
+import (
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/issuereports"
+
+	"github.com/samber/do/v2"
+	"github.com/verygoodsoftwarenotvirus/platform/database"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+)
+
+// RegisterIssueReportsRepository registers the issue reports repository with the injector.
+func RegisterIssueReportsRepository(i do.Injector) {
+	do.Provide[issuereports.Repository](i, func(i do.Injector) (issuereports.Repository, error) {
+		return ProvideIssueReportsRepository(
+			do.MustInvoke[logging.Logger](i),
+			do.MustInvoke[tracing.TracerProvider](i),
+			do.MustInvoke[audit.Repository](i),
+			do.MustInvoke[database.Client](i),
+		), nil
+	})
+}

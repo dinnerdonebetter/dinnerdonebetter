@@ -1,0 +1,25 @@
+package grpc
+
+import (
+	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
+	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+
+	"github.com/samber/do/v2"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+)
+
+// RegisterWebhooksService registers the webhooks gRPC service with the injector.
+func RegisterWebhooksService(i do.Injector) {
+	do.Provide[WebhooksMethodPermissions](i, func(i do.Injector) (WebhooksMethodPermissions, error) {
+		return ProvideMethodPermissions(), nil
+	})
+
+	do.Provide[webhookssvc.WebhooksServiceServer](i, func(i do.Injector) (webhookssvc.WebhooksServiceServer, error) {
+		return NewService(
+			do.MustInvoke[logging.Logger](i),
+			do.MustInvoke[tracing.TracerProvider](i),
+			do.MustInvoke[manager.WebhookDataManager](i),
+		), nil
+	})
+}

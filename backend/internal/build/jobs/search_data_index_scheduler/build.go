@@ -1,17 +1,16 @@
-//go:build wireinject
-
 package searchdataindexscheduler
 
 import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/google/wire"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
@@ -26,21 +25,30 @@ func Build(
 	ctx context.Context,
 	cfg *config.SearchDataIndexSchedulerConfig,
 ) (*indexing.IndexScheduler, error) {
-	wire.Build(
-		indexing.ProvidersIndexing,
-		tracingcfg.TracingConfigProviders,
-		observability.O11yProviders,
-		msgconfig.MessageQueueProviders,
-		databasecfg.ClientConfigProviders,
-		postgres.PGProviders,
-		loggingcfg.LogConfigProviders,
-		metricscfg.MetricsConfigProviders,
-		auditlogentries.AuditRepoProviders,
-		identity.IDRepoProviders,
-		mealplanning.MPRepoProviders,
-		ProvideIndexFunctions,
-		ConfigProviders,
-	)
+	i := do.New()
 
-	return nil, nil
+	do.ProvideValue(i, ctx)
+	do.ProvideValue(i, cfg)
+
+	RegisterConfigs(i)
+
+	observability.RegisterO11yConfigs(i)
+	tracingcfg.RegisterTracerProvider(i)
+	loggingcfg.RegisterLogger(i)
+	metricscfg.RegisterMetricsProvider(i)
+	msgconfig.RegisterMessageQueue(i)
+	postgres.RegisterDatabaseClient(i)
+	auditlogentries.RegisterAuditLogRepository(i)
+	identityrepo.RegisterIdentityRepository(i)
+	mealplanningrepo.RegisterMealPlanningRepository(i)
+
+	do.Provide[map[string]indexing.Function](i, func(i do.Injector) (map[string]indexing.Function, error) {
+		identityRepo := do.MustInvoke[identity.Repository](i)
+		mealPlanningRepo := do.MustInvoke[mealplanning.Repository](i)
+		return ProvideIndexFunctions(identityRepo, mealPlanningRepo), nil
+	})
+
+	indexing.RegisterIndexScheduler(i)
+
+	return do.MustInvoke[*indexing.IndexScheduler](i), nil
 }

@@ -1,5 +1,3 @@
-//go:build wireinject
-
 package mobilenotificationscheduler
 
 import (
@@ -10,8 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/google/wire"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
@@ -25,19 +22,22 @@ func Build(
 	ctx context.Context,
 	cfg *config.MobileNotificationSchedulerConfig,
 ) (*Scheduler, error) {
-	wire.Build(
-		tracingcfg.TracingConfigProviders,
-		observability.O11yProviders,
-		metricscfg.MetricsConfigProviders,
-		msgconfig.MessageQueueProviders,
-		databasecfg.ClientConfigProviders,
-		postgres.PGProviders,
-		loggingcfg.LogConfigProviders,
-		auditlogentries.AuditRepoProviders,
-		identity.IDRepoProviders,
-		mealplanning.MPRepoProviders,
-		ConfigProviders,
-	)
+	i := do.New()
 
-	return nil, nil
+	do.ProvideValue(i, ctx)
+	do.ProvideValue(i, cfg)
+
+	RegisterConfigs(i)
+
+	observability.RegisterO11yConfigs(i)
+	tracingcfg.RegisterTracerProvider(i)
+	loggingcfg.RegisterLogger(i)
+	metricscfg.RegisterMetricsProvider(i)
+	msgconfig.RegisterMessageQueue(i)
+	postgres.RegisterDatabaseClient(i)
+	auditlogentries.RegisterAuditLogRepository(i)
+	identity.RegisterIdentityRepository(i)
+	mealplanning.RegisterMealPlanningRepository(i)
+
+	return do.MustInvoke[*Scheduler](i), nil
 }

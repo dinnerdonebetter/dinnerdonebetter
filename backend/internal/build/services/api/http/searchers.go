@@ -4,11 +4,16 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
+	paymentswebhook "github.com/dinnerdonebetter/backend/internal/services/payments/http"
 
+	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/routing"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/routing/config"
 	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
 )
 
@@ -32,4 +37,35 @@ func ProvideUserTextSearcher(
 		cfg,
 		identityindexing.IndexTypeUsers,
 	)
+}
+
+// RegisterSearchers registers text search providers with the injector.
+func RegisterSearchers(i do.Injector) {
+	do.Provide[*textsearchcfg.Config](i, func(i do.Injector) (*textsearchcfg.Config, error) {
+		return ProvideTextSearchConfig(do.MustInvoke[*config.APIServiceConfig](i)), nil
+	})
+
+	do.Provide[identityindexing.UserTextSearcher](i, func(i do.Injector) (identityindexing.UserTextSearcher, error) {
+		return ProvideUserTextSearcher(
+			do.MustInvoke[context.Context](i),
+			do.MustInvoke[logging.Logger](i),
+			do.MustInvoke[tracing.TracerProvider](i),
+			do.MustInvoke[metrics.Provider](i),
+			do.MustInvoke[*textsearchcfg.Config](i),
+		)
+	})
+}
+
+// RegisterAPIRouter registers the API router provider with the injector.
+func RegisterAPIRouter(i do.Injector) {
+	do.Provide[routing.Router](i, func(i do.Injector) (routing.Router, error) {
+		return ProvideAPIRouter(
+			do.MustInvoke[routingcfg.Config](i),
+			do.MustInvoke[logging.Logger](i),
+			do.MustInvoke[tracing.TracerProvider](i),
+			do.MustInvoke[metrics.Provider](i),
+			do.MustInvoke[auth.AuthDataService](i),
+			do.MustInvoke[*paymentswebhook.WebhookHandler](i),
+		)
+	})
 }

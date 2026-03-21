@@ -1,0 +1,21 @@
+package indexing
+
+import (
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+
+	"github.com/samber/do/v2"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+)
+
+// RegisterCoreDataIndexer registers the core data indexer with the injector.
+func RegisterCoreDataIndexer(i do.Injector) {
+	do.Provide[*UserDataIndexer](i, func(i do.Injector) (*UserDataIndexer, error) {
+		return NewCoreDataIndexer(
+			do.MustInvoke[logging.Logger](i),
+			do.MustInvoke[tracing.TracerProvider](i),
+			do.MustInvoke[identity.Repository](i),
+			do.MustInvoke[UserTextSearcher](i),
+		), nil
+	})
+}

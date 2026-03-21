@@ -1,5 +1,3 @@
-//go:build wireinject
-
 package mealplantaskcreator
 
 import (
@@ -12,8 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 
-	"github.com/google/wire"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
@@ -27,21 +24,24 @@ func Build(
 	ctx context.Context,
 	cfg *config.MealPlanTaskCreatorConfig,
 ) (*mealplantaskcreator.Worker, error) {
-	wire.Build(
-		databasecfg.ClientConfigProviders,
-		postgres.PGProviders,
-		recipeanalysis.ProvidersRecipeAnalysis,
-		mealplantaskcreator.ProvidersMealPlanTaskCreator,
-		tracingcfg.TracingConfigProviders,
-		observability.O11yProviders,
-		msgconfig.MessageQueueProviders,
-		loggingcfg.LogConfigProviders,
-		metricscfg.MetricsConfigProviders,
-		auditlogentries.AuditRepoProviders,
-		identity.IDRepoProviders,
-		mealplanning.MPRepoProviders,
-		ConfigProviders,
-	)
+	i := do.New()
 
-	return nil, nil
+	do.ProvideValue(i, ctx)
+	do.ProvideValue(i, cfg)
+
+	RegisterConfigs(i)
+
+	observability.RegisterO11yConfigs(i)
+	tracingcfg.RegisterTracerProvider(i)
+	loggingcfg.RegisterLogger(i)
+	metricscfg.RegisterMetricsProvider(i)
+	postgres.RegisterDatabaseClient(i)
+	msgconfig.RegisterMessageQueue(i)
+	recipeanalysis.RegisterRecipeAnalyzer(i)
+	auditlogentries.RegisterAuditLogRepository(i)
+	identity.RegisterIdentityRepository(i)
+	mealplanning.RegisterMealPlanningRepository(i)
+	mealplantaskcreator.RegisterMealPlanTaskCreator(i)
+
+	return do.MustInvoke[*mealplantaskcreator.Worker](i), nil
 }
