@@ -91,7 +91,7 @@ jobs:
         run: git diff --exit-code
 
   env_vars_file:
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       matrix:
         go-version: ['1.26.x']
