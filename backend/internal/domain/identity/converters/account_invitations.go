@@ -3,7 +3,7 @@ package converters
 import (
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )

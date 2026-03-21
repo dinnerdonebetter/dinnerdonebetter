@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 
 	"github.com/stretchr/testify/mock"
 )

@@ -3,13 +3,13 @@ package grpc
 import (
 	"context"
 
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
-	notificationkeys "github.com/dinnerdonebetter/backend/internal/domain/notifications/keys"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
-	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
+	notificationkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/keys"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
+	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
 	"google.golang.org/grpc/codes"

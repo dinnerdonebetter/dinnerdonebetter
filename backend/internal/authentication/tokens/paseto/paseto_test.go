@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/mocks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mocks"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"

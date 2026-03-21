@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	searchdataindexscheduler "github.com/dinnerdonebetter/backend/internal/build/jobs/search_data_index_scheduler"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	searchdataindexscheduler "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/search_data_index_scheduler"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"
 )

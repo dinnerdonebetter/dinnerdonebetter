@@ -3,10 +3,10 @@ package api
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
-	paymentswebhook "github.com/dinnerdonebetter/backend/internal/services/payments/http"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
+	paymentswebhook "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

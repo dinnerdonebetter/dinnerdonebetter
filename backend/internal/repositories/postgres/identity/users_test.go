@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	authfakes "github.com/dinnerdonebetter/backend/internal/domain/auth/fakes"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
+	authfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/fakes"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

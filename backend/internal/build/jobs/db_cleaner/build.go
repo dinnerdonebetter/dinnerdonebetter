@@ -3,9 +3,9 @@ package dbcleaner
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
-	dbcleaner "github.com/dinnerdonebetter/backend/internal/services/oauth/workers/db_cleaner"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
+	dbcleaner "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/oauth/workers/db_cleaner"
 
 	"github.com/samber/do/v2"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"

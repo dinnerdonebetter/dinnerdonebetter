@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

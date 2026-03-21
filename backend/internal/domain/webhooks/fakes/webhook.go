@@ -3,8 +3,8 @@ package fakes
 import (
 	"net/http"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/converters"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/converters"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

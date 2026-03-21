@@ -9,7 +9,7 @@ package mealplanning
 import (
 	context "context"
 
-	comments "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
+	comments "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"

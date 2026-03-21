@@ -3,8 +3,8 @@ package manager
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
-	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
+	notificationsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"

@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	mockmanagers "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
-	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mockmanagers "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
+	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

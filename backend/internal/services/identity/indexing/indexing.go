@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

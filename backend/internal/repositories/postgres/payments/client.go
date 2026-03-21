@@ -3,9 +3,9 @@ package payments
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/payments"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/payments/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

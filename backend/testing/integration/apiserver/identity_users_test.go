@@ -3,11 +3,11 @@ package integration
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
-	identityconverters "github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	identityconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
 )

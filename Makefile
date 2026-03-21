@@ -120,7 +120,7 @@ full_prod_deploy: deploy_prod_infra deploy_prod_software verify_prod
 
 .PHONY: format_proto
 format_proto:
-	$(FORMAT_PROTOBUFS) format --path proto --write
+	$(FORMAT_PROTOBUFS) format proto --write
 
 # PATHS
 # Exclude monolithic {domain}/{domain}.proto files (they're duplicates of the split files)
@@ -129,7 +129,7 @@ PROTO_FILES_PATH          := $(shell find proto -name "*.proto" -type f ! -path 
 PROTO_GO_OUTPUT_PATH      := backend
 PROTO_OUTPUT_BACKEND_PATH := backend/internal/grpc
 PROTO_OUTPUT_IOS_PATH     := ios/ios/Generated
-BACKEND_REPO_NAME         := github.com/dinnerdonebetter/backend
+BACKEND_REPO_NAME         := github.com/dinnerdonebetter/dinnerdonebetter/backend
 
 .PHONY: proto_golang
 proto_golang: ensure_protoc_installed ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed

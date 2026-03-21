@@ -4,10 +4,10 @@ import (
 	"errors"
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/issuereports"
-	"github.com/dinnerdonebetter/backend/internal/domain/issuereports/fakes"
-	issuereportkeys "github.com/dinnerdonebetter/backend/internal/domain/issuereports/keys"
-	issuereportsmock "github.com/dinnerdonebetter/backend/internal/domain/issuereports/mock"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/fakes"
+	issuereportkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/keys"
+	issuereportsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

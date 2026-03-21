@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	oauthsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 )
 
 // OAuthMethodPermissions is a named type for Wire dependency injection.

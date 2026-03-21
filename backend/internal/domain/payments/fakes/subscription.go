@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/payments"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

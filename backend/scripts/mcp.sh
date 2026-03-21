@@ -4,7 +4,7 @@ set -euo pipefail
 # Run MCP service with air
 # Usage: mcp.sh <package_prefix> <artifacts_dir>
 
-PACKAGE_PREFIX="${1:-github.com/dinnerdonebetter/backend}"
+PACKAGE_PREFIX="${1:-github.com/dinnerdonebetter/dinnerdonebetter/backend}"
 ARTIFACTS_DIR="${2:-artifacts}"
 
 air \

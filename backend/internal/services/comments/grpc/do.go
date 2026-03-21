@@ -1,9 +1,9 @@
 package grpc
 
 import (
-	commentsmanager "github.com/dinnerdonebetter/backend/internal/domain/comments/manager"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
-	commentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
+	commentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
+	commentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

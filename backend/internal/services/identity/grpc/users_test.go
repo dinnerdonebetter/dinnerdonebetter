@@ -6,12 +6,12 @@ import (
 	"io"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
-	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
-	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
-	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	identityfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	uploadedmediasvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

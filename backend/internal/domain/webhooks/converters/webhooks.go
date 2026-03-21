@@ -1,7 +1,7 @@
 package converters
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )

@@ -1,8 +1,8 @@
 package webhooks
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	domainwebhooks "github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	domainwebhooks "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

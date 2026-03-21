@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/paseto"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
-	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
+	mockauthn "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/paseto"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
+	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 
 	oauth2errors "github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/stretchr/testify/assert"

@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
-	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
-	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
+	mockauthn "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mock"
+	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
+	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

@@ -3,10 +3,10 @@ package auth
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	authkeys "github.com/dinnerdonebetter/backend/internal/domain/auth/keys"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	authkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auth/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"

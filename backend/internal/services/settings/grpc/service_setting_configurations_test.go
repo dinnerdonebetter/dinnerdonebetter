@@ -4,10 +4,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/settings"
-	settingsfakes "github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
-	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
-	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
+	settingsfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/fakes"
+	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

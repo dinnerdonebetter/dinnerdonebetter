@@ -3,12 +3,12 @@ package manager
 import (
 	"testing"
 
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
-	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
+	mockauthn "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
+	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

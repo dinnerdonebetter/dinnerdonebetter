@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	mealplanningnotifications "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

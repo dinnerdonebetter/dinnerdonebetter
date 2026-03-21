@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
-	notificationsfakes "github.com/dinnerdonebetter/backend/internal/domain/notifications/fakes"
-	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
-	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
+	notificationsfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/fakes"
+	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

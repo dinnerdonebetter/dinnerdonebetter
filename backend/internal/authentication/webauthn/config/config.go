@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/webauthn"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/webauthn"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

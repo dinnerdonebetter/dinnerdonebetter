@@ -3,12 +3,12 @@ package manager
 import (
 	"testing"
 
-	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
-	"github.com/dinnerdonebetter/backend/internal/domain/payments"
-	"github.com/dinnerdonebetter/backend/internal/domain/payments/fakes"
-	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
-	paymentsmock "github.com/dinnerdonebetter/backend/internal/domain/payments/mock"
-	"github.com/dinnerdonebetter/backend/internal/services/payments/adapters"
+	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/fakes"
+	paymentskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/keys"
+	paymentsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/adapters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

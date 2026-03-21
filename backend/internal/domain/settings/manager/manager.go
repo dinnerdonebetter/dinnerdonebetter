@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/settings"
-	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
+	settingskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/keys"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"

@@ -3,8 +3,8 @@ package indexing
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

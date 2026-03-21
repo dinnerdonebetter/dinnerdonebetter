@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM golang:1.26-trixie AS build-stage
 
-WORKDIR /go/src/github.com/dinnerdonebetter/backend
+WORKDIR /go/src/github.com/dinnerdonebetter/dinnerdonebetter/backend
 
 RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 
@@ -13,7 +13,7 @@ COPY vendor vendor
 COPY go.mod go.mod
 COPY go.sum go.sum
 
-RUN --mount=type=cache,target=/root/.cache/go-build ./scripts/build.sh -o /dinnerdonebetter github.com/dinnerdonebetter/backend/cmd/services/api
+RUN --mount=type=cache,target=/root/.cache/go-build ./scripts/build.sh -o /dinnerdonebetter github.com/dinnerdonebetter/dinnerdonebetter/backend/cmd/services/api
 
 # final stage
 FROM debian:bullseye

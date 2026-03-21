@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	paymentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	paymentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
 )
 
 type PaymentsMethodPermissions map[string][]authorization.Permission

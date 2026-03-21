@@ -3,8 +3,8 @@ package mock
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/managers"
 
 	"github.com/stretchr/testify/mock"
 )

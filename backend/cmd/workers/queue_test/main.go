@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	queuetest "github.com/dinnerdonebetter/backend/internal/build/jobs/queue_test"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	queuetest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/queue_test"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"
 )

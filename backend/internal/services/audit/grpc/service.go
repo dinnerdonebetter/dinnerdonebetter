@@ -3,12 +3,12 @@ package grpc
 import (
 	"context"
 
-	auditkeys "github.com/dinnerdonebetter/backend/internal/domain/audit/keys"
-	auditmanager "github.com/dinnerdonebetter/backend/internal/domain/audit/manager"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
-	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc/converters"
+	auditkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/keys"
+	auditmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/manager"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	auditsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
+	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/audit/grpc/converters"
 
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

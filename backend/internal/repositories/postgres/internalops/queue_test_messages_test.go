@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"testing"
 
-	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
+	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

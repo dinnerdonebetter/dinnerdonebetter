@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	webhookfakes "github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
-	webhookmgrmock "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager/mock"
-	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
-	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	webhookfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
+	webhookmgrmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/manager/mock"
+	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

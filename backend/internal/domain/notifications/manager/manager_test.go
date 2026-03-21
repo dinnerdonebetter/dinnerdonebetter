@@ -3,11 +3,11 @@ package manager
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications/fakes"
-	notificationkeys "github.com/dinnerdonebetter/backend/internal/domain/notifications/keys"
-	notificationsmock "github.com/dinnerdonebetter/backend/internal/domain/notifications/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/fakes"
+	notificationkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/keys"
+	notificationsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

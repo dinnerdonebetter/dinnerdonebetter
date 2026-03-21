@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	auditkeys "github.com/dinnerdonebetter/backend/internal/domain/audit/keys"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	auditkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/keys"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

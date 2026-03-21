@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	emaildeliverabilitytest "github.com/dinnerdonebetter/backend/internal/build/jobs/email_deliverability_test"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	emaildeliverabilitytest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/email_deliverability_test"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"
 )

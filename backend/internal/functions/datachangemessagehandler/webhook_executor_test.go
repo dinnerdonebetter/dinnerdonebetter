@@ -4,11 +4,11 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	webhooksfakes "github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	identityfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
+	webhooksfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

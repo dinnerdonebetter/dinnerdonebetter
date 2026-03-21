@@ -3,11 +3,11 @@ package integration
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth/fakes"
-	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/fakes"
+	oauthsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/oauth/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

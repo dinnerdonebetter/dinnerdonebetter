@@ -3,8 +3,8 @@ package auth
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

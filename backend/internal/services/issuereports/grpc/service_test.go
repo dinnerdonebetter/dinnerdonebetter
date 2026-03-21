@@ -3,8 +3,8 @@ package grpc
 import (
 	"testing"
 
-	issuereportmock "github.com/dinnerdonebetter/backend/internal/domain/issuereports/mock"
-	issuereportssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
+	issuereportmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/mock"
+	issuereportssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

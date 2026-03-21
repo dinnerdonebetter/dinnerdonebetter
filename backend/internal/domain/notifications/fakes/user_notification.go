@@ -1,8 +1,8 @@
 package fakes
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/notifications"
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications/converters"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )

@@ -1,7 +1,7 @@
 package datachangemessagehandler
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"

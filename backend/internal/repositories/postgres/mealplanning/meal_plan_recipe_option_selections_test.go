@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
 	"github.com/stretchr/testify/assert"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"

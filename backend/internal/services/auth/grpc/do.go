@@ -1,15 +1,15 @@
 package grpc
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/authentication/webauthn"
-	webauthncfg "github.com/dinnerdonebetter/backend/internal/authentication/webauthn/config"
-	"github.com/dinnerdonebetter/backend/internal/branding"
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
-	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/webauthn"
+	webauthncfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/webauthn/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/managers"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
+	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/database"

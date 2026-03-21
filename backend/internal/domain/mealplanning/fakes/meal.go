@@ -1,8 +1,8 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 	"github.com/verygoodsoftwarenotvirus/platform/types"

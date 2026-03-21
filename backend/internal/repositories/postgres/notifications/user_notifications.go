@@ -3,11 +3,11 @@ package notifications
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	types "github.com/dinnerdonebetter/backend/internal/domain/notifications"
-	notificationkeys "github.com/dinnerdonebetter/backend/internal/domain/notifications/keys"
-	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
+	notificationkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/keys"
+	generated "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/notifications/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
-	"github.com/dinnerdonebetter/backend/internal/domain/payments"
-	paymentskeys "github.com/dinnerdonebetter/backend/internal/domain/payments/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
+	paymentskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/keys"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"

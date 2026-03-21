@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	apiserver "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	"github.com/spf13/cobra"
 	"github.com/verygoodsoftwarenotvirus/platform/version"

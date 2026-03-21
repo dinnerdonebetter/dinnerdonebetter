@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 )
 
 // AllRecipes returns all bootstrap recipe creation inputs that do not have prerequisites.

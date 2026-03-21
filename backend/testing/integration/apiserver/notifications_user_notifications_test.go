@@ -3,11 +3,11 @@ package integration
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications/fakes"
-	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/fakes"
+	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 )
 
 // RecipeStepImageRow represents a row from recipe_step_images table.

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/branding"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
 
 	"github.com/verygoodsoftwarenotvirus/platform/email"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

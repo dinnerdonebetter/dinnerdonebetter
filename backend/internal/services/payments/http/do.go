@@ -1,7 +1,7 @@
 package http
 
 import (
-	paymentsmanager "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
+	paymentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/manager"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

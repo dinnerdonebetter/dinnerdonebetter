@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 )
 
 type (

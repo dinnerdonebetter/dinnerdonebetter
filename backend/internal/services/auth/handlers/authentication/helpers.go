@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
 )

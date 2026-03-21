@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	analyticspb "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	analyticspb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
 )
 
 // AnalyticsMethodPermissions is a named type for Wire dependency injection.

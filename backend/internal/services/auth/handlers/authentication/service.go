@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
+	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/markbates/goth"

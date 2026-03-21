@@ -3,9 +3,9 @@ package manager
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
-	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/fakes"
-	uploadedmediamock "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia/fakes"
+	uploadedmediamock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

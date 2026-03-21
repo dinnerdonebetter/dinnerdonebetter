@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"

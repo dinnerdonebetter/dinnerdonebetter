@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/comments"
-	commentskeys "github.com/dinnerdonebetter/backend/internal/domain/comments/keys"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
+	commentskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/keys"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"

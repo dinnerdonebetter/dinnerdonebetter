@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

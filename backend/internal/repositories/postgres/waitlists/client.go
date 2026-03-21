@@ -3,9 +3,9 @@ package waitlists
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/waitlists"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/waitlists/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

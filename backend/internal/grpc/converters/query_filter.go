@@ -1,7 +1,7 @@
 package grpcconverters
 
 import (
-	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )

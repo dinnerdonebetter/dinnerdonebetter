@@ -3,8 +3,8 @@ package notifications
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/notifications/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/cryptography/encryption"
 	"github.com/verygoodsoftwarenotvirus/platform/cryptography/encryption/salsa20"

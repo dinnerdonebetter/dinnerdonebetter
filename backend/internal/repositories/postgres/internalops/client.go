@@ -3,8 +3,8 @@ package internalops
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

@@ -1,9 +1,9 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/settings"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )

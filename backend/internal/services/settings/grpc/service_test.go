@@ -3,7 +3,7 @@ package grpc
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/settings/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	analyticspb "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
+	analyticspb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/analytics/multisource"

@@ -8,10 +8,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 
 	"github.com/go-oauth2/oauth2/v4/manage"
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"

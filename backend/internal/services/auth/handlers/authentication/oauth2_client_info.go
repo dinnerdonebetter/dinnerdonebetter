@@ -1,7 +1,7 @@
 package authentication
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
 	"github.com/go-oauth2/oauth2/v4"
 )

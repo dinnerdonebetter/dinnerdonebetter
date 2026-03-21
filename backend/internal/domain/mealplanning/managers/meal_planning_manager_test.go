@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
-	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
-	mealplanningworkers "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	mealplanningworkers "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

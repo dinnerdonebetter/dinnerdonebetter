@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
-	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
+	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
+	dataprivacycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/dataprivacy/config"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

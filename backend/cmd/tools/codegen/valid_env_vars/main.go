@@ -12,7 +12,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	"github.com/codemodus/kace"
 	reflast "github.com/verygoodsoftwarenotvirus/platform/reflection/ast"

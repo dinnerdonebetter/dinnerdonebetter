@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops"
 
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_finalizer"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	mealplanfinalizer "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/meal_plan_finalizer"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"
 )

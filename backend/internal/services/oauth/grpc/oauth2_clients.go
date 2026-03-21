@@ -3,11 +3,11 @@ package grpc
 import (
 	"context"
 
-	oauthkeys "github.com/dinnerdonebetter/backend/internal/domain/oauth/keys"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
-	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	oauthgrpcconverters "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc/converters"
+	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
+	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
+	oauthsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
+	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
+	oauthgrpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/oauth/grpc/converters"
 
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
 	"google.golang.org/grpc/codes"

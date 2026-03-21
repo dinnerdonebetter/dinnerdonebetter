@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -3,8 +3,8 @@ package grpc
 import (
 	"testing"
 
-	managermock "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager/mock"
-	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
+	managermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/manager/mock"
+	oauthsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

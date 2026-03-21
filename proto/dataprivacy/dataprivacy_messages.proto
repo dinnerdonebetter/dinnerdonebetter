@@ -12,7 +12,7 @@ import "uploaded_media/uploaded_media.proto";
 import "waitlists/waitlists_messages.proto";
 import "webhooks/webhooks_messages.proto";
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy";
+option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy";
 
 message UserDataCollection {
   string report_id = 1;

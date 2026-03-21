@@ -1,7 +1,7 @@
 package manager
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 )
 
 // DataPrivacyManager defines the interface for data privacy business logic.

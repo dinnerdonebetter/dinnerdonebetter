@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
-	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
-	settingskeys "github.com/dinnerdonebetter/backend/internal/domain/settings/keys"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
+	settingskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/database"
 	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"

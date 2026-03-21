@@ -3,8 +3,8 @@ package emaildeliverabilitytest
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
-	emaildeliverabilitytest "github.com/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	emaildeliverabilitytest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
 
 	"github.com/samber/do/v2"
 	emailcfg "github.com/verygoodsoftwarenotvirus/platform/email/config"

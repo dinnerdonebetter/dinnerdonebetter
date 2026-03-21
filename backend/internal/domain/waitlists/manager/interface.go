@@ -1,7 +1,7 @@
 package manager
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/waitlists"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
 )
 
 // WaitlistsDataManager defines the interface for waitlists business logic.

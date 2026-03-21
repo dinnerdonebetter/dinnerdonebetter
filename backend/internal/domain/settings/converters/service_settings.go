@@ -1,7 +1,7 @@
 package converters
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
 
 	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )

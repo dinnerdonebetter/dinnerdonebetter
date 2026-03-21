@@ -3,9 +3,9 @@ package oauth
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
 
 	"github.com/verygoodsoftwarenotvirus/platform/cryptography/encryption"
 	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/cryptography/encryption/config"

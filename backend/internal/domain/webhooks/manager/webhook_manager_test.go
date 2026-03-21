@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
-	webhookkeys "github.com/dinnerdonebetter/backend/internal/domain/webhooks/keys"
-	webhookmock "github.com/dinnerdonebetter/backend/internal/domain/webhooks/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
+	webhookkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/keys"
+	webhookmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

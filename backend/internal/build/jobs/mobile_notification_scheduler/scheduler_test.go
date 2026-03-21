@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
-	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
-	mealplanningnotifications "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
+	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	mealplanningnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

@@ -8,9 +8,9 @@ import (
 	"syscall"
 	"time"
 
-	grpcapi "github.com/dinnerdonebetter/backend/internal/build/services/api/grpc"
-	httpapi "github.com/dinnerdonebetter/backend/internal/build/services/api/http"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	grpcapi "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api/grpc"
+	httpapi "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api/http"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"

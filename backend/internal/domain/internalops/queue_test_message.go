@@ -3,9 +3,9 @@ package internalops
 import (
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 
 	"github.com/verygoodsoftwarenotvirus/platform/email"
 	"github.com/verygoodsoftwarenotvirus/platform/notifications"

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_grocery_list_initializer"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	mealplangrocerylistinitializer "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/meal_plan_grocery_list_initializer"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"
 )

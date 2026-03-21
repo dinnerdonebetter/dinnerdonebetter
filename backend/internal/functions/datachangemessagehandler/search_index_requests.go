@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	coreindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
+	coreindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
+	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
 	"go.opentelemetry.io/otel/attribute"

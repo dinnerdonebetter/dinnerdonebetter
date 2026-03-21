@@ -3,8 +3,8 @@ package internalops
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops/generated"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops/generated"
 
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"

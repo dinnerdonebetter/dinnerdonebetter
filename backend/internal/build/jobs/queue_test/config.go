@@ -1,8 +1,8 @@
 package queuetest
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/config"
-	queuetest "github.com/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	queuetest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
 
 	"github.com/samber/do/v2"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
