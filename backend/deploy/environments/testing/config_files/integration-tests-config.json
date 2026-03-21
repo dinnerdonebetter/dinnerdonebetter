@@ -1,4 +1,5 @@
 {
+	"httpClient": null,
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -22,6 +23,7 @@
 	"encoding": {
 		"contentType": "application/json"
 	},
+	"baseURL": "",
 	"events": {
 		"consumers": {
 			"provider": "redis",
@@ -77,19 +79,6 @@
 		"runMode": "testing",
 		"debug": false
 	},
-	"email": {
-		"sendgrid": null,
-		"mailgun": null,
-		"mailjet": null,
-		"resend": null,
-		"postmark": null,
-		"provider": "",
-		"circuitBreakerConfig": {
-			"name": "",
-			"circuitBreakerErrorPercentage": 0,
-			"circuitBreakerMinimumOccurrenceThreshold": 0
-		}
-	},
 	"analytics": {
 		"proxySources": {
 			"ios": null,
@@ -105,14 +94,17 @@
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
 	},
-	"search": {
-		"algolia": null,
-		"elasticsearch": null,
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"resend": null,
+		"postmark": null,
 		"provider": "",
 		"circuitBreakerConfig": {
-			"name": "feature_flagger",
-			"circuitBreakerErrorPercentage": 0.5,
-			"circuitBreakerMinimumOccurrenceThreshold": 100
+			"name": "",
+			"circuitBreakerErrorPercentage": 0,
+			"circuitBreakerMinimumOccurrenceThreshold": 0
 		}
 	},
 	"featureFlags": {
@@ -125,7 +117,16 @@
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		}
 	},
-	"httpClient": null,
+	"search": {
+		"algolia": null,
+		"elasticsearch": null,
+		"provider": "",
+		"circuitBreakerConfig": {
+			"name": "feature_flagger",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
+	},
 	"http": {
 		"startupDeadline": 60000000000,
 		"port": 8000,
