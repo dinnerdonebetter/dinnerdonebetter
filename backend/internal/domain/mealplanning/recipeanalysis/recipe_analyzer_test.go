@@ -377,12 +377,12 @@ func TestRecipeAnalyzer_MakeGraphForRecipe_WithAssociatedRecipe(T *testing.T) {
 			AssociatedRecipes: []*mealplanning.Recipe{assocRecipe},
 		}
 
-		graph, err := g.MakeGraphForRecipe(ctx, recipe)
+		actual, err := g.MakeGraphForRecipe(ctx, recipe)
 		assert.NoError(t, err)
-		assert.NotNil(t, graph)
+		assert.NotNil(t, actual)
 
 		// Should have 3 nodes: 1 from assoc + 2 from main
-		assert.Equal(t, 3, graph.Nodes().Len())
+		assert.Equal(t, 3, actual.Nodes().Len())
 	})
 }
 
@@ -421,11 +421,11 @@ func TestRecipeAnalyzer_MakeGraphForMeal(T *testing.T) {
 			},
 		}
 
-		graph, err := g.MakeGraphForMeal(ctx, meal)
+		actual, err := g.MakeGraphForMeal(ctx, meal)
 		assert.NoError(t, err)
-		assert.NotNil(t, graph)
+		assert.NotNil(t, actual)
 		// 2 steps from main + 1 from side = 3 nodes
-		assert.Equal(t, 3, graph.Nodes().Len())
+		assert.Equal(t, 3, actual.Nodes().Len())
 	})
 }
 
@@ -983,6 +983,8 @@ func TestFindUnitigsByLength(T *testing.T) {
 	T.Parallel()
 
 	T.Run("example graph", func(t *testing.T) {
+		t.Parallel()
+
 		g := simple.NewDirectedGraph()
 
 		// Helper to add edges using character aliases
