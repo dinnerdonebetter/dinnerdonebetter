@@ -51,7 +51,6 @@ require (
 	google.golang.org/genai v1.49.0
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.11
-	maragu.dev/gomponents v1.2.0
 	resenje.org/schulze v0.6.1
 )
 
