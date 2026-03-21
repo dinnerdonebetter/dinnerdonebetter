@@ -109,7 +109,7 @@ jobs:
 
       - name: generate env vars file
         working-directory: backend
-        run: make env_vars
+        run: make vendor env_vars
 
       - name: Fail on changes
         run: git diff --exit-code
