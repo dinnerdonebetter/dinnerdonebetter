@@ -15,7 +15,7 @@ func RegisterPaymentProcessorRegistry(i do.Injector) {
 		return ProvidePaymentProcessorRegistry(
 			do.MustInvoke[logging.Logger](i),
 			do.MustInvoke[tracing.TracerProvider](i),
-			do.MustInvoke[paymentscfg.Config](i),
+			*do.MustInvoke[*paymentscfg.Config](i),
 		), nil
 	})
 

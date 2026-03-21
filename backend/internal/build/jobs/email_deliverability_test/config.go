@@ -16,9 +16,9 @@ func RegisterConfigs(i do.Injector) {
 		cfg := do.MustInvoke[*config.EmailDeliverabilityTestConfig](i)
 		return &cfg.Observability, nil
 	})
-	do.Provide[emailcfg.Config](i, func(i do.Injector) (emailcfg.Config, error) {
+	do.Provide[*emailcfg.Config](i, func(i do.Injector) (*emailcfg.Config, error) {
 		cfg := do.MustInvoke[*config.EmailDeliverabilityTestConfig](i)
-		return cfg.Email, nil
+		return &cfg.Email, nil
 	})
 	do.Provide[*httpclientcfg.Config](i, func(i do.Injector) (*httpclientcfg.Config, error) {
 		cfg := do.MustInvoke[*config.EmailDeliverabilityTestConfig](i)

@@ -16,9 +16,9 @@ func RegisterConfigs(i do.Injector) {
 		cfg := do.MustInvoke[*config.MealPlanGroceryListInitializerConfig](i)
 		return &cfg.Queues, nil
 	})
-	do.Provide[analyticscfg.Config](i, func(i do.Injector) (analyticscfg.Config, error) {
+	do.Provide[*analyticscfg.Config](i, func(i do.Injector) (*analyticscfg.Config, error) {
 		cfg := do.MustInvoke[*config.MealPlanGroceryListInitializerConfig](i)
-		return cfg.Analytics, nil
+		return &cfg.Analytics, nil
 	})
 	do.Provide[*msgconfig.Config](i, func(i do.Injector) (*msgconfig.Config, error) {
 		cfg := do.MustInvoke[*config.MealPlanGroceryListInitializerConfig](i)

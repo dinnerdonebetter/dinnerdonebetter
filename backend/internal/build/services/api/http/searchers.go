@@ -60,7 +60,7 @@ func RegisterSearchers(i do.Injector) {
 func RegisterAPIRouter(i do.Injector) {
 	do.Provide[routing.Router](i, func(i do.Injector) (routing.Router, error) {
 		return ProvideAPIRouter(
-			do.MustInvoke[routingcfg.Config](i),
+			*do.MustInvoke[*routingcfg.Config](i),
 			do.MustInvoke[logging.Logger](i),
 			do.MustInvoke[tracing.TracerProvider](i),
 			do.MustInvoke[metrics.Provider](i),

@@ -62,6 +62,7 @@ import (
 
 	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/analytics/multisource"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/featureflags/config"
 	"github.com/verygoodsoftwarenotvirus/platform/httpclient"
@@ -98,6 +99,7 @@ func BuildInjector(
 	httpclient.RegisterHTTPClient(i)
 	msgconfig.RegisterMessageQueue(i)
 	random.RegisterGenerator(i)
+	databasecfg.RegisterClientConfig(i)
 	postgres.RegisterDatabaseClient(i)
 	grpc.RegisterGRPCServer(i)
 	qrcodes.RegisterBuilder(i)

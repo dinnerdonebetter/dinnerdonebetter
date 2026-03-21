@@ -18,25 +18,25 @@ import (
 
 // RegisterConfigs registers all config sub-fields with the injector.
 func RegisterConfigs(i do.Injector) {
-	do.Provide[objectstorage.Config](i, func(i do.Injector) (objectstorage.Config, error) {
+	do.Provide[*objectstorage.Config](i, func(i do.Injector) (*objectstorage.Config, error) {
 		cfg := do.MustInvoke[*config.AsyncMessageHandlerConfig](i)
-		return cfg.Storage, nil
+		return &cfg.Storage, nil
 	})
 	do.Provide[*msgconfig.QueuesConfig](i, func(i do.Injector) (*msgconfig.QueuesConfig, error) {
 		cfg := do.MustInvoke[*config.AsyncMessageHandlerConfig](i)
 		return &cfg.Queues, nil
 	})
-	do.Provide[emailcfg.Config](i, func(i do.Injector) (emailcfg.Config, error) {
+	do.Provide[*emailcfg.Config](i, func(i do.Injector) (*emailcfg.Config, error) {
 		cfg := do.MustInvoke[*config.AsyncMessageHandlerConfig](i)
-		return cfg.Email, nil
+		return &cfg.Email, nil
 	})
 	do.Provide[*httpclientcfg.Config](i, func(i do.Injector) (*httpclientcfg.Config, error) {
 		cfg := do.MustInvoke[*config.AsyncMessageHandlerConfig](i)
 		return cfg.HTTPClient, nil
 	})
-	do.Provide[analyticscfg.Config](i, func(i do.Injector) (analyticscfg.Config, error) {
+	do.Provide[*analyticscfg.Config](i, func(i do.Injector) (*analyticscfg.Config, error) {
 		cfg := do.MustInvoke[*config.AsyncMessageHandlerConfig](i)
-		return cfg.Analytics, nil
+		return &cfg.Analytics, nil
 	})
 	do.Provide[*textsearchcfg.Config](i, func(i do.Injector) (*textsearchcfg.Config, error) {
 		cfg := do.MustInvoke[*config.AsyncMessageHandlerConfig](i)

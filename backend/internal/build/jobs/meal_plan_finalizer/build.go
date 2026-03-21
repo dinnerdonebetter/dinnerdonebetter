@@ -10,6 +10,7 @@ import (
 	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
 
 	"github.com/samber/do/v2"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
@@ -34,6 +35,7 @@ func BuildInjector(
 	tracingcfg.RegisterTracerProvider(i)
 	loggingcfg.RegisterLogger(i)
 	metricscfg.RegisterMetricsProvider(i)
+	databasecfg.RegisterClientConfig(i)
 	postgres.RegisterDatabaseClient(i)
 	msgconfig.RegisterMessageQueue(i)
 	auditlogentries.RegisterAuditLogRepository(i)

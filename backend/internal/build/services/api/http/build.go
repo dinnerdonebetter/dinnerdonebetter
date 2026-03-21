@@ -19,6 +19,7 @@ import (
 
 	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
@@ -52,6 +53,7 @@ func BuildInjector(
 	encoding.RegisterServerEncoderDecoder(i)
 	msgconfig.RegisterMessageQueue(i)
 	analyticscfg.RegisterEventReporter(i)
+	databasecfg.RegisterClientConfig(i)
 	postgres.RegisterDatabaseClient(i)
 	routingcfg.RegisterRouteParamManager(i)
 	random.RegisterGenerator(i)

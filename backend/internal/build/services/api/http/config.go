@@ -33,17 +33,17 @@ func RegisterConfigs(i do.Injector) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
 		return &cfg.Queues, nil
 	})
-	do.Provide[emailcfg.Config](i, func(i do.Injector) (emailcfg.Config, error) {
+	do.Provide[*emailcfg.Config](i, func(i do.Injector) (*emailcfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
-		return cfg.Email, nil
+		return &cfg.Email, nil
 	})
-	do.Provide[analyticscfg.Config](i, func(i do.Injector) (analyticscfg.Config, error) {
+	do.Provide[*analyticscfg.Config](i, func(i do.Injector) (*analyticscfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
-		return cfg.Analytics, nil
+		return &cfg.Analytics, nil
 	})
-	do.Provide[featureflagscfg.Config](i, func(i do.Injector) (featureflagscfg.Config, error) {
+	do.Provide[*featureflagscfg.Config](i, func(i do.Injector) (*featureflagscfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
-		return cfg.FeatureFlags, nil
+		return &cfg.FeatureFlags, nil
 	})
 	do.Provide[encoding.Config](i, func(i do.Injector) (encoding.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
@@ -57,9 +57,9 @@ func RegisterConfigs(i do.Injector) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
 		return cfg.Meta, nil
 	})
-	do.Provide[routingcfg.Config](i, func(i do.Injector) (routingcfg.Config, error) {
+	do.Provide[*routingcfg.Config](i, func(i do.Injector) (*routingcfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
-		return cfg.Routing, nil
+		return &cfg.Routing, nil
 	})
 	do.Provide[http.Config](i, func(i do.Injector) (http.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
@@ -79,9 +79,9 @@ func RegisterConfigs(i do.Injector) {
 		svc := do.MustInvoke[*config.ServicesConfig](i)
 		return &svc.Auth, nil
 	})
-	do.Provide[paymentscfg.Config](i, func(i do.Injector) (paymentscfg.Config, error) {
+	do.Provide[*paymentscfg.Config](i, func(i do.Injector) (*paymentscfg.Config, error) {
 		svc := do.MustInvoke[*config.ServicesConfig](i)
-		return svc.Payments, nil
+		return &svc.Payments, nil
 	})
 	do.Provide[*authentication.OAuth2Config](i, func(i do.Injector) (*authentication.OAuth2Config, error) {
 		cfg := do.MustInvoke[*authentication.Config](i)

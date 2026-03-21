@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
 	"github.com/samber/do/v2"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
@@ -34,6 +35,7 @@ func BuildInjector(
 	loggingcfg.RegisterLogger(i)
 	metricscfg.RegisterMetricsProvider(i)
 	msgconfig.RegisterMessageQueue(i)
+	databasecfg.RegisterClientConfig(i)
 	postgres.RegisterDatabaseClient(i)
 	auditlogentries.RegisterAuditLogRepository(i)
 	identity.RegisterIdentityRepository(i)

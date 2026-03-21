@@ -8,6 +8,7 @@ import (
 	dbcleaner "github.com/dinnerdonebetter/backend/internal/services/oauth/workers/db_cleaner"
 
 	"github.com/samber/do/v2"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	"github.com/verygoodsoftwarenotvirus/platform/observability"
 	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/logging/config"
@@ -31,6 +32,7 @@ func BuildInjector(
 	tracingcfg.RegisterTracerProvider(i)
 	loggingcfg.RegisterLogger(i)
 	metricscfg.RegisterMetricsProvider(i)
+	databasecfg.RegisterClientConfig(i)
 	postgres.RegisterDatabaseClient(i)
 	internalops.RegisterInternalOpsRepository(i)
 	dbcleaner.RegisterDBCleaner(i)

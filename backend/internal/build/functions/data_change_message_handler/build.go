@@ -22,6 +22,7 @@ import (
 
 	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
 	emailcfg "github.com/verygoodsoftwarenotvirus/platform/email/config"
 	"github.com/verygoodsoftwarenotvirus/platform/encoding"
@@ -58,6 +59,7 @@ func BuildInjector(
 	encoding.RegisterServerEncoderDecoder(i)
 	analyticscfg.RegisterEventReporter(i)
 	emailcfg.RegisterEmailer(i)
+	databasecfg.RegisterClientConfig(i)
 	postgres.RegisterDatabaseClient(i)
 	objectstorage.RegisterUploadManager(i)
 	notificationscfg.RegisterPushSender(i)

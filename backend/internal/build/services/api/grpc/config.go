@@ -38,21 +38,21 @@ func RegisterConfigs(i do.Injector) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
 		return &cfg.Queues, nil
 	})
-	do.Provide[emailcfg.Config](i, func(i do.Injector) (emailcfg.Config, error) {
+	do.Provide[*emailcfg.Config](i, func(i do.Injector) (*emailcfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
-		return cfg.Email, nil
+		return &cfg.Email, nil
 	})
-	do.Provide[analyticscfg.Config](i, func(i do.Injector) (analyticscfg.Config, error) {
+	do.Provide[*analyticscfg.Config](i, func(i do.Injector) (*analyticscfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
-		return cfg.Analytics, nil
+		return &cfg.Analytics, nil
 	})
 	do.Provide[*textsearchcfg.Config](i, func(i do.Injector) (*textsearchcfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
 		return &cfg.TextSearch, nil
 	})
-	do.Provide[featureflagscfg.Config](i, func(i do.Injector) (featureflagscfg.Config, error) {
+	do.Provide[*featureflagscfg.Config](i, func(i do.Injector) (*featureflagscfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
-		return cfg.FeatureFlags, nil
+		return &cfg.FeatureFlags, nil
 	})
 	do.Provide[*httpclientcfg.Config](i, func(i do.Injector) (*httpclientcfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
@@ -74,17 +74,17 @@ func RegisterConfigs(i do.Injector) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
 		return cfg.Meta, nil
 	})
-	do.Provide[routingcfg.Config](i, func(i do.Injector) (routingcfg.Config, error) {
+	do.Provide[*routingcfg.Config](i, func(i do.Injector) (*routingcfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
-		return cfg.Routing, nil
+		return &cfg.Routing, nil
 	})
 	do.Provide[http.Config](i, func(i do.Injector) (http.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
 		return cfg.HTTPServer, nil
 	})
-	do.Provide[grpc.Config](i, func(i do.Injector) (grpc.Config, error) {
+	do.Provide[*grpc.Config](i, func(i do.Injector) (*grpc.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
-		return cfg.GRPCServer, nil
+		return &cfg.GRPCServer, nil
 	})
 	do.Provide[*databasecfg.Config](i, func(i do.Injector) (*databasecfg.Config, error) {
 		cfg := do.MustInvoke[*config.APIServiceConfig](i)
@@ -114,28 +114,28 @@ func RegisterConfigs(i do.Injector) {
 	})
 
 	// From ServicesConfig
-	do.Provide[identitycfg.Config](i, func(i do.Injector) (identitycfg.Config, error) {
+	do.Provide[*identitycfg.Config](i, func(i do.Injector) (*identitycfg.Config, error) {
 		svc := do.MustInvoke[*config.ServicesConfig](i)
-		return svc.Users, nil
+		return &svc.Users, nil
 	})
-	do.Provide[dataprivacycfg.Config](i, func(i do.Injector) (dataprivacycfg.Config, error) {
+	do.Provide[*dataprivacycfg.Config](i, func(i do.Injector) (*dataprivacycfg.Config, error) {
 		svc := do.MustInvoke[*config.ServicesConfig](i)
-		return svc.DataPrivacy, nil
+		return &svc.DataPrivacy, nil
 	})
-	do.Provide[mealplanningcfg.Config](i, func(i do.Injector) (mealplanningcfg.Config, error) {
+	do.Provide[*mealplanningcfg.Config](i, func(i do.Injector) (*mealplanningcfg.Config, error) {
 		svc := do.MustInvoke[*config.ServicesConfig](i)
-		return svc.MealPlanning, nil
+		return &svc.MealPlanning, nil
 	})
-	do.Provide[oauthcfg.Config](i, func(i do.Injector) (oauthcfg.Config, error) {
+	do.Provide[*oauthcfg.Config](i, func(i do.Injector) (*oauthcfg.Config, error) {
 		svc := do.MustInvoke[*config.ServicesConfig](i)
-		return svc.OAuth2Clients, nil
+		return &svc.OAuth2Clients, nil
 	})
-	do.Provide[uploadedmediacfg.Config](i, func(i do.Injector) (uploadedmediacfg.Config, error) {
+	do.Provide[*uploadedmediacfg.Config](i, func(i do.Injector) (*uploadedmediacfg.Config, error) {
 		svc := do.MustInvoke[*config.ServicesConfig](i)
-		return svc.UploadedMedia, nil
+		return &svc.UploadedMedia, nil
 	})
-	do.Provide[paymentscfg.Config](i, func(i do.Injector) (paymentscfg.Config, error) {
+	do.Provide[*paymentscfg.Config](i, func(i do.Injector) (*paymentscfg.Config, error) {
 		svc := do.MustInvoke[*config.ServicesConfig](i)
-		return svc.Payments, nil
+		return &svc.Payments, nil
 	})
 }
