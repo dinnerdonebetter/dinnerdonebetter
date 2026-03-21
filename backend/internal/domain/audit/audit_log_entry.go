@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/database"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 const (

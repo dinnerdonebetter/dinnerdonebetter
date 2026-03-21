@@ -6,11 +6,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	analyticspb "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/analytics/multisource"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/analytics/multisource"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

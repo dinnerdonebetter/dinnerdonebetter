@@ -10,12 +10,12 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	platformerrors "github.com/dinnerdonebetter/backend/internal/platform/errors"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
 )
 
 const (

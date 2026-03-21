@@ -4,9 +4,9 @@ import (
 	"time"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/issuereports"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 func init() {

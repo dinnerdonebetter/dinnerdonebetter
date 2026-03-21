@@ -3,9 +3,8 @@ package config
 import (
 	"testing"
 
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-
 	"github.com/stretchr/testify/assert"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 )
 
 func TestQueueSettings_ValidateWithContext(T *testing.T) {

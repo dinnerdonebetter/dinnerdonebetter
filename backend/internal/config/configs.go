@@ -11,25 +11,25 @@ import (
 	"time"
 
 	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
-	httpclientcfg "github.com/dinnerdonebetter/backend/internal/platform/httpclient"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	notificationscfg "github.com/dinnerdonebetter/backend/internal/platform/notifications/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
-	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
-	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/encoding"
+	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/featureflags/config"
+	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/httpclient"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/notifications/config"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/routing/config"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/server/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/server/http"
+	"github.com/verygoodsoftwarenotvirus/platform/uploads/objectstorage"
 )
 
 const (
@@ -69,21 +69,21 @@ type (
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_ struct{} `json:"-"`
-
+		_                 struct{}                `json:"-"`
+		HTTPClient        *httpclientcfg.Config   `envPrefix:"HTTP_CLIENT_"        json:"httpClient"`
 		Queues            msgconfig.QueuesConfig  `envPrefix:"QUEUES_"             json:"queues"`
 		PushNotifications notificationscfg.Config `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
 		Routing           routingcfg.Config       `envPrefix:"ROUTING_"            json:"routing"`
 		Encoding          encoding.Config         `envPrefix:"ENCODING_"           json:"encoding"`
+		BaseURL           string                  `env:"BASE_URL"                  json:"baseURL"`
 		Events            msgconfig.Config        `envPrefix:"EVENTS_"             json:"events"`
 		Observability     observability.Config    `envPrefix:"OBSERVABILITY_"      json:"observability"`
 		GRPCServer        grpc.Config             `envPrefix:"GRPC_"               json:"grpc"`
 		Meta              MetaSettings            `envPrefix:"META_"               json:"meta"`
-		Email             emailcfg.Config         `envPrefix:"EMAIL_"              json:"email"`
 		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
-		TextSearch        textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
+		Email             emailcfg.Config         `envPrefix:"EMAIL_"              json:"email"`
 		FeatureFlags      featureflagscfg.Config  `envPrefix:"FEATURE_FLAGS_"      json:"featureFlags"`
-		HTTPClient        *httpclientcfg.Config   `envPrefix:"HTTP_CLIENT_"        json:"httpClient"`
+		TextSearch        textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
 		HTTPServer        http.Config             `envPrefix:"HTTP_"               json:"http"`
 		Auth              authcfg.Config          `envPrefix:"AUTH_"               json:"auth"`
 		Database          databasecfg.Config      `envPrefix:"DATABASE_"           json:"database"`
@@ -153,17 +153,17 @@ type (
 
 	// AsyncMessageHandlerConfig configures an instance of the search data index scheduler job.
 	AsyncMessageHandlerConfig struct {
-		_ struct{} `json:"-"`
-
-		PushNotifications notificationscfg.Config `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
+		_                 struct{}                `json:"-"`
+		HTTPClient        *httpclientcfg.Config   `envPrefix:"HTTP_CLIENT_"        json:"httpClient"`
 		Queues            msgconfig.QueuesConfig  `envPrefix:"QUEUES_"             json:"queues"`
 		Storage           objectstorage.Config    `envPrefix:"STORAGE_"            json:"storage"`
+		PushNotifications notificationscfg.Config `envPrefix:"PUSH_NOTIFICATIONS_" json:"pushNotifications"`
 		Encoding          encoding.Config         `envPrefix:"ENCODING_"           json:"encoding"`
+		BaseURL           string                  `env:"BASE_URL"                  json:"baseURL"`
 		Events            msgconfig.Config        `envPrefix:"EVENTS_"             json:"events"`
 		Observability     observability.Config    `envPrefix:"OBSERVABILITY_"      json:"observability"`
-		Email             emailcfg.Config         `envPrefix:"EMAIL_"              json:"email"`
-		HTTPClient        *httpclientcfg.Config   `envPrefix:"HTTP_CLIENT_"        json:"httpClient"`
 		Analytics         analyticscfg.Config     `envPrefix:"ANALYTICS_"          json:"analytics"`
+		Email             emailcfg.Config         `envPrefix:"EMAIL_"              json:"email"`
 		Search            textsearchcfg.Config    `envPrefix:"SEARCH_"             json:"search"`
 		Database          databasecfg.Config      `envPrefix:"DATABASE_"           json:"database"`
 	}

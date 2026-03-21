@@ -8,10 +8,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
 )
 
 // EnvironmentConfigSet contains a way of rendering a set of every config for a given environment to a given folder.
@@ -189,6 +188,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Observability:     s.RootConfig.Observability,
 		Database:          s.RootConfig.Database,
 		PushNotifications: s.RootConfig.PushNotifications,
+		BaseURL:           s.RootConfig.BaseURL,
 	}
 	amhConfig.Observability.Tracing.ServiceName = amhConfigObservabilityServiceName
 	amhConfig.Observability.Metrics.ServiceName = amhConfigObservabilityServiceName

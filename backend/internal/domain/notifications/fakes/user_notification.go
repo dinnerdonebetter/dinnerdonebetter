@@ -3,7 +3,8 @@ package fakes
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications/converters"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 // BuildFakeUserNotification builds a faked valid ingredient.

@@ -5,9 +5,10 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/client"
+
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 // BuildClientFunc builds an authenticated gRPC client from an access token.

@@ -180,18 +180,6 @@ linters:
           - ireturn
         path: wire\.go
       - linters:
-          - gosec
-        path: tests/
-      - linters:
-          - bodyclose
-        path: pkg/apiclient/core.roundtripper*
-      - linters:
-          - gosec
-        path: pkg/types/fakes
-      - linters:
-          - bodyclose
-        path: tests/testutil/
-      - linters:
           - errcheck
           - forcetypeassert
           - mnd
@@ -200,45 +188,9 @@ linters:
           - unused
         path: cmd/tools/codegen/queries
       - linters:
-          - forcetypeassert
-        path: pkg/types/mock/
-      - linters:
-          - forcetypeassert
-        path: internal/platform/encoding/mock
-      - linters:
-          - forcetypeassert
-        path: internal/platform/messagequeue/mock
-      - linters:
-          - forcetypeassert
-        path: internal/platform/routing/mock
-      - linters:
-          - forcetypeassert
-        path: internal/platform/search/mock
-      - linters:
-          - forcetypeassert
-        path: internal/platform/uploads/mock
-      - linters:
-          - paralleltest
-        path: internal/database/postgres
-      - linters:
           - gocritic
         path: cmd/tools/codegen
         text: 'rangeValCopy: each iteration copies'
-      - linters:
-          - paralleltest
-        path: internal/platform/email/sendgrid
-      - linters:
-          - paralleltest
-        path: internal/platform/featureflags/posthog
-      - linters:
-          - forcetypeassert
-        path: internal/platform/uploads/images/mock.go
-      - linters:
-          - forcetypeassert
-        path: internal/businesslogic/grocerylistpreparation/mocks.go
-      - linters:
-          - forcetypeassert
-        path: internal/database/database_mock.go
       - linters:
           - gosec
         path: cmd/tools/codegen/configs/main.go
@@ -267,7 +219,6 @@ linters:
         text: '//go:fix'
     paths:
       - cmd/playground
-      - tests/integration
       - third_party$
       - builtin$
       - examples$
@@ -296,7 +247,6 @@ formatters:
     generated: lax
     paths:
       - cmd/playground
-      - tests/integration
       - third_party$
       - builtin$
       - examples$

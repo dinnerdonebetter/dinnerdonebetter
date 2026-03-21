@@ -6,9 +6,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
-	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
+
+	"github.com/verygoodsoftwarenotvirus/platform/email"
+	"github.com/verygoodsoftwarenotvirus/platform/notifications"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
 )
 
 // BuildQueueTestMessage returns a message with TestID set for the given topic. Non-empty TestID triggers queue test behavior.

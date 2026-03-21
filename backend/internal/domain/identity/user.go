@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/pquerna/otp/totp"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 const (

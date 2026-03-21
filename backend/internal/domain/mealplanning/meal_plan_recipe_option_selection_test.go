@@ -3,9 +3,8 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 func TestMealPlanRecipeOptionSelectionCreationRequestInput_ValidateWithContext(T *testing.T) {

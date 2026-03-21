@@ -6,9 +6,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 // iOS APNs device tokens are 32 bytes, represented as 64 hex characters.

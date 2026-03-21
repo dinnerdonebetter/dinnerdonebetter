@@ -4,9 +4,9 @@ import (
 	"time"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	fake "github.com/brianvoe/gofakeit/v7"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 // BuildFakeOAuth2Client builds a faked OAuth2Client.

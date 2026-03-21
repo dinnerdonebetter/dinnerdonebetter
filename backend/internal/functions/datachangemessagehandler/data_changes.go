@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"slices"
 	"strings"
 	"sync"
@@ -19,15 +18,15 @@ import (
 	eatingemails "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/emails"
 	mealplanningkeys "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/notifications"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	coreemails "github.com/dinnerdonebetter/backend/internal/services/identity/emails"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/email"
+	"github.com/verygoodsoftwarenotvirus/platform/notifications"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -348,11 +347,6 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 		return errors.New("nil data change message")
 	}
 
-	envCfg := email.GetConfigForEnvironment(os.Getenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"))
-	if envCfg == nil {
-		return observability.PrepareAndLogError(email.ErrMissingEnvCfg, a.logger, span, "getting environment queuesConfig")
-	}
-
 	logger := a.logger.WithValue("event_type", changeMessage.EventType)
 
 	// Events from background jobs (e.g. meal plan grocery list initializer) may have no UserID; skip notifications.
@@ -383,7 +377,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 			return observability.PrepareError(fmt.Errorf("email verification token required"), span, "building address verification email")
 		}
 
-		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, emailVerificationToken, envCfg)
+		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, emailVerificationToken, a.baseURL)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building address verification email")
 		}
@@ -396,7 +390,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 			return observability.PrepareError(fmt.Errorf("email verification token required"), span, "building address verification email")
 		}
 
-		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, emailVerificationToken, envCfg)
+		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, emailVerificationToken, a.baseURL)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building address verification email")
 		}
@@ -429,7 +423,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 		for _, member := range account.Members {
 			if member.BelongsToUser.EmailAddressVerifiedAt != nil {
-				msg, err = eatingemails.BuildMealPlanCreatedEmail(member.BelongsToUser, mealPlan, envCfg)
+				msg, err = eatingemails.BuildMealPlanCreatedEmail(member.BelongsToUser, mealPlan, a.baseURL)
 				if err != nil {
 					return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
 				}
@@ -453,7 +447,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 			return observability.PrepareError(fmt.Errorf("password reset token not found"), span, "building password reset email")
 		}
 
-		msg, err = coreemails.BuildGeneratedPasswordResetTokenEmail(user, prt, envCfg)
+		msg, err = coreemails.BuildGeneratedPasswordResetTokenEmail(user, prt, a.baseURL)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token created email")
 		}
@@ -462,7 +456,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case identity.UsernameReminderRequestedEventType:
 		emailType = "username reminder"
-		msg, err = coreemails.BuildUsernameReminderEmail(user, envCfg)
+		msg, err = coreemails.BuildUsernameReminderEmail(user, a.baseURL)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building username reminder email")
 		}
@@ -471,7 +465,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case identity.PasswordResetTokenRedeemedEventType:
 		emailType = "password reset token redeemed"
-		msg, err = coreemails.BuildPasswordResetTokenRedeemedEmail(user, envCfg)
+		msg, err = coreemails.BuildPasswordResetTokenRedeemedEmail(user, a.baseURL)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token redemption email")
 		}
@@ -480,7 +474,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 
 	case identity.PasswordChangedEventType:
 		emailType = "password reset token redeemed"
-		msg, err = coreemails.BuildPasswordChangedEmail(user, envCfg)
+		msg, err = coreemails.BuildPasswordChangedEmail(user, a.baseURL)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token email")
 		}
@@ -507,7 +501,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 			return observability.PrepareError(fmt.Errorf("account invitation not found"), span, "building invite member email")
 		}
 
-		msg, err = coreemails.BuildInviteMemberEmail(user, accountInvite, envCfg)
+		msg, err = coreemails.BuildInviteMemberEmail(user, accountInvite, a.baseURL)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building email message")
 		}

@@ -2,9 +2,9 @@ package converters
 
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	"github.com/ccoveille/go-safecast"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 // ConvertRecipeStepCompletionConditionCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput creates a RecipeStepCompletionConditionDatabaseCreationInput from a RecipeStepCompletionConditionCreationRequestInput.

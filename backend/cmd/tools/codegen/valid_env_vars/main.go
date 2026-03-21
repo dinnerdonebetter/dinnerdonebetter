@@ -13,9 +13,9 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	reflast "github.com/dinnerdonebetter/backend/internal/platform/reflection/ast"
 
 	"github.com/codemodus/kace"
+	reflast "github.com/verygoodsoftwarenotvirus/platform/reflection/ast"
 )
 
 type structEntry struct {

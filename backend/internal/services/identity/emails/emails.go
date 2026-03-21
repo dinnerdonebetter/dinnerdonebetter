@@ -7,10 +7,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 
 	"github.com/matcornic/hermes/v2"
+	"github.com/verygoodsoftwarenotvirus/platform/email"
 )
 
 var (
@@ -18,11 +17,7 @@ var (
 )
 
 // BuildInviteMemberEmail builds an email notifying a user that they've been invited to join an account.
-func BuildInviteMemberEmail(recipient *identity.User, accountInvitation *identity.AccountInvitation, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
-	if envCfg == nil {
-		return nil, internalerrors.NilConfigError("email environment config")
-	}
-
+func BuildInviteMemberEmail(recipient *identity.User, accountInvitation *identity.AccountInvitation, baseURL string) (*email.OutboundEmailMessage, error) {
 	e := hermes.Email{
 		Body: hermes.Body{
 			Name: accountInvitation.ToEmail,
@@ -34,14 +29,14 @@ func BuildInviteMemberEmail(recipient *identity.User, accountInvitation *identit
 					Instructions: "Click the button below to reset your password:",
 					Button: hermes.Button{
 						Text: "Join the fun",
-						Link: fmt.Sprintf("%s/accept_invitation?i=%s&t=%s", envCfg.BaseURL(), accountInvitation.ID, accountInvitation.Token),
+						Link: fmt.Sprintf("%s/accept_invitation?i=%s&t=%s", baseURL, accountInvitation.ID, accountInvitation.Token),
 					},
 				},
 			},
 		},
 	}
 
-	htmlContent, err := envCfg.BuildHermes(branding.DefaultEmailBranding()).GenerateHTML(e)
+	htmlContent, err := branding.BuildHermes(baseURL).GenerateHTML(e)
 	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
@@ -50,7 +45,7 @@ func BuildInviteMemberEmail(recipient *identity.User, accountInvitation *identit
 		UserID:      recipient.ID,
 		ToAddress:   accountInvitation.ToEmail,
 		ToName:      recipient.FullName(),
-		FromAddress: envCfg.OutboundInvitesEmailAddress(),
+		FromAddress: branding.FromEmail,
 		FromName:    branding.CompanyName,
 		Subject:     "You've been invited!",
 		HTMLContent: htmlContent,
@@ -60,11 +55,7 @@ func BuildInviteMemberEmail(recipient *identity.User, accountInvitation *identit
 }
 
 // BuildGeneratedPasswordResetTokenEmail builds an email notifying a user that they've been invited to join an account.
-func BuildGeneratedPasswordResetTokenEmail(recipient *identity.User, passwordResetToken *auth.PasswordResetToken, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
-	if envCfg == nil {
-		return nil, internalerrors.NilConfigError("email environment config")
-	}
-
+func BuildGeneratedPasswordResetTokenEmail(recipient *identity.User, passwordResetToken *auth.PasswordResetToken, baseURL string) (*email.OutboundEmailMessage, error) {
 	if recipient.EmailAddressVerifiedAt == nil {
 		return nil, ErrUnverifiedEmailRecipient
 	}
@@ -80,7 +71,7 @@ func BuildGeneratedPasswordResetTokenEmail(recipient *identity.User, passwordRes
 					Instructions: "Click the button below to reset your password:",
 					Button: hermes.Button{
 						Text: "Reset your password",
-						Link: fmt.Sprintf("%s/reset_password?t=%s", envCfg.BaseURL(), passwordResetToken.Token),
+						Link: fmt.Sprintf("%s/reset_password?t=%s", baseURL, passwordResetToken.Token),
 					},
 				},
 			},
@@ -90,7 +81,7 @@ func BuildGeneratedPasswordResetTokenEmail(recipient *identity.User, passwordRes
 		},
 	}
 
-	htmlContent, err := envCfg.BuildHermes(branding.DefaultEmailBranding()).GenerateHTML(e)
+	htmlContent, err := branding.BuildHermes(baseURL).GenerateHTML(e)
 	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
@@ -99,7 +90,7 @@ func BuildGeneratedPasswordResetTokenEmail(recipient *identity.User, passwordRes
 		UserID:      recipient.ID,
 		ToAddress:   recipient.EmailAddress,
 		ToName:      recipient.FullName(),
-		FromAddress: envCfg.PasswordResetCreationEmailAddress(),
+		FromAddress: branding.FromEmail,
 		FromName:    branding.CompanyName,
 		Subject:     fmt.Sprintf("A password reset link was requested for your %s account", branding.CompanyName),
 		HTMLContent: htmlContent,
@@ -109,11 +100,7 @@ func BuildGeneratedPasswordResetTokenEmail(recipient *identity.User, passwordRes
 }
 
 // BuildUsernameReminderEmail builds an email notifying a user that they've been invited to join an account.
-func BuildUsernameReminderEmail(recipient *identity.User, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
-	if envCfg == nil {
-		return nil, internalerrors.NilConfigError("email environment config")
-	}
-
+func BuildUsernameReminderEmail(recipient *identity.User, baseURL string) (*email.OutboundEmailMessage, error) {
 	if recipient.EmailAddressVerifiedAt == nil {
 		return nil, ErrUnverifiedEmailRecipient
 	}
@@ -130,7 +117,7 @@ func BuildUsernameReminderEmail(recipient *identity.User, envCfg *email.Environm
 		},
 	}
 
-	htmlContent, err := envCfg.BuildHermes(branding.DefaultEmailBranding()).GenerateHTML(e)
+	htmlContent, err := branding.BuildHermes(baseURL).GenerateHTML(e)
 	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
@@ -139,7 +126,7 @@ func BuildUsernameReminderEmail(recipient *identity.User, envCfg *email.Environm
 		UserID:      recipient.ID,
 		ToName:      recipient.FullName(),
 		ToAddress:   recipient.EmailAddress,
-		FromAddress: envCfg.PasswordResetCreationEmailAddress(),
+		FromAddress: branding.FromEmail,
 		FromName:    branding.CompanyName,
 		Subject:     fmt.Sprintf("A password reset link was requested for your %s account", branding.CompanyName),
 		HTMLContent: htmlContent,
@@ -149,11 +136,7 @@ func BuildUsernameReminderEmail(recipient *identity.User, envCfg *email.Environm
 }
 
 // BuildPasswordResetTokenRedeemedEmail builds an email notifying a user that they've been invited to join an account.
-func BuildPasswordResetTokenRedeemedEmail(recipient *identity.User, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
-	if envCfg == nil {
-		return nil, internalerrors.NilConfigError("email environment config")
-	}
-
+func BuildPasswordResetTokenRedeemedEmail(recipient *identity.User, baseURL string) (*email.OutboundEmailMessage, error) {
 	if recipient.EmailAddressVerifiedAt == nil {
 		return nil, ErrUnverifiedEmailRecipient
 	}
@@ -170,7 +153,7 @@ func BuildPasswordResetTokenRedeemedEmail(recipient *identity.User, envCfg *emai
 		},
 	}
 
-	htmlContent, err := envCfg.BuildHermes(branding.DefaultEmailBranding()).GenerateHTML(e)
+	htmlContent, err := branding.BuildHermes(baseURL).GenerateHTML(e)
 	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
@@ -179,7 +162,7 @@ func BuildPasswordResetTokenRedeemedEmail(recipient *identity.User, envCfg *emai
 		UserID:      recipient.ID,
 		ToAddress:   recipient.EmailAddress,
 		ToName:      recipient.FullName(),
-		FromAddress: envCfg.PasswordResetRedemptionEmailAddress(),
+		FromAddress: branding.FromEmail,
 		FromName:    branding.CompanyName,
 		Subject:     fmt.Sprintf("Your %s account password has been changed.", branding.CompanyName),
 		HTMLContent: htmlContent,
@@ -189,11 +172,7 @@ func BuildPasswordResetTokenRedeemedEmail(recipient *identity.User, envCfg *emai
 }
 
 // BuildPasswordChangedEmail builds an email notifying a user that they've been invited to join an account.
-func BuildPasswordChangedEmail(recipient *identity.User, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
-	if envCfg == nil {
-		return nil, internalerrors.NilConfigError("email environment config")
-	}
-
+func BuildPasswordChangedEmail(recipient *identity.User, baseURL string) (*email.OutboundEmailMessage, error) {
 	if recipient.EmailAddressVerifiedAt == nil {
 		return nil, ErrUnverifiedEmailRecipient
 	}
@@ -210,7 +189,7 @@ func BuildPasswordChangedEmail(recipient *identity.User, envCfg *email.Environme
 		},
 	}
 
-	htmlContent, err := envCfg.BuildHermes(branding.DefaultEmailBranding()).GenerateHTML(e)
+	htmlContent, err := branding.BuildHermes(baseURL).GenerateHTML(e)
 	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
@@ -219,7 +198,7 @@ func BuildPasswordChangedEmail(recipient *identity.User, envCfg *email.Environme
 		UserID:      recipient.ID,
 		ToAddress:   recipient.EmailAddress,
 		ToName:      recipient.FullName(),
-		FromAddress: envCfg.PasswordResetRedemptionEmailAddress(),
+		FromAddress: branding.FromEmail,
 		FromName:    branding.CompanyName,
 		Subject:     fmt.Sprintf("Your %s account password has been changed.", branding.CompanyName),
 		HTMLContent: htmlContent,
@@ -231,11 +210,7 @@ func BuildPasswordChangedEmail(recipient *identity.User, envCfg *email.Environme
 var errEmailVerificationTokenRequired = errors.New("email verification token required")
 
 // BuildVerifyEmailAddressEmail builds an email notifying a user that they've been invited to join an account.
-func BuildVerifyEmailAddressEmail(recipient *identity.User, emailVerificationToken string, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
-	if envCfg == nil {
-		return nil, internalerrors.NilConfigError("email environment config")
-	}
-
+func BuildVerifyEmailAddressEmail(recipient *identity.User, emailVerificationToken, baseURL string) (*email.OutboundEmailMessage, error) {
 	if emailVerificationToken == "" {
 		return nil, errEmailVerificationTokenRequired
 	}
@@ -255,7 +230,7 @@ func BuildVerifyEmailAddressEmail(recipient *identity.User, emailVerificationTok
 					Instructions: "Click the button below to verify your email address:",
 					Button: hermes.Button{
 						Text: "Verify my email",
-						Link: fmt.Sprintf("%s/verify_email_address?t=%s", envCfg.BaseURL(), emailVerificationToken),
+						Link: fmt.Sprintf("%s/verify_email_address?t=%s", baseURL, emailVerificationToken),
 					},
 				},
 			},
@@ -265,7 +240,7 @@ func BuildVerifyEmailAddressEmail(recipient *identity.User, emailVerificationTok
 		},
 	}
 
-	htmlContent, err := envCfg.BuildHermes(branding.DefaultEmailBranding()).GenerateHTML(e)
+	htmlContent, err := branding.BuildHermes(baseURL).GenerateHTML(e)
 	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
@@ -274,7 +249,7 @@ func BuildVerifyEmailAddressEmail(recipient *identity.User, emailVerificationTok
 		UserID:      recipient.ID,
 		ToAddress:   recipient.EmailAddress,
 		ToName:      recipient.FullName(),
-		FromAddress: envCfg.PasswordResetCreationEmailAddress(),
+		FromAddress: branding.FromEmail,
 		FromName:    branding.CompanyName,
 		Subject:     fmt.Sprintf("Verify your email with %s", branding.CompanyName),
 		HTMLContent: htmlContent,

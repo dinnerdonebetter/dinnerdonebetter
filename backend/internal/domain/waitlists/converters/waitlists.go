@@ -2,7 +2,8 @@ package converters
 
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 // ConvertWaitlistToWaitlistUpdateRequestInput creates a WaitlistUpdateRequestInput from a Waitlist.

@@ -3,7 +3,7 @@ package payments
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 // Repository defines the data access interface for payments entities.

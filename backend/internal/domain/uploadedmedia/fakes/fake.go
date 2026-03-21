@@ -2,9 +2,9 @@ package fakes
 
 import (
 	uploadedmedia "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
+	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
 )
 
 // BuildFakeUploadedMedia builds a fake UploadedMedia.

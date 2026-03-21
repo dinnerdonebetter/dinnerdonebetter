@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/branding"
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/email"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -22,7 +21,7 @@ func TestBuildMealPlanCreatedEmail(T *testing.T) {
 		user.EmailAddressVerifiedAt = new(time.Now())
 		mealPlan := mealplanningfakes.BuildFakeMealPlan()
 
-		actual, err := BuildMealPlanCreatedEmail(user, mealPlan, &email.EnvironmentConfig{})
+		actual, err := BuildMealPlanCreatedEmail(user, mealPlan, "https://example.com")
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 		assert.Contains(t, actual.HTMLContent, branding.LogoURL)

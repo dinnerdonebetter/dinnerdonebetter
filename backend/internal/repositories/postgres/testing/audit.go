@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 // AssertAuditLogContains fetches audit log entries for the account and asserts that entries exist

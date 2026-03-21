@@ -2,7 +2,8 @@ package indexing
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/search/text/indexing"
+
+	"github.com/verygoodsoftwarenotvirus/platform/search/text/indexing"
 )
 
 const (

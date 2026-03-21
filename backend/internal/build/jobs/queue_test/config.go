@@ -2,10 +2,10 @@ package queuetest
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/config"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	queuetest "github.com/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
 
 	"github.com/google/wire"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
 )
 
 var (

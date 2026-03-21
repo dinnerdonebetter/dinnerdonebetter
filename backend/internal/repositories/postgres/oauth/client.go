@@ -5,13 +5,14 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption"
-	encryptioncfg "github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
+
+	"github.com/verygoodsoftwarenotvirus/platform/cryptography/encryption"
+	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/cryptography/encryption/config"
+	"github.com/verygoodsoftwarenotvirus/platform/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 const (

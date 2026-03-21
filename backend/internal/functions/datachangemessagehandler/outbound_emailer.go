@@ -7,9 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-
+	"github.com/verygoodsoftwarenotvirus/platform/email"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -68,7 +67,7 @@ func (a *AsyncDataChangeMessageHandler) handleEmailRequest(
 
 	a.emailsSentCounter.Add(ctx, 1)
 
-	if err := a.analyticsEventReporter.EventOccurred(ctx, email.SentEventType, mail.UserID, map[string]any{
+	if err := a.analyticsEventReporter.EventOccurred(ctx, "email_sent", mail.UserID, map[string]any{
 		"toAddress":   mail.ToAddress,
 		"toName":      mail.ToName,
 		"fromAddress": mail.FromAddress,

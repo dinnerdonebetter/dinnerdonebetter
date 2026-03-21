@@ -14,20 +14,20 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	notificationsmanager "github.com/dinnerdonebetter/backend/internal/domain/notifications/manager"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
-	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	platformnotifications "github.com/dinnerdonebetter/backend/internal/platform/notifications"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/analytics"
+	"github.com/verygoodsoftwarenotvirus/platform/email"
+	"github.com/verygoodsoftwarenotvirus/platform/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	platformnotifications "github.com/verygoodsoftwarenotvirus/platform/notifications"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/uploads"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -87,6 +87,7 @@ type AsyncDataChangeMessageHandler struct {
 	mealPlanningDataIndexer                   *mealplanningindexing.MealPlanningDataIndexer
 	userDataIndexer                           *identityindexing.UserDataIndexer
 	queuesConfig                              msgconfig.QueuesConfig
+	baseURL                                   string
 	nonWebhookEventTypes                      []string
 	nonWebhookEventTypesHat                   sync.RWMutex
 }
@@ -249,6 +250,7 @@ func NewAsyncDataChangeMessageHandler(
 		passwordResetTokenDataManager:             passwordResetTokenDataManager,
 		notificationsRepo:                         notificationsRepo,
 		pushNotificationSender:                    pushNotificationSender,
+		baseURL:                                   cfg.BaseURL,
 	}, nil
 }
 

@@ -3,14 +3,14 @@ package datachangemessagehandler
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/google/wire"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
 )
 
 var SearcherProviders = wire.NewSet(

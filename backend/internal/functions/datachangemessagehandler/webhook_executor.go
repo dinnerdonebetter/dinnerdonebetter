@@ -13,12 +13,12 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	platformkeys "github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/httpclient"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )

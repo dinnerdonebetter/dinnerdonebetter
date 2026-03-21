@@ -21,13 +21,6 @@ import (
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
-	errorsgrpc "github.com/dinnerdonebetter/backend/internal/platform/errors/grpc"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
-	platformgrpc "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	analyticsgrpc "github.com/dinnerdonebetter/backend/internal/services/analytics/grpc"
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
@@ -46,6 +39,13 @@ import (
 	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc"
 	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
+	platformgrpc "github.com/verygoodsoftwarenotvirus/platform/server/grpc"
 	grpc "google.golang.org/grpc"
 )
 

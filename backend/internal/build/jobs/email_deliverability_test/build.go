@@ -6,15 +6,15 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	emaildeliverabilitytest "github.com/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
 
 	"github.com/google/wire"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/httpclient"
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/logging/config"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
 )
 
 // Build builds the email deliverability test job.

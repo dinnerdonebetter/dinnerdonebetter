@@ -10,14 +10,15 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	queuetest "github.com/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
+
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/logging/config"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/observability/tracing/config"
 )
 
 // Injectors from build.go:

@@ -2,7 +2,8 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/types"
+
+	"github.com/verygoodsoftwarenotvirus/platform/types"
 )
 
 // ChickenVermicelliSoupRecipe creates the Chicken and Vermicelli Soup with Lime recipe.

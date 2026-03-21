@@ -1,9 +1,8 @@
 package config
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
-
 	"github.com/google/wire"
+	"github.com/verygoodsoftwarenotvirus/platform/server/http"
 )
 
 var (

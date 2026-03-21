@@ -8,19 +8,19 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	identitykeys "github.com/dinnerdonebetter/backend/internal/domain/identity/keys"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	randommock "github.com/dinnerdonebetter/backend/internal/platform/random/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
-	mocksearch "github.com/dinnerdonebetter/backend/internal/platform/search/text/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	randommock "github.com/verygoodsoftwarenotvirus/platform/random/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	mocksearch "github.com/verygoodsoftwarenotvirus/platform/search/text/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/testutils"
 )
 
 func buildIdentityDataManagerForTest(t *testing.T) *manager {

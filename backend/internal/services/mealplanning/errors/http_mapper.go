@@ -4,9 +4,10 @@ import (
 	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/errors/http"
-	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+
+	"github.com/verygoodsoftwarenotvirus/platform/errors/http"
+	"github.com/verygoodsoftwarenotvirus/platform/types"
 )
 
 func init() {

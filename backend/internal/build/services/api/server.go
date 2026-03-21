@@ -11,10 +11,11 @@ import (
 	grpcapi "github.com/dinnerdonebetter/backend/internal/build/services/api/grpc"
 	httpapi "github.com/dinnerdonebetter/backend/internal/build/services/api/http"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/profiling"
-	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
+
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/profiling"
+	"github.com/verygoodsoftwarenotvirus/platform/server/http"
 )
 
 type Server struct {

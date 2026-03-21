@@ -9,11 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 func createUploadedMediaForTest(t *testing.T, ctx context.Context, exampleUploadedMedia *types.UploadedMedia, dbc *repository) *types.UploadedMedia {

@@ -7,10 +7,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 
 	"github.com/matcornic/hermes/v2"
+	"github.com/verygoodsoftwarenotvirus/platform/email"
 )
 
 var (
@@ -18,11 +17,7 @@ var (
 )
 
 // BuildMealPlanCreatedEmail builds an email notifying a user that they've been invited to join an account.
-func BuildMealPlanCreatedEmail(recipient *identity.User, mealPlan *mealplanning.MealPlan, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
-	if envCfg == nil {
-		return nil, internalerrors.NilConfigError("email environment config")
-	}
-
+func BuildMealPlanCreatedEmail(recipient *identity.User, mealPlan *mealplanning.MealPlan, baseURL string) (*email.OutboundEmailMessage, error) {
 	if recipient.EmailAddressVerifiedAt == nil {
 		return nil, ErrUnverifiedEmailRecipient
 	}
@@ -52,21 +47,21 @@ func BuildMealPlanCreatedEmail(recipient *identity.User, mealPlan *mealplanning.
 					Instructions: instructions,
 					Button: hermes.Button{
 						Text: buttonAction,
-						Link: fmt.Sprintf("%s/meal_plans/%s", envCfg.BaseURL(), mealPlan.ID),
+						Link: fmt.Sprintf("%s/meal_plans/%s", baseURL, mealPlan.ID),
 					},
 				},
 			},
 		},
 	}
 
-	htmlContent, err := envCfg.BuildHermes(branding.DefaultEmailBranding()).GenerateHTML(e)
+	htmlContent, err := branding.BuildHermes(baseURL).GenerateHTML(e)
 	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
 	msg := &email.OutboundEmailMessage{
 		ToAddress:   recipient.EmailAddress,
-		FromAddress: envCfg.PasswordResetRedemptionEmailAddress(),
+		FromAddress: branding.FromEmail,
 		FromName:    branding.CompanyName,
 		Subject:     "A new meal plan has been created!",
 		HTMLContent: htmlContent,

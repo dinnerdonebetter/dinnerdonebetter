@@ -3,9 +3,9 @@ package fakes
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	fake "github.com/brianvoe/gofakeit/v7"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 // BuildFakeAccountInvitation builds a faked AccountInvitation.

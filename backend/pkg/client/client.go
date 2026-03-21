@@ -24,9 +24,9 @@ import (
 	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/httpclient"
-	"github.com/dinnerdonebetter/backend/internal/platform/random"
 
+	"github.com/verygoodsoftwarenotvirus/platform/httpclient"
+	"github.com/verygoodsoftwarenotvirus/platform/random"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

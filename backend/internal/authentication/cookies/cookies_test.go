@@ -4,10 +4,9 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
 )
 
 const (

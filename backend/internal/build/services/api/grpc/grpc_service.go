@@ -15,7 +15,8 @@ import (
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+
+	"github.com/verygoodsoftwarenotvirus/platform/server/grpc"
 )
 
 type GRPCService struct {

@@ -9,10 +9,10 @@ import (
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	webhooksfakes "github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/reflection"
 )
 
 func TestAsyncDataChangeMessageHandler_handleWebhookExecutionRequest(t *testing.T) {

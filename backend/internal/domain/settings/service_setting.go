@@ -8,10 +8,9 @@ import (
 	"slices"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
+	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
 )
 
 const (

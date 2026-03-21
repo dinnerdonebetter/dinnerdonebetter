@@ -6,10 +6,9 @@ import (
 	"embed"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-
 	"github.com/GuiaBolso/darwin"
+	"github.com/verygoodsoftwarenotvirus/platform/database"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
 )
 
 var (

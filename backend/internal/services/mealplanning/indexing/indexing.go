@@ -6,10 +6,11 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
+
+	"github.com/verygoodsoftwarenotvirus/platform/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
 )
 
 const (
