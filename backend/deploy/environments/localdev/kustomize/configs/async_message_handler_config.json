@@ -119,6 +119,10 @@
 		"resend": null,
 		"postmark": null,
 		"provider": "",
+		"baseURL": "",
+		"outboundInvitesEmailAddress": "",
+		"passwordResetCreationEmailAddress": "",
+		"passwordResetRedemptionEmailAddress": "",
 		"circuitBreakerConfig": {
 			"name": "",
 			"circuitBreakerErrorPercentage": 0,

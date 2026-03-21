@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -1012,6 +1013,13 @@ func FindUnitigsByLength(g *simple.DirectedGraph) map[int][][]graph.Node {
 				results[nodeCount] = append(results[nodeCount], chain)
 			}
 		}
+	}
+
+	for length, chains := range results {
+		sort.Slice(chains, func(i, j int) bool {
+			return chains[i][0].ID() < chains[j][0].ID()
+		})
+		results[length] = chains
 	}
 
 	return results

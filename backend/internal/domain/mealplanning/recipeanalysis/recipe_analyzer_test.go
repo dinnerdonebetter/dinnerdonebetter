@@ -1054,8 +1054,6 @@ func TestFindUnitigsByLength(T *testing.T) {
 			},
 		}
 
-		// TODO: these tests are only passing because they happen to be sorted in the right order
-
 		assert.Equal(t, expected, res)
 	})
 }
