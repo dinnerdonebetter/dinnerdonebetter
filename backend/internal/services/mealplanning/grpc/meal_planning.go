@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
@@ -34,7 +34,7 @@ func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanningsvc.
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal")
 	}
 
-	if err = s.commentsManager.ArchiveCommentsForReference(ctx, comments.CommentTargetTypeMeals, request.MealId); err != nil {
+	if err = s.commentsManager.ArchiveCommentsForReference(ctx, mealplanning.CommentTargetTypeMeals, request.MealId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving comments for meal")
 	}
 
@@ -64,7 +64,7 @@ func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan")
 	}
 
-	if err = s.commentsManager.ArchiveCommentsForReference(ctx, comments.CommentTargetTypeMealPlans, request.MealPlanId); err != nil {
+	if err = s.commentsManager.ArchiveCommentsForReference(ctx, mealplanning.CommentTargetTypeMealPlans, request.MealPlanId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving comments for meal plan")
 	}
 

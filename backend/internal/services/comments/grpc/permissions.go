@@ -11,10 +11,7 @@ type CommentsMethodPermissions map[string][]authorization.Permission
 // ProvideMethodPermissions returns a Wire provider for the comments service's method permissions.
 func ProvideMethodPermissions() CommentsMethodPermissions {
 	return CommentsMethodPermissions{
-		commentssvc.CommentsService_AddCommentToRecipe_FullMethodName:      {authorization.CreateCommentsPermission},
 		commentssvc.CommentsService_CreateComment_FullMethodName:           {authorization.CreateCommentsPermission},
-		commentssvc.CommentsService_AddCommentToMeal_FullMethodName:        {authorization.CreateCommentsPermission},
-		commentssvc.CommentsService_AddCommentToMealPlan_FullMethodName:    {authorization.CreateCommentsPermission},
 		commentssvc.CommentsService_GetCommentsForReference_FullMethodName: {authorization.ReadCommentsPermission},
 		commentssvc.CommentsService_UpdateComment_FullMethodName:           {authorization.UpdateCommentsPermission},
 		commentssvc.CommentsService_ArchiveComment_FullMethodName:          {authorization.ArchiveCommentsPermission},

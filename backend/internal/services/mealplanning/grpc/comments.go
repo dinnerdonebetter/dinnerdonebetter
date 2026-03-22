@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
 	commentskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/keys"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
 	commentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
@@ -33,7 +33,7 @@ func (s *serviceImpl) AddCommentToRecipe(ctx context.Context, request *commentss
 
 	input := converters.ConvertProtoCommentCreationRequestInputToDomain(
 		request.Input,
-		comments.CommentTargetTypeRecipes,
+		mealplanning.CommentTargetTypeRecipes,
 		request.RecipeId,
 		sessionContextData.GetUserID(),
 	)
@@ -69,7 +69,7 @@ func (s *serviceImpl) AddCommentToMeal(ctx context.Context, request *commentssvc
 
 	input := converters.ConvertProtoCommentCreationRequestInputToDomain(
 		request.Input,
-		comments.CommentTargetTypeMeals,
+		mealplanning.CommentTargetTypeMeals,
 		request.MealId,
 		sessionContextData.GetUserID(),
 	)
@@ -109,7 +109,7 @@ func (s *serviceImpl) AddCommentToMealPlan(ctx context.Context, request *comment
 
 	input := converters.ConvertProtoCommentCreationRequestInputToDomain(
 		request.Input,
-		comments.CommentTargetTypeMealPlans,
+		mealplanning.CommentTargetTypeMealPlans,
 		request.MealPlanId,
 		sessionContextData.GetUserID(),
 	)
@@ -162,9 +162,9 @@ func (s *serviceImpl) CreateComment(ctx context.Context, request *commentssvc.Cr
 	}
 
 	switch input.TargetType {
-	case comments.CommentTargetTypeRecipes, comments.CommentTargetTypeMeals:
+	case mealplanning.CommentTargetTypeRecipes, mealplanning.CommentTargetTypeMeals:
 		// no access check
-	case comments.CommentTargetTypeMealPlans:
+	case mealplanning.CommentTargetTypeMealPlans:
 		if _, err = s.mealPlanningManager.ReadMealPlan(ctx, input.ReferencedID, sessionContextData.GetActiveAccountID()); err != nil {
 			return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "validating meal plan access")
 		}
@@ -200,9 +200,9 @@ func (s *serviceImpl) GetCommentsForReference(ctx context.Context, request *comm
 	}
 
 	switch request.TargetType {
-	case comments.CommentTargetTypeRecipes, comments.CommentTargetTypeMeals:
+	case mealplanning.CommentTargetTypeRecipes, mealplanning.CommentTargetTypeMeals:
 		// no access check
-	case comments.CommentTargetTypeMealPlans:
+	case mealplanning.CommentTargetTypeMealPlans:
 		if _, err = s.mealPlanningManager.ReadMealPlan(ctx, request.ReferencedId, sessionContextData.GetActiveAccountID()); err != nil {
 			return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "validating meal plan access")
 		}

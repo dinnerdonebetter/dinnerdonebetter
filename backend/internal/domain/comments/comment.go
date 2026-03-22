@@ -16,11 +16,6 @@ const (
 	CommentUpdatedServiceEventType = "comment_updated"
 	// CommentArchivedServiceEventType indicates a comment was archived.
 	CommentArchivedServiceEventType = "comment_archived"
-
-	// Comment target types for references (recipes, meals, meal plans).
-	CommentTargetTypeRecipes   = "recipes"
-	CommentTargetTypeMeals     = "meals"
-	CommentTargetTypeMealPlans = "meal_plans"
 )
 
 func init() {
@@ -95,15 +90,6 @@ type (
 	}
 )
 
-var (
-	// ValidCommentTargetTypes defines the allowed target types for comments (MVP).
-	ValidCommentTargetTypes = map[string]bool{
-		CommentTargetTypeMeals:     true,
-		CommentTargetTypeRecipes:   true,
-		CommentTargetTypeMealPlans: true,
-	}
-)
-
 var _ validation.ValidatableWithContext = (*CommentCreationRequestInput)(nil)
 
 // ValidateWithContext validates a CommentCreationRequestInput.
@@ -112,11 +98,7 @@ func (x *CommentCreationRequestInput) ValidateWithContext(ctx context.Context) e
 		ctx,
 		x,
 		validation.Field(&x.Content, validation.Required, validation.Length(1, 10000)),
-		validation.Field(&x.TargetType, validation.Required, validation.In(
-			CommentTargetTypeMeals,
-			CommentTargetTypeRecipes,
-			CommentTargetTypeMealPlans,
-		)),
+		validation.Field(&x.TargetType, validation.Required),
 		validation.Field(&x.ReferencedID, validation.Required),
 		validation.Field(&x.BelongsToUser, validation.Required),
 	)
@@ -131,11 +113,7 @@ func (x *CommentDatabaseCreationInput) ValidateWithContext(ctx context.Context) 
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Content, validation.Required, validation.Length(1, 10000)),
-		validation.Field(&x.TargetType, validation.Required, validation.In(
-			CommentTargetTypeMeals,
-			CommentTargetTypeRecipes,
-			CommentTargetTypeMealPlans,
-		)),
+		validation.Field(&x.TargetType, validation.Required),
 		validation.Field(&x.ReferencedID, validation.Required),
 		validation.Field(&x.BelongsToUser, validation.Required),
 	)

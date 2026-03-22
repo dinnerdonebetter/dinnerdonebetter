@@ -5,7 +5,6 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
 	commentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	commentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 
 	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
@@ -25,7 +24,6 @@ type (
 		logger                    logging.Logger
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
 		commentsManager           commentsmanager.CommentsDataManager
-		mealPlanningManager       managers.MealPlanningManager
 	}
 )
 
@@ -33,13 +31,11 @@ func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	commentsManager commentsmanager.CommentsDataManager,
-	mealPlanningManager managers.MealPlanningManager,
 ) commentssvc.CommentsServiceServer {
 	return &serviceImpl{
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
 		commentsManager:           commentsManager,
-		mealPlanningManager:       mealPlanningManager,
 	}
 }

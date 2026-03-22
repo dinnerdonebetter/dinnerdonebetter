@@ -9,8 +9,6 @@ import (
 	commentsfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/fakes"
 	commentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager"
 	commentsmanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager/mock"
-	mealplanningfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	mockmanagers "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
 	commentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 
 	"github.com/stretchr/testify/assert"
@@ -52,21 +50,20 @@ func buildCommentsServiceImplForTest(t *testing.T) *serviceImpl {
 	t.Helper()
 
 	return &serviceImpl{
-		tracer:              tracing.NewTracerForTest(t.Name()),
-		logger:              logging.NewNoopLogger(),
-		commentsManager:     &noopCommentsManager{},
-		mealPlanningManager: &mockmanagers.MockMealPlanningManager{},
+		tracer:          tracing.NewTracerForTest(t.Name()),
+		logger:          logging.NewNoopLogger(),
+		commentsManager: &noopCommentsManager{},
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
-					UserID: mealplanningfakes.BuildFakeID(),
+					UserID: commentsfakes.BuildFakeID(),
 				},
 			}, nil
 		},
 	}
 }
 
-func TestServiceImpl_AddCommentToRecipe(T *testing.T) {
+func TestServiceImpl_CreateComment(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -75,143 +72,89 @@ func TestServiceImpl_AddCommentToRecipe(T *testing.T) {
 		ctx := t.Context()
 		s := buildCommentsServiceImplForTest(t)
 
-		recipeID := mealplanningfakes.BuildFakeID()
-		userID := mealplanningfakes.BuildFakeID()
-		content := "test comment"
+		userID := commentsfakes.BuildFakeID()
+		recipeID := commentsfakes.BuildFakeID()
 
 		mcm := &commentsmanagermock.MockCommentsDataManager{}
 		fakeComment := commentsfakes.BuildFakeComment()
-		fakeComment.TargetType = comments.CommentTargetTypeRecipes
+		fakeComment.TargetType = "recipes"
 		fakeComment.ReferencedID = recipeID
 
-		mcm.On(reflection.GetMethodName(mcm.CreateComment), testutils.ContextMatcher, mock.MatchedBy(func(in any) bool {
-			ci, ok := in.(*comments.CommentCreationRequestInput)
-			return ok && ci != nil && ci.TargetType == comments.CommentTargetTypeRecipes && ci.ReferencedID == recipeID && ci.BelongsToUser == userID
-		})).Return(fakeComment, nil)
-		s.commentsManager = mcm
-
-		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
-			return &sessions.ContextData{
-				Requester: sessions.RequesterInfo{UserID: userID},
-			}, nil
-		}
-
-		res, err := s.AddCommentToRecipe(ctx, &commentssvc.AddCommentToRecipeRequest{
-			RecipeId: recipeID,
-			Input:    &commentssvc.CommentCreationRequestInput{Content: content},
-		})
-		assert.NoError(t, err)
-		assert.NotNil(t, res)
-		assert.Equal(t, fakeComment.ID, res.Comment.Id)
-		assert.Equal(t, fakeComment.Content, res.Comment.Content)
-
-		mock.AssertExpectationsForObjects(t, mcm)
-	})
-}
-
-func TestServiceImpl_AddCommentToMeal(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		s := buildCommentsServiceImplForTest(t)
-
-		mealID := mealplanningfakes.BuildFakeID()
-		userID := mealplanningfakes.BuildFakeID()
-		content := "test comment on meal"
-
-		mcm := &commentsmanagermock.MockCommentsDataManager{}
-		fakeComment := commentsfakes.BuildFakeComment()
-		fakeComment.TargetType = comments.CommentTargetTypeMeals
-		fakeComment.ReferencedID = mealID
-		mcm.On(reflection.GetMethodName(mcm.CreateComment), testutils.ContextMatcher, mock.MatchedBy(func(in any) bool {
-			ci, ok := in.(*comments.CommentCreationRequestInput)
-			return ok && ci != nil && ci.TargetType == comments.CommentTargetTypeMeals && ci.ReferencedID == mealID && ci.BelongsToUser == userID
-		})).Return(fakeComment, nil)
-		s.commentsManager = mcm
-
-		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
-			return &sessions.ContextData{
-				Requester: sessions.RequesterInfo{UserID: userID},
-			}, nil
-		}
-
-		res, err := s.AddCommentToMeal(ctx, &commentssvc.AddCommentToMealRequest{
-			MealId: mealID,
-			Input:  &commentssvc.CommentCreationRequestInput{Content: content},
-		})
-		assert.NoError(t, err)
-		assert.NotNil(t, res)
-		assert.Equal(t, fakeComment.ID, res.Comment.Id)
-
-		mock.AssertExpectationsForObjects(t, mcm)
-	})
-}
-
-func TestServiceImpl_AddCommentToMealPlan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		s := buildCommentsServiceImplForTest(t)
-
-		mealPlanID := mealplanningfakes.BuildFakeID()
-		accountID := mealplanningfakes.BuildFakeID()
-		userID := mealplanningfakes.BuildFakeID()
-		content := "test comment on meal plan"
-
-		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On(reflection.GetMethodName(mmpm.ReadMealPlan), testutils.ContextMatcher, mealPlanID, accountID).Return(mealplanningfakes.BuildFakeMealPlan(), nil)
-		s.mealPlanningManager = mmpm
-
-		mcm := &commentsmanagermock.MockCommentsDataManager{}
-		fakeComment := commentsfakes.BuildFakeComment()
-		fakeComment.TargetType = comments.CommentTargetTypeMealPlans
-		fakeComment.ReferencedID = mealPlanID
 		mcm.On(reflection.GetMethodName(mcm.CreateComment), testutils.ContextMatcher, mock.Anything).Return(fakeComment, nil)
 		s.commentsManager = mcm
 
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
-				Requester:       sessions.RequesterInfo{UserID: userID},
-				ActiveAccountID: accountID,
+				Requester: sessions.RequesterInfo{UserID: userID},
 			}, nil
 		}
 
-		res, err := s.AddCommentToMealPlan(ctx, &commentssvc.AddCommentToMealPlanRequest{
-			MealPlanId: mealPlanID,
-			Input:      &commentssvc.CommentCreationRequestInput{Content: content},
+		res, err := s.CreateComment(ctx, &commentssvc.CreateCommentRequest{
+			Input: &commentssvc.CommentCreationRequestInput{
+				Content:      "test comment",
+				TargetType:   "recipes",
+				ReferencedId: recipeID,
+			},
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
 		assert.Equal(t, fakeComment.ID, res.Comment.Id)
 
-		mock.AssertExpectationsForObjects(t, mmpm, mcm)
+		mock.AssertExpectationsForObjects(t, mcm)
+	})
+
+	T.Run("missing input", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildCommentsServiceImplForTest(t)
+
+		res, err := s.CreateComment(ctx, &commentssvc.CreateCommentRequest{})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		st, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.InvalidArgument, st.Code())
+	})
+
+	T.Run("missing target_type", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildCommentsServiceImplForTest(t)
+
+		res, err := s.CreateComment(ctx, &commentssvc.CreateCommentRequest{
+			Input: &commentssvc.CommentCreationRequestInput{
+				Content:      "test",
+				ReferencedId: commentsfakes.BuildFakeID(),
+			},
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		st, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.InvalidArgument, st.Code())
 	})
 }
 
 func TestServiceImpl_GetCommentsForReference(T *testing.T) {
 	T.Parallel()
 
-	T.Run("recipes", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
 		s := buildCommentsServiceImplForTest(t)
 
-		recipeID := mealplanningfakes.BuildFakeID()
-		expected := commentsfakes.BuildFakeCommentList(comments.CommentTargetTypeRecipes, recipeID)
+		recipeID := commentsfakes.BuildFakeID()
+		expected := commentsfakes.BuildFakeCommentList("recipes", recipeID)
 
 		mcm := &commentsmanagermock.MockCommentsDataManager{}
-		mcm.On(reflection.GetMethodName(mcm.GetCommentsForReference), testutils.ContextMatcher, comments.CommentTargetTypeRecipes, recipeID, testutils.QueryFilterMatcher).Return(expected, nil)
+		mcm.On(reflection.GetMethodName(mcm.GetCommentsForReference), testutils.ContextMatcher, "recipes", recipeID, testutils.QueryFilterMatcher).Return(expected, nil)
 		s.commentsManager = mcm
 
 		res, err := s.GetCommentsForReference(ctx, &commentssvc.GetCommentsForReferenceRequest{
-			TargetType:   comments.CommentTargetTypeRecipes,
+			TargetType:   "recipes",
 			ReferencedId: recipeID,
 		})
 		assert.NoError(t, err)
@@ -219,80 +162,6 @@ func TestServiceImpl_GetCommentsForReference(T *testing.T) {
 		assert.Len(t, res.Data, len(expected.Data))
 
 		mock.AssertExpectationsForObjects(t, mcm)
-	})
-
-	T.Run("meals", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		s := buildCommentsServiceImplForTest(t)
-
-		mealID := mealplanningfakes.BuildFakeID()
-		expected := commentsfakes.BuildFakeCommentList(comments.CommentTargetTypeMeals, mealID)
-
-		mcm := &commentsmanagermock.MockCommentsDataManager{}
-		mcm.On(reflection.GetMethodName(mcm.GetCommentsForReference), testutils.ContextMatcher, comments.CommentTargetTypeMeals, mealID, testutils.QueryFilterMatcher).Return(expected, nil)
-		s.commentsManager = mcm
-
-		res, err := s.GetCommentsForReference(ctx, &commentssvc.GetCommentsForReferenceRequest{
-			TargetType:   comments.CommentTargetTypeMeals,
-			ReferencedId: mealID,
-		})
-		assert.NoError(t, err)
-		assert.NotNil(t, res)
-		assert.Len(t, res.Data, len(expected.Data))
-
-		mock.AssertExpectationsForObjects(t, mcm)
-	})
-
-	T.Run("meal_plans", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		s := buildCommentsServiceImplForTest(t)
-
-		mealPlanID := mealplanningfakes.BuildFakeID()
-		accountID := mealplanningfakes.BuildFakeID()
-		expected := commentsfakes.BuildFakeCommentList(comments.CommentTargetTypeMealPlans, mealPlanID)
-
-		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On(reflection.GetMethodName(mmpm.ReadMealPlan), testutils.ContextMatcher, mealPlanID, accountID).Return(mealplanningfakes.BuildFakeMealPlan(), nil)
-		s.mealPlanningManager = mmpm
-
-		mcm := &commentsmanagermock.MockCommentsDataManager{}
-		mcm.On(reflection.GetMethodName(mcm.GetCommentsForReference), testutils.ContextMatcher, comments.CommentTargetTypeMealPlans, mealPlanID, testutils.QueryFilterMatcher).Return(expected, nil)
-		s.commentsManager = mcm
-
-		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
-			return &sessions.ContextData{ActiveAccountID: accountID}, nil
-		}
-
-		res, err := s.GetCommentsForReference(ctx, &commentssvc.GetCommentsForReferenceRequest{
-			TargetType:   comments.CommentTargetTypeMealPlans,
-			ReferencedId: mealPlanID,
-		})
-		assert.NoError(t, err)
-		assert.NotNil(t, res)
-		assert.Len(t, res.Data, len(expected.Data))
-
-		mock.AssertExpectationsForObjects(t, mmpm, mcm)
-	})
-
-	T.Run("invalid_target_type", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		s := buildCommentsServiceImplForTest(t)
-
-		res, err := s.GetCommentsForReference(ctx, &commentssvc.GetCommentsForReferenceRequest{
-			TargetType:   "invalid",
-			ReferencedId: mealplanningfakes.BuildFakeID(),
-		})
-		assert.Error(t, err)
-		assert.Nil(t, res)
-		st, ok := status.FromError(err)
-		assert.True(t, ok)
-		assert.Equal(t, codes.InvalidArgument, st.Code())
 	})
 }
 
@@ -306,7 +175,7 @@ func TestServiceImpl_UpdateComment(T *testing.T) {
 		s := buildCommentsServiceImplForTest(t)
 
 		commentID := commentsfakes.BuildFakeID()
-		userID := mealplanningfakes.BuildFakeID()
+		userID := commentsfakes.BuildFakeID()
 		newContent := "updated content"
 
 		fakeComment := commentsfakes.BuildFakeComment()
@@ -343,7 +212,7 @@ func TestServiceImpl_UpdateComment(T *testing.T) {
 
 		commentID := commentsfakes.BuildFakeID()
 		ownerID := commentsfakes.BuildFakeID()
-		requestingUserID := mealplanningfakes.BuildFakeID()
+		requestingUserID := commentsfakes.BuildFakeID()
 
 		fakeComment := commentsfakes.BuildFakeComment()
 		fakeComment.ID = commentID
@@ -383,7 +252,7 @@ func TestServiceImpl_ArchiveComment(T *testing.T) {
 		s := buildCommentsServiceImplForTest(t)
 
 		commentID := commentsfakes.BuildFakeID()
-		userID := mealplanningfakes.BuildFakeID()
+		userID := commentsfakes.BuildFakeID()
 
 		fakeComment := commentsfakes.BuildFakeComment()
 		fakeComment.ID = commentID
@@ -417,7 +286,7 @@ func TestServiceImpl_ArchiveComment(T *testing.T) {
 
 		commentID := commentsfakes.BuildFakeID()
 		ownerID := commentsfakes.BuildFakeID()
-		requestingUserID := mealplanningfakes.BuildFakeID()
+		requestingUserID := commentsfakes.BuildFakeID()
 
 		fakeComment := commentsfakes.BuildFakeComment()
 		fakeComment.ID = commentID
