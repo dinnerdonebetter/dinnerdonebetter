@@ -17,10 +17,6 @@ terraform {
       source  = "hashicorp/google"
       version = "7.23.0"
     }
-    sendgrid = {
-      source  = "Trois-Six/sendgrid"
-      version = "0.2.1"
-    }
     grafana = {
       source  = "grafana/grafana"
       version = "4.28.0"
