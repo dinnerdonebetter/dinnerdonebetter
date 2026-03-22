@@ -2,7 +2,7 @@
 //  EntitlementService.swift
 //  ios
 //
-//  Checks RevenueCat entitlements (e.g. "Dinner Done Better Pro").
+//  Checks RevenueCat entitlements (e.g. pro subscription).
 //
 
 import Foundation
@@ -10,9 +10,9 @@ import RevenueCat
 
 enum EntitlementService {
   /// Entitlement identifier as configured in the RevenueCat dashboard.
-  static let proEntitlementID = "Dinner Done Better Pro"
+  static let proEntitlementID = Branding.proEntitlementName
 
-  /// Returns whether the user has an active "Dinner Done Better Pro" entitlement.
+  /// Returns whether the user has an active pro entitlement.
   /// Returns `false` when RevenueCat is not configured or on error.
   static func isProActive() async -> Bool {
     guard RevenueCatConfiguration.isConfigured else {

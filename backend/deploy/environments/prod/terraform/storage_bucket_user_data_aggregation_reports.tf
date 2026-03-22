@@ -1,6 +1,6 @@
 resource "google_storage_bucket" "user_data_storage" {
   provider                    = google
-  name                        = "dinner-done-better-prod-userdata"
+  name                        = "${local.gcp_project_id}-userdata"
   location                    = "US"
   uniform_bucket_level_access = false
   force_destroy               = true
@@ -15,7 +15,7 @@ resource "google_storage_bucket" "user_data_storage" {
   }
 
   cors {
-    origin          = ["https://dinnerdonebetter.com"]
+    origin          = ["https://${local.public_domain}"]
     method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
     response_header = ["*"]
     max_age_seconds = 3600
@@ -39,7 +39,7 @@ resource "google_storage_bucket_iam_policy" "user_data_policy" {
 # Domain-named bucket for user data. Requires Search Console domain verification.
 resource "google_storage_bucket" "user_data_domain" {
   provider                    = google
-  name                        = "userdata.dinnerdonebetter.com"
+  name                        = local.userdata_domain
   location                    = "US"
   uniform_bucket_level_access = false
   force_destroy               = true
@@ -54,7 +54,7 @@ resource "google_storage_bucket" "user_data_domain" {
   }
 
   cors {
-    origin          = ["https://dinnerdonebetter.com"]
+    origin          = ["https://${local.public_domain}"]
     method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
     response_header = ["*"]
     max_age_seconds = 3600

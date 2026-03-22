@@ -1,6 +1,6 @@
 # Secret Manager API must be enabled for the CSI driver and SecretSync to fetch secrets
 resource "google_project_service" "secret_manager" {
-  project = local.project_id
+  project = local.gcp_project_id
   service = "secretmanager.googleapis.com"
 }
 
@@ -34,7 +34,7 @@ resource "google_service_account" "prod_cluster_service_account" {
 }
 
 resource "google_project_iam_member" "prod_cluster" {
-  project = local.project_id
+  project = local.gcp_project_id
   role    = google_project_iam_custom_role.prod_cluster_role.id
   member  = format("serviceAccount:%s", google_service_account.prod_cluster_service_account.email)
 }
@@ -61,7 +61,7 @@ resource "google_container_cluster" "primary" {
 
   # Workload Identity is required for the Secret Manager add-on
   workload_identity_config {
-    workload_pool = "${local.project_id}.svc.id.goog"
+    workload_pool = "${local.gcp_project_id}.svc.id.goog"
   }
 }
 
@@ -97,7 +97,7 @@ resource "google_container_node_pool" "primary_nodes" {
     ]
 
     labels = {
-      env = local.project_id
+      env = local.gcp_project_id
     }
 
     preemptible  = false
@@ -123,39 +123,39 @@ resource "google_service_account" "workload_identity_sa" {
 
 # Grant the workload identity SA access to secrets and Pub/Sub
 resource "google_project_iam_member" "workload_identity_secret_accessor" {
-  project = local.project_id
+  project = local.gcp_project_id
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
 
 resource "google_project_iam_member" "workload_identity_pubsub" {
-  project = local.project_id
+  project = local.gcp_project_id
   role    = "roles/pubsub.publisher"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
 
 resource "google_project_iam_member" "workload_identity_pubsub_subscriber" {
-  project = local.project_id
+  project = local.gcp_project_id
   role    = "roles/pubsub.subscriber"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
 
 # TopicAdminClient.GetTopic requires pubsub.topics.get (included in viewer)
 resource "google_project_iam_member" "workload_identity_pubsub_viewer" {
-  project = local.project_id
+  project = local.gcp_project_id
   role    = "roles/pubsub.viewer"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
 
 resource "google_project_iam_member" "workload_identity_monitoring_viewer" {
-  project = local.project_id
+  project = local.gcp_project_id
   role    = "roles/monitoring.viewer"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
 
 # Firebase Cloud Messaging for Android push notifications (async message handler)
 resource "google_project_iam_member" "workload_identity_fcm_admin" {
-  project = local.project_id
+  project = local.gcp_project_id
   role    = "roles/firebasecloudmessaging.admin"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
@@ -164,5 +164,5 @@ resource "google_project_iam_member" "workload_identity_fcm_admin" {
 resource "google_service_account_iam_member" "workload_identity_binding" {
   service_account_id = google_service_account.workload_identity_sa.name
   role               = "roles/iam.workloadIdentityUser"
-  member             = "serviceAccount:${local.project_id}.svc.id.goog[prod/api-service-account]"
+  member             = "serviceAccount:${local.gcp_project_id}.svc.id.goog[prod/api-service-account]"
 }

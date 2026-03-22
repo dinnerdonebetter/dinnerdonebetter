@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Design System Theme
 
-/// Central theme configuration for the Dinner Done Better design system.
+/// Central theme configuration for the app's design system.
 /// Use these tokens throughout the app for consistent styling.
 enum DSTheme {
 

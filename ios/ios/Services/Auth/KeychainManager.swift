@@ -13,14 +13,18 @@ enum KeychainManager {
   // MARK: - Keys
 
   enum Key: String {
-    case accessToken = "com.dinnerdonebetter.accessToken"
-    case refreshToken = "com.dinnerdonebetter.refreshToken"
-    case oauth2AccessToken = "com.dinnerdonebetter.oauth2AccessToken"
-    case oauth2RefreshToken = "com.dinnerdonebetter.oauth2RefreshToken"
-    case oauth2TokenExpiresAt = "com.dinnerdonebetter.oauth2TokenExpiresAt"
-    case username = "com.dinnerdonebetter.username"
-    case userID = "com.dinnerdonebetter.userID"
-    case accountID = "com.dinnerdonebetter.accountID"
+    case accessToken
+    case refreshToken
+    case oauth2AccessToken
+    case oauth2RefreshToken
+    case oauth2TokenExpiresAt
+    case username
+    case userID
+    case accountID
+
+    var keychainKey: String {
+      "\(Branding.keychainPrefix).\(rawValue)"
+    }
   }
 
   // MARK: - Public API
@@ -38,7 +42,7 @@ enum KeychainManager {
   static func delete(key: Key) {
     let query: [String: Any] = [
       kSecClass as String: kSecClassGenericPassword,
-      kSecAttrAccount as String: key.rawValue,
+      kSecAttrAccount as String: key.keychainKey,
     ]
     SecItemDelete(query as CFDictionary)
   }
@@ -61,7 +65,7 @@ enum KeychainManager {
 
     let query: [String: Any] = [
       kSecClass as String: kSecClassGenericPassword,
-      kSecAttrAccount as String: key.rawValue,
+      kSecAttrAccount as String: key.keychainKey,
       kSecValueData as String: data,
       kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
     ]
@@ -71,7 +75,7 @@ enum KeychainManager {
   private static func loadData(for key: Key) -> Data? {
     let query: [String: Any] = [
       kSecClass as String: kSecClassGenericPassword,
-      kSecAttrAccount as String: key.rawValue,
+      kSecAttrAccount as String: key.keychainKey,
       kSecReturnData as String: true,
       kSecMatchLimit as String: kSecMatchLimitOne,
     ]

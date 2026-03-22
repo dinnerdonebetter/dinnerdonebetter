@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@dinnerdonebetter/api-client": "file:../packages/api-client",
+    "@dinnerdonebetter/branding": "file:../packages/branding",
     "@dinnerdonebetter/logger": "file:../packages/logger",
     "@dinnerdonebetter/ui": "file:../packages/ui",
     "@grpc/grpc-js": "^1.12.4",

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -40,7 +41,7 @@ const (
 	// ProductionRunMode is the run mode for a production environment.
 	ProductionRunMode runMode = "production"
 
-	EnvVarPrefix = "DINNER_DONE_BETTER_"
+	EnvVarPrefix = branding.EnvVarPrefix
 
 	// ConfigurationFilePathEnvVarKey is the env var key we use to indicate where the config file is located.
 	ConfigurationFilePathEnvVarKey = "CONFIGURATION_FILEPATH"

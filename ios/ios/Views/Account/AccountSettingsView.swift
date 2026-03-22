@@ -176,7 +176,7 @@ struct AccountSettingsView: View {
             HStack(spacing: DSTheme.Spacing.md) {
               Image(systemName: "crown.fill")
                 .foregroundColor(DSTheme.Colors.primary)
-              Text("Dinner Done Better Pro")
+              Text(Branding.proEntitlementName)
                 .font(DSTheme.Typography.label)
                 .foregroundColor(DSTheme.Colors.textPrimary)
               Spacer()

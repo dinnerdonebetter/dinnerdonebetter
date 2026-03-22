@@ -1,9 +1,9 @@
 data "grafana_data_source" "prometheus" {
-  name = "grafanacloud-dinnerdonebetter-prom"
+  name = "grafanacloud-${local.company_slug_ns}-prom"
 }
 
 data "grafana_data_source" "loki" {
-  name = "grafanacloud-dinnerdonebetter-logs"
+  name = "grafanacloud-${local.company_slug_ns}-logs"
 }
 
 locals {
@@ -12,11 +12,11 @@ locals {
 }
 
 resource "grafana_folder" "alerts" {
-  title = "DinnerDoneBetter Alerts"
+  title = "${local.company_name} Alerts"
 }
 
 resource "grafana_contact_point" "default" {
-  name = "DinnerDoneBetter Default"
+  name = "${local.company_name} Default"
 
   email {
     addresses               = ["verygoodsoftwarenotvirus@protonmail.com"]
@@ -222,7 +222,7 @@ resource "grafana_notification_policy" "default" {
 #       }
 #       model = jsonencode({
 #         refId         = "A"
-#         expr          = "kube_deployment_status_replicas_available{namespace=\"prod\", deployment=\"dinner-done-better-async-message-handler-deployment\"} == 0"
+#         expr          = "kube_deployment_status_replicas_available{namespace=\"prod\", deployment=\"${local.company_slug}-async-message-handler-deployment\"} == 0"
 #         intervalMs    = 1000
 #         maxDataPoints = 43200
 #       })

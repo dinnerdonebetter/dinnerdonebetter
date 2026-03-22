@@ -1,11 +1,12 @@
 <script lang="ts">
   import { PageContainer, Link, Alert } from '@dinnerdonebetter/ui';
+  import { COMPANY_NAME } from '@dinnerdonebetter/branding';
 
   let { data } = $props();
 </script>
 
 <PageContainer>
-  <h1>Welcome to Dinner Done Better</h1>
+  <h1>Welcome to {COMPANY_NAME}</h1>
   <p>Manage your meal plans and grocery lists.</p>
 
   {#if data?.flash}

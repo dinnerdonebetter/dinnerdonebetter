@@ -1,6 +1,6 @@
 resource "google_storage_bucket" "api_media" {
   provider                    = google
-  name                        = "dinner-done-better-prod-media"
+  name                        = "${local.gcp_project_id}-media"
   location                    = "US"
   uniform_bucket_level_access = false
   force_destroy               = true
@@ -15,7 +15,7 @@ resource "google_storage_bucket" "api_media" {
   }
 
   cors {
-    origin          = ["https://dinnerdonebetter.com"]
+    origin          = ["https://${local.public_domain}"]
     method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
     response_header = ["*"]
     max_age_seconds = 3600
@@ -40,7 +40,7 @@ resource "google_storage_bucket_iam_policy" "api_media_policy" {
 # Domain-named bucket for media (avatars, uploads). Requires Search Console domain verification.
 resource "google_storage_bucket" "api_media_domain" {
   provider                    = google
-  name                        = "media.dinnerdonebetter.com"
+  name                        = local.media_domain
   location                    = "US"
   uniform_bucket_level_access = false
   force_destroy               = true
@@ -55,7 +55,7 @@ resource "google_storage_bucket" "api_media_domain" {
   }
 
   cors {
-    origin          = ["https://dinnerdonebetter.com"]
+    origin          = ["https://${local.public_domain}"]
     method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
     response_header = ["*"]
     max_age_seconds = 3600

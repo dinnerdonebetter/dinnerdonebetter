@@ -1,9 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { PageContainer } from '@dinnerdonebetter/ui';
-
-  const COMPANY_NAME = 'Dinner Done Better';
-  const APP_STORE_URL = 'https://apps.apple.com/app/dinner-done-better/id0000000000';
+  import { COMPANY_NAME, APP_STORE_URL } from '@dinnerdonebetter/branding';
 
   let isIOS = $state(false);
   if (browser) {

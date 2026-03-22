@@ -48,7 +48,7 @@ struct RegisterView: View {
 
         // App Title
         VStack(spacing: DSTheme.Spacing.sm) {
-          Text("Dinner Done Better")
+          Text(Branding.companyName)
             .font(DSTheme.Typography.largeTitle)
             .foregroundColor(DSTheme.Colors.textPrimary)
 

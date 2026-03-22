@@ -18,7 +18,7 @@ data "google_iam_policy" "api_media_policy" {
   binding {
     role = "roles/storage.objectAdmin"
     members = [
-      "serviceAccount:workload-identity-sa@dinner-done-better-prod.iam.gserviceaccount.com",
+      "serviceAccount:workload-identity-sa@${local.gcp_project_id}.iam.gserviceaccount.com",
     ]
   }
 }

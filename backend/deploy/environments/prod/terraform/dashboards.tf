@@ -1,5 +1,5 @@
 resource "grafana_folder" "dashboards" {
-  title = "DinnerDoneBetter Dashboards"
+  title = "${local.company_name} Dashboards"
 }
 
 resource "grafana_dashboard" "api_server" {
