@@ -1,9 +1,9 @@
 data "grafana_data_source" "prometheus" {
-  name = local.grafana_prom_ds
+  name = "grafanacloud-${local.company_slug_ns}-prom"
 }
 
 data "grafana_data_source" "loki" {
-  name = local.grafana_loki_ds
+  name = "grafanacloud-${local.company_slug_ns}-logs"
 }
 
 locals {
