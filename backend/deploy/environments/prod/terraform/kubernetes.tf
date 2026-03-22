@@ -128,7 +128,7 @@ resource "kubernetes_secret" "api_service_config" {
     PUSH_NOTIFICATIONS_PROVIDER        = "apns_fcm"
     PUSH_NOTIFICATIONS_APNS_KEY_ID     = var.APNS_KEY_ID
     PUSH_NOTIFICATIONS_APNS_TEAM_ID    = var.APNS_TEAM_ID
-    PUSH_NOTIFICATIONS_APNS_BUNDLE_ID  = var.APNS_BUNDLE_ID
+    PUSH_NOTIFICATIONS_APNS_BUNDLE_ID  = local.ios_bundle_id
     PUSH_NOTIFICATIONS_APNS_PRODUCTION = var.APNS_PRODUCTION
     RESEND_API_KEY                     = var.RESEND_API_KEY
   }
@@ -160,7 +160,7 @@ resource "kubernetes_secret" "admin_webapp_config" {
     OAUTH2_CLIENT_SECRET  = var.ADMIN_WEBAPP_OAUTH2_CLIENT_SECRET
     COOKIE_NAME           = var.ADMIN_WEBAPP_COOKIE_NAME
     COOKIE_ENCRYPTION_KEY = random_bytes.admin_webapp_cookie_encryption_key.base64
-    COOKIE_DOMAIN         = var.ADMIN_WEBAPP_COOKIE_DOMAIN
+    COOKIE_DOMAIN         = local.admin_domain
   }
 }
 
@@ -188,7 +188,7 @@ resource "kubernetes_secret" "consumer_webapp_config" {
     OAUTH2_CLIENT_SECRET  = var.CONSUMER_WEBAPP_OAUTH2_CLIENT_SECRET
     COOKIE_NAME           = var.CONSUMER_WEBAPP_COOKIE_NAME
     COOKIE_ENCRYPTION_KEY = random_bytes.consumer_webapp_cookie_encryption_key.base64
-    COOKIE_DOMAIN         = var.CONSUMER_WEBAPP_COOKIE_DOMAIN
+    COOKIE_DOMAIN         = local.public_domain
   }
 }
 

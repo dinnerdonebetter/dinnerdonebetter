@@ -58,6 +58,7 @@ setup: ensure_yamlfmt_installed
 .PHONY: format
 format: format_yaml
 	(cd backend && $(MAKE) format)
+	(cd frontend && $(MAKE) format)
 	(cd ios && $(MAKE) format)
 
 .PHONY: terraformat
@@ -71,11 +72,13 @@ format_yaml: ensure_yamlfmt_installed
 .PHONY: lint
 lint:
 	(cd backend && $(MAKE) lint)
+	(cd frontend && $(MAKE) lint)
 	(cd ios && $(MAKE) lint)
 
 .PHONY: test
 test:
 	(cd backend && $(MAKE) test)
+	(cd frontend && $(MAKE) test)
 	(cd ios && $(MAKE) test)
 
 .PHONY: regit

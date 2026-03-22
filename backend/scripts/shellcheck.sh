@@ -34,7 +34,7 @@ for script in "${shell_scripts[@]}"; do
     --volume "${PROJECT_ROOT}:/workdir" \
     --workdir /workdir \
     "${SHELLCHECK_IMAGE}" \
-    "${rel_path}"
+    -x "${rel_path}"
 done
 
 echo "All shell scripts passed shellcheck!"

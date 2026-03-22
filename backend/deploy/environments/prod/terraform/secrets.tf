@@ -57,9 +57,6 @@ variable "APNS_AUTH_KEY_P8" {
 variable "APNS_TEAM_ID" {
   default = "K8R2Q5UWQS"
 }
-variable "APNS_BUNDLE_ID" {
-  default = local.ios_bundle_id
-}
 variable "APNS_PRODUCTION" {
   default     = "false"
   description = "Use APNs production environment (true) or sandbox (false). Sandbox for debug/TestFlight builds; production for App Store."
@@ -69,14 +66,8 @@ variable "APNS_PRODUCTION" {
 variable "ADMIN_WEBAPP_COOKIE_NAME" {
   default = "admin_webapp"
 }
-variable "ADMIN_WEBAPP_COOKIE_DOMAIN" {
-  default = local.admin_domain
-}
 
 # Consumer webapp config (cookie name and domain - required for consumer webapp / root site)
 variable "CONSUMER_WEBAPP_COOKIE_NAME" {
   default = "consumer_session"
-}
-variable "CONSUMER_WEBAPP_COOKIE_DOMAIN" {
-  default = local.public_domain
 }
