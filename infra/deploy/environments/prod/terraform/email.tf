@@ -1,5 +1,5 @@
 locals {
-  public_url = "dinnerdonebetter.com"
+  public_url = local.public_domain
 }
 
 resource "sendgrid_domain_authentication" "prod" {

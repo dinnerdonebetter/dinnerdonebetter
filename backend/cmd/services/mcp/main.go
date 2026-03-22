@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config/envvars"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
@@ -200,7 +201,7 @@ type mcpToolManager struct {
 }
 
 func (h *mcpToolManager) setupServer() *mcp.Server {
-	mcpServer := mcp.NewServer(&mcp.Implementation{Name: "dinnerdonebetter-mcp", Version: "v1.0.0"}, nil)
+	mcpServer := mcp.NewServer(&mcp.Implementation{Name: fmt.Sprintf("%s-mcp", branding.CompanyNameSlug), Version: "v1.0.0"}, nil)
 
 	mcp.AddTool(mcpServer, getValidIngredientTool, h.GetValidIngredient())
 	mcp.AddTool(mcpServer, searchForValidIngredientsTool, h.SearchForValidIngredients())

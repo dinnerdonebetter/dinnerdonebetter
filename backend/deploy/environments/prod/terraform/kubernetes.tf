@@ -141,7 +141,7 @@ resource "kubernetes_secret" "api_service_config" {
 # Maps to env vars DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID / _SECRET
 resource "kubernetes_secret" "admin_webapp_config" {
   metadata {
-    name      = "dinner-done-better-admin-webapp-config"
+    name      = local.k8s_admin_webapp_cfg
     namespace = local.k8s_namespace
 
     annotations = {
@@ -169,7 +169,7 @@ resource "kubernetes_secret" "admin_webapp_config" {
 # this Secret holds sensitive values injected via env vars.
 resource "kubernetes_secret" "consumer_webapp_config" {
   metadata {
-    name      = "dinner-done-better-consumer-webapp-secrets"
+    name      = local.k8s_consumer_webapp
     namespace = local.k8s_namespace
 
     annotations = {

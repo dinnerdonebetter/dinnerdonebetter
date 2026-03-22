@@ -6,10 +6,13 @@
 # Uses token-based kubeconfig (like CI's get-gke-credentials) so gke-gcloud-auth-plugin is not required.
 set -euo pipefail
 
+# shellcheck source=branding.sh
+source "$(dirname "${BASH_SOURCE[0]}")/branding.sh"
+
 BACKEND_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TERRAFORM_DIR="${BACKEND_ROOT}/deploy/environments/prod/terraform"
 KUBECONFIG_PATH="${TERRAFORM_DIR}/terraform_kubeconfig"
-PROJECT="dinner-done-better-prod"
+PROJECT="$GCP_PROJECT_ID"
 REGION="us-central1"
 CLUSTER="prod"
 

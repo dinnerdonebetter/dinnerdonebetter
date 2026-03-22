@@ -1,5 +1,5 @@
 locals {
-  database_name = "dinner-done-better"
+  database_name = local.company_slug
 }
 
 resource "google_sql_database_instance" "prod" {
@@ -50,7 +50,7 @@ resource "google_sql_database_instance" "prod" {
 }
 
 resource "google_sql_ssl_cert" "client_cert" {
-  common_name = "dinner-done-better-prod"
+  common_name = local.gcp_project_id
   instance    = google_sql_database_instance.prod.name
 }
 

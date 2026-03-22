@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@dinnerdonebetter/api-client": "file:../packages/api-client",
+    "@dinnerdonebetter/branding": "file:../packages/branding",
     "@dinnerdonebetter/logger": "file:../packages/logger",
     "@dinnerdonebetter/ui": "file:../packages/ui",
     "mermaid": "^11.4.0"

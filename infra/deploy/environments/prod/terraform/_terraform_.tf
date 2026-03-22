@@ -2,7 +2,7 @@ terraform {
   required_version = "1.14.5"
 
   backend "remote" {
-    organization = "dinnerdonebetter"
+    organization = "dinnerdonebetter" # must be literal; backend blocks don't support interpolation
 
     workspaces {
       name = "prod-infra"

@@ -2,6 +2,7 @@
   import '../app.css';
   import favicon from '$lib/assets/favicon.svg';
   import { Link } from '@dinnerdonebetter/ui';
+  import { COMPANY_NAME } from '@dinnerdonebetter/branding';
 
   let { children } = $props();
 </script>
@@ -13,7 +14,7 @@
 <div class="layout-root">
   <header class="layout-header">
     <div class="container">
-      <div><Link href="/">Dinner Done Better</Link></div>
+      <div><Link href="/">{COMPANY_NAME}</Link></div>
       <div class="layout-links">
         <Link href="/account/settings">Account</Link>
         <Link href="/logout">Sign Out</Link>
@@ -26,7 +27,7 @@
   </main>
 
   <footer class="layout-footer">
-    <p>© {new Date().getFullYear()} Dinner Done Better. All rights reserved.</p>
+    <p>© {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved.</p>
     <div class="layout-footer-links">
       <Link href="/privacy-policy">Privacy Policy</Link>
       <Link href="/terms-of-service">Terms of Service</Link>

@@ -22,7 +22,7 @@ enum AppEnvironment: String, CaseIterable {
   var subtitle: String {
     switch self {
     case .local: return "localhost"
-    case .production: return "dinnerdonebetter.com"
+    case .production: return Branding.publicDomain
     }
   }
 
@@ -64,7 +64,7 @@ struct APIConfiguration {
     case .local:
       return "http://localhost:8000"
     case .production:
-      return "https://http-api.dinnerdonebetter.com"
+      return Branding.productionAPIURL
     }
   }
 
@@ -75,7 +75,7 @@ struct APIConfiguration {
     case .local:
       return "http://localhost:3000"
     case .production:
-      return "https://www.dinnerdonebetter.com"
+      return Branding.productionWebURL
     }
   }
 
@@ -85,7 +85,7 @@ struct APIConfiguration {
     case .local:
       return "0.0.0.0"
     case .production:
-      return "api.dinnerdonebetter.com"
+      return Branding.productionGRPCDomain
     }
   }
 
@@ -111,7 +111,7 @@ struct APIConfiguration {
   }
 
   /// Whether search requests should use Algolia (production) or database (local).
-  /// Production at api.dinnerdonebetter.com has Algolia indices; local dev does not.
+  /// Production has Algolia indices; local dev does not.
   static var useSearchService: Bool {
     currentEnvironment == .production
   }
@@ -122,7 +122,7 @@ struct APIConfiguration {
     case .local:
       return "http://localhost:8000/uploads"
     case .production:
-      return "https://media.dinnerdonebetter.com"
+      return Branding.productionMediaURL
     }
   }
 

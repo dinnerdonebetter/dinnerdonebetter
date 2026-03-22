@@ -21,13 +21,13 @@ if [[ "${1:-}" == "-o" ]]; then
 
 	BUILD_TIME=""
 	if command -v date &>/dev/null; then
-		BUILD_TIME=$(date -u -Iseconds 2>/dev/null || true)
+		BUILD_TIME=$(TZ=UTC date -u -Iseconds 2>/dev/null || true)
 	fi
 	[[ -z "$BUILD_TIME" ]] && BUILD_TIME="unknown"
 
 	COMMIT_TIME=""
 	if command -v git &>/dev/null; then
-		COMMIT_TIME=$(git log -1 --format=%cI HEAD 2>/dev/null || true)
+		COMMIT_TIME=$(TZ=UTC git log -1 --format=%cI HEAD 2>/dev/null || true)
 	fi
 	[[ -z "$COMMIT_TIME" ]] && COMMIT_TIME="unknown"
 
