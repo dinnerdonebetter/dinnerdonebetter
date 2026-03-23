@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	pointer "github.com/verygoodsoftwarenotvirus/platform/v2/pointer"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/pointer"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
