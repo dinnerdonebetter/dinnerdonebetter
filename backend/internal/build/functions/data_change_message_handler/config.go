@@ -4,16 +4,16 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	"github.com/samber/do/v2"
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/analytics/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/email/config"
-	"github.com/verygoodsoftwarenotvirus/platform/encoding"
-	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/httpclient"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
-	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/notifications/config"
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
-	"github.com/verygoodsoftwarenotvirus/platform/uploads/objectstorage"
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v2/analytics/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v2/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
+	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v2/httpclient"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
+	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v2/notifications/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/uploads/objectstorage"
 )
 
 // RegisterConfigs registers all config sub-fields with the injector.

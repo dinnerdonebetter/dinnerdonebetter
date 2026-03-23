@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
 )
 
 func TestQueueSettings_ValidateWithContext(T *testing.T) {

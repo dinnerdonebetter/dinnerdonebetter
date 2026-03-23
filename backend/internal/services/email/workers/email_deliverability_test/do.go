@@ -2,9 +2,9 @@ package emaildeliverabilitytest
 
 import (
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/email"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterEmailDeliverabilityTest registers the email deliverability test job with the injector.

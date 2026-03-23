@@ -6,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
 	"google.golang.org/grpc/codes"
 )
 

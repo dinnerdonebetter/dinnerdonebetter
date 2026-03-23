@@ -9,7 +9,7 @@ import (
 	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 type (

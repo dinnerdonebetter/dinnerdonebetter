@@ -15,15 +15,15 @@ import (
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/analytics"
-	"github.com/verygoodsoftwarenotvirus/platform/email"
-	"github.com/verygoodsoftwarenotvirus/platform/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
-	"github.com/verygoodsoftwarenotvirus/platform/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/uploads"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/analytics"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/uploads"
 )
 
 // RegisterAsyncDataChangeMessageHandler registers the async data change message handler with the injector.

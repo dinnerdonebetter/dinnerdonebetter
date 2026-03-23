@@ -13,14 +13,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	randommock "github.com/verygoodsoftwarenotvirus/platform/random/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/reflection"
-	mocksearch "github.com/verygoodsoftwarenotvirus/platform/search/text/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/testutils"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	randommock "github.com/verygoodsoftwarenotvirus/platform/v2/random/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
+	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func buildIdentityDataManagerForTest(t *testing.T) *manager {

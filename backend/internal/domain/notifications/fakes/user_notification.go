@@ -4,7 +4,7 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/converters"
 
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 // BuildFakeUserNotification builds a faked valid ingredient.

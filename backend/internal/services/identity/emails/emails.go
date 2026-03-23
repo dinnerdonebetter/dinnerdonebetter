@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/matcornic/hermes/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/email"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
 )
 
 var (

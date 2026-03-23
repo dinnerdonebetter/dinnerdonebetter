@@ -13,9 +13,9 @@ import (
 	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )

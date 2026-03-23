@@ -12,9 +12,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
 )
 
 func TestMobileNotificationsEventHandler(t *testing.T) {

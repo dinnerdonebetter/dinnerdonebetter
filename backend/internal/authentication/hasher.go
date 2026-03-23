@@ -3,7 +3,7 @@ package authentication
 import (
 	"context"
 
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
 )
 
 var (

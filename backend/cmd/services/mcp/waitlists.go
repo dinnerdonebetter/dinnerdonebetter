@@ -10,7 +10,7 @@ import (
 	waitlistsconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/waitlists/grpc/converters"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 var waitlistSchema = map[string]any{

@@ -11,8 +11,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
 )
 
 func createMealPlanOptionVoteForTest(t *testing.T, ctx context.Context, mealPlanID, mealPlanEventID string, exampleMealPlanOptionVote *types.MealPlanOptionVote, dbc *repository) *types.MealPlanOptionVote {

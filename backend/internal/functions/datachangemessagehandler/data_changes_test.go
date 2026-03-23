@@ -19,9 +19,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/reflection"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
+	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
 )
 
 func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {

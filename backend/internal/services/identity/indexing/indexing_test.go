@@ -8,12 +8,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/reflection"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
-	mocksearch "github.com/verygoodsoftwarenotvirus/platform/search/text/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/testutils"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
+	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func TestHandleIndexRequest(T *testing.T) {

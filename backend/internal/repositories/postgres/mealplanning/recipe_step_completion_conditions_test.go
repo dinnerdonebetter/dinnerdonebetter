@@ -12,8 +12,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
 )
 
 func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Context, recipeID string, exampleRecipeStepCompletionCondition *types.RecipeStepCompletionCondition, dbc *repository) *types.RecipeStepCompletionCondition {

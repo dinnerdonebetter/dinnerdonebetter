@@ -5,7 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	"github.com/verygoodsoftwarenotvirus/platform/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
 )
 
 const (

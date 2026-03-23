@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
 )
 
 func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testing.T) {

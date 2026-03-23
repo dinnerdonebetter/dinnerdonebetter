@@ -12,9 +12,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/testutils"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

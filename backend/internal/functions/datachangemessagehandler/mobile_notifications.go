@@ -8,14 +8,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	mealplanningnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 	domainnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -72,7 +73,7 @@ func (a *AsyncDataChangeMessageHandler) MobileNotificationsEventHandler(topicNam
 				return err
 			}
 			return nil
-		case notifications.MobileNotificationRequestTypeHouseholdInvitationAccepted:
+		case identity.MobileNotificationRequestTypeHouseholdInvitationAccepted:
 			if err := a.handleHouseholdInvitationAcceptedNotification(ctx, &req); err != nil {
 				a.handlerErrorsCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("topic", topicMobileNotifications)))
 				status = statusFailure

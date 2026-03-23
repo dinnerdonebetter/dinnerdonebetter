@@ -48,7 +48,8 @@ func main() {
 	)
 
 	// Run server
-	go srv.Serve()
+	ctx := context.Background()
+	go srv.Serve(ctx)
 
 	// os.Interrupt
 	<-signalChan
