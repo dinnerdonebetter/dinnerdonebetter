@@ -5,7 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
 )
 
 // StubPaymentProcessor is a no-op implementation of PaymentProcessor for local development and testing.

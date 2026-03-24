@@ -22,11 +22,11 @@ import (
 	coreindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/email"
-	"github.com/verygoodsoftwarenotvirus/platform/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -542,12 +542,12 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 		}
 
 		mobileReq := &notifications.MobileNotificationRequest{
-			RequestType:      notifications.MobileNotificationRequestTypeHouseholdInvitationAccepted,
+			RequestType:      identity.MobileNotificationRequestTypeHouseholdInvitationAccepted,
 			RecipientUserIDs: recipientUserIDs,
 			Title:            "Someone joined your household",
 			Body:             fmt.Sprintf("%s joined your household", displayName),
 			Context: map[string]string{
-				notifications.ExcludedUserIDContextKey: acceptedUserID,
+				identity.ExcludedUserIDContextKey: acceptedUserID,
 			},
 		}
 		if err = a.mobileNotificationsPublisher.Publish(ctx, mobileReq); err != nil {

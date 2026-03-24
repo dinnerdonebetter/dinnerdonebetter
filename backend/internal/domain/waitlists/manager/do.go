@@ -7,10 +7,10 @@ import (
 	waitlistsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterWaitlistDataManager registers the waitlist data manager with the injector.

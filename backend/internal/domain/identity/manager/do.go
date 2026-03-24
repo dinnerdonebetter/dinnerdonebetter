@@ -8,11 +8,11 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/random"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
 )
 
 // RegisterIdentityDataManager registers the identity data manager with the injector.

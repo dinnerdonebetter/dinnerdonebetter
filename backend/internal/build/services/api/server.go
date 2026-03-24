@@ -12,10 +12,10 @@ import (
 	httpapi "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api/http"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/profiling"
-	"github.com/verygoodsoftwarenotvirus/platform/server/http"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/profiling"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/server/http"
 )
 
 type Server struct {
@@ -45,7 +45,7 @@ func NewServer(ctx context.Context, pillars *observability.Pillars, cfg *config.
 	}, nil
 }
 
-func (s *Server) Run() {
+func (s *Server) Run(ctx context.Context) {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(
 		signalChan,
@@ -55,7 +55,7 @@ func (s *Server) Run() {
 		syscall.SIGTERM,
 	)
 
-	if err := s.profilingProvider.Start(context.Background()); err != nil {
+	if err := s.profilingProvider.Start(ctx); err != nil {
 		s.logger.Error("starting profiling provider", err)
 	}
 
@@ -76,14 +76,14 @@ func (s *Server) Run() {
 				panic(err)
 			}
 		}()
-		s.grpcServer.Serve()
+		s.grpcServer.Serve(ctx)
 	}()
 
 	// Wait for shutdown signal
 	sig := <-signalChan
 	s.logger.WithValue("signal", sig.String()).Info("received shutdown signal")
 
-	cancelCtx, cancelShutdown := context.WithTimeout(context.Background(), 10*time.Second)
+	cancelCtx, cancelShutdown := context.WithTimeout(ctx, 10*time.Second)
 	defer cancelShutdown()
 
 	s.logger.Info("shutting down")

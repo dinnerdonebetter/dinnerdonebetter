@@ -3,17 +3,17 @@ package grpc
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
+	mealplanningdomain "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v2/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 	"google.golang.org/grpc/codes"
 )
 
@@ -34,7 +34,7 @@ func (s *serviceImpl) ArchiveRecipe(ctx context.Context, request *mealplanning.A
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe")
 	}
 
-	if err = s.commentsManager.ArchiveCommentsForReference(ctx, comments.CommentTargetTypeRecipes, request.RecipeId); err != nil {
+	if err = s.commentsManager.ArchiveCommentsForReference(ctx, mealplanningdomain.CommentTargetTypeRecipes, request.RecipeId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving comments for recipe")
 	}
 

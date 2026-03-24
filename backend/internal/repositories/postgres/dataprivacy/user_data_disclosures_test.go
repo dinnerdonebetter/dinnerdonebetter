@@ -10,8 +10,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
 )
 
 // --- Unit tests (validation, no DB required) ---

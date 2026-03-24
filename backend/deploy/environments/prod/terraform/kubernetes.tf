@@ -26,7 +26,7 @@ resource "kubernetes_namespace_v1" "prod" {
 # Kubernetes secrets
 
 # APNs .p8 key mounted as file for push notifications (async message handler)
-resource "kubernetes_secret" "apns_credentials" {
+resource "kubernetes_secret_v1" "apns_credentials" {
   metadata {
     name      = "apns-credentials"
     namespace = local.k8s_namespace
@@ -48,7 +48,7 @@ resource "kubernetes_secret" "apns_credentials" {
   }
 }
 
-resource "kubernetes_secret" "cloudflare_api_key" {
+resource "kubernetes_secret_v1" "cloudflare_api_key" {
   metadata {
     name      = "cloudflare-api-key"
     namespace = local.k8s_namespace
@@ -95,7 +95,7 @@ resource "kubernetes_config_map_v1" "pubsub_topics" {
   }
 }
 
-resource "kubernetes_secret" "api_service_config" {
+resource "kubernetes_secret_v1" "api_service_config" {
   metadata {
     name      = "api-service-config"
     namespace = local.k8s_namespace
@@ -118,7 +118,6 @@ resource "kubernetes_secret" "api_service_config" {
     DATABASE_HOST                      = google_sql_database_instance.prod.private_ip_address
     DATABASE_USERNAME                  = local.api_database_username
     DATABASE_PASSWORD                  = random_password.api_user_database_password.result
-    SENDGRID_API_TOKEN                 = var.SENDGRID_API_KEY
     POSTHOG_API_KEY                    = var.POSTHOG_API_KEY
     POSTHOG_PERSONAL_API_KEY           = var.POSTHOG_PERSONAL_API_KEY
     ALGOLIA_APPLICATION_ID             = var.ALGOLIA_APPLICATION_ID
@@ -139,7 +138,7 @@ resource "kubernetes_secret" "api_service_config" {
 # alongside the code that creates resources in that cluster.
 # Admin webapp and MCP server: OAuth2 credentials + cookie config
 # Maps to env vars DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID / _SECRET
-resource "kubernetes_secret" "admin_webapp_config" {
+resource "kubernetes_secret_v1" "admin_webapp_config" {
   metadata {
     name      = local.k8s_admin_webapp_cfg
     namespace = local.k8s_namespace
@@ -167,7 +166,7 @@ resource "kubernetes_secret" "admin_webapp_config" {
 # Consumer webapp (root site): OAuth2 credentials + cookie config
 # Note: ConfigMap dinner-done-better-consumer-webapp-config (from kustomize) holds config.json;
 # this Secret holds sensitive values injected via env vars.
-resource "kubernetes_secret" "consumer_webapp_config" {
+resource "kubernetes_secret_v1" "consumer_webapp_config" {
   metadata {
     name      = local.k8s_consumer_webapp
     namespace = local.k8s_namespace
@@ -193,7 +192,7 @@ resource "kubernetes_secret" "consumer_webapp_config" {
 }
 
 # MCP server OAuth2 credentials for DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID / _SECRET
-resource "kubernetes_secret" "mcp_server_config" {
+resource "kubernetes_secret_v1" "mcp_server_config" {
   metadata {
     name      = "mcp-server-config"
     namespace = local.k8s_namespace
@@ -218,7 +217,7 @@ resource "kubernetes_secret" "mcp_server_config" {
 # this is the sort of resource that should probably ideally live in the infra folder, but it's here for now
 # because I haven't yet wanted to fuss with figuring out how to manage the code that creates the cluster
 # alongside the code that creates resources in that cluster.
-resource "kubernetes_secret" "grafana_cloud_creds" {
+resource "kubernetes_secret_v1" "grafana_cloud_creds" {
   metadata {
     name      = "grafana-cloud-creds"
     namespace = local.k8s_namespace

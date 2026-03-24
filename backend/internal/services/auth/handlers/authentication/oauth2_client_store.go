@@ -7,9 +7,9 @@ import (
 	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 
 	"github.com/go-oauth2/oauth2/v4"
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 var _ oauth2.ClientStore = (*oauth2ClientStoreImpl)(nil)

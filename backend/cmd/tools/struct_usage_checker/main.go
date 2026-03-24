@@ -11,7 +11,7 @@ import (
 	"sync"
 
 	"github.com/hashicorp/go-multierror"
-	reflast "github.com/verygoodsoftwarenotvirus/platform/reflection/ast"
+	reflast "github.com/verygoodsoftwarenotvirus/platform/v2/reflection/ast"
 	"golang.org/x/tools/go/packages"
 )
 

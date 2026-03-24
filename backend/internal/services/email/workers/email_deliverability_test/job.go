@@ -7,9 +7,9 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
 
-	"github.com/verygoodsoftwarenotvirus/platform/email"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (

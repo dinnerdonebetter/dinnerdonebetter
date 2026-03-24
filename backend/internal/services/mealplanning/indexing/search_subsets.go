@@ -3,8 +3,8 @@ package indexing
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
-	"github.com/verygoodsoftwarenotvirus/platform/types"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 type ValidMeasurementUnitTextSearcher textsearch.Index[ValidMeasurementUnitSearchSubset]

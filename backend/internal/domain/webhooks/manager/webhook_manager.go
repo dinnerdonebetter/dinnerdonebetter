@@ -9,14 +9,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 	webhookkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/keys"
 
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (

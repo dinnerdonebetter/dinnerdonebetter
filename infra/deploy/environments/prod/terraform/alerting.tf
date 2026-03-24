@@ -18,6 +18,10 @@ resource "grafana_folder" "alerts" {
 resource "grafana_contact_point" "default" {
   name = "${local.company_name} Default"
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   email {
     addresses               = ["verygoodsoftwarenotvirus@protonmail.com"]
     disable_resolve_message = true

@@ -7,7 +7,7 @@ set -euo pipefail
 PACKAGE_PREFIX="${1:-github.com/dinnerdonebetter/dinnerdonebetter/backend}"
 ARTIFACTS_DIR="${2:-artifacts}"
 
-air \
+go tool air \
   --build.cmd "go build -o ./${ARTIFACTS_DIR}/consumer_tmp ${PACKAGE_PREFIX}/cmd/services/consumer" \
   --build.bin "./${ARTIFACTS_DIR}/consumer_tmp" \
   --proxy.app_port "8889" \

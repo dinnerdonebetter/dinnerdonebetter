@@ -13,7 +13,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 func buildMealForIntegrationTest(userID string, recipe *types.Recipe) *types.Meal {

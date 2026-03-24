@@ -7,10 +7,10 @@ import (
 	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
 )
 
 // RegisterSearchers registers all text searcher providers with the injector.

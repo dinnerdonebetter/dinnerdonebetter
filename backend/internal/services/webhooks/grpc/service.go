@@ -7,8 +7,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (

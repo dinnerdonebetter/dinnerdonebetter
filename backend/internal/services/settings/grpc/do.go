@@ -5,8 +5,8 @@ import (
 	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterSettingsService registers the settings gRPC service with the injector.

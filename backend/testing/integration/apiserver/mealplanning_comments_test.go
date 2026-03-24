@@ -3,7 +3,7 @@ package integration
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	commentsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
@@ -43,14 +43,14 @@ func TestComments_RecipeCompleteLifecycle(T *testing.T) {
 		createdComment := createCommentForRecipeForTest(t, createdRecipe.ID, testClient, "initial content")
 
 		assert.NotEmpty(t, createdComment.Id)
-		assert.Equal(t, comments.CommentTargetTypeRecipes, createdComment.TargetType)
+		assert.Equal(t, mealplanning.CommentTargetTypeRecipes, createdComment.TargetType)
 		assert.Equal(t, createdRecipe.ID, createdComment.ReferencedId)
 		assert.Equal(t, "initial content", createdComment.Content)
 		assert.NotNil(t, createdComment.CreatedAt)
 
 		// List comments
 		listRes, err := testClient.GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
-			TargetType:   comments.CommentTargetTypeRecipes,
+			TargetType:   mealplanning.CommentTargetTypeRecipes,
 			ReferencedId: createdRecipe.ID,
 		})
 		require.NoError(t, err)
@@ -76,7 +76,7 @@ func TestComments_RecipeCompleteLifecycle(T *testing.T) {
 
 		// List again and verify update
 		listRes2, err := testClient.GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
-			TargetType:   comments.CommentTargetTypeRecipes,
+			TargetType:   mealplanning.CommentTargetTypeRecipes,
 			ReferencedId: createdRecipe.ID,
 		})
 		require.NoError(t, err)
@@ -95,7 +95,7 @@ func TestComments_RecipeCompleteLifecycle(T *testing.T) {
 
 		// List again - archived comment may or may not appear depending on implementation
 		listRes3, err := testClient.GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
-			TargetType:   comments.CommentTargetTypeRecipes,
+			TargetType:   mealplanning.CommentTargetTypeRecipes,
 			ReferencedId: createdRecipe.ID,
 		})
 		require.NoError(t, err)
@@ -140,7 +140,7 @@ func TestComments_RecipeCompleteLifecycle(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		listRes, err := c.GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
-			TargetType:   comments.CommentTargetTypeRecipes,
+			TargetType:   mealplanning.CommentTargetTypeRecipes,
 			ReferencedId: createdRecipe.ID,
 		})
 		assert.Error(t, err)
@@ -204,11 +204,11 @@ func TestComments_MealCompleteLifecycle(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, res)
 		require.NotNil(t, res.Comment)
-		assert.Equal(t, comments.CommentTargetTypeMeals, res.Comment.TargetType)
+		assert.Equal(t, mealplanning.CommentTargetTypeMeals, res.Comment.TargetType)
 		assert.Equal(t, createdMeal.ID, res.Comment.ReferencedId)
 
 		listRes, err := userClient.GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
-			TargetType:   comments.CommentTargetTypeMeals,
+			TargetType:   mealplanning.CommentTargetTypeMeals,
 			ReferencedId: createdMeal.ID,
 		})
 		require.NoError(t, err)
@@ -239,11 +239,11 @@ func TestComments_MealPlanCompleteLifecycle(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, res)
 		require.NotNil(t, res.Comment)
-		assert.Equal(t, comments.CommentTargetTypeMealPlans, res.Comment.TargetType)
+		assert.Equal(t, mealplanning.CommentTargetTypeMealPlans, res.Comment.TargetType)
 		assert.Equal(t, createdMealPlan.ID, res.Comment.ReferencedId)
 
 		listRes, err := userClient.GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
-			TargetType:   comments.CommentTargetTypeMealPlans,
+			TargetType:   mealplanning.CommentTargetTypeMealPlans,
 			ReferencedId: createdMealPlan.ID,
 		})
 		require.NoError(t, err)

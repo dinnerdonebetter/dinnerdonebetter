@@ -12,7 +12,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 func createValidIngredientMeasurementUnitForTest(t *testing.T, ctx context.Context, exampleValidIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit, dbc *repository) *types.ValidIngredientMeasurementUnit {

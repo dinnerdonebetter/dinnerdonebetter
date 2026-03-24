@@ -94,11 +94,6 @@ linters:
     - wrapcheck
     - wsl
   settings:
-    cyclop:
-      max-complexity: 25
-      package-average: 0
-    dupl:
-      threshold: 100
     errcheck:
       check-type-assertions: true
       check-blank: true
@@ -122,22 +117,11 @@ linters:
       settings:
         rangeValCopy:
           sizeThreshold: 32
-    gocyclo:
-      min-complexity: 20
     govet:
       enable-all: true
       settings:
-        printf:
-          funcs:
-            - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
-            - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
-            - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
-            - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
         shadow:
           strict: true
-    lll:
-      line-length: 512
-      tab-width: 1
     misspell:
       locale: US
       ignore-rules:
@@ -145,12 +129,6 @@ linters:
         - cancelling
     nakedret:
       max-func-lines: 4
-    nestif:
-      min-complexity: 8
-    prealloc:
-      simple: true
-      range-loops: true
-      for-loops: false
     unparam:
       check-exported: false
     unused:
@@ -160,15 +138,12 @@ linters:
       parameters-are-used: true
       local-variables-are-used: true
       generated-is-used: true
-    wsl:
-      allow-cuddle-declarations: true
   exclusions:
     generated: lax
     rules:
       - linters:
           - bodyclose
           - errcheck
-          - exhaustruct
           - forcetypeassert
           - goconst
           - gosec
@@ -177,12 +152,8 @@ linters:
           - unused
         path: _test\.go
       - linters:
-          - ireturn
-        path: wire\.go
-      - linters:
           - errcheck
           - forcetypeassert
-          - mnd
         path: mock_?.*\.go
       - linters:
           - unused
@@ -194,9 +165,6 @@ linters:
       - linters:
           - gosec
         path: cmd/tools/codegen/configs/main.go
-      - linters:
-          - paralleltest
-        path: internal/config/env_vars_test.go
       - linters:
           - gocritic
         text: 'captLocal: `T'' should not be capitalized'
@@ -210,7 +178,6 @@ linters:
           - gosec
         text: 'G117:'
       - linters:
-          - cyclop
           - contextcheck
         path: (.+)_test\.go # test files
       # //go:fix is valid in Go 1.23+; gocheckcompilerdirectives does not recognize it yet
@@ -240,9 +207,6 @@ formatters:
       custom-order: true
     gofmt:
       simplify: true
-    goimports:
-      local-prefixes:
-        - github.com/dinnerdonebetter/dinnerdonebetter/backend
   exclusions:
     generated: lax
     paths:

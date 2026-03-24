@@ -7,8 +7,8 @@ import (
 	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 func TestNewService(t *testing.T) {

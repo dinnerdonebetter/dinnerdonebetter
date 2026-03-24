@@ -6,7 +6,7 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func TestRecipeStepInstrument_Update(T *testing.T) {

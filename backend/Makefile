@@ -8,17 +8,6 @@ THIS          := github.com/dinnerdonebetter/dinnerdonebetter/backend
 ARTIFACTS_DIR := artifacts
 SCRIPTS_DIR   := scripts
 COVERAGE_OUT  := $(ARTIFACTS_DIR)/coverage.out
-WIRE_TARGETS  := internal/build/services/api/grpc \
-	 internal/build/services/api/http \
-	 internal/build/functions/data_change_message_handler \
-	 internal/build/jobs/db_cleaner \
-	 internal/build/jobs/email_deliverability_test \
-	 internal/build/jobs/queue_test \
-	 internal/build/jobs/search_data_index_scheduler \
-	 internal/build/jobs/mobile_notification_scheduler \
-	 internal/build/jobs/meal_plan_finalizer \
-	 internal/build/jobs/meal_plan_grocery_list_initializer \
-	 internal/build/jobs/meal_plan_task_creator
 
 # COMPUTED
 TOTAL_PACKAGE_LIST := `go list $(THIS)/...`
@@ -48,42 +37,8 @@ $(ARTIFACTS_DIR):
 clean-$(ARTIFACTS_DIR):
 	@rm -rf $(ARTIFACTS_DIR)
 
-## PREREQUISITES
-
-.PHONY: ensure_wire_installed
-ensure_wire_installed:
-	@$(SCRIPTS_DIR)/ensure_tool_installed.sh wire "go install github.com/google/wire/cmd/wire@v0.7.0"
-
-.PHONY: ensure_fieldalignment_installed
-ensure_fieldalignment_installed:
-	@$(SCRIPTS_DIR)/ensure_tool_installed.sh fieldalignment "go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@v0.37.0"
-
-.PHONY: ensure_tagalign_installed
-ensure_tagalign_installed:
-	@$(SCRIPTS_DIR)/ensure_tool_installed.sh tagalign "go install github.com/4meepo/tagalign/cmd/tagalign@v1.4.3"
-
-.PHONY: ensure_gci_installed
-ensure_gci_installed:
-	@$(SCRIPTS_DIR)/ensure_tool_installed.sh gci "go install github.com/daixiang0/gci@v0.13.5"
-
-.PHONY: ensure_goimports_installed
-ensure_goimports_installed:
-	@$(SCRIPTS_DIR)/ensure_tool_installed.sh goimports "go install golang.org/x/tools/cmd/goimports@v0.29.0"
-
-.PHONY: ensure_protoc-gen-go_installed
-ensure_protoc-gen-go_installed:
-	@$(SCRIPTS_DIR)/ensure_tool_installed.sh protoc-gen-go "go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.4"
-
-.PHONY: ensure_protoc-gen-go-grpc_installed
-ensure_protoc-gen-go-grpc_installed:
-	@$(SCRIPTS_DIR)/ensure_tool_installed.sh protoc-gen-go-grpc "go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1"
-
-.PHONY: ensure_air_installed
-ensure_air_installed:
-	@$(SCRIPTS_DIR)/ensure_tool_installed.sh air "go install github.com/air-verse/air@v1.63.0"
-
 .PHONY: setup
-setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed
+setup: $(ARTIFACTS_DIR) revendor configs
 
 .PHONY: clean_vendor
 clean_vendor:
@@ -95,24 +50,18 @@ vendor:
 .PHONY: revendor
 revendor: clean_vendor vendor
 
-## DEPENDENCY INJECTION
-
-.PHONY: rewire
-rewire: ensure_wire_installed
-	$(SCRIPTS_DIR)/rewire.sh $(THIS) $(WIRE_TARGETS)
-
 ## FORMATTING
 
 .PHONY: format_imports
-format_imports: ensure_gci_installed
+format_imports:
 	$(SCRIPTS_DIR)/format_imports.sh $(THIS) $(PWD)
 
 .PHONY: format_go_fieldalignment
-format_go_fieldalignment: ensure_fieldalignment_installed
+format_go_fieldalignment:
 	@$(SCRIPTS_DIR)/format_go_fieldalignment.sh
 
 .PHONY: format_go_tag_alignment
-format_go_tag_alignment: ensure_tagalign_installed
+format_go_tag_alignment:
 	@$(SCRIPTS_DIR)/format_go_tag_alignment.sh
 
 .PHONY: go_fix
@@ -134,7 +83,7 @@ format: format_golang terraformat
 fmt: format
 
 .PHONY: goimports
-goimports: ensure_goimports_installed
+goimports:
 	$(SCRIPTS_DIR)/goimports.sh
 
 ## LINTING
@@ -189,7 +138,7 @@ env_vars:
 	$(MAKE) format_golang
 
 .PHONY: generated_files
-generated_files: rewire configs queries env_vars format_golang
+generated_files: configs queries env_vars format_golang
 
 ## INTEGRATION TESTING
 
@@ -231,7 +180,7 @@ dev: $(ARTIFACTS_DIR)
 AIR_PORT := 9999
 
 .PHONY: admin
-admin: $(ARTIFACTS_DIR) ensure_air_installed
+admin: $(ARTIFACTS_DIR)
 	DINNER_DONE_BETTER_COOKIES_LIFETIME=24h \
 	DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL=localhost:8001 \
 	DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL=http://localhost:8000 \
@@ -241,7 +190,7 @@ admin: $(ARTIFACTS_DIR) ensure_air_installed
 	$(SCRIPTS_DIR)/admin.sh $(THIS) $(ARTIFACTS_DIR)
 
 .PHONY: consumer
-consumer: $(ARTIFACTS_DIR) ensure_air_installed 
+consumer: $(ARTIFACTS_DIR)
 	DINNER_DONE_BETTER_COOKIES_LIFETIME=24h \
 	DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL=localhost:8001 \
 	DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL=http://localhost:8000 \
@@ -254,7 +203,7 @@ dry_run:
 	DRY_RUN=true go run $(THIS)/cmd/localdev/server
 
 .PHONY: mcp
-mcp: $(ARTIFACTS_DIR) ensure_air_installed
+mcp: $(ARTIFACTS_DIR)
 	$(SCRIPTS_DIR)/mcp.sh $(THIS) $(ARTIFACTS_DIR)
 
 .PHONY: mcp_inspector

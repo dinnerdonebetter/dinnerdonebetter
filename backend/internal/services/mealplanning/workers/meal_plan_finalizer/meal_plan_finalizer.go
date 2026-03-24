@@ -8,12 +8,12 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
-	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (

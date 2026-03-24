@@ -5,7 +5,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 // BuildFakeValidInstrument builds a faked valid instrument.

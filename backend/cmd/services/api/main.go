@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	"github.com/spf13/cobra"
-	"github.com/verygoodsoftwarenotvirus/platform/version"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/version"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -35,14 +35,14 @@ func serveCmd() *cobra.Command {
 }
 
 func runServe(_ *cobra.Command, _ []string) error {
-	rootCtx := context.Background()
+	ctx := context.Background()
 
 	cfg, err := config.LoadConfigFromEnvironment[config.APIServiceConfig]()
 	if err != nil {
 		return fmt.Errorf("could not load config from docker: %w", err)
 	}
 
-	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.HTTPServer.StartupDeadline)
+	buildCtx, cancel := context.WithTimeout(ctx, cfg.HTTPServer.StartupDeadline)
 	defer cancel()
 
 	pillars, err := cfg.Observability.ProvidePillars(buildCtx)
@@ -55,7 +55,7 @@ func runServe(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("could not create server: %w", err)
 	}
 
-	server.Run()
+	server.Run(ctx)
 	return nil
 }
 

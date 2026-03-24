@@ -17,10 +17,10 @@ import (
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	notificationsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 
-	"github.com/verygoodsoftwarenotvirus/platform/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/random"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
 )
 
 const (
@@ -121,7 +121,7 @@ func init() {
 	}
 	createdClientID, createdClientSecret = createdClient.ClientID, createdClient.ClientSecret
 
-	go server.Run()
+	go server.Run(ctx)
 
 	fmt.Printf("DB conn str: %s", dbCfg.ReadConnection.String())
 	dbConnStr = dbCfg.ReadConnection.String()

@@ -12,12 +12,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/fake"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/testutils"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/fake"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func buildServiceImplForRecipesTest(t *testing.T) *serviceImpl {

@@ -12,7 +12,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {

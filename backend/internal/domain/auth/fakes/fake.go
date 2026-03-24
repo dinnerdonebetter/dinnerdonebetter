@@ -6,7 +6,7 @@ import (
 	"time"
 
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
 )
 
 func init() {

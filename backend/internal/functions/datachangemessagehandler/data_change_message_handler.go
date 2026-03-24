@@ -17,17 +17,17 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/analytics"
-	"github.com/verygoodsoftwarenotvirus/platform/email"
-	"github.com/verygoodsoftwarenotvirus/platform/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
-	platformnotifications "github.com/verygoodsoftwarenotvirus/platform/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/uploads"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/analytics"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
+	platformnotifications "github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/uploads"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -318,12 +318,12 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring mobile notifications consumer")
 	}
 
-	go dataChangesConsumer.Consume(stopChan, errorsChan)
-	go outboundEmailsConsumer.Consume(stopChan, errorsChan)
-	go searchIndexRequestsConsumer.Consume(stopChan, errorsChan)
-	go webhookExecutionRequestsConsumer.Consume(stopChan, errorsChan)
-	go userDataAggregationConsumer.Consume(stopChan, errorsChan)
-	go mobileNotificationsConsumer.Consume(stopChan, errorsChan)
+	go dataChangesConsumer.Consume(ctx, stopChan, errorsChan)
+	go outboundEmailsConsumer.Consume(ctx, stopChan, errorsChan)
+	go searchIndexRequestsConsumer.Consume(ctx, stopChan, errorsChan)
+	go webhookExecutionRequestsConsumer.Consume(ctx, stopChan, errorsChan)
+	go userDataAggregationConsumer.Consume(ctx, stopChan, errorsChan)
+	go mobileNotificationsConsumer.Consume(ctx, stopChan, errorsChan)
 
 	go func() {
 		for e := range errorsChan {

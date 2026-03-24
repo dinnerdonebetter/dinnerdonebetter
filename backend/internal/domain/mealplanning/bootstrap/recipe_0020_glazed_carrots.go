@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 // GlazedCarrotsWithBrownButterAndSageRecipe creates the Glazed Carrots with Brown Butter and Sage recipe.

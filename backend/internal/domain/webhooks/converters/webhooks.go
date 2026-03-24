@@ -3,7 +3,7 @@ package converters
 import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
 )
 
 // ConvertWebhookToWebhookCreationRequestInput builds a WebhookCreationRequestInput from a Webhook.

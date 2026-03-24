@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/fakes"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
@@ -15,12 +16,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/database"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, *pgcontainers.PostgresContainer) {
@@ -87,7 +88,7 @@ func TestQuerier_Integration_Comments(t *testing.T) {
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	referencedID := identifiers.New()
-	targetType := comments.CommentTargetTypeRecipes
+	targetType := mealplanning.CommentTargetTypeRecipes
 
 	input := fakes.BuildFakeCommentDatabaseCreationInput()
 	input.BelongsToUser = user.ID
@@ -152,7 +153,7 @@ func TestQuerier_Integration_Comments_WithReplies(t *testing.T) {
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	referencedID := identifiers.New()
-	targetType := comments.CommentTargetTypeRecipes
+	targetType := mealplanning.CommentTargetTypeRecipes
 
 	// create parent comment
 	parentInput := fakes.BuildFakeCommentDatabaseCreationInput()
@@ -204,7 +205,7 @@ func TestQuerier_Integration_ArchiveCommentsForReference(t *testing.T) {
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	referencedID := identifiers.New()
-	targetType := comments.CommentTargetTypeMealPlans
+	targetType := mealplanning.CommentTargetTypeMealPlans
 
 	input := fakes.BuildFakeCommentDatabaseCreationInput()
 	input.BelongsToUser = user.ID
@@ -283,7 +284,7 @@ func TestQuerier_GetCommentsForReference(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.GetCommentsForReference(ctx, comments.CommentTargetTypeRecipes, "", nil)
+		actual, err := c.GetCommentsForReference(ctx, mealplanning.CommentTargetTypeRecipes, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -346,7 +347,7 @@ func TestQuerier_ArchiveCommentsForReference(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		err := c.ArchiveCommentsForReference(ctx, comments.CommentTargetTypeRecipes, "")
+		err := c.ArchiveCommentsForReference(ctx, mealplanning.CommentTargetTypeRecipes, "")
 		assert.Error(t, err)
 	})
 }
@@ -366,7 +367,7 @@ func TestQuerier_Integration_Comments_CursorPagination(t *testing.T) {
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	referencedID := identifiers.New()
-	targetType := comments.CommentTargetTypeMeals
+	targetType := mealplanning.CommentTargetTypeMeals
 
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[comments.Comment]{
 		TotalItems: 9,

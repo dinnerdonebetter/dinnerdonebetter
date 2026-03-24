@@ -11,14 +11,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/testutils"
-	"github.com/verygoodsoftwarenotvirus/platform/types"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func buildNewMealPlanGroceryListInitializerForTest(t *testing.T) *Worker {

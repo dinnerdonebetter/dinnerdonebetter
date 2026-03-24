@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/verygoodsoftwarenotvirus/platform/database"
-	"github.com/verygoodsoftwarenotvirus/platform/encoding"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (

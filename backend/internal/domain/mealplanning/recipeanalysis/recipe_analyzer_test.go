@@ -8,9 +8,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 	"gonum.org/v1/gonum/graph"
 	"gonum.org/v1/gonum/graph/simple"
 )

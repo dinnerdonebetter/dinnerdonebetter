@@ -9,12 +9,12 @@ import (
 	paymentswebhook "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/routing"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/routing/config"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/routing"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/routing/config"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
 )
 
 // ProvideTextSearchConfig provides a pointer to the text search config for dependency injection.

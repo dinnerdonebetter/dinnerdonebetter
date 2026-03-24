@@ -22,11 +22,11 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
-	"github.com/verygoodsoftwarenotvirus/platform/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/retry"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/retry"
 )
 
 var RunContainerTests = strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) != "false" // on by default

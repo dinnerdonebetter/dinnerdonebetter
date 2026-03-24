@@ -28,14 +28,14 @@ import (
 	identitygenerated "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/database"
-	"github.com/verygoodsoftwarenotvirus/platform/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
 )
 
 const (
@@ -693,7 +693,7 @@ func main() {
 		log.Println("dry run is enabled, skipping server run")
 		return
 	}
-	server.Run()
+	server.Run(ctx)
 }
 
 func createExampleServiceSettings(ctx context.Context, repo settings.Repository, logger logging.Logger) error {

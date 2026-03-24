@@ -7,7 +7,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
 )
 
 func TestChangeActiveAccountInput_ValidateWithContext(T *testing.T) {

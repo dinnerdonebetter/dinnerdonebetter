@@ -6,10 +6,10 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
-	"github.com/verygoodsoftwarenotvirus/platform/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/search/text"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/verygoodsoftwarenotvirus/platform/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 const (
@@ -27,6 +27,11 @@ const (
 	AcceptedAccountInvitationStatus AccountInvitationStatus = "accepted"
 	// RejectedAccountInvitationStatus indicates an account invitation was rejected.
 	RejectedAccountInvitationStatus AccountInvitationStatus = "rejected"
+
+	// MobileNotificationRequestTypeHouseholdInvitationAccepted indicates a household invitation accepted notification.
+	MobileNotificationRequestTypeHouseholdInvitationAccepted = "household_invitation_accepted"
+	// ExcludedUserIDContextKey is the key used in MobileNotificationRequest.Context for the user to exclude.
+	ExcludedUserIDContextKey = "excludedUserID"
 )
 
 type (

@@ -2,12 +2,11 @@ package grpc
 
 import (
 	commentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	commentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterCommentsService registers the comments gRPC service with the injector.
@@ -21,7 +20,6 @@ func RegisterCommentsService(i do.Injector) {
 			do.MustInvoke[logging.Logger](i),
 			do.MustInvoke[tracing.TracerProvider](i),
 			do.MustInvoke[commentsmanager.CommentsDataManager](i),
-			do.MustInvoke[managers.MealPlanningManager](i),
 		), nil
 	})
 }

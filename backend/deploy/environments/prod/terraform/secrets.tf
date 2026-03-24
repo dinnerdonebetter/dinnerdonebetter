@@ -28,9 +28,6 @@ resource "random_bytes" "consumer_webapp_cookie_encryption_key" {
 
 ### External API services ###
 
-# Sendgrid token
-variable "SENDGRID_API_KEY" {}
-
 # Resend API key
 variable "RESEND_API_KEY" {}
 
