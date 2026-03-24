@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	paymentswebhook "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
@@ -22,6 +23,7 @@ func ProvideAPIRouter(
 	metricsProvider metrics.Provider,
 	authService auth.AuthDataService,
 	paymentsWebhookHandler *paymentswebhook.WebhookHandler,
+	dbClient database.Client,
 ) (routing.Router, error) {
 	router, err := routingConfig.ProvideRouter(logger, tracerProvider, metricsProvider)
 	if err != nil {
@@ -38,7 +40,10 @@ func ProvideAPIRouter(
 
 		// Expose a readiness check on /ready
 		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
-			// TODO: check readiness here lol
+			if err = dbClient.ReadDB().PingContext(req.Context()); err != nil {
+				res.WriteHeader(http.StatusServiceUnavailable)
+				return
+			}
 			res.WriteHeader(http.StatusOK)
 		})
 
