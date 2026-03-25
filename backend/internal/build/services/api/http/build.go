@@ -19,9 +19,11 @@ import (
 
 	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v2/analytics/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/healthcheck"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
 	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging/config"
@@ -55,6 +57,14 @@ func BuildInjector(
 	analyticscfg.RegisterEventReporter(i)
 	databasecfg.RegisterClientConfig(i)
 	postgres.RegisterDatabaseClient(i)
+	do.Provide[healthcheck.Registry](i, func(i do.Injector) (healthcheck.Registry, error) {
+		registry := healthcheck.NewRegistry()
+		dbClient := do.MustInvoke[database.Client](i)
+		if checker, ok := dbClient.(healthcheck.DatabaseReadyChecker); ok {
+			registry.Register(healthcheck.NewDatabaseChecker("database", checker))
+		}
+		return registry, nil
+	})
 	routingcfg.RegisterRouteParamManager(i)
 	random.RegisterGenerator(i)
 	http.RegisterHTTPServer(i, "api_server")

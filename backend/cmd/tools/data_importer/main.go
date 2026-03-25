@@ -142,7 +142,10 @@ func runImport(dbHost string, dbPort uint16, dbUser, dbPassword, dbName string, 
 
 func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, enums *ExportedEnumerations) error {
 	for i, v := range enums.ValidIngredients {
-		exists, _ := repo.ValidIngredientExists(ctx, v.ID)
+		exists, existsErr := repo.ValidIngredientExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid ingredient %d (%s): %w", i, v.Name, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -153,7 +156,10 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 	log.Printf("  %d valid ingredients processed", len(enums.ValidIngredients))
 
 	for i, v := range enums.ValidPreparations {
-		exists, _ := repo.ValidPreparationExists(ctx, v.ID)
+		exists, existsErr := repo.ValidPreparationExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid preparation %d (%s): %w", i, v.Name, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -164,7 +170,10 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 	log.Printf("  %d valid preparations processed", len(enums.ValidPreparations))
 
 	for i, v := range enums.ValidInstruments {
-		exists, _ := repo.ValidInstrumentExists(ctx, v.ID)
+		exists, existsErr := repo.ValidInstrumentExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid instrument %d (%s): %w", i, v.Name, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -175,7 +184,10 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 	log.Printf("  %d valid instruments processed", len(enums.ValidInstruments))
 
 	for i, v := range enums.ValidVessels {
-		exists, _ := repo.ValidVesselExists(ctx, v.ID)
+		exists, existsErr := repo.ValidVesselExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid vessel %d (%s): %w", i, v.Name, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -186,7 +198,10 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 	log.Printf("  %d valid vessels processed", len(enums.ValidVessels))
 
 	for i, v := range enums.ValidMeasurementUnits {
-		exists, _ := repo.ValidMeasurementUnitExists(ctx, v.ID)
+		exists, existsErr := repo.ValidMeasurementUnitExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid measurement unit %d (%s): %w", i, v.Name, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -197,7 +212,10 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 	log.Printf("  %d valid measurement units processed", len(enums.ValidMeasurementUnits))
 
 	for i, v := range enums.ValidIngredientStates {
-		exists, _ := repo.ValidIngredientStateExists(ctx, v.ID)
+		exists, existsErr := repo.ValidIngredientStateExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid ingredient state %d (%s): %w", i, v.Name, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -212,7 +230,10 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 
 func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums *ExportedEnumerations) error {
 	for i, v := range enums.ValidIngredientPreparations {
-		exists, _ := repo.ValidIngredientPreparationExists(ctx, v.ID)
+		exists, existsErr := repo.ValidIngredientPreparationExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid ingredient preparation %d: %w", i, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -223,7 +244,10 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 	log.Printf("  %d valid ingredient preparations processed", len(enums.ValidIngredientPreparations))
 
 	for i, v := range enums.ValidIngredientMeasurementUnits {
-		exists, _ := repo.ValidIngredientMeasurementUnitExists(ctx, v.ID)
+		exists, existsErr := repo.ValidIngredientMeasurementUnitExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid ingredient measurement unit %d: %w", i, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -234,7 +258,10 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 	log.Printf("  %d valid ingredient measurement units processed", len(enums.ValidIngredientMeasurementUnits))
 
 	for i, v := range enums.ValidPreparationInstruments {
-		exists, _ := repo.ValidPreparationInstrumentExists(ctx, v.ID)
+		exists, existsErr := repo.ValidPreparationInstrumentExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid preparation instrument %d: %w", i, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -245,7 +272,10 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 	log.Printf("  %d valid preparation instruments processed", len(enums.ValidPreparationInstruments))
 
 	for i, v := range enums.ValidPreparationVessels {
-		exists, _ := repo.ValidPreparationVesselExists(ctx, v.ID)
+		exists, existsErr := repo.ValidPreparationVesselExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid preparation vessel %d: %w", i, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -256,7 +286,10 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 	log.Printf("  %d valid preparation vessels processed", len(enums.ValidPreparationVessels))
 
 	for i, v := range enums.ValidIngredientGroups {
-		exists, _ := repo.ValidIngredientGroupExists(ctx, v.ID)
+		exists, existsErr := repo.ValidIngredientGroupExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid ingredient group %d (%s): %w", i, v.Name, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -267,7 +300,10 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 	log.Printf("  %d valid ingredient groups processed", len(enums.ValidIngredientGroups))
 
 	for i, v := range enums.ValidIngredientStateIngredients {
-		exists, _ := repo.ValidIngredientStateIngredientExists(ctx, v.ID)
+		exists, existsErr := repo.ValidIngredientStateIngredientExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid ingredient state ingredient %d: %w", i, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -278,7 +314,10 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 	log.Printf("  %d valid ingredient state ingredients processed", len(enums.ValidIngredientStateIngredients))
 
 	for i, v := range enums.ValidMeasurementUnitConversions {
-		exists, _ := repo.ValidMeasurementUnitConversionExists(ctx, v.ID)
+		exists, existsErr := repo.ValidMeasurementUnitConversionExists(ctx, v.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking valid measurement unit conversion %d: %w", i, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -293,7 +332,10 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 
 func importRecipes(ctx context.Context, repo mealplanning.Repository, recipes []*mealplanning.Recipe) error {
 	for i, r := range recipes {
-		exists, _ := repo.RecipeExists(ctx, r.ID)
+		exists, existsErr := repo.RecipeExists(ctx, r.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking recipe %d (%s): %w", i, r.Name, existsErr)
+		}
 		if exists {
 			continue
 		}
@@ -310,7 +352,10 @@ func importRecipes(ctx context.Context, repo mealplanning.Repository, recipes []
 
 func importMeals(ctx context.Context, repo mealplanning.Repository, meals []*mealplanning.Meal) error {
 	for i, m := range meals {
-		exists, _ := repo.MealExists(ctx, m.ID)
+		exists, existsErr := repo.MealExists(ctx, m.ID)
+		if existsErr != nil {
+			return fmt.Errorf("checking meal %d (%s): %w", i, m.Name, existsErr)
+		}
 		if exists {
 			continue
 		}

@@ -6,8 +6,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	paymentswebhook "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/healthcheck"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
@@ -23,7 +23,7 @@ func ProvideAPIRouter(
 	metricsProvider metrics.Provider,
 	authService auth.AuthDataService,
 	paymentsWebhookHandler *paymentswebhook.WebhookHandler,
-	dbClient database.Client,
+	healthRegistry healthcheck.Registry,
 ) (routing.Router, error) {
 	router, err := routingConfig.ProvideRouter(logger, tracerProvider, metricsProvider)
 	if err != nil {
@@ -40,11 +40,12 @@ func ProvideAPIRouter(
 
 		// Expose a readiness check on /ready
 		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
-			if err = dbClient.ReadDB().PingContext(req.Context()); err != nil {
-				res.WriteHeader(http.StatusServiceUnavailable)
-				return
+			result := healthRegistry.CheckAll(req.Context())
+			status := http.StatusOK
+			if result.Status != healthcheck.StatusUp {
+				status = http.StatusServiceUnavailable
 			}
-			res.WriteHeader(http.StatusOK)
+			encoder.EncodeResponseWithStatus(req.Context(), res, result, status)
 		})
 
 		metaRouter.Get("/version", func(res http.ResponseWriter, req *http.Request) {

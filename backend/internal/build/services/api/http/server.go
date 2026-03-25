@@ -5,7 +5,7 @@ import (
 	paymentswebhook "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v2/healthcheck"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
 	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
@@ -23,7 +23,7 @@ func RegisterAPIRouter(i do.Injector) {
 			do.MustInvoke[metrics.Provider](i),
 			do.MustInvoke[auth.AuthDataService](i),
 			do.MustInvoke[*paymentswebhook.WebhookHandler](i),
-			do.MustInvoke[database.Client](i),
+			do.MustInvoke[healthcheck.Registry](i),
 		)
 	})
 }

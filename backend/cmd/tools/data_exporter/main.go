@@ -130,7 +130,7 @@ func runExport(dbHost string, dbPort uint16, dbUser, dbPassword, dbName string, 
 		return fmt.Errorf("marshaling export data: %w", err)
 	}
 
-	if err = os.WriteFile(outputFile, data, 0644); err != nil {
+	if err = os.WriteFile(outputFile, data, 0o600); err != nil {
 		return fmt.Errorf("writing output file: %w", err)
 	}
 
@@ -202,99 +202,111 @@ func exportEnumerations(ctx context.Context, repo mealplanning.Repository, expor
 	fetches := []enumFetch{
 		{
 			name: "valid ingredients",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidIngredients, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
 					return repo.GetValidIngredients(ctx, f)
 				}, func(v *mealplanning.ValidIngredient) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid preparations",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidPreparations, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparation], error) {
 					return repo.GetValidPreparations(ctx, f)
 				}, func(v *mealplanning.ValidPreparation) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid instruments",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidInstruments, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
 					return repo.GetValidInstruments(ctx, f)
 				}, func(v *mealplanning.ValidInstrument) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid vessels",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidVessels, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidVessel], error) {
 					return repo.GetValidVessels(ctx, f)
 				}, func(v *mealplanning.ValidVessel) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid measurement units",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidMeasurementUnits, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit], error) {
 					return repo.GetValidMeasurementUnits(ctx, f)
 				}, func(v *mealplanning.ValidMeasurementUnit) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid ingredient states",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidIngredientStates, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientState], error) {
 					return repo.GetValidIngredientStates(ctx, f)
 				}, func(v *mealplanning.ValidIngredientState) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid ingredient preparations",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidIngredientPreparations, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], error) {
 					return repo.GetValidIngredientPreparations(ctx, f)
 				}, func(v *mealplanning.ValidIngredientPreparation) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid ingredient measurement units",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidIngredientMeasurementUnits, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], error) {
 					return repo.GetValidIngredientMeasurementUnits(ctx, f)
 				}, func(v *mealplanning.ValidIngredientMeasurementUnit) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid preparation instruments",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidPreparationInstruments, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], error) {
 					return repo.GetValidPreparationInstruments(ctx, f)
 				}, func(v *mealplanning.ValidPreparationInstrument) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid preparation vessels",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidPreparationVessels, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], error) {
 					return repo.GetValidPreparationVessels(ctx, f)
 				}, func(v *mealplanning.ValidPreparationVessel) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid ingredient groups",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidIngredientGroups, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {
 					return repo.GetValidIngredientGroups(ctx, f)
 				}, func(v *mealplanning.ValidIngredientGroup) string { return v.ID })
-				return
+				return err
 			}},
 		{
 			name: "valid ingredient state ingredients",
-			fn: func() (err error) {
+			fn: func() error {
+				var err error
 				export.Enumerations.ValidIngredientStateIngredients, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], error) {
 					return repo.GetValidIngredientStateIngredients(ctx, f)
 				}, func(v *mealplanning.ValidIngredientStateIngredient) string { return v.ID })
-				return
+				return err
 			}},
 	}
 
