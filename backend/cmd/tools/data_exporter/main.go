@@ -25,38 +25,38 @@ import (
 
 // ExportData represents the full export structure.
 type ExportData struct {
-	ExportedAt   time.Time            `json:"exportedAt"`
-	Enumerations ExportedEnumerations `json:"enumerations"`
+	ExportedAt   time.Time              `json:"exportedAt"`
+	Enumerations ExportedEnumerations   `json:"enumerations"`
 	Recipes      []*mealplanning.Recipe `json:"recipes"`
 	Meals        []*mealplanning.Meal   `json:"meals"`
 }
 
 // ExportedEnumerations holds all valid enumeration data.
 type ExportedEnumerations struct {
-	ValidIngredients              []*mealplanning.ValidIngredient              `json:"validIngredients"`
-	ValidPreparations             []*mealplanning.ValidPreparation             `json:"validPreparations"`
-	ValidInstruments              []*mealplanning.ValidInstrument              `json:"validInstruments"`
-	ValidVessels                  []*mealplanning.ValidVessel                  `json:"validVessels"`
-	ValidMeasurementUnits         []*mealplanning.ValidMeasurementUnit         `json:"validMeasurementUnits"`
-	ValidIngredientStates         []*mealplanning.ValidIngredientState         `json:"validIngredientStates"`
-	ValidIngredientPreparations   []*mealplanning.ValidIngredientPreparation   `json:"validIngredientPreparations"`
+	ValidIngredients                []*mealplanning.ValidIngredient                `json:"validIngredients"`
+	ValidPreparations               []*mealplanning.ValidPreparation               `json:"validPreparations"`
+	ValidInstruments                []*mealplanning.ValidInstrument                `json:"validInstruments"`
+	ValidVessels                    []*mealplanning.ValidVessel                    `json:"validVessels"`
+	ValidMeasurementUnits           []*mealplanning.ValidMeasurementUnit           `json:"validMeasurementUnits"`
+	ValidIngredientStates           []*mealplanning.ValidIngredientState           `json:"validIngredientStates"`
+	ValidIngredientPreparations     []*mealplanning.ValidIngredientPreparation     `json:"validIngredientPreparations"`
 	ValidIngredientMeasurementUnits []*mealplanning.ValidIngredientMeasurementUnit `json:"validIngredientMeasurementUnits"`
-	ValidPreparationInstruments   []*mealplanning.ValidPreparationInstrument   `json:"validPreparationInstruments"`
-	ValidPreparationVessels       []*mealplanning.ValidPreparationVessel       `json:"validPreparationVessels"`
-	ValidIngredientGroups         []*mealplanning.ValidIngredientGroup         `json:"validIngredientGroups"`
+	ValidPreparationInstruments     []*mealplanning.ValidPreparationInstrument     `json:"validPreparationInstruments"`
+	ValidPreparationVessels         []*mealplanning.ValidPreparationVessel         `json:"validPreparationVessels"`
+	ValidIngredientGroups           []*mealplanning.ValidIngredientGroup           `json:"validIngredientGroups"`
 	ValidIngredientStateIngredients []*mealplanning.ValidIngredientStateIngredient `json:"validIngredientStateIngredients"`
 	ValidMeasurementUnitConversions []*mealplanning.ValidMeasurementUnitConversion `json:"validMeasurementUnitConversions"`
 }
 
 func main() {
 	var (
-		dbHost     string
-		dbPort     uint16
-		dbUser     string
-		dbPassword string
-		dbName     string
+		dbHost       string
+		dbPort       uint16
+		dbUser       string
+		dbPassword   string
+		dbName       string
 		dbSSLDisable bool
-		outputFile string
+		outputFile   string
 	)
 
 	root := &cobra.Command{
@@ -195,83 +195,107 @@ func fetchAll[T any](
 
 func exportEnumerations(ctx context.Context, repo mealplanning.Repository, export *ExportData) error {
 	type enumFetch struct {
-		name string
 		fn   func() error
+		name string
 	}
 
 	fetches := []enumFetch{
-		{"valid ingredients", func() (err error) {
-			export.Enumerations.ValidIngredients, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
-				return repo.GetValidIngredients(ctx, f)
-			}, func(v *mealplanning.ValidIngredient) string { return v.ID })
-			return
-		}},
-		{"valid preparations", func() (err error) {
-			export.Enumerations.ValidPreparations, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparation], error) {
-				return repo.GetValidPreparations(ctx, f)
-			}, func(v *mealplanning.ValidPreparation) string { return v.ID })
-			return
-		}},
-		{"valid instruments", func() (err error) {
-			export.Enumerations.ValidInstruments, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
-				return repo.GetValidInstruments(ctx, f)
-			}, func(v *mealplanning.ValidInstrument) string { return v.ID })
-			return
-		}},
-		{"valid vessels", func() (err error) {
-			export.Enumerations.ValidVessels, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidVessel], error) {
-				return repo.GetValidVessels(ctx, f)
-			}, func(v *mealplanning.ValidVessel) string { return v.ID })
-			return
-		}},
-		{"valid measurement units", func() (err error) {
-			export.Enumerations.ValidMeasurementUnits, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit], error) {
-				return repo.GetValidMeasurementUnits(ctx, f)
-			}, func(v *mealplanning.ValidMeasurementUnit) string { return v.ID })
-			return
-		}},
-		{"valid ingredient states", func() (err error) {
-			export.Enumerations.ValidIngredientStates, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientState], error) {
-				return repo.GetValidIngredientStates(ctx, f)
-			}, func(v *mealplanning.ValidIngredientState) string { return v.ID })
-			return
-		}},
-		{"valid ingredient preparations", func() (err error) {
-			export.Enumerations.ValidIngredientPreparations, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], error) {
-				return repo.GetValidIngredientPreparations(ctx, f)
-			}, func(v *mealplanning.ValidIngredientPreparation) string { return v.ID })
-			return
-		}},
-		{"valid ingredient measurement units", func() (err error) {
-			export.Enumerations.ValidIngredientMeasurementUnits, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], error) {
-				return repo.GetValidIngredientMeasurementUnits(ctx, f)
-			}, func(v *mealplanning.ValidIngredientMeasurementUnit) string { return v.ID })
-			return
-		}},
-		{"valid preparation instruments", func() (err error) {
-			export.Enumerations.ValidPreparationInstruments, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], error) {
-				return repo.GetValidPreparationInstruments(ctx, f)
-			}, func(v *mealplanning.ValidPreparationInstrument) string { return v.ID })
-			return
-		}},
-		{"valid preparation vessels", func() (err error) {
-			export.Enumerations.ValidPreparationVessels, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], error) {
-				return repo.GetValidPreparationVessels(ctx, f)
-			}, func(v *mealplanning.ValidPreparationVessel) string { return v.ID })
-			return
-		}},
-		{"valid ingredient groups", func() (err error) {
-			export.Enumerations.ValidIngredientGroups, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {
-				return repo.GetValidIngredientGroups(ctx, f)
-			}, func(v *mealplanning.ValidIngredientGroup) string { return v.ID })
-			return
-		}},
-		{"valid ingredient state ingredients", func() (err error) {
-			export.Enumerations.ValidIngredientStateIngredients, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], error) {
-				return repo.GetValidIngredientStateIngredients(ctx, f)
-			}, func(v *mealplanning.ValidIngredientStateIngredient) string { return v.ID })
-			return
-		}},
+		{
+			name: "valid ingredients",
+			fn: func() (err error) {
+				export.Enumerations.ValidIngredients, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
+					return repo.GetValidIngredients(ctx, f)
+				}, func(v *mealplanning.ValidIngredient) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid preparations",
+			fn: func() (err error) {
+				export.Enumerations.ValidPreparations, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparation], error) {
+					return repo.GetValidPreparations(ctx, f)
+				}, func(v *mealplanning.ValidPreparation) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid instruments",
+			fn: func() (err error) {
+				export.Enumerations.ValidInstruments, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
+					return repo.GetValidInstruments(ctx, f)
+				}, func(v *mealplanning.ValidInstrument) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid vessels",
+			fn: func() (err error) {
+				export.Enumerations.ValidVessels, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidVessel], error) {
+					return repo.GetValidVessels(ctx, f)
+				}, func(v *mealplanning.ValidVessel) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid measurement units",
+			fn: func() (err error) {
+				export.Enumerations.ValidMeasurementUnits, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit], error) {
+					return repo.GetValidMeasurementUnits(ctx, f)
+				}, func(v *mealplanning.ValidMeasurementUnit) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid ingredient states",
+			fn: func() (err error) {
+				export.Enumerations.ValidIngredientStates, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientState], error) {
+					return repo.GetValidIngredientStates(ctx, f)
+				}, func(v *mealplanning.ValidIngredientState) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid ingredient preparations",
+			fn: func() (err error) {
+				export.Enumerations.ValidIngredientPreparations, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], error) {
+					return repo.GetValidIngredientPreparations(ctx, f)
+				}, func(v *mealplanning.ValidIngredientPreparation) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid ingredient measurement units",
+			fn: func() (err error) {
+				export.Enumerations.ValidIngredientMeasurementUnits, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], error) {
+					return repo.GetValidIngredientMeasurementUnits(ctx, f)
+				}, func(v *mealplanning.ValidIngredientMeasurementUnit) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid preparation instruments",
+			fn: func() (err error) {
+				export.Enumerations.ValidPreparationInstruments, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], error) {
+					return repo.GetValidPreparationInstruments(ctx, f)
+				}, func(v *mealplanning.ValidPreparationInstrument) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid preparation vessels",
+			fn: func() (err error) {
+				export.Enumerations.ValidPreparationVessels, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], error) {
+					return repo.GetValidPreparationVessels(ctx, f)
+				}, func(v *mealplanning.ValidPreparationVessel) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid ingredient groups",
+			fn: func() (err error) {
+				export.Enumerations.ValidIngredientGroups, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {
+					return repo.GetValidIngredientGroups(ctx, f)
+				}, func(v *mealplanning.ValidIngredientGroup) string { return v.ID })
+				return
+			}},
+		{
+			name: "valid ingredient state ingredients",
+			fn: func() (err error) {
+				export.Enumerations.ValidIngredientStateIngredients, err = fetchAll(ctx, func(ctx context.Context, f *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], error) {
+					return repo.GetValidIngredientStateIngredients(ctx, f)
+				}, func(v *mealplanning.ValidIngredientStateIngredient) string { return v.ID })
+				return
+			}},
 	}
 
 	for _, f := range fetches {

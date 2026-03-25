@@ -15,7 +15,7 @@ func ConvertValidIngredientToDatabaseCreationInput(v *mealplanning.ValidIngredie
 		PluralName:                  v.PluralName,
 		StorageInstructions:         v.StorageInstructions,
 		Slug:                        v.Slug,
-		ShoppingSuggestions:          v.ShoppingSuggestions,
+		ShoppingSuggestions:         v.ShoppingSuggestions,
 		StorageTemperatureInCelsius: v.StorageTemperatureInCelsius,
 		ContainsEgg:                 v.ContainsEgg,
 		ContainsGluten:              v.ContainsGluten,

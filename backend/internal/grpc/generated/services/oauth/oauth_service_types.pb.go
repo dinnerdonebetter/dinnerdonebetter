@@ -27,7 +27,7 @@ const (
 
 type CreateOAuth2ClientRequest struct {
 	state         protoimpl.MessageState            `protogen:"open.v1"`
-	Input         *OAuth2ClientCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *OAuth2ClientCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -71,8 +71,8 @@ func (x *CreateOAuth2ClientRequest) GetInput() *OAuth2ClientCreationRequestInput
 
 type CreateOAuth2ClientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *OAuth2Client          `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *OAuth2Client          `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -123,7 +123,7 @@ func (x *CreateOAuth2ClientResponse) GetCreated() *OAuth2Client {
 
 type ArchiveOAuth2ClientRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Oauth2ClientId string                 `json:"oauth2_client_id,omitempty" protobuf:"bytes,1,opt,name=oauth2_client_id,json=oauth2ClientId,proto3"`
+	Oauth2ClientId string                 `protobuf:"bytes,1,opt,name=oauth2_client_id,json=oauth2ClientId,proto3" json:"oauth2_client_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -167,7 +167,7 @@ func (x *ArchiveOAuth2ClientRequest) GetOauth2ClientId() string {
 
 type ArchiveOAuth2ClientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -211,7 +211,7 @@ func (x *ArchiveOAuth2ClientResponse) GetResponseDetails() *types.ResponseDetail
 
 type GetOAuth2ClientRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Oauth2ClientId string                 `json:"oauth2_client_id,omitempty" protobuf:"bytes,1,opt,name=oauth2_client_id,json=oauth2ClientId,proto3"`
+	Oauth2ClientId string                 `protobuf:"bytes,1,opt,name=oauth2_client_id,json=oauth2ClientId,proto3" json:"oauth2_client_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -255,8 +255,8 @@ func (x *GetOAuth2ClientRequest) GetOauth2ClientId() string {
 
 type GetOAuth2ClientResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *OAuth2Client          `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *OAuth2Client          `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -307,7 +307,7 @@ func (x *GetOAuth2ClientResponse) GetResult() *OAuth2Client {
 
 type GetOAuth2ClientsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -351,9 +351,9 @@ func (x *GetOAuth2ClientsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetOAuth2ClientsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*OAuth2Client        `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*OAuth2Client        `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -411,8 +411,8 @@ func (x *GetOAuth2ClientsResponse) GetResults() []*OAuth2Client {
 
 type OAuth2ClientCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3"`
-	Description   string                 `json:"description,omitempty" protobuf:"bytes,2,opt,name=description,proto3"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -463,11 +463,11 @@ func (x *OAuth2ClientCreationRequestInput) GetDescription() string {
 
 type OAuth2ClientCreationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientId      string                 `json:"client_id,omitempty"     protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3"`
-	ClientSecret  string                 `json:"client_secret,omitempty" protobuf:"bytes,2,opt,name=client_secret,json=clientSecret,proto3"`
-	Name          string                 `json:"name,omitempty"          protobuf:"bytes,3,opt,name=name,proto3"`
-	Description   string                 `json:"description,omitempty"   protobuf:"bytes,4,opt,name=description,proto3"`
-	Id            string                 `json:"id,omitempty"            protobuf:"bytes,5,opt,name=id,proto3"`
+	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	ClientSecret  string                 `protobuf:"bytes,2,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	Id            string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

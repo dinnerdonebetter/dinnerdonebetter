@@ -8,8 +8,8 @@
 import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
 import { ResponseDetails } from '../common';
 import { Pagination, QueryFilter } from '../filtering';
-import { UploadedMedia } from '../uploaded_media/uploaded_media';
 import { Timestamp } from '../google/protobuf/timestamp';
+import { UploadedMedia } from '../uploaded_media/uploaded_media_messages';
 import {
   Account,
   AccountInvitation,

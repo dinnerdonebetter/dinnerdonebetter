@@ -63,24 +63,24 @@ func main() {
 
 // ExportData mirrors the exporter's output structure.
 type ExportData struct {
-	ExportedAt   time.Time            `json:"exportedAt"`
-	Enumerations ExportedEnumerations `json:"enumerations"`
+	ExportedAt   time.Time              `json:"exportedAt"`
+	Enumerations ExportedEnumerations   `json:"enumerations"`
 	Recipes      []*mealplanning.Recipe `json:"recipes"`
 	Meals        []*mealplanning.Meal   `json:"meals"`
 }
 
 type ExportedEnumerations struct {
-	ValidIngredients                []*mealplanning.ValidIngredient              `json:"validIngredients"`
-	ValidPreparations               []*mealplanning.ValidPreparation             `json:"validPreparations"`
-	ValidInstruments                []*mealplanning.ValidInstrument              `json:"validInstruments"`
-	ValidVessels                    []*mealplanning.ValidVessel                  `json:"validVessels"`
-	ValidMeasurementUnits           []*mealplanning.ValidMeasurementUnit         `json:"validMeasurementUnits"`
-	ValidIngredientStates           []*mealplanning.ValidIngredientState         `json:"validIngredientStates"`
-	ValidIngredientPreparations     []*mealplanning.ValidIngredientPreparation   `json:"validIngredientPreparations"`
+	ValidIngredients                []*mealplanning.ValidIngredient                `json:"validIngredients"`
+	ValidPreparations               []*mealplanning.ValidPreparation               `json:"validPreparations"`
+	ValidInstruments                []*mealplanning.ValidInstrument                `json:"validInstruments"`
+	ValidVessels                    []*mealplanning.ValidVessel                    `json:"validVessels"`
+	ValidMeasurementUnits           []*mealplanning.ValidMeasurementUnit           `json:"validMeasurementUnits"`
+	ValidIngredientStates           []*mealplanning.ValidIngredientState           `json:"validIngredientStates"`
+	ValidIngredientPreparations     []*mealplanning.ValidIngredientPreparation     `json:"validIngredientPreparations"`
 	ValidIngredientMeasurementUnits []*mealplanning.ValidIngredientMeasurementUnit `json:"validIngredientMeasurementUnits"`
-	ValidPreparationInstruments     []*mealplanning.ValidPreparationInstrument   `json:"validPreparationInstruments"`
-	ValidPreparationVessels         []*mealplanning.ValidPreparationVessel       `json:"validPreparationVessels"`
-	ValidIngredientGroups           []*mealplanning.ValidIngredientGroup         `json:"validIngredientGroups"`
+	ValidPreparationInstruments     []*mealplanning.ValidPreparationInstrument     `json:"validPreparationInstruments"`
+	ValidPreparationVessels         []*mealplanning.ValidPreparationVessel         `json:"validPreparationVessels"`
+	ValidIngredientGroups           []*mealplanning.ValidIngredientGroup           `json:"validIngredientGroups"`
 	ValidIngredientStateIngredients []*mealplanning.ValidIngredientStateIngredient `json:"validIngredientStateIngredients"`
 	ValidMeasurementUnitConversions []*mealplanning.ValidMeasurementUnitConversion `json:"validMeasurementUnitConversions"`
 }
@@ -353,9 +353,9 @@ func (c *importerClientConfig) GetReadConnectionString() string {
 	return c.connDetails.String()
 }
 
-func (c *importerClientConfig) GetWriteConnectionString() string { return c.GetReadConnectionString() }
-func (c *importerClientConfig) GetMaxPingAttempts() uint64       { return 10 }
-func (c *importerClientConfig) GetPingWaitPeriod() time.Duration { return time.Second }
-func (c *importerClientConfig) GetMaxIdleConns() int             { return 5 }
-func (c *importerClientConfig) GetMaxOpenConns() int             { return 7 }
+func (c *importerClientConfig) GetWriteConnectionString() string  { return c.GetReadConnectionString() }
+func (c *importerClientConfig) GetMaxPingAttempts() uint64        { return 10 }
+func (c *importerClientConfig) GetPingWaitPeriod() time.Duration  { return time.Second }
+func (c *importerClientConfig) GetMaxIdleConns() int              { return 5 }
+func (c *importerClientConfig) GetMaxOpenConns() int              { return 7 }
 func (c *importerClientConfig) GetConnMaxLifetime() time.Duration { return 30 * time.Minute }

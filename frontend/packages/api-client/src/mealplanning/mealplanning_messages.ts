@@ -14,7 +14,7 @@ import {
   Uint32RangeWithOptionalMax,
 } from '../common';
 import { Timestamp } from '../google/protobuf/timestamp';
-import { UploadedMedia } from '../uploaded_media/uploaded_media';
+import { UploadedMedia } from '../uploaded_media/uploaded_media_messages';
 
 export const protobufPackage = 'mealplanning';
 
@@ -940,6 +940,7 @@ export interface RecipeStepIngredient {
   optional: boolean;
   toTaste: boolean;
   index: number;
+  scaleFactor: number;
 }
 
 export interface RecipeStepInstrument {
@@ -957,6 +958,7 @@ export interface RecipeStepInstrument {
   preferenceRank: number;
   optional: boolean;
   index: number;
+  scaleFactor: number;
 }
 
 export interface RecipeStepProduct {
@@ -996,6 +998,7 @@ export interface RecipeStepVessel {
   unavailableAfterStep: boolean;
   index: number;
   optionIndex: number;
+  scaleFactor: number;
 }
 
 export interface Meal {
@@ -8266,6 +8269,7 @@ function createBaseRecipeStepIngredient(): RecipeStepIngredient {
     optional: false,
     toTaste: false,
     index: 0,
+    scaleFactor: 0,
   };
 }
 
@@ -8327,6 +8331,9 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
     }
     if (message.index !== 0) {
       writer.uint32(152).uint32(message.index);
+    }
+    if (message.scaleFactor !== 0) {
+      writer.uint32(165).float(message.scaleFactor);
     }
     return writer;
   },
@@ -8490,6 +8497,14 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
           message.index = reader.uint32();
           continue;
         }
+        case 20: {
+          if (tag !== 165) {
+            break;
+          }
+
+          message.scaleFactor = reader.float();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -8572,6 +8587,11 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
           ? globalThis.Boolean(object.to_taste)
           : false,
       index: isSet(object.index) ? globalThis.Number(object.index) : 0,
+      scaleFactor: isSet(object.scaleFactor)
+        ? globalThis.Number(object.scaleFactor)
+        : isSet(object.scale_factor)
+          ? globalThis.Number(object.scale_factor)
+          : 0,
     };
   },
 
@@ -8634,6 +8654,9 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
     if (message.index !== 0) {
       obj.index = Math.round(message.index);
     }
+    if (message.scaleFactor !== 0) {
+      obj.scaleFactor = message.scaleFactor;
+    }
     return obj;
   },
 
@@ -8670,6 +8693,7 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
     message.optional = object.optional ?? false;
     message.toTaste = object.toTaste ?? false;
     message.index = object.index ?? 0;
+    message.scaleFactor = object.scaleFactor ?? 0;
     return message;
   },
 };
@@ -8690,6 +8714,7 @@ function createBaseRecipeStepInstrument(): RecipeStepInstrument {
     preferenceRank: 0,
     optional: false,
     index: 0,
+    scaleFactor: 0,
   };
 }
 
@@ -8736,6 +8761,9 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
     }
     if (message.index !== 0) {
       writer.uint32(112).uint32(message.index);
+    }
+    if (message.scaleFactor !== 0) {
+      writer.uint32(125).float(message.scaleFactor);
     }
     return writer;
   },
@@ -8859,6 +8887,14 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
           message.index = reader.uint32();
           continue;
         }
+        case 15: {
+          if (tag !== 125) {
+            break;
+          }
+
+          message.scaleFactor = reader.float();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -8912,6 +8948,11 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
           : 0,
       optional: isSet(object.optional) ? globalThis.Boolean(object.optional) : false,
       index: isSet(object.index) ? globalThis.Number(object.index) : 0,
+      scaleFactor: isSet(object.scaleFactor)
+        ? globalThis.Number(object.scaleFactor)
+        : isSet(object.scale_factor)
+          ? globalThis.Number(object.scale_factor)
+          : 0,
     };
   },
 
@@ -8959,6 +9000,9 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
     if (message.index !== 0) {
       obj.index = Math.round(message.index);
     }
+    if (message.scaleFactor !== 0) {
+      obj.scaleFactor = message.scaleFactor;
+    }
     return obj;
   },
 
@@ -8987,6 +9031,7 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
     message.preferenceRank = object.preferenceRank ?? 0;
     message.optional = object.optional ?? false;
     message.index = object.index ?? 0;
+    message.scaleFactor = object.scaleFactor ?? 0;
     return message;
   },
 };
@@ -9446,6 +9491,7 @@ function createBaseRecipeStepVessel(): RecipeStepVessel {
     unavailableAfterStep: false,
     index: 0,
     optionIndex: 0,
+    scaleFactor: 0,
   };
 }
 
@@ -9492,6 +9538,9 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
     }
     if (message.optionIndex !== 0) {
       writer.uint32(112).uint32(message.optionIndex);
+    }
+    if (message.scaleFactor !== 0) {
+      writer.uint32(125).float(message.scaleFactor);
     }
     return writer;
   },
@@ -9615,6 +9664,14 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
           message.optionIndex = reader.uint32();
           continue;
         }
+        case 15: {
+          if (tag !== 125) {
+            break;
+          }
+
+          message.scaleFactor = reader.float();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -9672,6 +9729,11 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
         : isSet(object.option_index)
           ? globalThis.Number(object.option_index)
           : 0,
+      scaleFactor: isSet(object.scaleFactor)
+        ? globalThis.Number(object.scaleFactor)
+        : isSet(object.scale_factor)
+          ? globalThis.Number(object.scale_factor)
+          : 0,
     };
   },
 
@@ -9719,6 +9781,9 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
     if (message.optionIndex !== 0) {
       obj.optionIndex = Math.round(message.optionIndex);
     }
+    if (message.scaleFactor !== 0) {
+      obj.scaleFactor = message.scaleFactor;
+    }
     return obj;
   },
 
@@ -9745,6 +9810,7 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
     message.unavailableAfterStep = object.unavailableAfterStep ?? false;
     message.index = object.index ?? 0;
     message.optionIndex = object.optionIndex ?? 0;
+    message.scaleFactor = object.scaleFactor ?? 0;
     return message;
   },
 };

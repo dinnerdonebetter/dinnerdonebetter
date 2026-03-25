@@ -2,14 +2,34 @@ PWD           := $(shell pwd)
 MYSELF        := $(shell id -u)
 MY_GROUP      := $(shell id -g)
 
-# CONTAINER VERSIONS
-PROTOBUF_FORMAT := bufbuild/buf:1.5.0
+# ──────────────────────────────────────────────────────────────────────────────
+# Variables
+# ──────────────────────────────────────────────────────────────────────────────
 
-# COMMANDS
 CONTAINER_RUNNER      := docker
 RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD)
 RUN_CONTAINER_AS_USER := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP)
+
+PROTOBUF_FORMAT       := bufbuild/buf:1.5.0
 FORMAT_PROTOBUFS      := $(RUN_CONTAINER) $(PROTOBUF_FORMAT)
+ARTIFACTS_DIR         := artifacts
+
+# Exclude monolithic proto/X/X.proto files (they're duplicates of the split files)
+PROTO_FILES_PATH          := $(shell find proto -name "*.proto" -type f ! -regex "proto/\([^/]*\)/\1\.proto")
+PROTO_GO_OUTPUT_PATH      := backend
+PROTO_OUTPUT_BACKEND_PATH := backend/internal/grpc
+PROTO_OUTPUT_IOS_PATH     := ios/ios/Generated
+BACKEND_REPO_NAME         := github.com/dinnerdonebetter/dinnerdonebetter/backend
+PROTO_TS_OUTPUT_PATH      := frontend/packages/api-client/src
+PROTO_TS_PLUGIN           := frontend/node_modules/.bin/protoc-gen-ts_proto
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Setup & prerequisites
+# ──────────────────────────────────────────────────────────────────────────────
+
+.PHONY: setup
+setup: ensure_yamlfmt_installed
+	(cd backend && $(MAKE) setup)
 
 .PHONY: ensure_yamlfmt_installed
 ensure_yamlfmt_installed:
@@ -47,13 +67,16 @@ ifeq (, $(shell which protoc-gen-grpc-swift-2))
 	$(shell brew install protoc-gen-grpc-swift)
 endif
 
-.PHONY: lint_markdown
-lint_markdown:
-	./scripts/lint_markdown.sh
+.PHONY: ensure_proto_ts_plugin_installed
+ensure_proto_ts_plugin_installed:
+	@if [ ! -f $(PROTO_TS_PLUGIN) ]; then \
+		echo "Installing frontend dependencies for ts-proto..."; \
+		(cd frontend && npm install); \
+	fi
 
-.PHONY: setup
-setup: ensure_yamlfmt_installed
-	(cd backend && $(MAKE) setup)
+# ──────────────────────────────────────────────────────────────────────────────
+# Formatting, linting & testing
+# ──────────────────────────────────────────────────────────────────────────────
 
 .PHONY: format
 format: format_yaml
@@ -61,13 +84,13 @@ format: format_yaml
 	(cd frontend && $(MAKE) format)
 	(cd ios && $(MAKE) format)
 
-.PHONY: terraformat
-terraformat:
-	(cd backend && $(MAKE) terraformat)
-
 .PHONY: format_yaml
 format_yaml: ensure_yamlfmt_installed
 	yamlfmt -conf .yamlfmt.yaml
+
+.PHONY: terraformat
+terraformat:
+	(cd backend && $(MAKE) terraformat)
 
 .PHONY: lint
 lint:
@@ -75,27 +98,41 @@ lint:
 	(cd frontend && $(MAKE) lint)
 	(cd ios && $(MAKE) lint)
 
+.PHONY: lint_markdown
+lint_markdown:
+	./scripts/lint_markdown.sh
+
 .PHONY: test
 test:
 	(cd backend && $(MAKE) test)
 	(cd frontend && $(MAKE) test)
 	(cd ios && $(MAKE) test)
 
-.PHONY: regit
-regit:
-	cd ../
-	git clone git@github.com:dinnerdonebetter/dinnerdonebetter tempdir
-	@if [ -n "$(BRANCH)" ]; then \
-	  (cd tempdir && git checkout $(BRANCH)); \
-	fi
-	cp -rf tempdir/.git .
-	rm -rf tempdir
+# ──────────────────────────────────────────────────────────────────────────────
+# Frontend dev
+# ──────────────────────────────────────────────────────────────────────────────
+
+.PHONY: dev_consumer
+dev_consumer:
+	(cd frontend && npm run dev:consumer)
+
+.PHONY: dev_admin
+dev_admin:
+	(cd frontend && npm run dev:admin)
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Local deployment
+# ──────────────────────────────────────────────────────────────────────────────
 
 # Deploy to Docker Desktop Kubernetes cluster (no Helm required)
 .PHONY: deploy_localdev
 deploy_localdev:
 	skaffold run --filename=infra/skaffold.yaml --build-concurrency 1 --profile localdev
 	KO_DOCKER_REPO=ko.local skaffold run --filename=backend/skaffold.yaml --build-concurrency 1 --profile localdev
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Production deployment
+# ──────────────────────────────────────────────────────────────────────────────
 
 # Deploy prod Terraform: infra first (GKE, networking), then backend. Run from repo root.
 # Pass args through, e.g. make deploy_prod_infra ARGS="-auto-approve"
@@ -114,13 +151,6 @@ deploy_prod_software:
 deploy_prod_frontend:
 	./scripts/deploy-prod-frontend.sh
 
-# Destroy prod Terraform: backend first (k8s resources), then infra (GKE, networking).
-# Pass args through, e.g. make destroy_prod_infra ARGS="-auto-approve"
-.PHONY: destroy_prod_infra
-destroy_prod_infra:
-	(cd backend && ./scripts/terraform_destroy_prod.sh -auto-approve)
-	./infra/scripts/terraform_destroy_prod.sh -auto-approve
-
 .PHONY: verify_prod
 verify_prod:
 	skaffold verify --filename=skaffold.yaml --profile prod
@@ -128,60 +158,77 @@ verify_prod:
 .PHONY: full_prod_deploy
 full_prod_deploy: deploy_prod_infra deploy_prod_software verify_prod
 
+# Destroy prod Terraform: backend first (k8s resources), then infra (GKE, networking).
+# Pass args through, e.g. make destroy_prod_infra ARGS="-auto-approve"
+.PHONY: destroy_prod_infra
+destroy_prod_infra:
+	(cd backend && ./scripts/terraform_destroy_prod.sh -auto-approve)
+	./infra/scripts/terraform_destroy_prod.sh -auto-approve
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Protobuf generation
+# ──────────────────────────────────────────────────────────────────────────────
+
 .PHONY: format_proto
 format_proto:
 	$(FORMAT_PROTOBUFS) format proto --write
 
-# PATHS
-# Exclude monolithic {domain}/{domain}.proto files (they're duplicates of the split files)
-# But keep common.proto and filtering.proto at the root, and uploaded_media.proto (hasn't been split yet)
-PROTO_FILES_PATH          := $(shell find proto -name "*.proto" -type f ! -path "proto/audit/audit.proto" ! -path "proto/auth/auth.proto" ! -path "proto/dataprivacy/dataprivacy.proto" ! -path "proto/identity/identity.proto" ! -path "proto/internal_ops/internal_ops.proto" ! -path "proto/issue_reports/issue_reports.proto" ! -path "proto/mealplanning/mealplanning.proto" ! -path "proto/notifications/notifications.proto" ! -path "proto/oauth/oauth.proto" ! -path "proto/settings/settings.proto" ! -path "proto/waitlists/waitlists.proto" ! -path "proto/webhooks/webhooks.proto")
-PROTO_GO_OUTPUT_PATH      := backend
-PROTO_OUTPUT_BACKEND_PATH := backend/internal/grpc
-PROTO_OUTPUT_IOS_PATH     := ios/ios/Generated
-BACKEND_REPO_NAME         := github.com/dinnerdonebetter/dinnerdonebetter/backend
-
 .PHONY: proto_golang
 proto_golang: ensure_protoc_installed ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
-	mkdir -p $(PROTO_OUTPUT_BACKEND_PATH)
-	protoc --go_out=$(PROTO_GO_OUTPUT_PATH) \
-		--go-grpc_out=$(PROTO_GO_OUTPUT_PATH) \
+	rm -rf $(ARTIFACTS_DIR)/proto_golang
+	mkdir -p $(ARTIFACTS_DIR)/proto_golang
+	protoc --go_out=$(ARTIFACTS_DIR)/proto_golang \
+		--go-grpc_out=$(ARTIFACTS_DIR)/proto_golang \
 		--go_opt=module=$(BACKEND_REPO_NAME) \
 		--go-grpc_opt=module=$(BACKEND_REPO_NAME) \
 		--proto_path proto/ \
 		$(PROTO_FILES_PATH);
+	rm -rf $(PROTO_OUTPUT_BACKEND_PATH)/generated
+	mv $(ARTIFACTS_DIR)/proto_golang/internal/grpc/generated $(PROTO_OUTPUT_BACKEND_PATH)/generated
+	rm -rf $(ARTIFACTS_DIR)/proto_golang
 	(cd backend && $(MAKE) format_golang)
 
 .PHONY: proto_swift
 proto_swift: ensure_protoc-gen-swift_installed ensure_protoc-gen-grpc-swift_installed
-	mkdir -p $(PROTO_OUTPUT_IOS_PATH)
-	protoc --swift_out=$(PROTO_OUTPUT_IOS_PATH) \
-		--grpc-swift-2_out=$(PROTO_OUTPUT_IOS_PATH) \
+	rm -rf $(ARTIFACTS_DIR)/proto_swift
+	mkdir -p $(ARTIFACTS_DIR)/proto_swift
+	protoc --swift_out=$(ARTIFACTS_DIR)/proto_swift \
+		--grpc-swift-2_out=$(ARTIFACTS_DIR)/proto_swift \
       	--grpc-swift-2_opt=Client=true,Server=false \
       	--swift_opt=Visibility=Public \
 		--proto_path proto/ \
 		$(PROTO_FILES_PATH)
+	rm -rf $(PROTO_OUTPUT_IOS_PATH)
+	mv $(ARTIFACTS_DIR)/proto_swift $(PROTO_OUTPUT_IOS_PATH)
 	(cd ios && $(MAKE) format)
-
-PROTO_TS_OUTPUT_PATH := frontend/packages/api-client/src
-PROTO_TS_PLUGIN      := frontend/packages/api-client/node_modules/.bin/protoc-gen-ts_proto
-
-.PHONY: ensure_proto_ts_plugin_installed
-ensure_proto_ts_plugin_installed:
-	@if [ ! -f $(PROTO_TS_PLUGIN) ]; then \
-		echo "Installing frontend dependencies for ts-proto..."; \
-		(cd frontend && npm install); \
-	fi
 
 .PHONY: proto_typescript
 proto_typescript: ensure_protoc_installed ensure_proto_ts_plugin_installed
-	mkdir -p $(PROTO_TS_OUTPUT_PATH)
-	PATH="$(PWD)/frontend/packages/api-client/node_modules/.bin:$$PATH" protoc \
-		--ts_proto_out=$(PROTO_TS_OUTPUT_PATH) \
+	rm -rf $(ARTIFACTS_DIR)/proto_typescript
+	mkdir -p $(ARTIFACTS_DIR)/proto_typescript
+	PATH="$(PWD)/frontend/node_modules/.bin:$$PATH" protoc \
+		--ts_proto_out=$(ARTIFACTS_DIR)/proto_typescript \
 		--ts_proto_opt=outputServices=grpc-js \
 		--ts_proto_opt=esModuleInterop=true \
 		--proto_path proto/ \
 		$(PROTO_FILES_PATH)
+	rm -rf $(PROTO_TS_OUTPUT_PATH)
+	mv $(ARTIFACTS_DIR)/proto_typescript $(PROTO_TS_OUTPUT_PATH)
+	(cd frontend && $(MAKE) format)
 
 .PHONY: proto
-proto: format_proto proto_golang proto_swift
+proto: format_proto proto_golang proto_swift proto_typescript
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Utilities
+# ──────────────────────────────────────────────────────────────────────────────
+
+.PHONY: regit
+regit:
+	cd ../
+	git clone git@github.com:dinnerdonebetter/dinnerdonebetter tempdir
+	@if [ -n "$(BRANCH)" ]; then \
+	  (cd tempdir && git checkout $(BRANCH)); \
+	fi
+	cp -rf tempdir/.git .
+	rm -rf tempdir

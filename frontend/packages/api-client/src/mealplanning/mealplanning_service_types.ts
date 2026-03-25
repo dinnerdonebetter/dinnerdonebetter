@@ -19,7 +19,7 @@ import {
 } from '../common';
 import { Pagination, QueryFilter } from '../filtering';
 import { Timestamp } from '../google/protobuf/timestamp';
-import { UploadRequest } from '../uploaded_media/uploaded_media';
+import { UploadRequest } from '../uploaded_media/uploaded_media_messages';
 import {
   AccountInstrumentOwnership,
   Meal,
@@ -1444,7 +1444,6 @@ export interface RecipeCreationRequestInput {
   steps: RecipeStepCreationRequestInput[];
   alsoCreateMeal: boolean;
   eligibleForMeals: boolean;
-  media: RecipeMediaCreationRequestInput[];
 }
 
 export interface RecipeMediaCreationRequestInput {
@@ -1603,6 +1602,7 @@ export interface RecipeStepIngredientCreationRequestInput {
   validIngredientPreparationId?: string | undefined;
   validIngredientMeasurementUnitId?: string | undefined;
   index?: number | undefined;
+  scaleFactor?: number | undefined;
 }
 
 export interface RecipeStepIngredientUpdateRequestInput {
@@ -1621,6 +1621,7 @@ export interface RecipeStepIngredientUpdateRequestInput {
   productPercentageToUse?: number | undefined;
   recipeStepProductRecipeId?: string | undefined;
   index?: number | undefined;
+  scaleFactor?: number | undefined;
 }
 
 export interface RecipeStepInstrumentCreationRequestInput {
@@ -1635,6 +1636,7 @@ export interface RecipeStepInstrumentCreationRequestInput {
   preferenceRank: number;
   validPreparationInstrumentId?: string | undefined;
   index?: number | undefined;
+  scaleFactor?: number | undefined;
 }
 
 export interface RecipeStepInstrumentUpdateRequestInput {
@@ -1648,6 +1650,7 @@ export interface RecipeStepInstrumentUpdateRequestInput {
   optionIndex?: number | undefined;
   quantity?: Uint32RangeWithOptionalMaxUpdateRequestInput | undefined;
   index?: number | undefined;
+  scaleFactor?: number | undefined;
 }
 
 export interface RecipeStepProductCreationRequestInput {
@@ -1710,6 +1713,7 @@ export interface RecipeStepVesselCreationRequestInput {
   validPreparationVesselId?: string | undefined;
   index?: number | undefined;
   optionIndex: number;
+  scaleFactor?: number | undefined;
 }
 
 export interface RecipeStepVesselUpdateRequestInput {
@@ -1723,6 +1727,7 @@ export interface RecipeStepVesselUpdateRequestInput {
   unavailableAfterStep?: boolean | undefined;
   index?: number | undefined;
   optionIndex?: number | undefined;
+  scaleFactor?: number | undefined;
 }
 
 export interface RecipeUpdateRequestInput {
@@ -27063,7 +27068,6 @@ function createBaseRecipeCreationRequestInput(): RecipeCreationRequestInput {
     steps: [],
     alsoCreateMeal: false,
     eligibleForMeals: false,
-    media: [],
   };
 }
 
@@ -27110,9 +27114,6 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
     }
     if (message.eligibleForMeals !== false) {
       writer.uint32(104).bool(message.eligibleForMeals);
-    }
-    for (const v of message.media) {
-      RecipeMediaCreationRequestInput.encode(v!, writer.uint32(114).fork()).join();
     }
     return writer;
   },
@@ -27236,14 +27237,6 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
           message.eligibleForMeals = reader.bool();
           continue;
         }
-        case 14: {
-          if (tag !== 114) {
-            break;
-          }
-
-          message.media.push(RecipeMediaCreationRequestInput.decode(reader, reader.uint32()));
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -27307,9 +27300,6 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
         : isSet(object.eligible_for_meals)
           ? globalThis.Boolean(object.eligible_for_meals)
           : false,
-      media: globalThis.Array.isArray(object?.media)
-        ? object.media.map((e: any) => RecipeMediaCreationRequestInput.fromJSON(e))
-        : [],
     };
   },
 
@@ -27357,9 +27347,6 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
     if (message.eligibleForMeals !== false) {
       obj.eligibleForMeals = message.eligibleForMeals;
     }
-    if (message.media?.length) {
-      obj.media = message.media.map((e) => RecipeMediaCreationRequestInput.toJSON(e));
-    }
     return obj;
   },
 
@@ -27386,7 +27373,6 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
     message.steps = object.steps?.map((e) => RecipeStepCreationRequestInput.fromPartial(e)) || [];
     message.alsoCreateMeal = object.alsoCreateMeal ?? false;
     message.eligibleForMeals = object.eligibleForMeals ?? false;
-    message.media = object.media?.map((e) => RecipeMediaCreationRequestInput.fromPartial(e)) || [];
     return message;
   },
 };
@@ -30000,6 +29986,7 @@ function createBaseRecipeStepIngredientCreationRequestInput(): RecipeStepIngredi
     validIngredientPreparationId: undefined,
     validIngredientMeasurementUnitId: undefined,
     index: undefined,
+    scaleFactor: undefined,
   };
 }
 
@@ -30052,6 +30039,9 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
     }
     if (message.index !== undefined) {
       writer.uint32(128).uint32(message.index);
+    }
+    if (message.scaleFactor !== undefined) {
+      writer.uint32(141).float(message.scaleFactor);
     }
     return writer;
   },
@@ -30191,6 +30181,14 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
           message.index = reader.uint32();
           continue;
         }
+        case 17: {
+          if (tag !== 141) {
+            break;
+          }
+
+          message.scaleFactor = reader.float();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -30266,6 +30264,11 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
           ? globalThis.String(object.valid_ingredient_measurement_unit_id)
           : undefined,
       index: isSet(object.index) ? globalThis.Number(object.index) : undefined,
+      scaleFactor: isSet(object.scaleFactor)
+        ? globalThis.Number(object.scaleFactor)
+        : isSet(object.scale_factor)
+          ? globalThis.Number(object.scale_factor)
+          : undefined,
     };
   },
 
@@ -30319,6 +30322,9 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
     if (message.index !== undefined) {
       obj.index = Math.round(message.index);
     }
+    if (message.scaleFactor !== undefined) {
+      obj.scaleFactor = message.scaleFactor;
+    }
     return obj;
   },
 
@@ -30350,6 +30356,7 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
     message.validIngredientPreparationId = object.validIngredientPreparationId ?? undefined;
     message.validIngredientMeasurementUnitId = object.validIngredientMeasurementUnitId ?? undefined;
     message.index = object.index ?? undefined;
+    message.scaleFactor = object.scaleFactor ?? undefined;
     return message;
   },
 };
@@ -30371,6 +30378,7 @@ function createBaseRecipeStepIngredientUpdateRequestInput(): RecipeStepIngredien
     productPercentageToUse: undefined,
     recipeStepProductRecipeId: undefined,
     index: undefined,
+    scaleFactor: undefined,
   };
 }
 
@@ -30420,6 +30428,9 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
     }
     if (message.index !== undefined) {
       writer.uint32(120).uint32(message.index);
+    }
+    if (message.scaleFactor !== undefined) {
+      writer.uint32(133).float(message.scaleFactor);
     }
     return writer;
   },
@@ -30551,6 +30562,14 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
           message.index = reader.uint32();
           continue;
         }
+        case 16: {
+          if (tag !== 133) {
+            break;
+          }
+
+          message.scaleFactor = reader.float();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -30623,6 +30642,11 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
           ? globalThis.String(object.recipe_step_product_recipe_id)
           : undefined,
       index: isSet(object.index) ? globalThis.Number(object.index) : undefined,
+      scaleFactor: isSet(object.scaleFactor)
+        ? globalThis.Number(object.scaleFactor)
+        : isSet(object.scale_factor)
+          ? globalThis.Number(object.scale_factor)
+          : undefined,
     };
   },
 
@@ -30673,6 +30697,9 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
     if (message.index !== undefined) {
       obj.index = Math.round(message.index);
     }
+    if (message.scaleFactor !== undefined) {
+      obj.scaleFactor = message.scaleFactor;
+    }
     return obj;
   },
 
@@ -30703,6 +30730,7 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
     message.productPercentageToUse = object.productPercentageToUse ?? undefined;
     message.recipeStepProductRecipeId = object.recipeStepProductRecipeId ?? undefined;
     message.index = object.index ?? undefined;
+    message.scaleFactor = object.scaleFactor ?? undefined;
     return message;
   },
 };
@@ -30720,6 +30748,7 @@ function createBaseRecipeStepInstrumentCreationRequestInput(): RecipeStepInstrum
     preferenceRank: 0,
     validPreparationInstrumentId: undefined,
     index: undefined,
+    scaleFactor: undefined,
   };
 }
 
@@ -30757,6 +30786,9 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
     }
     if (message.index !== undefined) {
       writer.uint32(88).uint32(message.index);
+    }
+    if (message.scaleFactor !== undefined) {
+      writer.uint32(101).float(message.scaleFactor);
     }
     return writer;
   },
@@ -30856,6 +30888,14 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
           message.index = reader.uint32();
           continue;
         }
+        case 12: {
+          if (tag !== 101) {
+            break;
+          }
+
+          message.scaleFactor = reader.float();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -30902,6 +30942,11 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
           ? globalThis.String(object.valid_preparation_instrument_id)
           : undefined,
       index: isSet(object.index) ? globalThis.Number(object.index) : undefined,
+      scaleFactor: isSet(object.scaleFactor)
+        ? globalThis.Number(object.scaleFactor)
+        : isSet(object.scale_factor)
+          ? globalThis.Number(object.scale_factor)
+          : undefined,
     };
   },
 
@@ -30940,6 +30985,9 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
     if (message.index !== undefined) {
       obj.index = Math.round(message.index);
     }
+    if (message.scaleFactor !== undefined) {
+      obj.scaleFactor = message.scaleFactor;
+    }
     return obj;
   },
 
@@ -30966,6 +31014,7 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
     message.preferenceRank = object.preferenceRank ?? 0;
     message.validPreparationInstrumentId = object.validPreparationInstrumentId ?? undefined;
     message.index = object.index ?? undefined;
+    message.scaleFactor = object.scaleFactor ?? undefined;
     return message;
   },
 };
@@ -30982,6 +31031,7 @@ function createBaseRecipeStepInstrumentUpdateRequestInput(): RecipeStepInstrumen
     optionIndex: undefined,
     quantity: undefined,
     index: undefined,
+    scaleFactor: undefined,
   };
 }
 
@@ -31016,6 +31066,9 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
     }
     if (message.index !== undefined) {
       writer.uint32(80).uint32(message.index);
+    }
+    if (message.scaleFactor !== undefined) {
+      writer.uint32(93).float(message.scaleFactor);
     }
     return writer;
   },
@@ -31107,6 +31160,14 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
           message.index = reader.uint32();
           continue;
         }
+        case 11: {
+          if (tag !== 93) {
+            break;
+          }
+
+          message.scaleFactor = reader.float();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -31150,6 +31211,11 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
         ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.quantity)
         : undefined,
       index: isSet(object.index) ? globalThis.Number(object.index) : undefined,
+      scaleFactor: isSet(object.scaleFactor)
+        ? globalThis.Number(object.scaleFactor)
+        : isSet(object.scale_factor)
+          ? globalThis.Number(object.scale_factor)
+          : undefined,
     };
   },
 
@@ -31185,6 +31251,9 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
     if (message.index !== undefined) {
       obj.index = Math.round(message.index);
     }
+    if (message.scaleFactor !== undefined) {
+      obj.scaleFactor = message.scaleFactor;
+    }
     return obj;
   },
 
@@ -31210,6 +31279,7 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
         ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.quantity)
         : undefined;
     message.index = object.index ?? undefined;
+    message.scaleFactor = object.scaleFactor ?? undefined;
     return message;
   },
 };
@@ -32174,6 +32244,7 @@ function createBaseRecipeStepVesselCreationRequestInput(): RecipeStepVesselCreat
     validPreparationVesselId: undefined,
     index: undefined,
     optionIndex: 0,
+    scaleFactor: undefined,
   };
 }
 
@@ -32211,6 +32282,9 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
     }
     if (message.optionIndex !== 0) {
       writer.uint32(88).uint32(message.optionIndex);
+    }
+    if (message.scaleFactor !== undefined) {
+      writer.uint32(101).float(message.scaleFactor);
     }
     return writer;
   },
@@ -32310,6 +32384,14 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
           message.optionIndex = reader.uint32();
           continue;
         }
+        case 12: {
+          if (tag !== 101) {
+            break;
+          }
+
+          message.scaleFactor = reader.float();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -32360,6 +32442,11 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
         : isSet(object.option_index)
           ? globalThis.Number(object.option_index)
           : 0,
+      scaleFactor: isSet(object.scaleFactor)
+        ? globalThis.Number(object.scaleFactor)
+        : isSet(object.scale_factor)
+          ? globalThis.Number(object.scale_factor)
+          : undefined,
     };
   },
 
@@ -32398,6 +32485,9 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
     if (message.optionIndex !== 0) {
       obj.optionIndex = Math.round(message.optionIndex);
     }
+    if (message.scaleFactor !== undefined) {
+      obj.scaleFactor = message.scaleFactor;
+    }
     return obj;
   },
 
@@ -32424,6 +32514,7 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
     message.validPreparationVesselId = object.validPreparationVesselId ?? undefined;
     message.index = object.index ?? undefined;
     message.optionIndex = object.optionIndex ?? 0;
+    message.scaleFactor = object.scaleFactor ?? undefined;
     return message;
   },
 };
@@ -32440,6 +32531,7 @@ function createBaseRecipeStepVesselUpdateRequestInput(): RecipeStepVesselUpdateR
     unavailableAfterStep: undefined,
     index: undefined,
     optionIndex: undefined,
+    scaleFactor: undefined,
   };
 }
 
@@ -32474,6 +32566,9 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
     }
     if (message.optionIndex !== undefined) {
       writer.uint32(80).uint32(message.optionIndex);
+    }
+    if (message.scaleFactor !== undefined) {
+      writer.uint32(93).float(message.scaleFactor);
     }
     return writer;
   },
@@ -32565,6 +32660,14 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
           message.optionIndex = reader.uint32();
           continue;
         }
+        case 11: {
+          if (tag !== 93) {
+            break;
+          }
+
+          message.scaleFactor = reader.float();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -32612,6 +32715,11 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
         : isSet(object.option_index)
           ? globalThis.Number(object.option_index)
           : undefined,
+      scaleFactor: isSet(object.scaleFactor)
+        ? globalThis.Number(object.scaleFactor)
+        : isSet(object.scale_factor)
+          ? globalThis.Number(object.scale_factor)
+          : undefined,
     };
   },
 
@@ -32647,6 +32755,9 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
     if (message.optionIndex !== undefined) {
       obj.optionIndex = Math.round(message.optionIndex);
     }
+    if (message.scaleFactor !== undefined) {
+      obj.scaleFactor = message.scaleFactor;
+    }
     return obj;
   },
 
@@ -32672,6 +32783,7 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
     message.unavailableAfterStep = object.unavailableAfterStep ?? undefined;
     message.index = object.index ?? undefined;
     message.optionIndex = object.optionIndex ?? undefined;
+    message.scaleFactor = object.scaleFactor ?? undefined;
     return message;
   },
 };
