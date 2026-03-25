@@ -61,6 +61,15 @@ class PerformRecipeViewModel {
     isLoading = true
     errorMessage = nil
 
+    if APIConfiguration.currentEnvironment.isOffline {
+      let provider = await LocalDataProvider.shared
+      provider.loadIfNeeded()
+      self.recipe = provider.getRecipe(id: recipeID)
+      buildProductIDToStepIndexMapping()
+      isLoading = false
+      return
+    }
+
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         throw NSError(

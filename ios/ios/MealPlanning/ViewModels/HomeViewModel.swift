@@ -254,6 +254,12 @@ class HomeViewModel {
     errorIconColor = DSTheme.Colors.warning
     isServerDownError = false
 
+    if APIConfiguration.currentEnvironment.isOffline {
+      // In offline mode we have no meal plans, tasks, or grocery lists
+      isLoading = false
+      return
+    }
+
     do {
       // Fetch current user for welcome message
       if let user = try? await fetchCurrentUser() {
