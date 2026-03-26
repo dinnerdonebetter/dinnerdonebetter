@@ -32,7 +32,7 @@ func NewJWTSigner(logger logging.Logger, tracerProvider tracing.TracerProvider, 
 		audience:   audience,
 		signingKey: signingKey,
 		logger:     logging.EnsureLogger(logger),
-		tracer:     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("jwt_signer")),
+		tracer:     tracing.NewNamedTracer(tracerProvider, "jwt_signer"),
 	}
 
 	return s, nil

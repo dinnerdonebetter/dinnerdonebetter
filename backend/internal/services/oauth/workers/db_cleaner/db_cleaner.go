@@ -35,8 +35,8 @@ func NewDBCleaner(
 	}
 
 	return &Job{
-		logger:                logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:                logging.NewNamedLogger(logger, serviceName),
+		tracer:                tracing.NewNamedTracer(tracerProvider, serviceName),
 		handledRecordsCounter: handledRecordsCounter,
 		dataManager:           dataManager,
 	}, nil

@@ -320,7 +320,7 @@ func TestBuildUserAuthorizationHandler(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		signingKey := random.MustGenerateRawBytes(ctx, 32)
 		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracing.NewNoopTracerProvider(), t.Name(), signingKey)
@@ -351,7 +351,7 @@ func TestBuildUserAuthorizationHandler(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		signingKey := random.MustGenerateRawBytes(ctx, 32)
 		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracing.NewNoopTracerProvider(), t.Name(), signingKey)

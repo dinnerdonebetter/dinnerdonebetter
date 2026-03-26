@@ -59,8 +59,8 @@ func ProvideAuthInterceptor(
 	aggregatedPermissions MethodPermissionsMap,
 ) *AuthInterceptor {
 	return &AuthInterceptor{
-		tracer:              tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger:              logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:              tracing.NewNamedTracer(tracerProvider, o11yName),
+		logger:              logging.NewNamedLogger(logger, o11yName),
 		identityDataManager: identityDataManager,
 		oauth2ClientManager: oauth2ClientManager,
 		tokenIssuer:         tokenIssuer,

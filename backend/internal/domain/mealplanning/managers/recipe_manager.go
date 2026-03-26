@@ -141,8 +141,8 @@ func NewRecipeManager(
 
 	m := &recipeManager{
 		db:                   db,
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(recipeManagerName)),
-		logger:               logging.EnsureLogger(logger).WithName(recipeManagerName),
+		tracer:               tracing.NewNamedTracer(tracerProvider, recipeManagerName),
+		logger:               logging.NewNamedLogger(logger, recipeManagerName),
 		dataChangesPublisher: dataChangesPublisher,
 		recipeSearchIndex:    validIngredientStatesSearchIndex,
 		recipeAnalyzer:       recipeAnalyzer,

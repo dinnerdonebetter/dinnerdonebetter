@@ -63,8 +63,8 @@ func NewManager(
 	m := &manager{
 		maxRefreshTokenLifetime: cfg.MaxRefreshTokenLifetime,
 		maxAccessTokenLifetime:  cfg.MaxAccessTokenLifetime,
-		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracingProvider).Tracer(name)),
-		logger:                  logging.EnsureLogger(logger).WithName(name),
+		tracer:                  tracing.NewNamedTracer(tracingProvider, name),
+		logger:                  logging.NewNamedLogger(logger, name),
 		tokenIssuer:             tokenIssuer,
 		authenticator:           authenticator,
 		dataChangesPublisher:    dataChangesPublisher,

@@ -32,8 +32,8 @@ func NewPostgresSessionStore(client database.Client, logger logging.Logger, trac
 	encoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON)
 	s := &PostgresSessionStore{
 		client:  client,
-		logger:  logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:  logging.NewNamedLogger(logger, o11yName),
+		tracer:  tracing.NewNamedTracer(tracerProvider, o11yName),
 		encoder: encoder,
 	}
 	go s.cleanupLoop()

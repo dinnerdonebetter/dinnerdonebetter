@@ -39,7 +39,7 @@ func NewCookieManager(cfg *Config, tracerProvider tracing.TracerProvider) (Manag
 
 	return &manager{
 		secureCookie: securecookie.New(decodedHashkey, decodedBlockKey),
-		tracer:       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("cookie_manager")),
+		tracer:       tracing.NewNamedTracer(tracerProvider, "cookie_manager"),
 	}, nil
 }
 

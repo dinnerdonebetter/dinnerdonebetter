@@ -18,7 +18,7 @@ var _ payments.PaymentProcessor = (*StubPaymentProcessor)(nil)
 // NewStubPaymentProcessor returns a new stub payment processor.
 func NewStubPaymentProcessor(logger logging.Logger) *StubPaymentProcessor {
 	return &StubPaymentProcessor{
-		logger: logging.EnsureLogger(logger).WithName("stub_payment_processor"),
+		logger: logging.NewNamedLogger(logger, "stub_payment_processor"),
 	}
 }
 

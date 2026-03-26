@@ -31,7 +31,7 @@ func ProvideOAuth2ClientManager(
 ) *manage.Manager {
 	manager := manage.NewManager()
 
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("oauth2_client_manager"))
+	tracer := tracing.NewNamedTracer(tracerProvider, "oauth2_client_manager")
 
 	// we don't care at the moment
 	manager.SetValidateURIHandler(func(_, _ string) error {
@@ -74,7 +74,7 @@ func ProvideOAuth2ServerImplementation(
 
 	oauth2Server := server.NewServer(oauth2ServerConfig, manager)
 
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("oauth2_server_impl"))
+	tracer := tracing.NewNamedTracer(tracerProvider, "oauth2_server_impl")
 
 	oauth2Server.AuthorizeScopeHandler = AuthorizeScopeHandler(logger)
 	oauth2Server.AccessTokenExpHandler = AccessTokenExpHandler(logger)

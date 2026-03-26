@@ -31,7 +31,7 @@ func NewPASETOSigner(logger logging.Logger, tracerProvider tracing.TracerProvide
 		audience:   audience,
 		signingKey: signingKey,
 		logger:     logging.EnsureLogger(logger),
-		tracer:     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("paseto_signer")),
+		tracer:     tracing.NewNamedTracer(tracerProvider, "paseto_signer"),
 	}
 
 	return s, nil

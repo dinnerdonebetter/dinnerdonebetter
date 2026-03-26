@@ -154,8 +154,8 @@ func NewMealPlanningManager(
 
 	m := &mealPlanningManager{
 		db:                     db,
-		tracer:                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlannerName)),
-		logger:                 logging.EnsureLogger(logger).WithName(mealPlannerName),
+		tracer:                 tracing.NewNamedTracer(tracerProvider, mealPlannerName),
+		logger:                 logging.NewNamedLogger(logger, mealPlannerName),
 		dataChangesPublisher:   dataChangesPublisher,
 		mealsSearchIndex:       mealsSearchIndex,
 		groceryListInitializer: groceryListInitializer,

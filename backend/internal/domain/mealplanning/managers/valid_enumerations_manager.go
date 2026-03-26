@@ -210,8 +210,8 @@ func NewValidEnumerationsManager(
 
 	m := &validEnumerationManager{
 		db:                               db,
-		tracer:                           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(validEnumerationsManagerName)),
-		logger:                           logging.EnsureLogger(logger).WithName(validEnumerationsManagerName),
+		tracer:                           tracing.NewNamedTracer(tracerProvider, validEnumerationsManagerName),
+		logger:                           logging.NewNamedLogger(logger, validEnumerationsManagerName),
 		dataChangesPublisher:             dataChangesPublisher,
 		validIngredientStatesSearchIndex: validIngredientStatesSearchIndex,
 		validInstrumentSearchIndex:       validInstrumentSearchIndex,

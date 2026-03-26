@@ -36,8 +36,8 @@ func NewService(
 	uploadManager uploads.UploadManager,
 ) uploadedmediasvc.UploadedMediaServiceServer {
 	return &serviceImpl{
-		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:                    logging.NewNamedLogger(logger, o11yName),
+		tracer:                    tracing.NewNamedTracer(tracerProvider, o11yName),
 		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
 		uploadedMediaManager:      uploadedMediaManager,
 		uploadManager:             uploadManager,

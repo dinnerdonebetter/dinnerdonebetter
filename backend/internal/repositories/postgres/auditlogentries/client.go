@@ -35,9 +35,9 @@ func ProvideAuditLogRepository(
 		Client:           client,
 		readDB:           client.ReadDB(),
 		writeDB:          client.WriteDB(),
-		tracer:           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		tracer:           tracing.NewNamedTracer(tracerProvider, o11yName),
 		generatedQuerier: generated.New(),
-		logger:           logging.EnsureLogger(logger).WithName(o11yName),
+		logger:           logging.NewNamedLogger(logger, o11yName),
 	}
 
 	return c

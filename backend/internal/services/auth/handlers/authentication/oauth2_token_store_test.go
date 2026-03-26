@@ -24,7 +24,7 @@ func TestOAuth2TokenStoreImpl_Create(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		token := fakes.BuildFakeOAuth2ClientToken()
 		tokenInfo := convertTokenToImpl(token)
@@ -57,7 +57,7 @@ func TestOAuth2TokenStoreImpl_Create(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		token := fakes.BuildFakeOAuth2ClientToken()
 		tokenInfo := convertTokenToImpl(token)
@@ -91,7 +91,7 @@ func TestOAuth2TokenStoreImpl_RemoveByCode(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		code := "test-code"
 
@@ -120,7 +120,7 @@ func TestOAuth2TokenStoreImpl_RemoveByCode(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		code := "test-code"
 
@@ -153,7 +153,7 @@ func TestOAuth2TokenStoreImpl_RemoveByAccess(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		access := "test-access"
 
@@ -182,7 +182,7 @@ func TestOAuth2TokenStoreImpl_RemoveByAccess(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		access := "test-access"
 
@@ -215,7 +215,7 @@ func TestOAuth2TokenStoreImpl_RemoveByRefresh(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		refresh := "test-refresh"
 
@@ -244,7 +244,7 @@ func TestOAuth2TokenStoreImpl_RemoveByRefresh(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		refresh := "test-refresh"
 
@@ -277,7 +277,7 @@ func TestOAuth2TokenStoreImpl_GetByCode(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		token := fakes.BuildFakeOAuth2ClientToken()
 
@@ -309,7 +309,7 @@ func TestOAuth2TokenStoreImpl_GetByCode(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		code := "test-code"
 
@@ -343,7 +343,7 @@ func TestOAuth2TokenStoreImpl_GetByAccess(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		token := fakes.BuildFakeOAuth2ClientToken()
 
@@ -375,7 +375,7 @@ func TestOAuth2TokenStoreImpl_GetByAccess(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		access := "test-access"
 
@@ -409,7 +409,7 @@ func TestOAuth2TokenStoreImpl_GetByRefresh(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		token := fakes.BuildFakeOAuth2ClientToken()
 
@@ -441,7 +441,7 @@ func TestOAuth2TokenStoreImpl_GetByRefresh(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		refresh := "test-refresh"
 

@@ -83,8 +83,8 @@ func NewIdentityDataManager(
 	}
 
 	return &manager{
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger:               logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:               tracing.NewNamedTracer(tracerProvider, o11yName),
+		logger:               logging.NewNamedLogger(logger, o11yName),
 		identityRepo:         identityRepo,
 		dataChangesPublisher: publisher,
 		secretGenerator:      secretGenerator,

@@ -58,8 +58,8 @@ func NewMealPlanGroceryListInitializer(
 		postUpdatesPublisher:    postUpdatesPublisher,
 		dataManager:             dataManager,
 		groceryListCreator:      groceryListCreator,
-		logger:                  logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:                  logging.NewNamedLogger(logger, serviceName),
+		tracer:                  tracing.NewNamedTracer(tracerProvider, serviceName),
 	}, nil
 }
 

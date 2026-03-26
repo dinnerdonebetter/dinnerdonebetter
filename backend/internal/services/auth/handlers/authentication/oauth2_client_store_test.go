@@ -23,7 +23,7 @@ func TestNewOAuth2ClientStore(T *testing.T) {
 
 		domain := "example.com"
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 		dataManager := &oauthmock.RepositoryMock{}
 
 		store := newOAuth2ClientStore(domain, logger, tracer, dataManager)
@@ -47,7 +47,7 @@ func TestOAuth2ClientStoreImpl_GetByID(T *testing.T) {
 		ctx := t.Context()
 		domain := "example.com"
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		client := fakes.BuildFakeOAuth2Client()
 		dataManager := &oauthmock.RepositoryMock{}
@@ -82,7 +82,7 @@ func TestOAuth2ClientStoreImpl_GetByID(T *testing.T) {
 		ctx := t.Context()
 		domain := "example.com"
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		clientID := "test-client-id"
 		dataManager := &oauthmock.RepositoryMock{}

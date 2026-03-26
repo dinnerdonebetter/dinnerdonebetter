@@ -66,8 +66,8 @@ func NewOAuth2Manager(
 	}
 
 	return &manager{
-		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:                    logging.NewNamedLogger(logger, o11yName),
+		tracer:                    tracing.NewNamedTracer(tracerProvider, o11yName),
 		sessionContextDataFetcher: sessionContextDataFetcher,
 		secretGenerator:           secretGenerator,
 		oauthRepository:           oauthRepository,

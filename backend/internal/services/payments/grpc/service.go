@@ -27,8 +27,8 @@ func NewService(
 	paymentsManager paymentsmanager.PaymentsDataManager,
 ) paymentssvc.PaymentsServiceServer {
 	return &serviceImpl{
-		logger:          logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:          logging.NewNamedLogger(logger, o11yName),
+		tracer:          tracing.NewNamedTracer(tracerProvider, o11yName),
 		paymentsManager: paymentsManager,
 	}
 }

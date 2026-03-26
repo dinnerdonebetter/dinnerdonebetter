@@ -84,12 +84,12 @@ func ProvideService(
 	manager := ProvideOAuth2ClientManager(logger, tracerProvider, &cfg.OAuth2, oauthRepo)
 
 	svc := &service{
-		logger:               logging.EnsureLogger(logger).WithName(serviceName),
+		logger:               logging.NewNamedLogger(logger, serviceName),
 		encoderDecoder:       encoder,
 		config:               cfg,
 		identityDataManager:  identityDataManager,
 		authenticator:        authenticator,
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		tracer:               tracing.NewNamedTracer(tracerProvider, serviceName),
 		dataChangesPublisher: dataChangesPublisher,
 		analyticsReporter:    analyticsReporter,
 		tokenIssuer:          signer,

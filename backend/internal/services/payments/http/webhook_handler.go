@@ -45,8 +45,8 @@ func NewWebhookHandler(
 		sig = DefaultSignatureHeader
 	}
 	return &WebhookHandler{
-		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("payments_webhook")),
-		logger:          logging.EnsureLogger(logger).WithName("payments_webhook"),
+		tracer:          tracing.NewNamedTracer(tracerProvider, "payments_webhook"),
+		logger:          logging.NewNamedLogger(logger, "payments_webhook"),
 		paymentsManager: paymentsManager,
 		signatureHeader: sig,
 	}

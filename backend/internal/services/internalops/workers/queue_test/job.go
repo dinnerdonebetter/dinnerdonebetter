@@ -59,8 +59,8 @@ func NewJob(
 	return &Job{
 		internalOpsRepo:    internalOpsRepo,
 		publisherProvider:  publisherProvider,
-		logger:             logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:             logging.NewNamedLogger(logger, serviceName),
+		tracer:             tracing.NewNamedTracer(tracerProvider, serviceName),
 		roundTripHistogram: histogram,
 		queues:             params.Queues,
 	}, nil

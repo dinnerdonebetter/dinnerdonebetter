@@ -37,8 +37,8 @@ func NewScheduler(
 	mobileNotificationsPublisher messagequeue.Publisher,
 ) *Scheduler {
 	return &Scheduler{
-		logger:                       logging.EnsureLogger(logger).WithName(schedulerTracerName),
-		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(schedulerTracerName)),
+		logger:                       logging.NewNamedLogger(logger, schedulerTracerName),
+		tracer:                       tracing.NewNamedTracer(tracerProvider, schedulerTracerName),
 		mealPlanningRepo:             mealPlanningRepo,
 		identityRepo:                 identityRepo,
 		mobileNotificationsPublisher: mobileNotificationsPublisher,

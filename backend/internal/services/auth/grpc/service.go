@@ -51,8 +51,8 @@ func NewAuthService(
 	passkeyJSONEncoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON)
 
 	return &serviceImpl{
-		logger:                logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:                logging.NewNamedLogger(logger, o11yName),
+		tracer:                tracing.NewNamedTracer(tracerProvider, o11yName),
 		identityDataManager:   identityDataManager,
 		authManager:           authManager,
 		authenticationManager: authenticationManager,

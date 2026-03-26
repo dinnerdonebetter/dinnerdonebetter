@@ -39,8 +39,8 @@ func NewRevenueCatPaymentProcessor(
 	}
 	return &RevenueCatPaymentProcessor{
 		encoder: encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		logger:  logging.EnsureLogger(logger).WithName("revenuecat_processor"),
-		tracer:  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("revenuecat_processor")),
+		logger:  logging.NewNamedLogger(logger, "revenuecat_processor"),
+		tracer:  tracing.NewNamedTracer(tracerProvider, "revenuecat_processor"),
 		cfg:     cfg,
 	}
 }

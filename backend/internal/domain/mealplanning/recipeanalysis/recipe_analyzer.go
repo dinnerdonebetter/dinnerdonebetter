@@ -176,8 +176,8 @@ type recipeAnalyzer struct {
 // NewRecipeAnalyzer creates a recipeAnalyzer.
 func NewRecipeAnalyzer(logger logging.Logger, tracerProvider tracing.TracerProvider) RecipeAnalyzer {
 	return &recipeAnalyzer{
-		logger: logging.EnsureLogger(logger).WithName("recipe_analyzer"),
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("recipe_grapher")),
+		logger: logging.NewNamedLogger(logger, "recipe_analyzer"),
+		tracer: tracing.NewNamedTracer(tracerProvider, "recipe_grapher"),
 	}
 }
 
