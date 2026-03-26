@@ -7,9 +7,9 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	generated "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia/generated"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
 )
 
 const (

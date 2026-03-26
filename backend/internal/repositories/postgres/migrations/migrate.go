@@ -7,8 +7,8 @@ import (
 	"fmt"
 
 	"github.com/GuiaBolso/darwin"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
 )
 
 var (

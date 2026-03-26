@@ -9,8 +9,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/types"
 )
 
 const (

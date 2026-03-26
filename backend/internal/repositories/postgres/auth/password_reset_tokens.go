@@ -8,11 +8,11 @@ import (
 	authkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/keys"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auth/generated"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v3/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
 )
 
 const (

@@ -10,11 +10,11 @@ import (
 	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v3/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
 	"google.golang.org/grpc/codes"
 )
 

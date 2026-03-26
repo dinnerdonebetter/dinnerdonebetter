@@ -22,11 +22,11 @@ import (
 	coreindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/email"
+	notifications "github.com/verygoodsoftwarenotvirus/platform/v3/mobilenotifications"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v3/search/text"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )

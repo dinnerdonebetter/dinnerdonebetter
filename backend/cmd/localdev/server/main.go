@@ -28,14 +28,14 @@ import (
 	identitygenerated "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v3/search/text/config"
 )
 
 const (

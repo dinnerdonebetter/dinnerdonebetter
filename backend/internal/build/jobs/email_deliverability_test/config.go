@@ -5,9 +5,9 @@ import (
 	emaildeliverabilitytest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
 
 	"github.com/samber/do/v2"
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v2/email/config"
-	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v2/httpclient"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v3/email/config"
+	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v3/httpclient"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
 )
 
 // RegisterConfigs registers all config sub-fields with the injector.

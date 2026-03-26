@@ -15,14 +15,14 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/google"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/analytics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/internalerrors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/routing"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/analytics"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/internalerrors"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/routing"
 )
 
 const (

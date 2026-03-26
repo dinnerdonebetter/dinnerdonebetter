@@ -9,8 +9,8 @@ import (
 	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 	uploadedmediaconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/pointer"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/pointer"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

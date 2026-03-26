@@ -7,12 +7,12 @@ import (
 	emaildeliverabilitytest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
 
 	"github.com/samber/do/v2"
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v2/email/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/httpclient"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging/config"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics/config"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing/config"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v3/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/httpclient"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging/config"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing/config"
 )
 
 // BuildInjector creates and configures the dependency injection container.

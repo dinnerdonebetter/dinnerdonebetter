@@ -6,8 +6,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/errors/http"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/errors/http"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/types"
 )
 
 func init() {

@@ -13,14 +13,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
-	randommock "github.com/verygoodsoftwarenotvirus/platform/v2/random/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/random"
+	randommock "github.com/verygoodsoftwarenotvirus/platform/v3/random/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/testutils"
 )
 
 func buildOAuthManagerForTest(t *testing.T) *manager {

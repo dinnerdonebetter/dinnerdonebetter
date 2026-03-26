@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/testutils"
 )
 
 func TestAuthenticationService_validateLogin(T *testing.T) {

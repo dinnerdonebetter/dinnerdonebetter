@@ -6,14 +6,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	paymentswebhook "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/healthcheck"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/routing"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/routing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/version"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/healthcheck"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/routing"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/routing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/version"
 )
 
 func ProvideAPIRouter(

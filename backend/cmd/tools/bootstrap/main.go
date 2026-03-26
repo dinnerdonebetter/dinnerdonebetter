@@ -16,14 +16,14 @@ import (
 	oauthrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 
 	"github.com/spf13/cobra"
-	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/v2/cryptography/encryption/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
+	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/v3/cryptography/encryption/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v3/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/random"
 )
 
 const (

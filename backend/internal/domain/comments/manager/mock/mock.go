@@ -7,7 +7,7 @@ import (
 	commentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager"
 
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
 )
 
 var _ commentsmanager.CommentsDataManager = (*MockCommentsDataManager)(nil)

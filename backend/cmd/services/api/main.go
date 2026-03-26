@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	"github.com/spf13/cobra"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/version"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/version"
 	_ "go.uber.org/automaxprocs"
 )
 

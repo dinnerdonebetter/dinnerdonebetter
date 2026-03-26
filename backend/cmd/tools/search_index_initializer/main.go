@@ -17,15 +17,15 @@ import (
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/spf13/cobra"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/search/text/algolia"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v3/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v3/search/text"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/search/text/algolia"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v3/search/text/config"
 )
 
 const (

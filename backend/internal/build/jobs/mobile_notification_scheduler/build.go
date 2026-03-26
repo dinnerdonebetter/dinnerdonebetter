@@ -9,13 +9,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
 	"github.com/samber/do/v2"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging/config"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics/config"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v3/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/postgres"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging/config"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing/config"
 )
 
 // BuildInjector creates and configures the dependency injection container.

@@ -14,8 +14,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
 )
 
 func createWebhookForTest(t *testing.T, ctx context.Context, exampleWebhook *types.Webhook, dbc *repository) *types.Webhook {

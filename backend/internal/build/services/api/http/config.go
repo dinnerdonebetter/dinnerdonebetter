@@ -7,15 +7,15 @@ import (
 	paymentscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/config"
 
 	"github.com/samber/do/v2"
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v2/analytics/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v2/email/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v2/featureflags/config"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/routing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/server/http"
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v3/analytics/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v3/database/config"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v3/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/encoding"
+	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v3/featureflags/config"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/routing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/server/http"
 )
 
 // RegisterConfigs registers all config sub-fields with the injector.

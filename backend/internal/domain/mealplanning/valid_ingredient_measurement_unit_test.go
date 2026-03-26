@@ -5,7 +5,7 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/types"
 )
 
 func TestValidIngredientMeasurementUnit_Update(T *testing.T) {

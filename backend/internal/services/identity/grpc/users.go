@@ -18,11 +18,11 @@ import (
 	uploadedmediaconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
 	"github.com/google/uuid"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v2/observability/keys"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v3/errors"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v3/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v3/observability/keys"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )

@@ -4,7 +4,7 @@ import (
 	uploadedmedia "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
 )
 
 // BuildFakeUploadedMedia builds a fake UploadedMedia.

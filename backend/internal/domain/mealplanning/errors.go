@@ -1,7 +1,7 @@
 package mealplanning
 
 import (
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v3/errors"
 )
 
 var (

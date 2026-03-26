@@ -3,7 +3,7 @@ package converters
 import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
 )
 
 // ConvertValidVesselToValidVesselUpdateRequestInput creates a ValidVesselUpdateRequestInput from a ValidVessel.

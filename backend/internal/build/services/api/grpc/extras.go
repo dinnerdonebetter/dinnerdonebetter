@@ -40,13 +40,13 @@ import (
 	webhooksgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
 	"github.com/samber/do/v2"
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v2/analytics/config"
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
-	platformgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/server/grpc"
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v3/analytics/config"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v3/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v3/search/text/config"
+	platformgrpc "github.com/verygoodsoftwarenotvirus/platform/v3/server/grpc"
 	grpc "google.golang.org/grpc"
 )
 

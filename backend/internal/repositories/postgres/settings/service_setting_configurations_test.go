@@ -15,7 +15,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
 )
 
 func createServiceSettingConfigurationForTest(t *testing.T, ctx context.Context, exampleServiceSettingConfiguration *types.ServiceSettingConfiguration, dbc *Repository) *types.ServiceSettingConfiguration {

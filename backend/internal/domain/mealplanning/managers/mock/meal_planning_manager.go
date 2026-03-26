@@ -7,7 +7,7 @@ import (
 	mealplanningmgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
 )
 
 var _ mealplanningmgr.MealPlanningManager = (*MockMealPlanningManager)(nil)

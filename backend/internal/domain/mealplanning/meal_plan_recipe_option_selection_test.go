@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
 )
 
 func TestMealPlanRecipeOptionSelectionCreationRequestInput_ValidateWithContext(T *testing.T) {

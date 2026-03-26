@@ -7,10 +7,10 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v2/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/routing"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v3/errors"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v3/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/routing"
 )
 
 func init() {

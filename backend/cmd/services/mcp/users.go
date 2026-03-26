@@ -10,7 +10,7 @@ import (
 	identityconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
 )
 
 var userSchema = map[string]any{

@@ -10,7 +10,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
 )
 
 // EnvironmentConfigSet contains a way of rendering a set of every config for a given environment to a given folder.

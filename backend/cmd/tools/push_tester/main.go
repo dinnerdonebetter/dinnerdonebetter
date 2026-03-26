@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	"github.com/spf13/pflag"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications/apns"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications/fcm"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	notifications "github.com/verygoodsoftwarenotvirus/platform/v3/mobilenotifications"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/mobilenotifications/apns"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/mobilenotifications/fcm"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
 )
 
 const (

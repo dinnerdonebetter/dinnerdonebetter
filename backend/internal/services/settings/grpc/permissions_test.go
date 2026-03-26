@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v3/reflection"
 )
 
 func TestProvideMethodPermissions_CoverageAndValidity(t *testing.T) {
