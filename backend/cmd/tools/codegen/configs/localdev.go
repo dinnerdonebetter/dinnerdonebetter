@@ -11,33 +11,33 @@ import (
 	identitycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/config"
 	uploadedmediacfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v3/analytics/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/circuitbreaking"
-	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/v3/cryptography/encryption/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v3/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/encoding"
-	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v3/featureflags/config"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/redis"
-	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v3/mobilenotifications/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging/config"
-	logotelgrpc "github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging/otelgrpc"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics/otelgrpc"
-	profilingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/profiling/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/profiling/pprof"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing/oteltrace"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/routing/chi"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v3/routing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/search/text/algolia"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v3/search/text/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/server/http"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/testutils"
-	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v3/uploads/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/uploads/objectstorage"
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
+	circuitbreakingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/circuitbreaking/config"
+	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v4/featureflags/config"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/redis"
+	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/config"
+	logotelgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/otelgrpc"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/otelgrpc"
+	profilingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/profiling/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/profiling/pprof"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/oteltrace"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/routing/chi"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/routing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/search/text/algolia"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
 )
 
 const (
@@ -149,7 +149,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		},
 		FeatureFlags: featureflagscfg.Config{
 			// we're using a noop version of this in localdev right now, but it still tries to instantiate a circuit breaker.
-			CircuitBreaker: circuitbreaking.Config{
+			CircuitBreaker: circuitbreakingcfg.Config{
 				Name:                   "feature_flagger",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -158,7 +158,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		Analytics: analyticscfg.Config{
 			// we're using a noop version of this in localdev right now, but it still tries to instantiate a circuit breaker.
 			SourceConfig: analyticscfg.SourceConfig{
-				CircuitBreaker: circuitbreaking.Config{
+				CircuitBreaker: circuitbreakingcfg.Config{
 					Name:                   "feature_flagger",
 					ErrorRate:              .5,
 					MinimumSampleThreshold: 100,
@@ -168,7 +168,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		TextSearch: textsearchcfg.Config{
 			Algolia:  &algolia.Config{},
 			Provider: textsearchcfg.AlgoliaProvider,
-			CircuitBreaker: circuitbreaking.Config{
+			CircuitBreaker: circuitbreakingcfg.Config{
 				Name:                   "dev_text_searcher",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,

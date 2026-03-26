@@ -12,11 +12,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v3/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/encoding"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/server/http"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
 )
 
 func TestAPIServiceConfig_EncodeToFile(T *testing.T) {

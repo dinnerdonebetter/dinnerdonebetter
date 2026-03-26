@@ -16,7 +16,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
 )
 
 func TestMealPlans_WithRecipeOptionSelections(T *testing.T) {

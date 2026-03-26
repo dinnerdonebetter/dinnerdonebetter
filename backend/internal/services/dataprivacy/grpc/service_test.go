@@ -13,10 +13,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
-	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v3/uploads/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
 )
 
 func buildTestService(t *testing.T) (*serviceImpl, *dataprivacymock.Repository, *mockuploads.MockUploadManager) {

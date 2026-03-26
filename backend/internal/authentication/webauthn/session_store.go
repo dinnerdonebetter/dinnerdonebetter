@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/go-webauthn/webauthn/webauthn"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v3/errors"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
 )
 
 // SessionStore persists WebAuthn session data for the duration of the ceremony.

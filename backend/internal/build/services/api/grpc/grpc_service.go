@@ -16,7 +16,7 @@ import (
 	waitlistssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v3/server/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/grpc"
 )
 
 type GRPCService struct {

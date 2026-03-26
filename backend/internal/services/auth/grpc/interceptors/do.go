@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 // RegisterAuthInterceptor registers the auth interceptor with the injector.

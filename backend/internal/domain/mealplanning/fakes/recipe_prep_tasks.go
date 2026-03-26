@@ -5,8 +5,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/pointer"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/pointer"
 )
 
 func BuildFakeRecipePrepTask() *types.RecipePrepTask {

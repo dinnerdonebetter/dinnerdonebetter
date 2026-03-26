@@ -16,11 +16,11 @@ import (
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
 	"github.com/spf13/cobra"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v3/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 func main() {

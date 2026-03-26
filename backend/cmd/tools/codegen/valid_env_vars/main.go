@@ -15,7 +15,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
 	"github.com/codemodus/kace"
-	reflast "github.com/verygoodsoftwarenotvirus/platform/v3/reflection/ast"
+	reflast "github.com/verygoodsoftwarenotvirus/platform/v4/reflection/ast"
 )
 
 type structEntry struct {
@@ -104,7 +104,7 @@ func parseGoFiles(dir, modulePath string) map[string]*structEntry {
 			return nil
 		}
 
-		if strings.Contains(path, "/vendor/") && !strings.Contains(path, "/vendor/github.com/verygoodsoftwarenotvirus/platform/v3/") {
+		if strings.Contains(path, "/vendor/") && !strings.Contains(path, "/vendor/github.com/verygoodsoftwarenotvirus/platform/v4/") {
 			return filepath.SkipDir
 		}
 

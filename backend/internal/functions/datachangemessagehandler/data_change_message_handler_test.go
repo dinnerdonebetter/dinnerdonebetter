@@ -17,18 +17,18 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	analyticsmock "github.com/verygoodsoftwarenotvirus/platform/v3/analytics/mock"
-	emailmock "github.com/verygoodsoftwarenotvirus/platform/v3/email/mock"
-	encodingmock "github.com/verygoodsoftwarenotvirus/platform/v3/encoding/mock"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
-	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/mock"
-	notifications "github.com/verygoodsoftwarenotvirus/platform/v3/mobilenotifications"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics"
-	mockmetrics "github.com/verygoodsoftwarenotvirus/platform/v3/observability/metrics/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/reflection"
-	uploadsmock "github.com/verygoodsoftwarenotvirus/platform/v3/uploads/mock"
+	analyticsmock "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/mock"
+	emailmock "github.com/verygoodsoftwarenotvirus/platform/v4/email/mock"
+	encodingmock "github.com/verygoodsoftwarenotvirus/platform/v4/encoding/mock"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
+	noopnotifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/noop"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	mockmetrics "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	uploadsmock "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
 )
 
 // noopPasswordResetTokenDataManager implements auth.PasswordResetTokenDataManager for tests that do not exercise the password reset flow.
@@ -83,7 +83,7 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 	internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
 	mealPlanRepo := &mealplanningmock.Repository{}
 	notificationsRepo := &notificationsmock.Repository{}
-	pushNotificationSender := &notifications.NoopPushNotificationSender{}
+	pushNotificationSender := noopnotifications.NewPushNotificationSender()
 
 	handler := &AsyncDataChangeMessageHandler{
 		identityRepo:                         identityRepo,
@@ -188,7 +188,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		mealPlanRepo := &mealplanningmock.Repository{}
 		prtManager := noopPasswordResetTokenDataManager{}
 		notificationsRepo := &notificationsmock.Repository{}
-		pushNotificationSender := &notifications.NoopPushNotificationSender{}
+		pushNotificationSender := noopnotifications.NewPushNotificationSender()
 
 		handler, err := NewAsyncDataChangeMessageHandler(
 			ctx,

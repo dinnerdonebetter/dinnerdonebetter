@@ -3,7 +3,7 @@ package fakes
 import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 )
 
 // BuildFakeUserDeviceToken builds a faked user device token.

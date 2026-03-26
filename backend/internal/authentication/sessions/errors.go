@@ -1,7 +1,7 @@
 package sessions
 
 import (
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v3/errors"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
 )
 
 var (

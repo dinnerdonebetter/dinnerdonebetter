@@ -6,7 +6,7 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/converters"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 )
 
 // BuildFakeWaitlist builds a fake waitlist.

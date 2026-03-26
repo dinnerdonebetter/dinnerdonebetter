@@ -13,15 +13,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/analytics"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/encoding"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/reflection"
-	mockrouting "github.com/verygoodsoftwarenotvirus/platform/v3/routing/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/testutils"
+	noopanalytics "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/noop"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	mockrouting "github.com/verygoodsoftwarenotvirus/platform/v4/routing/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
 )
 
 func buildTestService(t *testing.T) *service {
@@ -59,7 +59,7 @@ func buildTestService(t *testing.T) *service {
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
 		pp,
-		analytics.NewNoopEventReporter(),
+		noopanalytics.NewEventReporter(),
 		rpm,
 		queueCfg,
 	)
@@ -108,7 +108,7 @@ func TestProvideService(T *testing.T) {
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
-			analytics.NewNoopEventReporter(),
+			noopanalytics.NewEventReporter(),
 			rpm,
 			queueCfg,
 		)

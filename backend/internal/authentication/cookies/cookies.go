@@ -6,9 +6,9 @@ import (
 	"fmt"
 
 	"github.com/gorilla/securecookie"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/internalerrors"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/internalerrors"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 type Manager interface {

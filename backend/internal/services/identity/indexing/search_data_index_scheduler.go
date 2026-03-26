@@ -3,7 +3,7 @@ package indexing
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v3/search/text/indexing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/search/text/indexing"
 )
 
 const (

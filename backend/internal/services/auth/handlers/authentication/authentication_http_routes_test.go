@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v3/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/testutils"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
 )
 
 //nolint:paralleltest // pending race condition fix on Goth's part.

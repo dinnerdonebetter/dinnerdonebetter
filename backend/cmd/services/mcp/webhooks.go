@@ -9,7 +9,7 @@ import (
 	webhooksconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/verygoodsoftwarenotvirus/platform/v3/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 )
 
 var webhookTriggerConfigSchema = map[string]any{
