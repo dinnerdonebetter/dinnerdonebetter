@@ -42,6 +42,8 @@ import {
   GetAuthStatusResponse,
   GetSelfRequest,
   GetSelfResponse,
+  ListActiveSessionsRequest,
+  ListActiveSessionsResponse,
   ListPasskeysRequest,
   ListPasskeysResponse,
   LoginForTokenRequest,
@@ -56,6 +58,10 @@ import {
   RequestPasswordResetTokenResponse,
   RequestUsernameReminderRequest,
   RequestUsernameReminderResponse,
+  RevokeAllOtherSessionsRequest,
+  RevokeAllOtherSessionsResponse,
+  RevokeSessionRequest,
+  RevokeSessionResponse,
   UpdatePasswordRequest,
   UpdatePasswordResponse,
   UserPermissionsRequestInput,
@@ -348,6 +354,39 @@ export const AuthServiceService = {
       Buffer.from(ArchivePasskeyResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): ArchivePasskeyResponse => ArchivePasskeyResponse.decode(value),
   },
+  listActiveSessions: {
+    path: '/auth.AuthService/ListActiveSessions' as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: ListActiveSessionsRequest): Buffer =>
+      Buffer.from(ListActiveSessionsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): ListActiveSessionsRequest => ListActiveSessionsRequest.decode(value),
+    responseSerialize: (value: ListActiveSessionsResponse): Buffer =>
+      Buffer.from(ListActiveSessionsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ListActiveSessionsResponse => ListActiveSessionsResponse.decode(value),
+  },
+  revokeSession: {
+    path: '/auth.AuthService/RevokeSession' as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: RevokeSessionRequest): Buffer => Buffer.from(RevokeSessionRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): RevokeSessionRequest => RevokeSessionRequest.decode(value),
+    responseSerialize: (value: RevokeSessionResponse): Buffer =>
+      Buffer.from(RevokeSessionResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): RevokeSessionResponse => RevokeSessionResponse.decode(value),
+  },
+  revokeAllOtherSessions: {
+    path: '/auth.AuthService/RevokeAllOtherSessions' as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: RevokeAllOtherSessionsRequest): Buffer =>
+      Buffer.from(RevokeAllOtherSessionsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): RevokeAllOtherSessionsRequest => RevokeAllOtherSessionsRequest.decode(value),
+    responseSerialize: (value: RevokeAllOtherSessionsResponse): Buffer =>
+      Buffer.from(RevokeAllOtherSessionsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): RevokeAllOtherSessionsResponse =>
+      RevokeAllOtherSessionsResponse.decode(value),
+  },
 } as const;
 
 export interface AuthServiceServer extends UntypedServiceImplementation {
@@ -378,6 +417,9 @@ export interface AuthServiceServer extends UntypedServiceImplementation {
   finishPasskeyAuthentication: handleUnaryCall<FinishPasskeyAuthenticationRequest, LoginForTokenResponse>;
   listPasskeys: handleUnaryCall<ListPasskeysRequest, ListPasskeysResponse>;
   archivePasskey: handleUnaryCall<ArchivePasskeyRequest, ArchivePasskeyResponse>;
+  listActiveSessions: handleUnaryCall<ListActiveSessionsRequest, ListActiveSessionsResponse>;
+  revokeSession: handleUnaryCall<RevokeSessionRequest, RevokeSessionResponse>;
+  revokeAllOtherSessions: handleUnaryCall<RevokeAllOtherSessionsRequest, RevokeAllOtherSessionsResponse>;
 }
 
 export interface AuthServiceClient extends Client {
@@ -740,6 +782,51 @@ export interface AuthServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: ArchivePasskeyResponse) => void,
+  ): ClientUnaryCall;
+  listActiveSessions(
+    request: ListActiveSessionsRequest,
+    callback: (error: ServiceError | null, response: ListActiveSessionsResponse) => void,
+  ): ClientUnaryCall;
+  listActiveSessions(
+    request: ListActiveSessionsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ListActiveSessionsResponse) => void,
+  ): ClientUnaryCall;
+  listActiveSessions(
+    request: ListActiveSessionsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ListActiveSessionsResponse) => void,
+  ): ClientUnaryCall;
+  revokeSession(
+    request: RevokeSessionRequest,
+    callback: (error: ServiceError | null, response: RevokeSessionResponse) => void,
+  ): ClientUnaryCall;
+  revokeSession(
+    request: RevokeSessionRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: RevokeSessionResponse) => void,
+  ): ClientUnaryCall;
+  revokeSession(
+    request: RevokeSessionRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: RevokeSessionResponse) => void,
+  ): ClientUnaryCall;
+  revokeAllOtherSessions(
+    request: RevokeAllOtherSessionsRequest,
+    callback: (error: ServiceError | null, response: RevokeAllOtherSessionsResponse) => void,
+  ): ClientUnaryCall;
+  revokeAllOtherSessions(
+    request: RevokeAllOtherSessionsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: RevokeAllOtherSessionsResponse) => void,
+  ): ClientUnaryCall;
+  revokeAllOtherSessions(
+    request: RevokeAllOtherSessionsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: RevokeAllOtherSessionsResponse) => void,
   ): ClientUnaryCall;
 }
 

@@ -308,6 +308,42 @@ internal enum Auth_AuthService {
                 method: "ArchivePasskey"
             )
         }
+        /// Namespace for "ListActiveSessions" metadata.
+        internal enum ListActiveSessions {
+            /// Request type for "ListActiveSessions".
+            internal typealias Input = Auth_ListActiveSessionsRequest
+            /// Response type for "ListActiveSessions".
+            internal typealias Output = Auth_ListActiveSessionsResponse
+            /// Descriptor for "ListActiveSessions".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "ListActiveSessions"
+            )
+        }
+        /// Namespace for "RevokeSession" metadata.
+        internal enum RevokeSession {
+            /// Request type for "RevokeSession".
+            internal typealias Input = Auth_RevokeSessionRequest
+            /// Response type for "RevokeSession".
+            internal typealias Output = Auth_RevokeSessionResponse
+            /// Descriptor for "RevokeSession".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "RevokeSession"
+            )
+        }
+        /// Namespace for "RevokeAllOtherSessions" metadata.
+        internal enum RevokeAllOtherSessions {
+            /// Request type for "RevokeAllOtherSessions".
+            internal typealias Input = Auth_RevokeAllOtherSessionsRequest
+            /// Response type for "RevokeAllOtherSessions".
+            internal typealias Output = Auth_RevokeAllOtherSessionsResponse
+            /// Descriptor for "RevokeAllOtherSessions".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "RevokeAllOtherSessions"
+            )
+        }
         /// Descriptors for all methods in the "auth.AuthService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
             EvaluateBooleanFeatureFlag.descriptor,
@@ -333,7 +369,10 @@ internal enum Auth_AuthService {
             BeginPasskeyAuthentication.descriptor,
             FinishPasskeyAuthentication.descriptor,
             ListPasskeys.descriptor,
-            ArchivePasskey.descriptor
+            ArchivePasskey.descriptor,
+            ListActiveSessions.descriptor,
+            RevokeSession.descriptor,
+            RevokeAllOtherSessions.descriptor
         ]
     }
 }
@@ -807,6 +846,63 @@ extension Auth_AuthService {
             deserializer: some GRPCCore.MessageDeserializer<Auth_ArchivePasskeyResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ArchivePasskeyResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "ListActiveSessions" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_ListActiveSessionsRequest` message.
+        ///   - serializer: A serializer for `Auth_ListActiveSessionsRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_ListActiveSessionsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func listActiveSessions<Result>(
+            request: GRPCCore.ClientRequest<Auth_ListActiveSessionsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_ListActiveSessionsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_ListActiveSessionsResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListActiveSessionsResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "RevokeSession" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_RevokeSessionRequest` message.
+        ///   - serializer: A serializer for `Auth_RevokeSessionRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_RevokeSessionResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func revokeSession<Result>(
+            request: GRPCCore.ClientRequest<Auth_RevokeSessionRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_RevokeSessionRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_RevokeSessionResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeSessionResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "RevokeAllOtherSessions" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_RevokeAllOtherSessionsRequest` message.
+        ///   - serializer: A serializer for `Auth_RevokeAllOtherSessionsRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_RevokeAllOtherSessionsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func revokeAllOtherSessions<Result>(
+            request: GRPCCore.ClientRequest<Auth_RevokeAllOtherSessionsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_RevokeAllOtherSessionsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_RevokeAllOtherSessionsResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeAllOtherSessionsResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
     }
 
@@ -1545,6 +1641,96 @@ extension Auth_AuthService {
                 onResponse: handleResponse
             )
         }
+
+        /// Call the "ListActiveSessions" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_ListActiveSessionsRequest` message.
+        ///   - serializer: A serializer for `Auth_ListActiveSessionsRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_ListActiveSessionsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func listActiveSessions<Result>(
+            request: GRPCCore.ClientRequest<Auth_ListActiveSessionsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_ListActiveSessionsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_ListActiveSessionsResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListActiveSessionsResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.ListActiveSessions.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "RevokeSession" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_RevokeSessionRequest` message.
+        ///   - serializer: A serializer for `Auth_RevokeSessionRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_RevokeSessionResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func revokeSession<Result>(
+            request: GRPCCore.ClientRequest<Auth_RevokeSessionRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_RevokeSessionRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_RevokeSessionResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeSessionResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.RevokeSession.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "RevokeAllOtherSessions" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_RevokeAllOtherSessionsRequest` message.
+        ///   - serializer: A serializer for `Auth_RevokeAllOtherSessionsRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_RevokeAllOtherSessionsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func revokeAllOtherSessions<Result>(
+            request: GRPCCore.ClientRequest<Auth_RevokeAllOtherSessionsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_RevokeAllOtherSessionsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_RevokeAllOtherSessionsResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeAllOtherSessionsResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.RevokeAllOtherSessions.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
     }
 }
 
@@ -2146,6 +2332,81 @@ extension Auth_AuthService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Auth_ArchivePasskeyRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_ArchivePasskeyResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ListActiveSessions" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_ListActiveSessionsRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func listActiveSessions<Result>(
+        request: GRPCCore.ClientRequest<Auth_ListActiveSessionsRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListActiveSessionsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.listActiveSessions(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_ListActiveSessionsRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_ListActiveSessionsResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "RevokeSession" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_RevokeSessionRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func revokeSession<Result>(
+        request: GRPCCore.ClientRequest<Auth_RevokeSessionRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeSessionResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.revokeSession(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_RevokeSessionRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_RevokeSessionResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "RevokeAllOtherSessions" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_RevokeAllOtherSessionsRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func revokeAllOtherSessions<Result>(
+        request: GRPCCore.ClientRequest<Auth_RevokeAllOtherSessionsRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeAllOtherSessionsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.revokeAllOtherSessions(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_RevokeAllOtherSessionsRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_RevokeAllOtherSessionsResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -2845,6 +3106,93 @@ extension Auth_AuthService.ClientProtocol {
             metadata: metadata
         )
         return try await self.archivePasskey(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ListActiveSessions" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func listActiveSessions<Result>(
+        _ message: Auth_ListActiveSessionsRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListActiveSessionsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_ListActiveSessionsRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.listActiveSessions(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "RevokeSession" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func revokeSession<Result>(
+        _ message: Auth_RevokeSessionRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeSessionResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_RevokeSessionRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.revokeSession(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "RevokeAllOtherSessions" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func revokeAllOtherSessions<Result>(
+        _ message: Auth_RevokeAllOtherSessionsRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeAllOtherSessionsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_RevokeAllOtherSessionsRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.revokeAllOtherSessions(
             request: request,
             options: options,
             onResponse: handleResponse

@@ -4,6 +4,7 @@ package auth;
 
 import "auth/auth_messages.proto";
 import "common.proto";
+import "filtering.proto";
 import "google/protobuf/timestamp.proto";
 import "identity/identity_messages.proto";
 
@@ -272,5 +273,29 @@ message ArchivePasskeyRequest {
 }
 
 message ArchivePasskeyResponse {
+  common.ResponseDetails response_details = 1;
+}
+
+message ListActiveSessionsRequest {
+  filtering.QueryFilter filter = 1;
+}
+
+message ListActiveSessionsResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated UserSession sessions = 3;
+}
+
+message RevokeSessionRequest {
+  string session_id = 1;
+}
+
+message RevokeSessionResponse {
+  common.ResponseDetails response_details = 1;
+}
+
+message RevokeAllOtherSessionsRequest {}
+
+message RevokeAllOtherSessionsResponse {
   common.ResponseDetails response_details = 1;
 }

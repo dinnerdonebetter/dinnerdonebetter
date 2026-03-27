@@ -26,10 +26,10 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type GetMealPlanTaskNotificationContextRow struct {
-	StartsAt            time.Time
 	PrepTaskName        string
 	CreationExplanation string
 	MealName            MealName
+	StartsAt            time.Time
 }
 
 func (q *Queries) GetMealPlanTaskNotificationContext(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskNotificationContextRow, error) {

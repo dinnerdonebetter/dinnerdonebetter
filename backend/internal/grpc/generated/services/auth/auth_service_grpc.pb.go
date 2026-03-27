@@ -44,6 +44,9 @@ const (
 	AuthService_FinishPasskeyAuthentication_FullMethodName   = "/auth.AuthService/FinishPasskeyAuthentication"
 	AuthService_ListPasskeys_FullMethodName                  = "/auth.AuthService/ListPasskeys"
 	AuthService_ArchivePasskey_FullMethodName                = "/auth.AuthService/ArchivePasskey"
+	AuthService_ListActiveSessions_FullMethodName            = "/auth.AuthService/ListActiveSessions"
+	AuthService_RevokeSession_FullMethodName                 = "/auth.AuthService/RevokeSession"
+	AuthService_RevokeAllOtherSessions_FullMethodName        = "/auth.AuthService/RevokeAllOtherSessions"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -74,6 +77,9 @@ type AuthServiceClient interface {
 	FinishPasskeyAuthentication(ctx context.Context, in *FinishPasskeyAuthenticationRequest, opts ...grpc.CallOption) (*LoginForTokenResponse, error)
 	ListPasskeys(ctx context.Context, in *ListPasskeysRequest, opts ...grpc.CallOption) (*ListPasskeysResponse, error)
 	ArchivePasskey(ctx context.Context, in *ArchivePasskeyRequest, opts ...grpc.CallOption) (*ArchivePasskeyResponse, error)
+	ListActiveSessions(ctx context.Context, in *ListActiveSessionsRequest, opts ...grpc.CallOption) (*ListActiveSessionsResponse, error)
+	RevokeSession(ctx context.Context, in *RevokeSessionRequest, opts ...grpc.CallOption) (*RevokeSessionResponse, error)
+	RevokeAllOtherSessions(ctx context.Context, in *RevokeAllOtherSessionsRequest, opts ...grpc.CallOption) (*RevokeAllOtherSessionsResponse, error)
 }
 
 type authServiceClient struct {
@@ -324,6 +330,36 @@ func (c *authServiceClient) ArchivePasskey(ctx context.Context, in *ArchivePassk
 	return out, nil
 }
 
+func (c *authServiceClient) ListActiveSessions(ctx context.Context, in *ListActiveSessionsRequest, opts ...grpc.CallOption) (*ListActiveSessionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListActiveSessionsResponse)
+	err := c.cc.Invoke(ctx, AuthService_ListActiveSessions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) RevokeSession(ctx context.Context, in *RevokeSessionRequest, opts ...grpc.CallOption) (*RevokeSessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RevokeSessionResponse)
+	err := c.cc.Invoke(ctx, AuthService_RevokeSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) RevokeAllOtherSessions(ctx context.Context, in *RevokeAllOtherSessionsRequest, opts ...grpc.CallOption) (*RevokeAllOtherSessionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RevokeAllOtherSessionsResponse)
+	err := c.cc.Invoke(ctx, AuthService_RevokeAllOtherSessions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -352,6 +388,9 @@ type AuthServiceServer interface {
 	FinishPasskeyAuthentication(context.Context, *FinishPasskeyAuthenticationRequest) (*LoginForTokenResponse, error)
 	ListPasskeys(context.Context, *ListPasskeysRequest) (*ListPasskeysResponse, error)
 	ArchivePasskey(context.Context, *ArchivePasskeyRequest) (*ArchivePasskeyResponse, error)
+	ListActiveSessions(context.Context, *ListActiveSessionsRequest) (*ListActiveSessionsResponse, error)
+	RevokeSession(context.Context, *RevokeSessionRequest) (*RevokeSessionResponse, error)
+	RevokeAllOtherSessions(context.Context, *RevokeAllOtherSessionsRequest) (*RevokeAllOtherSessionsResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -433,6 +472,15 @@ func (UnimplementedAuthServiceServer) ListPasskeys(context.Context, *ListPasskey
 }
 func (UnimplementedAuthServiceServer) ArchivePasskey(context.Context, *ArchivePasskeyRequest) (*ArchivePasskeyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchivePasskey not implemented")
+}
+func (UnimplementedAuthServiceServer) ListActiveSessions(context.Context, *ListActiveSessionsRequest) (*ListActiveSessionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListActiveSessions not implemented")
+}
+func (UnimplementedAuthServiceServer) RevokeSession(context.Context, *RevokeSessionRequest) (*RevokeSessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeSession not implemented")
+}
+func (UnimplementedAuthServiceServer) RevokeAllOtherSessions(context.Context, *RevokeAllOtherSessionsRequest) (*RevokeAllOtherSessionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeAllOtherSessions not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -887,6 +935,60 @@ func _AuthService_ArchivePasskey_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ListActiveSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListActiveSessionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ListActiveSessions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ListActiveSessions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ListActiveSessions(ctx, req.(*ListActiveSessionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_RevokeSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).RevokeSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_RevokeSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).RevokeSession(ctx, req.(*RevokeSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_RevokeAllOtherSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeAllOtherSessionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).RevokeAllOtherSessions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_RevokeAllOtherSessions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).RevokeAllOtherSessions(ctx, req.(*RevokeAllOtherSessionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -989,6 +1091,18 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ArchivePasskey",
 			Handler:    _AuthService_ArchivePasskey_Handler,
+		},
+		{
+			MethodName: "ListActiveSessions",
+			Handler:    _AuthService_ListActiveSessions_Handler,
+		},
+		{
+			MethodName: "RevokeSession",
+			Handler:    _AuthService_RevokeSession_Handler,
+		},
+		{
+			MethodName: "RevokeAllOtherSessions",
+			Handler:    _AuthService_RevokeAllOtherSessions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

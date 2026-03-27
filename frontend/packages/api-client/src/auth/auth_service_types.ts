@@ -7,6 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
 import { ResponseDetails } from '../common';
+import { Pagination, QueryFilter } from '../filtering';
 import { Timestamp } from '../google/protobuf/timestamp';
 import { Account, User } from '../identity/identity_messages';
 import { UserLoginInput } from './auth_messages';
@@ -281,6 +282,42 @@ export interface ArchivePasskeyRequest {
 }
 
 export interface ArchivePasskeyResponse {
+  responseDetails: ResponseDetails | undefined;
+}
+
+export interface UserSession {
+  id: string;
+  clientIp: string;
+  userAgent: string;
+  deviceName: string;
+  loginMethod: string;
+  createdAt: Date | undefined;
+  lastActiveAt: Date | undefined;
+  expiresAt: Date | undefined;
+  isCurrent: boolean;
+}
+
+export interface ListActiveSessionsRequest {
+  filter: QueryFilter | undefined;
+}
+
+export interface ListActiveSessionsResponse {
+  responseDetails: ResponseDetails | undefined;
+  pagination: Pagination | undefined;
+  sessions: UserSession[];
+}
+
+export interface RevokeSessionRequest {
+  sessionId: string;
+}
+
+export interface RevokeSessionResponse {
+  responseDetails: ResponseDetails | undefined;
+}
+
+export interface RevokeAllOtherSessionsRequest {}
+
+export interface RevokeAllOtherSessionsResponse {
   responseDetails: ResponseDetails | undefined;
 }
 
@@ -4936,6 +4973,642 @@ export const ArchivePasskeyResponse: MessageFns<ArchivePasskeyResponse> = {
   },
   fromPartial<I extends Exact<DeepPartial<ArchivePasskeyResponse>, I>>(object: I): ArchivePasskeyResponse {
     const message = createBaseArchivePasskeyResponse();
+    message.responseDetails =
+      object.responseDetails !== undefined && object.responseDetails !== null
+        ? ResponseDetails.fromPartial(object.responseDetails)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseUserSession(): UserSession {
+  return {
+    id: '',
+    clientIp: '',
+    userAgent: '',
+    deviceName: '',
+    loginMethod: '',
+    createdAt: undefined,
+    lastActiveAt: undefined,
+    expiresAt: undefined,
+    isCurrent: false,
+  };
+}
+
+export const UserSession: MessageFns<UserSession> = {
+  encode(message: UserSession, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.clientIp !== '') {
+      writer.uint32(18).string(message.clientIp);
+    }
+    if (message.userAgent !== '') {
+      writer.uint32(26).string(message.userAgent);
+    }
+    if (message.deviceName !== '') {
+      writer.uint32(34).string(message.deviceName);
+    }
+    if (message.loginMethod !== '') {
+      writer.uint32(42).string(message.loginMethod);
+    }
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(50).fork()).join();
+    }
+    if (message.lastActiveAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.lastActiveAt), writer.uint32(58).fork()).join();
+    }
+    if (message.expiresAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.expiresAt), writer.uint32(66).fork()).join();
+    }
+    if (message.isCurrent !== false) {
+      writer.uint32(72).bool(message.isCurrent);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UserSession {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUserSession();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.clientIp = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.userAgent = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.deviceName = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.loginMethod = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.lastActiveAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.expiresAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 9: {
+          if (tag !== 72) {
+            break;
+          }
+
+          message.isCurrent = reader.bool();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UserSession {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : '',
+      clientIp: isSet(object.clientIp)
+        ? globalThis.String(object.clientIp)
+        : isSet(object.client_ip)
+          ? globalThis.String(object.client_ip)
+          : '',
+      userAgent: isSet(object.userAgent)
+        ? globalThis.String(object.userAgent)
+        : isSet(object.user_agent)
+          ? globalThis.String(object.user_agent)
+          : '',
+      deviceName: isSet(object.deviceName)
+        ? globalThis.String(object.deviceName)
+        : isSet(object.device_name)
+          ? globalThis.String(object.device_name)
+          : '',
+      loginMethod: isSet(object.loginMethod)
+        ? globalThis.String(object.loginMethod)
+        : isSet(object.login_method)
+          ? globalThis.String(object.login_method)
+          : '',
+      createdAt: isSet(object.createdAt)
+        ? fromJsonTimestamp(object.createdAt)
+        : isSet(object.created_at)
+          ? fromJsonTimestamp(object.created_at)
+          : undefined,
+      lastActiveAt: isSet(object.lastActiveAt)
+        ? fromJsonTimestamp(object.lastActiveAt)
+        : isSet(object.last_active_at)
+          ? fromJsonTimestamp(object.last_active_at)
+          : undefined,
+      expiresAt: isSet(object.expiresAt)
+        ? fromJsonTimestamp(object.expiresAt)
+        : isSet(object.expires_at)
+          ? fromJsonTimestamp(object.expires_at)
+          : undefined,
+      isCurrent: isSet(object.isCurrent)
+        ? globalThis.Boolean(object.isCurrent)
+        : isSet(object.is_current)
+          ? globalThis.Boolean(object.is_current)
+          : false,
+    };
+  },
+
+  toJSON(message: UserSession): unknown {
+    const obj: any = {};
+    if (message.id !== '') {
+      obj.id = message.id;
+    }
+    if (message.clientIp !== '') {
+      obj.clientIp = message.clientIp;
+    }
+    if (message.userAgent !== '') {
+      obj.userAgent = message.userAgent;
+    }
+    if (message.deviceName !== '') {
+      obj.deviceName = message.deviceName;
+    }
+    if (message.loginMethod !== '') {
+      obj.loginMethod = message.loginMethod;
+    }
+    if (message.createdAt !== undefined) {
+      obj.createdAt = message.createdAt.toISOString();
+    }
+    if (message.lastActiveAt !== undefined) {
+      obj.lastActiveAt = message.lastActiveAt.toISOString();
+    }
+    if (message.expiresAt !== undefined) {
+      obj.expiresAt = message.expiresAt.toISOString();
+    }
+    if (message.isCurrent !== false) {
+      obj.isCurrent = message.isCurrent;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UserSession>, I>>(base?: I): UserSession {
+    return UserSession.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UserSession>, I>>(object: I): UserSession {
+    const message = createBaseUserSession();
+    message.id = object.id ?? '';
+    message.clientIp = object.clientIp ?? '';
+    message.userAgent = object.userAgent ?? '';
+    message.deviceName = object.deviceName ?? '';
+    message.loginMethod = object.loginMethod ?? '';
+    message.createdAt = object.createdAt ?? undefined;
+    message.lastActiveAt = object.lastActiveAt ?? undefined;
+    message.expiresAt = object.expiresAt ?? undefined;
+    message.isCurrent = object.isCurrent ?? false;
+    return message;
+  },
+};
+
+function createBaseListActiveSessionsRequest(): ListActiveSessionsRequest {
+  return { filter: undefined };
+}
+
+export const ListActiveSessionsRequest: MessageFns<ListActiveSessionsRequest> = {
+  encode(message: ListActiveSessionsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.filter !== undefined) {
+      QueryFilter.encode(message.filter, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListActiveSessionsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListActiveSessionsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.filter = QueryFilter.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListActiveSessionsRequest {
+    return { filter: isSet(object.filter) ? QueryFilter.fromJSON(object.filter) : undefined };
+  },
+
+  toJSON(message: ListActiveSessionsRequest): unknown {
+    const obj: any = {};
+    if (message.filter !== undefined) {
+      obj.filter = QueryFilter.toJSON(message.filter);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListActiveSessionsRequest>, I>>(base?: I): ListActiveSessionsRequest {
+    return ListActiveSessionsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListActiveSessionsRequest>, I>>(object: I): ListActiveSessionsRequest {
+    const message = createBaseListActiveSessionsRequest();
+    message.filter =
+      object.filter !== undefined && object.filter !== null ? QueryFilter.fromPartial(object.filter) : undefined;
+    return message;
+  },
+};
+
+function createBaseListActiveSessionsResponse(): ListActiveSessionsResponse {
+  return { responseDetails: undefined, pagination: undefined, sessions: [] };
+}
+
+export const ListActiveSessionsResponse: MessageFns<ListActiveSessionsResponse> = {
+  encode(message: ListActiveSessionsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.responseDetails !== undefined) {
+      ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    if (message.pagination !== undefined) {
+      Pagination.encode(message.pagination, writer.uint32(18).fork()).join();
+    }
+    for (const v of message.sessions) {
+      UserSession.encode(v!, writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListActiveSessionsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListActiveSessionsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.pagination = Pagination.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.sessions.push(UserSession.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListActiveSessionsResponse {
+    return {
+      responseDetails: isSet(object.responseDetails)
+        ? ResponseDetails.fromJSON(object.responseDetails)
+        : isSet(object.response_details)
+          ? ResponseDetails.fromJSON(object.response_details)
+          : undefined,
+      pagination: isSet(object.pagination) ? Pagination.fromJSON(object.pagination) : undefined,
+      sessions: globalThis.Array.isArray(object?.sessions)
+        ? object.sessions.map((e: any) => UserSession.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ListActiveSessionsResponse): unknown {
+    const obj: any = {};
+    if (message.responseDetails !== undefined) {
+      obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    if (message.pagination !== undefined) {
+      obj.pagination = Pagination.toJSON(message.pagination);
+    }
+    if (message.sessions?.length) {
+      obj.sessions = message.sessions.map((e) => UserSession.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListActiveSessionsResponse>, I>>(base?: I): ListActiveSessionsResponse {
+    return ListActiveSessionsResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListActiveSessionsResponse>, I>>(object: I): ListActiveSessionsResponse {
+    const message = createBaseListActiveSessionsResponse();
+    message.responseDetails =
+      object.responseDetails !== undefined && object.responseDetails !== null
+        ? ResponseDetails.fromPartial(object.responseDetails)
+        : undefined;
+    message.pagination =
+      object.pagination !== undefined && object.pagination !== null
+        ? Pagination.fromPartial(object.pagination)
+        : undefined;
+    message.sessions = object.sessions?.map((e) => UserSession.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseRevokeSessionRequest(): RevokeSessionRequest {
+  return { sessionId: '' };
+}
+
+export const RevokeSessionRequest: MessageFns<RevokeSessionRequest> = {
+  encode(message: RevokeSessionRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.sessionId !== '') {
+      writer.uint32(10).string(message.sessionId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeSessionRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeSessionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.sessionId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RevokeSessionRequest {
+    return {
+      sessionId: isSet(object.sessionId)
+        ? globalThis.String(object.sessionId)
+        : isSet(object.session_id)
+          ? globalThis.String(object.session_id)
+          : '',
+    };
+  },
+
+  toJSON(message: RevokeSessionRequest): unknown {
+    const obj: any = {};
+    if (message.sessionId !== '') {
+      obj.sessionId = message.sessionId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeSessionRequest>, I>>(base?: I): RevokeSessionRequest {
+    return RevokeSessionRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeSessionRequest>, I>>(object: I): RevokeSessionRequest {
+    const message = createBaseRevokeSessionRequest();
+    message.sessionId = object.sessionId ?? '';
+    return message;
+  },
+};
+
+function createBaseRevokeSessionResponse(): RevokeSessionResponse {
+  return { responseDetails: undefined };
+}
+
+export const RevokeSessionResponse: MessageFns<RevokeSessionResponse> = {
+  encode(message: RevokeSessionResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.responseDetails !== undefined) {
+      ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeSessionResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeSessionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RevokeSessionResponse {
+    return {
+      responseDetails: isSet(object.responseDetails)
+        ? ResponseDetails.fromJSON(object.responseDetails)
+        : isSet(object.response_details)
+          ? ResponseDetails.fromJSON(object.response_details)
+          : undefined,
+    };
+  },
+
+  toJSON(message: RevokeSessionResponse): unknown {
+    const obj: any = {};
+    if (message.responseDetails !== undefined) {
+      obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeSessionResponse>, I>>(base?: I): RevokeSessionResponse {
+    return RevokeSessionResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeSessionResponse>, I>>(object: I): RevokeSessionResponse {
+    const message = createBaseRevokeSessionResponse();
+    message.responseDetails =
+      object.responseDetails !== undefined && object.responseDetails !== null
+        ? ResponseDetails.fromPartial(object.responseDetails)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseRevokeAllOtherSessionsRequest(): RevokeAllOtherSessionsRequest {
+  return {};
+}
+
+export const RevokeAllOtherSessionsRequest: MessageFns<RevokeAllOtherSessionsRequest> = {
+  encode(_: RevokeAllOtherSessionsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeAllOtherSessionsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeAllOtherSessionsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): RevokeAllOtherSessionsRequest {
+    return {};
+  },
+
+  toJSON(_: RevokeAllOtherSessionsRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeAllOtherSessionsRequest>, I>>(base?: I): RevokeAllOtherSessionsRequest {
+    return RevokeAllOtherSessionsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeAllOtherSessionsRequest>, I>>(_: I): RevokeAllOtherSessionsRequest {
+    const message = createBaseRevokeAllOtherSessionsRequest();
+    return message;
+  },
+};
+
+function createBaseRevokeAllOtherSessionsResponse(): RevokeAllOtherSessionsResponse {
+  return { responseDetails: undefined };
+}
+
+export const RevokeAllOtherSessionsResponse: MessageFns<RevokeAllOtherSessionsResponse> = {
+  encode(message: RevokeAllOtherSessionsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.responseDetails !== undefined) {
+      ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeAllOtherSessionsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeAllOtherSessionsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RevokeAllOtherSessionsResponse {
+    return {
+      responseDetails: isSet(object.responseDetails)
+        ? ResponseDetails.fromJSON(object.responseDetails)
+        : isSet(object.response_details)
+          ? ResponseDetails.fromJSON(object.response_details)
+          : undefined,
+    };
+  },
+
+  toJSON(message: RevokeAllOtherSessionsResponse): unknown {
+    const obj: any = {};
+    if (message.responseDetails !== undefined) {
+      obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeAllOtherSessionsResponse>, I>>(base?: I): RevokeAllOtherSessionsResponse {
+    return RevokeAllOtherSessionsResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeAllOtherSessionsResponse>, I>>(
+    object: I,
+  ): RevokeAllOtherSessionsResponse {
+    const message = createBaseRevokeAllOtherSessionsResponse();
     message.responseDetails =
       object.responseDetails !== undefined && object.responseDetails !== null
         ? ResponseDetails.fromPartial(object.responseDetails)

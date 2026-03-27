@@ -3,3 +3,23 @@
 //   sqlc v1.25.0
 
 package generated
+
+import (
+	"database/sql"
+	"time"
+)
+
+type UserSessions struct {
+	ID             string
+	BelongsToUser  string
+	SessionTokenID string
+	RefreshTokenID string
+	ClientIp       string
+	UserAgent      string
+	DeviceName     string
+	LoginMethod    string
+	CreatedAt      time.Time
+	LastActiveAt   time.Time
+	ExpiresAt      time.Time
+	RevokedAt      sql.NullTime
+}

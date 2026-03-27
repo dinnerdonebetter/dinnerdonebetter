@@ -11,6 +11,10 @@ import (
 type Querier interface {
 	ArchiveIssueReport(ctx context.Context, db DBTX, id string) (int64, error)
 	CheckIssueReportExistence(ctx context.Context, db DBTX, id string) (bool, error)
+	// ******************************************************************************
+	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
+	// See cmd/tools/codegen/queries for the generator.
+	// ******************************************************************************
 	CreateIssueReport(ctx context.Context, db DBTX, arg *CreateIssueReportParams) error
 	GetIssueReport(ctx context.Context, db DBTX, id string) (*IssueReports, error)
 	GetIssueReports(ctx context.Context, db DBTX, arg *GetIssueReportsParams) ([]*GetIssueReportsRow, error)

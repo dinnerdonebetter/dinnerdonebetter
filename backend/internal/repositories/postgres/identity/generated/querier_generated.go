@@ -10,9 +10,21 @@ import (
 )
 
 type Querier interface {
+	// ******************************************************************************
+	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
+	// See cmd/tools/codegen/queries for the generator.
+	// ******************************************************************************
 	AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id string) error
 	AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id string) error
+	// ******************************************************************************
+	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
+	// See cmd/tools/codegen/queries for the generator.
+	// ******************************************************************************
 	AddToAccountDuringCreation(ctx context.Context, db DBTX, arg *AddToAccountDuringCreationParams) error
+	// ******************************************************************************
+	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
+	// See cmd/tools/codegen/queries for the generator.
+	// ******************************************************************************
 	AddUserToAccount(ctx context.Context, db DBTX, arg *AddUserToAccountParams) error
 	ArchiveAccount(ctx context.Context, db DBTX, arg *ArchiveAccountParams) (int64, error)
 	ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error)
@@ -21,6 +33,10 @@ type Querier interface {
 	ArchiveWebAuthnCredential(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveWebAuthnCredentialForUser(ctx context.Context, db DBTX, arg *ArchiveWebAuthnCredentialForUserParams) (int64, error)
 	AssignInvitationsToUserByEmail(ctx context.Context, db DBTX, arg *AssignInvitationsToUserByEmailParams) (int64, error)
+	// ******************************************************************************
+	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
+	// See cmd/tools/codegen/queries for the generator.
+	// ******************************************************************************
 	AttachAccountInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachAccountInvitationsToUserIDParams) (int64, error)
 	CheckAccountInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CreateAccount(ctx context.Context, db DBTX, arg *CreateAccountParams) error
@@ -63,6 +79,10 @@ type Querier interface {
 	RemoveUserFromAccount(ctx context.Context, db DBTX, arg *RemoveUserFromAccountParams) error
 	SearchUsersByUsername(ctx context.Context, db DBTX, arg *SearchUsersByUsernameParams) ([]*SearchUsersByUsernameRow, error)
 	SetAccountInvitationStatus(ctx context.Context, db DBTX, arg *SetAccountInvitationStatusParams) error
+	// ******************************************************************************
+	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
+	// See cmd/tools/codegen/queries for the generator.
+	// ******************************************************************************
 	SetUserAccountStatus(ctx context.Context, db DBTX, arg *SetUserAccountStatusParams) (int64, error)
 	TransferAccountMembership(ctx context.Context, db DBTX, arg *TransferAccountMembershipParams) error
 	TransferAccountOwnership(ctx context.Context, db DBTX, arg *TransferAccountOwnershipParams) error
