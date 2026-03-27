@@ -2879,114 +2879,6 @@ func (x *ArchivePasskeyResponse) GetResponseDetails() *types.ResponseDetails {
 	return nil
 }
 
-type UserSession struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	ClientIp      string                 `protobuf:"bytes,2,opt,name=client_ip,json=clientIp,proto3" json:"client_ip,omitempty"`
-	UserAgent     string                 `protobuf:"bytes,3,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
-	DeviceName    string                 `protobuf:"bytes,4,opt,name=device_name,json=deviceName,proto3" json:"device_name,omitempty"`
-	LoginMethod   string                 `protobuf:"bytes,5,opt,name=login_method,json=loginMethod,proto3" json:"login_method,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	LastActiveAt  *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=last_active_at,json=lastActiveAt,proto3" json:"last_active_at,omitempty"`
-	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	IsCurrent     bool                   `protobuf:"varint,9,opt,name=is_current,json=isCurrent,proto3" json:"is_current,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UserSession) Reset() {
-	*x = UserSession{}
-	mi := &file_auth_auth_service_types_proto_msgTypes[57]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UserSession) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UserSession) ProtoMessage() {}
-
-func (x *UserSession) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_auth_service_types_proto_msgTypes[57]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UserSession.ProtoReflect.Descriptor instead.
-func (*UserSession) Descriptor() ([]byte, []int) {
-	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{57}
-}
-
-func (x *UserSession) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *UserSession) GetClientIp() string {
-	if x != nil {
-		return x.ClientIp
-	}
-	return ""
-}
-
-func (x *UserSession) GetUserAgent() string {
-	if x != nil {
-		return x.UserAgent
-	}
-	return ""
-}
-
-func (x *UserSession) GetDeviceName() string {
-	if x != nil {
-		return x.DeviceName
-	}
-	return ""
-}
-
-func (x *UserSession) GetLoginMethod() string {
-	if x != nil {
-		return x.LoginMethod
-	}
-	return ""
-}
-
-func (x *UserSession) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *UserSession) GetLastActiveAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.LastActiveAt
-	}
-	return nil
-}
-
-func (x *UserSession) GetExpiresAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.ExpiresAt
-	}
-	return nil
-}
-
-func (x *UserSession) GetIsCurrent() bool {
-	if x != nil {
-		return x.IsCurrent
-	}
-	return false
-}
-
 type ListActiveSessionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
@@ -2996,7 +2888,7 @@ type ListActiveSessionsRequest struct {
 
 func (x *ListActiveSessionsRequest) Reset() {
 	*x = ListActiveSessionsRequest{}
-	mi := &file_auth_auth_service_types_proto_msgTypes[58]
+	mi := &file_auth_auth_service_types_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3008,7 +2900,7 @@ func (x *ListActiveSessionsRequest) String() string {
 func (*ListActiveSessionsRequest) ProtoMessage() {}
 
 func (x *ListActiveSessionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_auth_service_types_proto_msgTypes[58]
+	mi := &file_auth_auth_service_types_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3021,7 +2913,7 @@ func (x *ListActiveSessionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListActiveSessionsRequest.ProtoReflect.Descriptor instead.
 func (*ListActiveSessionsRequest) Descriptor() ([]byte, []int) {
-	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{58}
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *ListActiveSessionsRequest) GetFilter() *filtering.QueryFilter {
@@ -3042,7 +2934,7 @@ type ListActiveSessionsResponse struct {
 
 func (x *ListActiveSessionsResponse) Reset() {
 	*x = ListActiveSessionsResponse{}
-	mi := &file_auth_auth_service_types_proto_msgTypes[59]
+	mi := &file_auth_auth_service_types_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3054,7 +2946,7 @@ func (x *ListActiveSessionsResponse) String() string {
 func (*ListActiveSessionsResponse) ProtoMessage() {}
 
 func (x *ListActiveSessionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_auth_service_types_proto_msgTypes[59]
+	mi := &file_auth_auth_service_types_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3067,7 +2959,7 @@ func (x *ListActiveSessionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListActiveSessionsResponse.ProtoReflect.Descriptor instead.
 func (*ListActiveSessionsResponse) Descriptor() ([]byte, []int) {
-	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{59}
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *ListActiveSessionsResponse) GetResponseDetails() *types.ResponseDetails {
@@ -3100,7 +2992,7 @@ type RevokeSessionRequest struct {
 
 func (x *RevokeSessionRequest) Reset() {
 	*x = RevokeSessionRequest{}
-	mi := &file_auth_auth_service_types_proto_msgTypes[60]
+	mi := &file_auth_auth_service_types_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3112,7 +3004,7 @@ func (x *RevokeSessionRequest) String() string {
 func (*RevokeSessionRequest) ProtoMessage() {}
 
 func (x *RevokeSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_auth_service_types_proto_msgTypes[60]
+	mi := &file_auth_auth_service_types_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3125,7 +3017,7 @@ func (x *RevokeSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeSessionRequest.ProtoReflect.Descriptor instead.
 func (*RevokeSessionRequest) Descriptor() ([]byte, []int) {
-	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{60}
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *RevokeSessionRequest) GetSessionId() string {
@@ -3144,7 +3036,7 @@ type RevokeSessionResponse struct {
 
 func (x *RevokeSessionResponse) Reset() {
 	*x = RevokeSessionResponse{}
-	mi := &file_auth_auth_service_types_proto_msgTypes[61]
+	mi := &file_auth_auth_service_types_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3156,7 +3048,7 @@ func (x *RevokeSessionResponse) String() string {
 func (*RevokeSessionResponse) ProtoMessage() {}
 
 func (x *RevokeSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_auth_service_types_proto_msgTypes[61]
+	mi := &file_auth_auth_service_types_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3169,7 +3061,7 @@ func (x *RevokeSessionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeSessionResponse.ProtoReflect.Descriptor instead.
 func (*RevokeSessionResponse) Descriptor() ([]byte, []int) {
-	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{61}
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *RevokeSessionResponse) GetResponseDetails() *types.ResponseDetails {
@@ -3187,7 +3079,7 @@ type RevokeAllOtherSessionsRequest struct {
 
 func (x *RevokeAllOtherSessionsRequest) Reset() {
 	*x = RevokeAllOtherSessionsRequest{}
-	mi := &file_auth_auth_service_types_proto_msgTypes[62]
+	mi := &file_auth_auth_service_types_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3199,7 +3091,7 @@ func (x *RevokeAllOtherSessionsRequest) String() string {
 func (*RevokeAllOtherSessionsRequest) ProtoMessage() {}
 
 func (x *RevokeAllOtherSessionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_auth_service_types_proto_msgTypes[62]
+	mi := &file_auth_auth_service_types_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3212,7 +3104,7 @@ func (x *RevokeAllOtherSessionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeAllOtherSessionsRequest.ProtoReflect.Descriptor instead.
 func (*RevokeAllOtherSessionsRequest) Descriptor() ([]byte, []int) {
-	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{62}
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{61}
 }
 
 type RevokeAllOtherSessionsResponse struct {
@@ -3224,7 +3116,7 @@ type RevokeAllOtherSessionsResponse struct {
 
 func (x *RevokeAllOtherSessionsResponse) Reset() {
 	*x = RevokeAllOtherSessionsResponse{}
-	mi := &file_auth_auth_service_types_proto_msgTypes[63]
+	mi := &file_auth_auth_service_types_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3236,7 +3128,7 @@ func (x *RevokeAllOtherSessionsResponse) String() string {
 func (*RevokeAllOtherSessionsResponse) ProtoMessage() {}
 
 func (x *RevokeAllOtherSessionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_auth_service_types_proto_msgTypes[63]
+	mi := &file_auth_auth_service_types_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3249,7 +3141,7 @@ func (x *RevokeAllOtherSessionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeAllOtherSessionsResponse.ProtoReflect.Descriptor instead.
 func (*RevokeAllOtherSessionsResponse) Descriptor() ([]byte, []int) {
-	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{63}
+	return file_auth_auth_service_types_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *RevokeAllOtherSessionsResponse) GetResponseDetails() *types.ResponseDetails {
@@ -3673,72 +3565,48 @@ var file_auth_auth_service_types_proto_rawDesc = string([]byte{
 	0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
 	0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x22, 0xf4, 0x02, 0x0a, 0x0b, 0x55, 0x73,
-	0x65, 0x72, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x69,
-	0x65, 0x6e, 0x74, 0x5f, 0x69, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x6c,
-	0x69, 0x65, 0x6e, 0x74, 0x49, 0x70, 0x12, 0x1d, 0x0a, 0x0a, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x75, 0x73, 0x65, 0x72,
-	0x41, 0x67, 0x65, 0x6e, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f,
-	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x64, 0x65, 0x76, 0x69,
-	0x63, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x5f,
-	0x6d, 0x65, 0x74, 0x68, 0x6f, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x6c, 0x6f,
-	0x67, 0x69, 0x6e, 0x4d, 0x65, 0x74, 0x68, 0x6f, 0x64, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
-	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x64, 0x41, 0x74, 0x12, 0x40, 0x0a, 0x0e, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x61, 0x63, 0x74,
-	0x69, 0x76, 0x65, 0x5f, 0x61, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
-	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0c, 0x6c, 0x61, 0x73, 0x74, 0x41, 0x63,
-	0x74, 0x69, 0x76, 0x65, 0x41, 0x74, 0x12, 0x39, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x65,
-	0x73, 0x5f, 0x61, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
-	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x65, 0x78, 0x70, 0x69, 0x72, 0x65, 0x73, 0x41,
-	0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x69, 0x73, 0x5f, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x18,
-	0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x69, 0x73, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74,
-	0x22, 0x4b, 0x0a, 0x19, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x53, 0x65,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2e, 0x0a,
-	0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e,
-	0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46,
-	0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0xc6, 0x01,
-	0x0a, 0x1a, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x53, 0x65, 0x73, 0x73,
-	0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10,
-	0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52,
-	0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
-	0x12, 0x35, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67,
-	0x2e, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2d, 0x0a, 0x08, 0x73, 0x65, 0x73, 0x73, 0x69,
-	0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x61, 0x75, 0x74, 0x68,
-	0x2e, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x08, 0x73, 0x65,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x35, 0x0a, 0x14, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65,
-	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1d,
-	0x0a, 0x0a, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0x5b, 0x0a,
-	0x15, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x22, 0x4b, 0x0a, 0x19, 0x4c, 0x69, 0x73,
+	0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2e, 0x0a, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69,
+	0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06,
+	0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0xc6, 0x01, 0x0a, 0x1a, 0x4c, 0x69, 0x73, 0x74, 0x41,
+	0x63, 0x74, 0x69, 0x76, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x35, 0x0a, 0x0a, 0x70, 0x61, 0x67,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e,
+	0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x2d, 0x0a, 0x08, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x11, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x08, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x22,
+	0x35, 0x0a, 0x14, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x65, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x65, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0x5b, 0x0a, 0x15, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d,
+	0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x73, 0x22, 0x1f, 0x0a, 0x1d, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x41, 0x6c, 0x6c,
+	0x4f, 0x74, 0x68, 0x65, 0x72, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x22, 0x64, 0x0a, 0x1e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x41, 0x6c,
+	0x6c, 0x4f, 0x74, 0x68, 0x65, 0x72, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65,
 	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e,
 	0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
 	0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
 	0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x22, 0x1f, 0x0a, 0x1d, 0x52, 0x65,
-	0x76, 0x6f, 0x6b, 0x65, 0x41, 0x6c, 0x6c, 0x4f, 0x74, 0x68, 0x65, 0x72, 0x53, 0x65, 0x73, 0x73,
-	0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x64, 0x0a, 0x1e, 0x52,
-	0x65, 0x76, 0x6f, 0x6b, 0x65, 0x41, 0x6c, 0x6c, 0x4f, 0x74, 0x68, 0x65, 0x72, 0x53, 0x65, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a,
-	0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
-	0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
-	0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x73, 0x42, 0x5c, 0x5a, 0x5a, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72,
-	0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65,
-	0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e,
-	0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65,
-	0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x42, 0x5c, 0x5a, 0x5a, 0x67, 0x69,
+	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64,
+	0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72,
+	0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65,
+	0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63,
+	0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x73, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -3753,7 +3621,7 @@ func file_auth_auth_service_types_proto_rawDescGZIP() []byte {
 	return file_auth_auth_service_types_proto_rawDescData
 }
 
-var file_auth_auth_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 65)
+var file_auth_auth_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 64)
 var file_auth_auth_service_types_proto_goTypes = []any{
 	(*LoginForTokenRequest)(nil),                     // 0: auth.LoginForTokenRequest
 	(*LoginForTokenResponse)(nil),                    // 1: auth.LoginForTokenResponse
@@ -3812,76 +3680,73 @@ var file_auth_auth_service_types_proto_goTypes = []any{
 	(*PasskeyCredential)(nil),                        // 54: auth.PasskeyCredential
 	(*ArchivePasskeyRequest)(nil),                    // 55: auth.ArchivePasskeyRequest
 	(*ArchivePasskeyResponse)(nil),                   // 56: auth.ArchivePasskeyResponse
-	(*UserSession)(nil),                              // 57: auth.UserSession
-	(*ListActiveSessionsRequest)(nil),                // 58: auth.ListActiveSessionsRequest
-	(*ListActiveSessionsResponse)(nil),               // 59: auth.ListActiveSessionsResponse
-	(*RevokeSessionRequest)(nil),                     // 60: auth.RevokeSessionRequest
-	(*RevokeSessionResponse)(nil),                    // 61: auth.RevokeSessionResponse
-	(*RevokeAllOtherSessionsRequest)(nil),            // 62: auth.RevokeAllOtherSessionsRequest
-	(*RevokeAllOtherSessionsResponse)(nil),           // 63: auth.RevokeAllOtherSessionsResponse
-	nil,                                              // 64: auth.UserPermissionsResponse.PermissionsEntry
-	(*UserLoginInput)(nil),                           // 65: auth.UserLoginInput
-	(*types.ResponseDetails)(nil),                    // 66: common.ResponseDetails
-	(*timestamppb.Timestamp)(nil),                    // 67: google.protobuf.Timestamp
-	(*identity.Account)(nil),                         // 68: identity.Account
-	(*identity.User)(nil),                            // 69: identity.User
-	(*filtering.QueryFilter)(nil),                    // 70: filtering.QueryFilter
-	(*filtering.Pagination)(nil),                     // 71: filtering.Pagination
+	(*ListActiveSessionsRequest)(nil),                // 57: auth.ListActiveSessionsRequest
+	(*ListActiveSessionsResponse)(nil),               // 58: auth.ListActiveSessionsResponse
+	(*RevokeSessionRequest)(nil),                     // 59: auth.RevokeSessionRequest
+	(*RevokeSessionResponse)(nil),                    // 60: auth.RevokeSessionResponse
+	(*RevokeAllOtherSessionsRequest)(nil),            // 61: auth.RevokeAllOtherSessionsRequest
+	(*RevokeAllOtherSessionsResponse)(nil),           // 62: auth.RevokeAllOtherSessionsResponse
+	nil,                                              // 63: auth.UserPermissionsResponse.PermissionsEntry
+	(*UserLoginInput)(nil),                           // 64: auth.UserLoginInput
+	(*types.ResponseDetails)(nil),                    // 65: common.ResponseDetails
+	(*timestamppb.Timestamp)(nil),                    // 66: google.protobuf.Timestamp
+	(*identity.Account)(nil),                         // 67: identity.Account
+	(*identity.User)(nil),                            // 68: identity.User
+	(*filtering.QueryFilter)(nil),                    // 69: filtering.QueryFilter
+	(*filtering.Pagination)(nil),                     // 70: filtering.Pagination
+	(*UserSession)(nil),                              // 71: auth.UserSession
 }
 var file_auth_auth_service_types_proto_depIdxs = []int32{
-	65, // 0: auth.LoginForTokenRequest.input:type_name -> auth.UserLoginInput
-	66, // 1: auth.LoginForTokenResponse.response_details:type_name -> common.ResponseDetails
+	64, // 0: auth.LoginForTokenRequest.input:type_name -> auth.UserLoginInput
+	65, // 1: auth.LoginForTokenResponse.response_details:type_name -> common.ResponseDetails
 	33, // 2: auth.LoginForTokenResponse.result:type_name -> auth.TokenResponse
-	65, // 3: auth.AdminLoginForTokenRequest.input:type_name -> auth.UserLoginInput
-	66, // 4: auth.AdminLoginForTokenResponse.response_details:type_name -> common.ResponseDetails
+	64, // 3: auth.AdminLoginForTokenRequest.input:type_name -> auth.UserLoginInput
+	65, // 4: auth.AdminLoginForTokenResponse.response_details:type_name -> common.ResponseDetails
 	33, // 5: auth.AdminLoginForTokenResponse.result:type_name -> auth.TokenResponse
-	66, // 6: auth.ExchangeTokenResponse.response_details:type_name -> common.ResponseDetails
-	67, // 7: auth.ExchangeTokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
-	66, // 8: auth.GetActiveAccountResponse.response_details:type_name -> common.ResponseDetails
-	68, // 9: auth.GetActiveAccountResponse.result:type_name -> identity.Account
-	66, // 10: auth.GetAuthStatusResponse.response_details:type_name -> common.ResponseDetails
-	66, // 11: auth.RedeemPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
-	66, // 12: auth.RefreshTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
+	65, // 6: auth.ExchangeTokenResponse.response_details:type_name -> common.ResponseDetails
+	66, // 7: auth.ExchangeTokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
+	65, // 8: auth.GetActiveAccountResponse.response_details:type_name -> common.ResponseDetails
+	67, // 9: auth.GetActiveAccountResponse.result:type_name -> identity.Account
+	65, // 10: auth.GetAuthStatusResponse.response_details:type_name -> common.ResponseDetails
+	65, // 11: auth.RedeemPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
+	65, // 12: auth.RefreshTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
 	31, // 13: auth.RefreshTOTPSecretResponse.result:type_name -> auth.TOTPSecretRefreshResponse
-	66, // 14: auth.RequestEmailVerificationEmailResponse.response_details:type_name -> common.ResponseDetails
-	66, // 15: auth.RequestPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
-	66, // 16: auth.RequestUsernameReminderResponse.response_details:type_name -> common.ResponseDetails
-	66, // 17: auth.UpdatePasswordResponse.response_details:type_name -> common.ResponseDetails
-	66, // 18: auth.VerifyEmailAddressResponse.response_details:type_name -> common.ResponseDetails
-	66, // 19: auth.VerifyTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
-	66, // 20: auth.EmailAddressVerificationResponse.response_details:type_name -> common.ResponseDetails
-	66, // 21: auth.PasswordResetResponse.response_details:type_name -> common.ResponseDetails
-	66, // 22: auth.TOTPSecretVerificationResponse.response_details:type_name -> common.ResponseDetails
-	67, // 23: auth.TokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
-	66, // 24: auth.UserPermissionsResponse.response_details:type_name -> common.ResponseDetails
-	64, // 25: auth.UserPermissionsResponse.permissions:type_name -> auth.UserPermissionsResponse.PermissionsEntry
-	66, // 26: auth.EvaluateBooleanFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
-	66, // 27: auth.EvaluateInt64FeatureFlagResponse.response_details:type_name -> common.ResponseDetails
-	66, // 28: auth.EvaluateStringFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
-	66, // 29: auth.BeginPasskeyRegistrationResponse.response_details:type_name -> common.ResponseDetails
-	66, // 30: auth.FinishPasskeyRegistrationResponse.response_details:type_name -> common.ResponseDetails
-	66, // 31: auth.BeginPasskeyAuthenticationResponse.response_details:type_name -> common.ResponseDetails
-	66, // 32: auth.GetSelfResponse.response_details:type_name -> common.ResponseDetails
-	69, // 33: auth.GetSelfResponse.result:type_name -> identity.User
-	66, // 34: auth.ListPasskeysResponse.response_details:type_name -> common.ResponseDetails
+	65, // 14: auth.RequestEmailVerificationEmailResponse.response_details:type_name -> common.ResponseDetails
+	65, // 15: auth.RequestPasswordResetTokenResponse.response_details:type_name -> common.ResponseDetails
+	65, // 16: auth.RequestUsernameReminderResponse.response_details:type_name -> common.ResponseDetails
+	65, // 17: auth.UpdatePasswordResponse.response_details:type_name -> common.ResponseDetails
+	65, // 18: auth.VerifyEmailAddressResponse.response_details:type_name -> common.ResponseDetails
+	65, // 19: auth.VerifyTOTPSecretResponse.response_details:type_name -> common.ResponseDetails
+	65, // 20: auth.EmailAddressVerificationResponse.response_details:type_name -> common.ResponseDetails
+	65, // 21: auth.PasswordResetResponse.response_details:type_name -> common.ResponseDetails
+	65, // 22: auth.TOTPSecretVerificationResponse.response_details:type_name -> common.ResponseDetails
+	66, // 23: auth.TokenResponse.expires_utc:type_name -> google.protobuf.Timestamp
+	65, // 24: auth.UserPermissionsResponse.response_details:type_name -> common.ResponseDetails
+	63, // 25: auth.UserPermissionsResponse.permissions:type_name -> auth.UserPermissionsResponse.PermissionsEntry
+	65, // 26: auth.EvaluateBooleanFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
+	65, // 27: auth.EvaluateInt64FeatureFlagResponse.response_details:type_name -> common.ResponseDetails
+	65, // 28: auth.EvaluateStringFeatureFlagResponse.response_details:type_name -> common.ResponseDetails
+	65, // 29: auth.BeginPasskeyRegistrationResponse.response_details:type_name -> common.ResponseDetails
+	65, // 30: auth.FinishPasskeyRegistrationResponse.response_details:type_name -> common.ResponseDetails
+	65, // 31: auth.BeginPasskeyAuthenticationResponse.response_details:type_name -> common.ResponseDetails
+	65, // 32: auth.GetSelfResponse.response_details:type_name -> common.ResponseDetails
+	68, // 33: auth.GetSelfResponse.result:type_name -> identity.User
+	65, // 34: auth.ListPasskeysResponse.response_details:type_name -> common.ResponseDetails
 	54, // 35: auth.ListPasskeysResponse.results:type_name -> auth.PasskeyCredential
-	67, // 36: auth.PasskeyCredential.created_at:type_name -> google.protobuf.Timestamp
-	67, // 37: auth.PasskeyCredential.last_used_at:type_name -> google.protobuf.Timestamp
-	66, // 38: auth.ArchivePasskeyResponse.response_details:type_name -> common.ResponseDetails
-	67, // 39: auth.UserSession.created_at:type_name -> google.protobuf.Timestamp
-	67, // 40: auth.UserSession.last_active_at:type_name -> google.protobuf.Timestamp
-	67, // 41: auth.UserSession.expires_at:type_name -> google.protobuf.Timestamp
-	70, // 42: auth.ListActiveSessionsRequest.filter:type_name -> filtering.QueryFilter
-	66, // 43: auth.ListActiveSessionsResponse.response_details:type_name -> common.ResponseDetails
-	71, // 44: auth.ListActiveSessionsResponse.pagination:type_name -> filtering.Pagination
-	57, // 45: auth.ListActiveSessionsResponse.sessions:type_name -> auth.UserSession
-	66, // 46: auth.RevokeSessionResponse.response_details:type_name -> common.ResponseDetails
-	66, // 47: auth.RevokeAllOtherSessionsResponse.response_details:type_name -> common.ResponseDetails
-	48, // [48:48] is the sub-list for method output_type
-	48, // [48:48] is the sub-list for method input_type
-	48, // [48:48] is the sub-list for extension type_name
-	48, // [48:48] is the sub-list for extension extendee
-	0,  // [0:48] is the sub-list for field type_name
+	66, // 36: auth.PasskeyCredential.created_at:type_name -> google.protobuf.Timestamp
+	66, // 37: auth.PasskeyCredential.last_used_at:type_name -> google.protobuf.Timestamp
+	65, // 38: auth.ArchivePasskeyResponse.response_details:type_name -> common.ResponseDetails
+	69, // 39: auth.ListActiveSessionsRequest.filter:type_name -> filtering.QueryFilter
+	65, // 40: auth.ListActiveSessionsResponse.response_details:type_name -> common.ResponseDetails
+	70, // 41: auth.ListActiveSessionsResponse.pagination:type_name -> filtering.Pagination
+	71, // 42: auth.ListActiveSessionsResponse.sessions:type_name -> auth.UserSession
+	65, // 43: auth.RevokeSessionResponse.response_details:type_name -> common.ResponseDetails
+	65, // 44: auth.RevokeAllOtherSessionsResponse.response_details:type_name -> common.ResponseDetails
+	45, // [45:45] is the sub-list for method output_type
+	45, // [45:45] is the sub-list for method input_type
+	45, // [45:45] is the sub-list for extension type_name
+	45, // [45:45] is the sub-list for extension extendee
+	0,  // [0:45] is the sub-list for field type_name
 }
 
 func init() { file_auth_auth_service_types_proto_init() }
@@ -3896,7 +3761,7 @@ func file_auth_auth_service_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_auth_service_types_proto_rawDesc), len(file_auth_auth_service_types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   65,
+			NumMessages:   64,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
