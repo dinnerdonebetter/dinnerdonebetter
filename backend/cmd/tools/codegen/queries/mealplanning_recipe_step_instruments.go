@@ -30,6 +30,7 @@ var recipeStepInstrumentsColumns = []string{
 	"maximum_quantity",
 	"index",
 	"option_index",
+	"scale_factor",
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,

@@ -35,6 +35,7 @@ var recipeStepIngredientsColumns = []string{
 	"to_taste",
 	"product_percentage_to_use",
 	"vessel_index",
+	"scale_factor",
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
