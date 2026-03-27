@@ -64,6 +64,7 @@ func (m *Migrator) Migrate(ctx context.Context, db *sql.DB) error {
 		{Version: 20, Description: "media for preparations ingredients steps", Script: fetchMigration("00020_media_for_preparations_ingredients_steps")},
 		{Version: 21, Description: "mealplanning bridge tables unique active indexes", Script: fetchMigration("00021_valid_preparation_instruments_unique_active")},
 		{Version: 22, Description: "mealplanning bridge tables unique active indexes", Script: fetchMigration("00022_recipe_step_scale_factor")},
+		{Version: 23, Description: "user sessions table", Script: fetchMigration("00023_user_sessions")},
 	}
 
 	if err := darwin.New(darwin.NewGenericDriver(db, darwin.PostgresDialect{}), migrations, nil).Migrate(); err != nil {

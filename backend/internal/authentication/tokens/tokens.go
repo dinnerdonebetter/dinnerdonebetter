@@ -16,9 +16,10 @@ type (
 	}
 
 	Issuer interface {
-		IssueToken(ctx context.Context, user User, expiry time.Duration) (string, error)
-		IssueTokenWithAccount(ctx context.Context, user User, expiry time.Duration, accountID string) (string, error)
+		IssueToken(ctx context.Context, user User, expiry time.Duration, accountID, sessionID string) (tokenStr, jti string, err error)
 		ParseUserIDFromToken(ctx context.Context, token string) (string, error)
 		ParseUserIDAndAccountIDFromToken(ctx context.Context, token string) (userID, accountID string, err error)
+		ParseSessionIDFromToken(ctx context.Context, token string) (string, error)
+		ParseJTIFromToken(ctx context.Context, token string) (string, error)
 	}
 )

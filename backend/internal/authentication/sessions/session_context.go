@@ -47,6 +47,7 @@ type ContextData struct {
 	AccountPermissions map[string]authorization.AccountRolePermissionsChecker `json:"-"`
 	Requester          RequesterInfo                                          `json:"-"`
 	ActiveAccountID    string                                                 `json:"-"`
+	SessionID          string                                                 `json:"-"`
 }
 
 // RequesterInfo contains data relevant to the user making a request.
@@ -74,6 +75,11 @@ func (x *ContextData) GetServicePermissions() authorization.ServiceRolePermissio
 // GetActiveAccountID is a simple getter.
 func (x *ContextData) GetActiveAccountID() string {
 	return x.ActiveAccountID
+}
+
+// GetSessionID is a simple getter.
+func (x *ContextData) GetSessionID() string {
+	return x.SessionID
 }
 
 // AccountRolePermissionsChecker returns the relevant AccountRolePermissionsChecker.

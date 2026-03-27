@@ -24,8 +24,16 @@ func RegisterAuthRepository(i do.Injector) {
 	do.Provide[domainauth.PasswordResetTokenDataManager](i, func(i do.Injector) (domainauth.PasswordResetTokenDataManager, error) {
 		return ProvidePasswordResetTokenDataManager(do.MustInvoke[domainauth.Repository](i)), nil
 	})
+
+	do.Provide[domainauth.UserSessionDataManager](i, func(i do.Injector) (domainauth.UserSessionDataManager, error) {
+		return ProvideUserSessionDataManager(do.MustInvoke[domainauth.Repository](i)), nil
+	})
 }
 
 func ProvidePasswordResetTokenDataManager(r domainauth.Repository) domainauth.PasswordResetTokenDataManager {
+	return r
+}
+
+func ProvideUserSessionDataManager(r domainauth.Repository) domainauth.UserSessionDataManager {
 	return r
 }

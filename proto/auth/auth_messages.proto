@@ -42,3 +42,15 @@ message UserLoginInput {
   string totp_token = 3;
   string desired_account_id = 4;
 }
+
+message UserSession {
+  string id = 1;
+  string client_ip = 2;
+  string user_agent = 3;
+  string device_name = 4;
+  string login_method = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp last_active_at = 7;
+  google.protobuf.Timestamp expires_at = 8;
+  bool is_current = 9;
+}

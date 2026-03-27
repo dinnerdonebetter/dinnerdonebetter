@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 
 	"github.com/go-oauth2/oauth2/v4/manage"
@@ -39,6 +40,7 @@ type AuthInterceptor struct {
 	tracer                tracing.Tracer
 	logger                logging.Logger
 	identityDataManager   identitymanager.IdentityDataManager
+	sessionDataManager    auth.UserSessionDataManager
 	methodPermissions     map[string][]authorization.Permission
 	oauth2ClientManager   *manage.Manager
 	tokenIssuer           tokens.Issuer
@@ -54,6 +56,7 @@ func ProvideAuthInterceptor(
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	identityDataManager identitymanager.IdentityDataManager,
+	sessionDataManager auth.UserSessionDataManager,
 	oauth2ClientManager *manage.Manager,
 	tokenIssuer tokens.Issuer,
 	aggregatedPermissions MethodPermissionsMap,
@@ -62,6 +65,7 @@ func ProvideAuthInterceptor(
 		tracer:              tracing.NewNamedTracer(tracerProvider, o11yName),
 		logger:              logging.NewNamedLogger(logger, o11yName),
 		identityDataManager: identityDataManager,
+		sessionDataManager:  sessionDataManager,
 		oauth2ClientManager: oauth2ClientManager,
 		tokenIssuer:         tokenIssuer,
 		methodPermissions:   aggregatedPermissions,
@@ -160,10 +164,30 @@ func (s *AuthInterceptor) extractSessionContextData(ctx context.Context, metaDat
 	// Fallback: treat Bearer token as JWT (e.g. from LoginForToken with DesiredAccountID).
 	userID, accountID, parseErr := s.tokenIssuer.ParseUserIDAndAccountIDFromToken(ctx, accessToken)
 	if parseErr == nil && userID != "" {
+		// Validate session if token has a session ID.
+		sessionID, sidErr := s.tokenIssuer.ParseSessionIDFromToken(ctx, accessToken)
+		if sidErr == nil && sessionID != "" {
+			jti, jtiErr := s.tokenIssuer.ParseJTIFromToken(ctx, accessToken)
+			if jtiErr == nil && jti != "" {
+				if _, sessErr := s.sessionDataManager.GetUserSessionBySessionTokenID(ctx, jti); sessErr != nil {
+					return nil, Unauthenticated("session has been revoked or expired")
+				}
+				// Touch last active asynchronously so it doesn't block the request.
+				touchJTI := jti
+				touchCtx := context.WithoutCancel(ctx)
+				go func() {
+					if err = s.sessionDataManager.TouchSessionLastActive(touchCtx, touchJTI); err != nil {
+						logger.Error("touch session last active failed", err)
+					}
+				}()
+			}
+		}
+
 		sessionCtxData, sessionErr := s.identityDataManager.BuildSessionContextDataForUser(ctx, userID, accountID)
 		if sessionErr != nil {
 			return nil, observability.PrepareAndLogError(sessionErr, logger, span, "fetching user info from token")
 		}
+		sessionCtxData.SessionID = sessionID
 		return s.applyZuckMode(ctx, metaData, sessionCtxData)
 	}
 

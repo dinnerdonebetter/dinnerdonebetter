@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/samber/do/v2"
@@ -37,6 +38,7 @@ func RegisterAuth(i do.Injector) {
 			do.MustInvoke[logging.Logger](i),
 			do.MustInvoke[messagequeue.PublisherProvider](i),
 			do.MustInvoke[identity.Repository](i),
+			do.MustInvoke[auth.Repository](i),
 			do.MustInvoke[*tokenscfg.Config](i),
 		)
 	})

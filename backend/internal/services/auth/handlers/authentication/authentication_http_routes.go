@@ -250,7 +250,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	defaultAccountTimer.Stop()
 
 	var token string
-	token, err = s.tokenIssuer.IssueToken(ctx, user, s.config.TokenLifetime)
+	token, _, err = s.tokenIssuer.IssueToken(ctx, user, s.config.TokenLifetime, "", "")
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "signing token")
 		errRes := types.NewAPIErrorResponse(staticError, types.ErrEncryptionIssue, responseDetails)

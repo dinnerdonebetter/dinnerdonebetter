@@ -36,5 +36,8 @@ func ProvideMethodPermissions() AuthMethodPermissions {
 		authsvc.AuthService_FinishPasskeyRegistration_FullMethodName:     noPerms,
 		authsvc.AuthService_ListPasskeys_FullMethodName:                  noPerms,
 		authsvc.AuthService_ArchivePasskey_FullMethodName:                noPerms,
+		authsvc.AuthService_ListActiveSessions_FullMethodName:            noPerms,
+		authsvc.AuthService_RevokeSession_FullMethodName:                 noPerms,
+		authsvc.AuthService_RevokeAllOtherSessions_FullMethodName:        noPerms,
 	}
 }

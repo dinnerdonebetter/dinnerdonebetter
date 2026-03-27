@@ -16,7 +16,7 @@ Authentication in this app is **convoluted by design**: there are several ways t
 ### JWT (from LoginForToken / ProcessLogin / ProcessPasskeyLogin)
 
 - **Issued by**: `internal/authentication/manager.go` via `ProcessLogin`, `ProcessPasskeyLogin`, or `ExchangeTokenForUser`
-- **Format**: JWT (or PASETO, configurable) with claims: `sub` (user ID), `account_id` (optional), `exp`, `aud`, `iss`
+- **Format**: JWT (or PASETO, configurable) with claims: `sub` (user ID), `account_id` (optional), `sid` (session ID), `jti` (unique token ID), `exp`, `aud`, `iss`
 - **Lifetime**: Configurable (e.g. 5–10 min access, 72h refresh)
 - **Used for**:
   - Stored in web app auth cookie
@@ -42,8 +42,9 @@ Authentication in this app is **convoluted by design**: there are several ways t
 
 1. Client calls gRPC `LoginForToken` (or `AdminLoginForToken` for admin-only) with username, password, and optionally TOTP.
 2. `ProcessLogin` validates credentials via `Authenticator.CredentialsAreValid` (password + TOTP if 2FA verified).
-3. Manager issues JWT with `IssueTokenWithAccount` (user ID + account ID).
-4. Client receives `TokenResponse` with `AccessToken` and `RefreshToken`.
+3. Manager creates a server-side session record in the `user_sessions` table with device metadata (IP, User-Agent).
+4. Manager issues JWT with `IssueToken` (user ID + account ID + session ID + JTI).
+5. Client receives `TokenResponse` with `AccessToken` and `RefreshToken`.
 
 **Entry points**:
 
@@ -62,7 +63,7 @@ Authentication in this app is **convoluted by design**: there are several ways t
 3. User completes passkey assertion in browser.
 4. Client calls `FinishPasskeyAuthentication` with assertion response and challenge.
 5. WebAuthn service validates assertion, returns user ID.
-6. `ProcessPasskeyLogin` issues JWT (same as password login).
+6. `ProcessPasskeyLogin` creates a session record and issues JWT (same as password login).
 7. Client stores JWT in cookie (web app) or uses it directly.
 
 **Entry points**:
@@ -108,10 +109,11 @@ Every gRPC request (except unauthenticated routes) goes through `AuthInterceptor
 2. **Resolve session** (in order):
    - **OAuth2 first**: `oauth2ClientManager.LoadAccessToken(ctx, accessToken)` — if token is an OAuth2 access token, load from DB and get `user_id`.
    - **JWT fallback**: `tokenIssuer.ParseUserIDAndAccountIDFromToken(ctx, accessToken)` — if OAuth2 fails, treat as JWT.
-3. **Build session context**: `identityDataManager.BuildSessionContextDataForUser(ctx, userID, accountID)`.
-4. **Zuck mode** (optional): If `X-Zuck-Mode-User` header present and user can impersonate, override session with that user/account.
-5. **Permissions**: Check method’s required permissions against session; deny if missing.
-6. **Inject context**: Store `sessions.ContextData` in request context for handlers.
+3. **Validate session** (JWT path only): If the token has a `sid` claim, extract the `jti` and look up the session in `user_sessions`. If the session has been revoked or expired, return 401. Tokens without `sid` (pre-session-management or SSO) skip this check. Asynchronously updates `last_active_at` on the session.
+4. **Build session context**: `identityDataManager.BuildSessionContextDataForUser(ctx, userID, accountID)`. The session ID is attached to `ContextData.SessionID`.
+5. **Zuck mode** (optional): If `X-Zuck-Mode-User` header present and user can impersonate, override session with that user/account.
+6. **Permissions**: Check method’s required permissions against session; deny if missing.
+7. **Inject context**: Store `sessions.ContextData` in request context for handlers.
 
 **Unauthenticated routes** (skip interceptor):
 
@@ -148,8 +150,41 @@ After auth, handlers receive `sessions.ContextData` in the request context. It c
 - `Requester`: User ID, username, email, account status, service role
 - `ActiveAccountID`: Account for this request
 - `AccountPermissions`: Map of account ID → role checker
+- `SessionID`: The server-side session ID (from the `sid` claim; empty for OAuth2 tokens or pre-session JWTs)
 
 **Implementation**: [`internal/authentication/sessions/session_context.go`](backend/internal/authentication/sessions/session_context.go)
+
+## Session Management
+
+Users can view and manage their active login sessions. Each login (password, passkey) creates a record in the `user_sessions` table that tracks:
+
+- **Device metadata**: Client IP, User-Agent, friendly device name (derived from User-Agent)
+- **Login method**: `password` or `passkey`
+- **Activity**: `created_at`, `last_active_at` (updated asynchronously on each request), `expires_at`
+- **Token linkage**: `session_token_id` (access token JTI) and `refresh_token_id` (refresh token JTI), rotated on each token refresh
+
+### Token Refresh and Session Continuity
+
+When a client calls `ExchangeToken` with a refresh token, the system:
+
+1. Extracts the `jti` and `sid` from the refresh token.
+2. Looks up the session by refresh token JTI — rejects if revoked.
+3. Issues new access + refresh tokens with the same `sid` but new JTIs.
+4. Updates the session record with the new JTIs and expiration.
+
+This means the session ID is stable across token refreshes, while individual tokens rotate.
+
+### gRPC Endpoints
+
+- **`ListActiveSessions`**: Returns all active (non-revoked, non-expired) sessions for the current user with pagination. Each session includes an `is_current` flag.
+- **`RevokeSession`**: Revokes a specific session by ID. The revoked session's tokens are rejected on the next request.
+- **`RevokeAllOtherSessions`**: Revokes all sessions except the one making the request.
+
+### Backward Compatibility
+
+Tokens issued before session management (without a `sid` claim) continue to work — the interceptor skips session validation for these tokens. As old tokens expire, all active tokens will have session tracking.
+
+**Implementation**: [`internal/domain/auth/user_session.go`](backend/internal/domain/auth/user_session.go), [`internal/repositories/postgres/auth/user_sessions.go`](backend/internal/repositories/postgres/auth/user_sessions.go), [`internal/services/auth/grpc/auth.go`](backend/internal/services/auth/grpc/auth.go)
 
 ## Key File Reference
 
@@ -166,6 +201,9 @@ After auth, handlers receive `sessions.ContextData` in the request context. It c
 | Web app auth middleware                       | `internal/platform/webappauth/middleware.go`                           |
 | Client builder (OAuth2 + JWT)                 | `internal/platform/webappauth/client_builder.go`                       |
 | gRPC client (OAuth2, Bearer)                  | `pkg/client/client.go`                                                 |
+| Session domain model + interfaces             | `internal/domain/auth/user_session.go`                                 |
+| Session DB repository                         | `internal/repositories/postgres/auth/user_sessions.go`                 |
+| Session DB migration                          | `internal/repositories/postgres/migrations/migration_files/00023_user_sessions.sql` |
 
 ## Flow Diagram
 
@@ -179,13 +217,15 @@ flowchart TB
 
     subgraph "Token Issuance"
         PM[ProcessLogin / ProcessPasskeyLogin]
-        JWT[JWT with user_id + account_id]
+        SESS[(user_sessions table)]
+        JWT[JWT with user_id + account_id + sid + jti]
     end
 
     PW --> PM
     PK --> PM
     SSO --> JWT
 
+    PM --> SESS
     PM --> JWT
 
     subgraph "Web App Path"
@@ -211,6 +251,7 @@ flowchart TB
         AI[Extract Bearer]
         O2Check{OAuth2 token?}
         JWTCheck{JWT?}
+        SessCheck{Session valid?}
         SC[Session Context]
     end
 
@@ -218,8 +259,22 @@ flowchart TB
     AI --> O2Check
     O2Check -->|yes| SC
     O2Check -->|no| JWTCheck
-    JWTCheck -->|yes| SC
+    JWTCheck -->|yes| SessCheck
     JWTCheck -->|no| Err[401 Unauthenticated]
+    SessCheck -->|yes| SC
+    SessCheck -->|revoked/expired| Err
+
+    subgraph "Session Management"
+        LS[ListActiveSessions]
+        RS[RevokeSession]
+        RA[RevokeAllOtherSessions]
+    end
+
+    SC --> LS
+    SC --> RS
+    SC --> RA
+    RS --> SESS
+    RA --> SESS
 ```
 
 ## Related Documentation

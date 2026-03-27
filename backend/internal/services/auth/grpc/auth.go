@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
@@ -18,6 +19,8 @@ import (
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
 )
 
 func (s *serviceImpl) EvaluateBooleanFeatureFlag(ctx context.Context, req *authsvc.EvaluateBooleanFeatureFlagRequest) (*authsvc.EvaluateBooleanFeatureFlagResponse, error) {
@@ -181,7 +184,7 @@ func (s *serviceImpl) loginForToken(ctx context.Context, admin bool, input *auth
 
 	logger := s.logger.WithSpan(span)
 
-	tokenResponse, err := s.authenticationManager.ProcessLogin(ctx, admin, input)
+	tokenResponse, err := s.authenticationManager.ProcessLogin(ctx, admin, input, extractLoginMetadata(ctx))
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to process login request")
 	}
@@ -570,7 +573,7 @@ func (s *serviceImpl) FinishPasskeyAuthentication(ctx context.Context, request *
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to finish passkey authentication")
 	}
 
-	tokenResponse, err := s.authenticationManager.ProcessPasskeyLogin(ctx, result.UserID, "")
+	tokenResponse, err := s.authenticationManager.ProcessPasskeyLogin(ctx, result.UserID, "", extractLoginMetadata(ctx))
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to process passkey login")
 	}
@@ -625,6 +628,28 @@ func (s *serviceImpl) ListPasskeys(ctx context.Context, _ *authsvc.ListPasskeysR
 	}, nil
 }
 
+// extractLoginMetadata extracts client IP and User-Agent from gRPC request metadata.
+func extractLoginMetadata(ctx context.Context) *authentication.LoginMetadata {
+	meta := &authentication.LoginMetadata{}
+
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		if vals := md.Get("user-agent"); len(vals) > 0 {
+			meta.UserAgent = vals[0]
+		}
+		if vals := md.Get("x-forwarded-for"); len(vals) > 0 {
+			meta.ClientIP = vals[0]
+		}
+	}
+
+	if meta.ClientIP == "" {
+		if p, ok := peer.FromContext(ctx); ok && p.Addr != nil {
+			meta.ClientIP = p.Addr.String()
+		}
+	}
+
+	return meta
+}
+
 func (s *serviceImpl) ArchivePasskey(ctx context.Context, request *authsvc.ArchivePasskeyRequest) (*authsvc.ArchivePasskeyResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -647,6 +672,97 @@ func (s *serviceImpl) ArchivePasskey(ctx context.Context, request *authsvc.Archi
 	}
 
 	return &authsvc.ArchivePasskeyResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}, nil
+}
+
+func (s *serviceImpl) ListActiveSessions(ctx context.Context, request *authsvc.ListActiveSessionsRequest) (*authsvc.ListActiveSessionsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	sessionsResult, err := s.authManager.GetActiveSessionsForUser(ctx, sessionContextData.GetUserID(), filter)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to list active sessions")
+	}
+
+	results := make([]*authsvc.UserSession, 0, len(sessionsResult.Data))
+	for _, sess := range sessionsResult.Data {
+		results = append(results, &authsvc.UserSession{
+			Id:           sess.ID,
+			ClientIp:     sess.ClientIP,
+			UserAgent:    sess.UserAgent,
+			DeviceName:   sess.DeviceName,
+			LoginMethod:  sess.LoginMethod,
+			CreatedAt:    grpcconverters.ConvertTimeToPBTimestamp(sess.CreatedAt),
+			LastActiveAt: grpcconverters.ConvertTimeToPBTimestamp(sess.LastActiveAt),
+			ExpiresAt:    grpcconverters.ConvertTimeToPBTimestamp(sess.ExpiresAt),
+			IsCurrent:    sess.ID == sessionContextData.GetSessionID(),
+		})
+	}
+
+	return &authsvc.ListActiveSessionsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(sessionsResult.Pagination, filter),
+		Sessions:   results,
+	}, nil
+}
+
+func (s *serviceImpl) RevokeSession(ctx context.Context, request *authsvc.RevokeSessionRequest) (*authsvc.RevokeSessionResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	sessionID := strings.TrimSpace(request.GetSessionId())
+	if sessionID == "" {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("session_id is required"), logger, span, codes.InvalidArgument, "session_id is required")
+	}
+
+	if err = s.authManager.RevokeSession(ctx, sessionID, sessionContextData.GetUserID()); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to revoke session")
+	}
+
+	return &authsvc.RevokeSessionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}, nil
+}
+
+func (s *serviceImpl) RevokeAllOtherSessions(ctx context.Context, _ *authsvc.RevokeAllOtherSessionsRequest) (*authsvc.RevokeAllOtherSessionsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if err = s.authManager.RevokeAllSessionsForUserExcept(ctx, sessionContextData.GetUserID(), sessionContextData.GetSessionID()); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to revoke all other sessions")
+	}
+
+	return &authsvc.RevokeAllOtherSessionsResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
 		},

@@ -31,4 +31,7 @@ service AuthService {
   rpc FinishPasskeyAuthentication(FinishPasskeyAuthenticationRequest) returns (LoginForTokenResponse);
   rpc ListPasskeys(ListPasskeysRequest) returns (ListPasskeysResponse);
   rpc ArchivePasskey(ArchivePasskeyRequest) returns (ArchivePasskeyResponse);
+  rpc ListActiveSessions(ListActiveSessionsRequest) returns (ListActiveSessionsResponse);
+  rpc RevokeSession(RevokeSessionRequest) returns (RevokeSessionResponse);
+  rpc RevokeAllOtherSessions(RevokeAllOtherSessionsRequest) returns (RevokeAllOtherSessionsResponse);
 }

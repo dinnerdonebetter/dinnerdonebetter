@@ -20,6 +20,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
@@ -64,6 +65,50 @@ func (m *mockPasswordResetTokenDataManager) RedeemPasswordResetToken(ctx context
 	return m.Called(ctx, passwordResetTokenID).Error(0)
 }
 
+type mockUserSessionDataManager struct {
+	mock.Mock
+}
+
+func (m *mockUserSessionDataManager) CreateUserSession(ctx context.Context, input *auth.UserSessionDatabaseCreationInput) (*auth.UserSession, error) {
+	args := m.Called(ctx, input)
+	return args.Get(0).(*auth.UserSession), args.Error(1)
+}
+
+func (m *mockUserSessionDataManager) GetUserSessionBySessionTokenID(ctx context.Context, sessionTokenID string) (*auth.UserSession, error) {
+	args := m.Called(ctx, sessionTokenID)
+	return args.Get(0).(*auth.UserSession), args.Error(1)
+}
+
+func (m *mockUserSessionDataManager) GetUserSessionByRefreshTokenID(ctx context.Context, refreshTokenID string) (*auth.UserSession, error) {
+	args := m.Called(ctx, refreshTokenID)
+	return args.Get(0).(*auth.UserSession), args.Error(1)
+}
+
+func (m *mockUserSessionDataManager) GetActiveSessionsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[auth.UserSession], error) {
+	args := m.Called(ctx, userID, filter)
+	return args.Get(0).(*filtering.QueryFilteredResult[auth.UserSession]), args.Error(1)
+}
+
+func (m *mockUserSessionDataManager) RevokeUserSession(ctx context.Context, sessionID, userID string) error {
+	return m.Called(ctx, sessionID, userID).Error(0)
+}
+
+func (m *mockUserSessionDataManager) RevokeAllSessionsForUser(ctx context.Context, userID string) error {
+	return m.Called(ctx, userID).Error(0)
+}
+
+func (m *mockUserSessionDataManager) RevokeAllSessionsForUserExcept(ctx context.Context, userID, sessionID string) error {
+	return m.Called(ctx, userID, sessionID).Error(0)
+}
+
+func (m *mockUserSessionDataManager) UpdateSessionTokenIDs(ctx context.Context, sessionID, newSessionTokenID, newRefreshTokenID string, newExpiresAt time.Time) error {
+	return m.Called(ctx, sessionID, newSessionTokenID, newRefreshTokenID, newExpiresAt).Error(0)
+}
+
+func (m *mockUserSessionDataManager) TouchSessionLastActive(ctx context.Context, sessionTokenID string) error {
+	return m.Called(ctx, sessionTokenID).Error(0)
+}
+
 func TestProvideAuthManager(t *testing.T) {
 	t.Parallel()
 
@@ -81,6 +126,7 @@ func TestProvideAuthManager(t *testing.T) {
 			logging.NewNoopLogger(),
 			tracing.NewNoopTracerProvider(),
 			&mockPasswordResetTokenDataManager{},
+			&mockUserSessionDataManager{},
 			&identitymock.RepositoryMock{},
 			&mockauthn.Authenticator{},
 			mpp,
@@ -206,6 +252,7 @@ func TestProvideAuthManager_NilConfig(t *testing.T) {
 		logging.NewNoopLogger(),
 		tracing.NewNoopTracerProvider(),
 		&mockPasswordResetTokenDataManager{},
+		&mockUserSessionDataManager{},
 		&identitymock.RepositoryMock{},
 		&mockauthn.Authenticator{},
 		mpp,

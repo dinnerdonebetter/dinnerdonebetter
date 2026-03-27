@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
@@ -26,9 +27,15 @@ const (
 )
 
 type (
+	// LoginMetadata holds request metadata for session tracking.
+	LoginMetadata struct {
+		ClientIP  string
+		UserAgent string
+	}
+
 	Manager interface {
-		ProcessLogin(ctx context.Context, adminOnly bool, loginData *auth.UserLoginInput) (*auth.TokenResponse, error)
-		ProcessPasskeyLogin(ctx context.Context, userID, desiredAccountID string) (*auth.TokenResponse, error)
+		ProcessLogin(ctx context.Context, adminOnly bool, loginData *auth.UserLoginInput, meta *LoginMetadata) (*auth.TokenResponse, error)
+		ProcessPasskeyLogin(ctx context.Context, userID, desiredAccountID string, meta *LoginMetadata) (*auth.TokenResponse, error)
 		ExchangeTokenForUser(ctx context.Context, refreshToken, desiredAccountID string) (*auth.TokenResponse, error)
 	}
 
@@ -39,6 +46,7 @@ type (
 		logger                  logging.Logger
 		dataChangesPublisher    messagequeue.Publisher
 		userAuthDataManager     identity.Repository
+		sessionDataManager      auth.UserSessionDataManager
 		maxAccessTokenLifetime  time.Duration
 		maxRefreshTokenLifetime time.Duration
 	}
@@ -53,6 +61,7 @@ func NewManager(
 	logger logging.Logger,
 	publisherProvider messagequeue.PublisherProvider,
 	userAuthDataManager identity.Repository,
+	sessionDataManager auth.UserSessionDataManager,
 	cfg *tokenscfg.Config,
 ) (Manager, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, queuesConfig.DataChangesTopicName)
@@ -69,6 +78,7 @@ func NewManager(
 		authenticator:           authenticator,
 		dataChangesPublisher:    dataChangesPublisher,
 		userAuthDataManager:     userAuthDataManager,
+		sessionDataManager:      sessionDataManager,
 	}
 
 	return m, nil
@@ -109,7 +119,7 @@ func (m *manager) validateLogin(ctx context.Context, user *identity.User, loginI
 	return loginValid, nil
 }
 
-func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *auth.UserLoginInput) (*auth.TokenResponse, error) {
+func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *auth.UserLoginInput, meta *LoginMetadata) (*auth.TokenResponse, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -183,6 +193,11 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 		accountID = defaultAccountID
 	}
 
+	response, err := m.issueTokensWithSession(ctx, user, accountID, auth.LoginMethodPassword, meta)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "issuing tokens with session")
+	}
+
 	dcm := &audit.DataChangeMessage{
 		EventType: identity.UserLoggedInServiceEventType,
 		AccountID: accountID,
@@ -193,27 +208,11 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 		return nil, observability.PrepareError(err, span, "publishing data change")
 	}
 
-	response := &auth.TokenResponse{
-		UserID:     user.ID,
-		AccountID:  accountID,
-		ExpiresUTC: time.Now().Add(m.maxAccessTokenLifetime).UTC(),
-	}
-
-	response.AccessToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxAccessTokenLifetime, accountID)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "creating access token")
-	}
-
-	response.RefreshToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxRefreshTokenLifetime, accountID)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "creating refresh token")
-	}
-
 	return response, nil
 }
 
 // ProcessPasskeyLogin issues tokens for a user authenticated via passkey.
-func (m *manager) ProcessPasskeyLogin(ctx context.Context, userID, desiredAccountID string) (*auth.TokenResponse, error) {
+func (m *manager) ProcessPasskeyLogin(ctx context.Context, userID, desiredAccountID string, meta *LoginMetadata) (*auth.TokenResponse, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -251,6 +250,11 @@ func (m *manager) ProcessPasskeyLogin(ctx context.Context, userID, desiredAccoun
 		accountID = defaultAccountID
 	}
 
+	response, err := m.issueTokensWithSession(ctx, user, accountID, auth.LoginMethodPasskey, meta)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "issuing tokens with session")
+	}
+
 	dcm := &audit.DataChangeMessage{
 		EventType: identity.UserLoggedInServiceEventType,
 		AccountID: accountID,
@@ -259,22 +263,6 @@ func (m *manager) ProcessPasskeyLogin(ctx context.Context, userID, desiredAccoun
 
 	if err = m.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		return nil, observability.PrepareError(err, span, "publishing data change")
-	}
-
-	response := &auth.TokenResponse{
-		UserID:     user.ID,
-		AccountID:  accountID,
-		ExpiresUTC: time.Now().Add(m.maxAccessTokenLifetime).UTC(),
-	}
-
-	response.AccessToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxAccessTokenLifetime, accountID)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "creating access token")
-	}
-
-	response.RefreshToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxRefreshTokenLifetime, accountID)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "creating refresh token")
 	}
 
 	return response, nil
@@ -307,6 +295,24 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desire
 		return nil, observability.PrepareError(err, span, "user is banned")
 	}
 
+	// Validate the existing session via refresh token JTI.
+	refreshJTI, jtiErr := m.tokenIssuer.ParseJTIFromToken(ctx, refreshToken)
+	sessionID, sidErr := m.tokenIssuer.ParseSessionIDFromToken(ctx, refreshToken)
+
+	if jtiErr != nil {
+		refreshJTI = ""
+	}
+	if sidErr != nil {
+		sessionID = ""
+	}
+
+	if refreshJTI != "" && sessionID != "" {
+		session, sessErr := m.sessionDataManager.GetUserSessionByRefreshTokenID(ctx, refreshJTI)
+		if sessErr != nil || session == nil {
+			return nil, observability.PrepareError(errors.New("session has been revoked"), span, "validating session")
+		}
+	}
+
 	var accountID string
 	if desiredAccountID != "" {
 		var isMember bool
@@ -327,6 +333,31 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desire
 		accountID = defaultAccountID
 	}
 
+	// Issue new tokens with the same session ID.
+	var accessJTI, refreshJTINew string
+	response := &auth.TokenResponse{
+		UserID:     user.ID,
+		AccountID:  accountID,
+		ExpiresUTC: time.Now().Add(m.maxAccessTokenLifetime).UTC(),
+	}
+
+	response.AccessToken, accessJTI, err = m.tokenIssuer.IssueToken(ctx, user, m.maxAccessTokenLifetime, accountID, sessionID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating access token")
+	}
+
+	response.RefreshToken, refreshJTINew, err = m.tokenIssuer.IssueToken(ctx, user, m.maxRefreshTokenLifetime, accountID, sessionID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating refresh token")
+	}
+
+	// Update the session with new token JTIs.
+	if sessionID != "" {
+		if updateErr := m.sessionDataManager.UpdateSessionTokenIDs(ctx, sessionID, accessJTI, refreshJTINew, time.Now().Add(m.maxRefreshTokenLifetime).UTC()); updateErr != nil {
+			logger.Error("updating session token IDs", updateErr)
+		}
+	}
+
 	dcm := &audit.DataChangeMessage{
 		EventType: identity.UserLoggedInServiceEventType,
 		AccountID: accountID,
@@ -337,21 +368,80 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desire
 		return nil, observability.PrepareError(err, span, "publishing data change")
 	}
 
+	return response, nil
+}
+
+// issueTokensWithSession creates a session record and issues tokens with the session ID embedded.
+func (m *manager) issueTokensWithSession(ctx context.Context, user *identity.User, accountID, loginMethod string, meta *LoginMetadata) (*auth.TokenResponse, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	sessionID := identifiers.New()
+
+	var clientIP, userAgent string
+	if meta != nil {
+		clientIP = meta.ClientIP
+		userAgent = meta.UserAgent
+	}
+
 	response := &auth.TokenResponse{
 		UserID:     user.ID,
 		AccountID:  accountID,
 		ExpiresUTC: time.Now().Add(m.maxAccessTokenLifetime).UTC(),
 	}
 
-	response.AccessToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxAccessTokenLifetime, accountID)
+	var (
+		err                   error
+		accessJTI, refreshJTI string
+	)
+	response.AccessToken, accessJTI, err = m.tokenIssuer.IssueToken(ctx, user, m.maxAccessTokenLifetime, accountID, sessionID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating accessToken")
+		return nil, observability.PrepareError(err, span, "creating access token")
 	}
 
-	response.RefreshToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxRefreshTokenLifetime, accountID)
+	response.RefreshToken, refreshJTI, err = m.tokenIssuer.IssueToken(ctx, user, m.maxRefreshTokenLifetime, accountID, sessionID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating accessToken")
+		return nil, observability.PrepareError(err, span, "creating refresh token")
+	}
+
+	if _, err = m.sessionDataManager.CreateUserSession(ctx, &auth.UserSessionDatabaseCreationInput{
+		ID:             sessionID,
+		BelongsToUser:  user.ID,
+		SessionTokenID: accessJTI,
+		RefreshTokenID: refreshJTI,
+		ClientIP:       clientIP,
+		UserAgent:      userAgent,
+		DeviceName:     deriveDeviceName(userAgent),
+		LoginMethod:    loginMethod,
+		ExpiresAt:      time.Now().Add(m.maxRefreshTokenLifetime).UTC(),
+	}); err != nil {
+		m.logger.Error("creating user session", err)
 	}
 
 	return response, nil
+}
+
+// deriveDeviceName produces a simple friendly device name from a User-Agent string.
+func deriveDeviceName(userAgent string) string {
+	if userAgent == "" {
+		return "Unknown Device"
+	}
+
+	ua := strings.ToLower(userAgent)
+	switch {
+	case strings.Contains(ua, "iphone"):
+		return "iPhone"
+	case strings.Contains(ua, "ipad"):
+		return "iPad"
+	case strings.Contains(ua, "android"):
+		return "Android Device"
+	case strings.Contains(ua, "macintosh") || strings.Contains(ua, "mac os"):
+		return "Mac"
+	case strings.Contains(ua, "windows"):
+		return "Windows PC"
+	case strings.Contains(ua, "linux"):
+		return "Linux"
+	default:
+		return "Unknown Device"
+	}
 }

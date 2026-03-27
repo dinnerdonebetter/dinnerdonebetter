@@ -163,6 +163,9 @@ func BuildDatabaseContainer(ctx context.Context, dbName string) (*postgres.Postg
 	if err = dbConfig.LoadConnectionDetailsFromURL(connStr); err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to connect to postgres container: %w", err)
 	}
+	// LoadConnectionDetailsFromURL only populates ReadConnection; copy it to
+	// WriteConnection so ProvideDatabaseClient can open both handles.
+	dbConfig.WriteConnection = dbConfig.ReadConnection
 
 	db, err := dbConfig.ConnectToDatabase()
 	if err != nil {
