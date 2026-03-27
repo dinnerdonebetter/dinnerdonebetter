@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: SetUserAccountStatus :execrows
 UPDATE users SET
 	last_updated_at = NOW(),

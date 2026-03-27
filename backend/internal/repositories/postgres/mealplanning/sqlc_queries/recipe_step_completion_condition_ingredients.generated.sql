@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: CreateRecipeStepCompletionConditionIngredient :exec
 INSERT INTO recipe_step_completion_condition_ingredients (
 	id,

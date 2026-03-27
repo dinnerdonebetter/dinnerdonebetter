@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: ArchiveUserIngredientPreference :execrows
 UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(belongs_to_user) AND id = sqlc.arg(id);
 

@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: AttachAccountInvitationsToUserID :execrows
 UPDATE account_invitations SET
 	to_user = sqlc.arg(to_user),

@@ -10,196 +10,48 @@ import (
 )
 
 type Querier interface {
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *ArchiveAccountInstrumentOwnershipParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveMealList(ctx context.Context, db DBTX, arg *ArchiveMealListParams) (int64, error)
 	ArchiveMealListItem(ctx context.Context, db DBTX, arg *ArchiveMealListItemParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *ArchiveMealPlanEventParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) (int64, error)
 	ArchiveMealPlanRecipeOptionSelection(ctx context.Context, db DBTX, arg *ArchiveMealPlanRecipeOptionSelectionParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeList(ctx context.Context, db DBTX, arg *ArchiveRecipeListParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeListItem(ctx context.Context, db DBTX, arg *ArchiveRecipeListItemParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeRating(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeStep(ctx context.Context, db DBTX, arg *ArchiveRecipeStepParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *ArchiveRecipeStepCompletionConditionParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeStepIngredient(ctx context.Context, db DBTX, arg *ArchiveRecipeStepIngredientParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeStepInstrument(ctx context.Context, db DBTX, arg *ArchiveRecipeStepInstrumentParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeStepProduct(ctx context.Context, db DBTX, arg *ArchiveRecipeStepProductParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveRecipeStepVessel(ctx context.Context, db DBTX, arg *ArchiveRecipeStepVesselParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveUserIngredientPreference(ctx context.Context, db DBTX, arg *ArchiveUserIngredientPreferenceParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidIngredient(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidIngredientGroup(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX, arg *ArchiveValidIngredientGroupMemberParams) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidIngredientPreparation(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidIngredientState(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidInstrument(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidPrepTaskConfig(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidPreparation(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidPreparationInstrument(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ArchiveValidVessel(ctx context.Context, db DBTX, id string) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	ChangeMealPlanTaskStatus(ctx context.Context, db DBTX, arg *ChangeMealPlanTaskStatusParams) error
 	CheckAccountInstrumentOwnershipExistence(ctx context.Context, db DBTX, arg *CheckAccountInstrumentOwnershipExistenceParams) (bool, error)
 	CheckMealExistence(ctx context.Context, db DBTX, id string) (bool, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CheckMealInMealList(ctx context.Context, db DBTX, arg *CheckMealInMealListParams) (bool, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CheckMealInMealPlanEvent(ctx context.Context, db DBTX, arg *CheckMealInMealPlanEventParams) (bool, error)
 	CheckMealPlanEventExistence(ctx context.Context, db DBTX, arg *CheckMealPlanEventExistenceParams) (bool, error)
 	CheckMealPlanExistence(ctx context.Context, db DBTX, arg *CheckMealPlanExistenceParams) (bool, error)
@@ -237,10 +89,6 @@ type Querier interface {
 	CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error
 	CreateIngredientMedia(ctx context.Context, db DBTX, arg *CreateIngredientMediaParams) error
 	CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error
 	CreateMealImage(ctx context.Context, db DBTX, arg *CreateMealImageParams) error
 	CreateMealList(ctx context.Context, db DBTX, arg *CreateMealListParams) error
@@ -250,10 +98,6 @@ type Querier interface {
 	CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *CreateMealPlanGroceryListItemParams) error
 	CreateMealPlanOption(ctx context.Context, db DBTX, arg *CreateMealPlanOptionParams) error
 	CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *CreateMealPlanOptionVoteParams) error
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CreateMealPlanRecipeOptionSelection(ctx context.Context, db DBTX, arg *CreateMealPlanRecipeOptionSelectionParams) error
 	CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMealPlanTaskParams) error
 	CreatePreparationMedia(ctx context.Context, db DBTX, arg *CreatePreparationMediaParams) error
@@ -263,18 +107,10 @@ type Querier interface {
 	CreateRecipeListItem(ctx context.Context, db DBTX, arg *CreateRecipeListItemParams) error
 	CreateRecipeMedia(ctx context.Context, db DBTX, arg *CreateRecipeMediaParams) error
 	CreateRecipePrepTask(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskParams) error
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CreateRecipePrepTaskStep(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskStepParams) error
 	CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRecipeRatingParams) error
 	CreateRecipeStep(ctx context.Context, db DBTX, arg *CreateRecipeStepParams) error
 	CreateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *CreateRecipeStepCompletionConditionParams) error
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CreateRecipeStepCompletionConditionIngredient(ctx context.Context, db DBTX, arg *CreateRecipeStepCompletionConditionIngredientParams) error
 	CreateRecipeStepImage(ctx context.Context, db DBTX, arg *CreateRecipeStepImageParams) error
 	CreateRecipeStepIngredient(ctx context.Context, db DBTX, arg *CreateRecipeStepIngredientParams) error

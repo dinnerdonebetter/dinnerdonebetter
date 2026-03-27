@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: CreateIssueReport :exec
 INSERT INTO issue_reports (
 	id,

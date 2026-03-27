@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: ArchiveServiceSetting :execrows
 UPDATE service_settings SET archived_at = NOW() WHERE id = sqlc.arg(id);
 

@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: ArchiveValidVessel :execrows
 UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 

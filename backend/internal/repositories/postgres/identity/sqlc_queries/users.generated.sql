@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: AcceptPrivacyPolicyForUser :exec
 UPDATE users SET
 	last_accepted_privacy_policy = NOW()

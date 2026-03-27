@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: ArchiveSubscription :execrows
 UPDATE subscriptions SET archived_at = NOW(), last_updated_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 

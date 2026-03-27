@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: ArchiveMealPlan :execrows
 UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_account = sqlc.arg(belongs_to_account) AND id = sqlc.arg(id);
 

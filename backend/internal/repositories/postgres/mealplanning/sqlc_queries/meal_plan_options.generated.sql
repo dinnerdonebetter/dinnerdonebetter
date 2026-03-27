@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: CheckMealInMealPlanEvent :one
 SELECT EXISTS (
 	SELECT meal_plan_options.id

@@ -9,10 +9,6 @@ import (
 )
 
 type Querier interface {
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateAuditLogEntryParams) error
 	GetAuditLogEntriesForAccount(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountParams) ([]*GetAuditLogEntriesForAccountRow, error)
 	GetAuditLogEntriesForAccountAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountAndResourceTypeParams) ([]*GetAuditLogEntriesForAccountAndResourceTypeRow, error)

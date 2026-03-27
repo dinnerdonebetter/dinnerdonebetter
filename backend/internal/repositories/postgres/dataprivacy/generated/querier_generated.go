@@ -10,10 +10,6 @@ import (
 
 type Querier interface {
 	ArchiveUserDataDisclosure(ctx context.Context, db DBTX, id string) error
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CreateUserDataDisclosure(ctx context.Context, db DBTX, arg *CreateUserDataDisclosureParams) error
 	GetUserDataDisclosure(ctx context.Context, db DBTX, id string) (*UserDataDisclosures, error)
 	GetUserDataDisclosuresForUser(ctx context.Context, db DBTX, arg *GetUserDataDisclosuresForUserParams) ([]*GetUserDataDisclosuresForUserRow, error)

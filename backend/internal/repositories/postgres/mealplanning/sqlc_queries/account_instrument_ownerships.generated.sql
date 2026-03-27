@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: ArchiveAccountInstrumentOwnership :execrows
 UPDATE account_instrument_ownerships SET
 	archived_at = NOW()

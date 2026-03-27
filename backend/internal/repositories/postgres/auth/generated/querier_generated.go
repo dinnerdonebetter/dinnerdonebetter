@@ -10,15 +10,7 @@ import (
 
 type Querier interface {
 	CleanupExpiredSessions(ctx context.Context, db DBTX) (int64, error)
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CreatePasswordResetToken(ctx context.Context, db DBTX, arg *CreatePasswordResetTokenParams) error
-	// ******************************************************************************
-	// THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
-	// See cmd/tools/codegen/queries for the generator.
-	// ******************************************************************************
 	CreateUserSession(ctx context.Context, db DBTX, arg *CreateUserSessionParams) error
 	GetActiveSessionsForUser(ctx context.Context, db DBTX, arg *GetActiveSessionsForUserParams) ([]*GetActiveSessionsForUserRow, error)
 	GetPasswordResetToken(ctx context.Context, db DBTX, token string) (*GetPasswordResetTokenRow, error)

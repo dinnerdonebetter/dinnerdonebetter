@@ -1,8 +1,3 @@
--- ******************************************************************************
--- THIS FILE IS GENERATED. DO NOT EDIT DIRECTLY.
--- See cmd/tools/codegen/queries for the generator.
--- ******************************************************************************
-
 -- name: ChangeMealPlanTaskStatus :exec
 UPDATE meal_plan_tasks SET
 	completed_at = sqlc.arg(completed_at),
