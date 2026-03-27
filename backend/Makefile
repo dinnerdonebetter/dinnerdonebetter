@@ -127,7 +127,7 @@ querier: queries queries_lint
 
 .PHONY: struct_usage_check
 struct_usage_check:
-	$(SCRIPTS_DIR)/struct_usage_check.sh $(THIS)
+	$(SCRIPTS_DIR)/struct_usage_check.sh
 
 .PHONY: check_struct_usage
 check_struct_usage: struct_usage_check

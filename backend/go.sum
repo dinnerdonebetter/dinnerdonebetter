@@ -882,6 +882,8 @@ github.com/vanng822/go-premailer v1.32.0 h1:dW1y2IKSBQyYIwMc9comDA2e+00/pJ1kVXf3
 github.com/vanng822/go-premailer v1.32.0/go.mod h1:4gVC6Hs+ESjSSfB1ohMwLqwuGoJ76cc0c2VM7DYqr0s=
 github.com/verygoodsoftwarenotvirus/platform/v4 v4.0.1 h1:VMmeQFyk0ITLvG73MCzWBp689VWwIS2JnD3cXHgvAss=
 github.com/verygoodsoftwarenotvirus/platform/v4 v4.0.1/go.mod h1:KGaXmrwd4oEa+knxMXXDLw+fnbwchM7am0b1U7D+6jw=
+github.com/verygoodsoftwarenotvirus/rollcall v1.0.0 h1:TXPqVTP9DzvqFrIAhCK2ehiMSjh7ZYsFQeMapvDm5pY=
+github.com/verygoodsoftwarenotvirus/rollcall v1.0.0/go.mod h1:1HdVXc0vOZpKOnCIxfWCq23jE1tfknnHSjtWARSp2wg=
 github.com/wagslane/go-password-validator v0.3.0 h1:vfxOPzGHkz5S146HDpavl0cw1DSVP061Ry2PX0/ON6I=
 github.com/wagslane/go-password-validator v0.3.0/go.mod h1:TI1XJ6T5fRdRnHqHt14pvy1tNVnrwe7m3/f1f2fDphQ=
 github.com/woodsbury/decimal128 v1.3.0 h1:8pffMNWIlC0O5vbyHWFZAt5yWvWcrHA+3ovIIjVWss0=

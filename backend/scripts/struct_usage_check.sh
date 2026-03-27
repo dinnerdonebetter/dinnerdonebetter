@@ -2,8 +2,4 @@
 set -euo pipefail
 
 # Check struct usage
-# Usage: struct_usage_check.sh <package_prefix>
-
-PACKAGE_PREFIX="${1:-github.com/dinnerdonebetter/dinnerdonebetter/backend}"
-
-go run "${PACKAGE_PREFIX}/cmd/tools/struct_usage_checker"
+go tool rollcall
