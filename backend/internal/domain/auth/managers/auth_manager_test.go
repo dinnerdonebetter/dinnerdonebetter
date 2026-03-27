@@ -939,3 +939,174 @@ func TestAuthManager_NewTOTPSecret_UserNotFound(t *testing.T) {
 	assert.Nil(t, result)
 	mock.AssertExpectationsForObjects(t, userDataManager)
 }
+
+func TestAuthManager_GetActiveSessionsForUser(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		userID := identityfakes.BuildFakeID()
+		filter := filtering.DefaultQueryFilter()
+
+		expected := &filtering.QueryFilteredResult[auth.UserSession]{
+			Data: []*auth.UserSession{
+				{ID: identityfakes.BuildFakeID(), BelongsToUser: userID},
+			},
+		}
+
+		sessionDM := &mockUserSessionDataManager{}
+		sessionDM.On(reflection.GetMethodName(sessionDM.GetActiveSessionsForUser), testutils.ContextMatcher, userID, filter).Return(expected, nil)
+
+		manager := &AuthManager{
+			sessionDataManager: sessionDM,
+			tracer:             tracing.NewTracerForTest("auth_manager"),
+		}
+
+		result, err := manager.GetActiveSessionsForUser(ctx, userID, filter)
+
+		require.NoError(t, err)
+		assert.Equal(t, expected, result)
+		mock.AssertExpectationsForObjects(t, sessionDM)
+	})
+
+	t.Run("nil filter defaults", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		userID := identityfakes.BuildFakeID()
+
+		expected := &filtering.QueryFilteredResult[auth.UserSession]{
+			Data: []*auth.UserSession{},
+		}
+
+		sessionDM := &mockUserSessionDataManager{}
+		sessionDM.On(reflection.GetMethodName(sessionDM.GetActiveSessionsForUser), testutils.ContextMatcher, userID, filtering.DefaultQueryFilter()).Return(expected, nil)
+
+		manager := &AuthManager{
+			sessionDataManager: sessionDM,
+			tracer:             tracing.NewTracerForTest("auth_manager"),
+		}
+
+		result, err := manager.GetActiveSessionsForUser(ctx, userID, nil)
+
+		require.NoError(t, err)
+		assert.Equal(t, expected, result)
+		mock.AssertExpectationsForObjects(t, sessionDM)
+	})
+
+	t.Run("error from data manager", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		userID := identityfakes.BuildFakeID()
+		filter := filtering.DefaultQueryFilter()
+
+		sessionDM := &mockUserSessionDataManager{}
+		sessionDM.On(reflection.GetMethodName(sessionDM.GetActiveSessionsForUser), testutils.ContextMatcher, userID, filter).Return((*filtering.QueryFilteredResult[auth.UserSession])(nil), errors.New("db error"))
+
+		manager := &AuthManager{
+			sessionDataManager: sessionDM,
+			tracer:             tracing.NewTracerForTest("auth_manager"),
+		}
+
+		result, err := manager.GetActiveSessionsForUser(ctx, userID, filter)
+
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		mock.AssertExpectationsForObjects(t, sessionDM)
+	})
+}
+
+func TestAuthManager_RevokeSession(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		sessionID := identityfakes.BuildFakeID()
+		userID := identityfakes.BuildFakeID()
+
+		sessionDM := &mockUserSessionDataManager{}
+		sessionDM.On(reflection.GetMethodName(sessionDM.RevokeUserSession), testutils.ContextMatcher, sessionID, userID).Return(nil)
+
+		manager := &AuthManager{
+			sessionDataManager: sessionDM,
+			tracer:             tracing.NewTracerForTest("auth_manager"),
+		}
+
+		err := manager.RevokeSession(ctx, sessionID, userID)
+
+		require.NoError(t, err)
+		mock.AssertExpectationsForObjects(t, sessionDM)
+	})
+
+	t.Run("error from data manager", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		sessionID := identityfakes.BuildFakeID()
+		userID := identityfakes.BuildFakeID()
+
+		sessionDM := &mockUserSessionDataManager{}
+		sessionDM.On(reflection.GetMethodName(sessionDM.RevokeUserSession), testutils.ContextMatcher, sessionID, userID).Return(errors.New("db error"))
+
+		manager := &AuthManager{
+			sessionDataManager: sessionDM,
+			tracer:             tracing.NewTracerForTest("auth_manager"),
+		}
+
+		err := manager.RevokeSession(ctx, sessionID, userID)
+
+		assert.Error(t, err)
+		mock.AssertExpectationsForObjects(t, sessionDM)
+	})
+}
+
+func TestAuthManager_RevokeAllSessionsForUserExcept(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		userID := identityfakes.BuildFakeID()
+		currentSessionID := identityfakes.BuildFakeID()
+
+		sessionDM := &mockUserSessionDataManager{}
+		sessionDM.On(reflection.GetMethodName(sessionDM.RevokeAllSessionsForUserExcept), testutils.ContextMatcher, userID, currentSessionID).Return(nil)
+
+		manager := &AuthManager{
+			sessionDataManager: sessionDM,
+			tracer:             tracing.NewTracerForTest("auth_manager"),
+		}
+
+		err := manager.RevokeAllSessionsForUserExcept(ctx, userID, currentSessionID)
+
+		require.NoError(t, err)
+		mock.AssertExpectationsForObjects(t, sessionDM)
+	})
+
+	t.Run("error from data manager", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		userID := identityfakes.BuildFakeID()
+		currentSessionID := identityfakes.BuildFakeID()
+
+		sessionDM := &mockUserSessionDataManager{}
+		sessionDM.On(reflection.GetMethodName(sessionDM.RevokeAllSessionsForUserExcept), testutils.ContextMatcher, userID, currentSessionID).Return(errors.New("db error"))
+
+		manager := &AuthManager{
+			sessionDataManager: sessionDM,
+			tracer:             tracing.NewTracerForTest("auth_manager"),
+		}
+
+		err := manager.RevokeAllSessionsForUserExcept(ctx, userID, currentSessionID)
+
+		assert.Error(t, err)
+		mock.AssertExpectationsForObjects(t, sessionDM)
+	})
+}

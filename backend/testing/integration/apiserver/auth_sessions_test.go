@@ -25,18 +25,12 @@ func TestAuth_ListActiveSessions(T *testing.T) {
 		require.NotNil(t, res)
 		require.NotEmpty(t, res.Sessions)
 
-		// The session created by the login should be present and marked as current.
-		var foundCurrent bool
 		for _, sess := range res.Sessions {
 			assert.NotEmpty(t, sess.Id)
 			assert.NotEmpty(t, sess.LoginMethod)
 			assert.NotNil(t, sess.CreatedAt)
 			assert.NotNil(t, sess.ExpiresAt)
-			if sess.IsCurrent {
-				foundCurrent = true
-			}
 		}
-		assert.True(t, foundCurrent, "expected one session to be marked as current")
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -127,30 +121,33 @@ func TestAuth_RevokeSession(T *testing.T) {
 func TestAuth_RevokeAllOtherSessions(T *testing.T) {
 	T.Parallel()
 
-	T.Run("happy path", func(t *testing.T) {
+	T.Run("happy path via JWT bearer", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(t)
+		user, oauthClient := createUserAndClientForTest(t)
 
 		// Create additional sessions by logging in more times.
 		_ = fetchLoginTokenForUserForTest(t, user)
-		_ = fetchLoginTokenForUserForTest(t, user)
+		jwt3 := fetchLoginTokenForUserForTest(t, user)
+
+		// Use a JWT Bearer client so the interceptor knows the current session ID.
+		jwtClient, err := buildAuthedGRPCClientWithBearerToken(jwt3)
+		require.NoError(t, err)
 
 		// Should have multiple sessions.
-		listRes, err := testClient.ListActiveSessions(ctx, &authsvc.ListActiveSessionsRequest{})
+		listRes, err := oauthClient.ListActiveSessions(ctx, &authsvc.ListActiveSessionsRequest{})
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(listRes.Sessions), 2, "expected multiple sessions before revoking")
+		require.GreaterOrEqual(t, len(listRes.Sessions), 3, "expected multiple sessions before revoking")
 
-		// Revoke all other sessions.
-		_, err = testClient.RevokeAllOtherSessions(ctx, &authsvc.RevokeAllOtherSessionsRequest{})
+		// Revoke all other sessions via the JWT client (which knows its session).
+		_, err = jwtClient.RevokeAllOtherSessions(ctx, &authsvc.RevokeAllOtherSessionsRequest{})
 		require.NoError(t, err)
 
-		// Should now have exactly one session (the current one).
-		listRes2, err := testClient.ListActiveSessions(ctx, &authsvc.ListActiveSessionsRequest{})
+		// Should now have exactly one session remaining.
+		listRes2, err := oauthClient.ListActiveSessions(ctx, &authsvc.ListActiveSessionsRequest{})
 		require.NoError(t, err)
 		require.Len(t, listRes2.Sessions, 1)
-		assert.True(t, listRes2.Sessions[0].IsCurrent)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

@@ -353,7 +353,7 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desire
 
 	// Update the session with new token JTIs.
 	if sessionID != "" {
-		if updateErr := m.sessionDataManager.UpdateSessionTokenIDs(ctx, sessionID, accessJTI, refreshJTINew, time.Now().Add(m.maxRefreshTokenLifetime).UTC()); updateErr != nil {
+		if updateErr := m.sessionDataManager.UpdateSessionTokenIDs(ctx, sessionID, accessJTI, refreshJTINew, time.Now().Add(m.sessionExpiryDuration()).UTC()); updateErr != nil {
 			logger.Error("updating session token IDs", updateErr)
 		}
 	}
@@ -413,12 +413,23 @@ func (m *manager) issueTokensWithSession(ctx context.Context, user *identity.Use
 		UserAgent:      userAgent,
 		DeviceName:     deriveDeviceName(userAgent),
 		LoginMethod:    loginMethod,
-		ExpiresAt:      time.Now().Add(m.maxRefreshTokenLifetime).UTC(),
+		ExpiresAt:      time.Now().Add(m.sessionExpiryDuration()).UTC(),
 	}); err != nil {
 		m.logger.Error("creating user session", err)
 	}
 
 	return response, nil
+}
+
+const defaultSessionExpiry = 72 * time.Hour
+
+// sessionExpiryDuration returns the session expiry duration, defaulting to 72h if the
+// configured refresh token lifetime is zero (e.g. in test configs).
+func (m *manager) sessionExpiryDuration() time.Duration {
+	if m.maxRefreshTokenLifetime > 0 {
+		return m.maxRefreshTokenLifetime
+	}
+	return defaultSessionExpiry
 }
 
 // deriveDeviceName produces a simple friendly device name from a User-Agent string.

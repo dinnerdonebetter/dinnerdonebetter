@@ -327,7 +327,7 @@ func TestBuildUserAuthorizationHandler(T *testing.T) {
 		require.NoError(t, err)
 
 		user := fakes.BuildFakeUser()
-		token, err := tokenIssuer.IssueToken(ctx, user, time.Hour)
+		token, _, err := tokenIssuer.IssueToken(ctx, user, time.Hour, "", "")
 		require.NoError(t, err)
 
 		req := &http.Request{
