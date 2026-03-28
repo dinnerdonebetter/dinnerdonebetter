@@ -6,11 +6,12 @@ import (
 
 	internalopsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops/mock"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
 )
 
 func TestAsyncDataChangeMessageHandler_handleQueueTestMessage(t *testing.T) {

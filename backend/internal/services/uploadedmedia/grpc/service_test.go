@@ -6,10 +6,11 @@ import (
 	uploadedmediamock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia/mock"
 	uploadedmediasvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v2/uploads/mock"
 )
 
 func TestNewService(t *testing.T) {

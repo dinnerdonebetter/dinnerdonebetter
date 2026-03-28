@@ -4,11 +4,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	domainoauth "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterOAuthRepository registers the OAuth repository with the injector.

@@ -816,12 +816,12 @@ func AllVesselShapeValues() []VesselShape {
 }
 
 type IngredientMedia struct {
-	CreatedAt         time.Time
-	ArchivedAt        sql.NullTime
 	ID                string
 	ValidIngredientID string
 	UploadedMediaID   string
 	Index             int32
+	CreatedAt         time.Time
+	ArchivedAt        sql.NullTime
 }
 
 type MealPlanEvents struct {
@@ -837,53 +837,53 @@ type MealPlanEvents struct {
 }
 
 type MealPlanOptionVotes struct {
+	ID                      string
+	Rank                    int32
+	Abstain                 bool
+	Notes                   string
+	ByUser                  string
 	CreatedAt               time.Time
 	LastUpdatedAt           sql.NullTime
 	ArchivedAt              sql.NullTime
-	ID                      string
-	Notes                   string
-	ByUser                  string
 	BelongsToMealPlanOption string
-	Rank                    int32
-	Abstain                 bool
 }
 
 type MealPlanRecipeOptionSelections struct {
-	CreatedAt               time.Time
-	LastUpdatedAt           sql.NullTime
-	ArchivedAt              sql.NullTime
 	ID                      string
 	BelongsToMealPlanOption string
 	RecipeID                string
 	RecipeStepID            string
-	SelectionType           string
 	IngredientIndex         int32
 	SelectedOptionIndex     int32
+	SelectionType           string
+	CreatedAt               time.Time
+	LastUpdatedAt           sql.NullTime
+	ArchivedAt              sql.NullTime
 }
 
 type PreparationMedia struct {
-	CreatedAt          time.Time
-	ArchivedAt         sql.NullTime
 	ID                 string
 	ValidPreparationID string
-	UploadedMediaID    string
 	ForIngredientID    sql.NullString
+	UploadedMediaID    string
 	Index              int32
+	CreatedAt          time.Time
+	ArchivedAt         sql.NullTime
 }
 
 type RecipeRatings struct {
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 	ID            string
 	RecipeID      string
-	Notes         string
-	ByUser        string
 	Taste         sql.NullString
 	Difficulty    sql.NullString
 	Cleanup       sql.NullString
 	Instructions  sql.NullString
 	Overall       sql.NullString
+	Notes         string
+	ByUser        string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 type RecipeStepImages struct {

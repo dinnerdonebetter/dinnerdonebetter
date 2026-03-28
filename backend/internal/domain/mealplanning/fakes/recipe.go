@@ -4,8 +4,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
 )
 
 // BuildFakeRecipe builds a faked recipe.

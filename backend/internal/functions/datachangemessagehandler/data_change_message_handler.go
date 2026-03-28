@@ -17,17 +17,18 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/analytics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	platformnotifications "github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/uploads"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/analytics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/email"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	platformnotifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -214,8 +215,8 @@ func NewAsyncDataChangeMessageHandler(
 	}
 
 	return &AsyncDataChangeMessageHandler{
-		tracer:                               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger:                               logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                               tracing.NewNamedTracer(tracerProvider, o11yName),
+		logger:                               logging.NewNamedLogger(logger, o11yName),
 		nonWebhookEventTypes:                 []string{},
 		identityRepo:                         identityRepo,
 		dataPrivacyRepo:                      dataPrivacyRepo,

@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"net"
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
@@ -14,10 +16,14 @@ import (
 	identityfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 )
 
@@ -278,7 +284,7 @@ func TestServiceImpl_LoginForToken(t *testing.T) {
 			ExpiresUTC:   time.Now().Add(time.Hour),
 		}
 
-		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, false, mock.AnythingOfType("*auth.UserLoginInput")).Return(fakeTokenResponse, nil)
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, false, mock.AnythingOfType("*auth.UserLoginInput"), mock.AnythingOfType("*authentication.LoginMetadata")).Return(fakeTokenResponse, nil)
 
 		request := &authsvc.LoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
@@ -307,7 +313,7 @@ func TestServiceImpl_LoginForToken(t *testing.T) {
 		service, _, _, authenticationManager, _ := buildTestService(t)
 		ctx := t.Context()
 
-		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, false, mock.AnythingOfType("*auth.UserLoginInput")).Return((*auth.TokenResponse)(nil), errors.New("login failed"))
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, false, mock.AnythingOfType("*auth.UserLoginInput"), mock.AnythingOfType("*authentication.LoginMetadata")).Return((*auth.TokenResponse)(nil), errors.New("login failed"))
 
 		request := &authsvc.LoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
@@ -347,7 +353,7 @@ func TestServiceImpl_AdminLoginForToken(t *testing.T) {
 			ExpiresUTC:   time.Now().Add(time.Hour),
 		}
 
-		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, true, mock.AnythingOfType("*auth.UserLoginInput")).Return(fakeTokenResponse, nil)
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, true, mock.AnythingOfType("*auth.UserLoginInput"), mock.AnythingOfType("*authentication.LoginMetadata")).Return(fakeTokenResponse, nil)
 
 		request := &authsvc.AdminLoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
@@ -376,7 +382,7 @@ func TestServiceImpl_AdminLoginForToken(t *testing.T) {
 		service, _, _, authenticationManager, _ := buildTestService(t)
 		ctx := t.Context()
 
-		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, true, mock.AnythingOfType("*auth.UserLoginInput")).Return((*auth.TokenResponse)(nil), errors.New("admin login failed"))
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, true, mock.AnythingOfType("*auth.UserLoginInput"), mock.AnythingOfType("*authentication.LoginMetadata")).Return((*auth.TokenResponse)(nil), errors.New("admin login failed"))
 
 		request := &authsvc.AdminLoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
@@ -1195,5 +1201,302 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 		assert.Equal(t, codes.Internal, grpcErr.Code())
 
 		mock.AssertExpectationsForObjects(t, authManager)
+	})
+}
+
+func buildContextWithSessionDataAndSessionID(t *testing.T) (context.Context, *sessions.ContextData) {
+	t.Helper()
+	sessionData := &sessions.ContextData{
+		Requester: sessions.RequesterInfo{
+			UserID:                   identityfakes.BuildFakeID(),
+			AccountStatus:            identity.GoodStandingUserAccountStatus.String(),
+			AccountStatusExplanation: "",
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker("service_user"),
+		},
+		ActiveAccountID: identityfakes.BuildFakeID(),
+		SessionID:       identityfakes.BuildFakeID(),
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker("account_member"),
+		},
+	}
+	sessionData.AccountPermissions[sessionData.ActiveAccountID] = authorization.NewAccountRolePermissionChecker("account_member")
+	ctx := context.WithValue(t.Context(), sessions.SessionContextDataKey, sessionData)
+	return ctx, sessionData
+}
+
+func Test_extractLoginMetadata(t *testing.T) {
+	t.Parallel()
+
+	t.Run("extracts user-agent from gRPC metadata", func(t *testing.T) {
+		t.Parallel()
+
+		md := metadata.New(map[string]string{
+			"user-agent": "TestBrowser/1.0",
+		})
+		ctx := metadata.NewIncomingContext(t.Context(), md)
+
+		meta := extractLoginMetadata(ctx)
+
+		assert.Equal(t, "TestBrowser/1.0", meta.UserAgent)
+	})
+
+	t.Run("extracts x-forwarded-for for client IP", func(t *testing.T) {
+		t.Parallel()
+
+		md := metadata.New(map[string]string{
+			"x-forwarded-for": "203.0.113.50",
+			"user-agent":      "TestBrowser/1.0",
+		})
+		ctx := metadata.NewIncomingContext(t.Context(), md)
+
+		meta := extractLoginMetadata(ctx)
+
+		assert.Equal(t, "203.0.113.50", meta.ClientIP)
+		assert.Equal(t, "TestBrowser/1.0", meta.UserAgent)
+	})
+
+	t.Run("falls back to peer address when no x-forwarded-for", func(t *testing.T) {
+		t.Parallel()
+
+		md := metadata.New(map[string]string{
+			"user-agent": "TestBrowser/1.0",
+		})
+		ctx := metadata.NewIncomingContext(t.Context(), md)
+
+		addr, _ := net.ResolveTCPAddr("tcp", "192.168.1.100:12345")
+		p := &peer.Peer{Addr: addr}
+		ctx = peer.NewContext(ctx, p)
+
+		meta := extractLoginMetadata(ctx)
+
+		assert.Equal(t, "192.168.1.100:12345", meta.ClientIP)
+		assert.Equal(t, "TestBrowser/1.0", meta.UserAgent)
+	})
+
+	t.Run("returns empty metadata when no context metadata exists", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+
+		meta := extractLoginMetadata(ctx)
+
+		assert.NotNil(t, meta)
+		assert.Equal(t, &authentication.LoginMetadata{}, meta)
+	})
+}
+
+func TestServiceImpl_ListActiveSessions(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success with is_current flag", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, authManager, _, _ := buildTestService(t)
+		ctx, sessionData := buildContextWithSessionDataAndSessionID(t)
+
+		currentSessionID := sessionData.GetSessionID()
+		otherSessionID := identityfakes.BuildFakeID()
+
+		now := time.Now()
+		fakeSessions := &filtering.QueryFilteredResult[auth.UserSession]{
+			Data: []*auth.UserSession{
+				{
+					ID:           currentSessionID,
+					ClientIP:     "192.168.1.1",
+					UserAgent:    "TestBrowser/1.0",
+					DeviceName:   "My Laptop",
+					LoginMethod:  auth.LoginMethodPassword,
+					CreatedAt:    now.Add(-time.Hour),
+					LastActiveAt: now,
+					ExpiresAt:    now.Add(time.Hour),
+				},
+				{
+					ID:           otherSessionID,
+					ClientIP:     "10.0.0.1",
+					UserAgent:    "OtherBrowser/2.0",
+					DeviceName:   "My Phone",
+					LoginMethod:  auth.LoginMethodPasskey,
+					CreatedAt:    now.Add(-2 * time.Hour),
+					LastActiveAt: now.Add(-30 * time.Minute),
+					ExpiresAt:    now.Add(30 * time.Minute),
+				},
+			},
+			Pagination: filtering.Pagination{
+				TotalCount:    2,
+				FilteredCount: 2,
+			},
+		}
+
+		authManager.On(reflection.GetMethodName(authManager.GetActiveSessionsForUser), mock.Anything, sessionData.GetUserID(), mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeSessions, nil)
+
+		request := &authsvc.ListActiveSessionsRequest{}
+
+		response, err := service.ListActiveSessions(ctx, request)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.NotNil(t, response.ResponseDetails)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
+		assert.Len(t, response.Sessions, 2)
+
+		// First session should be marked as current.
+		assert.Equal(t, currentSessionID, response.Sessions[0].Id)
+		assert.True(t, response.Sessions[0].IsCurrent)
+
+		// Second session should NOT be marked as current.
+		assert.Equal(t, otherSessionID, response.Sessions[1].Id)
+		assert.False(t, response.Sessions[1].IsCurrent)
+
+		mock.AssertExpectationsForObjects(t, authManager)
+	})
+
+	t.Run("error fetching session context", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, _ := buildTestService(t)
+		ctx := t.Context()
+
+		request := &authsvc.ListActiveSessionsRequest{}
+
+		response, err := service.ListActiveSessions(ctx, request)
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
+	})
+
+	t.Run("error from auth manager", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, authManager, _, _ := buildTestService(t)
+		ctx, sessionData := buildContextWithSessionDataAndSessionID(t)
+
+		authManager.On(reflection.GetMethodName(authManager.GetActiveSessionsForUser), mock.Anything, sessionData.GetUserID(), mock.AnythingOfType("*filtering.QueryFilter")).Return((*filtering.QueryFilteredResult[auth.UserSession])(nil), errors.New("database error"))
+
+		request := &authsvc.ListActiveSessionsRequest{}
+
+		response, err := service.ListActiveSessions(ctx, request)
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.Internal, grpcErr.Code())
+
+		mock.AssertExpectationsForObjects(t, authManager)
+	})
+}
+
+func TestServiceImpl_RevokeSession(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, authManager, _, _ := buildTestService(t)
+		ctx, sessionData := buildContextWithSessionDataAndSessionID(t)
+
+		targetSessionID := identityfakes.BuildFakeID()
+
+		authManager.On(reflection.GetMethodName(authManager.RevokeSession), mock.Anything, targetSessionID, sessionData.GetUserID()).Return(nil)
+
+		request := &authsvc.RevokeSessionRequest{
+			SessionId: targetSessionID,
+		}
+
+		response, err := service.RevokeSession(ctx, request)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.NotNil(t, response.ResponseDetails)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
+
+		mock.AssertExpectationsForObjects(t, authManager)
+	})
+
+	t.Run("error when session_id is empty", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, _ := buildTestService(t)
+		ctx := buildContextWithSessionData(t)
+
+		request := &authsvc.RevokeSessionRequest{
+			SessionId: "",
+		}
+
+		response, err := service.RevokeSession(ctx, request)
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.InvalidArgument, grpcErr.Code())
+	})
+
+	t.Run("error fetching session context", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, _ := buildTestService(t)
+		ctx := t.Context()
+
+		request := &authsvc.RevokeSessionRequest{
+			SessionId: identityfakes.BuildFakeID(),
+		}
+
+		response, err := service.RevokeSession(ctx, request)
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
+	})
+}
+
+func TestServiceImpl_RevokeAllOtherSessions(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, authManager, _, _ := buildTestService(t)
+		ctx, sessionData := buildContextWithSessionDataAndSessionID(t)
+
+		authManager.On(reflection.GetMethodName(authManager.RevokeAllSessionsForUserExcept), mock.Anything, sessionData.GetUserID(), sessionData.GetSessionID()).Return(nil)
+
+		request := &authsvc.RevokeAllOtherSessionsRequest{}
+
+		response, err := service.RevokeAllOtherSessions(ctx, request)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.NotNil(t, response.ResponseDetails)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
+
+		mock.AssertExpectationsForObjects(t, authManager)
+	})
+
+	t.Run("error fetching session context", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, _ := buildTestService(t)
+		ctx := t.Context()
+
+		request := &authsvc.RevokeAllOtherSessionsRequest{}
+
+		response, err := service.RevokeAllOtherSessions(ctx, request)
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
 	})
 }

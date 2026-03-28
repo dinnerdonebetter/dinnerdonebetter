@@ -16,16 +16,17 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/search/text/algolia"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
+
 	"github.com/spf13/cobra"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/search/text/algolia"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
 )
 
 const (

@@ -15,6 +15,8 @@ const (
 	SearchUserPermission Permission = "search.user"
 	// ArchiveUserPermission is a service admin permission.
 	ArchiveUserPermission Permission = "archive.user"
+	// ManageUserSessionsPermission is a service admin permission.
+	ManageUserSessionsPermission Permission = "manage.user_sessions"
 )
 
 var (
@@ -25,5 +27,6 @@ var (
 		ReadUserPermission,
 		SearchUserPermission,
 		ArchiveUserPermission,
+		ManageUserSessionsPermission,
 	}
 )

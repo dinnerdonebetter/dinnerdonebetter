@@ -3,9 +3,10 @@ package manager
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterAuditDataManager registers the audit data manager with the injector.

@@ -30,6 +30,7 @@ var recipeStepVesselsColumns = []string{
 	"unavailable_after_step",
 	"index",
 	"option_index",
+	"scale_factor",
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,

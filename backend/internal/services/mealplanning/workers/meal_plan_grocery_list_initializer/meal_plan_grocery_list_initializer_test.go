@@ -8,17 +8,18 @@ import (
 	grocerylistpreparation2 "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func buildNewMealPlanGroceryListInitializerForTest(t *testing.T) *Worker {

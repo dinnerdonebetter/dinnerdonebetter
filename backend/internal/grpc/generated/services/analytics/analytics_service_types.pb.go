@@ -26,9 +26,9 @@ const (
 
 type TrackEventRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Source        string                 `json:"source,omitempty"     protobuf:"bytes,1,opt,name=source,proto3"`
-	Event         string                 `json:"event,omitempty"      protobuf:"bytes,2,opt,name=event,proto3"`
-	Properties    map[string]string      `json:"properties,omitempty" protobuf:"bytes,3,rep,name=properties,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Source        string                 `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
+	Event         string                 `protobuf:"bytes,2,opt,name=event,proto3" json:"event,omitempty"`
+	Properties    map[string]string      `protobuf:"bytes,3,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -86,7 +86,7 @@ func (x *TrackEventRequest) GetProperties() map[string]string {
 
 type TrackEventResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -130,10 +130,10 @@ func (x *TrackEventResponse) GetResponseDetails() *types.ResponseDetails {
 
 type TrackAnonymousEventRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Source        string                 `json:"source,omitempty"       protobuf:"bytes,1,opt,name=source,proto3"`
-	Event         string                 `json:"event,omitempty"        protobuf:"bytes,2,opt,name=event,proto3"`
-	AnonymousId   string                 `json:"anonymous_id,omitempty" protobuf:"bytes,3,opt,name=anonymous_id,json=anonymousId,proto3"`
-	Properties    map[string]string      `json:"properties,omitempty"   protobuf:"bytes,4,rep,name=properties,proto3"                    protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Source        string                 `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
+	Event         string                 `protobuf:"bytes,2,opt,name=event,proto3" json:"event,omitempty"`
+	AnonymousId   string                 `protobuf:"bytes,3,opt,name=anonymous_id,json=anonymousId,proto3" json:"anonymous_id,omitempty"`
+	Properties    map[string]string      `protobuf:"bytes,4,rep,name=properties,proto3" json:"properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -198,7 +198,7 @@ func (x *TrackAnonymousEventRequest) GetProperties() map[string]string {
 
 type TrackAnonymousEventResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

@@ -9,13 +9,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/hashicorp/go-multierror"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (
@@ -58,8 +59,8 @@ func NewMealPlanTaskCreator(
 		dataManager:             dataManager,
 		postUpdatesPublisher:    postUpdatesPublisher,
 		processedRecordsCounter: processedRecordsCounter,
-		logger:                  logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:                  logging.NewNamedLogger(logger, serviceName),
+		tracer:                  tracing.NewNamedTracer(tracerProvider, serviceName),
 	}, nil
 }
 

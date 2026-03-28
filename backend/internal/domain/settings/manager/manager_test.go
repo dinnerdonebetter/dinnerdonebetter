@@ -9,15 +9,16 @@ import (
 	settingskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/keys"
 	settingsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/mock"
 
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func buildSettingsManagerForTest(t *testing.T) *settingsManager {

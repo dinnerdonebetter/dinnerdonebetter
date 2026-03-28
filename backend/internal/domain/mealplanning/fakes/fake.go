@@ -4,9 +4,10 @@ import (
 	"math"
 	"time"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func init() {

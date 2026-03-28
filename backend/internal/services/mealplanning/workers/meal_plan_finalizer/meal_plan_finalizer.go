@@ -8,12 +8,12 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 const (
@@ -55,8 +55,8 @@ func NewMealPlanFinalizer(
 		postUpdatesPublisher:    postUpdatesPublisher,
 		finalizedRecordsCounter: finalizedRecordsCounter,
 
-		logger: logging.EnsureLogger(logger).WithName(serviceName),
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger: logging.NewNamedLogger(logger, serviceName),
+		tracer: tracing.NewNamedTracer(tracerProvider, serviceName),
 	}, nil
 }
 

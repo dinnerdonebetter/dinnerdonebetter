@@ -6,9 +6,10 @@ import (
 
 	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
 )
 
 func TestProvideMethodPermissions_CoverageAndValidity(t *testing.T) {

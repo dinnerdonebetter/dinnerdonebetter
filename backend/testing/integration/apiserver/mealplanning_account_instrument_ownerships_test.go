@@ -225,6 +225,71 @@ func TestAccountInstrumentOwnerships_Listing(T *testing.T) {
 	})
 }
 
+func TestAccountInstrumentOwnerships_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		created := createAccountInstrumentOwnershipForTest(t, testClient)
+
+		updateInput := fakes.BuildFakeAccountInstrumentOwnershipUpdateRequestInput()
+		updateInput.ValidInstrumentID = &created.Instrument.ID
+		created.Update(updateInput)
+
+		_, err := testClient.UpdateAccountInstrumentOwnership(ctx, &settingssvc.UpdateAccountInstrumentOwnershipRequest{
+			AccountInstrumentOwnershipId: created.ID,
+			Input: &settingssvc.AccountInstrumentOwnershipUpdateRequestInput{
+				Notes:             updateInput.Notes,
+				Quantity:          new(uint32(*updateInput.Quantity)),
+				ValidInstrumentId: updateInput.ValidInstrumentID,
+			},
+		})
+		require.NoError(t, err)
+
+		// Re-fetch to verify the update took effect
+		res, err := testClient.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: created.ID})
+		require.NoError(t, err)
+		updated := mealplanningconverters.ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(res.Result)
+		require.NotNil(t, updated.LastUpdatedAt)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		created := createAccountInstrumentOwnershipForTest(t, testClient)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.UpdateAccountInstrumentOwnership(ctx, &settingssvc.UpdateAccountInstrumentOwnershipRequest{
+			AccountInstrumentOwnershipId: created.ID,
+			Input: &settingssvc.AccountInstrumentOwnershipUpdateRequestInput{
+				Notes: new("doesn't matter"),
+			},
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		_, err := testClient.UpdateAccountInstrumentOwnership(ctx, &settingssvc.UpdateAccountInstrumentOwnershipRequest{
+			AccountInstrumentOwnershipId: nonexistentID,
+			Input: &settingssvc.AccountInstrumentOwnershipUpdateRequestInput{
+				Notes: new("doesn't matter"),
+			},
+		})
+		assert.Error(t, err)
+	})
+}
+
 func TestAccountInstrumentOwnerships_SearchForValidInstrumentsNotOwnedByAccount(T *testing.T) {
 	T.Parallel()
 

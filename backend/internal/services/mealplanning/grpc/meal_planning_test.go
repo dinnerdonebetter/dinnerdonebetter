@@ -10,14 +10,15 @@ import (
 	mockmanagers "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
 	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/fake"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/fake"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func buildServiceImplForMealPlanningTest(t *testing.T) *serviceImpl {

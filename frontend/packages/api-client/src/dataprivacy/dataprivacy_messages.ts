@@ -12,7 +12,7 @@ import { IssueReport } from '../issue_reports/issue_reports_messages';
 import { DataCollection as DataCollection3 } from '../mealplanning/mealplanning_messages';
 import { DataCollection as DataCollection4 } from '../notifications/notifications_messages';
 import { DataCollection as DataCollection1 } from '../settings/settings_messages';
-import { UploadedMedia } from '../uploaded_media/uploaded_media';
+import { UploadedMedia } from '../uploaded_media/uploaded_media_messages';
 import { WaitlistSignup } from '../waitlists/waitlists_messages';
 import { DataCollection as DataCollection2 } from '../webhooks/webhooks_messages';
 

@@ -14,14 +14,15 @@ import (
 	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
 	oauth2errors "github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func TestProvideOAuth2ClientManager(T *testing.T) {
@@ -320,14 +321,14 @@ func TestBuildUserAuthorizationHandler(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		signingKey := random.MustGenerateRawBytes(ctx, 32)
 		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracing.NewNoopTracerProvider(), t.Name(), signingKey)
 		require.NoError(t, err)
 
 		user := fakes.BuildFakeUser()
-		token, err := tokenIssuer.IssueToken(ctx, user, time.Hour)
+		token, _, err := tokenIssuer.IssueToken(ctx, user, time.Hour, "", "")
 		require.NoError(t, err)
 
 		req := &http.Request{
@@ -351,7 +352,7 @@ func TestBuildUserAuthorizationHandler(T *testing.T) {
 
 		ctx := t.Context()
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		signingKey := random.MustGenerateRawBytes(ctx, 32)
 		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracing.NewNoopTracerProvider(), t.Name(), signingKey)

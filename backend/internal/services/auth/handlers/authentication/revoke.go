@@ -9,8 +9,8 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 const (

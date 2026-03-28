@@ -4,7 +4,7 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/converters"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 )
 
 // BuildFakeServiceSettingConfiguration builds a faked service setting.

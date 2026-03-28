@@ -10,7 +10,8 @@ import (
 	coreindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )

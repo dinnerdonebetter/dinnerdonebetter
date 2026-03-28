@@ -6,11 +6,12 @@ import (
 	"log"
 	"os"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/spf13/cobra"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/cryptography/encryption"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/cryptography/encryption/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const secretKeyLengthBytes = 32

@@ -6,14 +6,15 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
+	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
-	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func TestHandleIndexRequest(T *testing.T) {

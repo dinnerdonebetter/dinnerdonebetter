@@ -3,7 +3,7 @@ package converters
 import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
 )
 
 // ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionUpdateRequestInput creates a ValidMeasurementUnitConversionUpdateRequestInput from a ValidMeasurementUnitConversion.

@@ -8,11 +8,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/fakes"
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func TestNewOAuth2ClientStore(T *testing.T) {
@@ -23,7 +24,7 @@ func TestNewOAuth2ClientStore(T *testing.T) {
 
 		domain := "example.com"
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 		dataManager := &oauthmock.RepositoryMock{}
 
 		store := newOAuth2ClientStore(domain, logger, tracer, dataManager)
@@ -47,7 +48,7 @@ func TestOAuth2ClientStoreImpl_GetByID(T *testing.T) {
 		ctx := t.Context()
 		domain := "example.com"
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		client := fakes.BuildFakeOAuth2Client()
 		dataManager := &oauthmock.RepositoryMock{}
@@ -82,7 +83,7 @@ func TestOAuth2ClientStoreImpl_GetByID(T *testing.T) {
 		ctx := t.Context()
 		domain := "example.com"
 		logger := logging.NewNoopLogger()
-		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer("test"))
+		tracer := tracing.NewTracerForTest("test")
 
 		clientID := "test-client-id"
 		dataManager := &oauthmock.RepositoryMock{}

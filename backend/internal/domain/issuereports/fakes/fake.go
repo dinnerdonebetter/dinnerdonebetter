@@ -5,8 +5,9 @@ import (
 
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
 )
 
 func init() {

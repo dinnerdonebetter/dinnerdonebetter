@@ -29,6 +29,12 @@ import type {
   BeginPasskeyAuthenticationRequest,
   BeginPasskeyAuthenticationResponse,
   FinishPasskeyAuthenticationRequest,
+  ListActiveSessionsRequest,
+  ListActiveSessionsResponse,
+  RevokeSessionRequest,
+  RevokeSessionResponse,
+  RevokeAllOtherSessionsRequest,
+  RevokeAllOtherSessionsResponse,
 } from './auth/auth_service_types.js';
 import { IdentityServiceClient } from './identity/identity_service.js';
 import type {
@@ -50,7 +56,7 @@ import type {
   UpdateUserDetailsResponse,
   UploadUserAvatarResponse,
 } from './identity/identity_service_types.js';
-import { UploadRequest, UploadMetadata } from './uploaded_media/uploaded_media.js';
+import { UploadRequest, UploadMetadata } from './uploaded_media/uploaded_media_messages.js';
 import { SettingsServiceClient } from './settings/settings_service.js';
 import type {
   GetServiceSettingsRequest,
@@ -235,6 +241,22 @@ export function createGrpcClients(config: GrpcClientConfig) {
       promisifyUnary<ArchivePasskeyRequest, ArchivePasskeyResponse>(
         getAuthClient().archivePasskey.bind(getAuthClient()),
       )(request, authMetadata(oauth2Token)),
+
+    listActiveSessions: (oauth2Token: string): Promise<ListActiveSessionsResponse> =>
+      promisifyUnary<ListActiveSessionsRequest, ListActiveSessionsResponse>(
+        getAuthClient().listActiveSessions.bind(getAuthClient()),
+      )({ filter: undefined }, authMetadata(oauth2Token)),
+
+    revokeSession: (oauth2Token: string, request: RevokeSessionRequest): Promise<RevokeSessionResponse> =>
+      promisifyUnary<RevokeSessionRequest, RevokeSessionResponse>(getAuthClient().revokeSession.bind(getAuthClient()))(
+        request,
+        authMetadata(oauth2Token),
+      ),
+
+    revokeAllOtherSessions: (oauth2Token: string): Promise<RevokeAllOtherSessionsResponse> =>
+      promisifyUnary<RevokeAllOtherSessionsRequest, RevokeAllOtherSessionsResponse>(
+        getAuthClient().revokeAllOtherSessions.bind(getAuthClient()),
+      )({}, authMetadata(oauth2Token)),
 
     getAccountsForUser: (
       oauth2Token: string,

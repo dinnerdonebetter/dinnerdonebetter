@@ -3,20 +3,21 @@ package config
 import (
 	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
 
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v4/featureflags/config"
+	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/routing/config"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
+
 	"github.com/samber/do/v2"
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v2/analytics/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v2/email/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v2/featureflags/config"
-	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v2/httpclient"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v2/notifications/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/routing/config"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/server/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/server/http"
 )
 
 func ProvideHTTPServerConfigFromAPIServiceConfig(cfg *APIServiceConfig) http.Config {

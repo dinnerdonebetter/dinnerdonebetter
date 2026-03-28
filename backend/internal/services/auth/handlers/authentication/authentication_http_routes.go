@@ -10,13 +10,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
+	errorshttp "github.com/verygoodsoftwarenotvirus/platform/v4/errors/http"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	servertiming "github.com/mitchellh/go-server-timing"
-	errorshttp "github.com/verygoodsoftwarenotvirus/platform/v2/errors/http"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func (s *service) postLogin(ctx context.Context, user *identity.User, defaultAccountID string) (int, error) {
@@ -250,7 +251,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	defaultAccountTimer.Stop()
 
 	var token string
-	token, err = s.tokenIssuer.IssueToken(ctx, user, s.config.TokenLifetime)
+	token, _, err = s.tokenIssuer.IssueToken(ctx, user, s.config.TokenLifetime, "", "")
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "signing token")
 		errRes := types.NewAPIErrorResponse(staticError, types.ErrEncryptionIssue, responseDetails)

@@ -6,12 +6,13 @@ import (
 	"log"
 	"strings"
 
+	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/apns"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/fcm"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/spf13/pflag"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications/apns"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications/fcm"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (

@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
 import { Timestamp } from '../google/protobuf/timestamp';
-import { UploadedMedia } from '../uploaded_media/uploaded_media';
+import { UploadedMedia } from '../uploaded_media/uploaded_media_messages';
 
 export const protobufPackage = 'identity';
 

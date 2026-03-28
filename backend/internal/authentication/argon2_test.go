@@ -6,10 +6,11 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (

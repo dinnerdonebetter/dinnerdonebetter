@@ -5,13 +5,14 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (
@@ -32,8 +33,8 @@ func NewPostgresSessionStore(client database.Client, logger logging.Logger, trac
 	encoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON)
 	s := &PostgresSessionStore{
 		client:  client,
-		logger:  logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:  logging.NewNamedLogger(logger, o11yName),
+		tracer:  tracing.NewNamedTracer(tracerProvider, o11yName),
 		encoder: encoder,
 	}
 	go s.cleanupLoop()

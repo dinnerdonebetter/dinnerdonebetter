@@ -10,14 +10,15 @@ import (
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	mealplanningnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 
+	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
+	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
 )
 
 func TestScheduler_ScheduleNotifications_publishesMobileNotificationRequest(t *testing.T) {

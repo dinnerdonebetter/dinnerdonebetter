@@ -10,13 +10,14 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config/envvars"
 
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/server/http"
 )
 
 func TestAPIServiceConfig_EncodeToFile(T *testing.T) {

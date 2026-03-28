@@ -7,14 +7,15 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mocks"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 const (
@@ -37,12 +38,49 @@ func Test_signer_IssueToken(T *testing.T) {
 		user := mocks.NewMockUser()
 		user.On(reflection.GetMethodName(user.GetID)).Return("user_id").Times(2)
 
-		actual, err := s.IssueToken(ctx, user, exampleExpiry)
+		actual, _, err := s.IssueToken(ctx, user, exampleExpiry, "", "")
 		assert.NoError(t, err)
 
 		parsed, err := s.ParseUserIDFromToken(ctx, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, parsed, user.GetID())
+
+		mock.AssertExpectationsForObjects(t, user)
+	})
+
+	T.Run("with account ID and session ID", func(t *testing.T) {
+		t.Parallel()
+
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		require.NoError(t, err)
+
+		ctx := t.Context()
+		user := mocks.NewMockUser()
+		user.On(reflection.GetMethodName(user.GetID)).Return("user_id")
+
+		accountID := "account_123"
+		sessionID := "session_456"
+
+		tokenStr, jti, err := s.IssueToken(ctx, user, exampleExpiry, accountID, sessionID)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, tokenStr)
+		assert.NotEmpty(t, jti)
+
+		// Verify user ID and account ID
+		parsedUserID, parsedAccountID, err := s.ParseUserIDAndAccountIDFromToken(ctx, tokenStr)
+		assert.NoError(t, err)
+		assert.Equal(t, "user_id", parsedUserID)
+		assert.Equal(t, accountID, parsedAccountID)
+
+		// Verify session ID
+		parsedSessionID, err := s.ParseSessionIDFromToken(ctx, tokenStr)
+		assert.NoError(t, err)
+		assert.Equal(t, sessionID, parsedSessionID)
+
+		// Verify JTI
+		parsedJTI, err := s.ParseJTIFromToken(ctx, tokenStr)
+		assert.NoError(t, err)
+		assert.Equal(t, jti, parsedJTI)
 
 		mock.AssertExpectationsForObjects(t, user)
 	})
@@ -61,7 +99,7 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 		user := mocks.NewMockUser()
 		user.On(reflection.GetMethodName(user.GetID)).Return("user_id").Times(2)
 
-		issuedToken, err := s.IssueToken(ctx, user, exampleExpiry)
+		issuedToken, _, err := s.IssueToken(ctx, user, exampleExpiry, "", "")
 		assert.NoError(t, err)
 
 		actual, err := s.ParseUserIDFromToken(ctx, issuedToken)
@@ -101,6 +139,103 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 		ctx := t.Context()
 
 		actual, err := s.ParseUserIDFromToken(ctx, exampleToken)
+		assert.Error(t, err)
+		assert.Empty(t, actual)
+	})
+}
+
+func Test_signer_ParseSessionIDFromToken(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		require.NoError(t, err)
+
+		ctx := t.Context()
+		user := mocks.NewMockUser()
+		user.On(reflection.GetMethodName(user.GetID)).Return("user_id")
+
+		sessionID := "session_abc"
+
+		tokenStr, _, err := s.IssueToken(ctx, user, exampleExpiry, "", sessionID)
+		require.NoError(t, err)
+
+		actual, err := s.ParseSessionIDFromToken(ctx, tokenStr)
+		assert.NoError(t, err)
+		assert.Equal(t, sessionID, actual)
+
+		mock.AssertExpectationsForObjects(t, user)
+	})
+
+	T.Run("with missing field", func(t *testing.T) {
+		t.Parallel()
+
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		require.NoError(t, err)
+
+		ctx := t.Context()
+		user := mocks.NewMockUser()
+		user.On(reflection.GetMethodName(user.GetID)).Return("user_id")
+
+		tokenStr, _, err := s.IssueToken(ctx, user, exampleExpiry, "", "")
+		require.NoError(t, err)
+
+		actual, err := s.ParseSessionIDFromToken(ctx, tokenStr)
+		assert.NoError(t, err)
+		assert.Empty(t, actual)
+
+		mock.AssertExpectationsForObjects(t, user)
+	})
+
+	T.Run("with invalid token", func(t *testing.T) {
+		t.Parallel()
+
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		require.NoError(t, err)
+
+		ctx := t.Context()
+
+		actual, err := s.ParseSessionIDFromToken(ctx, "not-a-valid-token")
+		assert.Error(t, err)
+		assert.Empty(t, actual)
+	})
+}
+
+func Test_signer_ParseJTIFromToken(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		require.NoError(t, err)
+
+		ctx := t.Context()
+		user := mocks.NewMockUser()
+		user.On(reflection.GetMethodName(user.GetID)).Return("user_id")
+
+		tokenStr, expectedJTI, err := s.IssueToken(ctx, user, exampleExpiry, "", "")
+		require.NoError(t, err)
+		require.NotEmpty(t, expectedJTI)
+
+		actual, err := s.ParseJTIFromToken(ctx, tokenStr)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedJTI, actual)
+
+		mock.AssertExpectationsForObjects(t, user)
+	})
+
+	T.Run("with invalid token", func(t *testing.T) {
+		t.Parallel()
+
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		require.NoError(t, err)
+
+		ctx := t.Context()
+
+		actual, err := s.ParseJTIFromToken(ctx, "not-a-valid-token")
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 	})

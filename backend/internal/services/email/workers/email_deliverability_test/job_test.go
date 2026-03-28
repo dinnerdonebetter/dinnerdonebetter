@@ -4,13 +4,14 @@ import (
 	"errors"
 	"testing"
 
+	emailmock "github.com/verygoodsoftwarenotvirus/platform/v4/email/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	emailmock "github.com/verygoodsoftwarenotvirus/platform/v2/email/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
 )
 
 func TestNewJob(T *testing.T) {

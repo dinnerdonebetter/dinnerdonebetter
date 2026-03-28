@@ -122,3 +122,142 @@ func TestValidIngredientMeasurementUnits_Listing(T *testing.T) {
 		assert.True(t, len(results.Results) >= 1, "at least one VIMU for this ingredient")
 	})
 }
+
+func TestValidIngredientMeasurementUnits_SearchByIngredient(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		createdValidIngredient, createdValidMeasurementUnit, _ := createValidIngredientMeasurementUnitForTest(t)
+
+		results, err := adminClient.SearchValidMeasurementUnitsByIngredient(ctx, &mealplanningsvc.SearchValidMeasurementUnitsByIngredientRequest{
+			ValidIngredientId: createdValidIngredient.ID,
+			Query:             createdValidMeasurementUnit.Name[:2],
+		})
+		require.NoError(t, err)
+		require.NotNil(t, results)
+		assert.True(t, len(results.Results) >= 1, "expected at least one result when searching by ingredient")
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.SearchValidMeasurementUnitsByIngredient(ctx, &mealplanningsvc.SearchValidMeasurementUnitsByIngredientRequest{})
+		assert.Error(t, err)
+	})
+}
+
+func TestIntegration_UpdateValidIngredientMeasurementUnit(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientMeasurementUnitForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientMeasurementUnitUpdateRequestInput()
+		updateInput.ValidIngredientID = &created.Ingredient.ID
+		updateInput.ValidMeasurementUnitID = &created.MeasurementUnit.ID
+		created.Update(updateInput)
+
+		response, err := adminClient.UpdateValidIngredientMeasurementUnit(ctx, &mealplanningsvc.UpdateValidIngredientMeasurementUnitRequest{
+			ValidIngredientMeasurementUnitId: created.ID,
+			Input:                            mealplanningconverters.ConvertValidIngredientMeasurementUnitUpdateRequestInputToGRPCValidIngredientMeasurementUnitUpdateRequestInput(updateInput),
+		})
+		assert.NoError(t, err)
+
+		updated := mealplanningconverters.ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(response.Result)
+		require.NotNil(t, updated.LastUpdatedAt)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientMeasurementUnitForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientMeasurementUnitUpdateRequestInput()
+		created.Update(updateInput)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.UpdateValidIngredientMeasurementUnit(ctx, &mealplanningsvc.UpdateValidIngredientMeasurementUnitRequest{
+			ValidIngredientMeasurementUnitId: created.ID,
+			Input:                            mealplanningconverters.ConvertValidIngredientMeasurementUnitUpdateRequestInputToGRPCValidIngredientMeasurementUnitUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from updating", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(T)
+
+		_, _, created := createValidIngredientMeasurementUnitForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientMeasurementUnitUpdateRequestInput()
+
+		response, err := testClient.UpdateValidIngredientMeasurementUnit(ctx, &mealplanningsvc.UpdateValidIngredientMeasurementUnitRequest{
+			ValidIngredientMeasurementUnitId: created.ID,
+			Input:                            mealplanningconverters.ConvertValidIngredientMeasurementUnitUpdateRequestInputToGRPCValidIngredientMeasurementUnitUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
+}
+
+func TestIntegration_ArchiveValidIngredientMeasurementUnit(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientMeasurementUnitForTest(t)
+
+		_, err := adminClient.ArchiveValidIngredientMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitId: created.ID})
+		assert.NoError(t, err)
+
+		x, err := adminClient.GetValidIngredientMeasurementUnit(ctx, &mealplanningsvc.GetValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitId: created.ID})
+		assert.Nil(t, x)
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientMeasurementUnitForTest(t)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.ArchiveValidIngredientMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitId: created.ID})
+		assert.Error(t, err)
+	})
+
+	T.Run("invalid ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, err := adminClient.ArchiveValidIngredientMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitId: nonexistentID})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from archiving", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientMeasurementUnitForTest(t)
+		_, testClient := createUserAndClientForTest(T)
+
+		_, err := testClient.ArchiveValidIngredientMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitId: created.ID})
+		assert.Error(t, err)
+	})
+}

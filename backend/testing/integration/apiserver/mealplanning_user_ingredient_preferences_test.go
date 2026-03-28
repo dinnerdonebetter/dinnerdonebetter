@@ -184,6 +184,70 @@ func TestUserIngredientPreferences_Archiving(T *testing.T) {
 	})
 }
 
+func TestUserIngredientPreferences_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		created := createUserIngredientPreferenceForTest(t, testClient)
+
+		updateInput := fakes.BuildFakeUserIngredientPreferenceUpdateRequestInput()
+		created.Update(updateInput)
+
+		response, err := testClient.UpdateUserIngredientPreference(ctx, &settingssvc.UpdateUserIngredientPreferenceRequest{
+			UserIngredientPreferenceId: created.ID,
+			Input: &settingssvc.UserIngredientPreferenceUpdateRequestInput{
+				Notes:   updateInput.Notes,
+				Rating:  new(int32(*updateInput.Rating)),
+				Allergy: updateInput.Allergy,
+			},
+		})
+		assert.NoError(t, err)
+
+		updated := settingsconverters.ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(response.Updated)
+		// Ensure UpdatedAt was set
+		require.NotNil(t, updated.LastUpdatedAt)
+
+		assertRoughEquality(t, created, updated, defaultIgnoredFields("ID", "BelongsToUser", "Ingredient")...)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		created := createUserIngredientPreferenceForTest(t, testClient)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.UpdateUserIngredientPreference(ctx, &settingssvc.UpdateUserIngredientPreferenceRequest{
+			UserIngredientPreferenceId: created.ID,
+			Input: &settingssvc.UserIngredientPreferenceUpdateRequestInput{
+				Notes: new("doesn't matter"),
+			},
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		_, err := testClient.UpdateUserIngredientPreference(ctx, &settingssvc.UpdateUserIngredientPreferenceRequest{
+			UserIngredientPreferenceId: nonexistentID,
+			Input: &settingssvc.UserIngredientPreferenceUpdateRequestInput{
+				Notes: new("doesn't matter"),
+			},
+		})
+		assert.Error(t, err)
+	})
+}
+
 func TestUserIngredientPreferences_Listing(T *testing.T) {
 	T.Parallel()
 

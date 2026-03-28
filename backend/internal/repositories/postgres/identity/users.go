@@ -15,14 +15,15 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v4/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v2/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (

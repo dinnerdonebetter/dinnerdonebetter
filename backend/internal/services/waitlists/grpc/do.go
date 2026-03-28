@@ -4,9 +4,10 @@ import (
 	waitlistsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	waitlistssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterWaitlistsService registers the waitlists gRPC service with the injector.

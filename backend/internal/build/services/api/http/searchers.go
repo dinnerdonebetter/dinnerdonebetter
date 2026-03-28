@@ -4,17 +4,14 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
-	paymentswebhook "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
+
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
 
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/routing"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/routing/config"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
 )
 
 // ProvideTextSearchConfig provides a pointer to the text search config for dependency injection.
@@ -52,20 +49,6 @@ func RegisterSearchers(i do.Injector) {
 			do.MustInvoke[tracing.TracerProvider](i),
 			do.MustInvoke[metrics.Provider](i),
 			do.MustInvoke[*textsearchcfg.Config](i),
-		)
-	})
-}
-
-// RegisterAPIRouter registers the API router provider with the injector.
-func RegisterAPIRouter(i do.Injector) {
-	do.Provide[routing.Router](i, func(i do.Injector) (routing.Router, error) {
-		return ProvideAPIRouter(
-			*do.MustInvoke[*routingcfg.Config](i),
-			do.MustInvoke[logging.Logger](i),
-			do.MustInvoke[tracing.TracerProvider](i),
-			do.MustInvoke[metrics.Provider](i),
-			do.MustInvoke[auth.AuthDataService](i),
-			do.MustInvoke[*paymentswebhook.WebhookHandler](i),
 		)
 	})
 }

@@ -9,12 +9,13 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -59,8 +60,8 @@ func NewJob(
 	return &Job{
 		internalOpsRepo:    internalOpsRepo,
 		publisherProvider:  publisherProvider,
-		logger:             logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:             logging.NewNamedLogger(logger, serviceName),
+		tracer:             tracing.NewNamedTracer(tracerProvider, serviceName),
 		roundTripHistogram: histogram,
 		queues:             params.Queues,
 	}, nil

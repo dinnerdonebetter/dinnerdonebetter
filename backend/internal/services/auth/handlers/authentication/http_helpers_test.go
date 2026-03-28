@@ -13,10 +13,11 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 type authServiceHTTPRoutesTestHelper struct {

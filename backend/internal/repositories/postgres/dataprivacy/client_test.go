@@ -20,12 +20,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/stretchr/testify/require"
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 func buildDatabaseClientForTest(t *testing.T) (repo *repository, auditRepo audit.Repository, idRepo identity.Repository, pgContainer *pgcontainers.PostgresContainer) {

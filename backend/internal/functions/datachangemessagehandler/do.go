@@ -14,16 +14,17 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/analytics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/email"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads"
+
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/analytics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/uploads"
 )
 
 // RegisterAsyncDataChangeMessageHandler registers the async data change message handler with the injector.

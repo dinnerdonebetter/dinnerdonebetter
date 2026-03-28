@@ -159,12 +159,12 @@ LIMIT COALESCE($6, 50)
 `
 
 type GetUserDeviceTokensForUserParams struct {
-	ResultLimit    interface{}
-	CreatedAfter   sql.NullTime
-	CreatedBefore  sql.NullTime
 	UserID         string
 	PlatformFilter sql.NullString
+	CreatedAfter   sql.NullTime
+	CreatedBefore  sql.NullTime
 	Cursor         sql.NullString
+	ResultLimit    interface{}
 }
 
 type GetUserDeviceTokensForUserRow struct {

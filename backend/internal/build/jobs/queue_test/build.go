@@ -7,15 +7,16 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	queuetest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
 
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/config"
+
 	"github.com/samber/do/v2"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics/config"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing/config"
 )
 
 // BuildInjector creates and configures the dependency injection container.

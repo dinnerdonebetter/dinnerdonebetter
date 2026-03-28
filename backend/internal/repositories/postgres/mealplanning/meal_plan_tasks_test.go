@@ -9,9 +9,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/pointer"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/pointer"
 )
 
 func createMealPlanTaskForTest(t *testing.T, ctx context.Context, exampleMealPlanTask *types.MealPlanTask, dbc *repository) *types.MealPlanTask {

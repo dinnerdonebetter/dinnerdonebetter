@@ -89,6 +89,7 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_GetValidPreparationVesselsByVessel_FullMethodName:      {authorization.ReadValidPreparationVesselsPermission},
 		mealplanningsvc.MealPlanningService_GetValidPreparationVesselsByPreparation_FullMethodName: {authorization.ReadValidPreparationVesselsPermission},
 		mealplanningsvc.MealPlanningService_UpdateValidPreparationVessel_FullMethodName:            {authorization.UpdateValidPreparationVesselsPermission},
+		mealplanningsvc.MealPlanningService_ArchiveValidPreparationVessel_FullMethodName:           {authorization.ArchiveValidPreparationVesselsPermission},
 
 		// ValidIngredientPreparations
 		mealplanningsvc.MealPlanningService_GetValidIngredientPreparation_FullMethodName:               {authorization.ReadValidIngredientPreparationsPermission},

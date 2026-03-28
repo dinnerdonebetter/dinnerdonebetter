@@ -19,19 +19,20 @@ import (
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v4/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v2/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
@@ -83,8 +84,8 @@ func NewIdentityDataManager(
 	}
 
 	return &manager{
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger:               logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:               tracing.NewNamedTracer(tracerProvider, o11yName),
+		logger:               logging.NewNamedLogger(logger, o11yName),
 		identityRepo:         identityRepo,
 		dataChangesPublisher: publisher,
 		secretGenerator:      secretGenerator,

@@ -10,18 +10,19 @@ import (
 	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 
+	noopanalytics "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/noop"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	mockrouting "github.com/verygoodsoftwarenotvirus/platform/v4/routing/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/analytics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
-	mockrouting "github.com/verygoodsoftwarenotvirus/platform/v2/routing/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func buildTestService(t *testing.T) *service {
@@ -59,7 +60,7 @@ func buildTestService(t *testing.T) *service {
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
 		pp,
-		analytics.NewNoopEventReporter(),
+		noopanalytics.NewEventReporter(),
 		rpm,
 		queueCfg,
 	)
@@ -108,7 +109,7 @@ func TestProvideService(T *testing.T) {
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
-			analytics.NewNoopEventReporter(),
+			noopanalytics.NewEventReporter(),
 			rpm,
 			queueCfg,
 		)

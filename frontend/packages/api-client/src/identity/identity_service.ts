@@ -19,7 +19,7 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from '@grpc/grpc-js';
-import { UploadRequest } from '../uploaded_media/uploaded_media';
+import { UploadRequest } from '../uploaded_media/uploaded_media_messages';
 import {
   AcceptAccountInvitationRequest,
   AcceptAccountInvitationResponse,

@@ -3,7 +3,7 @@ package fakes
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 )
 
 // BuildFakeComment builds a faked Comment.

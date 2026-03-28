@@ -13,11 +13,12 @@ import (
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 	mealplantaskcreator "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v2/uploads/mock"
 )
 
 // noopCommentsManager is a stub implementation for tests that only need service construction.

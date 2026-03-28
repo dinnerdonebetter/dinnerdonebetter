@@ -121,3 +121,113 @@ func TestValidIngredientStateIngredients_Listing(T *testing.T) {
 		assert.True(t, len(results.Results) >= len(createdValidIngredientStateIngredients))
 	})
 }
+
+func TestIntegration_UpdateValidIngredientStateIngredient(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientStateIngredientForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientStateIngredientUpdateRequestInput()
+		updateInput.ValidIngredientStateID = &created.IngredientState.ID
+		updateInput.ValidIngredientID = &created.Ingredient.ID
+		created.Update(updateInput)
+
+		response, err := adminClient.UpdateValidIngredientStateIngredient(ctx, &mealplanningsvc.UpdateValidIngredientStateIngredientRequest{
+			ValidIngredientStateIngredientId: created.ID,
+			Input:                            mealplanningconverters.ConvertValidIngredientStateIngredientUpdateRequestInputToGRPCValidIngredientStateIngredientUpdateRequestInput(updateInput),
+		})
+		assert.NoError(t, err)
+
+		updated := mealplanningconverters.ConvertGRPCValidIngredientStateIngredientToValidIngredientStateIngredient(response.Result)
+		require.NotNil(t, updated.LastUpdatedAt)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientStateIngredientForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientStateIngredientUpdateRequestInput()
+		created.Update(updateInput)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.UpdateValidIngredientStateIngredient(ctx, &mealplanningsvc.UpdateValidIngredientStateIngredientRequest{
+			ValidIngredientStateIngredientId: created.ID,
+			Input:                            mealplanningconverters.ConvertValidIngredientStateIngredientUpdateRequestInputToGRPCValidIngredientStateIngredientUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from updating", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(T)
+
+		_, _, created := createValidIngredientStateIngredientForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientStateIngredientUpdateRequestInput()
+
+		response, err := testClient.UpdateValidIngredientStateIngredient(ctx, &mealplanningsvc.UpdateValidIngredientStateIngredientRequest{
+			ValidIngredientStateIngredientId: created.ID,
+			Input:                            mealplanningconverters.ConvertValidIngredientStateIngredientUpdateRequestInputToGRPCValidIngredientStateIngredientUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
+}
+
+func TestIntegration_ArchiveValidIngredientStateIngredient(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientStateIngredientForTest(t)
+
+		_, err := adminClient.ArchiveValidIngredientStateIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientStateIngredientRequest{ValidIngredientStateIngredientId: created.ID})
+		assert.NoError(t, err)
+
+		x, err := adminClient.GetValidIngredientStateIngredient(ctx, &mealplanningsvc.GetValidIngredientStateIngredientRequest{ValidIngredientStateIngredientId: created.ID})
+		assert.Nil(t, x)
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientStateIngredientForTest(t)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.ArchiveValidIngredientStateIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientStateIngredientRequest{ValidIngredientStateIngredientId: created.ID})
+		assert.Error(t, err)
+	})
+
+	T.Run("invalid ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, err := adminClient.ArchiveValidIngredientStateIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientStateIngredientRequest{ValidIngredientStateIngredientId: nonexistentID})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from archiving", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientStateIngredientForTest(t)
+		_, testClient := createUserAndClientForTest(T)
+
+		_, err := testClient.ArchiveValidIngredientStateIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientStateIngredientRequest{ValidIngredientStateIngredientId: created.ID})
+		assert.Error(t, err)
+	})
+}

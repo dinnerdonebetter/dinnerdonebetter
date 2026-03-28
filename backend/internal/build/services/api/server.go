@@ -12,10 +12,10 @@ import (
 	httpapi "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api/http"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/profiling"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/server/http"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/profiling"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
 )
 
 type Server struct {

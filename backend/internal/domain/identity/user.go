@@ -10,10 +10,11 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/pquerna/otp/totp"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 const (

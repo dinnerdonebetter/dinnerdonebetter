@@ -6,6 +6,7 @@ tool (
 	github.com/4meepo/tagalign/cmd/tagalign
 	github.com/air-verse/air
 	github.com/daixiang0/gci
+	github.com/verygoodsoftwarenotvirus/rollcall/cmd/rollcall
 	golang.org/x/tools/cmd/goimports
 	golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc
@@ -49,13 +50,12 @@ require (
 	github.com/stripe/stripe-go/v75 v75.11.0
 	github.com/testcontainers/testcontainers-go v0.41.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.41.0
-	github.com/verygoodsoftwarenotvirus/platform/v2 v2.0.0
+	github.com/verygoodsoftwarenotvirus/platform/v4 v4.0.1
 	github.com/wagslane/go-password-validator v0.3.0
 	go.opentelemetry.io/otel v1.42.0
 	go.opentelemetry.io/otel/metric v1.42.0
 	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/oauth2 v0.36.0
-	golang.org/x/tools v0.43.0
 	gonum.org/v1/gonum v0.17.0
 	google.golang.org/adk v0.6.0
 	google.golang.org/genai v1.49.0
@@ -152,6 +152,7 @@ require (
 	github.com/spf13/cast v1.9.2 // indirect
 	github.com/tdewolff/parse/v2 v2.8.3 // indirect
 	github.com/testcontainers/testcontainers-go/modules/redis v0.41.0 // indirect
+	github.com/verygoodsoftwarenotvirus/rollcall v1.0.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go.opentelemetry.io/contrib/bridges/otelslog v0.17.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.67.0 // indirect
@@ -175,6 +176,7 @@ require (
 	golang.org/x/crypto v0.49.0 // indirect
 	golang.org/x/net v0.52.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260311193753-579e4da9a98c // indirect
+	golang.org/x/tools v0.43.0 // indirect
 	google.golang.org/api v0.272.0 // indirect
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.6.1 // indirect
 )

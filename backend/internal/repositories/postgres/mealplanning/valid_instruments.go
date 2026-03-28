@@ -8,12 +8,12 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v2/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v4/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 var (

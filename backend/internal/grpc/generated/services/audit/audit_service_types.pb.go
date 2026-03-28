@@ -27,8 +27,8 @@ const (
 
 type GetAuditLogEntriesForAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"     protobuf:"bytes,1,opt,name=filter,proto3"`
-	AccountId     string                 `json:"account_id,omitempty" protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	AccountId     string                 `protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -79,9 +79,9 @@ func (x *GetAuditLogEntriesForAccountRequest) GetAccountId() string {
 
 type GetAuditLogEntriesForAccountResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*AuditLogEntry       `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*AuditLogEntry       `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -139,8 +139,8 @@ func (x *GetAuditLogEntriesForAccountResponse) GetResults() []*AuditLogEntry {
 
 type GetAuditLogEntriesForUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"  protobuf:"bytes,1,opt,name=filter,proto3"`
-	UserId        string                 `json:"user_id,omitempty" protobuf:"bytes,2,opt,name=user_id,json=userId,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -191,9 +191,9 @@ func (x *GetAuditLogEntriesForUserRequest) GetUserId() string {
 
 type GetAuditLogEntriesForUserResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*AuditLogEntry       `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*AuditLogEntry       `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -251,7 +251,7 @@ func (x *GetAuditLogEntriesForUserResponse) GetResults() []*AuditLogEntry {
 
 type GetAuditLogEntryByIDRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	AuditLogEntryId string                 `json:"audit_log_entry_id,omitempty" protobuf:"bytes,1,opt,name=audit_log_entry_id,json=auditLogEntryId,proto3"`
+	AuditLogEntryId string                 `protobuf:"bytes,1,opt,name=audit_log_entry_id,json=auditLogEntryId,proto3" json:"audit_log_entry_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -295,8 +295,8 @@ func (x *GetAuditLogEntryByIDRequest) GetAuditLogEntryId() string {
 
 type GetAuditLogEntryByIDResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *AuditLogEntry         `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *AuditLogEntry         `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

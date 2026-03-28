@@ -8,9 +8,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
 )
 
 // --- Unit tests ---

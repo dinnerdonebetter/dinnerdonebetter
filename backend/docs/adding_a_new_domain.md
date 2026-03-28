@@ -353,8 +353,8 @@ Explicit `o11yName` constant in:
 
 Used for:
 
-- `tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName))`
-- `logging.EnsureLogger(logger).WithName(o11yName)`
+- `tracing.NewNamedTracer(tracerProvider, o11yName)`
+- `logging.NewNamedLogger(logger, o11yName)`
 
 ---
 

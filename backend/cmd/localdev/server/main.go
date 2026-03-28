@@ -28,14 +28,14 @@ import (
 	identitygenerated "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	noopmq "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/noop"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
 )
 
 const (
@@ -241,7 +241,7 @@ func main() {
 			queueCfg := &msgconfig.QueuesConfig{
 				DataChangesTopicName: "data_changes",
 			}
-			publisherProvider := messagequeue.NewNoopPublisherProvider()
+			publisherProvider := noopmq.NewPublisherProvider()
 			recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
 			searchConfig := &textsearchcfg.Config{}
 			metricsProvider := metrics.NewNoopMetricsProvider()

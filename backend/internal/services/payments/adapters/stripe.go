@@ -7,12 +7,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/stripe/stripe-go/v75"
 	"github.com/stripe/stripe-go/v75/webhook"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // StripeConfig holds configuration for the Stripe adapter.
@@ -41,8 +42,8 @@ func NewStripePaymentProcessor(
 
 	return &StripePaymentProcessor{
 		encoder: encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		logger:  logging.EnsureLogger(logger).WithName("stripe_processor"),
-		tracer:  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("stripe_processor")),
+		logger:  logging.NewNamedLogger(logger, "stripe_processor"),
+		tracer:  tracing.NewNamedTracer(tracerProvider, "stripe_processor"),
 		cfg:     cfg,
 	}
 }

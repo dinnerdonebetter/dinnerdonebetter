@@ -4,9 +4,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/manager"
 	oauthsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterOAuthService registers the OAuth gRPC service with the injector.

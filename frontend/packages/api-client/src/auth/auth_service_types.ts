@@ -7,9 +7,10 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
 import { ResponseDetails } from '../common';
+import { Pagination, QueryFilter } from '../filtering';
 import { Timestamp } from '../google/protobuf/timestamp';
 import { Account, User } from '../identity/identity_messages';
-import { UserLoginInput } from './auth_messages';
+import { UserLoginInput, UserSession } from './auth_messages';
 
 export const protobufPackage = 'auth';
 
@@ -282,6 +283,44 @@ export interface ArchivePasskeyRequest {
 
 export interface ArchivePasskeyResponse {
   responseDetails: ResponseDetails | undefined;
+}
+
+export interface ListActiveSessionsRequest {
+  filter: QueryFilter | undefined;
+}
+
+export interface ListActiveSessionsResponse {
+  responseDetails: ResponseDetails | undefined;
+  pagination: Pagination | undefined;
+  sessions: UserSession[];
+}
+
+export interface RevokeSessionRequest {
+  sessionId: string;
+}
+
+export interface RevokeSessionResponse {
+  responseDetails: ResponseDetails | undefined;
+}
+
+export interface RevokeAllOtherSessionsRequest {}
+
+export interface RevokeAllOtherSessionsResponse {
+  responseDetails: ResponseDetails | undefined;
+}
+
+export interface AdminListSessionsForUserRequest {
+  userId: string;
+  filter: QueryFilter | undefined;
+}
+
+export interface AdminRevokeUserSessionRequest {
+  userId: string;
+  sessionId: string;
+}
+
+export interface AdminRevokeAllUserSessionsRequest {
+  userId: string;
 }
 
 function createBaseLoginForTokenRequest(): LoginForTokenRequest {
@@ -4940,6 +4979,649 @@ export const ArchivePasskeyResponse: MessageFns<ArchivePasskeyResponse> = {
       object.responseDetails !== undefined && object.responseDetails !== null
         ? ResponseDetails.fromPartial(object.responseDetails)
         : undefined;
+    return message;
+  },
+};
+
+function createBaseListActiveSessionsRequest(): ListActiveSessionsRequest {
+  return { filter: undefined };
+}
+
+export const ListActiveSessionsRequest: MessageFns<ListActiveSessionsRequest> = {
+  encode(message: ListActiveSessionsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.filter !== undefined) {
+      QueryFilter.encode(message.filter, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListActiveSessionsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListActiveSessionsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.filter = QueryFilter.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListActiveSessionsRequest {
+    return { filter: isSet(object.filter) ? QueryFilter.fromJSON(object.filter) : undefined };
+  },
+
+  toJSON(message: ListActiveSessionsRequest): unknown {
+    const obj: any = {};
+    if (message.filter !== undefined) {
+      obj.filter = QueryFilter.toJSON(message.filter);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListActiveSessionsRequest>, I>>(base?: I): ListActiveSessionsRequest {
+    return ListActiveSessionsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListActiveSessionsRequest>, I>>(object: I): ListActiveSessionsRequest {
+    const message = createBaseListActiveSessionsRequest();
+    message.filter =
+      object.filter !== undefined && object.filter !== null ? QueryFilter.fromPartial(object.filter) : undefined;
+    return message;
+  },
+};
+
+function createBaseListActiveSessionsResponse(): ListActiveSessionsResponse {
+  return { responseDetails: undefined, pagination: undefined, sessions: [] };
+}
+
+export const ListActiveSessionsResponse: MessageFns<ListActiveSessionsResponse> = {
+  encode(message: ListActiveSessionsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.responseDetails !== undefined) {
+      ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    if (message.pagination !== undefined) {
+      Pagination.encode(message.pagination, writer.uint32(18).fork()).join();
+    }
+    for (const v of message.sessions) {
+      UserSession.encode(v!, writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListActiveSessionsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListActiveSessionsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.pagination = Pagination.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.sessions.push(UserSession.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListActiveSessionsResponse {
+    return {
+      responseDetails: isSet(object.responseDetails)
+        ? ResponseDetails.fromJSON(object.responseDetails)
+        : isSet(object.response_details)
+          ? ResponseDetails.fromJSON(object.response_details)
+          : undefined,
+      pagination: isSet(object.pagination) ? Pagination.fromJSON(object.pagination) : undefined,
+      sessions: globalThis.Array.isArray(object?.sessions)
+        ? object.sessions.map((e: any) => UserSession.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ListActiveSessionsResponse): unknown {
+    const obj: any = {};
+    if (message.responseDetails !== undefined) {
+      obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    if (message.pagination !== undefined) {
+      obj.pagination = Pagination.toJSON(message.pagination);
+    }
+    if (message.sessions?.length) {
+      obj.sessions = message.sessions.map((e) => UserSession.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListActiveSessionsResponse>, I>>(base?: I): ListActiveSessionsResponse {
+    return ListActiveSessionsResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListActiveSessionsResponse>, I>>(object: I): ListActiveSessionsResponse {
+    const message = createBaseListActiveSessionsResponse();
+    message.responseDetails =
+      object.responseDetails !== undefined && object.responseDetails !== null
+        ? ResponseDetails.fromPartial(object.responseDetails)
+        : undefined;
+    message.pagination =
+      object.pagination !== undefined && object.pagination !== null
+        ? Pagination.fromPartial(object.pagination)
+        : undefined;
+    message.sessions = object.sessions?.map((e) => UserSession.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseRevokeSessionRequest(): RevokeSessionRequest {
+  return { sessionId: '' };
+}
+
+export const RevokeSessionRequest: MessageFns<RevokeSessionRequest> = {
+  encode(message: RevokeSessionRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.sessionId !== '') {
+      writer.uint32(10).string(message.sessionId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeSessionRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeSessionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.sessionId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RevokeSessionRequest {
+    return {
+      sessionId: isSet(object.sessionId)
+        ? globalThis.String(object.sessionId)
+        : isSet(object.session_id)
+          ? globalThis.String(object.session_id)
+          : '',
+    };
+  },
+
+  toJSON(message: RevokeSessionRequest): unknown {
+    const obj: any = {};
+    if (message.sessionId !== '') {
+      obj.sessionId = message.sessionId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeSessionRequest>, I>>(base?: I): RevokeSessionRequest {
+    return RevokeSessionRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeSessionRequest>, I>>(object: I): RevokeSessionRequest {
+    const message = createBaseRevokeSessionRequest();
+    message.sessionId = object.sessionId ?? '';
+    return message;
+  },
+};
+
+function createBaseRevokeSessionResponse(): RevokeSessionResponse {
+  return { responseDetails: undefined };
+}
+
+export const RevokeSessionResponse: MessageFns<RevokeSessionResponse> = {
+  encode(message: RevokeSessionResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.responseDetails !== undefined) {
+      ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeSessionResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeSessionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RevokeSessionResponse {
+    return {
+      responseDetails: isSet(object.responseDetails)
+        ? ResponseDetails.fromJSON(object.responseDetails)
+        : isSet(object.response_details)
+          ? ResponseDetails.fromJSON(object.response_details)
+          : undefined,
+    };
+  },
+
+  toJSON(message: RevokeSessionResponse): unknown {
+    const obj: any = {};
+    if (message.responseDetails !== undefined) {
+      obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeSessionResponse>, I>>(base?: I): RevokeSessionResponse {
+    return RevokeSessionResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeSessionResponse>, I>>(object: I): RevokeSessionResponse {
+    const message = createBaseRevokeSessionResponse();
+    message.responseDetails =
+      object.responseDetails !== undefined && object.responseDetails !== null
+        ? ResponseDetails.fromPartial(object.responseDetails)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseRevokeAllOtherSessionsRequest(): RevokeAllOtherSessionsRequest {
+  return {};
+}
+
+export const RevokeAllOtherSessionsRequest: MessageFns<RevokeAllOtherSessionsRequest> = {
+  encode(_: RevokeAllOtherSessionsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeAllOtherSessionsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeAllOtherSessionsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): RevokeAllOtherSessionsRequest {
+    return {};
+  },
+
+  toJSON(_: RevokeAllOtherSessionsRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeAllOtherSessionsRequest>, I>>(base?: I): RevokeAllOtherSessionsRequest {
+    return RevokeAllOtherSessionsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeAllOtherSessionsRequest>, I>>(_: I): RevokeAllOtherSessionsRequest {
+    const message = createBaseRevokeAllOtherSessionsRequest();
+    return message;
+  },
+};
+
+function createBaseRevokeAllOtherSessionsResponse(): RevokeAllOtherSessionsResponse {
+  return { responseDetails: undefined };
+}
+
+export const RevokeAllOtherSessionsResponse: MessageFns<RevokeAllOtherSessionsResponse> = {
+  encode(message: RevokeAllOtherSessionsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.responseDetails !== undefined) {
+      ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeAllOtherSessionsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeAllOtherSessionsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RevokeAllOtherSessionsResponse {
+    return {
+      responseDetails: isSet(object.responseDetails)
+        ? ResponseDetails.fromJSON(object.responseDetails)
+        : isSet(object.response_details)
+          ? ResponseDetails.fromJSON(object.response_details)
+          : undefined,
+    };
+  },
+
+  toJSON(message: RevokeAllOtherSessionsResponse): unknown {
+    const obj: any = {};
+    if (message.responseDetails !== undefined) {
+      obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeAllOtherSessionsResponse>, I>>(base?: I): RevokeAllOtherSessionsResponse {
+    return RevokeAllOtherSessionsResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeAllOtherSessionsResponse>, I>>(
+    object: I,
+  ): RevokeAllOtherSessionsResponse {
+    const message = createBaseRevokeAllOtherSessionsResponse();
+    message.responseDetails =
+      object.responseDetails !== undefined && object.responseDetails !== null
+        ? ResponseDetails.fromPartial(object.responseDetails)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseAdminListSessionsForUserRequest(): AdminListSessionsForUserRequest {
+  return { userId: '', filter: undefined };
+}
+
+export const AdminListSessionsForUserRequest: MessageFns<AdminListSessionsForUserRequest> = {
+  encode(message: AdminListSessionsForUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== '') {
+      writer.uint32(10).string(message.userId);
+    }
+    if (message.filter !== undefined) {
+      QueryFilter.encode(message.filter, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AdminListSessionsForUserRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminListSessionsForUserRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.filter = QueryFilter.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminListSessionsForUserRequest {
+    return {
+      userId: isSet(object.userId)
+        ? globalThis.String(object.userId)
+        : isSet(object.user_id)
+          ? globalThis.String(object.user_id)
+          : '',
+      filter: isSet(object.filter) ? QueryFilter.fromJSON(object.filter) : undefined,
+    };
+  },
+
+  toJSON(message: AdminListSessionsForUserRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== '') {
+      obj.userId = message.userId;
+    }
+    if (message.filter !== undefined) {
+      obj.filter = QueryFilter.toJSON(message.filter);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AdminListSessionsForUserRequest>, I>>(base?: I): AdminListSessionsForUserRequest {
+    return AdminListSessionsForUserRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AdminListSessionsForUserRequest>, I>>(
+    object: I,
+  ): AdminListSessionsForUserRequest {
+    const message = createBaseAdminListSessionsForUserRequest();
+    message.userId = object.userId ?? '';
+    message.filter =
+      object.filter !== undefined && object.filter !== null ? QueryFilter.fromPartial(object.filter) : undefined;
+    return message;
+  },
+};
+
+function createBaseAdminRevokeUserSessionRequest(): AdminRevokeUserSessionRequest {
+  return { userId: '', sessionId: '' };
+}
+
+export const AdminRevokeUserSessionRequest: MessageFns<AdminRevokeUserSessionRequest> = {
+  encode(message: AdminRevokeUserSessionRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== '') {
+      writer.uint32(10).string(message.userId);
+    }
+    if (message.sessionId !== '') {
+      writer.uint32(18).string(message.sessionId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AdminRevokeUserSessionRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminRevokeUserSessionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.sessionId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminRevokeUserSessionRequest {
+    return {
+      userId: isSet(object.userId)
+        ? globalThis.String(object.userId)
+        : isSet(object.user_id)
+          ? globalThis.String(object.user_id)
+          : '',
+      sessionId: isSet(object.sessionId)
+        ? globalThis.String(object.sessionId)
+        : isSet(object.session_id)
+          ? globalThis.String(object.session_id)
+          : '',
+    };
+  },
+
+  toJSON(message: AdminRevokeUserSessionRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== '') {
+      obj.userId = message.userId;
+    }
+    if (message.sessionId !== '') {
+      obj.sessionId = message.sessionId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AdminRevokeUserSessionRequest>, I>>(base?: I): AdminRevokeUserSessionRequest {
+    return AdminRevokeUserSessionRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AdminRevokeUserSessionRequest>, I>>(
+    object: I,
+  ): AdminRevokeUserSessionRequest {
+    const message = createBaseAdminRevokeUserSessionRequest();
+    message.userId = object.userId ?? '';
+    message.sessionId = object.sessionId ?? '';
+    return message;
+  },
+};
+
+function createBaseAdminRevokeAllUserSessionsRequest(): AdminRevokeAllUserSessionsRequest {
+  return { userId: '' };
+}
+
+export const AdminRevokeAllUserSessionsRequest: MessageFns<AdminRevokeAllUserSessionsRequest> = {
+  encode(message: AdminRevokeAllUserSessionsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== '') {
+      writer.uint32(10).string(message.userId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AdminRevokeAllUserSessionsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminRevokeAllUserSessionsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminRevokeAllUserSessionsRequest {
+    return {
+      userId: isSet(object.userId)
+        ? globalThis.String(object.userId)
+        : isSet(object.user_id)
+          ? globalThis.String(object.user_id)
+          : '',
+    };
+  },
+
+  toJSON(message: AdminRevokeAllUserSessionsRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== '') {
+      obj.userId = message.userId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AdminRevokeAllUserSessionsRequest>, I>>(
+    base?: I,
+  ): AdminRevokeAllUserSessionsRequest {
+    return AdminRevokeAllUserSessionsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AdminRevokeAllUserSessionsRequest>, I>>(
+    object: I,
+  ): AdminRevokeAllUserSessionsRequest {
+    const message = createBaseAdminRevokeAllUserSessionsRequest();
+    message.userId = object.userId ?? '';
     return message;
   },
 };

@@ -8,7 +8,7 @@ import "issue_reports/issue_reports_messages.proto";
 import "mealplanning/mealplanning_messages.proto";
 import "notifications/notifications_messages.proto";
 import "settings/settings_messages.proto";
-import "uploaded_media/uploaded_media.proto";
+import "uploaded_media/uploaded_media_messages.proto";
 import "waitlists/waitlists_messages.proto";
 import "webhooks/webhooks_messages.proto";
 

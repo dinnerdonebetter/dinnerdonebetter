@@ -3,8 +3,9 @@ package config
 import (
 	"context"
 
+	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/config"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v2/uploads/config"
 )
 
 // Config configures the service.

@@ -79,6 +79,115 @@ func TestValidPreparationVessels_Creating(T *testing.T) {
 	})
 }
 
+func TestValidPreparationVessels_Archiving(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationVesselForTest(t)
+
+		_, err := adminClient.ArchiveValidPreparationVessel(ctx, &mealplanningsvc.ArchiveValidPreparationVesselRequest{ValidPreparationVesselId: created.ID})
+		assert.NoError(t, err)
+
+		x, err := adminClient.GetValidPreparationVessel(ctx, &mealplanningsvc.GetValidPreparationVesselRequest{ValidPreparationVesselId: created.ID})
+		assert.Nil(t, x)
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationVesselForTest(t)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.ArchiveValidPreparationVessel(ctx, &mealplanningsvc.ArchiveValidPreparationVesselRequest{ValidPreparationVesselId: created.ID})
+		assert.Error(t, err)
+	})
+
+	T.Run("invalid ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, err := adminClient.ArchiveValidPreparationVessel(ctx, &mealplanningsvc.ArchiveValidPreparationVesselRequest{ValidPreparationVesselId: nonexistentID})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from archiving", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationVesselForTest(t)
+		_, testClient := createUserAndClientForTest(T)
+
+		_, err := testClient.ArchiveValidPreparationVessel(ctx, &mealplanningsvc.ArchiveValidPreparationVesselRequest{ValidPreparationVesselId: created.ID})
+		assert.Error(t, err)
+	})
+}
+
+func TestValidPreparationVessels_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationVesselForTest(t)
+
+		updateInput := fakes.BuildFakeValidPreparationVesselUpdateRequestInput()
+		updateInput.ValidPreparationID = &created.Preparation.ID
+		updateInput.ValidVesselID = &created.Vessel.ID
+
+		response, err := adminClient.UpdateValidPreparationVessel(ctx, &mealplanningsvc.UpdateValidPreparationVesselRequest{
+			ValidPreparationVesselId: created.ID,
+			Input:                    mealplanningconverters.ConvertValidPreparationVesselUpdateRequestInputToGRPCValidPreparationVesselUpdateRequestInput(updateInput),
+		})
+		assert.NoError(t, err)
+		require.NotNil(t, response)
+		require.NotNil(t, response.Result)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationVesselForTest(t)
+
+		updateInput := fakes.BuildFakeValidPreparationVesselUpdateRequestInput()
+		updateInput.ValidPreparationID = &created.Preparation.ID
+		updateInput.ValidVesselID = &created.Vessel.ID
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.UpdateValidPreparationVessel(ctx, &mealplanningsvc.UpdateValidPreparationVesselRequest{
+			ValidPreparationVesselId: created.ID,
+			Input:                    mealplanningconverters.ConvertValidPreparationVesselUpdateRequestInputToGRPCValidPreparationVesselUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from updating", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(T)
+
+		_, _, created := createValidPreparationVesselForTest(t)
+
+		response, err := testClient.UpdateValidPreparationVessel(ctx, &mealplanningsvc.UpdateValidPreparationVesselRequest{
+			ValidPreparationVesselId: created.ID,
+			Input: &mealplanningsvc.ValidPreparationVesselUpdateRequestInput{
+				Notes: new("doesn't matter"),
+			},
+		})
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
+}
+
 func TestValidPreparationVessels_Listing(T *testing.T) {
 	T.Parallel()
 

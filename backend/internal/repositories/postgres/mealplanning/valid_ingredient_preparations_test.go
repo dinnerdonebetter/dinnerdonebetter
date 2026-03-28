@@ -10,9 +10,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 func createValidIngredientPreparationForTest(t *testing.T, ctx context.Context, exampleValidIngredientPreparation *types.ValidIngredientPreparation, dbc *repository) *types.ValidIngredientPreparation {

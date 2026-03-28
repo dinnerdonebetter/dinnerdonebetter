@@ -6,6 +6,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/managers"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
 	"github.com/stretchr/testify/mock"
 )
 
@@ -75,5 +77,29 @@ func (m *AuthManager) VerifyUserEmailAddress(ctx context.Context, input *auth.Em
 // VerifyUserEmailAddressByToken is a mock method.
 func (m *AuthManager) VerifyUserEmailAddressByToken(ctx context.Context, token string) error {
 	args := m.Called(ctx, token)
+	return args.Error(0)
+}
+
+// GetActiveSessionsForUser is a mock method.
+func (m *AuthManager) GetActiveSessionsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[auth.UserSession], error) {
+	args := m.Called(ctx, userID, filter)
+	return args.Get(0).(*filtering.QueryFilteredResult[auth.UserSession]), args.Error(1)
+}
+
+// RevokeSession is a mock method.
+func (m *AuthManager) RevokeSession(ctx context.Context, sessionID, userID string) error {
+	args := m.Called(ctx, sessionID, userID)
+	return args.Error(0)
+}
+
+// RevokeAllSessionsForUserExcept is a mock method.
+func (m *AuthManager) RevokeAllSessionsForUserExcept(ctx context.Context, userID, currentSessionID string) error {
+	args := m.Called(ctx, userID, currentSessionID)
+	return args.Error(0)
+}
+
+// RevokeAllSessionsForUser is a mock method.
+func (m *AuthManager) RevokeAllSessionsForUser(ctx context.Context, userID string) error {
+	args := m.Called(ctx, userID)
 	return args.Error(0)
 }

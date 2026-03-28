@@ -3,17 +3,18 @@ package datachangemessagehandler
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
+
 	"github.com/samber/do/v2"
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v2/analytics/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v2/email/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v2/httpclient"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v2/notifications/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/uploads/objectstorage"
 )
 
 // RegisterConfigs registers all config sub-fields with the injector.

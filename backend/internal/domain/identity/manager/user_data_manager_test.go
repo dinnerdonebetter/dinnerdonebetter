@@ -10,17 +10,18 @@ import (
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	randommock "github.com/verygoodsoftwarenotvirus/platform/v4/random/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	randommock "github.com/verygoodsoftwarenotvirus/platform/v2/random/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
-	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
 )
 
 func buildIdentityDataManagerForTest(t *testing.T) *manager {

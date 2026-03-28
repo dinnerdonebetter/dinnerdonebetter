@@ -4,8 +4,9 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/converters"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 // BuildFakeAccountInvitation builds a faked AccountInvitation.

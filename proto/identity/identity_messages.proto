@@ -3,7 +3,7 @@ syntax = "proto3";
 package identity;
 
 import "google/protobuf/timestamp.proto";
-import "uploaded_media/uploaded_media.proto";
+import "uploaded_media/uploaded_media_messages.proto";
 
 option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity";
 

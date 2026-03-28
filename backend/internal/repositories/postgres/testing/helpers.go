@@ -16,17 +16,18 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/retry"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/retry"
 )
 
 var RunContainerTests = strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) != "false" // on by default
@@ -163,6 +164,9 @@ func BuildDatabaseContainer(ctx context.Context, dbName string) (*postgres.Postg
 	if err = dbConfig.LoadConnectionDetailsFromURL(connStr); err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to connect to postgres container: %w", err)
 	}
+	// LoadConnectionDetailsFromURL only populates ReadConnection; copy it to
+	// WriteConnection so ProvideDatabaseClient can open both handles.
+	dbConfig.WriteConnection = dbConfig.ReadConnection
 
 	db, err := dbConfig.ConnectToDatabase()
 	if err != nil {

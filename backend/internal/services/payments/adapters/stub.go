@@ -5,7 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 )
 
 // StubPaymentProcessor is a no-op implementation of PaymentProcessor for local development and testing.
@@ -18,7 +18,7 @@ var _ payments.PaymentProcessor = (*StubPaymentProcessor)(nil)
 // NewStubPaymentProcessor returns a new stub payment processor.
 func NewStubPaymentProcessor(logger logging.Logger) *StubPaymentProcessor {
 	return &StubPaymentProcessor{
-		logger: logging.EnsureLogger(logger).WithName("stub_payment_processor"),
+		logger: logging.NewNamedLogger(logger, "stub_payment_processor"),
 	}
 }
 

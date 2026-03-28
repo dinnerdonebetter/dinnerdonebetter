@@ -8,8 +8,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
 )
 
 func TestQuerier_Integration_AccountUserMemberships(t *testing.T) {

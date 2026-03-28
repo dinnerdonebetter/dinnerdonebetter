@@ -7,15 +7,17 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (
 	issuer       = "dinner-done-better"
 	accountIDKey = "account_id"
+	sessionIDKey = "sid"
 )
 
 type (
@@ -32,25 +34,22 @@ func NewJWTSigner(logger logging.Logger, tracerProvider tracing.TracerProvider, 
 		audience:   audience,
 		signingKey: signingKey,
 		logger:     logging.EnsureLogger(logger),
-		tracer:     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("jwt_signer")),
+		tracer:     tracing.NewNamedTracer(tracerProvider, "jwt_signer"),
 	}
 
 	return s, nil
 }
 
-// IssueToken issues a new JSON web token.
-func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.Duration) (string, error) {
-	return s.IssueTokenWithAccount(ctx, user, expiry, "")
-}
-
-// IssueTokenWithAccount issues a new JSON web token, optionally including an account ID claim.
-func (s *signer) IssueTokenWithAccount(ctx context.Context, user tokens.User, expiry time.Duration, accountID string) (string, error) {
+// IssueToken issues a new JSON web token, optionally including account ID and session ID claims.
+func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.Duration, accountID, sessionID string) (tokenStr, jti string, err error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if expiry <= 0 {
 		expiry = time.Minute * 10
 	}
+
+	jti = identifiers.New()
 
 	claims := jwt.MapClaims{
 		"exp": jwt.NewNumericDate(time.Now().Add(expiry).UTC()),           /* expiration time */
@@ -59,21 +58,23 @@ func (s *signer) IssueTokenWithAccount(ctx context.Context, user tokens.User, ex
 		"aud": s.audience,                                                 /* audience, i.e. server address */
 		"iss": issuer,                                                     /* issuer */
 		"sub": user.GetID(),                                               /* subject */
-		"jti": identifiers.New(),                                          /* JWT ID */
+		"jti": jti,                                                        /* JWT ID */
 	}
 	if accountID != "" {
 		claims[accountIDKey] = accountID
 	}
+	if sessionID != "" {
+		claims[sessionIDKey] = sessionID
+	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString(s.signingKey)
+	tokenStr, err = token.SignedString(s.signingKey)
 	if err != nil {
-		// this error actually cannot happen with SigningMethodHS256, but it can with other methods.
-		return "", err
+		return "", "", err
 	}
 
-	return tokenString, nil
+	return tokenStr, jti, nil
 }
 
 // ParseUserIDFromToken parses a AccessToken and returns the associated user ID.
@@ -87,14 +88,8 @@ func (s *signer) ParseUserIDAndAccountIDFromToken(ctx context.Context, tokenStri
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	parsedToken, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return s.signingKey, nil
-	})
+	parsedToken, err := s.parseToken(tokenString)
 	if err != nil {
-		s.logger.Error("parsing JWT", err)
 		return "", "", err
 	}
 
@@ -111,4 +106,57 @@ func (s *signer) ParseUserIDAndAccountIDFromToken(ctx context.Context, tokenStri
 	}
 
 	return subject, "", nil
+}
+
+// ParseSessionIDFromToken extracts the session ID claim from a JWT.
+func (s *signer) ParseSessionIDFromToken(ctx context.Context, tokenString string) (string, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	parsedToken, err := s.parseToken(tokenString)
+	if err != nil {
+		return "", err
+	}
+
+	if claims, ok := parsedToken.Claims.(jwt.MapClaims); ok {
+		if sid, ok2 := claims[sessionIDKey].(string); ok2 {
+			return sid, nil
+		}
+	}
+
+	return "", nil
+}
+
+// ParseJTIFromToken extracts the JTI claim from a JWT.
+func (s *signer) ParseJTIFromToken(ctx context.Context, tokenString string) (string, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	parsedToken, err := s.parseToken(tokenString)
+	if err != nil {
+		return "", err
+	}
+
+	if claims, ok := parsedToken.Claims.(jwt.MapClaims); ok {
+		if jti, ok2 := claims["jti"].(string); ok2 {
+			return jti, nil
+		}
+	}
+
+	return "", nil
+}
+
+func (s *signer) parseToken(tokenString string) (*jwt.Token, error) {
+	parsedToken, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return s.signingKey, nil
+	})
+	if err != nil {
+		s.logger.Error("parsing JWT", err)
+		return nil, err
+	}
+
+	return parsedToken, nil
 }

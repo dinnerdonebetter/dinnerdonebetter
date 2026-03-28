@@ -6,8 +6,18 @@
 import * as grpc from '@grpc/grpc-js';
 import type { Metadata } from '@grpc/grpc-js';
 import { AuthServiceClient } from './auth/auth_service.js';
-import type { AdminLoginForTokenRequest } from './auth/auth_service_types.js';
-import type { LoginForTokenResponse } from './auth/auth_service_types.js';
+import type {
+  AdminLoginForTokenRequest,
+  AdminListSessionsForUserRequest,
+  AdminRevokeUserSessionRequest,
+  AdminRevokeAllUserSessionsRequest,
+} from './auth/auth_service_types.js';
+import type {
+  LoginForTokenResponse,
+  ListActiveSessionsResponse,
+  RevokeSessionResponse,
+  RevokeAllOtherSessionsResponse,
+} from './auth/auth_service_types.js';
 import { IdentityServiceClient } from './identity/identity_service.js';
 import { OAuthServiceClient } from './oauth/oauth_service.js';
 import { PaymentsServiceClient } from './payments/payments_service.js';
@@ -124,6 +134,27 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
       ),
     finishPasskeyAuthentication: (request: { challenge: string; username: string; assertionResponse: Uint8Array }) =>
       promisifyUnary(get.auth().finishPasskeyAuthentication.bind(get.auth()))(request, emptyMetadata),
+
+    adminListSessionsForUser: (
+      token: string,
+      request: AdminListSessionsForUserRequest,
+    ): Promise<ListActiveSessionsResponse> =>
+      promisifyUnary<AdminListSessionsForUserRequest, ListActiveSessionsResponse>(
+        get.auth().adminListSessionsForUser.bind(get.auth()),
+      )(request, authMetadata(token)),
+
+    adminRevokeUserSession: (token: string, request: AdminRevokeUserSessionRequest): Promise<RevokeSessionResponse> =>
+      promisifyUnary<AdminRevokeUserSessionRequest, RevokeSessionResponse>(
+        get.auth().adminRevokeUserSession.bind(get.auth()),
+      )(request, authMetadata(token)),
+
+    adminRevokeAllUserSessions: (
+      token: string,
+      request: AdminRevokeAllUserSessionsRequest,
+    ): Promise<RevokeAllOtherSessionsResponse> =>
+      promisifyUnary<AdminRevokeAllUserSessionsRequest, RevokeAllOtherSessionsResponse>(
+        get.auth().adminRevokeAllUserSessions.bind(get.auth()),
+      )(request, authMetadata(token)),
 
     // Identity – request types are intentionally loose; callers pass proto-shaped objects
     getUser: (token: string, request: { userId: string }) =>

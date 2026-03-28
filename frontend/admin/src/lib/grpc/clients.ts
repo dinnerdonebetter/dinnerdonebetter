@@ -113,3 +113,6 @@ export const getValidIngredientPreparationsByPreparation = clients.getValidIngre
 export const getValidPrepTaskConfig = clients.getValidPrepTaskConfig;
 export const getValidPrepTaskConfigs = clients.getValidPrepTaskConfigs;
 export const getMeasurementUnitConversionMismatches = clients.getMeasurementUnitConversionMismatches;
+export const adminListSessionsForUser = clients.adminListSessionsForUser;
+export const adminRevokeUserSession = clients.adminRevokeUserSession;
+export const adminRevokeAllUserSessions = clients.adminRevokeAllUserSessions;

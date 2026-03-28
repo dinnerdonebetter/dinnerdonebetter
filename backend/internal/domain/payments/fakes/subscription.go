@@ -3,8 +3,9 @@ package fakes
 import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 // BuildFakeSubscription builds a faked subscription.

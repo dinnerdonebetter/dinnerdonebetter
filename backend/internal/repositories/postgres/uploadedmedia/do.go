@@ -4,10 +4,11 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterUploadedMediaRepository registers the uploaded media repository with the injector.

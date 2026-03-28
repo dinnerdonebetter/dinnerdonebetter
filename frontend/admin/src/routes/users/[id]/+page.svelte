@@ -66,6 +66,11 @@
     </Card>
   {/if}
 
+  <Card>
+    <h2 class="card-title">Actions</h2>
+    <Link href="/users/{user.id}/sessions">View &amp; manage sessions</Link>
+  </Card>
+
   <p><Link href="/users">Back to users</Link></p>
 {:else}
   <Text>User not found.</Text>

@@ -7,12 +7,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/numbers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	"github.com/shopspring/decimal"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/numbers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 // groceryListExcludedIngredientSlugs contains ingredient slugs that should not appear on grocery lists
@@ -33,8 +34,8 @@ type groceryListCreator struct {
 
 func NewGroceryListCreator(logger logging.Logger, tracerProvider tracing.TracerProvider) GroceryListCreator {
 	return &groceryListCreator{
-		logger: logging.EnsureLogger(logger).WithName("grocery_list_creator"),
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("grocery_list_creator")),
+		logger: logging.NewNamedLogger(logger, "grocery_list_creator"),
+		tracer: tracing.NewNamedTracer(tracerProvider, "grocery_list_creator"),
 	}
 }
 

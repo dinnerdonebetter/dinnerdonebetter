@@ -11,13 +11,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/dustin/go-humanize/english"
 	"github.com/hako/durafmt"
 	"github.com/heimdalr/dag"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 	"gonum.org/v1/gonum/graph"
 	"gonum.org/v1/gonum/graph/simple"
 	"gonum.org/v1/gonum/graph/topo"
@@ -176,8 +177,8 @@ type recipeAnalyzer struct {
 // NewRecipeAnalyzer creates a recipeAnalyzer.
 func NewRecipeAnalyzer(logger logging.Logger, tracerProvider tracing.TracerProvider) RecipeAnalyzer {
 	return &recipeAnalyzer{
-		logger: logging.EnsureLogger(logger).WithName("recipe_analyzer"),
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("recipe_grapher")),
+		logger: logging.NewNamedLogger(logger, "recipe_analyzer"),
+		tracer: tracing.NewNamedTracer(tracerProvider, "recipe_grapher"),
 	}
 }
 

@@ -79,6 +79,115 @@ func TestValidPreparationInstruments_Creating(T *testing.T) {
 	})
 }
 
+func TestValidPreparationInstruments_Archiving(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationInstrumentForTest(t)
+
+		_, err := adminClient.ArchiveValidPreparationInstrument(ctx, &mealplanningsvc.ArchiveValidPreparationInstrumentRequest{ValidPreparationInstrumentId: created.ID})
+		assert.NoError(t, err)
+
+		x, err := adminClient.GetValidPreparationInstrument(ctx, &mealplanningsvc.GetValidPreparationInstrumentRequest{ValidPreparationInstrumentId: created.ID})
+		assert.Nil(t, x)
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationInstrumentForTest(t)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.ArchiveValidPreparationInstrument(ctx, &mealplanningsvc.ArchiveValidPreparationInstrumentRequest{ValidPreparationInstrumentId: created.ID})
+		assert.Error(t, err)
+	})
+
+	T.Run("invalid ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, err := adminClient.ArchiveValidPreparationInstrument(ctx, &mealplanningsvc.ArchiveValidPreparationInstrumentRequest{ValidPreparationInstrumentId: nonexistentID})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from archiving", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationInstrumentForTest(t)
+		_, testClient := createUserAndClientForTest(T)
+
+		_, err := testClient.ArchiveValidPreparationInstrument(ctx, &mealplanningsvc.ArchiveValidPreparationInstrumentRequest{ValidPreparationInstrumentId: created.ID})
+		assert.Error(t, err)
+	})
+}
+
+func TestValidPreparationInstruments_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationInstrumentForTest(t)
+
+		updateInput := fakes.BuildFakeValidPreparationInstrumentUpdateRequestInput()
+		updateInput.ValidPreparationID = &created.Preparation.ID
+		updateInput.ValidInstrumentID = &created.Instrument.ID
+
+		response, err := adminClient.UpdateValidPreparationInstrument(ctx, &mealplanningsvc.UpdateValidPreparationInstrumentRequest{
+			ValidPreparationInstrumentId: created.ID,
+			Input:                        mealplanningconverters.ConvertValidPreparationInstrumentUpdateRequestInputToGRPCValidPreparationInstrumentUpdateRequestInput(updateInput),
+		})
+		assert.NoError(t, err)
+		require.NotNil(t, response)
+		require.NotNil(t, response.Result)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidPreparationInstrumentForTest(t)
+
+		updateInput := fakes.BuildFakeValidPreparationInstrumentUpdateRequestInput()
+		updateInput.ValidPreparationID = &created.Preparation.ID
+		updateInput.ValidInstrumentID = &created.Instrument.ID
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.UpdateValidPreparationInstrument(ctx, &mealplanningsvc.UpdateValidPreparationInstrumentRequest{
+			ValidPreparationInstrumentId: created.ID,
+			Input:                        mealplanningconverters.ConvertValidPreparationInstrumentUpdateRequestInputToGRPCValidPreparationInstrumentUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from updating", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(T)
+
+		_, _, created := createValidPreparationInstrumentForTest(t)
+
+		response, err := testClient.UpdateValidPreparationInstrument(ctx, &mealplanningsvc.UpdateValidPreparationInstrumentRequest{
+			ValidPreparationInstrumentId: created.ID,
+			Input: &mealplanningsvc.ValidPreparationInstrumentUpdateRequestInput{
+				Notes: new("doesn't matter"),
+			},
+		})
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
+}
+
 func TestValidPreparationInstruments_Listing(T *testing.T) {
 	T.Parallel()
 

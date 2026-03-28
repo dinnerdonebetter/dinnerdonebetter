@@ -12,10 +12,11 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterDataPrivacyRepository registers the data privacy repository with the injector.

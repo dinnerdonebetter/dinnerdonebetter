@@ -6,11 +6,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
@@ -21,7 +22,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		onion := fakes.BuildFakeValidIngredient()
@@ -307,7 +308,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		onion := fakes.BuildFakeValidIngredient()
@@ -501,7 +502,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		onion := fakes.BuildFakeValidIngredient()
@@ -569,7 +570,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		spaghetti := fakes.BuildFakeValidIngredient()
@@ -697,7 +698,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		spaghetti := fakes.BuildFakeValidIngredient()
@@ -853,7 +854,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		spaghetti := fakes.BuildFakeValidIngredient()
@@ -985,7 +986,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		// Ingredients for main recipe
@@ -1124,7 +1125,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		// Ingredients for main recipe
@@ -1234,7 +1235,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		// Ingredient that appears in both main recipe and associated recipe
@@ -1353,7 +1354,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		listGenerator := &groceryListCreator{
 			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
 		carrot := fakes.BuildFakeValidIngredient()

@@ -10,16 +10,17 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/converters"
 	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/internalerrors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	perrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+
 	"google.golang.org/grpc/codes"
 )
 
@@ -57,7 +58,7 @@ func NewOAuth2Manager(
 	queuesConfig *msgconfig.QueuesConfig,
 ) (OAuth2Manager, error) {
 	if queuesConfig == nil {
-		return nil, internalerrors.NilConfigError("queues config for OAuth2 manager")
+		return nil, perrors.ErrNilInputProvided
 	}
 
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, queuesConfig.DataChangesTopicName)
@@ -66,8 +67,8 @@ func NewOAuth2Manager(
 	}
 
 	return &manager{
-		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:                    logging.NewNamedLogger(logger, o11yName),
+		tracer:                    tracing.NewNamedTracer(tracerProvider, o11yName),
 		sessionContextDataFetcher: sessionContextDataFetcher,
 		secretGenerator:           secretGenerator,
 		oauthRepository:           oauthRepository,

@@ -44,6 +44,7 @@ type (
 		IsServiceAdmin() bool
 		CanUpdateUserAccountStatuses() bool
 		CanImpersonateUsers() bool
+		CanManageUserSessions() bool
 	}
 
 	serviceRoleCollection struct {
@@ -93,4 +94,9 @@ func (r serviceRoleCollection) CanUpdateUserAccountStatuses() bool {
 // CanImpersonateUsers returns whether a user can impersonate others.
 func (r serviceRoleCollection) CanImpersonateUsers() bool {
 	return hasPermission(ImpersonateUserPermission, r.Roles...)
+}
+
+// CanManageUserSessions returns whether a user can manage other users' sessions.
+func (r serviceRoleCollection) CanManageUserSessions() bool {
+	return hasPermission(ManageUserSessionsPermission, r.Roles...)
 }

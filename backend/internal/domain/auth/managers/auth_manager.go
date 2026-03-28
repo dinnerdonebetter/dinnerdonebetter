@@ -17,17 +17,19 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	perrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v4/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/qrcodes"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+
 	"github.com/pquerna/otp/totp"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/internalerrors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v2/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/qrcodes"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
@@ -63,6 +65,7 @@ func (a servicePermissionCheckerAdapter) IsServiceAdmin() bool {
 
 type AuthManager struct {
 	passwordResetTokenDataManager auth.PasswordResetTokenDataManager
+	sessionDataManager            auth.UserSessionDataManager
 	userDataManager               identity.UserDataManager
 	tracer                        tracing.Tracer
 	authenticator                 authentication.Authenticator
@@ -79,6 +82,7 @@ func ProvideAuthManager(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	passwordResetTokenDataManager auth.PasswordResetTokenDataManager,
+	sessionDataManager auth.UserSessionDataManager,
 	userDataManager identity.UserDataManager,
 	authenticator authentication.Authenticator,
 	publisherProvider messagequeue.PublisherProvider,
@@ -87,7 +91,7 @@ func ProvideAuthManager(
 	queueConfig *msgconfig.QueuesConfig,
 ) (AuthManagerInterface, error) {
 	if queueConfig == nil {
-		return nil, internalerrors.NilConfigError("queues config for auth manager")
+		return nil, perrors.ErrNilInputProvided
 	}
 
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, queueConfig.DataChangesTopicName)
@@ -96,9 +100,10 @@ func ProvideAuthManager(
 	}
 
 	return &AuthManager{
-		logger:                        logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                        tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:                        logging.NewNamedLogger(logger, o11yName),
+		tracer:                        tracing.NewNamedTracer(tracerProvider, o11yName),
 		passwordResetTokenDataManager: passwordResetTokenDataManager,
+		sessionDataManager:            sessionDataManager,
 		userDataManager:               userDataManager,
 		authenticator:                 authenticator,
 		secretGenerator:               secretGenerator,
@@ -738,4 +743,40 @@ func (l *AuthManager) validateCredentialsForUpdateRequest(ctx context.Context, u
 	}
 
 	return user, nil
+}
+
+// GetActiveSessionsForUser returns all active sessions for a user.
+func (l *AuthManager) GetActiveSessionsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[auth.UserSession], error) {
+	ctx, span := l.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
+	return l.sessionDataManager.GetActiveSessionsForUser(ctx, userID, filter)
+}
+
+// RevokeSession revokes a specific user session.
+func (l *AuthManager) RevokeSession(ctx context.Context, sessionID, userID string) error {
+	ctx, span := l.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return l.sessionDataManager.RevokeUserSession(ctx, sessionID, userID)
+}
+
+// RevokeAllSessionsForUserExcept revokes all sessions for a user except the specified one.
+func (l *AuthManager) RevokeAllSessionsForUserExcept(ctx context.Context, userID, currentSessionID string) error {
+	ctx, span := l.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return l.sessionDataManager.RevokeAllSessionsForUserExcept(ctx, userID, currentSessionID)
+}
+
+// RevokeAllSessionsForUser revokes all sessions for a user.
+func (l *AuthManager) RevokeAllSessionsForUser(ctx context.Context, userID string) error {
+	ctx, span := l.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return l.sessionDataManager.RevokeAllSessionsForUser(ctx, userID)
 }

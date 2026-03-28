@@ -12,18 +12,18 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v2/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v2/search/text"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v4/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
 )
 
 const (
@@ -141,8 +141,8 @@ func NewRecipeManager(
 
 	m := &recipeManager{
 		db:                   db,
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(recipeManagerName)),
-		logger:               logging.EnsureLogger(logger).WithName(recipeManagerName),
+		tracer:               tracing.NewNamedTracer(tracerProvider, recipeManagerName),
+		logger:               logging.NewNamedLogger(logger, recipeManagerName),
 		dataChangesPublisher: dataChangesPublisher,
 		recipeSearchIndex:    validIngredientStatesSearchIndex,
 		recipeAnalyzer:       recipeAnalyzer,

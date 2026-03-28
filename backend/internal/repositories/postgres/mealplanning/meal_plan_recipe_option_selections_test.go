@@ -5,8 +5,9 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+
 	"github.com/stretchr/testify/assert"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
 )
 
 func TestQuerier_GetMealPlanRecipeOptionSelection(T *testing.T) {

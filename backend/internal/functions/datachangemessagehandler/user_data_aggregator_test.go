@@ -7,9 +7,10 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/reflection"
 )
 
 func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testing.T) {

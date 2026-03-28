@@ -11,10 +11,10 @@ import (
 	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 // AuthOptionsRequest is the request body for passkey authentication options.

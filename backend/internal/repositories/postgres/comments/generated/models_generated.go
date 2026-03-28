@@ -73,13 +73,13 @@ func AllCommentTargetTypeValues() []CommentTargetType {
 }
 
 type Comments struct {
-	CreatedAt       time.Time
-	LastUpdatedAt   sql.NullTime
-	ArchivedAt      sql.NullTime
 	ID              string
 	Content         string
 	TargetType      CommentTargetType
 	ReferencedID    string
-	BelongsToUser   string
 	ParentCommentID sql.NullString
+	BelongsToUser   string
+	CreatedAt       time.Time
+	LastUpdatedAt   sql.NullTime
+	ArchivedAt      sql.NullTime
 }

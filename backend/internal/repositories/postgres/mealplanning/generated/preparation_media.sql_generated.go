@@ -29,8 +29,8 @@ INSERT INTO preparation_media (
 type CreatePreparationMediaParams struct {
 	ID                 string
 	ValidPreparationID string
-	UploadedMediaID    string
 	ForIngredientID    sql.NullString
+	UploadedMediaID    string
 	Index              int32
 }
 

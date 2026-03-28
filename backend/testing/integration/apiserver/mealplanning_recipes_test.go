@@ -10,9 +10,10 @@ import (
 	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
@@ -2901,6 +2902,104 @@ func TestRecipes_Archiving(T *testing.T) {
 
 		_, err := testClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.Error(t, err)
+	})
+}
+
+func TestRecipes_Listing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("should be readable in paginated form", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		actual, err := adminClient.GetRecipes(ctx, &mealplanninggrpc.GetRecipesRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, actual)
+
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		recipes, err := c.GetRecipes(ctx, &mealplanninggrpc.GetRecipesRequest{})
+		assert.Error(t, err)
+		assert.Nil(t, recipes)
+	})
+}
+
+func TestRecipes_SearchForMealEligibleRecipes(T *testing.T) {
+	T.Parallel()
+
+	T.Run("should return meal-eligible recipes matching query", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		// just verify the endpoint responds without error
+		actual, err := adminClient.SearchForMealEligibleRecipes(ctx, &mealplanninggrpc.SearchForMealEligibleRecipesRequest{
+			Query: "test",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, actual)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		results, err := c.SearchForMealEligibleRecipes(ctx, &mealplanninggrpc.SearchForMealEligibleRecipesRequest{
+			Query: "test",
+		})
+		assert.Error(t, err)
+		assert.Nil(t, results)
+	})
+}
+
+func TestRecipes_EstimateRecipePrepTasks(T *testing.T) {
+	T.Parallel()
+
+	T.Run("should return prep task estimates for a recipe", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		actual, err := adminClient.EstimateRecipePrepTasks(ctx, &mealplanninggrpc.EstimateRecipePrepTasksRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, actual)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		results, err := c.EstimateRecipePrepTasks(ctx, &mealplanninggrpc.EstimateRecipePrepTasksRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, results)
+	})
+
+	T.Run("nonexistent recipe", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		results, err := adminClient.EstimateRecipePrepTasks(ctx, &mealplanninggrpc.EstimateRecipePrepTasksRequest{
+			RecipeId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, results)
 	})
 }
 

@@ -10,11 +10,13 @@ import (
 	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"google.golang.org/grpc/codes"
 )
 
@@ -47,8 +49,8 @@ func NewService(
 	return &serviceImpl{
 		msgConfig:                 msgConfig,
 		internalOpsRepo:           repo,
-		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:                    logging.NewNamedLogger(logger, o11yName),
+		tracer:                    tracing.NewNamedTracer(tracerProvider, o11yName),
 		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
 	}
 }
@@ -84,7 +86,7 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "building queue test message")
 	}
 
-	pp, err := msgconfig.ProvidePublisherProvider(ctx, s.logger, tracing.NewNoopTracerProvider(), s.msgConfig)
+	pp, err := msgconfig.ProvidePublisherProvider(ctx, s.logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), s.msgConfig)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "establishing publisher provider")
 	}

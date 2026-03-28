@@ -11,11 +11,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	platformtypes "github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	platformtypes "github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func buildRecipeStepForTestCreation(t *testing.T, ctx context.Context, recipeID string, dbc *repository) *types.RecipeStep {

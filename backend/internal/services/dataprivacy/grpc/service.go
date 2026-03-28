@@ -14,11 +14,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/dataprivacy/grpc/converters"
 
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/uploads"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads"
+
 	"google.golang.org/grpc/codes"
 )
 
@@ -48,8 +49,8 @@ func NewDataPrivacyService(
 	uploadManager uploads.UploadManager,
 ) dataprivacysvc.DataPrivacyServiceServer {
 	return &serviceImpl{
-		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:                    logging.NewNamedLogger(logger, o11yName),
+		tracer:                    tracing.NewNamedTracer(tracerProvider, o11yName),
 		sessionContextDataFetcher: sessionContextDataFetcher,
 		dataPrivacyManager:        dataPrivacyManager,
 		uploadManager:             uploadManager,

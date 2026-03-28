@@ -9,9 +9,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/settings/grpc/converters"
 
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v2/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v4/observability/keys"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"google.golang.org/grpc/codes"
 )
 

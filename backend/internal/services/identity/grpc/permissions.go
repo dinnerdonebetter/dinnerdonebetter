@@ -60,10 +60,14 @@ func ProvideMethodPermissions() IdentityMethodPermissions {
 		identitysvc.IdentityService_AcceptAccountInvitation_FullMethodName:       noPerms,
 		identitysvc.IdentityService_GetReceivedAccountInvitations_FullMethodName: noPerms,
 		identitysvc.IdentityService_GetSentAccountInvitations_FullMethodName:     noPerms,
+		identitysvc.IdentityService_GetAccountInvitation_FullMethodName:          noPerms,
 		identitysvc.IdentityService_SetDefaultAccount_FullMethodName:             noPerms,
 		identitysvc.IdentityService_CreateAccount_FullMethodName:                 noPerms,
 		identitysvc.IdentityService_GetAccount_FullMethodName:                    noPerms,
 		identitysvc.IdentityService_GetAccounts_FullMethodName:                   noPerms,
 		identitysvc.IdentityService_UploadUserAvatar_FullMethodName:              noPerms,
+		identitysvc.IdentityService_UpdateUserDetails_FullMethodName:             noPerms,
+		identitysvc.IdentityService_UpdateUserEmailAddress_FullMethodName:        noPerms,
+		identitysvc.IdentityService_UpdateUserUsername_FullMethodName:            noPerms,
 	}
 }

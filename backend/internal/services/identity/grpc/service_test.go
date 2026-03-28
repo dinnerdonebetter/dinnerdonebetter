@@ -14,10 +14,11 @@ import (
 	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v2/uploads/mock"
 )
 
 func buildTestService(t *testing.T) (*serviceImpl, *managermock.IdentityDataManager) {

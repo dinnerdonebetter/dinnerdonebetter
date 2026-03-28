@@ -4,8 +4,8 @@ import (
 	paymentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/manager"
 	paymentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 const (
@@ -27,8 +27,8 @@ func NewService(
 	paymentsManager paymentsmanager.PaymentsDataManager,
 ) paymentssvc.PaymentsServiceServer {
 	return &serviceImpl{
-		logger:          logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:          logging.NewNamedLogger(logger, o11yName),
+		tracer:          tracing.NewNamedTracer(tracerProvider, o11yName),
 		paymentsManager: paymentsManager,
 	}
 }

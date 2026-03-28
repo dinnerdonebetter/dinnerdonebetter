@@ -15,38 +15,38 @@ import (
 	oauthcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/oauth/config"
 	uploadedmediacfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v2/analytics/config"
-	analyticsposthog "github.com/verygoodsoftwarenotvirus/platform/v2/analytics/posthog"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/circuitbreaking"
-	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/v2/cryptography/encryption/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v2/email/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/email/resend"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v2/featureflags/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/featureflags/posthog"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/pubsub"
-	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v2/notifications/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging/config"
-	logotelgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging/otelgrpc"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics/otelgrpc"
-	profilingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/profiling/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/profiling/pyroscope"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing/oteltrace"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/routing/chi"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/routing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/search/text/algolia"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v2/search/text/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/server/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/server/http"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/testutils"
-	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v2/uploads/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/uploads/objectstorage"
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
+	analyticsposthog "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/posthog"
+	circuitbreakingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/circuitbreaking/config"
+	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/email/resend"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v4/featureflags/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/featureflags/posthog"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/pubsub"
+	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/config"
+	logotelgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/otelgrpc"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/otelgrpc"
+	profilingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/profiling/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/profiling/pyroscope"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/oteltrace"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/routing/chi"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/routing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/search/text/algolia"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
 )
 
 const (
@@ -195,7 +195,7 @@ func buildProdConfig() *config.APIServiceConfig {
 			Resend: &resend.Config{
 				APIToken: "placeholder", // overridden by env from api-service-config secret
 			},
-			CircuitBreaker: circuitbreaking.Config{
+			CircuitBreaker: circuitbreakingcfg.Config{
 				Name:                   "prod_emailer",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -206,7 +206,7 @@ func buildProdConfig() *config.APIServiceConfig {
 				IOS: &analyticscfg.SourceConfig{
 					Provider: analyticscfg.ProviderPostHog,
 					Posthog:  &analyticsposthog.Config{APIKey: "placeholder"}, // overridden by env from api-service-config secret
-					CircuitBreaker: circuitbreaking.Config{
+					CircuitBreaker: circuitbreakingcfg.Config{
 						Name:                   "ios_analytics",
 						ErrorRate:              .5,
 						MinimumSampleThreshold: 100,
@@ -215,7 +215,7 @@ func buildProdConfig() *config.APIServiceConfig {
 				Web: &analyticscfg.SourceConfig{
 					Provider: analyticscfg.ProviderPostHog,
 					Posthog:  &analyticsposthog.Config{APIKey: "placeholder"}, // overridden by env from api-service-config secret
-					CircuitBreaker: circuitbreaking.Config{
+					CircuitBreaker: circuitbreakingcfg.Config{
 						Name:                   "web_analytics",
 						ErrorRate:              .5,
 						MinimumSampleThreshold: 100,
@@ -225,7 +225,7 @@ func buildProdConfig() *config.APIServiceConfig {
 			SourceConfig: analyticscfg.SourceConfig{
 				Provider: analyticscfg.ProviderPostHog,
 				Posthog:  &analyticsposthog.Config{APIKey: "placeholder"}, // overridden by env from api-service-config secret
-				CircuitBreaker: circuitbreaking.Config{
+				CircuitBreaker: circuitbreakingcfg.Config{
 					Name:                   "api_analytics",
 					ErrorRate:              .5,
 					MinimumSampleThreshold: 100,
@@ -235,7 +235,7 @@ func buildProdConfig() *config.APIServiceConfig {
 		TextSearch: textsearchcfg.Config{
 			Provider: textsearchcfg.AlgoliaProvider,
 			Algolia:  &algolia.Config{},
-			CircuitBreaker: circuitbreaking.Config{
+			CircuitBreaker: circuitbreakingcfg.Config{
 				Name:                   "prod_text_searcher",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -244,7 +244,7 @@ func buildProdConfig() *config.APIServiceConfig {
 		FeatureFlags: featureflagscfg.Config{
 			Provider: featureflagscfg.ProviderPostHog,
 			PostHog:  &posthog.Config{ProjectAPIKey: "placeholder"}, // overridden by env from CSI secret
-			CircuitBreaker: circuitbreaking.Config{
+			CircuitBreaker: circuitbreakingcfg.Config{
 				Name:                   "feature_flagger",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,

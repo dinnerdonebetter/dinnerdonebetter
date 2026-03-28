@@ -6,8 +6,9 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 // BuildFakeMealPlanOptionVote builds a faked meal plan option vote.

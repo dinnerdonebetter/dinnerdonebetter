@@ -4,9 +4,10 @@ import (
 	auditmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/manager"
 	auditsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/samber/do/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 // RegisterAuditService registers the audit gRPC service with the injector.

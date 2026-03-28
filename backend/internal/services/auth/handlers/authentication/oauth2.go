@@ -13,14 +13,15 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 func ProvideOAuth2ClientManager(
@@ -31,7 +32,7 @@ func ProvideOAuth2ClientManager(
 ) *manage.Manager {
 	manager := manage.NewManager()
 
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("oauth2_client_manager"))
+	tracer := tracing.NewNamedTracer(tracerProvider, "oauth2_client_manager")
 
 	// we don't care at the moment
 	manager.SetValidateURIHandler(func(_, _ string) error {
@@ -74,7 +75,7 @@ func ProvideOAuth2ServerImplementation(
 
 	oauth2Server := server.NewServer(oauth2ServerConfig, manager)
 
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("oauth2_server_impl"))
+	tracer := tracing.NewNamedTracer(tracerProvider, "oauth2_server_impl")
 
 	oauth2Server.AuthorizeScopeHandler = AuthorizeScopeHandler(logger)
 	oauth2Server.AccessTokenExpHandler = AccessTokenExpHandler(logger)

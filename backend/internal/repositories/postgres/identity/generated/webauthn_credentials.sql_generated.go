@@ -68,11 +68,11 @@ INSERT INTO webauthn_credentials (
 type CreateWebAuthnCredentialParams struct {
 	ID            string
 	BelongsToUser string
-	Transports    string
-	FriendlyName  string
 	CredentialID  []byte
 	PublicKey     []byte
 	SignCount     int32
+	Transports    string
+	FriendlyName  string
 }
 
 func (q *Queries) CreateWebAuthnCredential(ctx context.Context, db DBTX, arg *CreateWebAuthnCredentialParams) error {
@@ -105,15 +105,15 @@ WHERE archived_at IS NULL
 `
 
 type GetWebAuthnCredentialByCredentialIDRow struct {
-	CreatedAt     time.Time
-	LastUsedAt    sql.NullTime
 	ID            string
 	BelongsToUser string
-	Transports    string
-	FriendlyName  string
 	CredentialID  []byte
 	PublicKey     []byte
 	SignCount     int32
+	Transports    string
+	FriendlyName  string
+	CreatedAt     time.Time
+	LastUsedAt    sql.NullTime
 }
 
 func (q *Queries) GetWebAuthnCredentialByCredentialID(ctx context.Context, db DBTX, credentialID []byte) (*GetWebAuthnCredentialByCredentialIDRow, error) {
@@ -150,15 +150,15 @@ WHERE archived_at IS NULL
 `
 
 type GetWebAuthnCredentialsForUserRow struct {
-	CreatedAt     time.Time
-	LastUsedAt    sql.NullTime
 	ID            string
 	BelongsToUser string
-	Transports    string
-	FriendlyName  string
 	CredentialID  []byte
 	PublicKey     []byte
 	SignCount     int32
+	Transports    string
+	FriendlyName  string
+	CreatedAt     time.Time
+	LastUsedAt    sql.NullTime
 }
 
 func (q *Queries) GetWebAuthnCredentialsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetWebAuthnCredentialsForUserRow, error) {
@@ -203,8 +203,8 @@ WHERE archived_at IS NULL
 `
 
 type UpdateWebAuthnCredentialSignCountParams struct {
-	ID        string
 	SignCount int32
+	ID        string
 }
 
 func (q *Queries) UpdateWebAuthnCredentialSignCount(ctx context.Context, db DBTX, arg *UpdateWebAuthnCredentialSignCountParams) (int64, error) {

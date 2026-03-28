@@ -7,10 +7,11 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/o1egl/paseto/v2"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const (
@@ -31,7 +32,7 @@ func NewPASETOSigner(logger logging.Logger, tracerProvider tracing.TracerProvide
 		audience:   audience,
 		signingKey: signingKey,
 		logger:     logging.EnsureLogger(logger),
-		tracer:     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("paseto_signer")),
+		tracer:     tracing.NewNamedTracer(tracerProvider, "paseto_signer"),
 	}
 
 	return s, nil
@@ -46,15 +47,11 @@ type tokenPayload struct {
 	JTI        string
 	Subject    string
 	AccountID  string `json:"account_id,omitempty"`
+	SessionID  string `json:"sid,omitempty"`
 }
 
-// IssueToken issues a new PASETO token.
-func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.Duration) (string, error) {
-	return s.IssueTokenWithAccount(ctx, user, expiry, "")
-}
-
-// IssueTokenWithAccount issues a new PASETO token, optionally including an account ID.
-func (s *signer) IssueTokenWithAccount(ctx context.Context, user tokens.User, expiry time.Duration, accountID string) (string, error) {
+// IssueToken issues a new PASETO token, optionally including account ID and session ID.
+func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.Duration, accountID, sessionID string) (tokenStr, jti string, err error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -62,10 +59,12 @@ func (s *signer) IssueTokenWithAccount(ctx context.Context, user tokens.User, ex
 		expiry = time.Minute * 10
 	}
 
+	jti = identifiers.New()
+
 	t := tokenPayload{
 		Audience:   s.audience,
 		Issuer:     issuer,
-		JTI:        identifiers.New(),
+		JTI:        jti,
 		Subject:    user.GetID(),
 		IssuedAt:   time.Now().UTC(),
 		Expiration: time.Now().Add(expiry).UTC(),
@@ -74,13 +73,16 @@ func (s *signer) IssueTokenWithAccount(ctx context.Context, user tokens.User, ex
 	if accountID != "" {
 		t.AccountID = accountID
 	}
-
-	tokenString, err := paseto.NewV2().Encrypt(s.signingKey, t, "footer")
-	if err != nil {
-		return "", fmt.Errorf("signing token with key length %d: %w", len(s.signingKey), err)
+	if sessionID != "" {
+		t.SessionID = sessionID
 	}
 
-	return tokenString, nil
+	tokenStr, err = paseto.NewV2().Encrypt(s.signingKey, t, "footer")
+	if err != nil {
+		return "", "", fmt.Errorf("signing token with key length %d: %w", len(s.signingKey), err)
+	}
+
+	return tokenStr, jti, nil
 }
 
 // ParseUserIDFromToken parses a AccessToken and returns the associated user ID.
@@ -94,14 +96,49 @@ func (s *signer) ParseUserIDAndAccountIDFromToken(ctx context.Context, providedT
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	var (
-		parsedToken tokenPayload
-		footer      string
-	)
-	if err = paseto.NewV2().Decrypt(providedToken, s.signingKey, &parsedToken, &footer); err != nil {
-		s.logger.Error("parsing PASETO token", err)
+	parsedToken, err := s.decryptToken(providedToken)
+	if err != nil {
 		return "", "", err
 	}
 
 	return parsedToken.Subject, parsedToken.AccountID, nil
+}
+
+// ParseSessionIDFromToken extracts the session ID from a PASETO token.
+func (s *signer) ParseSessionIDFromToken(ctx context.Context, providedToken string) (string, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	parsedToken, err := s.decryptToken(providedToken)
+	if err != nil {
+		return "", err
+	}
+
+	return parsedToken.SessionID, nil
+}
+
+// ParseJTIFromToken extracts the JTI from a PASETO token.
+func (s *signer) ParseJTIFromToken(ctx context.Context, providedToken string) (string, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	parsedToken, err := s.decryptToken(providedToken)
+	if err != nil {
+		return "", err
+	}
+
+	return parsedToken.JTI, nil
+}
+
+func (s *signer) decryptToken(providedToken string) (*tokenPayload, error) {
+	var (
+		parsedToken tokenPayload
+		footer      string
+	)
+	if err := paseto.NewV2().Decrypt(providedToken, s.signingKey, &parsedToken, &footer); err != nil {
+		s.logger.Error("parsing PASETO token", err)
+		return nil, err
+	}
+
+	return &parsedToken, nil
 }

@@ -6,13 +6,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	paymentswebhook "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/routing"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/routing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/version"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/healthcheck"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/routing"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/routing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/version"
 )
 
 func ProvideAPIRouter(
@@ -22,6 +23,7 @@ func ProvideAPIRouter(
 	metricsProvider metrics.Provider,
 	authService auth.AuthDataService,
 	paymentsWebhookHandler *paymentswebhook.WebhookHandler,
+	healthRegistry healthcheck.Registry,
 ) (routing.Router, error) {
 	router, err := routingConfig.ProvideRouter(logger, tracerProvider, metricsProvider)
 	if err != nil {
@@ -38,8 +40,12 @@ func ProvideAPIRouter(
 
 		// Expose a readiness check on /ready
 		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
-			// TODO: check readiness here lol
-			res.WriteHeader(http.StatusOK)
+			result := healthRegistry.CheckAll(req.Context())
+			status := http.StatusOK
+			if result.Status != healthcheck.StatusUp {
+				status = http.StatusServiceUnavailable
+			}
+			encoder.EncodeResponseWithStatus(req.Context(), res, result, status)
 		})
 
 		metaRouter.Get("/version", func(res http.ResponseWriter, req *http.Request) {

@@ -5,8 +5,9 @@ import (
 
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
 	fake "github.com/brianvoe/gofakeit/v7"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
 )
 
 // BuildFakeOAuth2Client builds a faked OAuth2Client.

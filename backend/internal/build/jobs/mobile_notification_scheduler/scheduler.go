@@ -8,13 +8,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/hashicorp/go-multierror"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/notifications"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 const schedulerTracerName = "mobile_notification_scheduler"
@@ -37,8 +38,8 @@ func NewScheduler(
 	mobileNotificationsPublisher messagequeue.Publisher,
 ) *Scheduler {
 	return &Scheduler{
-		logger:                       logging.EnsureLogger(logger).WithName(schedulerTracerName),
-		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(schedulerTracerName)),
+		logger:                       logging.NewNamedLogger(logger, schedulerTracerName),
+		tracer:                       tracing.NewNamedTracer(tracerProvider, schedulerTracerName),
 		mealPlanningRepo:             mealPlanningRepo,
 		identityRepo:                 identityRepo,
 		mobileNotificationsPublisher: mobileNotificationsPublisher,

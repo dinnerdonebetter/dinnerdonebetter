@@ -9,14 +9,14 @@ import (
 	commentskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/keys"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/filtering"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 const (
@@ -47,8 +47,8 @@ func NewCommentsDataManager(
 	}
 
 	return &commentsManager{
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger:               logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:               tracing.NewNamedTracer(tracerProvider, o11yName),
+		logger:               logging.NewNamedLogger(logger, o11yName),
 		repo:                 repo,
 		dataChangesPublisher: dataChangesPublisher,
 	}, nil

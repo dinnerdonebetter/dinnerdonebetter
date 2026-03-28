@@ -6,9 +6,10 @@ import (
 	"embed"
 	"fmt"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+
 	"github.com/GuiaBolso/darwin"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
 )
 
 var (
@@ -57,13 +58,10 @@ func (m *Migrator) Migrate(ctx context.Context, db *sql.DB) error {
 		{Version: 13, Description: "data privacy tables", Script: fetchMigration("00013_dataprivacy")},
 		{Version: 14, Description: "queue test messages tables", Script: fetchMigration("00014_internalops")},
 		{Version: 15, Description: "user device tokens table", Script: fetchMigration("00015_user_device_tokens")},
-		{Version: 16, Description: "meal planning tables", Script: fetchMigration("00016_mealplanning")},
-		{Version: 17, Description: "meal planning schema additions", Script: fetchMigration("00017_mealplanning_schema_additions")},
-		{Version: 18, Description: "webauthn credentials table", Script: fetchMigration("00018_webauthn_credentials")},
-		{Version: 19, Description: "webauthn sessions table", Script: fetchMigration("00019_webauthn_sessions")},
-		{Version: 20, Description: "media for preparations ingredients steps", Script: fetchMigration("00020_media_for_preparations_ingredients_steps")},
-		{Version: 21, Description: "mealplanning bridge tables unique active indexes", Script: fetchMigration("00021_valid_preparation_instruments_unique_active")},
-		{Version: 22, Description: "mealplanning bridge tables unique active indexes", Script: fetchMigration("00022_recipe_step_scale_factor")},
+		{Version: 16, Description: "webauthn credentials table", Script: fetchMigration("00016_webauthn_credentials")},
+		{Version: 17, Description: "webauthn sessions table", Script: fetchMigration("00017_webauthn_sessions")},
+		{Version: 18, Description: "user sessions table", Script: fetchMigration("00018_user_sessions")},
+		{Version: 19, Description: "meal planning tables", Script: fetchMigration("00019_mealplanning")},
 	}
 
 	if err := darwin.New(darwin.NewGenericDriver(db, darwin.PostgresDialect{}), migrations, nil).Migrate(); err != nil {

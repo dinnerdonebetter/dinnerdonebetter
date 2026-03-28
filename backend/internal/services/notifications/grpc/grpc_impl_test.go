@@ -6,9 +6,10 @@ import (
 	notificationsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/mock"
 	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
 )
 
 func TestNewService(t *testing.T) {

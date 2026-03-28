@@ -7,8 +7,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/errors/http"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/errors/http"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
 )
 
 func init() {

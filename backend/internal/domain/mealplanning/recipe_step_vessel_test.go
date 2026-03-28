@@ -3,9 +3,10 @@ package mealplanning
 import (
 	"testing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/types"
 )
 
 func TestRecipeStepVessel_Update(T *testing.T) {

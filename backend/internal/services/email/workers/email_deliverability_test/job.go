@@ -7,9 +7,9 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/email"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/email"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 const (
@@ -44,8 +44,8 @@ func NewJob(
 
 	return &Job{
 		emailer:        emailer,
-		logger:         logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:         logging.NewNamedLogger(logger, serviceName),
+		tracer:         tracing.NewNamedTracer(tracerProvider, serviceName),
 		recipientEmail: recipientEmail,
 	}, nil
 }

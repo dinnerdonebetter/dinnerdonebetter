@@ -17,19 +17,22 @@ import (
 	paymentsadapters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/adapters"
 	paymentshttp "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/healthcheck"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/config"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/routing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
+
 	"github.com/samber/do/v2"
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v2/analytics/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging/config"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/metrics/config"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v2/routing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/server/http"
 )
 
 // BuildInjector creates and configures the dependency injection container.
@@ -55,6 +58,14 @@ func BuildInjector(
 	analyticscfg.RegisterEventReporter(i)
 	databasecfg.RegisterClientConfig(i)
 	postgres.RegisterDatabaseClient(i)
+	do.Provide[healthcheck.Registry](i, func(i do.Injector) (healthcheck.Registry, error) {
+		registry := healthcheck.NewRegistry()
+		dbClient := do.MustInvoke[database.Client](i)
+		if checker, ok := dbClient.(healthcheck.DatabaseReadyChecker); ok {
+			registry.Register(healthcheck.NewDatabaseChecker("database", checker))
+		}
+		return registry, nil
+	})
 	routingcfg.RegisterRouteParamManager(i)
 	random.RegisterGenerator(i)
 	http.RegisterHTTPServer(i, "api_server")

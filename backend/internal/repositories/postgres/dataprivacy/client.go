@@ -15,9 +15,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy/generated"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 const (
@@ -62,8 +62,8 @@ func ProvideDataPrivacyRepository(
 		Client:            client,
 		readDB:            client.ReadDB(),
 		writeDB:           client.WriteDB(),
-		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger:            logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:            tracing.NewNamedTracer(tracerProvider, o11yName),
+		logger:            logging.NewNamedLogger(logger, o11yName),
 		generatedQuerier:  generated.New(),
 		auditLogRepo:      auditLogRepo,
 		identityRepo:      identityRepo,

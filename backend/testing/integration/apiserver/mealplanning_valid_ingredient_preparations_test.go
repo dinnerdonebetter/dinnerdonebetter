@@ -122,3 +122,142 @@ func TestValidIngredientPreparations_Listing(T *testing.T) {
 		assert.True(t, len(results.Results) >= 1, "at least one VIP for this ingredient")
 	})
 }
+
+func TestValidIngredientPreparations_SearchByPreparation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		createdValidIngredient, createdValidPreparation, _ := createValidIngredientPreparationForTest(t)
+
+		results, err := adminClient.SearchValidIngredientsByPreparation(ctx, &mealplanningsvc.SearchValidIngredientsByPreparationRequest{
+			ValidPreparationId: createdValidPreparation.ID,
+			Query:              createdValidIngredient.Name[:2],
+		})
+		require.NoError(t, err)
+		require.NotNil(t, results)
+		assert.True(t, len(results.Results) >= 1, "expected at least one result when searching by preparation")
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.SearchValidIngredientsByPreparation(ctx, &mealplanningsvc.SearchValidIngredientsByPreparationRequest{})
+		assert.Error(t, err)
+	})
+}
+
+func TestIntegration_UpdateValidIngredientPreparation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientPreparationForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientPreparationUpdateRequestInput()
+		updateInput.ValidIngredientID = &created.Ingredient.ID
+		updateInput.ValidPreparationID = &created.Preparation.ID
+		created.Update(updateInput)
+
+		response, err := adminClient.UpdateValidIngredientPreparation(ctx, &mealplanningsvc.UpdateValidIngredientPreparationRequest{
+			ValidIngredientPreparationId: created.ID,
+			Input:                        mealplanningconverters.ConvertValidIngredientPreparationUpdateRequestInputToGRPCValidIngredientPreparationUpdateRequestInput(updateInput),
+		})
+		assert.NoError(t, err)
+
+		updated := mealplanningconverters.ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(response.Result)
+		require.NotNil(t, updated.LastUpdatedAt)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientPreparationForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientPreparationUpdateRequestInput()
+		created.Update(updateInput)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.UpdateValidIngredientPreparation(ctx, &mealplanningsvc.UpdateValidIngredientPreparationRequest{
+			ValidIngredientPreparationId: created.ID,
+			Input:                        mealplanningconverters.ConvertValidIngredientPreparationUpdateRequestInputToGRPCValidIngredientPreparationUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from updating", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(T)
+
+		_, _, created := createValidIngredientPreparationForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientPreparationUpdateRequestInput()
+
+		response, err := testClient.UpdateValidIngredientPreparation(ctx, &mealplanningsvc.UpdateValidIngredientPreparationRequest{
+			ValidIngredientPreparationId: created.ID,
+			Input:                        mealplanningconverters.ConvertValidIngredientPreparationUpdateRequestInputToGRPCValidIngredientPreparationUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
+}
+
+func TestIntegration_ArchiveValidIngredientPreparation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientPreparationForTest(t)
+
+		_, err := adminClient.ArchiveValidIngredientPreparation(ctx, &mealplanningsvc.ArchiveValidIngredientPreparationRequest{ValidIngredientPreparationId: created.ID})
+		assert.NoError(t, err)
+
+		x, err := adminClient.GetValidIngredientPreparation(ctx, &mealplanningsvc.GetValidIngredientPreparationRequest{ValidIngredientPreparationId: created.ID})
+		assert.Nil(t, x)
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientPreparationForTest(t)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.ArchiveValidIngredientPreparation(ctx, &mealplanningsvc.ArchiveValidIngredientPreparationRequest{ValidIngredientPreparationId: created.ID})
+		assert.Error(t, err)
+	})
+
+	T.Run("invalid ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, err := adminClient.ArchiveValidIngredientPreparation(ctx, &mealplanningsvc.ArchiveValidIngredientPreparationRequest{ValidIngredientPreparationId: nonexistentID})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from archiving", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, created := createValidIngredientPreparationForTest(t)
+		_, testClient := createUserAndClientForTest(T)
+
+		_, err := testClient.ArchiveValidIngredientPreparation(ctx, &mealplanningsvc.ArchiveValidIngredientPreparationRequest{ValidIngredientPreparationId: created.ID})
+		assert.Error(t, err)
+	})
+}

@@ -201,41 +201,41 @@ func AllSubscriptionStatusValues() []SubscriptionStatus {
 }
 
 type Products struct {
-	CreatedAt             time.Time
-	LastUpdatedAt         sql.NullTime
-	ArchivedAt            sql.NullTime
 	ID                    string
 	Name                  string
 	Description           string
 	Kind                  ProductKind
-	Currency              string
-	ExternalProductID     sql.NullString
-	BillingIntervalMonths sql.NullInt32
 	AmountCents           int32
+	Currency              string
+	BillingIntervalMonths sql.NullInt32
+	ExternalProductID     sql.NullString
+	CreatedAt             time.Time
+	LastUpdatedAt         sql.NullTime
+	ArchivedAt            sql.NullTime
 }
 
 type Purchases struct {
-	CreatedAt             time.Time
-	CompletedAt           sql.NullTime
-	LastUpdatedAt         sql.NullTime
-	ArchivedAt            sql.NullTime
 	ID                    string
 	BelongsToAccount      string
 	ProductID             string
-	Currency              string
-	ExternalTransactionID sql.NullString
 	AmountCents           int32
+	Currency              string
+	CompletedAt           sql.NullTime
+	ExternalTransactionID sql.NullString
+	CreatedAt             time.Time
+	LastUpdatedAt         sql.NullTime
+	ArchivedAt            sql.NullTime
 }
 
 type Subscriptions struct {
+	ID                     string
+	BelongsToAccount       string
+	ProductID              string
+	ExternalSubscriptionID sql.NullString
+	Status                 SubscriptionStatus
 	CurrentPeriodStart     time.Time
 	CurrentPeriodEnd       time.Time
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
-	ID                     string
-	BelongsToAccount       string
-	ProductID              string
-	Status                 SubscriptionStatus
-	ExternalSubscriptionID sql.NullString
 }

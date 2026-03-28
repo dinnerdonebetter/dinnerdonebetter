@@ -13,10 +13,11 @@ import (
 	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v2/errors"
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v2/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"google.golang.org/grpc/codes"
 )
 

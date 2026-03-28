@@ -6,10 +6,10 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 const bearerPrefix = "Bearer "
@@ -39,8 +39,8 @@ func NewRevenueCatPaymentProcessor(
 	}
 	return &RevenueCatPaymentProcessor{
 		encoder: encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		logger:  logging.EnsureLogger(logger).WithName("revenuecat_processor"),
-		tracer:  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("revenuecat_processor")),
+		logger:  logging.NewNamedLogger(logger, "revenuecat_processor"),
+		tracer:  tracing.NewNamedTracer(tracerProvider, "revenuecat_processor"),
 		cfg:     cfg,
 	}
 }

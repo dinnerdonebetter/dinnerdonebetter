@@ -11,9 +11,10 @@ import (
 	identityfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
 )
 
 func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *identity.User, account *identity.Account, dbc *repository) *types.AuditLogEntry {

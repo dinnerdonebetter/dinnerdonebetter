@@ -12,17 +12,18 @@ import (
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/analytics"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	perrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/routing"
+
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/google"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/analytics"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/internalerrors"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/routing"
 )
 
 const (
@@ -68,7 +69,7 @@ func ProvideService(
 	queuesConfig *msgconfig.QueuesConfig,
 ) (auth.AuthDataService, error) {
 	if queuesConfig == nil {
-		return nil, internalerrors.NilConfigError("queuesConfig for AuthDataService")
+		return nil, perrors.ErrNilInputProvided
 	}
 
 	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(ctx, queuesConfig.DataChangesTopicName)
@@ -84,12 +85,12 @@ func ProvideService(
 	manager := ProvideOAuth2ClientManager(logger, tracerProvider, &cfg.OAuth2, oauthRepo)
 
 	svc := &service{
-		logger:               logging.EnsureLogger(logger).WithName(serviceName),
+		logger:               logging.NewNamedLogger(logger, serviceName),
 		encoderDecoder:       encoder,
 		config:               cfg,
 		identityDataManager:  identityDataManager,
 		authenticator:        authenticator,
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		tracer:               tracing.NewNamedTracer(tracerProvider, serviceName),
 		dataChangesPublisher: dataChangesPublisher,
 		analyticsReporter:    analyticsReporter,
 		tokenIssuer:          signer,

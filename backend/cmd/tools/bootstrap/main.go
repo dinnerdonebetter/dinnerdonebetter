@@ -15,15 +15,16 @@ import (
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	oauthrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 
+	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+
 	"github.com/spf13/cobra"
-	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/v2/cryptography/encryption/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/random"
 )
 
 const (

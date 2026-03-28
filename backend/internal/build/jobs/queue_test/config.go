@@ -4,10 +4,11 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	queuetest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
 
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+
 	"github.com/samber/do/v2"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v2/database/config"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v2/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability"
 )
 
 // RegisterConfigs registers all config sub-fields with the injector.

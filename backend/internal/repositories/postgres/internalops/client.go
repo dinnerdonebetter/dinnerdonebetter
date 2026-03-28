@@ -6,9 +6,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops/generated"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v2/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v2/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 )
 
 const (
@@ -30,9 +30,9 @@ func ProvideInternalOpsRepository(logger logging.Logger, tracerProvider tracing.
 		Client:           client,
 		readDB:           client.ReadDB(),
 		writeDB:          client.WriteDB(),
-		tracer:           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		tracer:           tracing.NewNamedTracer(tracerProvider, o11yName),
 		generatedQuerier: generated.New(),
-		logger:           logging.EnsureLogger(logger).WithName(o11yName),
+		logger:           logging.NewNamedLogger(logger, o11yName),
 	}
 
 	return c
