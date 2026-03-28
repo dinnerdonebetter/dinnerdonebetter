@@ -63,7 +63,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, *p
 
 	auditLogRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 
-	c := ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogRepo, pgc)
+	c := ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogRepo, pgc, nil, nil)
 	require.NoError(t, err)
 
 	return c.(*repository), auditLogRepo, container
@@ -72,7 +72,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, *p
 func buildInertClientForTest(t *testing.T) *repository {
 	t.Helper()
 
-	c := ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{})
+	c := ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{}, nil, nil)
 
 	return c.(*repository)
 }

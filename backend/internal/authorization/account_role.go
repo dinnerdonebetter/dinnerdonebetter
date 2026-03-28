@@ -21,18 +21,23 @@ const (
 	AccountMemberRole AccountRole = iota
 	// AccountAdminRole is a role for someone who can manipulate the specifics of an account.
 	AccountAdminRole AccountRole = iota
+	// AccountRestrictedRole is a role with zero built-in permissions, used when custom roles are the sole source.
+	AccountRestrictedRole AccountRole = iota
 
-	AccountAdminRoleName  = "account_admin"
-	AccountMemberRoleName = "account_member"
+	AccountAdminRoleName      = "account_admin"
+	AccountMemberRoleName     = "account_member"
+	AccountRestrictedRoleName = "account_restricted"
 )
 
 var (
-	accountAdmin  = gorbac.NewStdRole(AccountAdminRoleName)
-	accountMember = gorbac.NewStdRole(AccountMemberRoleName)
+	accountAdmin      = gorbac.NewStdRole(AccountAdminRoleName)
+	accountMember     = gorbac.NewStdRole(AccountMemberRoleName)
+	accountRestricted = gorbac.NewStdRole(AccountRestrictedRoleName)
 )
 
 type accountRoleCollection struct {
-	Roles []string
+	customPerms *CustomRolePermissionChecker
+	Roles       []string
 }
 
 func init() {
@@ -46,12 +51,22 @@ func NewAccountRolePermissionChecker(roles ...string) AccountRolePermissionsChec
 	}
 }
 
+// NewAccountRolePermissionCheckerWithCustomRoles returns a new checker that combines built-in roles with custom role permissions.
+func NewAccountRolePermissionCheckerWithCustomRoles(customPerms *CustomRolePermissionChecker, roles ...string) AccountRolePermissionsChecker {
+	return &accountRoleCollection{
+		Roles:       roles,
+		customPerms: customPerms,
+	}
+}
+
 func (r AccountRole) String() string {
 	switch r {
 	case AccountMemberRole:
 		return AccountMemberRoleName
 	case AccountAdminRole:
 		return AccountAdminRoleName
+	case AccountRestrictedRole:
+		return AccountRestrictedRoleName
 	default:
 		return ""
 	}
@@ -59,7 +74,13 @@ func (r AccountRole) String() string {
 
 // HasPermission returns whether a user can do something or not.
 func (r accountRoleCollection) HasPermission(p Permission) bool {
-	return hasPermission(p, r.Roles...)
+	if hasPermission(p, r.Roles...) {
+		return true
+	}
+	if r.customPerms != nil {
+		return r.customPerms.HasPermission(p)
+	}
+	return false
 }
 
 func hasPermission(p Permission, roles ...string) bool {

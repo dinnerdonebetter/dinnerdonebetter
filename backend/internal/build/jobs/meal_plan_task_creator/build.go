@@ -3,9 +3,12 @@ package mealplantaskcreator
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	domaincustomroles "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/customroles"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	mealplantaskcreator "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
@@ -42,6 +45,15 @@ func BuildInjector(
 	msgconfig.RegisterMessageQueue(i)
 	recipeanalysis.RegisterRecipeAnalyzer(i)
 	auditlogentries.RegisterAuditLogRepository(i)
+	customroles.RegisterCustomRolesRepository(i)
+	do.Provide(i, func(i do.Injector) (*authorization.RolePermissionCache, error) {
+		cache := authorization.NewRolePermissionCache()
+		repo := do.MustInvoke[domaincustomroles.Repository](i)
+		if err := cache.Refresh(ctx, repo.GetAllCustomRolePermissions); err != nil {
+			return nil, err
+		}
+		return cache, nil
+	})
 	identity.RegisterIdentityRepository(i)
 	mealplanning.RegisterMealPlanningRepository(i)
 	mealplantaskcreator.RegisterMealPlanTaskCreator(i)

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	apiserver "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
@@ -22,6 +23,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auth"
+	customrolesrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	notificationsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
@@ -148,7 +150,9 @@ type DatabaseInitFunc func(ctx context.Context, dbClient database.Client, dbCfg 
 func WithIdentityRepository(fn func(ctx context.Context, repo identity.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider, dbClient database.Client) error) DatabaseInitFunc {
 	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
 		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
-		identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, dbClient)
+		rolePermissionCache := authorization.NewRolePermissionCache()
+		customRolesRepo := customrolesrepo.ProvideCustomRolesRepository(logger, tracerProvider, dbClient)
+		identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, dbClient, customRolesRepo, rolePermissionCache)
 		return fn(ctx, identityRepo, logger, tracerProvider, dbClient)
 	}
 }
@@ -179,7 +183,9 @@ func WithAuthRepository(fn func(ctx context.Context, repo auth.Repository, logge
 func WithMealPlanningRepository(fn func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
 	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
 		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
-		identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, dbClient)
+		rolePermissionCache := authorization.NewRolePermissionCache()
+		customRolesRepo := customrolesrepo.ProvideCustomRolesRepository(logger, tracerProvider, dbClient)
+		identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, dbClient, customRolesRepo, rolePermissionCache)
 		mealPlanningRepo := mealplanningrepo.ProvideMealPlanningRepository(logger, tracerProvider, auditLogRepo, identityRepo, dbClient)
 		return fn(ctx, mealPlanningRepo, logger, tracerProvider)
 	}

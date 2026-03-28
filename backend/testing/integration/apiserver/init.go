@@ -8,12 +8,14 @@ import (
 	"net"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	apiserver "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	customrolesrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	notificationsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 
@@ -102,7 +104,9 @@ func init() {
 
 	// create premade admin user
 	auditLogRepo := auditlogentries.ProvideAuditLogRepository(pillars.Logger, pillars.TracerProvider, databaseClient)
-	identityRepo := identityrepo.ProvideIdentityRepository(pillars.Logger, pillars.TracerProvider, auditLogRepo, databaseClient)
+	rolePermissionCache := authorization.NewRolePermissionCache()
+	customRolesRepo := customrolesrepo.ProvideCustomRolesRepository(pillars.Logger, pillars.TracerProvider, databaseClient)
+	identityRepo := identityrepo.ProvideIdentityRepository(pillars.Logger, pillars.TracerProvider, auditLogRepo, databaseClient, customRolesRepo, rolePermissionCache)
 	notifsRepo = notificationsrepo.ProvideNotificationsRepository(nil, nil, auditLogRepo, dbCfg, databaseClient)
 	adminUser, err := localdev.CreatePremadeAdminUser(ctx, pillars.Logger, pillars.TracerProvider, identityRepo, databaseClient, premadeAdminUser)
 	if err != nil {

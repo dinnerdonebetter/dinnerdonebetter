@@ -9,9 +9,11 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	customrolesrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	oauthrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 
@@ -126,7 +128,9 @@ func runBootstrap(
 	}()
 
 	auditRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
-	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditRepo, client)
+	rolePermissionCache := authorization.NewRolePermissionCache()
+	customRolesRepo := customrolesrepo.ProvideCustomRolesRepository(logger, tracerProvider, client)
+	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditRepo, client, customRolesRepo, rolePermissionCache)
 	oauthRepo := oauthrepo.ProvideOAuthRepository(logger, tracerProvider, auditRepo, dbConfig, client)
 
 	hasher := authentication.ProvideArgon2Authenticator(logger, tracerProvider)

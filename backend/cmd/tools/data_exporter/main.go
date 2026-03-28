@@ -9,8 +9,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	customrolesrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
@@ -103,7 +105,9 @@ func runExport(dbHost string, dbPort uint16, dbUser, dbPassword, dbName string, 
 	}()
 
 	auditRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
-	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditRepo, client)
+	rolePermissionCache := authorization.NewRolePermissionCache()
+	customRolesRepo := customrolesrepo.ProvideCustomRolesRepository(logger, tracerProvider, client)
+	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditRepo, client, customRolesRepo, rolePermissionCache)
 	repo := mealplanningrepo.ProvideMealPlanningRepository(logger, tracerProvider, auditRepo, identityRepo, client)
 
 	export := &ExportData{

@@ -6,10 +6,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
 	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	auditmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/manager"
 	authmgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/managers"
 	commentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager"
+	domaincustomroles "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/customroles"
+	customrolesmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/customroles/manager"
 	dataprivacymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy/manager"
 	identitymgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	issuereportsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/manager"
@@ -27,6 +30,7 @@ import (
 	auditrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	commentsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/comments"
+	customrolesrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	dataprivacyrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	internalopsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
@@ -120,6 +124,18 @@ func BuildInjector(
 	auditrepo.RegisterAuditLogRepository(i)
 	authrepo.RegisterAuthRepository(i)
 	commentsrepo.RegisterCommentsRepository(i)
+	customrolesrepo.RegisterCustomRolesRepository(i)
+
+	// custom roles cache (must be before identity repo which depends on it)
+	do.Provide(i, func(i do.Injector) (*authorization.RolePermissionCache, error) {
+		cache := authorization.NewRolePermissionCache()
+		repo := do.MustInvoke[domaincustomroles.Repository](i)
+		if err := cache.Refresh(ctx, repo.GetAllCustomRolePermissions); err != nil {
+			return nil, err
+		}
+		return cache, nil
+	})
+
 	identityrepo.RegisterIdentityRepository(i)
 	issuereportsrepo.RegisterIssueReportsRepository(i)
 	uploadedmediarepo.RegisterUploadedMediaRepository(i)
@@ -134,6 +150,7 @@ func BuildInjector(
 	auditmanager.RegisterAuditDataManager(i)
 	authmgr.RegisterAuthManager(i)
 	commentsmanager.RegisterCommentsDataManager(i)
+	customrolesmanager.RegisterCustomRolesDataManager(i)
 	identitymgr.RegisterIdentityDataManager(i)
 	notificationsmanager.RegisterNotificationsDataManager(i)
 	settingsmanager.RegisterSettingsDataManager(i)

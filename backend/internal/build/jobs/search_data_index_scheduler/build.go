@@ -3,10 +3,13 @@ package searchdataindexscheduler
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	domaincustomroles "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/customroles"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	customrolesrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
@@ -42,6 +45,15 @@ func BuildInjector(
 	databasecfg.RegisterClientConfig(i)
 	postgres.RegisterDatabaseClient(i)
 	auditlogentries.RegisterAuditLogRepository(i)
+	customrolesrepo.RegisterCustomRolesRepository(i)
+	do.Provide(i, func(i do.Injector) (*authorization.RolePermissionCache, error) {
+		cache := authorization.NewRolePermissionCache()
+		repo := do.MustInvoke[domaincustomroles.Repository](i)
+		if err := cache.Refresh(ctx, repo.GetAllCustomRolePermissions); err != nil {
+			return nil, err
+		}
+		return cache, nil
+	})
 	identityrepo.RegisterIdentityRepository(i)
 	mealplanningrepo.RegisterMealPlanningRepository(i)
 

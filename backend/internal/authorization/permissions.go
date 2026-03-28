@@ -1,6 +1,8 @@
 package authorization
 
 import (
+	"sync"
+
 	"github.com/mikespook/gorbac/v2"
 )
 
@@ -24,6 +26,11 @@ func (p Permission) Match(perm gorbac.Permission) bool {
 var (
 	// ServiceAdminPermissions is every service admin permission.
 	ServiceAdminPermissions = []gorbac.Permission{
+		CreateCustomRolesPermission,
+		ReadCustomRolesPermission,
+		UpdateCustomRolesPermission,
+		ArchiveCustomRolesPermission,
+		AssignCustomRolesPermission,
 		ReadUserDataPermission,
 		UpdateUserStatusPermission,
 		ReadUserPermission,
@@ -102,6 +109,11 @@ var (
 
 	// AccountAdminPermissions is every account admin permission.
 	AccountAdminPermissions = []gorbac.Permission{
+		CreateCustomRolesPermission,
+		ReadCustomRolesPermission,
+		UpdateCustomRolesPermission,
+		ArchiveCustomRolesPermission,
+		AssignCustomRolesPermission,
 		UpdateAccountPermission,
 		ArchiveAccountPermission,
 		TransferAccountPermission,
@@ -149,6 +161,7 @@ var (
 
 	// AccountMemberPermissions is every account member permission.
 	AccountMemberPermissions = []gorbac.Permission{
+		ReadCustomRolesPermission,
 		ReportAnalyticsEventsPermission,
 		ReadWebhooksPermission,
 		ReadIssueReportsPermission,
@@ -306,4 +319,28 @@ func init() {
 	for _, perm := range AccountMemberPermissions {
 		must(accountMember.Assign(perm))
 	}
+}
+
+var (
+	allPermissionIDs     map[string]struct{}
+	allPermissionIDsOnce sync.Once
+)
+
+// AllPermissionIDs returns the set of all known permission string IDs.
+func AllPermissionIDs() map[string]struct{} {
+	allPermissionIDsOnce.Do(func() {
+		allPermissionIDs = make(map[string]struct{})
+		allLists := [][]gorbac.Permission{
+			ServiceAdminPermissions,
+			ServiceDataAdminPermissions,
+			AccountAdminPermissions,
+			AccountMemberPermissions,
+		}
+		for _, list := range allLists {
+			for _, perm := range list {
+				allPermissionIDs[perm.ID()] = struct{}{}
+			}
+		}
+	})
+	return allPermissionIDs
 }

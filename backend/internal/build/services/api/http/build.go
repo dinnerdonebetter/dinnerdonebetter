@@ -5,11 +5,14 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	domaincustomroles "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/customroles"
 	identitymgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	paymentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/manager"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories"
 	auditrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	customrolesrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	oauthrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	paymentsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/payments"
@@ -77,6 +80,18 @@ func BuildInjector(
 	// repos
 	repositories.RegisterMigrator(i)
 	auditrepo.RegisterAuditLogRepository(i)
+	customrolesrepo.RegisterCustomRolesRepository(i)
+
+	// custom roles cache (must be before identity repo which depends on it)
+	do.Provide(i, func(i do.Injector) (*authorization.RolePermissionCache, error) {
+		cache := authorization.NewRolePermissionCache()
+		repo := do.MustInvoke[domaincustomroles.Repository](i)
+		if err := cache.Refresh(ctx, repo.GetAllCustomRolePermissions); err != nil {
+			return nil, err
+		}
+		return cache, nil
+	})
+
 	identityrepo.RegisterIdentityRepository(i)
 	oauthrepo.RegisterOAuthRepository(i)
 	paymentsrepo.RegisterPaymentsRepository(i)

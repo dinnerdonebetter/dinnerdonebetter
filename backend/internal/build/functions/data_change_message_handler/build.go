@@ -3,13 +3,16 @@ package datachangemessagehandler
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	domaincustomroles "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/customroles"
 	notificationsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/manager"
 	settingsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/manager"
 	waitlistsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/functions/datachangemessagehandler"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auth"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	internalopsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
@@ -68,6 +71,15 @@ func BuildInjector(
 	// repos
 	auditlogentries.RegisterAuditLogRepository(i)
 	auth.RegisterAuthRepository(i)
+	customroles.RegisterCustomRolesRepository(i)
+	do.Provide(i, func(i do.Injector) (*authorization.RolePermissionCache, error) {
+		cache := authorization.NewRolePermissionCache()
+		repo := do.MustInvoke[domaincustomroles.Repository](i)
+		if err := cache.Refresh(ctx, repo.GetAllCustomRolePermissions); err != nil {
+			return nil, err
+		}
+		return cache, nil
+	})
 	dataprivacy.RegisterDataPrivacyRepository(i)
 	identity.RegisterIdentityRepository(i)
 	issue_reports.RegisterIssueReportsRepository(i)

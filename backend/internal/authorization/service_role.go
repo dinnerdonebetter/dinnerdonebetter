@@ -48,7 +48,8 @@ type (
 	}
 
 	serviceRoleCollection struct {
-		Roles []string
+		customPerms *CustomRolePermissionChecker
+		Roles       []string
 	}
 )
 
@@ -72,13 +73,27 @@ func NewServiceRolePermissionChecker(roles ...string) ServiceRolePermissionCheck
 	}
 }
 
+// NewServiceRolePermissionCheckerWithCustomRoles returns a new checker that combines built-in roles with custom role permissions.
+func NewServiceRolePermissionCheckerWithCustomRoles(customPerms *CustomRolePermissionChecker, roles ...string) ServiceRolePermissionChecker {
+	return &serviceRoleCollection{
+		Roles:       roles,
+		customPerms: customPerms,
+	}
+}
+
 func (r serviceRoleCollection) AsAccountRolePermissionChecker() AccountRolePermissionsChecker {
 	return NewAccountRolePermissionChecker(r.Roles...)
 }
 
 // HasPermission returns whether a user can do something or not.
 func (r serviceRoleCollection) HasPermission(p Permission) bool {
-	return hasPermission(p, r.Roles...)
+	if hasPermission(p, r.Roles...) {
+		return true
+	}
+	if r.customPerms != nil {
+		return r.customPerms.HasPermission(p)
+	}
+	return false
 }
 
 // IsServiceAdmin returns if a role is an admin.

@@ -48,7 +48,27 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID,
 	accountRolesMap := map[string]authorization.AccountRolePermissionsChecker{}
 	defaultAccountID := ""
 	for _, result := range results {
-		accountRolesMap[result.BelongsToAccount] = authorization.NewAccountRolePermissionChecker(result.AccountRole)
+		var accountChecker authorization.AccountRolePermissionsChecker
+
+		if r.customRolesRepo != nil && r.rolePermissionCache != nil {
+			roleIDs, roleErr := r.customRolesRepo.GetAccountScopedRoleIDsForMembership(ctx, result.ID)
+			if roleErr != nil {
+				return nil, observability.PrepareAndLogError(roleErr, logger, span, "fetching custom role assignments for membership")
+			}
+			if len(roleIDs) > 0 {
+				customPerms := r.rolePermissionCache.GetPermissionsForRoles(roleIDs)
+				accountChecker = authorization.NewAccountRolePermissionCheckerWithCustomRoles(
+					authorization.NewCustomRolePermissionChecker(customPerms),
+					result.AccountRole,
+				)
+			}
+		}
+
+		if accountChecker == nil {
+			accountChecker = authorization.NewAccountRolePermissionChecker(result.AccountRole)
+		}
+
+		accountRolesMap[result.BelongsToAccount] = accountChecker
 		if result.DefaultAccount {
 			defaultAccountID = result.BelongsToAccount
 		}
@@ -71,6 +91,24 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID,
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching user from database")
 	}
 
+	var servicePermissions authorization.ServiceRolePermissionChecker
+	if r.customRolesRepo != nil && r.rolePermissionCache != nil {
+		serviceRoleIDs, roleErr := r.customRolesRepo.GetServiceScopedRoleIDsForUser(ctx, userID)
+		if roleErr != nil {
+			return nil, observability.PrepareAndLogError(roleErr, logger, span, "fetching service-scoped custom role assignments for user")
+		}
+		if len(serviceRoleIDs) > 0 {
+			customPerms := r.rolePermissionCache.GetPermissionsForRoles(serviceRoleIDs)
+			servicePermissions = authorization.NewServiceRolePermissionCheckerWithCustomRoles(
+				authorization.NewCustomRolePermissionChecker(customPerms),
+				user.ServiceRole,
+			)
+		}
+	}
+	if servicePermissions == nil {
+		servicePermissions = authorization.NewServiceRolePermissionChecker(user.ServiceRole)
+	}
+
 	sessionCtxData := &sessions.ContextData{
 		Requester: sessions.RequesterInfo{
 			UserID:                   user.ID,
@@ -78,7 +116,7 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID,
 			EmailAddress:             user.EmailAddress,
 			AccountStatus:            user.AccountStatus,
 			AccountStatusExplanation: user.AccountStatusExplanation,
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker(user.ServiceRole),
+			ServicePermissions:       servicePermissions,
 		},
 		AccountPermissions: accountRolesMap,
 		ActiveAccountID:    effectiveAccountID,

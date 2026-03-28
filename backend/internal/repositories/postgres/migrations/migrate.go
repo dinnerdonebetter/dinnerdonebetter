@@ -62,6 +62,7 @@ func (m *Migrator) Migrate(ctx context.Context, db *sql.DB) error {
 		{Version: 17, Description: "webauthn sessions table", Script: fetchMigration("00017_webauthn_sessions")},
 		{Version: 18, Description: "user sessions table", Script: fetchMigration("00018_user_sessions")},
 		{Version: 19, Description: "meal planning tables", Script: fetchMigration("00019_mealplanning")},
+		{Version: 20, Description: "custom roles tables", Script: fetchMigration("00020_custom_roles")},
 	}
 
 	if err := darwin.New(darwin.NewGenericDriver(db, darwin.PostgresDialect{}), migrations, nil).Migrate(); err != nil {

@@ -29,6 +29,7 @@ func initializeRBAC() *gorbac.RBAC {
 	must(rbac.Add(serviceAdmin))
 	must(rbac.Add(accountAdmin))
 	must(rbac.Add(accountMember))
+	must(rbac.Add(accountRestricted))
 
 	must(rbac.SetParent(AccountAdminRoleName, AccountMemberRoleName))
 	must(rbac.SetParent(serviceAdminRoleName, AccountAdminRoleName))

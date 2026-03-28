@@ -8,9 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	customrolesrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/customroles"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
@@ -139,7 +141,9 @@ func runInit(databaseURL, searchProvider, algoliaAppID, algoliaAPIKey, indicesSt
 	}()
 
 	auditRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
-	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditRepo, client)
+	rolePermissionCache := authorization.NewRolePermissionCache()
+	customRolesRepo := customrolesrepo.ProvideCustomRolesRepository(logger, tracerProvider, client)
+	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditRepo, client, customRolesRepo, rolePermissionCache)
 	mealPlanningRepo := mealplanningrepo.ProvideMealPlanningRepository(logger, tracerProvider, auditRepo, identityRepo, client)
 
 	searchCfg := &textsearchcfg.Config{

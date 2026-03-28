@@ -1,7 +1,9 @@
 package identity
 
 import (
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/customroles"
 	domainidentity "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
@@ -19,6 +21,8 @@ func RegisterIdentityRepository(i do.Injector) {
 			do.MustInvoke[tracing.TracerProvider](i),
 			do.MustInvoke[audit.Repository](i),
 			do.MustInvoke[database.Client](i),
+			do.MustInvoke[customroles.Repository](i),
+			do.MustInvoke[*authorization.RolePermissionCache](i),
 		), nil
 	})
 
