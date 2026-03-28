@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/settings/grpc/converters"
 
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+
 	"google.golang.org/grpc/codes"
 )
 

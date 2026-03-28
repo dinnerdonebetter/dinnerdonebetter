@@ -6,8 +6,9 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
-	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 // BuildFakeMealPlanEvent builds a faked meal plan event.

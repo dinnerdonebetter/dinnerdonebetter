@@ -9,8 +9,6 @@ import (
 	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
 	dataprivacycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/dataprivacy/config"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
 	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
@@ -24,6 +22,9 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
 	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestStringOrDefault(T *testing.T) {

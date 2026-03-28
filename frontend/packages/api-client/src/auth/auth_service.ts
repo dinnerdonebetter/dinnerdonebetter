@@ -18,7 +18,10 @@ import {
   type UntypedServiceImplementation,
 } from '@grpc/grpc-js';
 import {
+  AdminListSessionsForUserRequest,
   AdminLoginForTokenRequest,
+  AdminRevokeAllUserSessionsRequest,
+  AdminRevokeUserSessionRequest,
   ArchivePasskeyRequest,
   ArchivePasskeyResponse,
   BeginPasskeyAuthenticationRequest,
@@ -387,6 +390,42 @@ export const AuthServiceService = {
     responseDeserialize: (value: Buffer): RevokeAllOtherSessionsResponse =>
       RevokeAllOtherSessionsResponse.decode(value),
   },
+  adminListSessionsForUser: {
+    path: '/auth.AuthService/AdminListSessionsForUser' as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: AdminListSessionsForUserRequest): Buffer =>
+      Buffer.from(AdminListSessionsForUserRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): AdminListSessionsForUserRequest =>
+      AdminListSessionsForUserRequest.decode(value),
+    responseSerialize: (value: ListActiveSessionsResponse): Buffer =>
+      Buffer.from(ListActiveSessionsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ListActiveSessionsResponse => ListActiveSessionsResponse.decode(value),
+  },
+  adminRevokeUserSession: {
+    path: '/auth.AuthService/AdminRevokeUserSession' as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: AdminRevokeUserSessionRequest): Buffer =>
+      Buffer.from(AdminRevokeUserSessionRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): AdminRevokeUserSessionRequest => AdminRevokeUserSessionRequest.decode(value),
+    responseSerialize: (value: RevokeSessionResponse): Buffer =>
+      Buffer.from(RevokeSessionResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): RevokeSessionResponse => RevokeSessionResponse.decode(value),
+  },
+  adminRevokeAllUserSessions: {
+    path: '/auth.AuthService/AdminRevokeAllUserSessions' as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: AdminRevokeAllUserSessionsRequest): Buffer =>
+      Buffer.from(AdminRevokeAllUserSessionsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): AdminRevokeAllUserSessionsRequest =>
+      AdminRevokeAllUserSessionsRequest.decode(value),
+    responseSerialize: (value: RevokeAllOtherSessionsResponse): Buffer =>
+      Buffer.from(RevokeAllOtherSessionsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): RevokeAllOtherSessionsResponse =>
+      RevokeAllOtherSessionsResponse.decode(value),
+  },
 } as const;
 
 export interface AuthServiceServer extends UntypedServiceImplementation {
@@ -420,6 +459,9 @@ export interface AuthServiceServer extends UntypedServiceImplementation {
   listActiveSessions: handleUnaryCall<ListActiveSessionsRequest, ListActiveSessionsResponse>;
   revokeSession: handleUnaryCall<RevokeSessionRequest, RevokeSessionResponse>;
   revokeAllOtherSessions: handleUnaryCall<RevokeAllOtherSessionsRequest, RevokeAllOtherSessionsResponse>;
+  adminListSessionsForUser: handleUnaryCall<AdminListSessionsForUserRequest, ListActiveSessionsResponse>;
+  adminRevokeUserSession: handleUnaryCall<AdminRevokeUserSessionRequest, RevokeSessionResponse>;
+  adminRevokeAllUserSessions: handleUnaryCall<AdminRevokeAllUserSessionsRequest, RevokeAllOtherSessionsResponse>;
 }
 
 export interface AuthServiceClient extends Client {
@@ -824,6 +866,51 @@ export interface AuthServiceClient extends Client {
   ): ClientUnaryCall;
   revokeAllOtherSessions(
     request: RevokeAllOtherSessionsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: RevokeAllOtherSessionsResponse) => void,
+  ): ClientUnaryCall;
+  adminListSessionsForUser(
+    request: AdminListSessionsForUserRequest,
+    callback: (error: ServiceError | null, response: ListActiveSessionsResponse) => void,
+  ): ClientUnaryCall;
+  adminListSessionsForUser(
+    request: AdminListSessionsForUserRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ListActiveSessionsResponse) => void,
+  ): ClientUnaryCall;
+  adminListSessionsForUser(
+    request: AdminListSessionsForUserRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ListActiveSessionsResponse) => void,
+  ): ClientUnaryCall;
+  adminRevokeUserSession(
+    request: AdminRevokeUserSessionRequest,
+    callback: (error: ServiceError | null, response: RevokeSessionResponse) => void,
+  ): ClientUnaryCall;
+  adminRevokeUserSession(
+    request: AdminRevokeUserSessionRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: RevokeSessionResponse) => void,
+  ): ClientUnaryCall;
+  adminRevokeUserSession(
+    request: AdminRevokeUserSessionRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: RevokeSessionResponse) => void,
+  ): ClientUnaryCall;
+  adminRevokeAllUserSessions(
+    request: AdminRevokeAllUserSessionsRequest,
+    callback: (error: ServiceError | null, response: RevokeAllOtherSessionsResponse) => void,
+  ): ClientUnaryCall;
+  adminRevokeAllUserSessions(
+    request: AdminRevokeAllUserSessionsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: RevokeAllOtherSessionsResponse) => void,
+  ): ClientUnaryCall;
+  adminRevokeAllUserSessions(
+    request: AdminRevokeAllUserSessionsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: RevokeAllOtherSessionsResponse) => void,

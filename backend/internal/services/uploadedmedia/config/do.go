@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/samber/do/v2"
 	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/config"
+
+	"github.com/samber/do/v2"
 )
 
 // RegisterUploadedMediaConfig registers the uploaded media config fields with the injector.

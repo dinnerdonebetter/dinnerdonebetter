@@ -9,15 +9,16 @@ import (
 	notificationkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/keys"
 	notificationsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/mock"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func buildNotificationsManagerForTest(t *testing.T) *notificationsManager {

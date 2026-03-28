@@ -15,7 +15,6 @@ import (
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	oauthrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 
-	"github.com/spf13/cobra"
 	encryptioncfg "github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
@@ -24,6 +23,8 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+
+	"github.com/spf13/cobra"
 )
 
 const (

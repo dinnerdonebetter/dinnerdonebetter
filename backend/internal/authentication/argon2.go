@@ -6,11 +6,12 @@ import (
 	"math"
 	"runtime"
 
-	"github.com/alexedwards/argon2id"
-	"github.com/pquerna/otp/totp"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/alexedwards/argon2id"
+	"github.com/pquerna/otp/totp"
 )
 
 func init() {

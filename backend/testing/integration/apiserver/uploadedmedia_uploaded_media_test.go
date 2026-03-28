@@ -428,6 +428,165 @@ func TestUploadedMedia_Archiving(T *testing.T) {
 	})
 }
 
+const uploadedMediaUploadChunkSize = 32 * 1024
+
+func TestUploadedMedia_Upload(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		fileData := []byte("fake image data for integration test")
+		filename := "test-image.jpg"
+		contentType := uploadedmedia.MimeTypeImageJPEG
+
+		stream, err := testClient.Upload(ctx)
+		require.NoError(t, err)
+
+		// First message: metadata
+		err = stream.Send(&uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: &uploadedmediasvc.UploadMetadata{
+					ObjectName:  filename,
+					ContentType: contentType,
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		// Stream chunks
+		for offset := 0; offset < len(fileData); offset += uploadedMediaUploadChunkSize {
+			end := min(offset+uploadedMediaUploadChunkSize, len(fileData))
+			chunk := fileData[offset:end]
+			err = stream.Send(&uploadedmediasvc.UploadRequest{
+				Payload: &uploadedmediasvc.UploadRequest_Chunk{Chunk: chunk},
+			})
+			require.NoError(t, err)
+		}
+
+		resp, err := stream.CloseAndRecv()
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.NotEmpty(t, resp.ObjectUrl)
+		assert.Equal(t, int64(len(fileData)), resp.SizeBytes)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		stream, err := c.Upload(ctx)
+		require.NoError(t, err)
+
+		err = stream.Send(&uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: &uploadedmediasvc.UploadMetadata{
+					ObjectName:  "test.jpg",
+					ContentType: uploadedmedia.MimeTypeImageJPEG,
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = stream.CloseAndRecv()
+		assert.Error(t, err)
+	})
+
+	T.Run("missing metadata", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		stream, err := testClient.Upload(ctx)
+		require.NoError(t, err)
+
+		// Send chunk without metadata first
+		err = stream.Send(&uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Chunk{Chunk: []byte("data")},
+		})
+		require.NoError(t, err)
+
+		_, err = stream.CloseAndRecv()
+		assert.Error(t, err)
+	})
+
+	T.Run("missing object name", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		stream, err := testClient.Upload(ctx)
+		require.NoError(t, err)
+
+		err = stream.Send(&uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: &uploadedmediasvc.UploadMetadata{
+					ObjectName:  "",
+					ContentType: uploadedmedia.MimeTypeImageJPEG,
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = stream.CloseAndRecv()
+		assert.Error(t, err)
+	})
+
+	T.Run("missing content type", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		stream, err := testClient.Upload(ctx)
+		require.NoError(t, err)
+
+		err = stream.Send(&uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: &uploadedmediasvc.UploadMetadata{
+					ObjectName:  "test.jpg",
+					ContentType: "",
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = stream.CloseAndRecv()
+		assert.Error(t, err)
+	})
+
+	T.Run("no file data", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		stream, err := testClient.Upload(ctx)
+		require.NoError(t, err)
+
+		// Send metadata only, no chunks
+		err = stream.Send(&uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: &uploadedmediasvc.UploadMetadata{
+					ObjectName:  "test.jpg",
+					ContentType: uploadedmedia.MimeTypeImageJPEG,
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = stream.CloseAndRecv()
+		assert.Error(t, err)
+	})
+}
+
 func TestUploadedMedia_Pagination(T *testing.T) {
 	T.Parallel()
 

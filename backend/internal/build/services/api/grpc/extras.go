@@ -39,7 +39,6 @@ import (
 	waitlistsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/waitlists/grpc"
 	webhooksgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
-	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
@@ -47,6 +46,8 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
 	platformgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/server/grpc"
+
+	"github.com/samber/do/v2"
 	grpc "google.golang.org/grpc"
 )
 

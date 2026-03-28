@@ -11,11 +11,12 @@ import (
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 
-	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/featureflags"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/samber/do/v2"
 )
 
 // RegisterAuthService registers the auth gRPC service with the injector.

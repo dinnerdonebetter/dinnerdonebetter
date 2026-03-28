@@ -4,10 +4,11 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports"
 
-	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/samber/do/v2"
 )
 
 // RegisterIssueReportsRepository registers the issue reports repository with the injector.

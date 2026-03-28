@@ -14,8 +14,9 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	"github.com/codemodus/kace"
 	reflast "github.com/verygoodsoftwarenotvirus/platform/v4/reflection/ast"
+
+	"github.com/codemodus/kace"
 )
 
 type structEntry struct {

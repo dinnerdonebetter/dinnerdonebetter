@@ -5,10 +5,11 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/gorilla/securecookie"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/internalerrors"
+	perrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/gorilla/securecookie"
 )
 
 type Manager interface {
@@ -24,7 +25,7 @@ type manager struct {
 // NewCookieManager returns a new Manager.
 func NewCookieManager(cfg *Config, tracerProvider tracing.TracerProvider) (Manager, error) {
 	if cfg == nil {
-		return nil, internalerrors.NilConfigError("cookie manager")
+		return nil, perrors.ErrNilInputProvided
 	}
 
 	decodedHashkey, err := base64.StdEncoding.DecodeString(cfg.Base64EncodedHashKey)

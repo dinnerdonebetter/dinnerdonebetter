@@ -8,13 +8,14 @@ import (
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 	mealplantaskcreator "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 
-	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
+
+	"github.com/samber/do/v2"
 )
 
 // RegisterManagers registers all meal planning managers with the injector.

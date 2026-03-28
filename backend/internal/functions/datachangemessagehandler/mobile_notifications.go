@@ -17,6 +17,7 @@ import (
 	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )

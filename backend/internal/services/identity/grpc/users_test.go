@@ -13,12 +13,13 @@ import (
 	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	uploadedmediasvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
 	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

@@ -5,10 +5,11 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/email"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAsyncDataChangeMessageHandler_OutboundEmailsEventHandler(t *testing.T) {

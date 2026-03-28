@@ -6,10 +6,11 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // --- Unit tests ---

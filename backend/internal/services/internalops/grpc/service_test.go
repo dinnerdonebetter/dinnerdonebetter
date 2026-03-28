@@ -5,10 +5,11 @@ import (
 
 	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 
-	"github.com/stretchr/testify/assert"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewService(t *testing.T) {

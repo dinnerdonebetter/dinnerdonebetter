@@ -11,6 +11,7 @@ import (
 	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )

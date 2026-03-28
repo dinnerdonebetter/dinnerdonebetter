@@ -10,9 +10,6 @@ import (
 	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
@@ -21,6 +18,10 @@ import (
 	randommock "github.com/verygoodsoftwarenotvirus/platform/v4/random/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func buildOAuthManagerForTest(t *testing.T) *manager {

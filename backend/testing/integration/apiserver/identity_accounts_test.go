@@ -641,6 +641,143 @@ func TestAccounts_Inviting(T *testing.T) {
 	})
 }
 
+func TestAccounts_GetAccountInvitation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
+		input := &identity.UserRegistrationInput{
+			Birthday:              new(time.Now()),
+			EmailAddress:          inviteeEmailAddress,
+			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AcceptedPrivacyPolicy: true,
+			AcceptedTOS:           true,
+		}
+		_, _ = createUserAndClientForTestWithRegistrationInput(t, input)
+
+		// create the invitation
+		invitation, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
+			Input: &identitysvc.AccountInvitationCreationRequestInput{
+				Note:    t.Name(),
+				ToName:  t.Name(),
+				ToEmail: inviteeEmailAddress,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, invitation)
+
+		// retrieve the single invitation by ID
+		result, err := testClient.GetAccountInvitation(ctx, &identitysvc.GetAccountInvitationRequest{
+			AccountInvitationId: invitation.Created.Id,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, invitation.Created.Id, result.Result.Id)
+	})
+
+	T.Run("nonexistent invitation", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		result, err := testClient.GetAccountInvitation(ctx, &identitysvc.GetAccountInvitationRequest{
+			AccountInvitationId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, result)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		testClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		result, err := testClient.GetAccountInvitation(ctx, &identitysvc.GetAccountInvitationRequest{
+			AccountInvitationId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, result)
+	})
+}
+
+func TestAccounts_GetAccountsForUser(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(t)
+
+		// create additional accounts
+		for range 3 {
+			exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
+			exampleAccountInput := identitygrpcconverters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+
+			_, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
+			require.NoError(t, err)
+		}
+
+		// admin fetches accounts for the user
+		accounts, err := adminClient.GetAccountsForUser(ctx, &identitysvc.GetAccountsForUserRequest{
+			UserId: user.ID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, accounts)
+		// 1 default account + 3 created accounts
+		assert.Equal(t, 4, len(accounts.Results))
+	})
+
+	T.Run("nonexistent user", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		accounts, err := adminClient.GetAccountsForUser(ctx, &identitysvc.GetAccountsForUserRequest{
+			UserId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, accounts)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, _ := createUserAndClientForTest(t)
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		accounts, err := c.GetAccountsForUser(ctx, &identitysvc.GetAccountsForUserRequest{
+			UserId: user.ID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, accounts)
+	})
+
+	T.Run("only admins can do it", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(t)
+
+		accounts, err := testClient.GetAccountsForUser(ctx, &identitysvc.GetAccountsForUserRequest{
+			UserId: user.ID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, accounts)
+	})
+}
+
 func TestAccounts_OwnershipTransfer(T *testing.T) {
 	T.Parallel()
 

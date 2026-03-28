@@ -5,10 +5,11 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 
-	"github.com/go-oauth2/oauth2/v4/manage"
-	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/go-oauth2/oauth2/v4/manage"
+	"github.com/samber/do/v2"
 )
 
 // RegisterAuthInterceptor registers the auth interceptor with the injector.

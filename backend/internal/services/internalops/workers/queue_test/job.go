@@ -15,6 +15,7 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )

@@ -4,8 +4,9 @@ import (
 	"math"
 	"time"
 
-	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 func init() {

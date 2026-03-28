@@ -6,8 +6,9 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/converters"
 
-	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 // BuildFakeWebhook builds a faked Webhook.

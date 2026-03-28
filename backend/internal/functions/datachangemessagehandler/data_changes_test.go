@@ -17,11 +17,12 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
 	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {

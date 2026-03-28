@@ -8,12 +8,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/stretchr/testify/require"
-	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/stretchr/testify/require"
+	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
 func buildDatabaseClientForTest(t *testing.T) (c *Repository, auditLogEntryRepo audit.Repository, container *pgcontainers.PostgresContainer) {

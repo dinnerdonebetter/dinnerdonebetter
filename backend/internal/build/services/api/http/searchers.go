@@ -6,11 +6,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 
-	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
+
+	"github.com/samber/do/v2"
 )
 
 // ProvideTextSearchConfig provides a pointer to the text search config for dependency injection.

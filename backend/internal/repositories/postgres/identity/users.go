@@ -15,7 +15,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
@@ -23,6 +22,8 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v4/observability/keys"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 const (

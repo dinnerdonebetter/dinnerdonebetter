@@ -18,6 +18,7 @@ import (
 
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
@@ -760,6 +761,123 @@ func (s *serviceImpl) RevokeAllOtherSessions(ctx context.Context, _ *authsvc.Rev
 
 	if err = s.authManager.RevokeAllSessionsForUserExcept(ctx, sessionContextData.GetUserID(), sessionContextData.GetSessionID()); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to revoke all other sessions")
+	}
+
+	return &authsvc.RevokeAllOtherSessionsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}, nil
+}
+
+func (s *serviceImpl) AdminListSessionsForUser(ctx context.Context, request *authsvc.AdminListSessionsForUserRequest) (*authsvc.ListActiveSessionsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if !sessionContextData.GetServicePermissions().CanManageUserSessions() {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("insufficient permissions"), logger, span, codes.PermissionDenied, "insufficient permissions")
+	}
+
+	userID := strings.TrimSpace(request.GetUserId())
+	if userID == "" {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("user_id is required"), logger, span, codes.InvalidArgument, "user_id is required")
+	}
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	sessionsResult, err := s.authManager.GetActiveSessionsForUser(ctx, userID, filter)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to list active sessions for user")
+	}
+
+	results := make([]*authsvc.UserSession, 0, len(sessionsResult.Data))
+	for _, sess := range sessionsResult.Data {
+		results = append(results, &authsvc.UserSession{
+			Id:           sess.ID,
+			ClientIp:     sess.ClientIP,
+			UserAgent:    sess.UserAgent,
+			DeviceName:   sess.DeviceName,
+			LoginMethod:  sess.LoginMethod,
+			CreatedAt:    grpcconverters.ConvertTimeToPBTimestamp(sess.CreatedAt),
+			LastActiveAt: grpcconverters.ConvertTimeToPBTimestamp(sess.LastActiveAt),
+			ExpiresAt:    grpcconverters.ConvertTimeToPBTimestamp(sess.ExpiresAt),
+		})
+	}
+
+	return &authsvc.ListActiveSessionsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(sessionsResult.Pagination, filter),
+		Sessions:   results,
+	}, nil
+}
+
+func (s *serviceImpl) AdminRevokeUserSession(ctx context.Context, request *authsvc.AdminRevokeUserSessionRequest) (*authsvc.RevokeSessionResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if !sessionContextData.GetServicePermissions().CanManageUserSessions() {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("insufficient permissions"), logger, span, codes.PermissionDenied, "insufficient permissions")
+	}
+
+	userID := strings.TrimSpace(request.GetUserId())
+	if userID == "" {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("user_id is required"), logger, span, codes.InvalidArgument, "user_id is required")
+	}
+
+	sessionID := strings.TrimSpace(request.GetSessionId())
+	if sessionID == "" {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("session_id is required"), logger, span, codes.InvalidArgument, "session_id is required")
+	}
+
+	if err = s.authManager.RevokeSession(ctx, sessionID, userID); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to revoke user session")
+	}
+
+	return &authsvc.RevokeSessionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}, nil
+}
+
+func (s *serviceImpl) AdminRevokeAllUserSessions(ctx context.Context, request *authsvc.AdminRevokeAllUserSessionsRequest) (*authsvc.RevokeAllOtherSessionsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if !sessionContextData.GetServicePermissions().CanManageUserSessions() {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("insufficient permissions"), logger, span, codes.PermissionDenied, "insufficient permissions")
+	}
+
+	userID := strings.TrimSpace(request.GetUserId())
+	if userID == "" {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("user_id is required"), logger, span, codes.InvalidArgument, "user_id is required")
+	}
+
+	if err = s.authManager.RevokeAllSessionsForUser(ctx, userID); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to revoke all sessions for user")
 	}
 
 	return &authsvc.RevokeAllOtherSessionsResponse{

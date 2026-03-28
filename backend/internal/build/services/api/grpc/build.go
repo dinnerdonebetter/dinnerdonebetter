@@ -60,7 +60,6 @@ import (
 	waitlistssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/waitlists/grpc"
 	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
-	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/analytics/multisource"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
@@ -76,6 +75,8 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/server/grpc"
 	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
+
+	"github.com/samber/do/v2"
 )
 
 // BuildInjector creates and configures the dependency injection container.

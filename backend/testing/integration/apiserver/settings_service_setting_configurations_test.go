@@ -184,6 +184,61 @@ func TestServiceSettingConfigurations_Archiving(T *testing.T) {
 	})
 }
 
+func TestServiceSettingConfigurations_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		created := createServiceSettingConfigurationForTest(t, testClient)
+
+		updateInput := fakes.BuildFakeServiceSettingConfigurationUpdateRequestInput()
+		created.Update(updateInput)
+
+		_, err := adminClient.UpdateServiceSettingConfiguration(ctx, &settingssvc.UpdateServiceSettingConfigurationRequest{
+			ServiceSettingConfigurationId: created.ID,
+			Input: &settingssvc.ServiceSettingConfigurationUpdateRequestInput{
+				Value: updateInput.Value,
+				Notes: updateInput.Notes,
+			},
+		})
+		require.NoError(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		created := createServiceSettingConfigurationForTest(t, testClient)
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.UpdateServiceSettingConfiguration(ctx, &settingssvc.UpdateServiceSettingConfigurationRequest{
+			ServiceSettingConfigurationId: created.ID,
+			Input: &settingssvc.ServiceSettingConfigurationUpdateRequestInput{
+				Value: new("doesn't matter"),
+			},
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, err := adminClient.UpdateServiceSettingConfiguration(ctx, &settingssvc.UpdateServiceSettingConfigurationRequest{
+			ServiceSettingConfigurationId: nonexistentID,
+			Input: &settingssvc.ServiceSettingConfigurationUpdateRequestInput{
+				Value: new("doesn't matter"),
+			},
+		})
+		assert.Error(t, err)
+	})
+}
+
 func TestServiceSettingConfigurations_Listing_ForUser(T *testing.T) {
 	T.Parallel()
 

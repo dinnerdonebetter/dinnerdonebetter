@@ -6,9 +6,10 @@ import (
 	webhookmgrmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/manager/mock"
 	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewService(t *testing.T) {

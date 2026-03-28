@@ -11,15 +11,16 @@ import (
 	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	perrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/internalerrors"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+
 	"google.golang.org/grpc/codes"
 )
 
@@ -57,7 +58,7 @@ func NewOAuth2Manager(
 	queuesConfig *msgconfig.QueuesConfig,
 ) (OAuth2Manager, error) {
 	if queuesConfig == nil {
-		return nil, internalerrors.NilConfigError("queues config for OAuth2 manager")
+		return nil, perrors.ErrNilInputProvided
 	}
 
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, queuesConfig.DataChangesTopicName)

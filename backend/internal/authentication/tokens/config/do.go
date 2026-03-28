@@ -3,9 +3,10 @@ package tokenscfg
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 
-	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/samber/do/v2"
 )
 
 // ProvideTokenIssuer provides a tokens.Issuer from a config.

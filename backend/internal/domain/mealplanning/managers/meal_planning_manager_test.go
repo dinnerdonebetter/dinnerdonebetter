@@ -10,9 +10,6 @@ import (
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	mealplanningworkers "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
@@ -22,6 +19,10 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
 	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func buildMealPlanManagerForTest(t *testing.T) *mealPlanningManager {

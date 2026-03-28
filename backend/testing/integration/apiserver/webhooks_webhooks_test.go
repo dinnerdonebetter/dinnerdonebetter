@@ -2,7 +2,9 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/converters"
@@ -317,6 +319,169 @@ func TestWebhookTriggerConfigs_Removing(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		_, err := c.ArchiveWebhookTriggerConfig(ctx, &webhookssvc.ArchiveWebhookTriggerConfigRequest{})
+		assert.Error(t, err)
+	})
+}
+
+func TestWebhookTriggerEvents_Reading(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		catalogEvent := createWebhookTriggerEventCatalogForTest(t, ctx, testClient, "test_read_event", "for reading test")
+
+		retrieved, err := testClient.GetWebhookTriggerEvent(ctx, &webhookssvc.GetWebhookTriggerEventRequest{Id: catalogEvent.Id})
+		require.NoError(t, err)
+		require.NotNil(t, retrieved)
+		assert.Equal(t, catalogEvent.Id, retrieved.Result.Id)
+		assert.Equal(t, catalogEvent.Name, retrieved.Result.Name)
+		assert.Equal(t, catalogEvent.Description, retrieved.Result.Description)
+	})
+
+	T.Run("nonexistent ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		retrieved, err := testClient.GetWebhookTriggerEvent(ctx, &webhookssvc.GetWebhookTriggerEventRequest{Id: nonexistentID})
+		assert.Error(t, err)
+		assert.Nil(t, retrieved)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		_, err := c.GetWebhookTriggerEvent(ctx, &webhookssvc.GetWebhookTriggerEventRequest{Id: nonexistentID})
+		assert.Error(t, err)
+	})
+}
+
+func TestWebhookTriggerEvents_Listing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		for range exampleQuantity {
+			createWebhookTriggerEventCatalogForTest(t, ctx, testClient, fmt.Sprintf("list_event_%d", time.Now().UnixNano()), "for listing test")
+		}
+
+		results, err := testClient.GetWebhookTriggerEvents(ctx, &webhookssvc.GetWebhookTriggerEventsRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, results)
+		assert.True(t, len(results.Results) >= exampleQuantity)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		_, err := c.GetWebhookTriggerEvents(ctx, &webhookssvc.GetWebhookTriggerEventsRequest{})
+		assert.Error(t, err)
+	})
+}
+
+func TestWebhookTriggerEvents_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		catalogEvent := createWebhookTriggerEventCatalogForTest(t, ctx, testClient, "test_update_event", "for updating test")
+
+		_, err := testClient.UpdateWebhookTriggerEvent(ctx, &webhookssvc.UpdateWebhookTriggerEventRequest{
+			Id: catalogEvent.Id,
+			Input: &webhookssvc.WebhookTriggerEventUpdateRequestInput{
+				Name:        "updated_event_name",
+				Description: "updated description",
+			},
+		})
+		assert.NoError(t, err)
+
+		retrieved, err := testClient.GetWebhookTriggerEvent(ctx, &webhookssvc.GetWebhookTriggerEventRequest{Id: catalogEvent.Id})
+		require.NoError(t, err)
+		require.NotNil(t, retrieved)
+		assert.Equal(t, "updated_event_name", retrieved.Result.Name)
+		assert.Equal(t, "updated description", retrieved.Result.Description)
+	})
+
+	T.Run("nonexistent ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		_, err := testClient.UpdateWebhookTriggerEvent(ctx, &webhookssvc.UpdateWebhookTriggerEventRequest{
+			Id: nonexistentID,
+			Input: &webhookssvc.WebhookTriggerEventUpdateRequestInput{
+				Name:        "doesn't matter",
+				Description: "doesn't matter",
+			},
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		_, err := c.UpdateWebhookTriggerEvent(ctx, &webhookssvc.UpdateWebhookTriggerEventRequest{
+			Id: nonexistentID,
+			Input: &webhookssvc.WebhookTriggerEventUpdateRequestInput{
+				Name:        "doesn't matter",
+				Description: "doesn't matter",
+			},
+		})
+		assert.Error(t, err)
+	})
+}
+
+func TestWebhookTriggerEvents_Archiving(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		catalogEvent := createWebhookTriggerEventCatalogForTest(t, ctx, testClient, "test_archive_event", "for archiving test")
+
+		_, err := testClient.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{Id: catalogEvent.Id})
+		assert.NoError(t, err)
+
+		retrieved, err := testClient.GetWebhookTriggerEvent(ctx, &webhookssvc.GetWebhookTriggerEventRequest{Id: catalogEvent.Id})
+		assert.Nil(t, retrieved)
+		assert.Error(t, err)
+	})
+
+	T.Run("nonexistent ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		_, err := testClient.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{Id: nonexistentID})
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		_, err := c.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{})
 		assert.Error(t, err)
 	})
 }

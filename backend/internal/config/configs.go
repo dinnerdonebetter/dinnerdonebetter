@@ -13,8 +13,6 @@ import (
 	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/hashicorp/go-multierror"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
 	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
@@ -31,6 +29,9 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/server/grpc"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (

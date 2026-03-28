@@ -19,8 +19,6 @@ import (
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 
-	"github.com/boombuler/barcode"
-	"github.com/boombuler/barcode/qr"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
@@ -32,6 +30,9 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+
+	"github.com/boombuler/barcode"
+	"github.com/boombuler/barcode/qr"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 

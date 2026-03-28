@@ -6,8 +6,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
-	"github.com/stretchr/testify/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ mealplanning.Repository = (*Repository)(nil)

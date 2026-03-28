@@ -10,6 +10,7 @@ import (
 
 	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+
 	"google.golang.org/grpc/codes"
 )
 

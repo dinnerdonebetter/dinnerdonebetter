@@ -309,6 +309,20 @@ export interface RevokeAllOtherSessionsResponse {
   responseDetails: ResponseDetails | undefined;
 }
 
+export interface AdminListSessionsForUserRequest {
+  userId: string;
+  filter: QueryFilter | undefined;
+}
+
+export interface AdminRevokeUserSessionRequest {
+  userId: string;
+  sessionId: string;
+}
+
+export interface AdminRevokeAllUserSessionsRequest {
+  userId: string;
+}
+
 function createBaseLoginForTokenRequest(): LoginForTokenRequest {
   return { input: undefined };
 }
@@ -5371,6 +5385,243 @@ export const RevokeAllOtherSessionsResponse: MessageFns<RevokeAllOtherSessionsRe
       object.responseDetails !== undefined && object.responseDetails !== null
         ? ResponseDetails.fromPartial(object.responseDetails)
         : undefined;
+    return message;
+  },
+};
+
+function createBaseAdminListSessionsForUserRequest(): AdminListSessionsForUserRequest {
+  return { userId: '', filter: undefined };
+}
+
+export const AdminListSessionsForUserRequest: MessageFns<AdminListSessionsForUserRequest> = {
+  encode(message: AdminListSessionsForUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== '') {
+      writer.uint32(10).string(message.userId);
+    }
+    if (message.filter !== undefined) {
+      QueryFilter.encode(message.filter, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AdminListSessionsForUserRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminListSessionsForUserRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.filter = QueryFilter.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminListSessionsForUserRequest {
+    return {
+      userId: isSet(object.userId)
+        ? globalThis.String(object.userId)
+        : isSet(object.user_id)
+          ? globalThis.String(object.user_id)
+          : '',
+      filter: isSet(object.filter) ? QueryFilter.fromJSON(object.filter) : undefined,
+    };
+  },
+
+  toJSON(message: AdminListSessionsForUserRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== '') {
+      obj.userId = message.userId;
+    }
+    if (message.filter !== undefined) {
+      obj.filter = QueryFilter.toJSON(message.filter);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AdminListSessionsForUserRequest>, I>>(base?: I): AdminListSessionsForUserRequest {
+    return AdminListSessionsForUserRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AdminListSessionsForUserRequest>, I>>(
+    object: I,
+  ): AdminListSessionsForUserRequest {
+    const message = createBaseAdminListSessionsForUserRequest();
+    message.userId = object.userId ?? '';
+    message.filter =
+      object.filter !== undefined && object.filter !== null ? QueryFilter.fromPartial(object.filter) : undefined;
+    return message;
+  },
+};
+
+function createBaseAdminRevokeUserSessionRequest(): AdminRevokeUserSessionRequest {
+  return { userId: '', sessionId: '' };
+}
+
+export const AdminRevokeUserSessionRequest: MessageFns<AdminRevokeUserSessionRequest> = {
+  encode(message: AdminRevokeUserSessionRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== '') {
+      writer.uint32(10).string(message.userId);
+    }
+    if (message.sessionId !== '') {
+      writer.uint32(18).string(message.sessionId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AdminRevokeUserSessionRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminRevokeUserSessionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.sessionId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminRevokeUserSessionRequest {
+    return {
+      userId: isSet(object.userId)
+        ? globalThis.String(object.userId)
+        : isSet(object.user_id)
+          ? globalThis.String(object.user_id)
+          : '',
+      sessionId: isSet(object.sessionId)
+        ? globalThis.String(object.sessionId)
+        : isSet(object.session_id)
+          ? globalThis.String(object.session_id)
+          : '',
+    };
+  },
+
+  toJSON(message: AdminRevokeUserSessionRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== '') {
+      obj.userId = message.userId;
+    }
+    if (message.sessionId !== '') {
+      obj.sessionId = message.sessionId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AdminRevokeUserSessionRequest>, I>>(base?: I): AdminRevokeUserSessionRequest {
+    return AdminRevokeUserSessionRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AdminRevokeUserSessionRequest>, I>>(
+    object: I,
+  ): AdminRevokeUserSessionRequest {
+    const message = createBaseAdminRevokeUserSessionRequest();
+    message.userId = object.userId ?? '';
+    message.sessionId = object.sessionId ?? '';
+    return message;
+  },
+};
+
+function createBaseAdminRevokeAllUserSessionsRequest(): AdminRevokeAllUserSessionsRequest {
+  return { userId: '' };
+}
+
+export const AdminRevokeAllUserSessionsRequest: MessageFns<AdminRevokeAllUserSessionsRequest> = {
+  encode(message: AdminRevokeAllUserSessionsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== '') {
+      writer.uint32(10).string(message.userId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AdminRevokeAllUserSessionsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminRevokeAllUserSessionsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminRevokeAllUserSessionsRequest {
+    return {
+      userId: isSet(object.userId)
+        ? globalThis.String(object.userId)
+        : isSet(object.user_id)
+          ? globalThis.String(object.user_id)
+          : '',
+    };
+  },
+
+  toJSON(message: AdminRevokeAllUserSessionsRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== '') {
+      obj.userId = message.userId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AdminRevokeAllUserSessionsRequest>, I>>(
+    base?: I,
+  ): AdminRevokeAllUserSessionsRequest {
+    return AdminRevokeAllUserSessionsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AdminRevokeAllUserSessionsRequest>, I>>(
+    object: I,
+  ): AdminRevokeAllUserSessionsRequest {
+    const message = createBaseAdminRevokeAllUserSessionsRequest();
+    message.userId = object.userId ?? '';
     return message;
   },
 };

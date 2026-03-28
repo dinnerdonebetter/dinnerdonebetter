@@ -344,6 +344,42 @@ internal enum Auth_AuthService {
                 method: "RevokeAllOtherSessions"
             )
         }
+        /// Namespace for "AdminListSessionsForUser" metadata.
+        internal enum AdminListSessionsForUser {
+            /// Request type for "AdminListSessionsForUser".
+            internal typealias Input = Auth_AdminListSessionsForUserRequest
+            /// Response type for "AdminListSessionsForUser".
+            internal typealias Output = Auth_ListActiveSessionsResponse
+            /// Descriptor for "AdminListSessionsForUser".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "AdminListSessionsForUser"
+            )
+        }
+        /// Namespace for "AdminRevokeUserSession" metadata.
+        internal enum AdminRevokeUserSession {
+            /// Request type for "AdminRevokeUserSession".
+            internal typealias Input = Auth_AdminRevokeUserSessionRequest
+            /// Response type for "AdminRevokeUserSession".
+            internal typealias Output = Auth_RevokeSessionResponse
+            /// Descriptor for "AdminRevokeUserSession".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "AdminRevokeUserSession"
+            )
+        }
+        /// Namespace for "AdminRevokeAllUserSessions" metadata.
+        internal enum AdminRevokeAllUserSessions {
+            /// Request type for "AdminRevokeAllUserSessions".
+            internal typealias Input = Auth_AdminRevokeAllUserSessionsRequest
+            /// Response type for "AdminRevokeAllUserSessions".
+            internal typealias Output = Auth_RevokeAllOtherSessionsResponse
+            /// Descriptor for "AdminRevokeAllUserSessions".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "auth.AuthService"),
+                method: "AdminRevokeAllUserSessions"
+            )
+        }
         /// Descriptors for all methods in the "auth.AuthService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
             EvaluateBooleanFeatureFlag.descriptor,
@@ -372,7 +408,10 @@ internal enum Auth_AuthService {
             ArchivePasskey.descriptor,
             ListActiveSessions.descriptor,
             RevokeSession.descriptor,
-            RevokeAllOtherSessions.descriptor
+            RevokeAllOtherSessions.descriptor,
+            AdminListSessionsForUser.descriptor,
+            AdminRevokeUserSession.descriptor,
+            AdminRevokeAllUserSessions.descriptor
         ]
     }
 }
@@ -900,6 +939,63 @@ extension Auth_AuthService {
         func revokeAllOtherSessions<Result>(
             request: GRPCCore.ClientRequest<Auth_RevokeAllOtherSessionsRequest>,
             serializer: some GRPCCore.MessageSerializer<Auth_RevokeAllOtherSessionsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_RevokeAllOtherSessionsResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeAllOtherSessionsResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "AdminListSessionsForUser" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_AdminListSessionsForUserRequest` message.
+        ///   - serializer: A serializer for `Auth_AdminListSessionsForUserRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_ListActiveSessionsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func adminListSessionsForUser<Result>(
+            request: GRPCCore.ClientRequest<Auth_AdminListSessionsForUserRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_AdminListSessionsForUserRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_ListActiveSessionsResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListActiveSessionsResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "AdminRevokeUserSession" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_AdminRevokeUserSessionRequest` message.
+        ///   - serializer: A serializer for `Auth_AdminRevokeUserSessionRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_RevokeSessionResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func adminRevokeUserSession<Result>(
+            request: GRPCCore.ClientRequest<Auth_AdminRevokeUserSessionRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_AdminRevokeUserSessionRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_RevokeSessionResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeSessionResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "AdminRevokeAllUserSessions" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_AdminRevokeAllUserSessionsRequest` message.
+        ///   - serializer: A serializer for `Auth_AdminRevokeAllUserSessionsRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_RevokeAllOtherSessionsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func adminRevokeAllUserSessions<Result>(
+            request: GRPCCore.ClientRequest<Auth_AdminRevokeAllUserSessionsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_AdminRevokeAllUserSessionsRequest>,
             deserializer: some GRPCCore.MessageDeserializer<Auth_RevokeAllOtherSessionsResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeAllOtherSessionsResponse>) async throws -> Result
@@ -1731,6 +1827,96 @@ extension Auth_AuthService {
                 onResponse: handleResponse
             )
         }
+
+        /// Call the "AdminListSessionsForUser" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_AdminListSessionsForUserRequest` message.
+        ///   - serializer: A serializer for `Auth_AdminListSessionsForUserRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_ListActiveSessionsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func adminListSessionsForUser<Result>(
+            request: GRPCCore.ClientRequest<Auth_AdminListSessionsForUserRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_AdminListSessionsForUserRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_ListActiveSessionsResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListActiveSessionsResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.AdminListSessionsForUser.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "AdminRevokeUserSession" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_AdminRevokeUserSessionRequest` message.
+        ///   - serializer: A serializer for `Auth_AdminRevokeUserSessionRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_RevokeSessionResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func adminRevokeUserSession<Result>(
+            request: GRPCCore.ClientRequest<Auth_AdminRevokeUserSessionRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_AdminRevokeUserSessionRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_RevokeSessionResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeSessionResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.AdminRevokeUserSession.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "AdminRevokeAllUserSessions" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Auth_AdminRevokeAllUserSessionsRequest` message.
+        ///   - serializer: A serializer for `Auth_AdminRevokeAllUserSessionsRequest` messages.
+        ///   - deserializer: A deserializer for `Auth_RevokeAllOtherSessionsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func adminRevokeAllUserSessions<Result>(
+            request: GRPCCore.ClientRequest<Auth_AdminRevokeAllUserSessionsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Auth_AdminRevokeAllUserSessionsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Auth_RevokeAllOtherSessionsResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeAllOtherSessionsResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Auth_AuthService.Method.AdminRevokeAllUserSessions.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
     }
 }
 
@@ -2406,6 +2592,81 @@ extension Auth_AuthService.ClientProtocol {
         try await self.revokeAllOtherSessions(
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Auth_RevokeAllOtherSessionsRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_RevokeAllOtherSessionsResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "AdminListSessionsForUser" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_AdminListSessionsForUserRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func adminListSessionsForUser<Result>(
+        request: GRPCCore.ClientRequest<Auth_AdminListSessionsForUserRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListActiveSessionsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.adminListSessionsForUser(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_AdminListSessionsForUserRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_ListActiveSessionsResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "AdminRevokeUserSession" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_AdminRevokeUserSessionRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func adminRevokeUserSession<Result>(
+        request: GRPCCore.ClientRequest<Auth_AdminRevokeUserSessionRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeSessionResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.adminRevokeUserSession(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_AdminRevokeUserSessionRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_RevokeSessionResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "AdminRevokeAllUserSessions" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Auth_AdminRevokeAllUserSessionsRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func adminRevokeAllUserSessions<Result>(
+        request: GRPCCore.ClientRequest<Auth_AdminRevokeAllUserSessionsRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeAllOtherSessionsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.adminRevokeAllUserSessions(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Auth_AdminRevokeAllUserSessionsRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Auth_RevokeAllOtherSessionsResponse>(),
             options: options,
             onResponse: handleResponse
@@ -3193,6 +3454,93 @@ extension Auth_AuthService.ClientProtocol {
             metadata: metadata
         )
         return try await self.revokeAllOtherSessions(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "AdminListSessionsForUser" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func adminListSessionsForUser<Result>(
+        _ message: Auth_AdminListSessionsForUserRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_ListActiveSessionsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_AdminListSessionsForUserRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.adminListSessionsForUser(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "AdminRevokeUserSession" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func adminRevokeUserSession<Result>(
+        _ message: Auth_AdminRevokeUserSessionRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeSessionResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_AdminRevokeUserSessionRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.adminRevokeUserSession(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "AdminRevokeAllUserSessions" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func adminRevokeAllUserSessions<Result>(
+        _ message: Auth_AdminRevokeAllUserSessionsRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Auth_RevokeAllOtherSessionsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Auth_AdminRevokeAllUserSessionsRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.adminRevokeAllUserSessions(
             request: request,
             options: options,
             onResponse: handleResponse

@@ -5,9 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 
-	"github.com/stretchr/testify/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ audit.Repository = (*Repository)(nil)

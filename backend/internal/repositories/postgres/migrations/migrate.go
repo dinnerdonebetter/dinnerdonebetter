@@ -6,9 +6,10 @@ import (
 	"embed"
 	"fmt"
 
-	"github.com/GuiaBolso/darwin"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+
+	"github.com/GuiaBolso/darwin"
 )
 
 var (

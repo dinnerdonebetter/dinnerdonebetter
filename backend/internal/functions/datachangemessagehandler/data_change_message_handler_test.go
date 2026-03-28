@@ -15,8 +15,6 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	analyticsmock "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/mock"
 	emailmock "github.com/verygoodsoftwarenotvirus/platform/v4/email/mock"
 	encodingmock "github.com/verygoodsoftwarenotvirus/platform/v4/encoding/mock"
@@ -29,6 +27,9 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
 	uploadsmock "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 // noopPasswordResetTokenDataManager implements auth.PasswordResetTokenDataManager for tests that do not exercise the password reset flow.

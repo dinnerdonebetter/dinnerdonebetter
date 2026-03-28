@@ -23,6 +23,10 @@
       <span class="account-link-title">Passkeys</span>
       <span class="account-link-subtitle">Add, view, and remove passkeys</span>
     </Link>
+    <Link href="/account/sessions" class="account-link">
+      <span class="account-link-title">Sessions</span>
+      <span class="account-link-subtitle">View and revoke active sessions</span>
+    </Link>
     <Link href="/account/preferences" class="account-link">
       <span class="account-link-title">Preferences</span>
       <span class="account-link-subtitle">Configure preferences</span>

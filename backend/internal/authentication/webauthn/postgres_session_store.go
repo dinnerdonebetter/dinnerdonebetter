@@ -5,13 +5,14 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
 	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/go-webauthn/webauthn/webauthn"
 )
 
 const (

@@ -16,11 +16,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -370,6 +371,35 @@ func TestAuth_GetAuthStatus(T *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
 		assert.Equal(t, user.ID, res.UserId)
+	})
+}
+
+func TestAuth_GetSelf(T *testing.T) {
+	T.Parallel()
+
+	T.Run("for authenticated user", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(T)
+
+		res, err := testClient.GetSelf(ctx, &authsvc.GetSelfRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.NotNil(t, res.Result)
+		assert.Equal(t, user.ID, res.Result.Id)
+		assert.Equal(t, user.Username, res.Result.Username)
+	})
+
+	T.Run("for unauthenticated user", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		res, err := unauthedClient.GetSelf(ctx, &authsvc.GetSelfRequest{})
+		assert.Error(t, err)
+		assert.Nil(t, res)
 	})
 }
 

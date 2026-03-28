@@ -20,7 +20,6 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
@@ -34,6 +33,8 @@ import (
 	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/config"
 	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
+
+	"github.com/samber/do/v2"
 )
 
 // BuildInjector creates and configures the dependency injection container.

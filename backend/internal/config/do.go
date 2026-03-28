@@ -3,7 +3,6 @@ package config
 import (
 	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
 
-	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
 	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
@@ -17,6 +16,8 @@ import (
 	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/server/grpc"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
+
+	"github.com/samber/do/v2"
 )
 
 func ProvideHTTPServerConfigFromAPIServiceConfig(cfg *APIServiceConfig) http.Config {

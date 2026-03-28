@@ -5,8 +5,9 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 
-	"github.com/stretchr/testify/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ notifications.Repository = (*Repository)(nil)

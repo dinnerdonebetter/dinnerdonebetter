@@ -10,13 +10,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/gothic"
-	servertiming "github.com/mitchellh/go-server-timing"
 	errorshttp "github.com/verygoodsoftwarenotvirus/platform/v4/errors/http"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 func (s *service) postLogin(ctx context.Context, user *identity.User, defaultAccountID string) (int, error) {

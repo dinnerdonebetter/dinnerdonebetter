@@ -34,4 +34,7 @@ service AuthService {
   rpc ListActiveSessions(ListActiveSessionsRequest) returns (ListActiveSessionsResponse);
   rpc RevokeSession(RevokeSessionRequest) returns (RevokeSessionResponse);
   rpc RevokeAllOtherSessions(RevokeAllOtherSessionsRequest) returns (RevokeAllOtherSessionsResponse);
+  rpc AdminListSessionsForUser(AdminListSessionsForUserRequest) returns (ListActiveSessionsResponse);
+  rpc AdminRevokeUserSession(AdminRevokeUserSessionRequest) returns (RevokeSessionResponse);
+  rpc AdminRevokeAllUserSessions(AdminRevokeAllUserSessionsRequest) returns (RevokeAllOtherSessionsResponse);
 }

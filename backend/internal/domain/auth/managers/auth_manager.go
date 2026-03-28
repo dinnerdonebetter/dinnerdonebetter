@@ -17,10 +17,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
-	"github.com/pquerna/otp/totp"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	perrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/internalerrors"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
@@ -29,6 +28,8 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/qrcodes"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+
+	"github.com/pquerna/otp/totp"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
@@ -90,7 +91,7 @@ func ProvideAuthManager(
 	queueConfig *msgconfig.QueuesConfig,
 ) (AuthManagerInterface, error) {
 	if queueConfig == nil {
-		return nil, internalerrors.NilConfigError("queues config for auth manager")
+		return nil, perrors.ErrNilInputProvided
 	}
 
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, queueConfig.DataChangesTopicName)
@@ -770,4 +771,12 @@ func (l *AuthManager) RevokeAllSessionsForUserExcept(ctx context.Context, userID
 	defer span.End()
 
 	return l.sessionDataManager.RevokeAllSessionsForUserExcept(ctx, userID, currentSessionID)
+}
+
+// RevokeAllSessionsForUser revokes all sessions for a user.
+func (l *AuthManager) RevokeAllSessionsForUser(ctx context.Context, userID string) error {
+	ctx, span := l.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return l.sessionDataManager.RevokeAllSessionsForUser(ctx, userID)
 }

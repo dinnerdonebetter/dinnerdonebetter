@@ -7,10 +7,11 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 //nolint:paralleltest // pending race condition fix on Goth's part.

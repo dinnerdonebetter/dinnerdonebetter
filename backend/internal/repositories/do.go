@@ -1,10 +1,11 @@
 package repositories
 
 import (
-	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+
+	"github.com/samber/do/v2"
 )
 
 // RegisterMigrator registers the database migrator with the injector.

@@ -8,6 +8,7 @@ import (
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+
 	"google.golang.org/grpc/codes"
 )
 

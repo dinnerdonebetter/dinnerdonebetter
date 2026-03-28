@@ -34,6 +34,7 @@ var (
 		ArchiveServiceSettingsPermission,
 		CreateUserNotificationsPermission,
 		ImpersonateUserPermission,
+		ManageUserSessionsPermission,
 		PublishArbitraryQueueMessagePermission,
 		UpdateRecipesStatusPermission,
 		// only admins can arbitrarily create these via the API, this is exclusively for integration test purposes.

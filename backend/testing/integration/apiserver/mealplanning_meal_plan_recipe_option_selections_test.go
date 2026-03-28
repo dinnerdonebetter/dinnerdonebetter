@@ -14,9 +14,12 @@ import (
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestMealPlans_WithRecipeOptionSelections(T *testing.T) {
@@ -525,4 +528,426 @@ func createMealFromRecipe(t *testing.T, recipe *mealplanning.Recipe, nameSuffix 
 
 	createdMeal := converters.ConvertGRPCMealToMeal(fetchedMealRes.Result)
 	return createdMeal
+}
+
+// selectionTestSetup holds all the IDs and objects needed for selection CRUD tests.
+type selectionTestSetup struct {
+	userClient       client.Client
+	recipe           *mealplanning.Recipe
+	mealPlan         *mealplanning.MealPlan
+	validPreparation *mealplanning.ValidPreparation
+	mealPlanOptionID string
+	validIngredients []*mealplanning.ValidIngredient
+}
+
+// createMealPlanWithAlternativeIngredientsForSelectionTests creates a recipe
+// with alternative ingredients, a meal from that recipe, and a meal plan
+// (single option, auto-finalized) WITHOUT any pre-populated selections so
+// that individual selection CRUD operations can be tested.
+func createMealPlanWithAlternativeIngredientsForSelectionTests(t *testing.T) *selectionTestSetup {
+	t.Helper()
+	ctx := t.Context()
+
+	_, userClient := createUserAndClientForTest(t)
+
+	// Create a recipe with alternative ingredients at step[0], index=0
+	validIngredients, validPreparation, recipe := createRecipeWithAlternativeIngredients(t, t.Name())
+	require.NotNil(t, recipe)
+	require.NotEmpty(t, recipe.Steps)
+
+	// Create a meal from the recipe
+	meal := createMealFromRecipe(t, recipe, t.Name())
+	require.NotNil(t, meal)
+
+	// Build a single-option meal plan (auto-finalized, no voting needed)
+	now := time.Now()
+	exampleMealPlan := &mealplanning.MealPlan{
+		Notes:          t.Name(),
+		Status:         string(mealplanning.MealPlanStatusFinalized),
+		VotingDeadline: now.Add(7 * 24 * time.Hour),
+		ElectionMethod: mealplanning.MealPlanElectionMethodSchulze,
+		Events: []*mealplanning.MealPlanEvent{
+			{
+				StartsAt: now.Add(24 * time.Hour),
+				EndsAt:   now.Add(72 * time.Hour),
+				MealName: mealplanning.BreakfastMealName,
+				Options: []*mealplanning.MealPlanOption{
+					{
+						Meal:  mealplanning.Meal{ID: meal.ID},
+						Notes: "option with alternative ingredients",
+					},
+				},
+			},
+		},
+	}
+
+	// Create the meal plan without selections
+	exampleMealPlanInput := mpconverters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
+	createMealPlanRes, err := userClient.CreateMealPlan(ctx, &mealplanninggrpc.CreateMealPlanRequest{
+		Input: converters.ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(exampleMealPlanInput),
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, createMealPlanRes.Created.Id)
+
+	// Fetch the created meal plan to get event/option IDs
+	mealPlanRes, err := userClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{
+		MealPlanId: createMealPlanRes.Created.Id,
+	})
+	require.NoError(t, err)
+	createdMealPlan := converters.ConvertGRPCMealPlanToMealPlan(mealPlanRes.Result)
+
+	require.NotEmpty(t, createdMealPlan.Events)
+	require.NotEmpty(t, createdMealPlan.Events[0].Options)
+
+	mealPlanOptionID := createdMealPlan.Events[0].Options[0].ID
+	require.NotEmpty(t, mealPlanOptionID)
+
+	return &selectionTestSetup{
+		userClient:       userClient,
+		recipe:           recipe,
+		mealPlan:         createdMealPlan,
+		mealPlanOptionID: mealPlanOptionID,
+		validIngredients: validIngredients,
+		validPreparation: validPreparation,
+	}
+}
+
+func TestMealPlanRecipeOptionSelections_Creating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		setup := createMealPlanWithAlternativeIngredientsForSelectionTests(t)
+
+		// Create a selection for ingredient index 0, choosing optionIndex 1
+		createRes, err := setup.userClient.CreateMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.CreateMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+			Input: &mealplanninggrpc.MealPlanRecipeOptionSelectionCreationRequestInput{
+				RecipeId:            setup.recipe.ID,
+				RecipeStepId:        setup.recipe.Steps[0].ID,
+				IngredientIndex:     0,
+				SelectedOptionIndex: 1,
+				SelectionType:       mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createRes)
+		require.NotNil(t, createRes.Created)
+		assert.NotEmpty(t, createRes.Created.Id)
+		assert.Equal(t, setup.mealPlanOptionID, createRes.Created.BelongsToMealPlanOption)
+		assert.Equal(t, setup.recipe.ID, createRes.Created.RecipeId)
+		assert.Equal(t, setup.recipe.Steps[0].ID, createRes.Created.RecipeStepId)
+		assert.Equal(t, uint32(0), createRes.Created.IngredientIndex)
+		assert.Equal(t, uint32(1), createRes.Created.SelectedOptionIndex)
+		assert.Equal(t, mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT, createRes.Created.SelectionType)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.CreateMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.CreateMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: fakes.BuildFakeID(),
+			Input: &mealplanninggrpc.MealPlanRecipeOptionSelectionCreationRequestInput{
+				RecipeId:            fakes.BuildFakeID(),
+				RecipeStepId:        fakes.BuildFakeID(),
+				IngredientIndex:     0,
+				SelectedOptionIndex: 1,
+				SelectionType:       mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+			},
+		})
+		assert.Error(t, err)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+}
+
+func TestMealPlanRecipeOptionSelections_Reading(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		setup := createMealPlanWithAlternativeIngredientsForSelectionTests(t)
+
+		// First create a selection
+		createRes, err := setup.userClient.CreateMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.CreateMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+			Input: &mealplanninggrpc.MealPlanRecipeOptionSelectionCreationRequestInput{
+				RecipeId:            setup.recipe.ID,
+				RecipeStepId:        setup.recipe.Steps[0].ID,
+				IngredientIndex:     0,
+				SelectedOptionIndex: 1,
+				SelectionType:       mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createRes.Created)
+
+		// Now read the selection back by its composite key
+		getRes, err := setup.userClient.GetMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.GetMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+			RecipeStepId:     setup.recipe.Steps[0].ID,
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, getRes)
+		require.NotNil(t, getRes.Result)
+
+		assert.Equal(t, createRes.Created.Id, getRes.Result.Id)
+		assert.Equal(t, setup.mealPlanOptionID, getRes.Result.BelongsToMealPlanOption)
+		assert.Equal(t, setup.recipe.ID, getRes.Result.RecipeId)
+		assert.Equal(t, setup.recipe.Steps[0].ID, getRes.Result.RecipeStepId)
+		assert.Equal(t, uint32(0), getRes.Result.IngredientIndex)
+		assert.Equal(t, uint32(1), getRes.Result.SelectedOptionIndex)
+		assert.Equal(t, mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT, getRes.Result.SelectionType)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.GetMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.GetMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: fakes.BuildFakeID(),
+			RecipeStepId:     fakes.BuildFakeID(),
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+		})
+		assert.Error(t, err)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+
+	T.Run("not found for nonexistent meal plan option", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		_, err := userClient.GetMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.GetMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: fakes.BuildFakeID(),
+			RecipeStepId:     fakes.BuildFakeID(),
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+		})
+		assert.Error(t, err)
+		assert.Equal(t, codes.NotFound, status.Code(err))
+	})
+}
+
+func TestMealPlanRecipeOptionSelections_Listing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		setup := createMealPlanWithAlternativeIngredientsForSelectionTests(t)
+
+		// Create a selection
+		_, err := setup.userClient.CreateMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.CreateMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+			Input: &mealplanninggrpc.MealPlanRecipeOptionSelectionCreationRequestInput{
+				RecipeId:            setup.recipe.ID,
+				RecipeStepId:        setup.recipe.Steps[0].ID,
+				IngredientIndex:     0,
+				SelectedOptionIndex: 1,
+				SelectionType:       mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+			},
+		})
+		require.NoError(t, err)
+
+		// List selections for the meal plan option
+		listRes, err := setup.userClient.GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx, &mealplanninggrpc.GetMealPlanRecipeOptionSelectionsForMealPlanOptionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, listRes)
+		assert.NotEmpty(t, listRes.Results, "expected at least one selection in the list")
+
+		// Verify the selection we created is in the list
+		found := false
+		for _, s := range listRes.Results {
+			if s.RecipeStepId == setup.recipe.Steps[0].ID && s.IngredientIndex == 0 {
+				found = true
+				assert.Equal(t, uint32(1), s.SelectedOptionIndex)
+				break
+			}
+		}
+		assert.True(t, found, "expected to find the created selection in the list")
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx, &mealplanninggrpc.GetMealPlanRecipeOptionSelectionsForMealPlanOptionRequest{
+			MealPlanOptionId: fakes.BuildFakeID(),
+		})
+		assert.Error(t, err)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+}
+
+func TestMealPlanRecipeOptionSelections_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		setup := createMealPlanWithAlternativeIngredientsForSelectionTests(t)
+
+		// Create a selection with optionIndex 1
+		createRes, err := setup.userClient.CreateMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.CreateMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+			Input: &mealplanninggrpc.MealPlanRecipeOptionSelectionCreationRequestInput{
+				RecipeId:            setup.recipe.ID,
+				RecipeStepId:        setup.recipe.Steps[0].ID,
+				IngredientIndex:     0,
+				SelectedOptionIndex: 1,
+				SelectionType:       mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createRes.Created)
+		assert.Equal(t, uint32(1), createRes.Created.SelectedOptionIndex)
+
+		// Update the selection to optionIndex 0
+		updateRes, err := setup.userClient.UpdateMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.UpdateMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+			RecipeStepId:     setup.recipe.Steps[0].ID,
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+			Input: &mealplanninggrpc.MealPlanRecipeOptionSelectionUpdateRequestInput{
+				SelectedOptionIndex: 0,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, updateRes)
+
+		// Read back and verify the update took effect
+		getRes, err := setup.userClient.GetMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.GetMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+			RecipeStepId:     setup.recipe.Steps[0].ID,
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, getRes.Result)
+		assert.Equal(t, uint32(0), getRes.Result.SelectedOptionIndex, "expected SelectedOptionIndex to be updated to 0")
+		assert.NotNil(t, getRes.Result.LastUpdatedAt, "expected LastUpdatedAt to be set after update")
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.UpdateMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.UpdateMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: fakes.BuildFakeID(),
+			RecipeStepId:     fakes.BuildFakeID(),
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+			Input: &mealplanninggrpc.MealPlanRecipeOptionSelectionUpdateRequestInput{
+				SelectedOptionIndex: 0,
+			},
+		})
+		assert.Error(t, err)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+
+	T.Run("not found for nonexistent selection", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		_, err := userClient.UpdateMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.UpdateMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: fakes.BuildFakeID(),
+			RecipeStepId:     fakes.BuildFakeID(),
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+			Input: &mealplanninggrpc.MealPlanRecipeOptionSelectionUpdateRequestInput{
+				SelectedOptionIndex: 0,
+			},
+		})
+		assert.Error(t, err)
+		assert.Equal(t, codes.NotFound, status.Code(err))
+	})
+}
+
+func TestMealPlanRecipeOptionSelections_Archiving(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		setup := createMealPlanWithAlternativeIngredientsForSelectionTests(t)
+
+		// Create a selection
+		createRes, err := setup.userClient.CreateMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.CreateMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+			Input: &mealplanninggrpc.MealPlanRecipeOptionSelectionCreationRequestInput{
+				RecipeId:            setup.recipe.ID,
+				RecipeStepId:        setup.recipe.Steps[0].ID,
+				IngredientIndex:     0,
+				SelectedOptionIndex: 1,
+				SelectionType:       mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createRes.Created)
+
+		// Archive the selection
+		_, err = setup.userClient.ArchiveMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.ArchiveMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: setup.mealPlanOptionID,
+			RecipeStepId:     setup.recipe.Steps[0].ID,
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+		})
+		assert.NoError(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.ArchiveMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.ArchiveMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: fakes.BuildFakeID(),
+			RecipeStepId:     fakes.BuildFakeID(),
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+		})
+		assert.Error(t, err)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+
+	T.Run("not found for nonexistent selection", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		_, err := userClient.ArchiveMealPlanRecipeOptionSelection(ctx, &mealplanninggrpc.ArchiveMealPlanRecipeOptionSelectionRequest{
+			MealPlanOptionId: fakes.BuildFakeID(),
+			RecipeStepId:     fakes.BuildFakeID(),
+			IngredientIndex:  0,
+			SelectionType:    mealplanninggrpc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT,
+		})
+		assert.Error(t, err)
+		assert.Equal(t, codes.NotFound, status.Code(err))
+	})
 }

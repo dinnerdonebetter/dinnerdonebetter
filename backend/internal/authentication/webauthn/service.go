@@ -10,9 +10,10 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
 )
 
 const (

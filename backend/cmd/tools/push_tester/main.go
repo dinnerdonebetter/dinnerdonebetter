@@ -6,12 +6,13 @@ import (
 	"log"
 	"strings"
 
-	"github.com/spf13/pflag"
 	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/apns"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/fcm"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/spf13/pflag"
 )
 
 const (

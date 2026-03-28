@@ -3,7 +3,6 @@ package datachangemessagehandler
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
 	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
@@ -14,6 +13,8 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
+
+	"github.com/samber/do/v2"
 )
 
 // RegisterConfigs registers all config sub-fields with the injector.

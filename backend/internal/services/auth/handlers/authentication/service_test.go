@@ -10,9 +10,6 @@ import (
 	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	noopanalytics "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/noop"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
@@ -22,6 +19,10 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
 	mockrouting "github.com/verygoodsoftwarenotvirus/platform/v4/routing/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func buildTestService(t *testing.T) *service {

@@ -6,11 +6,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/spf13/cobra"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/spf13/cobra"
 )
 
 const secretKeyLengthBytes = 32

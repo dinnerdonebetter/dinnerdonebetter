@@ -17,7 +17,6 @@ import (
 	paymentsadapters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/adapters"
 	paymentshttp "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/http"
 
-	"github.com/samber/do/v2"
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
@@ -32,6 +31,8 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
 	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/routing/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
+
+	"github.com/samber/do/v2"
 )
 
 // BuildInjector creates and configures the dependency injection container.

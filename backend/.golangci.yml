@@ -203,6 +203,7 @@ formatters:
         - standard
         - prefix(github.com/dinnerdonebetter/dinnerdonebetter/backend)
         - prefix(github.com/dinnerdonebetter)
+        - prefix(github.com/verygoodsoftwarenotvirus)
         - default
       custom-order: true
     gofmt:

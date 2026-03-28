@@ -8,8 +8,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_buildDataChangeMessageFromContext(T *testing.T) {

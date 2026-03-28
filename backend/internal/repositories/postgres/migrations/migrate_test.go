@@ -6,9 +6,10 @@ import (
 
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/pointer"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestQuerier_Migrate(T *testing.T) {

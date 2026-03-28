@@ -2,10 +2,15 @@ package integration
 
 import (
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mpconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func checkMealPlanGroceryListItemEquality(t *testing.T, expected, actual *mealplanning.MealPlanGroceryListItem) {
@@ -27,14 +32,350 @@ func checkMealPlanGroceryListItemEquality(t *testing.T, expected, actual *mealpl
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func TestMealPlanGroceryListItems_CompleteLifecycle(T *testing.T) {
+func TestMealPlanGroceryListItems_Getting(T *testing.T) {
 	T.Parallel()
 
-	T.Run("should CRUD", func(t *testing.T) {
+	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
 
-		// TODO: This test should work by first creating a meal plan, finalizing it, and then manipulating its entries
+		_, userClient := createUserAndClientForTest(t)
+		meal := createMealForTest(t, userClient, nil)
 
-		t.SkipNow()
+		now := time.Now().Truncate(time.Second).UTC()
+		inTenMinutes := now.Add(10 * time.Minute)
+		inOneWeek := now.Add(7 * 24 * time.Hour)
+
+		mealPlan := &mealplanning.MealPlan{
+			Notes:          "get grocery list item test",
+			VotingDeadline: inOneWeek,
+			ElectionMethod: mealplanning.MealPlanElectionMethodSchulze,
+			Status:         string(mealplanning.MealPlanStatusFinalized),
+			TasksCreated:   true,
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Notes:    "dinner",
+					StartsAt: inTenMinutes,
+					EndsAt:   inOneWeek,
+					MealName: mealplanning.DinnerMealName,
+					Options: []*mealplanning.MealPlanOption{
+						{
+							Meal: mealplanning.Meal{ID: meal.ID},
+						},
+					},
+				},
+			},
+		}
+
+		exampleMealPlanInput := mpconverters.ConvertMealPlanToMealPlanCreationRequestInput(mealPlan)
+		createdRes, err := userClient.CreateMealPlan(ctx, &mealplanninggrpc.CreateMealPlanRequest{
+			Input: converters.ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(exampleMealPlanInput),
+		})
+		require.NoError(t, err)
+		mealPlanID := createdRes.Created.Id
+
+		// Run grocery list initializer worker
+		_, err = adminClient.RunMealPlanGroceryListInitializerWorker(ctx, &mealplanninggrpc.RunMealPlanGroceryListInitializerWorkerRequest{})
+		require.NoError(t, err)
+
+		// Fetch the grocery list to get an item ID
+		groceryRes, err := userClient.GetMealPlanGroceryListItemsForMealPlan(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemsForMealPlanRequest{MealPlanId: mealPlanID})
+		require.NoError(t, err)
+
+		if len(groceryRes.Results) == 0 {
+			t.Skip("no grocery list items generated for this meal plan, skipping detailed assertions")
+		}
+
+		firstItemID := groceryRes.Results[0].Id
+
+		// Get the individual grocery list item
+		getRes, err := userClient.GetMealPlanGroceryListItem(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemRequest{
+			MealPlanId:                mealPlanID,
+			MealPlanGroceryListItemId: firstItemID,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, getRes)
+		require.NotNil(t, getRes.Result)
+		assert.Equal(t, firstItemID, getRes.Result.Id)
+
+		// Clean up
+		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: mealPlanID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		res, err := c.GetMealPlanGroceryListItem(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemRequest{
+			MealPlanId:                nonexistentID,
+			MealPlanGroceryListItemId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+	})
+
+	T.Run("nonexistent meal plan grocery list item", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		res, err := userClient.GetMealPlanGroceryListItem(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemRequest{
+			MealPlanId:                nonexistentID,
+			MealPlanGroceryListItemId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+	})
+}
+
+func TestMealPlanGroceryListItems_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		meal := createMealForTest(t, userClient, nil)
+
+		now := time.Now().Truncate(time.Second).UTC()
+		inTenMinutes := now.Add(10 * time.Minute)
+		inOneWeek := now.Add(7 * 24 * time.Hour)
+
+		mealPlan := &mealplanning.MealPlan{
+			Notes:          "update grocery list item test",
+			VotingDeadline: inOneWeek,
+			ElectionMethod: mealplanning.MealPlanElectionMethodSchulze,
+			Status:         string(mealplanning.MealPlanStatusFinalized),
+			TasksCreated:   true,
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Notes:    "dinner",
+					StartsAt: inTenMinutes,
+					EndsAt:   inOneWeek,
+					MealName: mealplanning.DinnerMealName,
+					Options: []*mealplanning.MealPlanOption{
+						{
+							Meal: mealplanning.Meal{ID: meal.ID},
+						},
+					},
+				},
+			},
+		}
+
+		exampleMealPlanInput := mpconverters.ConvertMealPlanToMealPlanCreationRequestInput(mealPlan)
+		createdRes, err := userClient.CreateMealPlan(ctx, &mealplanninggrpc.CreateMealPlanRequest{
+			Input: converters.ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(exampleMealPlanInput),
+		})
+		require.NoError(t, err)
+		mealPlanID := createdRes.Created.Id
+
+		// Run grocery list initializer worker
+		_, err = adminClient.RunMealPlanGroceryListInitializerWorker(ctx, &mealplanninggrpc.RunMealPlanGroceryListInitializerWorkerRequest{})
+		require.NoError(t, err)
+
+		// Fetch the grocery list to get an item ID
+		groceryRes, err := userClient.GetMealPlanGroceryListItemsForMealPlan(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemsForMealPlanRequest{MealPlanId: mealPlanID})
+		require.NoError(t, err)
+
+		if len(groceryRes.Results) == 0 {
+			t.Skip("no grocery list items generated for this meal plan, skipping detailed assertions")
+		}
+
+		firstItemID := groceryRes.Results[0].Id
+
+		// Update the grocery list item: mark as acquired with purchase details
+		newStatus := mealplanninggrpc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ACQUIRED
+		newStatusExplanation := new("purchased from store")
+		newQuantityPurchased := new(float32(2.5))
+		newPurchasePrice := new(float32(4.99))
+		newPurchasedUPC := new("012345678901")
+
+		updateRes, err := userClient.UpdateMealPlanGroceryListItem(ctx, &mealplanninggrpc.UpdateMealPlanGroceryListItemRequest{
+			MealPlanId:                mealPlanID,
+			MealPlanGroceryListItemId: firstItemID,
+			Input: &mealplanninggrpc.MealPlanGroceryListItemUpdateRequestInput{
+				Status:            &newStatus,
+				StatusExplanation: newStatusExplanation,
+				QuantityPurchased: newQuantityPurchased,
+				PurchasePrice:     newPurchasePrice,
+				PurchasedUpc:      newPurchasedUPC,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, updateRes)
+		require.NotNil(t, updateRes.Updated)
+
+		updated := converters.ConvertGRPCMealPlanGroceryListItemToMealPlanGroceryListItem(updateRes.Updated)
+		assert.Equal(t, firstItemID, updated.ID)
+		assert.Equal(t, string(mealplanning.MealPlanGroceryListItemStatusAcquired), updated.Status)
+		assert.Equal(t, "purchased from store", updated.StatusExplanation)
+		assert.NotNil(t, updated.QuantityPurchased)
+		assert.InDelta(t, float32(2.5), *updated.QuantityPurchased, 0.01)
+		assert.NotNil(t, updated.PurchasePrice)
+		assert.InDelta(t, float32(4.99), *updated.PurchasePrice, 0.01)
+		assert.NotNil(t, updated.PurchasedUPC)
+		assert.Equal(t, "012345678901", *updated.PurchasedUPC)
+
+		// Verify the update persisted by re-fetching
+		getRes, err := userClient.GetMealPlanGroceryListItem(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemRequest{
+			MealPlanId:                mealPlanID,
+			MealPlanGroceryListItemId: firstItemID,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, getRes)
+
+		refetched := converters.ConvertGRPCMealPlanGroceryListItemToMealPlanGroceryListItem(getRes.Result)
+		assert.Equal(t, string(mealplanning.MealPlanGroceryListItemStatusAcquired), refetched.Status)
+		assert.Equal(t, "purchased from store", refetched.StatusExplanation)
+
+		// Clean up
+		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: mealPlanID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		newStatus := mealplanninggrpc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ACQUIRED
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		res, err := c.UpdateMealPlanGroceryListItem(ctx, &mealplanninggrpc.UpdateMealPlanGroceryListItemRequest{
+			MealPlanId:                nonexistentID,
+			MealPlanGroceryListItemId: nonexistentID,
+			Input: &mealplanninggrpc.MealPlanGroceryListItemUpdateRequestInput{
+				Status: &newStatus,
+			},
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+	})
+
+	T.Run("nonexistent meal plan grocery list item", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		newStatus := mealplanninggrpc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ACQUIRED
+
+		res, err := userClient.UpdateMealPlanGroceryListItem(ctx, &mealplanninggrpc.UpdateMealPlanGroceryListItemRequest{
+			MealPlanId:                nonexistentID,
+			MealPlanGroceryListItemId: nonexistentID,
+			Input: &mealplanninggrpc.MealPlanGroceryListItemUpdateRequestInput{
+				Status: &newStatus,
+			},
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+	})
+}
+
+func TestMealPlanGroceryListItems_Archiving(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		meal := createMealForTest(t, userClient, nil)
+
+		now := time.Now().Truncate(time.Second).UTC()
+		inTenMinutes := now.Add(10 * time.Minute)
+		inOneWeek := now.Add(7 * 24 * time.Hour)
+
+		mealPlan := &mealplanning.MealPlan{
+			Notes:          "archive grocery list item test",
+			VotingDeadline: inOneWeek,
+			ElectionMethod: mealplanning.MealPlanElectionMethodSchulze,
+			Status:         string(mealplanning.MealPlanStatusFinalized),
+			TasksCreated:   true,
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Notes:    "dinner",
+					StartsAt: inTenMinutes,
+					EndsAt:   inOneWeek,
+					MealName: mealplanning.DinnerMealName,
+					Options: []*mealplanning.MealPlanOption{
+						{
+							Meal: mealplanning.Meal{ID: meal.ID},
+						},
+					},
+				},
+			},
+		}
+
+		exampleMealPlanInput := mpconverters.ConvertMealPlanToMealPlanCreationRequestInput(mealPlan)
+		createdRes, err := userClient.CreateMealPlan(ctx, &mealplanninggrpc.CreateMealPlanRequest{
+			Input: converters.ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(exampleMealPlanInput),
+		})
+		require.NoError(t, err)
+		mealPlanID := createdRes.Created.Id
+
+		// Run grocery list initializer worker
+		_, err = adminClient.RunMealPlanGroceryListInitializerWorker(ctx, &mealplanninggrpc.RunMealPlanGroceryListInitializerWorkerRequest{})
+		require.NoError(t, err)
+
+		// Fetch the grocery list to get an item ID
+		groceryRes, err := userClient.GetMealPlanGroceryListItemsForMealPlan(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemsForMealPlanRequest{MealPlanId: mealPlanID})
+		require.NoError(t, err)
+
+		if len(groceryRes.Results) == 0 {
+			t.Skip("no grocery list items generated for this meal plan, skipping detailed assertions")
+		}
+
+		firstItemID := groceryRes.Results[0].Id
+
+		// Archive the grocery list item
+		archiveRes, err := userClient.ArchiveMealPlanGroceryListItem(ctx, &mealplanninggrpc.ArchiveMealPlanGroceryListItemRequest{
+			MealPlanId:                mealPlanID,
+			MealPlanGroceryListItemId: firstItemID,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, archiveRes)
+
+		// Verify the item is no longer fetchable
+		getRes, err := userClient.GetMealPlanGroceryListItem(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemRequest{
+			MealPlanId:                mealPlanID,
+			MealPlanGroceryListItemId: firstItemID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, getRes)
+
+		// Clean up
+		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: mealPlanID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		res, err := c.ArchiveMealPlanGroceryListItem(ctx, &mealplanninggrpc.ArchiveMealPlanGroceryListItemRequest{
+			MealPlanId:                nonexistentID,
+			MealPlanGroceryListItemId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+	})
+
+	T.Run("nonexistent meal plan grocery list item", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		res, err := userClient.ArchiveMealPlanGroceryListItem(ctx, &mealplanninggrpc.ArchiveMealPlanGroceryListItemRequest{
+			MealPlanId:                nonexistentID,
+			MealPlanGroceryListItemId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, res)
 	})
 }

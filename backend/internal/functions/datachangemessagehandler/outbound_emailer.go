@@ -9,6 +9,7 @@ import (
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/email"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )

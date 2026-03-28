@@ -3,10 +3,11 @@ package waitlists
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 
-	"github.com/samber/do/v2"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+
+	"github.com/samber/do/v2"
 )
 
 // RegisterWaitlistsRepository registers the waitlists repository with the injector.

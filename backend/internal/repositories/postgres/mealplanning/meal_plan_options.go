@@ -17,6 +17,7 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+
 	"resenje.org/schulze"
 )
 

@@ -4,9 +4,10 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
-	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/pointer"
+
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 func BuildFakeRecipePrepTask() *types.RecipePrepTask {

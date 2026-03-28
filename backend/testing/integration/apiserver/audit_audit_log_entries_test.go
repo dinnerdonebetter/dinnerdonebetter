@@ -52,6 +52,60 @@ func TestAuditLogEntries_Listing_ForUser(T *testing.T) {
 	})
 }
 
+func TestAuditLogEntries_GetByID(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, userClient := createUserAndClientForTest(t)
+
+		// User creation generates audit log entries; fetch them for the user
+		forUser, err := userClient.GetAuditLogEntriesForUser(ctx, &auditgrpc.GetAuditLogEntriesForUserRequest{
+			UserId: user.ID,
+		})
+		require.NoError(t, err)
+		require.NotEmpty(t, forUser.Results)
+
+		// pick the first entry and get it by ID
+		entryID := forUser.Results[0].Id
+
+		result, err := userClient.GetAuditLogEntryByID(ctx, &auditgrpc.GetAuditLogEntryByIDRequest{
+			AuditLogEntryId: entryID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, entryID, result.Result.Id)
+	})
+
+	T.Run("nonexistent entry", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+
+		result, err := userClient.GetAuditLogEntryByID(ctx, &auditgrpc.GetAuditLogEntryByIDRequest{
+			AuditLogEntryId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, result)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		result, err := c.GetAuditLogEntryByID(ctx, &auditgrpc.GetAuditLogEntryByIDRequest{
+			AuditLogEntryId: nonexistentID,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, result)
+	})
+}
+
 func TestAuditLogEntries_Listing_ForAccount(T *testing.T) {
 	T.Parallel()
 

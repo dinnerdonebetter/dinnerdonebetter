@@ -6,8 +6,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/managers"
 
-	"github.com/stretchr/testify/mock"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var (
@@ -94,5 +95,11 @@ func (m *AuthManager) RevokeSession(ctx context.Context, sessionID, userID strin
 // RevokeAllSessionsForUserExcept is a mock method.
 func (m *AuthManager) RevokeAllSessionsForUserExcept(ctx context.Context, userID, currentSessionID string) error {
 	args := m.Called(ctx, userID, currentSessionID)
+	return args.Error(0)
+}
+
+// RevokeAllSessionsForUser is a mock method.
+func (m *AuthManager) RevokeAllSessionsForUser(ctx context.Context, userID string) error {
+	args := m.Called(ctx, userID)
 	return args.Error(0)
 }

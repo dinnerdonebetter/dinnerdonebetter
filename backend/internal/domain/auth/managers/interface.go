@@ -27,4 +27,5 @@ type AuthManagerInterface interface {
 	GetActiveSessionsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[auth.UserSession], error)
 	RevokeSession(ctx context.Context, sessionID, userID string) error
 	RevokeAllSessionsForUserExcept(ctx context.Context, userID, currentSessionID string) error
+	RevokeAllSessionsForUser(ctx context.Context, userID string) error
 }
