@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// UpdateUserStatusPermission is a service admin permission.
 	UpdateUserStatusPermission Permission = "update.user_status"
@@ -21,7 +17,7 @@ const (
 
 var (
 	// AuthPermissions contains all authentication-related permissions.
-	AuthPermissions = []gorbac.Permission{
+	AuthPermissions = []Permission{
 		UpdateUserStatusPermission,
 		ImpersonateUserPermission,
 		ReadUserPermission,

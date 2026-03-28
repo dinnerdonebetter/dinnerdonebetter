@@ -37,7 +37,6 @@ require (
 	github.com/lib/pq v1.11.2
 	github.com/markbates/goth v1.82.0
 	github.com/matcornic/hermes/v2 v2.1.0
-	github.com/mikespook/gorbac/v2 v2.3.3
 	github.com/mitchellh/go-server-timing v1.0.1
 	github.com/modelcontextprotocol/go-sdk v1.4.0
 	github.com/o1egl/paseto/v2 v2.1.1
@@ -300,7 +299,6 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.21 // indirect
-	github.com/mikespook/gorbac v2.3.0+incompatible // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.1-0.20231216201459-8508981c8b6c // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect

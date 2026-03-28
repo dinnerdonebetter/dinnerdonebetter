@@ -212,7 +212,7 @@ func (s *AuthInterceptor) applyZuckMode(ctx context.Context, metaData metadata.M
 
 	if zuckAccountID != "" {
 		sessionCtxData.ActiveAccountID = zuckAccountID
-		sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String())
+		sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(nil)
 	}
 
 	return sessionCtxData, nil
@@ -249,7 +249,7 @@ func (s *AuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		if requiredPermissions, methodHasDefinedScopes := s.methodPermissions[info.FullMethod]; methodHasDefinedScopes {
 			for _, scope := range requiredPermissions {
 				hasPerm := sessionContextData.ServiceRolePermissionChecker().HasPermission(scope) || sessionContextData.AccountRolePermissionsChecker().HasPermission(scope)
-				permissionEvaluation[scope.ID()] = hasPerm
+				permissionEvaluation[string(scope)] = hasPerm
 
 				if !hasPerm {
 					proceed = false

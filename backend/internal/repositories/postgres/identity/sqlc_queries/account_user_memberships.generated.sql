@@ -2,13 +2,11 @@
 INSERT INTO account_user_memberships (
 	id,
 	belongs_to_account,
-	belongs_to_user,
-	account_role
+	belongs_to_user
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(belongs_to_account),
-	sqlc.arg(belongs_to_user),
-	sqlc.arg(account_role)
+	sqlc.arg(belongs_to_user)
 );
 
 -- name: ArchiveUserMemberships :execrows
@@ -22,14 +20,12 @@ INSERT INTO account_user_memberships (
 	id,
 	belongs_to_account,
 	belongs_to_user,
-	default_account,
-	account_role
+	default_account
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(belongs_to_account),
 	sqlc.arg(belongs_to_user),
-	sqlc.arg(default_account),
-	sqlc.arg(account_role)
+	sqlc.arg(default_account)
 );
 
 -- name: GetDefaultAccountIDForUser :one
@@ -45,7 +41,6 @@ SELECT
 	account_user_memberships.belongs_to_account,
 	account_user_memberships.belongs_to_user,
 	account_user_memberships.default_account,
-	account_user_memberships.account_role,
 	account_user_memberships.created_at,
 	account_user_memberships.last_updated_at,
 	account_user_memberships.archived_at
@@ -58,12 +53,6 @@ WHERE account_user_memberships.archived_at IS NULL
 UPDATE account_user_memberships SET
 	default_account = (belongs_to_user = sqlc.arg(belongs_to_user) AND belongs_to_account = sqlc.arg(belongs_to_account))
 WHERE archived_at IS NULL
-	AND belongs_to_user = sqlc.arg(belongs_to_user);
-
--- name: ModifyAccountUserPermissions :exec
-UPDATE account_user_memberships SET
-	account_role = sqlc.arg(account_role)
-WHERE belongs_to_account = sqlc.arg(belongs_to_account)
 	AND belongs_to_user = sqlc.arg(belongs_to_user);
 
 -- name: RemoveUserFromAccount :exec

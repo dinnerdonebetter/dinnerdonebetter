@@ -10,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
@@ -113,7 +112,6 @@ func userFromGetUserByIDRow(row *generated.GetUserByIDRow) *identity.User {
 		EmailAddress:               row.EmailAddress,
 		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(row.EmailAddressVerifiedAt),
 		Avatar:                     avatar,
-		ServiceRole:                row.ServiceRole,
 		RequiresPasswordChange:     row.RequiresPasswordChange,
 	}
 }
@@ -197,7 +195,6 @@ func CreateUserForTest(t *testing.T, exampleUser *identity.User, db *sql.DB) *id
 		RequiresPasswordChange:        exampleUser.RequiresPasswordChange,
 		TwoFactorSecret:               exampleUser.TwoFactorSecret,
 		TwoFactorSecretVerifiedAt:     database.NullTimeFromTimePointer(exampleUser.TwoFactorSecretVerifiedAt),
-		ServiceRole:                   exampleUser.ServiceRole,
 		UserAccountStatus:             exampleUser.AccountStatus,
 		UserAccountStatusExplanation:  exampleUser.AccountStatusExplanation,
 		Birthday:                      database.NullTimeFromTimePointer(exampleUser.Birthday),
@@ -206,6 +203,14 @@ func CreateUserForTest(t *testing.T, exampleUser *identity.User, db *sql.DB) *id
 		LastName:                      exampleUser.LastName,
 	})
 	require.NoError(t, err)
+
+	// Assign default service_user role.
+	require.NoError(t, dbc.AssignRoleToUser(ctx, db, &generated.AssignRoleToUserParams{
+		ID:        identifiers.New(),
+		UserID:    exampleUser.ID,
+		RoleID:    "role_service_user",
+		AccountID: sql.NullString{},
+	}))
 
 	dbCreated, err := dbc.GetUserByID(ctx, db, exampleUser.ID)
 	require.NoError(t, err)
@@ -255,7 +260,14 @@ func CreateAccountForTest(t *testing.T, exampleAccount *identity.Account, userID
 		BelongsToAccount: exampleAccount.ID,
 		BelongsToUser:    userID,
 		DefaultAccount:   true,
-		AccountRole:      authorization.AccountAdminRole.String(),
+	}))
+
+	// Account owners get account_admin role.
+	require.NoError(t, dbc.AssignRoleToUser(ctx, db, &generated.AssignRoleToUserParams{
+		ID:        identifiers.New(),
+		UserID:    userID,
+		RoleID:    "role_account_admin",
+		AccountID: sql.NullString{String: exampleAccount.ID, Valid: true},
 	}))
 
 	dbCreated, err := dbc.GetAccountsForUser(ctx, db, &generated.GetAccountsForUserParams{

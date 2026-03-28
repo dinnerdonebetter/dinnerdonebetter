@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -12,7 +13,6 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	mealplangrocerylistinitializerbuild "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/meal_plan_grocery_list_initializer"
 	mealplantaskcreatorbuild "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/meal_plan_task_creator"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
@@ -152,9 +152,16 @@ func main() {
 							ID:               membershipID,
 							BelongsToUser:    existingUser.ID,
 							BelongsToAccount: adminAccountID,
-							AccountRole:      authorization.AccountMemberRole.String(),
 						}); err != nil {
 							return fmt.Errorf("failed to add existing user %s to account: %w", memberUser.username, err)
+						}
+						if err = generatedQuerier.AssignRoleToUser(ctx, dbClient.WriteDB(), &identitygenerated.AssignRoleToUserParams{
+							ID:        identifiers.New(),
+							UserID:    existingUser.ID,
+							RoleID:    "role_account_member",
+							AccountID: sql.NullString{String: adminAccountID, Valid: true},
+						}); err != nil {
+							return fmt.Errorf("failed to assign account role to existing user %s: %w", memberUser.username, err)
 						}
 						logger.Info(fmt.Sprintf("Added existing user %s to admin account", memberUser.username))
 					}
@@ -195,9 +202,17 @@ func main() {
 					ID:               membershipID,
 					BelongsToUser:    user.ID,
 					BelongsToAccount: adminAccountID,
-					AccountRole:      authorization.AccountMemberRole.String(),
 				}); err != nil {
 					return fmt.Errorf("failed to add user %s to account: %w", memberUser.username, err)
+				}
+
+				if err = generatedQuerier.AssignRoleToUser(ctx, dbClient.WriteDB(), &identitygenerated.AssignRoleToUserParams{
+					ID:        identifiers.New(),
+					UserID:    user.ID,
+					RoleID:    "role_account_member",
+					AccountID: sql.NullString{String: adminAccountID, Valid: true},
+				}); err != nil {
+					return fmt.Errorf("failed to assign account role to user %s: %w", memberUser.username, err)
 				}
 
 				if err = generatedQuerier.MarkAccountUserMembershipAsUserDefault(ctx, dbClient.WriteDB(), &identitygenerated.MarkAccountUserMembershipAsUserDefaultParams{

@@ -2,8 +2,7 @@ package authorization
 
 import (
 	"encoding/gob"
-
-	"github.com/mikespook/gorbac/v2"
+	"slices"
 )
 
 type (
@@ -26,23 +25,23 @@ const (
 	AccountMemberRoleName = "account_member"
 )
 
-var (
-	accountAdmin  = gorbac.NewStdRole(AccountAdminRoleName)
-	accountMember = gorbac.NewStdRole(AccountMemberRoleName)
-)
-
 type accountRoleCollection struct {
-	Roles []string
+	Permissions map[Permission]bool
+	RoleNames   []string
 }
 
 func init() {
 	gob.Register(accountRoleCollection{})
 }
 
-// NewAccountRolePermissionChecker returns a new checker for a set of Roles.
-func NewAccountRolePermissionChecker(roles ...string) AccountRolePermissionsChecker {
+// NewAccountRolePermissionChecker returns a new checker from a set of permissions.
+func NewAccountRolePermissionChecker(perms []Permission) AccountRolePermissionsChecker {
+	m := make(map[Permission]bool, len(perms))
+	for _, p := range perms {
+		m[p] = true
+	}
 	return &accountRoleCollection{
-		Roles: roles,
+		Permissions: m,
 	}
 }
 
@@ -59,19 +58,10 @@ func (r AccountRole) String() string {
 
 // HasPermission returns whether a user can do something or not.
 func (r accountRoleCollection) HasPermission(p Permission) bool {
-	return hasPermission(p, r.Roles...)
+	return r.Permissions[p]
 }
 
-func hasPermission(p Permission, roles ...string) bool {
-	if len(roles) == 0 {
-		return false
-	}
-
-	for _, r := range roles {
-		if globalAuthorizer.IsGranted(r, p, nil) {
-			return true
-		}
-	}
-
-	return false
+// IsAccountAdmin returns whether a user is an account admin.
+func (r accountRoleCollection) IsAccountAdmin() bool {
+	return slices.Contains(r.RoleNames, AccountAdminRoleName)
 }

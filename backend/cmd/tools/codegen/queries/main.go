@@ -95,6 +95,11 @@ func main() {
 		"internal/repositories/postgres/payments/sqlc_queries/purchases":                                        buildPaymentsPurchasesQueries(databaseToUse),
 		"internal/repositories/postgres/payments/sqlc_queries/payment_transactions":                             buildPaymentsTransactionsQueries(databaseToUse),
 		"internal/repositories/postgres/comments/sqlc_queries/comments":                                         buildCommentsQueries(databaseToUse),
+		"internal/repositories/postgres/identity/sqlc_queries/user_roles":                                       buildUserRolesQueries(databaseToUse),
+		"internal/repositories/postgres/identity/sqlc_queries/permissions":                                      buildPermissionsQueries(databaseToUse),
+		"internal/repositories/postgres/identity/sqlc_queries/user_role_permissions":                            buildUserRolePermissionsQueries(databaseToUse),
+		"internal/repositories/postgres/identity/sqlc_queries/user_role_assignments":                            buildUserRoleAssignmentsQueries(databaseToUse),
+		"internal/repositories/postgres/identity/sqlc_queries/user_role_hierarchy":                              buildUserRoleHierarchyQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

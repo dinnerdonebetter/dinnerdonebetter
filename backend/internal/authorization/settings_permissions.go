@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// CreateServiceSettingsPermission is an admin user permission.
 	CreateServiceSettingsPermission Permission = "create.service_settings"
@@ -26,7 +22,7 @@ const (
 
 var (
 	// SettingsPermissions contains all settings-related permissions.
-	SettingsPermissions = []gorbac.Permission{
+	SettingsPermissions = []Permission{
 		CreateServiceSettingsPermission,
 		ReadServiceSettingsPermission,
 		SearchServiceSettingsPermission,

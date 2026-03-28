@@ -46,9 +46,9 @@ type (
 
 	// User represents a User.
 	User struct {
-		_ struct{} `json:"-"`
-
+		_                          struct{}                     `json:"-"`
 		CreatedAt                  time.Time                    `json:"createdAt"`
+		EmailAddressVerifiedAt     *time.Time                   `json:"emailAddressVerifiedAt"`
 		PasswordLastChangedAt      *time.Time                   `json:"passwordLastChangedAt"`
 		LastUpdatedAt              *time.Time                   `json:"lastUpdatedAt"`
 		LastAcceptedTermsOfService *time.Time                   `json:"lastAcceptedTOS"`
@@ -58,7 +58,6 @@ type (
 		Birthday                   *time.Time                   `json:"birthday"`
 		ArchivedAt                 *time.Time                   `json:"archivedAt"`
 		AccountStatusExplanation   string                       `json:"accountStatusExplanation"`
-		TwoFactorSecret            string                       `json:"-"`
 		HashedPassword             string                       `json:"-"`
 		ID                         string                       `json:"id"`
 		AccountStatus              string                       `json:"accountStatus"`
@@ -66,8 +65,7 @@ type (
 		FirstName                  string                       `json:"firstName"`
 		LastName                   string                       `json:"lastName"`
 		EmailAddress               string                       `json:"emailAddress"`
-		EmailAddressVerifiedAt     *time.Time                   `json:"emailAddressVerifiedAt"`
-		ServiceRole                string                       `json:"serviceRole"`
+		TwoFactorSecret            string                       `json:"-"`
 		RequiresPasswordChange     bool                         `json:"requiresPasswordChange"`
 	}
 

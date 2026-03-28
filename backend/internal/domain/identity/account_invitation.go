@@ -66,22 +66,21 @@ type (
 
 	// AccountInvitation represents an account invitation.
 	AccountInvitation struct {
-		_ struct{} `json:"-"`
-
+		_                  struct{}   `json:"-"`
+		ExpiresAt          time.Time  `json:"expiresAt"`
 		CreatedAt          time.Time  `json:"createdAt"`
 		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt         *time.Time `json:"archivedAt"`
 		ToUser             *string    `json:"toUser"`
-		Status             string     `json:"status"`
+		FromUser           User       `json:"fromUser"`
 		ToEmail            string     `json:"toEmail"`
-		StatusNote         string     `json:"statusNote"`
 		Token              string     `json:"token"`
 		ID                 string     `json:"id"`
 		Note               string     `json:"note"`
 		ToName             string     `json:"toName"`
-		ExpiresAt          time.Time  `json:"expiresAt"`
+		StatusNote         string     `json:"statusNote"`
+		Status             string     `json:"status"`
 		DestinationAccount Account    `json:"destinationAccount"`
-		FromUser           User       `json:"fromUser"`
 	}
 
 	// AccountInvitationUpdateRequestInput is used by users to update the status of a given account invitation.

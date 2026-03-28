@@ -193,11 +193,11 @@ func TestAuthManager_CheckUserPermissions(t *testing.T) {
 		sessionData := &sessions.ContextData{
 			Requester: sessions.RequesterInfo{
 				UserID:             userID,
-				ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
+				ServicePermissions: authorization.NewServiceRolePermissionChecker([]string{authorization.ServiceUserRole.String()}, nil),
 			},
 			ActiveAccountID: accountID,
 			AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
-				accountID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRoleName),
+				accountID: authorization.NewAccountRolePermissionChecker(nil),
 			},
 		}
 		sessionFetcher := func(context.Context) (*sessions.ContextData, error) {

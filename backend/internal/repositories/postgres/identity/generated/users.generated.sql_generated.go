@@ -59,7 +59,6 @@ INSERT INTO users
 	requires_password_change,
 	two_factor_secret,
 	two_factor_secret_verified_at,
-	service_role,
 	user_account_status,
 	user_account_status_explanation,
 	birthday,
@@ -79,8 +78,7 @@ INSERT INTO users
 	$10,
 	$11,
 	$12,
-	$13,
-	$14
+	$13
 )
 `
 
@@ -92,7 +90,6 @@ type CreateUserParams struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -110,7 +107,6 @@ func (q *Queries) CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams
 		arg.RequiresPasswordChange,
 		arg.TwoFactorSecret,
 		arg.TwoFactorSecretVerifiedAt,
-		arg.ServiceRole,
 		arg.UserAccountStatus,
 		arg.UserAccountStatusExplanation,
 		arg.Birthday,
@@ -143,7 +139,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -167,8 +162,10 @@ SELECT
 FROM users
 	LEFT JOIN user_avatars ON user_avatars.belongs_to_user = users.id AND user_avatars.archived_at IS NULL
 	LEFT JOIN uploaded_media ON uploaded_media.id = user_avatars.uploaded_media_id AND uploaded_media.archived_at IS NULL
+	JOIN user_role_assignments ON user_role_assignments.user_id = users.id AND user_role_assignments.account_id IS NULL AND user_role_assignments.archived_at IS NULL
+	JOIN user_roles ON user_roles.id = user_role_assignments.role_id AND user_roles.archived_at IS NULL
 WHERE users.archived_at IS NULL
-	AND users.service_role = 'service_admin'
+	AND user_roles.name = 'service_admin'
 	AND users.username = $1
 	AND users.two_factor_secret_verified_at IS NOT NULL
 `
@@ -182,7 +179,6 @@ type GetAdminUserByUsernameRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -217,7 +213,6 @@ func (q *Queries) GetAdminUserByUsername(ctx context.Context, db DBTX, username 
 		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
-		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
@@ -268,7 +263,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -305,7 +299,6 @@ type GetUserByEmailRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -340,7 +333,6 @@ func (q *Queries) GetUserByEmail(ctx context.Context, db DBTX, emailAddress stri
 		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
-		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
@@ -375,7 +367,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -412,7 +403,6 @@ type GetUserByEmailAddressVerificationTokenRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -447,7 +437,6 @@ func (q *Queries) GetUserByEmailAddressVerificationToken(ctx context.Context, db
 		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
-		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
@@ -482,7 +471,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -519,7 +507,6 @@ type GetUserByIDRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -554,7 +541,6 @@ func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUser
 		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
-		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
@@ -589,7 +575,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -626,7 +611,6 @@ type GetUserByUsernameRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -661,7 +645,6 @@ func (q *Queries) GetUserByUsername(ctx context.Context, db DBTX, username strin
 		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
-		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
@@ -727,7 +710,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -765,7 +747,6 @@ type GetUserWithUnverifiedTwoFactorRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -800,7 +781,6 @@ func (q *Queries) GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, i
 		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
-		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
@@ -835,7 +815,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -873,7 +852,6 @@ type GetUserWithVerifiedTwoFactorRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -908,7 +886,6 @@ func (q *Queries) GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id 
 		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
-		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
@@ -943,7 +920,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -1025,7 +1001,6 @@ type GetUsersRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -1076,7 +1051,6 @@ func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([
 			&i.RequiresPasswordChange,
 			&i.TwoFactorSecret,
 			&i.TwoFactorSecretVerifiedAt,
-			&i.ServiceRole,
 			&i.UserAccountStatus,
 			&i.UserAccountStatusExplanation,
 			&i.Birthday,
@@ -1123,7 +1097,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -1210,7 +1183,6 @@ type GetUsersForAccountRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -1262,7 +1234,6 @@ func (q *Queries) GetUsersForAccount(ctx context.Context, db DBTX, arg *GetUsers
 			&i.RequiresPasswordChange,
 			&i.TwoFactorSecret,
 			&i.TwoFactorSecretVerifiedAt,
-			&i.ServiceRole,
 			&i.UserAccountStatus,
 			&i.UserAccountStatusExplanation,
 			&i.Birthday,
@@ -1309,7 +1280,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -1346,7 +1316,6 @@ type GetUsersWithIDsRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -1387,7 +1356,6 @@ func (q *Queries) GetUsersWithIDs(ctx context.Context, db DBTX, ids []string) ([
 			&i.RequiresPasswordChange,
 			&i.TwoFactorSecret,
 			&i.TwoFactorSecretVerifiedAt,
-			&i.ServiceRole,
 			&i.UserAccountStatus,
 			&i.UserAccountStatusExplanation,
 			&i.Birthday,
@@ -1498,7 +1466,6 @@ SELECT
 	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
@@ -1582,7 +1549,6 @@ type SearchUsersByUsernameRow struct {
 	RequiresPasswordChange        bool
 	TwoFactorSecret               string
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ServiceRole                   string
 	UserAccountStatus             string
 	UserAccountStatusExplanation  string
 	Birthday                      sql.NullTime
@@ -1634,7 +1600,6 @@ func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, arg *Searc
 			&i.RequiresPasswordChange,
 			&i.TwoFactorSecret,
 			&i.TwoFactorSecretVerifiedAt,
-			&i.ServiceRole,
 			&i.UserAccountStatus,
 			&i.UserAccountStatusExplanation,
 			&i.Birthday,

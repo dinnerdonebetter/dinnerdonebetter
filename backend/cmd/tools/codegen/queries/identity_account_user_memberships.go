@@ -11,7 +11,6 @@ const (
 	accountUserMembershipsTableName = "account_user_memberships"
 
 	defaultAccountColumn = "default_account"
-	accountRoleColumn    = "account_role"
 )
 
 func init() {
@@ -23,7 +22,6 @@ var accountUserMembershipsColumns = []string{
 	belongsToAccountColumn,
 	belongsToUserColumn,
 	defaultAccountColumn,
-	accountRoleColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -124,21 +122,6 @@ WHERE %s IS NULL
 					accountUserMembershipsTableName,
 					defaultAccountColumn, belongsToUserColumn, belongsToUserColumn, belongsToAccountColumn, belongsToAccountColumn,
 					archivedAtColumn,
-					belongsToUserColumn, belongsToUserColumn,
-				)),
-			},
-			{
-				Annotation: QueryAnnotation{
-					Name: "ModifyAccountUserPermissions",
-					Type: ExecType,
-				},
-				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	%s = sqlc.arg(%s)
-WHERE %s = sqlc.arg(%s)
-	AND %s = sqlc.arg(%s);`,
-					accountUserMembershipsTableName,
-					accountRoleColumn, accountRoleColumn,
-					belongsToAccountColumn, belongsToAccountColumn,
 					belongsToUserColumn, belongsToUserColumn,
 				)),
 			},

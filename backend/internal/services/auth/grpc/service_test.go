@@ -88,11 +88,11 @@ func TestServiceImpl_fetchSessionContext(t *testing.T) {
 				UserID:                   "test-user-id",
 				AccountStatus:            "active",
 				AccountStatusExplanation: "",
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker("service_admin"),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker([]string{"service_admin"}, nil),
 			},
 			ActiveAccountID: "test-account-id",
 			AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
-				"test-account-id": authorization.NewAccountRolePermissionChecker("account_admin"),
+				"test-account-id": authorization.NewAccountRolePermissionChecker(nil),
 			},
 		}
 

@@ -323,8 +323,12 @@ func TestQuerier_Integration_MealPlanOptionVotes_CursorBasedPagination(t *testin
 	// when all votes are received (we'll create 9 votes but have 10+ users in the account)
 	addUserToAccountHelper := func(userID string) {
 		_, execErr := dbc.writeDB.ExecContext(ctx,
-			`INSERT INTO account_user_memberships (id, belongs_to_user, belongs_to_account, account_role, default_account) VALUES ($1, $2, $3, $4, $5)`,
-			identifiers.New(), userID, account.ID, "account_member", false)
+			`INSERT INTO account_user_memberships (id, belongs_to_user, belongs_to_account, default_account) VALUES ($1, $2, $3, $4)`,
+			identifiers.New(), userID, account.ID, false)
+		require.NoError(t, execErr)
+		_, execErr = dbc.writeDB.ExecContext(ctx,
+			`INSERT INTO user_role_assignments (id, user_id, role_id, account_id) VALUES ($1, $2, 'role_account_member', $3)`,
+			identifiers.New(), userID, account.ID)
 		require.NoError(t, execErr)
 	}
 	// Add one extra non-voting user

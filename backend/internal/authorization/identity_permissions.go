@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// UpdateAccountPermission is an account admin permission.
 	UpdateAccountPermission Permission = "update.account"
@@ -21,7 +17,7 @@ const (
 
 var (
 	// IdentityPermissions contains all identity-related permissions (accounts, users, memberships).
-	IdentityPermissions = []gorbac.Permission{
+	IdentityPermissions = []Permission{
 		UpdateAccountPermission,
 		ArchiveAccountPermission,
 		InviteUserToAccountPermission,

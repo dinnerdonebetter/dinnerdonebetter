@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
@@ -90,7 +89,6 @@ func (r *repository) GetUser(ctx context.Context, userID string) (*identity.User
 		EmailAddress:               result.EmailAddress,
 		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 		Avatar:                     avatarFromRow(result.AvatarID, result.AvatarStoragePath, result.AvatarMimeType, result.AvatarCreatedAt, result.AvatarLastUpdatedAt, result.AvatarArchivedAt, result.AvatarCreatedByUser),
-		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
 
@@ -132,7 +130,6 @@ func (r *repository) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, u
 		EmailAddress:               result.EmailAddress,
 		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 		Avatar:                     avatarFromRow(result.AvatarID, result.AvatarStoragePath, result.AvatarMimeType, result.AvatarCreatedAt, result.AvatarLastUpdatedAt, result.AvatarArchivedAt, result.AvatarCreatedByUser),
-		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
 
@@ -174,7 +171,6 @@ func (r *repository) GetUserByUsername(ctx context.Context, username string) (*i
 		EmailAddress:               result.EmailAddress,
 		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 		Avatar:                     avatarFromRow(result.AvatarID, result.AvatarStoragePath, result.AvatarMimeType, result.AvatarCreatedAt, result.AvatarLastUpdatedAt, result.AvatarArchivedAt, result.AvatarCreatedByUser),
-		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
 
@@ -219,7 +215,6 @@ func (r *repository) GetAdminUserByUsername(ctx context.Context, username string
 		EmailAddress:               result.EmailAddress,
 		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 		Avatar:                     avatarFromRow(result.AvatarID, result.AvatarStoragePath, result.AvatarMimeType, result.AvatarCreatedAt, result.AvatarLastUpdatedAt, result.AvatarArchivedAt, result.AvatarCreatedByUser),
-		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
 
@@ -261,7 +256,6 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*identit
 		EmailAddress:               result.EmailAddress,
 		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 		Avatar:                     avatarFromRow(result.AvatarID, result.AvatarStoragePath, result.AvatarMimeType, result.AvatarCreatedAt, result.AvatarLastUpdatedAt, result.AvatarArchivedAt, result.AvatarCreatedByUser),
-		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
 
@@ -329,7 +323,6 @@ func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery
 			EmailAddress:               result.EmailAddress,
 			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 			Avatar:                     avatarFromRow(result.AvatarID, result.AvatarStoragePath, result.AvatarMimeType, result.AvatarCreatedAt, result.AvatarLastUpdatedAt, result.AvatarArchivedAt, result.AvatarCreatedByUser),
-			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		})
 	}
@@ -396,7 +389,6 @@ func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter
 			EmailAddress:               result.EmailAddress,
 			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 			Avatar:                     avatarFromRow(result.AvatarID, result.AvatarStoragePath, result.AvatarMimeType, result.AvatarCreatedAt, result.AvatarLastUpdatedAt, result.AvatarArchivedAt, result.AvatarCreatedByUser),
-			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		}
 
@@ -476,7 +468,6 @@ func (r *repository) GetUsersForAccount(ctx context.Context, accountID string, f
 			EmailAddress:               result.EmailAddress,
 			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 			Avatar:                     avatarFromRow(result.AvatarID, result.AvatarStoragePath, result.AvatarMimeType, result.AvatarCreatedAt, result.AvatarLastUpdatedAt, result.AvatarArchivedAt, result.AvatarCreatedByUser),
-			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		}
 
@@ -521,7 +512,6 @@ func (r *repository) GetUsersWithIDs(ctx context.Context, ids []string) (x []*id
 			EmailAddress:               result.EmailAddress,
 			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 			Avatar:                     avatarFromRow(result.AvatarID, result.AvatarStoragePath, result.AvatarMimeType, result.AvatarCreatedAt, result.AvatarLastUpdatedAt, result.AvatarArchivedAt, result.AvatarCreatedByUser),
-			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		}
 
@@ -605,7 +595,6 @@ func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabas
 		TwoFactorSecret:               input.TwoFactorSecret,
 		UserAccountStatus:             string(identity.UnverifiedAccountStatus),
 		Birthday:                      database.NullTimeFromTimePointer(input.Birthday),
-		ServiceRole:                   authorization.ServiceUserRole.String(),
 		EmailAddressVerificationToken: database.NullStringFromString(token),
 		TwoFactorSecretVerifiedAt:     sql.NullTime{},
 		UserAccountStatusExplanation:  "",
@@ -635,7 +624,6 @@ func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabas
 		TwoFactorSecret: input.TwoFactorSecret,
 		AccountStatus:   string(identity.UnverifiedAccountStatus),
 		Birthday:        input.Birthday,
-		ServiceRole:     authorization.ServiceUserRole.String(),
 		CreatedAt:       r.CurrentTime(),
 	}
 	logger = logger.WithValue(identitykeys.UserIDKey, user.ID)
@@ -650,6 +638,17 @@ func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabas
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	// Assign the default service_user role.
+	if err = r.generatedQuerier.AssignRoleToUser(ctx, tx, &generated.AssignRoleToUserParams{
+		ID:        identifiers.New(),
+		UserID:    user.ID,
+		RoleID:    "role_service_user",
+		AccountID: sql.NullString{},
+	}); err != nil {
+		r.RollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "assigning service role to user")
 	}
 
 	if strings.TrimSpace(input.AccountName) == "" {
@@ -744,11 +743,21 @@ func (r *repository) createAccountForUser(ctx context.Context, querier database.
 		ID:               accountMembershipID,
 		BelongsToUser:    userID,
 		BelongsToAccount: accountID,
-		AccountRole:      authorization.AccountAdminRole.String(),
 		DefaultAccount:   !hasValidInvite,
 	}); err != nil {
 		r.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "writing account user membership")
+	}
+
+	// Account owners get account_admin role.
+	if err := r.generatedQuerier.AssignRoleToUser(ctx, querier, &generated.AssignRoleToUserParams{
+		ID:        identifiers.New(),
+		UserID:    userID,
+		RoleID:    "role_account_admin",
+		AccountID: sql.NullString{String: accountID, Valid: true},
+	}); err != nil {
+		r.RollbackTransaction(ctx, querier)
+		return nil, observability.PrepareError(err, span, "assigning account role to user")
 	}
 
 	if _, err := r.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
@@ -1346,7 +1355,6 @@ func (r *repository) GetUserByEmailAddressVerificationToken(ctx context.Context,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
 		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
-		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
 

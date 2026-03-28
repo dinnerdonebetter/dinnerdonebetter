@@ -154,8 +154,11 @@ func runBootstrap(
 		return fmt.Errorf("creating user: %w", err)
 	}
 
-	_, err = client.WriteDB().ExecContext(ctx, "UPDATE users SET service_role = $1 WHERE id = $2", "service_admin", user.ID)
-	if err != nil {
+	// Promote user to service_admin by archiving old service role and assigning new one.
+	if _, err = client.WriteDB().ExecContext(ctx, "UPDATE user_role_assignments SET archived_at = NOW() WHERE user_id = $1 AND account_id IS NULL AND archived_at IS NULL", user.ID); err != nil {
+		return fmt.Errorf("archiving old service role: %w", err)
+	}
+	if _, err = client.WriteDB().ExecContext(ctx, "INSERT INTO user_role_assignments (id, user_id, role_id) VALUES ($1, $2, 'role_service_admin')", identifiers.New(), user.ID); err != nil {
 		return fmt.Errorf("promoting user to admin: %w", err)
 	}
 

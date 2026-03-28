@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// CreateWebhooksPermission is an account admin permission.
 	CreateWebhooksPermission Permission = "create.webhooks"
@@ -29,7 +25,7 @@ const (
 
 var (
 	// WebhooksPermissions contains all webhook-related permissions.
-	WebhooksPermissions = []gorbac.Permission{
+	WebhooksPermissions = []Permission{
 		CreateWebhooksPermission,
 		ReadWebhooksPermission,
 		UpdateWebhooksPermission,

@@ -23,7 +23,6 @@ const (
 	twoFactorSecretColumn = "two_factor_secret"
 	/* #nosec G101 */
 	twoFactorSecretVerifiedAtColumn     = "two_factor_secret_verified_at"
-	serviceRoleColumn                   = "service_role"
 	userAccountStatusColumn             = "user_account_status"
 	userAccountStatusExplanationColumn  = "user_account_status_explanation"
 	birthdayColumn                      = "birthday"
@@ -64,7 +63,6 @@ var usersColumns = []string{
 	requiresPasswordChangeColumn,
 	twoFactorSecretColumn,
 	twoFactorSecretVerifiedAtColumn,
-	serviceRoleColumn,
 	userAccountStatusColumn,
 	userAccountStatusExplanationColumn,
 	birthdayColumn,
@@ -210,6 +208,8 @@ func buildUsersQueries(database string) []*Query {
 	%s
 FROM %s
 	%s
+	JOIN %s ON %s.%s = %s.%s AND %s.%s IS NULL AND %s.%s IS NULL
+	JOIN %s ON %s.%s = %s.%s AND %s.%s IS NULL
 WHERE %s.%s IS NULL
 	AND %s.%s = 'service_admin'
 	AND %s.%s = sqlc.arg(%s)
@@ -220,8 +220,10 @@ WHERE %s.%s IS NULL
 					strings.Join(avatarJoinSelect("avatar"), ",\n\t"),
 					usersTableName,
 					avatarJoinClause,
+					userRoleAssignmentsTableName, userRoleAssignmentsTableName, userIDColumn, usersTableName, idColumn, userRoleAssignmentsTableName, accountIDColumn, userRoleAssignmentsTableName, archivedAtColumn,
+					userRolesTableName, userRolesTableName, idColumn, userRoleAssignmentsTableName, roleIDColumn, userRolesTableName, archivedAtColumn,
 					usersTableName, archivedAtColumn,
-					usersTableName, serviceRoleColumn,
+					userRolesTableName, nameColumn,
 					usersTableName, usernameColumn, usernameColumn,
 					usersTableName, twoFactorSecretVerifiedAtColumn,
 				)),

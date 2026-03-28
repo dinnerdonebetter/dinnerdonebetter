@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// ReadUserDataPermission is a service admin permission.
 	ReadUserDataPermission Permission = "admin.read_user_data"
@@ -13,7 +9,7 @@ const (
 
 var (
 	// AdminPermissions contains all admin-specific permissions.
-	AdminPermissions = []gorbac.Permission{
+	AdminPermissions = []Permission{
 		ReadUserDataPermission,
 		PublishArbitraryQueueMessagePermission,
 	}

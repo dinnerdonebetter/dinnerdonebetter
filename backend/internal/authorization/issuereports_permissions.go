@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// CreateIssueReportsPermission is an account admin permission.
 	CreateIssueReportsPermission Permission = "create.issue_reports"
@@ -17,7 +13,7 @@ const (
 
 var (
 	// IssueReportsPermissions contains all issue report-related permissions.
-	IssueReportsPermissions = []gorbac.Permission{
+	IssueReportsPermissions = []Permission{
 		CreateIssueReportsPermission,
 		ReadIssueReportsPermission,
 		UpdateIssueReportsPermission,

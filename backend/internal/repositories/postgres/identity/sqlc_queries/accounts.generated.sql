@@ -2,13 +2,11 @@
 INSERT INTO account_user_memberships (
 	id,
 	belongs_to_account,
-	belongs_to_user,
-	account_role
+	belongs_to_user
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(belongs_to_account),
-	sqlc.arg(belongs_to_user),
-	sqlc.arg(account_role)
+	sqlc.arg(belongs_to_user)
 );
 
 -- name: ArchiveAccount :execrows
@@ -83,7 +81,6 @@ SELECT
 	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
-	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
@@ -108,7 +105,6 @@ SELECT
 	account_user_memberships.belongs_to_account as membership_belongs_to_account,
 	account_user_memberships.belongs_to_user as membership_belongs_to_user,
 	account_user_memberships.default_account as membership_default_account,
-	account_user_memberships.account_role as membership_account_role,
 	account_user_memberships.created_at as membership_created_at,
 	account_user_memberships.last_updated_at as membership_last_updated_at,
 	account_user_memberships.archived_at as membership_archived_at

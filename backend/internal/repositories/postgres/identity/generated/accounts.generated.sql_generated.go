@@ -15,13 +15,11 @@ const addToAccountDuringCreation = `-- name: AddToAccountDuringCreation :exec
 INSERT INTO account_user_memberships (
 	id,
 	belongs_to_account,
-	belongs_to_user,
-	account_role
+	belongs_to_user
 ) VALUES (
 	$1,
 	$2,
-	$3,
-	$4
+	$3
 )
 `
 
@@ -29,16 +27,10 @@ type AddToAccountDuringCreationParams struct {
 	ID               string
 	BelongsToAccount string
 	BelongsToUser    string
-	AccountRole      string
 }
 
 func (q *Queries) AddToAccountDuringCreation(ctx context.Context, db DBTX, arg *AddToAccountDuringCreationParams) error {
-	_, err := db.ExecContext(ctx, addToAccountDuringCreation,
-		arg.ID,
-		arg.BelongsToAccount,
-		arg.BelongsToUser,
-		arg.AccountRole,
-	)
+	_, err := db.ExecContext(ctx, addToAccountDuringCreation, arg.ID, arg.BelongsToAccount, arg.BelongsToUser)
 	return err
 }
 
@@ -166,7 +158,6 @@ SELECT
 	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
-	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
@@ -191,7 +182,6 @@ SELECT
 	account_user_memberships.belongs_to_account as membership_belongs_to_account,
 	account_user_memberships.belongs_to_user as membership_belongs_to_user,
 	account_user_memberships.default_account as membership_default_account,
-	account_user_memberships.account_role as membership_account_role,
 	account_user_memberships.created_at as membership_created_at,
 	account_user_memberships.last_updated_at as membership_last_updated_at,
 	account_user_memberships.archived_at as membership_archived_at
@@ -235,7 +225,6 @@ type GetAccountByIDWithMembershipsRow struct {
 	UserRequiresPasswordChange        bool
 	UserTwoFactorSecret               string
 	UserTwoFactorSecretVerifiedAt     sql.NullTime
-	UserServiceRole                   string
 	UserUserAccountStatus             string
 	UserUserAccountStatusExplanation  string
 	UserBirthday                      sql.NullTime
@@ -260,7 +249,6 @@ type GetAccountByIDWithMembershipsRow struct {
 	MembershipBelongsToAccount        string
 	MembershipBelongsToUser           string
 	MembershipDefaultAccount          bool
-	MembershipAccountRole             string
 	MembershipCreatedAt               time.Time
 	MembershipLastUpdatedAt           sql.NullTime
 	MembershipArchivedAt              sql.NullTime
@@ -305,7 +293,6 @@ func (q *Queries) GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id
 			&i.UserRequiresPasswordChange,
 			&i.UserTwoFactorSecret,
 			&i.UserTwoFactorSecretVerifiedAt,
-			&i.UserServiceRole,
 			&i.UserUserAccountStatus,
 			&i.UserUserAccountStatusExplanation,
 			&i.UserBirthday,
@@ -330,7 +317,6 @@ func (q *Queries) GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id
 			&i.MembershipBelongsToAccount,
 			&i.MembershipBelongsToUser,
 			&i.MembershipDefaultAccount,
-			&i.MembershipAccountRole,
 			&i.MembershipCreatedAt,
 			&i.MembershipLastUpdatedAt,
 			&i.MembershipArchivedAt,

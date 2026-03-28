@@ -33,7 +33,7 @@ func TestSessionContextData_AttachToLogger(T *testing.T) {
 		t.Parallel()
 
 		x := &sessions.ContextData{
-			Requester: sessions.RequesterInfo{ServicePermissions: authorization.NewServiceRolePermissionChecker(t.Name())},
+			Requester: sessions.RequesterInfo{ServicePermissions: authorization.NewServiceRolePermissionChecker([]string{t.Name()}, nil)},
 		}
 
 		assert.NotNil(t, x.AttachToLogger(logging.NewNoopLogger()))
@@ -49,7 +49,7 @@ func TestSessionContextData_AccountRolePermissionsChecker(T *testing.T) {
 		x := &sessions.ContextData{
 			ActiveAccountID: t.Name(),
 			AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
-				t.Name(): authorization.NewAccountRolePermissionChecker(t.Name()),
+				t.Name(): authorization.NewAccountRolePermissionChecker(nil),
 			},
 		}
 
@@ -66,7 +66,7 @@ func TestSessionContextData_ServiceRolePermissionChecker(T *testing.T) {
 		x := &sessions.ContextData{
 			ActiveAccountID: t.Name(),
 			Requester: sessions.RequesterInfo{
-				ServicePermissions: authorization.NewServiceRolePermissionChecker(t.Name()),
+				ServicePermissions: authorization.NewServiceRolePermissionChecker([]string{t.Name()}, nil),
 			},
 		}
 

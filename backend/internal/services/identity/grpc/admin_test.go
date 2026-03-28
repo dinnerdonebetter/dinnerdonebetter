@@ -39,11 +39,11 @@ func buildTestServiceWithAdminPermissions(t *testing.T) (*serviceImpl, *managerm
 				Requester: sessions.RequesterInfo{
 					UserID:             identityfakes.BuildFakeID(),
 					AccountStatus:      identity.GoodStandingUserAccountStatus.String(),
-					ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceAdminRole.String()),
+					ServicePermissions: authorization.NewServiceRolePermissionChecker([]string{authorization.ServiceAdminRole.String()}, authorization.ServiceAdminPermissions),
 				},
 				ActiveAccountID: identityfakes.BuildFakeID(),
 				AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
-					identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
+					identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker(authorization.AccountMemberPermissions),
 				},
 			}, nil
 		},
@@ -68,11 +68,11 @@ func buildTestServiceWithInsufficientPermissions(t *testing.T) *serviceImpl {
 				Requester: sessions.RequesterInfo{
 					UserID:             identityfakes.BuildFakeID(),
 					AccountStatus:      identity.GoodStandingUserAccountStatus.String(),
-					ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
+					ServicePermissions: authorization.NewServiceRolePermissionChecker([]string{authorization.ServiceUserRole.String()}, nil),
 				},
 				ActiveAccountID: identityfakes.BuildFakeID(),
 				AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
-					identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
+					identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker(nil),
 				},
 			}, nil
 		},

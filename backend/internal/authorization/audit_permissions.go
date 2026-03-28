@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// ReadAuditLogEntriesPermission is a service permission.
 	ReadAuditLogEntriesPermission Permission = "read.audit_log_entries"
@@ -11,7 +7,7 @@ const (
 
 var (
 	// AuditPermissions contains all audit-related permissions.
-	AuditPermissions = []gorbac.Permission{
+	AuditPermissions = []Permission{
 		ReadAuditLogEntriesPermission,
 	}
 )
