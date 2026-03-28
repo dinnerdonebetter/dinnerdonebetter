@@ -156,7 +156,8 @@ CREATE TABLE IF NOT EXISTS valid_ingredients (
     is_fat BOOLEAN DEFAULT FALSE NOT NULL,
     is_acid BOOLEAN DEFAULT FALSE NOT NULL,
     is_heat BOOLEAN DEFAULT FALSE NOT NULL,
-    last_indexed_at TIMESTAMP WITH TIME ZONE
+    last_indexed_at TIMESTAMP WITH TIME ZONE,
+    contaminates_equipment BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS valid_ingredient_groups (
@@ -413,7 +414,8 @@ CREATE TABLE IF NOT EXISTS recipes (
     eligible_for_meals BOOLEAN DEFAULT true NOT NULL,
     last_indexed_at TIMESTAMP WITH TIME ZONE,
     last_validated_at TIMESTAMP WITH TIME ZONE,
-    yields_component_type component_type DEFAULT 'unspecified'::component_type NOT NULL
+    yields_component_type component_type DEFAULT 'unspecified'::component_type NOT NULL,
+    source_isbn TEXT DEFAULT ''::TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS recipe_steps (
@@ -481,6 +483,7 @@ CREATE TABLE IF NOT EXISTS recipe_step_ingredients (
     to_taste BOOLEAN DEFAULT FALSE NOT NULL,
     product_percentage_to_use NUMERIC(14,2),
     recipe_step_product_recipe_id TEXT REFERENCES recipes("id") ON DELETE CASCADE,
+    scale_factor NUMERIC(14,4) DEFAULT 1.0 NOT NULL,
     CONSTRAINT valid_instrument_or_product CHECK (((recipe_step_product_id IS NOT NULL) OR (ingredient_id IS NOT NULL))),
     UNIQUE(ingredient_id, belongs_to_recipe_step)
 );
@@ -500,7 +503,8 @@ CREATE TABLE IF NOT EXISTS recipe_step_instruments (
     minimum_quantity INTEGER DEFAULT 1 NOT NULL,
     maximum_quantity INTEGER,
     index INTEGER DEFAULT 0 NOT NULL,
-    option_index INTEGER DEFAULT 0 NOT NULL
+    option_index INTEGER DEFAULT 0 NOT NULL,
+    scale_factor NUMERIC(14,4) DEFAULT 1.0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS recipe_step_vessels (
@@ -518,7 +522,8 @@ CREATE TABLE IF NOT EXISTS recipe_step_vessels (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
-    valid_vessel_id TEXT REFERENCES valid_vessels("id") ON DELETE CASCADE
+    valid_vessel_id TEXT REFERENCES valid_vessels("id") ON DELETE CASCADE,
+    scale_factor NUMERIC(14,4) DEFAULT 1.0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS recipe_step_completion_conditions (
@@ -845,6 +850,9 @@ CREATE INDEX idx_valid_measurement_units_indexing ON valid_measurement_units (la
 -- Valid ingredient measurement units indexes
 CREATE INDEX idx_ingredient_measurement_units_ingredient ON valid_ingredient_measurement_units (valid_ingredient_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_ingredient_measurement_units_unit ON valid_ingredient_measurement_units (valid_measurement_unit_id) WHERE archived_at IS NULL;
+CREATE UNIQUE INDEX idx_valid_ingredient_measurement_units_ing_unit_active
+    ON valid_ingredient_measurement_units (valid_ingredient_id, valid_measurement_unit_id)
+    WHERE archived_at IS NULL;
 
 -- Valid measurement unit conversions indexes
 CREATE INDEX idx_measurement_conversions_from_unit ON valid_measurement_unit_conversions (from_unit) WHERE archived_at IS NULL;
@@ -855,6 +863,9 @@ CREATE INDEX idx_measurement_conversions_from_to ON valid_measurement_unit_conve
 -- Valid ingredient state ingredients indexes
 CREATE INDEX idx_ingredient_state_ingredients_ingredient ON valid_ingredient_state_ingredients (valid_ingredient) WHERE archived_at IS NULL;
 CREATE INDEX idx_ingredient_state_ingredients_state ON valid_ingredient_state_ingredients (valid_ingredient_state) WHERE archived_at IS NULL;
+CREATE UNIQUE INDEX idx_valid_ingredient_state_ingredients_ing_state_active
+    ON valid_ingredient_state_ingredients (valid_ingredient, valid_ingredient_state)
+    WHERE archived_at IS NULL;
 
 -- Valid preparations indexes
 CREATE INDEX idx_valid_preparations_archived_at ON valid_preparations (archived_at) WHERE archived_at IS NULL;
@@ -866,6 +877,9 @@ CREATE INDEX idx_valid_preparations_indexing ON valid_preparations (last_indexed
 -- Valid ingredient preparations indexes
 CREATE INDEX idx_ingredient_preparations_preparation ON valid_ingredient_preparations (valid_preparation_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_ingredient_preparations_ingredient ON valid_ingredient_preparations (valid_ingredient_id) WHERE archived_at IS NULL;
+CREATE UNIQUE INDEX idx_valid_ingredient_preparations_prep_ing_active
+    ON valid_ingredient_preparations (valid_preparation_id, valid_ingredient_id)
+    WHERE archived_at IS NULL;
 
 -- Valid instruments indexes
 CREATE INDEX idx_valid_instruments_archived_at ON valid_instruments (archived_at) WHERE archived_at IS NULL;
@@ -877,6 +891,9 @@ CREATE INDEX idx_valid_instruments_indexing ON valid_instruments (last_indexed_a
 -- Valid preparation instruments indexes
 CREATE INDEX idx_preparation_instruments_preparation ON valid_preparation_instruments (valid_preparation_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_preparation_instruments_instrument ON valid_preparation_instruments (valid_instrument_id) WHERE archived_at IS NULL;
+CREATE UNIQUE INDEX idx_valid_preparation_instruments_prep_instrument_active
+    ON valid_preparation_instruments (valid_preparation_id, valid_instrument_id)
+    WHERE archived_at IS NULL;
 
 -- Valid vessels indexes
 CREATE INDEX idx_valid_vessels_archived_at ON valid_vessels (archived_at) WHERE archived_at IS NULL;
@@ -890,6 +907,9 @@ CREATE INDEX idx_valid_vessels_indexing ON valid_vessels (last_indexed_at) WHERE
 -- Valid preparation vessels indexes
 CREATE INDEX idx_preparation_vessels_preparation ON valid_preparation_vessels (valid_preparation_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_preparation_vessels_vessel ON valid_preparation_vessels (valid_vessel_id) WHERE archived_at IS NULL;
+CREATE UNIQUE INDEX idx_valid_preparation_vessels_prep_vessel_active
+    ON valid_preparation_vessels (valid_preparation_id, valid_vessel_id)
+    WHERE archived_at IS NULL;
 
 -- User ingredient preferences indexes
 CREATE INDEX idx_user_ingredient_preferences_user ON user_ingredient_preferences (belongs_to_user) WHERE archived_at IS NULL;
@@ -1069,3 +1089,44 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_meal_plan_options_event_meal_unique
     ON meal_plan_options (belongs_to_meal_plan_event, meal_id)
     WHERE archived_at IS NULL
     AND belongs_to_meal_plan_event IS NOT NULL;
+
+-- =============================================================================
+-- MEDIA FOR PREPARATIONS, INGREDIENTS, AND RECIPE STEPS
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS preparation_media (
+    id TEXT NOT NULL PRIMARY KEY,
+    valid_preparation_id TEXT NOT NULL REFERENCES valid_preparations(id) ON DELETE CASCADE,
+    for_ingredient_id TEXT REFERENCES valid_ingredients(id) ON DELETE CASCADE,
+    uploaded_media_id TEXT NOT NULL REFERENCES uploaded_media(id) ON DELETE CASCADE,
+    index INTEGER DEFAULT 0 NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    archived_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE NULLS NOT DISTINCT (valid_preparation_id, for_ingredient_id, uploaded_media_id, archived_at)
+);
+
+CREATE TABLE IF NOT EXISTS ingredient_media (
+    id TEXT NOT NULL PRIMARY KEY,
+    valid_ingredient_id TEXT NOT NULL REFERENCES valid_ingredients(id) ON DELETE CASCADE,
+    uploaded_media_id TEXT NOT NULL REFERENCES uploaded_media(id) ON DELETE CASCADE,
+    index INTEGER DEFAULT 0 NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    archived_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE(valid_ingredient_id, uploaded_media_id, archived_at)
+);
+
+CREATE TABLE IF NOT EXISTS recipe_step_images (
+    id TEXT NOT NULL PRIMARY KEY,
+    belongs_to_recipe_step TEXT NOT NULL REFERENCES recipe_steps(id) ON DELETE CASCADE,
+    uploaded_media_id TEXT NOT NULL REFERENCES uploaded_media(id) ON DELETE CASCADE,
+    uploaded_by_user TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    archived_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX idx_preparation_media_preparation ON preparation_media (valid_preparation_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_preparation_media_ingredient ON preparation_media (for_ingredient_id) WHERE archived_at IS NULL AND for_ingredient_id IS NOT NULL;
+
+CREATE INDEX idx_ingredient_media_ingredient ON ingredient_media (valid_ingredient_id) WHERE archived_at IS NULL;
+
+CREATE INDEX idx_recipe_step_images_step ON recipe_step_images (belongs_to_recipe_step) WHERE archived_at IS NULL;
