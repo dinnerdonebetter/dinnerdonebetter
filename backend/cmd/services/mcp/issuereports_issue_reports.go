@@ -8,8 +8,9 @@ import (
 	issuereportsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 	issuereportsconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
 
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // boolResult is a shared result type for operations that don't return a domain object.
