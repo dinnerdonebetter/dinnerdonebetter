@@ -151,6 +151,13 @@ deploy_prod_software:
 deploy_prod_frontend:
 	./scripts/deploy-prod-frontend.sh
 
+# Destroy prod Terraform: backend first (k8s resources), then infra (GKE, networking).
+# Pass args through, e.g. make destroy_prod_infra ARGS="-auto-approve"
+.PHONY: destroy_prod_infra
+destroy_prod_infra:
+	(cd backend && ./scripts/terraform_destroy_prod.sh -auto-approve)
+	./infra/scripts/terraform_destroy_prod.sh -auto-approve
+
 .PHONY: verify_prod
 verify_prod:
 	skaffold verify --filename=skaffold.yaml --profile prod
