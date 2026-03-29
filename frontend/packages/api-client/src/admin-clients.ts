@@ -17,6 +17,8 @@ import type {
   ListActiveSessionsResponse,
   RevokeSessionResponse,
   RevokeAllOtherSessionsResponse,
+  RevokeCurrentSessionRequest,
+  RevokeCurrentSessionResponse,
 } from './auth/auth_service_types.js';
 import { IdentityServiceClient } from './identity/identity_service.js';
 import { OAuthServiceClient } from './oauth/oauth_service.js';
@@ -156,6 +158,11 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         get.auth().adminRevokeAllUserSessions.bind(get.auth()),
       )(request, authMetadata(token)),
 
+    revokeCurrentSession: (token: string): Promise<RevokeCurrentSessionResponse> =>
+      promisifyUnary<RevokeCurrentSessionRequest, RevokeCurrentSessionResponse>(
+        get.auth().revokeCurrentSession.bind(get.auth()),
+      )({}, authMetadata(token)),
+
     // Identity – request types are intentionally loose; callers pass proto-shaped objects
     getUser: (token: string, request: { userId: string }) =>
       promisifyUnary(get.identity().getUser.bind(get.identity()))(request as any, authMetadata(token)),
@@ -189,6 +196,11 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
     adminUpdateUserStatus: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.identity().adminUpdateUserStatus.bind(get.identity()))(
         request as unknown as Parameters<IdentityServiceClient['adminUpdateUserStatus']>[0],
+        authMetadata(token),
+      ),
+    adminSetPasswordChangeRequired: (token: string, request: Record<string, unknown>) =>
+      promisifyUnary(get.identity().adminSetPasswordChangeRequired.bind(get.identity()))(
+        request as unknown as Parameters<IdentityServiceClient['adminSetPasswordChangeRequired']>[0],
         authMetadata(token),
       ),
     updateUserDetails: (token: string, request: Record<string, unknown>) =>

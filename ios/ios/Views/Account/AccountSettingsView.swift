@@ -163,6 +163,18 @@ struct AccountSettingsView: View {
         TapGesture().onEnded {
           eventReporterService.reporter.track(event: "profile_viewed", properties: [:])
         })
+
+      DSListRowLink(
+        title: "Active Sessions",
+        subtitle: "Manage your signed-in devices",
+        icon: "laptopcomputer.and.iphone",
+        style: .card,
+        destination: SessionsView()
+      )
+      .simultaneousGesture(
+        TapGesture().onEnded {
+          eventReporterService.reporter.track(event: "sessions_tapped", properties: [:])
+        })
     }
   }
 

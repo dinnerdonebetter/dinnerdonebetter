@@ -3411,6 +3411,102 @@ func (x *UsernameUpdateRequest) GetTotpToken() string {
 	return ""
 }
 
+type AdminSetPasswordChangeRequiredRequest struct {
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	TargetUserId           string                 `protobuf:"bytes,1,opt,name=target_user_id,json=targetUserId,proto3" json:"target_user_id,omitempty"`
+	RequiresPasswordChange bool                   `protobuf:"varint,2,opt,name=requires_password_change,json=requiresPasswordChange,proto3" json:"requires_password_change,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *AdminSetPasswordChangeRequiredRequest) Reset() {
+	*x = AdminSetPasswordChangeRequiredRequest{}
+	mi := &file_identity_identity_service_types_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdminSetPasswordChangeRequiredRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdminSetPasswordChangeRequiredRequest) ProtoMessage() {}
+
+func (x *AdminSetPasswordChangeRequiredRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_identity_identity_service_types_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdminSetPasswordChangeRequiredRequest.ProtoReflect.Descriptor instead.
+func (*AdminSetPasswordChangeRequiredRequest) Descriptor() ([]byte, []int) {
+	return file_identity_identity_service_types_proto_rawDescGZIP(), []int{62}
+}
+
+func (x *AdminSetPasswordChangeRequiredRequest) GetTargetUserId() string {
+	if x != nil {
+		return x.TargetUserId
+	}
+	return ""
+}
+
+func (x *AdminSetPasswordChangeRequiredRequest) GetRequiresPasswordChange() bool {
+	if x != nil {
+		return x.RequiresPasswordChange
+	}
+	return false
+}
+
+type AdminSetPasswordChangeRequiredResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *AdminSetPasswordChangeRequiredResponse) Reset() {
+	*x = AdminSetPasswordChangeRequiredResponse{}
+	mi := &file_identity_identity_service_types_proto_msgTypes[63]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdminSetPasswordChangeRequiredResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdminSetPasswordChangeRequiredResponse) ProtoMessage() {}
+
+func (x *AdminSetPasswordChangeRequiredResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_identity_identity_service_types_proto_msgTypes[63]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdminSetPasswordChangeRequiredResponse.ProtoReflect.Descriptor instead.
+func (*AdminSetPasswordChangeRequiredResponse) Descriptor() ([]byte, []int) {
+	return file_identity_identity_service_types_proto_rawDescGZIP(), []int{63}
+}
+
+func (x *AdminSetPasswordChangeRequiredResponse) GetResponseDetails() *types.ResponseDetails {
+	if x != nil {
+		return x.ResponseDetails
+	}
+	return nil
+}
+
 type AdminUpdateUserStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TargetUserId  string                 `protobuf:"bytes,1,opt,name=target_user_id,json=targetUserId,proto3" json:"target_user_id,omitempty"`
@@ -3422,7 +3518,7 @@ type AdminUpdateUserStatusRequest struct {
 
 func (x *AdminUpdateUserStatusRequest) Reset() {
 	*x = AdminUpdateUserStatusRequest{}
-	mi := &file_identity_identity_service_types_proto_msgTypes[62]
+	mi := &file_identity_identity_service_types_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3434,7 +3530,7 @@ func (x *AdminUpdateUserStatusRequest) String() string {
 func (*AdminUpdateUserStatusRequest) ProtoMessage() {}
 
 func (x *AdminUpdateUserStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_identity_service_types_proto_msgTypes[62]
+	mi := &file_identity_identity_service_types_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3447,7 +3543,7 @@ func (x *AdminUpdateUserStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdminUpdateUserStatusRequest.ProtoReflect.Descriptor instead.
 func (*AdminUpdateUserStatusRequest) Descriptor() ([]byte, []int) {
-	return file_identity_identity_service_types_proto_rawDescGZIP(), []int{62}
+	return file_identity_identity_service_types_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *AdminUpdateUserStatusRequest) GetTargetUserId() string {
@@ -3480,7 +3576,7 @@ type AdminUpdateUserStatusResponse struct {
 
 func (x *AdminUpdateUserStatusResponse) Reset() {
 	*x = AdminUpdateUserStatusResponse{}
-	mi := &file_identity_identity_service_types_proto_msgTypes[63]
+	mi := &file_identity_identity_service_types_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3492,7 +3588,7 @@ func (x *AdminUpdateUserStatusResponse) String() string {
 func (*AdminUpdateUserStatusResponse) ProtoMessage() {}
 
 func (x *AdminUpdateUserStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_identity_service_types_proto_msgTypes[63]
+	mi := &file_identity_identity_service_types_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3505,7 +3601,7 @@ func (x *AdminUpdateUserStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdminUpdateUserStatusResponse.ProtoReflect.Descriptor instead.
 func (*AdminUpdateUserStatusResponse) Descriptor() ([]byte, []int) {
-	return file_identity_identity_service_types_proto_rawDescGZIP(), []int{63}
+	return file_identity_identity_service_types_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *AdminUpdateUserStatusResponse) GetResponseDetails() *types.ResponseDetails {
@@ -4071,28 +4167,43 @@ var file_identity_identity_service_types_proto_rawDesc = string([]byte{
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x50,
 	0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x74, 0x6f, 0x74, 0x70, 0x5f,
 	0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x74, 0x6f, 0x74,
-	0x70, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x7b, 0x0a, 0x1c, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x24, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x5f, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
-	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x0a,
-	0x6e, 0x65, 0x77, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x09, 0x6e, 0x65, 0x77, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x72,
-	0x65, 0x61, 0x73, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x61,
-	0x73, 0x6f, 0x6e, 0x22, 0x63, 0x0a, 0x1d, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17,
-	0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x42, 0x60, 0x5a, 0x5e, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e,
-	0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f,
-	0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64,
-	0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67,
-	0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
-	0x73, 0x2f, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x70, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x87, 0x01, 0x0a, 0x25, 0x41, 0x64, 0x6d, 0x69, 0x6e,
+	0x53, 0x65, 0x74, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x67,
+	0x65, 0x52, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x24, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f, 0x75, 0x73, 0x65, 0x72, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
+	0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x38, 0x0a, 0x18, 0x72, 0x65, 0x71, 0x75, 0x69, 0x72,
+	0x65, 0x73, 0x5f, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x5f, 0x63, 0x68, 0x61, 0x6e,
+	0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x16, 0x72, 0x65, 0x71, 0x75, 0x69, 0x72,
+	0x65, 0x73, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65,
+	0x22, 0x6c, 0x0a, 0x26, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x53, 0x65, 0x74, 0x50, 0x61, 0x73, 0x73,
+	0x77, 0x6f, 0x72, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x69, 0x72,
+	0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10, 0x72, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x72,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x22, 0x7b,
+	0x0a, 0x1c, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65,
+	0x72, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x24,
+	0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x55, 0x73,
+	0x65, 0x72, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x6e, 0x65, 0x77, 0x5f, 0x73, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6e, 0x65, 0x77, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x22, 0x63, 0x0a, 0x1d, 0x41,
+	0x64, 0x6d, 0x69, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x53, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x10,
+	0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52,
+	0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
+	0x42, 0x60, 0x5a, 0x5e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64,
+	0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f,
+	0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72,
+	0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61,
+	0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64,
+	0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69,
+	0x74, 0x79, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -4107,7 +4218,7 @@ func file_identity_identity_service_types_proto_rawDescGZIP() []byte {
 	return file_identity_identity_service_types_proto_rawDescData
 }
 
-var file_identity_identity_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 64)
+var file_identity_identity_service_types_proto_msgTypes = make([]protoimpl.MessageInfo, 66)
 var file_identity_identity_service_types_proto_goTypes = []any{
 	(*ArchiveUserRequest)(nil),                     // 0: identity.ArchiveUserRequest
 	(*ArchiveUserResponse)(nil),                    // 1: identity.ArchiveUserResponse
@@ -4171,98 +4282,101 @@ var file_identity_identity_service_types_proto_goTypes = []any{
 	(*UserDataAggregationRequest)(nil),             // 59: identity.UserDataAggregationRequest
 	(*UserDetailsUpdateRequest)(nil),               // 60: identity.UserDetailsUpdateRequest
 	(*UsernameUpdateRequest)(nil),                  // 61: identity.UsernameUpdateRequest
-	(*AdminUpdateUserStatusRequest)(nil),           // 62: identity.AdminUpdateUserStatusRequest
-	(*AdminUpdateUserStatusResponse)(nil),          // 63: identity.AdminUpdateUserStatusResponse
-	(*types.ResponseDetails)(nil),                  // 64: common.ResponseDetails
-	(*UserRegistrationInput)(nil),                  // 65: identity.UserRegistrationInput
-	(*Account)(nil),                                // 66: identity.Account
-	(*AccountInvitation)(nil),                      // 67: identity.AccountInvitation
-	(*filtering.QueryFilter)(nil),                  // 68: filtering.QueryFilter
-	(*filtering.Pagination)(nil),                   // 69: filtering.Pagination
-	(*User)(nil),                                   // 70: identity.User
-	(*AccountOwnershipTransferInput)(nil),          // 71: identity.AccountOwnershipTransferInput
-	(*ModifyUserPermissionsInput)(nil),             // 72: identity.ModifyUserPermissionsInput
-	(*timestamppb.Timestamp)(nil),                  // 73: google.protobuf.Timestamp
-	(*uploaded_media.UploadedMedia)(nil),           // 74: uploaded_media.UploadedMedia
+	(*AdminSetPasswordChangeRequiredRequest)(nil),  // 62: identity.AdminSetPasswordChangeRequiredRequest
+	(*AdminSetPasswordChangeRequiredResponse)(nil), // 63: identity.AdminSetPasswordChangeRequiredResponse
+	(*AdminUpdateUserStatusRequest)(nil),           // 64: identity.AdminUpdateUserStatusRequest
+	(*AdminUpdateUserStatusResponse)(nil),          // 65: identity.AdminUpdateUserStatusResponse
+	(*types.ResponseDetails)(nil),                  // 66: common.ResponseDetails
+	(*UserRegistrationInput)(nil),                  // 67: identity.UserRegistrationInput
+	(*Account)(nil),                                // 68: identity.Account
+	(*AccountInvitation)(nil),                      // 69: identity.AccountInvitation
+	(*filtering.QueryFilter)(nil),                  // 70: filtering.QueryFilter
+	(*filtering.Pagination)(nil),                   // 71: filtering.Pagination
+	(*User)(nil),                                   // 72: identity.User
+	(*AccountOwnershipTransferInput)(nil),          // 73: identity.AccountOwnershipTransferInput
+	(*ModifyUserPermissionsInput)(nil),             // 74: identity.ModifyUserPermissionsInput
+	(*timestamppb.Timestamp)(nil),                  // 75: google.protobuf.Timestamp
+	(*uploaded_media.UploadedMedia)(nil),           // 76: uploaded_media.UploadedMedia
 }
 var file_identity_identity_service_types_proto_depIdxs = []int32{
-	64, // 0: identity.ArchiveUserResponse.response_details:type_name -> common.ResponseDetails
-	64, // 1: identity.ArchiveUserMembershipResponse.response_details:type_name -> common.ResponseDetails
-	65, // 2: identity.CreateUserRequest.input:type_name -> identity.UserRegistrationInput
-	64, // 3: identity.CreateUserResponse.response_details:type_name -> common.ResponseDetails
+	66, // 0: identity.ArchiveUserResponse.response_details:type_name -> common.ResponseDetails
+	66, // 1: identity.ArchiveUserMembershipResponse.response_details:type_name -> common.ResponseDetails
+	67, // 2: identity.CreateUserRequest.input:type_name -> identity.UserRegistrationInput
+	66, // 3: identity.CreateUserResponse.response_details:type_name -> common.ResponseDetails
 	58, // 4: identity.CreateUserResponse.created:type_name -> identity.UserCreationResponse
 	54, // 5: identity.CreateAccountRequest.input:type_name -> identity.AccountCreationRequestInput
-	64, // 6: identity.CreateAccountResponse.response_details:type_name -> common.ResponseDetails
-	66, // 7: identity.CreateAccountResponse.created:type_name -> identity.Account
+	66, // 6: identity.CreateAccountResponse.response_details:type_name -> common.ResponseDetails
+	68, // 7: identity.CreateAccountResponse.created:type_name -> identity.Account
 	55, // 8: identity.CreateAccountInvitationRequest.input:type_name -> identity.AccountInvitationCreationRequestInput
-	64, // 9: identity.CreateAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
-	67, // 10: identity.CreateAccountInvitationResponse.created:type_name -> identity.AccountInvitation
+	66, // 9: identity.CreateAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
+	69, // 10: identity.CreateAccountInvitationResponse.created:type_name -> identity.AccountInvitation
 	56, // 11: identity.CancelAccountInvitationRequest.input:type_name -> identity.AccountInvitationUpdateRequestInput
-	64, // 12: identity.CancelAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
-	64, // 13: identity.ArchiveAccountResponse.response_details:type_name -> common.ResponseDetails
+	66, // 12: identity.CancelAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
+	66, // 13: identity.ArchiveAccountResponse.response_details:type_name -> common.ResponseDetails
 	56, // 14: identity.AcceptAccountInvitationRequest.input:type_name -> identity.AccountInvitationUpdateRequestInput
-	64, // 15: identity.AcceptAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
-	64, // 16: identity.GetAccountResponse.response_details:type_name -> common.ResponseDetails
-	66, // 17: identity.GetAccountResponse.result:type_name -> identity.Account
-	64, // 18: identity.GetAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
-	67, // 19: identity.GetAccountInvitationResponse.result:type_name -> identity.AccountInvitation
-	68, // 20: identity.GetAccountsRequest.filter:type_name -> filtering.QueryFilter
-	64, // 21: identity.GetAccountsResponse.response_details:type_name -> common.ResponseDetails
-	69, // 22: identity.GetAccountsResponse.pagination:type_name -> filtering.Pagination
-	66, // 23: identity.GetAccountsResponse.results:type_name -> identity.Account
-	68, // 24: identity.GetAccountsForUserRequest.filter:type_name -> filtering.QueryFilter
-	64, // 25: identity.GetAccountsForUserResponse.response_details:type_name -> common.ResponseDetails
-	69, // 26: identity.GetAccountsForUserResponse.pagination:type_name -> filtering.Pagination
-	66, // 27: identity.GetAccountsForUserResponse.results:type_name -> identity.Account
-	68, // 28: identity.GetReceivedAccountInvitationsRequest.filter:type_name -> filtering.QueryFilter
-	64, // 29: identity.GetReceivedAccountInvitationsResponse.response_details:type_name -> common.ResponseDetails
-	69, // 30: identity.GetReceivedAccountInvitationsResponse.pagination:type_name -> filtering.Pagination
-	67, // 31: identity.GetReceivedAccountInvitationsResponse.results:type_name -> identity.AccountInvitation
-	68, // 32: identity.GetSentAccountInvitationsRequest.filter:type_name -> filtering.QueryFilter
-	64, // 33: identity.GetSentAccountInvitationsResponse.response_details:type_name -> common.ResponseDetails
-	69, // 34: identity.GetSentAccountInvitationsResponse.pagination:type_name -> filtering.Pagination
-	67, // 35: identity.GetSentAccountInvitationsResponse.results:type_name -> identity.AccountInvitation
-	64, // 36: identity.GetUserResponse.response_details:type_name -> common.ResponseDetails
-	70, // 37: identity.GetUserResponse.result:type_name -> identity.User
-	68, // 38: identity.GetUsersRequest.filter:type_name -> filtering.QueryFilter
-	64, // 39: identity.GetUsersResponse.response_details:type_name -> common.ResponseDetails
-	69, // 40: identity.GetUsersResponse.pagination:type_name -> filtering.Pagination
-	70, // 41: identity.GetUsersResponse.results:type_name -> identity.User
-	68, // 42: identity.GetUsersForAccountRequest.filter:type_name -> filtering.QueryFilter
-	64, // 43: identity.GetUsersForAccountResponse.response_details:type_name -> common.ResponseDetails
-	69, // 44: identity.GetUsersForAccountResponse.pagination:type_name -> filtering.Pagination
-	70, // 45: identity.GetUsersForAccountResponse.results:type_name -> identity.User
+	66, // 15: identity.AcceptAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
+	66, // 16: identity.GetAccountResponse.response_details:type_name -> common.ResponseDetails
+	68, // 17: identity.GetAccountResponse.result:type_name -> identity.Account
+	66, // 18: identity.GetAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
+	69, // 19: identity.GetAccountInvitationResponse.result:type_name -> identity.AccountInvitation
+	70, // 20: identity.GetAccountsRequest.filter:type_name -> filtering.QueryFilter
+	66, // 21: identity.GetAccountsResponse.response_details:type_name -> common.ResponseDetails
+	71, // 22: identity.GetAccountsResponse.pagination:type_name -> filtering.Pagination
+	68, // 23: identity.GetAccountsResponse.results:type_name -> identity.Account
+	70, // 24: identity.GetAccountsForUserRequest.filter:type_name -> filtering.QueryFilter
+	66, // 25: identity.GetAccountsForUserResponse.response_details:type_name -> common.ResponseDetails
+	71, // 26: identity.GetAccountsForUserResponse.pagination:type_name -> filtering.Pagination
+	68, // 27: identity.GetAccountsForUserResponse.results:type_name -> identity.Account
+	70, // 28: identity.GetReceivedAccountInvitationsRequest.filter:type_name -> filtering.QueryFilter
+	66, // 29: identity.GetReceivedAccountInvitationsResponse.response_details:type_name -> common.ResponseDetails
+	71, // 30: identity.GetReceivedAccountInvitationsResponse.pagination:type_name -> filtering.Pagination
+	69, // 31: identity.GetReceivedAccountInvitationsResponse.results:type_name -> identity.AccountInvitation
+	70, // 32: identity.GetSentAccountInvitationsRequest.filter:type_name -> filtering.QueryFilter
+	66, // 33: identity.GetSentAccountInvitationsResponse.response_details:type_name -> common.ResponseDetails
+	71, // 34: identity.GetSentAccountInvitationsResponse.pagination:type_name -> filtering.Pagination
+	69, // 35: identity.GetSentAccountInvitationsResponse.results:type_name -> identity.AccountInvitation
+	66, // 36: identity.GetUserResponse.response_details:type_name -> common.ResponseDetails
+	72, // 37: identity.GetUserResponse.result:type_name -> identity.User
+	70, // 38: identity.GetUsersRequest.filter:type_name -> filtering.QueryFilter
+	66, // 39: identity.GetUsersResponse.response_details:type_name -> common.ResponseDetails
+	71, // 40: identity.GetUsersResponse.pagination:type_name -> filtering.Pagination
+	72, // 41: identity.GetUsersResponse.results:type_name -> identity.User
+	70, // 42: identity.GetUsersForAccountRequest.filter:type_name -> filtering.QueryFilter
+	66, // 43: identity.GetUsersForAccountResponse.response_details:type_name -> common.ResponseDetails
+	71, // 44: identity.GetUsersForAccountResponse.pagination:type_name -> filtering.Pagination
+	72, // 45: identity.GetUsersForAccountResponse.results:type_name -> identity.User
 	56, // 46: identity.RejectAccountInvitationRequest.input:type_name -> identity.AccountInvitationUpdateRequestInput
-	64, // 47: identity.RejectAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
-	68, // 48: identity.SearchForUsersRequest.filter:type_name -> filtering.QueryFilter
-	64, // 49: identity.SearchForUsersResponse.response_details:type_name -> common.ResponseDetails
-	69, // 50: identity.SearchForUsersResponse.pagination:type_name -> filtering.Pagination
-	70, // 51: identity.SearchForUsersResponse.results:type_name -> identity.User
-	64, // 52: identity.SetDefaultAccountResponse.response_details:type_name -> common.ResponseDetails
-	71, // 53: identity.TransferAccountOwnershipRequest.input:type_name -> identity.AccountOwnershipTransferInput
-	64, // 54: identity.TransferAccountOwnershipResponse.response_details:type_name -> common.ResponseDetails
+	66, // 47: identity.RejectAccountInvitationResponse.response_details:type_name -> common.ResponseDetails
+	70, // 48: identity.SearchForUsersRequest.filter:type_name -> filtering.QueryFilter
+	66, // 49: identity.SearchForUsersResponse.response_details:type_name -> common.ResponseDetails
+	71, // 50: identity.SearchForUsersResponse.pagination:type_name -> filtering.Pagination
+	72, // 51: identity.SearchForUsersResponse.results:type_name -> identity.User
+	66, // 52: identity.SetDefaultAccountResponse.response_details:type_name -> common.ResponseDetails
+	73, // 53: identity.TransferAccountOwnershipRequest.input:type_name -> identity.AccountOwnershipTransferInput
+	66, // 54: identity.TransferAccountOwnershipResponse.response_details:type_name -> common.ResponseDetails
 	57, // 55: identity.UpdateAccountRequest.input:type_name -> identity.AccountUpdateRequestInput
-	64, // 56: identity.UpdateAccountResponse.response_details:type_name -> common.ResponseDetails
-	72, // 57: identity.UpdateAccountMemberPermissionsRequest.input:type_name -> identity.ModifyUserPermissionsInput
-	64, // 58: identity.UpdateAccountMemberPermissionsResponse.response_details:type_name -> common.ResponseDetails
-	73, // 59: identity.UserDetailsUpdateRequestInput.birthday:type_name -> google.protobuf.Timestamp
+	66, // 56: identity.UpdateAccountResponse.response_details:type_name -> common.ResponseDetails
+	74, // 57: identity.UpdateAccountMemberPermissionsRequest.input:type_name -> identity.ModifyUserPermissionsInput
+	66, // 58: identity.UpdateAccountMemberPermissionsResponse.response_details:type_name -> common.ResponseDetails
+	75, // 59: identity.UserDetailsUpdateRequestInput.birthday:type_name -> google.protobuf.Timestamp
 	46, // 60: identity.UpdateUserDetailsRequest.input:type_name -> identity.UserDetailsUpdateRequestInput
-	64, // 61: identity.UpdateUserDetailsResponse.response_details:type_name -> common.ResponseDetails
-	64, // 62: identity.UpdateUserEmailAddressResponse.response_details:type_name -> common.ResponseDetails
-	64, // 63: identity.UpdateUserUsernameResponse.response_details:type_name -> common.ResponseDetails
-	64, // 64: identity.UploadUserAvatarResponse.response_details:type_name -> common.ResponseDetails
-	74, // 65: identity.UploadUserAvatarResponse.created:type_name -> uploaded_media.UploadedMedia
-	73, // 66: identity.AccountInvitationCreationRequestInput.expires_at:type_name -> google.protobuf.Timestamp
-	64, // 67: identity.UserCreationResponse.response_details:type_name -> common.ResponseDetails
-	73, // 68: identity.UserCreationResponse.created_at:type_name -> google.protobuf.Timestamp
-	73, // 69: identity.UserCreationResponse.birthday:type_name -> google.protobuf.Timestamp
-	73, // 70: identity.UserDetailsUpdateRequest.birthday:type_name -> google.protobuf.Timestamp
-	64, // 71: identity.AdminUpdateUserStatusResponse.response_details:type_name -> common.ResponseDetails
-	72, // [72:72] is the sub-list for method output_type
-	72, // [72:72] is the sub-list for method input_type
-	72, // [72:72] is the sub-list for extension type_name
-	72, // [72:72] is the sub-list for extension extendee
-	0,  // [0:72] is the sub-list for field type_name
+	66, // 61: identity.UpdateUserDetailsResponse.response_details:type_name -> common.ResponseDetails
+	66, // 62: identity.UpdateUserEmailAddressResponse.response_details:type_name -> common.ResponseDetails
+	66, // 63: identity.UpdateUserUsernameResponse.response_details:type_name -> common.ResponseDetails
+	66, // 64: identity.UploadUserAvatarResponse.response_details:type_name -> common.ResponseDetails
+	76, // 65: identity.UploadUserAvatarResponse.created:type_name -> uploaded_media.UploadedMedia
+	75, // 66: identity.AccountInvitationCreationRequestInput.expires_at:type_name -> google.protobuf.Timestamp
+	66, // 67: identity.UserCreationResponse.response_details:type_name -> common.ResponseDetails
+	75, // 68: identity.UserCreationResponse.created_at:type_name -> google.protobuf.Timestamp
+	75, // 69: identity.UserCreationResponse.birthday:type_name -> google.protobuf.Timestamp
+	75, // 70: identity.UserDetailsUpdateRequest.birthday:type_name -> google.protobuf.Timestamp
+	66, // 71: identity.AdminSetPasswordChangeRequiredResponse.response_details:type_name -> common.ResponseDetails
+	66, // 72: identity.AdminUpdateUserStatusResponse.response_details:type_name -> common.ResponseDetails
+	73, // [73:73] is the sub-list for method output_type
+	73, // [73:73] is the sub-list for method input_type
+	73, // [73:73] is the sub-list for extension type_name
+	73, // [73:73] is the sub-list for extension extendee
+	0,  // [0:73] is the sub-list for field type_name
 }
 
 func init() { file_identity_identity_service_types_proto_init() }
@@ -4280,7 +4394,7 @@ func file_identity_identity_service_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_identity_identity_service_types_proto_rawDesc), len(file_identity_identity_service_types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   64,
+			NumMessages:   66,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

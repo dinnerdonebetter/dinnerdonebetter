@@ -36,7 +36,8 @@ export const actions: Actions = {
         return fail(500, { error: 'No access token in response', username });
       }
 
-      const encoded = encodeSession({ accessToken });
+      const refreshToken = response.result?.refreshToken;
+      const encoded = encodeSession({ accessToken, refreshToken });
       const opts = getCookieOptions();
       cookies.set(opts.name, encoded, {
         path: opts.path,

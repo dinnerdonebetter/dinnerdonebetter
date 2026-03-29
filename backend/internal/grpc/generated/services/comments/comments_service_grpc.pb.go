@@ -20,6 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	CommentsService_AddCommentToMeal_FullMethodName        = "/comments.CommentsService/AddCommentToMeal"
+	CommentsService_AddCommentToMealPlan_FullMethodName    = "/comments.CommentsService/AddCommentToMealPlan"
+	CommentsService_AddCommentToRecipe_FullMethodName      = "/comments.CommentsService/AddCommentToRecipe"
 	CommentsService_CreateComment_FullMethodName           = "/comments.CommentsService/CreateComment"
 	CommentsService_ArchiveComment_FullMethodName          = "/comments.CommentsService/ArchiveComment"
 	CommentsService_GetCommentsForReference_FullMethodName = "/comments.CommentsService/GetCommentsForReference"
@@ -30,6 +33,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommentsServiceClient interface {
+	AddCommentToMeal(ctx context.Context, in *AddCommentToMealRequest, opts ...grpc.CallOption) (*AddCommentToMealResponse, error)
+	AddCommentToMealPlan(ctx context.Context, in *AddCommentToMealPlanRequest, opts ...grpc.CallOption) (*AddCommentToMealPlanResponse, error)
+	AddCommentToRecipe(ctx context.Context, in *AddCommentToRecipeRequest, opts ...grpc.CallOption) (*AddCommentToRecipeResponse, error)
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error)
 	ArchiveComment(ctx context.Context, in *ArchiveCommentRequest, opts ...grpc.CallOption) (*ArchiveCommentResponse, error)
 	GetCommentsForReference(ctx context.Context, in *GetCommentsForReferenceRequest, opts ...grpc.CallOption) (*GetCommentsForReferenceResponse, error)
@@ -42,6 +48,36 @@ type commentsServiceClient struct {
 
 func NewCommentsServiceClient(cc grpc.ClientConnInterface) CommentsServiceClient {
 	return &commentsServiceClient{cc}
+}
+
+func (c *commentsServiceClient) AddCommentToMeal(ctx context.Context, in *AddCommentToMealRequest, opts ...grpc.CallOption) (*AddCommentToMealResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddCommentToMealResponse)
+	err := c.cc.Invoke(ctx, CommentsService_AddCommentToMeal_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commentsServiceClient) AddCommentToMealPlan(ctx context.Context, in *AddCommentToMealPlanRequest, opts ...grpc.CallOption) (*AddCommentToMealPlanResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddCommentToMealPlanResponse)
+	err := c.cc.Invoke(ctx, CommentsService_AddCommentToMealPlan_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commentsServiceClient) AddCommentToRecipe(ctx context.Context, in *AddCommentToRecipeRequest, opts ...grpc.CallOption) (*AddCommentToRecipeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddCommentToRecipeResponse)
+	err := c.cc.Invoke(ctx, CommentsService_AddCommentToRecipe_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *commentsServiceClient) CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error) {
@@ -88,6 +124,9 @@ func (c *commentsServiceClient) UpdateComment(ctx context.Context, in *UpdateCom
 // All implementations must embed UnimplementedCommentsServiceServer
 // for forward compatibility.
 type CommentsServiceServer interface {
+	AddCommentToMeal(context.Context, *AddCommentToMealRequest) (*AddCommentToMealResponse, error)
+	AddCommentToMealPlan(context.Context, *AddCommentToMealPlanRequest) (*AddCommentToMealPlanResponse, error)
+	AddCommentToRecipe(context.Context, *AddCommentToRecipeRequest) (*AddCommentToRecipeResponse, error)
 	CreateComment(context.Context, *CreateCommentRequest) (*CreateCommentResponse, error)
 	ArchiveComment(context.Context, *ArchiveCommentRequest) (*ArchiveCommentResponse, error)
 	GetCommentsForReference(context.Context, *GetCommentsForReferenceRequest) (*GetCommentsForReferenceResponse, error)
@@ -102,6 +141,15 @@ type CommentsServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCommentsServiceServer struct{}
 
+func (UnimplementedCommentsServiceServer) AddCommentToMeal(context.Context, *AddCommentToMealRequest) (*AddCommentToMealResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCommentToMeal not implemented")
+}
+func (UnimplementedCommentsServiceServer) AddCommentToMealPlan(context.Context, *AddCommentToMealPlanRequest) (*AddCommentToMealPlanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCommentToMealPlan not implemented")
+}
+func (UnimplementedCommentsServiceServer) AddCommentToRecipe(context.Context, *AddCommentToRecipeRequest) (*AddCommentToRecipeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCommentToRecipe not implemented")
+}
 func (UnimplementedCommentsServiceServer) CreateComment(context.Context, *CreateCommentRequest) (*CreateCommentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateComment not implemented")
 }
@@ -133,6 +181,60 @@ func RegisterCommentsServiceServer(s grpc.ServiceRegistrar, srv CommentsServiceS
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&CommentsService_ServiceDesc, srv)
+}
+
+func _CommentsService_AddCommentToMeal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddCommentToMealRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentsServiceServer).AddCommentToMeal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommentsService_AddCommentToMeal_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentsServiceServer).AddCommentToMeal(ctx, req.(*AddCommentToMealRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommentsService_AddCommentToMealPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddCommentToMealPlanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentsServiceServer).AddCommentToMealPlan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommentsService_AddCommentToMealPlan_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentsServiceServer).AddCommentToMealPlan(ctx, req.(*AddCommentToMealPlanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommentsService_AddCommentToRecipe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddCommentToRecipeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentsServiceServer).AddCommentToRecipe(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommentsService_AddCommentToRecipe_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentsServiceServer).AddCommentToRecipe(ctx, req.(*AddCommentToRecipeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _CommentsService_CreateComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -214,6 +316,18 @@ var CommentsService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "comments.CommentsService",
 	HandlerType: (*CommentsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AddCommentToMeal",
+			Handler:    _CommentsService_AddCommentToMeal_Handler,
+		},
+		{
+			MethodName: "AddCommentToMealPlan",
+			Handler:    _CommentsService_AddCommentToMealPlan_Handler,
+		},
+		{
+			MethodName: "AddCommentToRecipe",
+			Handler:    _CommentsService_AddCommentToRecipe_Handler,
+		},
 		{
 			MethodName: "CreateComment",
 			Handler:    _CommentsService_CreateComment_Handler,

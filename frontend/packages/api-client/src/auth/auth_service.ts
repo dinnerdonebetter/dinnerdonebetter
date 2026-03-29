@@ -63,6 +63,8 @@ import {
   RequestUsernameReminderResponse,
   RevokeAllOtherSessionsRequest,
   RevokeAllOtherSessionsResponse,
+  RevokeCurrentSessionRequest,
+  RevokeCurrentSessionResponse,
   RevokeSessionRequest,
   RevokeSessionResponse,
   UpdatePasswordRequest,
@@ -390,6 +392,17 @@ export const AuthServiceService = {
     responseDeserialize: (value: Buffer): RevokeAllOtherSessionsResponse =>
       RevokeAllOtherSessionsResponse.decode(value),
   },
+  revokeCurrentSession: {
+    path: '/auth.AuthService/RevokeCurrentSession' as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: RevokeCurrentSessionRequest): Buffer =>
+      Buffer.from(RevokeCurrentSessionRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): RevokeCurrentSessionRequest => RevokeCurrentSessionRequest.decode(value),
+    responseSerialize: (value: RevokeCurrentSessionResponse): Buffer =>
+      Buffer.from(RevokeCurrentSessionResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): RevokeCurrentSessionResponse => RevokeCurrentSessionResponse.decode(value),
+  },
   adminListSessionsForUser: {
     path: '/auth.AuthService/AdminListSessionsForUser' as const,
     requestStream: false as const,
@@ -459,6 +472,7 @@ export interface AuthServiceServer extends UntypedServiceImplementation {
   listActiveSessions: handleUnaryCall<ListActiveSessionsRequest, ListActiveSessionsResponse>;
   revokeSession: handleUnaryCall<RevokeSessionRequest, RevokeSessionResponse>;
   revokeAllOtherSessions: handleUnaryCall<RevokeAllOtherSessionsRequest, RevokeAllOtherSessionsResponse>;
+  revokeCurrentSession: handleUnaryCall<RevokeCurrentSessionRequest, RevokeCurrentSessionResponse>;
   adminListSessionsForUser: handleUnaryCall<AdminListSessionsForUserRequest, ListActiveSessionsResponse>;
   adminRevokeUserSession: handleUnaryCall<AdminRevokeUserSessionRequest, RevokeSessionResponse>;
   adminRevokeAllUserSessions: handleUnaryCall<AdminRevokeAllUserSessionsRequest, RevokeAllOtherSessionsResponse>;
@@ -869,6 +883,21 @@ export interface AuthServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: RevokeAllOtherSessionsResponse) => void,
+  ): ClientUnaryCall;
+  revokeCurrentSession(
+    request: RevokeCurrentSessionRequest,
+    callback: (error: ServiceError | null, response: RevokeCurrentSessionResponse) => void,
+  ): ClientUnaryCall;
+  revokeCurrentSession(
+    request: RevokeCurrentSessionRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: RevokeCurrentSessionResponse) => void,
+  ): ClientUnaryCall;
+  revokeCurrentSession(
+    request: RevokeCurrentSessionRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: RevokeCurrentSessionResponse) => void,
   ): ClientUnaryCall;
   adminListSessionsForUser(
     request: AdminListSessionsForUserRequest,

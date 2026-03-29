@@ -1000,6 +1000,49 @@ func (m *manager) AdminUpdateUserStatus(ctx context.Context, input *identity.Use
 	return nil
 }
 
+func (m *manager) AdminSetPasswordChangeRequired(ctx context.Context, userID string, requiresChange bool) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrEmptyInputProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		identitykeys.UserIDKey: userID,
+	}, span, m.logger)
+
+	if err := m.identityRepo.SetUserRequiresPasswordChange(ctx, userID, requiresChange); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "setting user requires password change")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserPasswordChangeRequiredServiceEventType, map[string]any{
+		identitykeys.UserIDKey: userID,
+	}))
+
+	return nil
+}
+
+func (m *manager) UserRequiresPasswordChange(ctx context.Context, userID string) (bool, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return false, ErrEmptyInputProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		identitykeys.UserIDKey: userID,
+	}, span, m.logger)
+
+	result, err := m.identityRepo.UserRequiresPasswordChange(ctx, userID)
+	if err != nil {
+		return false, observability.PrepareAndLogError(err, logger, span, "checking if user requires password change")
+	}
+
+	return result, nil
+}
+
 // buildQRCode builds a QR code for a given username and secret.
 func (m *manager) buildQRCode(ctx context.Context, username, twoFactorSecret string) string {
 	_, span := m.tracer.StartSpan(ctx)

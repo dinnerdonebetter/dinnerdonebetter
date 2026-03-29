@@ -11,6 +11,30 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
+func (s *serviceImpl) AdminSetPasswordChangeRequired(ctx context.Context, request *identitysvc.AdminSetPasswordChangeRequiredRequest) (*identitysvc.AdminSetPasswordChangeRequiredResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+
+	if !sessionContextData.Requester.ServicePermissions.CanUpdateUserAccountStatuses() {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(nil, logger, span, codes.PermissionDenied, "user does not have permission to set password change required")
+	}
+
+	if err = s.identityDataManager.AdminSetPasswordChangeRequired(ctx, request.GetTargetUserId(), request.GetRequiresPasswordChange()); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "setting password change required")
+	}
+
+	return &identitysvc.AdminSetPasswordChangeRequiredResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}, nil
+}
+
 func (s *serviceImpl) AdminUpdateUserStatus(ctx context.Context, request *identitysvc.AdminUpdateUserStatusRequest) (*identitysvc.AdminUpdateUserStatusResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

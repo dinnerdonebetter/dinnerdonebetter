@@ -422,6 +422,21 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetUserRequiresPasswordChange",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
+					usersTableName, requiresPasswordChangeColumn,
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, idColumn, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetUserIDsNeedingIndexing",
 					Type: ManyType,
 				},
@@ -662,12 +677,14 @@ WHERE %s IS NULL
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),
+	%s = FALSE,
 	%s = %s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 					usersTableName,
 					hashedPasswordColumn, hashedPasswordColumn,
+					requiresPasswordChangeColumn,
 					passwordLastChangedAtColumn, currentTimeExpression,
 					lastUpdatedAtColumn, currentTimeExpression,
 					archivedAtColumn,

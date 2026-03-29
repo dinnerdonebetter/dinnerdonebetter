@@ -23,6 +23,17 @@ func (m *RepositoryMock) UpdateUserAccountStatus(ctx context.Context, userID str
 	return m.Called(ctx, userID, input).Error(0)
 }
 
+// SetUserRequiresPasswordChange is a mock function.
+func (m *RepositoryMock) SetUserRequiresPasswordChange(ctx context.Context, userID string, requiresChange bool) error {
+	return m.Called(ctx, userID, requiresChange).Error(0)
+}
+
+// UserRequiresPasswordChange is a mock function.
+func (m *RepositoryMock) UserRequiresPasswordChange(ctx context.Context, userID string) (bool, error) {
+	returnValues := m.Called(ctx, userID)
+	return returnValues.Bool(0), returnValues.Error(1)
+}
+
 // AccountExists is a mock function.
 func (m *RepositoryMock) AccountExists(ctx context.Context, accountID, userID string) (bool, error) {
 	returnValues := m.Called(ctx, accountID, userID)

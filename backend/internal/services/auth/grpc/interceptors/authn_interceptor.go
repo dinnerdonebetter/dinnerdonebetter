@@ -38,15 +38,16 @@ const (
 )
 
 type AuthInterceptor struct {
-	tracer                tracing.Tracer
-	logger                logging.Logger
-	identityDataManager   identitymanager.IdentityDataManager
-	sessionDataManager    auth.UserSessionDataManager
-	methodPermissions     map[string][]authorization.Permission
-	oauth2ClientManager   *manage.Manager
-	tokenIssuer           tokens.Issuer
-	unauthenticatedRoutes []string
-	methodScopesHat       sync.Mutex
+	tracer                      tracing.Tracer
+	logger                      logging.Logger
+	identityDataManager         identitymanager.IdentityDataManager
+	sessionDataManager          auth.UserSessionDataManager
+	methodPermissions           map[string][]authorization.Permission
+	oauth2ClientManager         *manage.Manager
+	tokenIssuer                 tokens.Issuer
+	unauthenticatedRoutes       []string
+	passwordChangeAllowedRoutes []string
+	methodScopesHat             sync.Mutex
 }
 
 // MethodPermissionsMap is a map of gRPC method full names to the permissions required to call them.
@@ -70,6 +71,13 @@ func ProvideAuthInterceptor(
 		oauth2ClientManager: oauth2ClientManager,
 		tokenIssuer:         tokenIssuer,
 		methodPermissions:   aggregatedPermissions,
+		// Routes allowed when requires_password_change is true.
+		passwordChangeAllowedRoutes: []string{
+			"/auth.AuthService/UpdatePassword",
+			"/auth.AuthService/RevokeCurrentSession",
+			"/auth.AuthService/GetAuthStatus",
+			"/auth.AuthService/GetActiveAccount",
+		},
 		// TODO: configure this elsewhere
 		unauthenticatedRoutes: []string{
 			"/auth.AuthService/AdminLoginForToken",
@@ -265,6 +273,14 @@ func (s *AuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.PermissionDenied, "permission denied")
 		}
 
+		requiresChange, pcErr := s.identityDataManager.UserRequiresPasswordChange(ctx, sessionContextData.Requester.UserID)
+		if pcErr != nil {
+			return nil, status.Error(codes.Internal, "checking password change requirement")
+		}
+		if requiresChange && !slices.Contains(s.passwordChangeAllowedRoutes, info.FullMethod) {
+			return nil, status.Error(codes.FailedPrecondition, "password change required")
+		}
+
 		ctx = context.WithValue(ctx, sessions.SessionContextDataKey, sessionContextData)
 
 		return handler(ctx, req)
@@ -326,6 +342,14 @@ func (s *AuthInterceptor) StreamServerInterceptor() grpc.StreamServerInterceptor
 
 		if !proceed {
 			return status.Error(codes.PermissionDenied, "permission denied")
+		}
+
+		requiresChange, pcErr := s.identityDataManager.UserRequiresPasswordChange(ss.Context(), sessionContextData.Requester.UserID)
+		if pcErr != nil {
+			return status.Error(codes.Internal, "checking password change requirement")
+		}
+		if requiresChange && !slices.Contains(s.passwordChangeAllowedRoutes, info.FullMethod) {
+			return status.Error(codes.FailedPrecondition, "password change required")
 		}
 
 		newCtx := context.WithValue(ss.Context(), sessions.SessionContextDataKey, sessionContextData)

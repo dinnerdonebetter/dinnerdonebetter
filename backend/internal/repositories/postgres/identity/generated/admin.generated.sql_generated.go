@@ -31,3 +31,24 @@ func (q *Queries) SetUserAccountStatus(ctx context.Context, db DBTX, arg *SetUse
 	}
 	return result.RowsAffected()
 }
+
+const setUserRequiresPasswordChange = `-- name: SetUserRequiresPasswordChange :execrows
+UPDATE users SET
+	last_updated_at = NOW(),
+	requires_password_change = $1
+WHERE archived_at IS NULL
+	AND id = $2
+`
+
+type SetUserRequiresPasswordChangeParams struct {
+	RequiresPasswordChange bool
+	ID                     string
+}
+
+func (q *Queries) SetUserRequiresPasswordChange(ctx context.Context, db DBTX, arg *SetUserRequiresPasswordChangeParams) (int64, error) {
+	result, err := db.ExecContext(ctx, setUserRequiresPasswordChange, arg.RequiresPasswordChange, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}

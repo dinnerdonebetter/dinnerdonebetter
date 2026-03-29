@@ -771,6 +771,21 @@ class AuthenticationManager: AuthenticationManaging {
   }
 
   func logout() async {
+    // Revoke server session (best-effort, using JWT so session ID is available)
+    if !accessToken.isEmpty {
+      do {
+        let manager = try getClientManager()
+        let metadata = manager.authenticatedMetadata(accessToken: self.accessToken)
+        _ = try await manager.client.auth.revokeCurrentSession(
+          Auth_RevokeCurrentSessionRequest(),
+          metadata: metadata,
+          options: manager.defaultCallOptions
+        )
+      } catch {
+        // Proceed with logout even if revocation fails
+      }
+    }
+
     await DeviceTokenRegistrationService.shared.archiveCurrentDeviceToken(authManager: self)
     logOutFromRevenueCat()
     AnalyticsConfiguration.provideEventReporter().reset()

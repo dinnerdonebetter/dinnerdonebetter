@@ -1,9 +1,22 @@
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { listActiveSessions, revokeSession, revokeAllOtherSessions } from '$lib/grpc/clients';
+import { decodeSession, getCookieName } from '$lib/auth/session';
 
-export const load: PageServerLoad = async ({ locals, url }) => {
-  const token = locals.oauthToken;
+/** Extract the JWT from the session cookie (preferred for session-aware calls). */
+function getJwt(cookies: Parameters<PageServerLoad>[0]['cookies']): string | null {
+  const cookieValue = cookies.get(getCookieName());
+  if (!cookieValue) return null;
+  try {
+    return decodeSession(cookieValue).accessToken;
+  } catch {
+    return null;
+  }
+}
+
+export const load: PageServerLoad = async ({ locals, cookies, url }) => {
+  // Prefer JWT for session management so the backend can set isCurrent correctly
+  const token = getJwt(cookies) || locals.oauthToken;
   if (!token) {
     return { sessions: [], error: null, revoked: false, revokedAll: false };
   }
@@ -21,8 +34,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 };
 
 export const actions: Actions = {
-  'revoke': async ({ request, locals }) => {
-    const token = locals.oauthToken;
+  'revoke': async ({ request, locals, cookies }) => {
+    const token = getJwt(cookies) || locals.oauthToken;
     if (!token) throw redirect(302, '/login');
 
     const formData = await request.formData();
@@ -42,8 +55,8 @@ export const actions: Actions = {
     }
   },
 
-  'revoke-all': async ({ locals }) => {
-    const token = locals.oauthToken;
+  'revoke-all': async ({ locals, cookies }) => {
+    const token = getJwt(cookies) || locals.oauthToken;
     if (!token) throw redirect(302, '/login');
 
     try {

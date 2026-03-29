@@ -700,6 +700,20 @@ func (q *Queries) GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]str
 	return items, nil
 }
 
+const getUserRequiresPasswordChange = `-- name: GetUserRequiresPasswordChange :one
+SELECT users.requires_password_change
+FROM users
+WHERE users.archived_at IS NULL
+	AND users.id = $1
+`
+
+func (q *Queries) GetUserRequiresPasswordChange(ctx context.Context, db DBTX, id string) (bool, error) {
+	row := db.QueryRowContext(ctx, getUserRequiresPasswordChange, id)
+	var requires_password_change bool
+	err := row.Scan(&requires_password_change)
+	return requires_password_change, err
+}
+
 const getUserWithUnverifiedTwoFactor = `-- name: GetUserWithUnverifiedTwoFactor :one
 SELECT
 	users.id,
@@ -1703,6 +1717,7 @@ func (q *Queries) UpdateUserLastIndexedAt(ctx context.Context, db DBTX, id strin
 const updateUserPassword = `-- name: UpdateUserPassword :execrows
 UPDATE users SET
 	hashed_password = $1,
+	requires_password_change = FALSE,
 	password_last_changed_at = NOW(),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL

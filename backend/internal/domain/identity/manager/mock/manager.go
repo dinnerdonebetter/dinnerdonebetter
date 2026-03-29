@@ -204,3 +204,14 @@ func (m *IdentityDataManager) SetUserAvatar(ctx context.Context, userID, uploade
 func (m *IdentityDataManager) AdminUpdateUserStatus(ctx context.Context, input *identity.UserAccountStatusUpdateInput) error {
 	return m.Called(ctx, input).Error(0)
 }
+
+// AdminSetPasswordChangeRequired is a mock function.
+func (m *IdentityDataManager) AdminSetPasswordChangeRequired(ctx context.Context, userID string, requiresChange bool) error {
+	return m.Called(ctx, userID, requiresChange).Error(0)
+}
+
+// UserRequiresPasswordChange is a mock function.
+func (m *IdentityDataManager) UserRequiresPasswordChange(ctx context.Context, userID string) (bool, error) {
+	returnValues := m.Called(ctx, userID)
+	return returnValues.Bool(0), returnValues.Error(1)
+}

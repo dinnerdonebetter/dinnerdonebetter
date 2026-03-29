@@ -1514,3 +1514,50 @@ func (r *repository) UpdateUserAccountStatus(ctx context.Context, userID string,
 
 	return nil
 }
+
+func (r *repository) SetUserRequiresPasswordChange(ctx context.Context, userID string, requiresChange bool) error {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return platformerrors.ErrInvalidIDProvided
+	}
+
+	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+
+	rowsChanged, err := r.generatedQuerier.SetUserRequiresPasswordChange(ctx, r.writeDB, &generated.SetUserRequiresPasswordChangeParams{
+		RequiresPasswordChange: requiresChange,
+		ID:                     userID,
+	})
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "setting user requires password change")
+	}
+
+	if rowsChanged == 0 {
+		return sql.ErrNoRows
+	}
+
+	logger.Info("user requires password change updated")
+
+	return nil
+}
+
+func (r *repository) UserRequiresPasswordChange(ctx context.Context, userID string) (bool, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return false, platformerrors.ErrInvalidIDProvided
+	}
+
+	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
+	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
+
+	result, err := r.generatedQuerier.GetUserRequiresPasswordChange(ctx, r.readDB, userID)
+	if err != nil {
+		return false, observability.PrepareAndLogError(err, logger, span, "checking if user requires password change")
+	}
+
+	return result, nil
+}

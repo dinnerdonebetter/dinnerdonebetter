@@ -422,6 +422,12 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = ANY(sqlc.arg(ids)::text[]);
 
+-- name: GetUserRequiresPasswordChange :one
+SELECT users.requires_password_change
+FROM users
+WHERE users.archived_at IS NULL
+	AND users.id = sqlc.arg(id);
+
 -- name: GetUserIDsNeedingIndexing :many
 SELECT users.id
 FROM users
@@ -630,6 +636,7 @@ UPDATE users SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at
 -- name: UpdateUserPassword :execrows
 UPDATE users SET
 	hashed_password = sqlc.arg(hashed_password),
+	requires_password_change = FALSE,
 	password_last_changed_at = NOW(),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL

@@ -284,7 +284,7 @@ struct SeedValidVessel: Codable {
     pb.description_p = description
     pb.slug = slug
     pb.iconPath = iconPath ?? ""
-    pb.shape = shape
+    pb.shape = validVesselShapeFromString(shape)
     pb.capacity = capacity
     if let cu = capacityUnit { pb.capacityUnit = cu.toProtobuf() }
     pb.widthInMillimeters = widthInMillimeters
@@ -341,7 +341,7 @@ struct SeedValidIngredientState: Codable {
     pb.slug = slug
     pb.pastTense = pastTense
     pb.description_p = description
-    pb.attributeType = attributeType
+    pb.attributeType = ingredientStateAttributeTypeFromString(attributeType)
     pb.iconPath = iconPath ?? ""
     return pb
   }
@@ -484,7 +484,6 @@ struct SeedRecipe: Codable {
   let status: String
   let inspiredByRecipeID: String?
   let estimatedPortions: SeedFloat32RangeWithOptionalMax
-  let sealOfApproval: Bool
   let eligibleForMeals: Bool
   let steps: [SeedRecipeStep]
   let media: [SeedRecipeMedia]?
@@ -504,11 +503,10 @@ struct SeedRecipe: Codable {
     pb.portionName = portionName
     pb.pluralPortionName = pluralPortionName
     pb.createdByUser = createdByUser
-    pb.yieldsComponentType = yieldsComponentType ?? ""
+    pb.yieldsComponentType = mealComponentTypeFromString(yieldsComponentType ?? "")
     pb.status = status
     if let rid = inspiredByRecipeID { pb.inspiredByRecipeID = rid }
     pb.estimatedPortions = estimatedPortions.toProtobuf()
-    pb.sealOfApproval = sealOfApproval
     pb.eligibleForMeals = eligibleForMeals
     pb.steps = steps.map { $0.toProtobuf() }
     pb.media = (media ?? []).map { $0.toProtobuf() }
@@ -606,7 +604,7 @@ struct SeedRecipeStepIngredient: Codable {
     pb.quantity = quantity.toProtobuf()
     pb.quantityNotes = quantityNotes ?? ""
     pb.ingredientNotes = ingredientNotes ?? ""
-    if let rid = productOfRecipeID { pb.productOfRecipeID = rid }
+    if let rid = productOfRecipeID { pb.recipeStepProductRecipeID = rid }
     if let pid = recipeStepProductID { pb.recipeStepProductID = pid }
     if let vi = vesselIndex { pb.vesselIndex = UInt32(vi) }
     if let ppu = productPercentageToUse { pb.productPercentageToUse = ppu }
@@ -729,7 +727,7 @@ struct SeedRecipeStepProduct: Codable {
     pb.id = id
     pb.belongsToRecipeStep = belongsToRecipeStep
     pb.name = name
-    pb.type = type
+    pb.type = recipeStepProductTypeFromString(type)
     pb.storageInstructions = storageInstructions ?? ""
     pb.quantityNotes = quantityNotes ?? ""
     if let mu = measurementUnit { pb.measurementUnit = mu.toProtobuf() }
@@ -860,7 +858,7 @@ struct SeedRecipePrepTask: Codable {
     if let t = timeBufferBeforeRecipeInSeconds {
       pb.timeBufferBeforeRecipeInSeconds = t.toProtobuf()
     }
-    pb.recipeSteps = (recipeSteps ?? []).map { $0.toProtobuf() }
+    pb.taskSteps = (recipeSteps ?? []).map { $0.toProtobuf() }
     pb.createdAt = dateToTimestamp(createdAt)
     if let d = lastUpdatedAt { pb.lastUpdatedAt = dateToTimestamp(d) }
     if let d = archivedAt { pb.archivedAt = dateToTimestamp(d) }
@@ -921,7 +919,7 @@ struct SeedMealComponent: Codable {
 
   func toProtobuf() -> Mealplanning_MealComponent {
     var pb = Mealplanning_MealComponent()
-    pb.componentType = componentType
+    pb.componentType = mealComponentTypeFromString(componentType)
     pb.recipe = recipe.toProtobuf()
     pb.recipeScale = recipeScale
     return pb
@@ -935,4 +933,58 @@ private func dateToTimestamp(_ date: Date) -> SwiftProtobuf.Google_Protobuf_Time
   ts.seconds = Int64(date.timeIntervalSince1970)
   ts.nanos = Int32((date.timeIntervalSince1970.truncatingRemainder(dividingBy: 1)) * 1_000_000_000)
   return ts
+}
+
+private func validVesselShapeFromString(_ s: String) -> Mealplanning_ValidVesselShape {
+  switch s {
+  case "hemisphere": return .vesselShapeHemisphere
+  case "rectangle": return .vesselShapeRectangle
+  case "cone": return .vesselShapeCone
+  case "pyramid": return .vesselShapePyramid
+  case "cylinder": return .vesselShapeCylinder
+  case "sphere": return .vesselShapeSphere
+  case "cube": return .vesselShapeCube
+  case "other": return .vesselShapeOther
+  default: return .vesselShapeOther
+  }
+}
+
+private func ingredientStateAttributeTypeFromString(_ s: String)
+  -> Mealplanning_ValidIngredientStateAttributeType
+{
+  switch s {
+  case "texture": return .texture
+  case "consistency": return .consistency
+  case "temperature": return .temperature
+  case "color": return .color
+  case "appearance": return .appearance
+  case "odor": return .odor
+  case "taste": return .taste
+  case "sound": return .sound
+  case "other": return .other
+  default: return .other
+  }
+}
+
+private func mealComponentTypeFromString(_ s: String) -> Mealplanning_MealComponentType {
+  switch s {
+  case "amuse-bouche": return .amuseBouche
+  case "appetizer": return .appetizer
+  case "soup": return .soup
+  case "main": return .main
+  case "salad": return .salad
+  case "beverage": return .beverage
+  case "side": return .side
+  case "dessert": return .dessert
+  default: return .unspecified
+  }
+}
+
+private func recipeStepProductTypeFromString(_ s: String) -> Mealplanning_RecipeStepProductType {
+  switch s {
+  case "ingredient": return .ingredient
+  case "instrument": return .instrument
+  case "vessel": return .vessel
+  default: return .ingredient
+  }
 }

@@ -67,7 +67,7 @@ spec:
             - --interval=3m
             - --events
             - --cloudflare-proxied
-            - --source=ingress
+            - --source=service
             - --domain-filter=dinnerdonebetter.com
             - --cloudflare-dns-records-per-page=5000
           env:

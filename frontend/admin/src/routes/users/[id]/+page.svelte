@@ -5,6 +5,10 @@
   const user = data?.user as Record<string, unknown> | null;
 </script>
 
+{#if data?.passwordChangeUpdated}
+  <p class="success">Password change requirement updated.</p>
+{/if}
+
 {#if data?.error}
   <p class="error">{data.error}</p>
 {:else if user}
@@ -24,6 +28,8 @@
       <dd>{user.emailAddress ?? '-'}</dd>
       <dt>Account status</dt>
       <dd>{user.accountStatus ?? '-'}</dd>
+      <dt>Requires password change</dt>
+      <dd>{user.requiresPasswordChange ? 'Yes' : 'No'}</dd>
     </dl>
   </Card>
 
@@ -68,7 +74,18 @@
 
   <Card>
     <h2 class="card-title">Actions</h2>
-    <Link href="/users/{user.id}/sessions">View &amp; manage sessions</Link>
+    <div class="actions-list">
+      <Link href="/users/{user.id}/sessions">View &amp; manage sessions</Link>
+      {#if user.requiresPasswordChange}
+        <form method="POST" action="?/clear-password-change">
+          <button type="submit" class="btn btn-secondary">Clear password change requirement</button>
+        </form>
+      {:else}
+        <form method="POST" action="?/require-password-change">
+          <button type="submit" class="btn btn-warning">Require password change</button>
+        </form>
+      {/if}
+    </div>
   </Card>
 
   <p><Link href="/users">Back to users</Link></p>
@@ -83,6 +100,31 @@
   }
   .error {
     color: var(--color-error, #b91c1c);
+  }
+  .success {
+    color: var(--color-success, #15803d);
+    margin-bottom: var(--space-md);
+  }
+  .actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: flex-start;
+  }
+  .btn {
+    padding: var(--space-xs) var(--space-md);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+  .btn-warning {
+    background: var(--color-warning, #d97706);
+    color: white;
+  }
+  .btn-secondary {
+    background: var(--color-secondary, #6b7280);
+    color: white;
   }
   .card-title {
     font-size: 1rem;

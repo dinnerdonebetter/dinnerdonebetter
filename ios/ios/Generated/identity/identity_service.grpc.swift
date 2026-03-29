@@ -20,6 +20,18 @@ internal enum Identity_IdentityService {
     internal static let descriptor = GRPCCore.ServiceDescriptor(fullyQualifiedService: "identity.IdentityService")
     /// Namespace for method metadata.
     internal enum Method {
+        /// Namespace for "AdminSetPasswordChangeRequired" metadata.
+        internal enum AdminSetPasswordChangeRequired {
+            /// Request type for "AdminSetPasswordChangeRequired".
+            internal typealias Input = Identity_AdminSetPasswordChangeRequiredRequest
+            /// Response type for "AdminSetPasswordChangeRequired".
+            internal typealias Output = Identity_AdminSetPasswordChangeRequiredResponse
+            /// Descriptor for "AdminSetPasswordChangeRequired".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "identity.IdentityService"),
+                method: "AdminSetPasswordChangeRequired"
+            )
+        }
         /// Namespace for "AdminUpdateUserStatus" metadata.
         internal enum AdminUpdateUserStatus {
             /// Request type for "AdminUpdateUserStatus".
@@ -358,6 +370,7 @@ internal enum Identity_IdentityService {
         }
         /// Descriptors for all methods in the "identity.IdentityService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
+            AdminSetPasswordChangeRequired.descriptor,
             AdminUpdateUserStatus.descriptor,
             AcceptAccountInvitation.descriptor,
             ArchiveAccount.descriptor,
@@ -405,6 +418,25 @@ extension Identity_IdentityService {
     /// You don't need to implement this protocol directly, use the generated
     /// implementation, ``Client``.
     internal protocol ClientProtocol: Sendable {
+        /// Call the "AdminSetPasswordChangeRequired" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Identity_AdminSetPasswordChangeRequiredRequest` message.
+        ///   - serializer: A serializer for `Identity_AdminSetPasswordChangeRequiredRequest` messages.
+        ///   - deserializer: A deserializer for `Identity_AdminSetPasswordChangeRequiredResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func adminSetPasswordChangeRequired<Result>(
+            request: GRPCCore.ClientRequest<Identity_AdminSetPasswordChangeRequiredRequest>,
+            serializer: some GRPCCore.MessageSerializer<Identity_AdminSetPasswordChangeRequiredRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Identity_AdminSetPasswordChangeRequiredResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Identity_AdminSetPasswordChangeRequiredResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
         /// Call the "AdminUpdateUserStatus" method.
         ///
         /// - Parameters:
@@ -952,6 +984,36 @@ extension Identity_IdentityService {
         ///   - client: A `GRPCCore.GRPCClient` providing a communication channel to the service.
         internal init(wrapping client: GRPCCore.GRPCClient<Transport>) {
             self.client = client
+        }
+
+        /// Call the "AdminSetPasswordChangeRequired" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Identity_AdminSetPasswordChangeRequiredRequest` message.
+        ///   - serializer: A serializer for `Identity_AdminSetPasswordChangeRequiredRequest` messages.
+        ///   - deserializer: A deserializer for `Identity_AdminSetPasswordChangeRequiredResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func adminSetPasswordChangeRequired<Result>(
+            request: GRPCCore.ClientRequest<Identity_AdminSetPasswordChangeRequiredRequest>,
+            serializer: some GRPCCore.MessageSerializer<Identity_AdminSetPasswordChangeRequiredRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Identity_AdminSetPasswordChangeRequiredResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Identity_AdminSetPasswordChangeRequiredResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Identity_IdentityService.Method.AdminSetPasswordChangeRequired.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
         }
 
         /// Call the "AdminUpdateUserStatus" method.
@@ -1799,6 +1861,31 @@ extension Identity_IdentityService {
 // Helpers providing default arguments to 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension Identity_IdentityService.ClientProtocol {
+    /// Call the "AdminSetPasswordChangeRequired" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Identity_AdminSetPasswordChangeRequiredRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func adminSetPasswordChangeRequired<Result>(
+        request: GRPCCore.ClientRequest<Identity_AdminSetPasswordChangeRequiredRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Identity_AdminSetPasswordChangeRequiredResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.adminSetPasswordChangeRequired(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Identity_AdminSetPasswordChangeRequiredRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Identity_AdminSetPasswordChangeRequiredResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "AdminUpdateUserStatus" method.
     ///
     /// - Parameters:
@@ -2503,6 +2590,35 @@ extension Identity_IdentityService.ClientProtocol {
 // Helpers providing sugared APIs for 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension Identity_IdentityService.ClientProtocol {
+    /// Call the "AdminSetPasswordChangeRequired" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func adminSetPasswordChangeRequired<Result>(
+        _ message: Identity_AdminSetPasswordChangeRequiredRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Identity_AdminSetPasswordChangeRequiredResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Identity_AdminSetPasswordChangeRequiredRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.adminSetPasswordChangeRequired(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "AdminUpdateUserStatus" method.
     ///
     /// - Parameters:

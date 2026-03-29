@@ -7,6 +7,7 @@ import { encrypt, decrypt } from './crypto';
 
 export interface AuthPayload {
   accessToken: string;
+  refreshToken?: string;
 }
 
 const COOKIE_LIFETIME_SECONDS = 180 * 24 * 60 * 60; // 180 days in seconds

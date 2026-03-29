@@ -122,6 +122,11 @@ func (s *serviceImpl) GetAuthStatus(ctx context.Context, _ *authsvc.GetAuthStatu
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
+	requiresPasswordChange, pcErr := s.identityDataManager.UserRequiresPasswordChange(ctx, sessionContextData.GetUserID())
+	if pcErr != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(pcErr, logger, span, codes.Internal, "checking password change requirement")
+	}
+
 	x := &authsvc.GetAuthStatusResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
@@ -130,6 +135,7 @@ func (s *serviceImpl) GetAuthStatus(ctx context.Context, _ *authsvc.GetAuthStatu
 		AccountStatus:            sessionContextData.Requester.AccountStatus,
 		AccountStatusExplanation: sessionContextData.Requester.AccountStatusExplanation,
 		ActiveAccount:            sessionContextData.GetActiveAccountID(),
+		RequiresPasswordChange:   requiresPasswordChange,
 	}
 
 	return x, nil
@@ -764,6 +770,33 @@ func (s *serviceImpl) RevokeAllOtherSessions(ctx context.Context, _ *authsvc.Rev
 	}
 
 	return &authsvc.RevokeAllOtherSessionsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}, nil
+}
+
+func (s *serviceImpl) RevokeCurrentSession(ctx context.Context, _ *authsvc.RevokeCurrentSessionRequest) (*authsvc.RevokeCurrentSessionResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	sessionID := sessionContextData.GetSessionID()
+	if sessionID == "" {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("session ID not available"), logger, span, codes.FailedPrecondition, "session ID not available — use JWT auth")
+	}
+
+	if err = s.authManager.RevokeSession(ctx, sessionID, sessionContextData.GetUserID()); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to revoke current session")
+	}
+
+	return &authsvc.RevokeCurrentSessionResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
 		},

@@ -1,8 +1,9 @@
 import { env } from '$env/dynamic/private';
 import { redirect } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit';
-import { decodeSession, getCookieName } from '$lib/auth/session';
+import { decodeSession, encodeSession, getCookieName, getCookieOptions } from '$lib/auth/session';
 import { exchangeJwtForOAuth2Token } from '$lib/grpc/oauth2';
+import { exchangeToken } from '$lib/grpc/clients';
 import { initServerOtel } from '$lib/otel/server';
 import { recordRequest } from '$lib/otel/server-metrics';
 import { ServerTiming, ServerTimingHeaderName } from '$lib/server-timing';
@@ -70,8 +71,39 @@ export const handle: Handle = async ({ event, resolve }) => {
     const { accessToken } = await exchangeJwtForOAuth2Token(httpApiUrl, clientId, clientSecret, payload.accessToken);
     event.locals.oauthToken = accessToken;
   } catch {
-    event.cookies.delete(cookieName, { path: '/' });
-    throw redirect(302, LOGIN_PATH);
+    // JWT may be expired — try refreshing with the stored refresh token
+    if (payload.refreshToken) {
+      try {
+        const refreshed = await exchangeToken(payload.refreshToken);
+        const newPayload = {
+          accessToken: refreshed.accessToken,
+          refreshToken: refreshed.refreshToken,
+        };
+        const opts = getCookieOptions();
+        const encoded = encodeSession(newPayload);
+        event.cookies.set(cookieName, encoded, {
+          path: opts.path,
+          httpOnly: opts.httpOnly,
+          secure: opts.secure,
+          sameSite: opts.sameSite,
+          maxAge: opts.maxAge,
+        });
+
+        const { accessToken } = await exchangeJwtForOAuth2Token(
+          httpApiUrl,
+          clientId,
+          clientSecret,
+          refreshed.accessToken,
+        );
+        event.locals.oauthToken = accessToken;
+      } catch {
+        event.cookies.delete(cookieName, { path: '/' });
+        throw redirect(302, LOGIN_PATH);
+      }
+    } else {
+      event.cookies.delete(cookieName, { path: '/' });
+      throw redirect(302, LOGIN_PATH);
+    }
   } finally {
     authEvent.end();
   }

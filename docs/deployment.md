@@ -32,7 +32,7 @@ Publishing a GitHub Release triggers [`.github/workflows/deploy_prod.yaml`](.git
 
 Infrastructure is split into:
 
-- **`infra/deploy/environments/prod/`** — GKE cluster, networking (Cloudflare), email (SendGrid), ingress, cert-manager, external-dns
+- **`infra/deploy/environments/prod/`** — GKE cluster, networking (Cloudflare), email (SendGrid), Caddy (TLS + reverse proxy), external-dns
 - **`backend/deploy/environments/prod/`** — Database, storage, Pub/Sub, search, and application Terraform/Kustomize
 
 ---
