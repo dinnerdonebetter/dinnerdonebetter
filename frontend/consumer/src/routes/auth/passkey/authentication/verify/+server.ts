@@ -35,7 +35,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       return json({ error: 'no access token' }, { status: 500 });
     }
 
-    const encoded = encodeSession({ accessToken });
+    const refreshToken = tokenRes.result?.refreshToken;
+    const encoded = encodeSession({ accessToken, refreshToken });
     const opts = getCookieOptions();
     cookies.set(opts.name, encoded, {
       path: opts.path,

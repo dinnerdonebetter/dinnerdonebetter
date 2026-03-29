@@ -1500,3 +1500,85 @@ func TestServiceImpl_RevokeAllOtherSessions(t *testing.T) {
 		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
 	})
 }
+
+func TestServiceImpl_RevokeCurrentSession(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, authManager, _, _ := buildTestService(t)
+		ctx, sessionData := buildContextWithSessionDataAndSessionID(t)
+
+		authManager.On(reflection.GetMethodName(authManager.RevokeSession), mock.Anything, sessionData.GetSessionID(), sessionData.GetUserID()).Return(nil)
+
+		request := &authsvc.RevokeCurrentSessionRequest{}
+
+		response, err := service.RevokeCurrentSession(ctx, request)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.NotNil(t, response.ResponseDetails)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
+
+		mock.AssertExpectationsForObjects(t, authManager)
+	})
+
+	t.Run("error when session ID not available", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, _ := buildTestService(t)
+		ctx := buildContextWithSessionData(t)
+
+		request := &authsvc.RevokeCurrentSessionRequest{}
+
+		response, err := service.RevokeCurrentSession(ctx, request)
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.FailedPrecondition, grpcErr.Code())
+	})
+
+	t.Run("error fetching session context", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _, _, _ := buildTestService(t)
+		ctx := t.Context()
+
+		request := &authsvc.RevokeCurrentSessionRequest{}
+
+		response, err := service.RevokeCurrentSession(ctx, request)
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
+	})
+
+	t.Run("error revoking session", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, authManager, _, _ := buildTestService(t)
+		ctx, sessionData := buildContextWithSessionDataAndSessionID(t)
+
+		authManager.On(reflection.GetMethodName(authManager.RevokeSession), mock.Anything, sessionData.GetSessionID(), sessionData.GetUserID()).Return(errors.New("oh no"))
+
+		request := &authsvc.RevokeCurrentSessionRequest{}
+
+		response, err := service.RevokeCurrentSession(ctx, request)
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.Internal, grpcErr.Code())
+
+		mock.AssertExpectationsForObjects(t, authManager)
+	})
+}

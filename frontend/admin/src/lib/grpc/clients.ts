@@ -116,3 +116,4 @@ export const getMeasurementUnitConversionMismatches = clients.getMeasurementUnit
 export const adminListSessionsForUser = clients.adminListSessionsForUser;
 export const adminRevokeUserSession = clients.adminRevokeUserSession;
 export const adminRevokeAllUserSessions = clients.adminRevokeAllUserSessions;
+export const revokeCurrentSession = clients.revokeCurrentSession;

@@ -17,6 +17,8 @@ import type {
   ListActiveSessionsResponse,
   RevokeSessionResponse,
   RevokeAllOtherSessionsResponse,
+  RevokeCurrentSessionRequest,
+  RevokeCurrentSessionResponse,
 } from './auth/auth_service_types.js';
 import { IdentityServiceClient } from './identity/identity_service.js';
 import { OAuthServiceClient } from './oauth/oauth_service.js';
@@ -155,6 +157,11 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
       promisifyUnary<AdminRevokeAllUserSessionsRequest, RevokeAllOtherSessionsResponse>(
         get.auth().adminRevokeAllUserSessions.bind(get.auth()),
       )(request, authMetadata(token)),
+
+    revokeCurrentSession: (token: string): Promise<RevokeCurrentSessionResponse> =>
+      promisifyUnary<RevokeCurrentSessionRequest, RevokeCurrentSessionResponse>(
+        get.auth().revokeCurrentSession.bind(get.auth()),
+      )({}, authMetadata(token)),
 
     // Identity – request types are intentionally loose; callers pass proto-shaped objects
     getUser: (token: string, request: { userId: string }) =>

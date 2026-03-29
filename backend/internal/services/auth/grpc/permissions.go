@@ -39,6 +39,7 @@ func ProvideMethodPermissions() AuthMethodPermissions {
 		authsvc.AuthService_ListActiveSessions_FullMethodName:            noPerms,
 		authsvc.AuthService_RevokeSession_FullMethodName:                 noPerms,
 		authsvc.AuthService_RevokeAllOtherSessions_FullMethodName:        noPerms,
+		authsvc.AuthService_RevokeCurrentSession_FullMethodName:          noPerms,
 		authsvc.AuthService_AdminListSessionsForUser_FullMethodName:      {authorization.ManageUserSessionsPermission},
 		authsvc.AuthService_AdminRevokeUserSession_FullMethodName:        {authorization.ManageUserSessionsPermission},
 		authsvc.AuthService_AdminRevokeAllUserSessions_FullMethodName:    {authorization.ManageUserSessionsPermission},

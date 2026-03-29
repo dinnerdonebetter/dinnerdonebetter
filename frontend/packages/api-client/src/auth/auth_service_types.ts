@@ -309,6 +309,12 @@ export interface RevokeAllOtherSessionsResponse {
   responseDetails: ResponseDetails | undefined;
 }
 
+export interface RevokeCurrentSessionRequest {}
+
+export interface RevokeCurrentSessionResponse {
+  responseDetails: ResponseDetails | undefined;
+}
+
 export interface AdminListSessionsForUserRequest {
   userId: string;
   filter: QueryFilter | undefined;
@@ -5381,6 +5387,116 @@ export const RevokeAllOtherSessionsResponse: MessageFns<RevokeAllOtherSessionsRe
     object: I,
   ): RevokeAllOtherSessionsResponse {
     const message = createBaseRevokeAllOtherSessionsResponse();
+    message.responseDetails =
+      object.responseDetails !== undefined && object.responseDetails !== null
+        ? ResponseDetails.fromPartial(object.responseDetails)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseRevokeCurrentSessionRequest(): RevokeCurrentSessionRequest {
+  return {};
+}
+
+export const RevokeCurrentSessionRequest: MessageFns<RevokeCurrentSessionRequest> = {
+  encode(_: RevokeCurrentSessionRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeCurrentSessionRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeCurrentSessionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): RevokeCurrentSessionRequest {
+    return {};
+  },
+
+  toJSON(_: RevokeCurrentSessionRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeCurrentSessionRequest>, I>>(base?: I): RevokeCurrentSessionRequest {
+    return RevokeCurrentSessionRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeCurrentSessionRequest>, I>>(_: I): RevokeCurrentSessionRequest {
+    const message = createBaseRevokeCurrentSessionRequest();
+    return message;
+  },
+};
+
+function createBaseRevokeCurrentSessionResponse(): RevokeCurrentSessionResponse {
+  return { responseDetails: undefined };
+}
+
+export const RevokeCurrentSessionResponse: MessageFns<RevokeCurrentSessionResponse> = {
+  encode(message: RevokeCurrentSessionResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.responseDetails !== undefined) {
+      ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RevokeCurrentSessionResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRevokeCurrentSessionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RevokeCurrentSessionResponse {
+    return {
+      responseDetails: isSet(object.responseDetails)
+        ? ResponseDetails.fromJSON(object.responseDetails)
+        : isSet(object.response_details)
+          ? ResponseDetails.fromJSON(object.response_details)
+          : undefined,
+    };
+  },
+
+  toJSON(message: RevokeCurrentSessionResponse): unknown {
+    const obj: any = {};
+    if (message.responseDetails !== undefined) {
+      obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RevokeCurrentSessionResponse>, I>>(base?: I): RevokeCurrentSessionResponse {
+    return RevokeCurrentSessionResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RevokeCurrentSessionResponse>, I>>(object: I): RevokeCurrentSessionResponse {
+    const message = createBaseRevokeCurrentSessionResponse();
     message.responseDetails =
       object.responseDetails !== undefined && object.responseDetails !== null
         ? ResponseDetails.fromPartial(object.responseDetails)

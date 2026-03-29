@@ -35,6 +35,10 @@ import type {
   RevokeSessionResponse,
   RevokeAllOtherSessionsRequest,
   RevokeAllOtherSessionsResponse,
+  RevokeCurrentSessionRequest,
+  RevokeCurrentSessionResponse,
+  ExchangeTokenRequest,
+  ExchangeTokenResponse,
 } from './auth/auth_service_types.js';
 import { IdentityServiceClient } from './identity/identity_service.js';
 import type {
@@ -257,6 +261,17 @@ export function createGrpcClients(config: GrpcClientConfig) {
       promisifyUnary<RevokeAllOtherSessionsRequest, RevokeAllOtherSessionsResponse>(
         getAuthClient().revokeAllOtherSessions.bind(getAuthClient()),
       )({}, authMetadata(oauth2Token)),
+
+    revokeCurrentSession: (token: string): Promise<RevokeCurrentSessionResponse> =>
+      promisifyUnary<RevokeCurrentSessionRequest, RevokeCurrentSessionResponse>(
+        getAuthClient().revokeCurrentSession.bind(getAuthClient()),
+      )({}, authMetadata(token)),
+
+    exchangeToken: (refreshToken: string, desiredAccountId?: string): Promise<ExchangeTokenResponse> =>
+      promisifyUnary<ExchangeTokenRequest, ExchangeTokenResponse>(getAuthClient().exchangeToken.bind(getAuthClient()))(
+        { refreshToken, desiredAccountId: desiredAccountId ?? '' },
+        emptyMetadata,
+      ),
 
     getAccountsForUser: (
       oauth2Token: string,

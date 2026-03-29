@@ -108,6 +108,10 @@ test:
 	(cd frontend && $(MAKE) test)
 	(cd ios && $(MAKE) test)
 
+.PHONY: pre_commit
+pre_commit: proto format test lint
+	(cd backend && ($MAKE) generated_files)
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Frontend dev
 # ──────────────────────────────────────────────────────────────────────────────
@@ -141,6 +145,13 @@ deploy_prod_infra:
 	./infra/scripts/terraform_apply_prod.sh -auto-approve
 	(cd backend && ./scripts/terraform_apply_prod.sh -auto-approve)
 
+# Destroy prod Terraform: backend first (k8s resources), then infra (GKE, networking).
+# Pass args through, e.g. make destroy_prod_infra ARGS="-auto-approve"
+.PHONY: destroy_prod_infra
+destroy_prod_infra:
+	(cd backend && ./scripts/terraform_destroy_prod.sh -auto-approve)
+	./infra/scripts/terraform_destroy_prod.sh -auto-approve
+
 # Prod deploy + verify. Run from repo root. Requires kubectl pointed at prod, grpcurl.
 .PHONY: deploy_prod_software
 deploy_prod_software:
@@ -151,26 +162,12 @@ deploy_prod_software:
 deploy_prod_frontend:
 	./scripts/deploy-prod-frontend.sh
 
-# Destroy prod Terraform: backend first (k8s resources), then infra (GKE, networking).
-# Pass args through, e.g. make destroy_prod_infra ARGS="-auto-approve"
-.PHONY: destroy_prod_infra
-destroy_prod_infra:
-	(cd backend && ./scripts/terraform_destroy_prod.sh -auto-approve)
-	./infra/scripts/terraform_destroy_prod.sh -auto-approve
-
 .PHONY: verify_prod
 verify_prod:
 	skaffold verify --filename=skaffold.yaml --profile prod
 
 .PHONY: full_prod_deploy
 full_prod_deploy: deploy_prod_infra deploy_prod_software verify_prod
-
-# Destroy prod Terraform: backend first (k8s resources), then infra (GKE, networking).
-# Pass args through, e.g. make destroy_prod_infra ARGS="-auto-approve"
-.PHONY: destroy_prod_infra
-destroy_prod_infra:
-	(cd backend && ./scripts/terraform_destroy_prod.sh -auto-approve)
-	./infra/scripts/terraform_destroy_prod.sh -auto-approve
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Protobuf generation
@@ -209,6 +206,9 @@ proto_swift: ensure_protoc-gen-swift_installed ensure_protoc-gen-grpc-swift_inst
 	mv $(ARTIFACTS_DIR)/proto_swift $(PROTO_OUTPUT_IOS_PATH)
 	(cd ios && $(MAKE) format)
 
+# Hand-written files in the TS proto output directory that must survive regeneration
+PROTO_TS_HANDWRITTEN := index.ts create-clients.ts admin-clients.ts
+
 .PHONY: proto_typescript
 proto_typescript: ensure_protoc_installed ensure_proto_ts_plugin_installed
 	rm -rf $(ARTIFACTS_DIR)/proto_typescript
@@ -219,8 +219,20 @@ proto_typescript: ensure_protoc_installed ensure_proto_ts_plugin_installed
 		--ts_proto_opt=esModuleInterop=true \
 		--proto_path proto/ \
 		$(PROTO_FILES_PATH)
+	mkdir -p $(ARTIFACTS_DIR)/proto_ts_handwritten
+	for f in $(PROTO_TS_HANDWRITTEN); do \
+		if [ -f $(PROTO_TS_OUTPUT_PATH)/$$f ]; then \
+			cp $(PROTO_TS_OUTPUT_PATH)/$$f $(ARTIFACTS_DIR)/proto_ts_handwritten/$$f; \
+		fi; \
+	done
 	rm -rf $(PROTO_TS_OUTPUT_PATH)
 	mv $(ARTIFACTS_DIR)/proto_typescript $(PROTO_TS_OUTPUT_PATH)
+	for f in $(PROTO_TS_HANDWRITTEN); do \
+		if [ -f $(ARTIFACTS_DIR)/proto_ts_handwritten/$$f ]; then \
+			cp $(ARTIFACTS_DIR)/proto_ts_handwritten/$$f $(PROTO_TS_OUTPUT_PATH)/$$f; \
+		fi; \
+	done
+	rm -rf $(ARTIFACTS_DIR)/proto_ts_handwritten
 	(cd frontend && $(MAKE) format)
 
 .PHONY: proto

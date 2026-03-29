@@ -770,6 +770,33 @@ func (s *serviceImpl) RevokeAllOtherSessions(ctx context.Context, _ *authsvc.Rev
 	}, nil
 }
 
+func (s *serviceImpl) RevokeCurrentSession(ctx context.Context, _ *authsvc.RevokeCurrentSessionRequest) (*authsvc.RevokeCurrentSessionResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.fetchSessionContext(ctx)
+	if err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	sessionID := sessionContextData.GetSessionID()
+	if sessionID == "" {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("session ID not available"), logger, span, codes.FailedPrecondition, "session ID not available — use JWT auth")
+	}
+
+	if err = s.authManager.RevokeSession(ctx, sessionID, sessionContextData.GetUserID()); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to revoke current session")
+	}
+
+	return &authsvc.RevokeCurrentSessionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}, nil
+}
+
 func (s *serviceImpl) AdminListSessionsForUser(ctx context.Context, request *authsvc.AdminListSessionsForUserRequest) (*authsvc.ListActiveSessionsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
