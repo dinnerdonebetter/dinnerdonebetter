@@ -46,7 +46,6 @@ func TestRecipeStepProducts_CompleteLifecycle(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var (
@@ -73,7 +72,7 @@ func TestRecipeStepProducts_CompleteLifecycle(T *testing.T) {
 		createdRecipeStepProduct := converters.ConvertGRPCRecipeStepProductToRecipeStepProduct(createdRecipeStepProductRes.Created)
 		checkRecipeStepProductEquality(t, -1, -1, exampleRecipeStepProduct, createdRecipeStepProduct)
 
-		retrievedRecipeStepProductRes, err := userClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
+		retrievedRecipeStepProductRes, err := adminClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
 			RecipeId:            createdRecipe.ID,
 			RecipeStepId:        createdRecipeStepID,
 			RecipeStepProductId: createdRecipeStepProduct.ID,
@@ -97,7 +96,7 @@ func TestRecipeStepProducts_CompleteLifecycle(T *testing.T) {
 		})
 		require.NoError(t, err)
 
-		retrievedRecipeStepProductRes, err = userClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
+		retrievedRecipeStepProductRes, err = adminClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
 			RecipeId:            createdRecipe.ID,
 			RecipeStepId:        createdRecipeStepID,
 			RecipeStepProductId: createdRecipeStepProduct.ID,
@@ -110,14 +109,14 @@ func TestRecipeStepProducts_CompleteLifecycle(T *testing.T) {
 		checkRecipeStepProductEquality(t, -1, -1, newRecipeStepProduct, actual)
 		assert.NotNil(t, actual.LastUpdatedAt)
 
-		_, err = userClient.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
+		_, err = adminClient.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
 			RecipeId:            createdRecipe.ID,
 			RecipeStepId:        createdRecipeStepID,
 			RecipeStepProductId: createdRecipeStepProduct.ID,
 		})
 		assert.NoError(t, err)
 
-		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
+		_, err = adminClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -135,7 +134,6 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var (
@@ -164,7 +162,7 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 			createdRecipeStepProduct := converters.ConvertGRPCRecipeStepProductToRecipeStepProduct(createdRecipeStepProductRes.Created)
 			checkRecipeStepProductEquality(t, -1, -1, exampleRecipeStepProduct, createdRecipeStepProduct)
 
-			retrievedRecipeStepProductRes, err := userClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
+			retrievedRecipeStepProductRes, err := adminClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
 				RecipeId:            createdRecipe.ID,
 				RecipeStepId:        createdRecipeStepID,
 				RecipeStepProductId: createdRecipeStepProduct.ID,
@@ -178,7 +176,7 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 		}
 
 		// assert recipe step product list equality
-		actual, err := userClient.GetRecipeStepProducts(ctx, &mealplanninggrpc.GetRecipeStepProductsRequest{
+		actual, err := adminClient.GetRecipeStepProducts(ctx, &mealplanninggrpc.GetRecipeStepProductsRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -192,7 +190,7 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 		)
 
 		for _, createdRecipeStepProduct := range expected {
-			_, err = userClient.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
+			_, err = adminClient.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
 				RecipeId:            createdRecipe.ID,
 				RecipeStepId:        createdRecipeStepID,
 				RecipeStepProductId: createdRecipeStepProduct.ID,
@@ -200,7 +198,7 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 			assert.NoError(t, err)
 		}
 
-		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
+		_, err = adminClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -208,5 +206,67 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
+	})
+}
+
+func TestRecipeStepProducts_OwnershipDenial(T *testing.T) {
+	T.Parallel()
+
+	T.Run("non-owner cannot create recipe step product", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+
+		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
+		exampleRecipeStepProductInput := mpconverters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
+		_, err := otherUserClient.CreateRecipeStepProduct(ctx, &mealplanninggrpc.CreateRecipeStepProductRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStep.ID,
+			Input:        converters.ConvertRecipeStepProductCreationRequestInputToGRPCRecipeStepProductCreationRequestInput(exampleRecipeStepProductInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("non-owner cannot update recipe step product", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+		createdRecipeStepProduct := createdRecipeStep.Products[0]
+
+		newRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
+		updateInput := mpconverters.ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(newRecipeStepProduct)
+		_, err := otherUserClient.UpdateRecipeStepProduct(ctx, &mealplanninggrpc.UpdateRecipeStepProductRequest{
+			RecipeId:            createdRecipe.ID,
+			RecipeStepId:        createdRecipeStep.ID,
+			RecipeStepProductId: createdRecipeStepProduct.ID,
+			Input:               converters.ConvertRecipeStepProductUpdateRequestInputToGRPCRecipeStepProductUpdateRequestInput(updateInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("non-owner cannot archive recipe step product", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+		createdRecipeStepProduct := createdRecipeStep.Products[0]
+
+		_, err := otherUserClient.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
+			RecipeId:            createdRecipe.ID,
+			RecipeStepId:        createdRecipeStep.ID,
+			RecipeStepProductId: createdRecipeStepProduct.ID,
+		})
+		require.Error(t, err)
 	})
 }

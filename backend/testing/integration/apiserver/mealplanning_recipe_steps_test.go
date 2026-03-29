@@ -247,6 +247,61 @@ func TestRecipeSteps_Listing(T *testing.T) {
 	})
 }
 
+func TestRecipeSteps_OwnershipDenial(T *testing.T) {
+	T.Parallel()
+
+	T.Run("non-owner cannot create recipe step", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		exampleRecipeStep := fakes.BuildFakeRecipeStep()
+		exampleRecipeStepInput := mpconverters.ConvertRecipeStepToRecipeStepCreationRequestInput(exampleRecipeStep)
+		_, err := otherUserClient.CreateRecipeStep(ctx, &mealplanninggrpc.CreateRecipeStepRequest{
+			RecipeId: createdRecipe.ID,
+			Input:    converters.ConvertRecipeStepCreationRequestInputToGRPCRecipeStepCreationRequestInput(exampleRecipeStepInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("non-owner cannot update recipe step", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+
+		newRecipeStep := fakes.BuildFakeRecipeStep()
+		updateInput := mpconverters.ConvertRecipeStepToRecipeStepUpdateRequestInput(newRecipeStep)
+		_, err := otherUserClient.UpdateRecipeStep(ctx, &mealplanninggrpc.UpdateRecipeStepRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStep.ID,
+			Input:        converters.ConvertRecipeStepUpdateRequestInputToGRPCRecipeStepUpdateRequestInput(updateInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("non-owner cannot archive recipe step", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+
+		_, err := otherUserClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStep.ID,
+		})
+		require.Error(t, err)
+	})
+}
+
 /*
 
 // TODO: uncomment me.
