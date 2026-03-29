@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// CreateValidInstrumentsPermission is a permission.
 	CreateValidInstrumentsPermission Permission = "create.valid_instruments"
@@ -367,7 +363,7 @@ const (
 
 var (
 	// MealPlanningPermissions contains all meal planning-related permissions.
-	MealPlanningPermissions = []gorbac.Permission{
+	MealPlanningPermissions = []Permission{
 		CreateValidInstrumentsPermission,
 		ReadValidInstrumentsPermission,
 		SearchValidInstrumentsPermission,

@@ -84,7 +84,10 @@ func (x *ContextData) GetSessionID() string {
 
 // AccountRolePermissionsChecker returns the relevant AccountRolePermissionsChecker.
 func (x *ContextData) AccountRolePermissionsChecker() authorization.AccountRolePermissionsChecker {
-	return x.AccountPermissions[x.ActiveAccountID]
+	if checker, ok := x.AccountPermissions[x.ActiveAccountID]; ok {
+		return checker
+	}
+	return authorization.NewAccountRolePermissionChecker(nil)
 }
 
 // ServiceRolePermissionChecker returns the relevant ServiceRolePermissionChecker.

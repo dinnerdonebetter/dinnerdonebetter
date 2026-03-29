@@ -154,7 +154,6 @@ SELECT
 	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
-	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
@@ -235,7 +234,6 @@ type GetAccountInvitationByAccountAndIDRow struct {
 	UserRequiresPasswordChange               bool
 	UserTwoFactorSecret                      string
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
-	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
 	UserBirthday                             sql.NullTime
@@ -305,7 +303,6 @@ func (q *Queries) GetAccountInvitationByAccountAndID(ctx context.Context, db DBT
 		&i.UserRequiresPasswordChange,
 		&i.UserTwoFactorSecret,
 		&i.UserTwoFactorSecretVerifiedAt,
-		&i.UserServiceRole,
 		&i.UserUserAccountStatus,
 		&i.UserUserAccountStatusExplanation,
 		&i.UserBirthday,
@@ -375,7 +372,6 @@ SELECT
 	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
-	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
@@ -456,7 +452,6 @@ type GetAccountInvitationByEmailAndTokenRow struct {
 	UserRequiresPasswordChange               bool
 	UserTwoFactorSecret                      string
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
-	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
 	UserBirthday                             sql.NullTime
@@ -526,7 +521,6 @@ func (q *Queries) GetAccountInvitationByEmailAndToken(ctx context.Context, db DB
 		&i.UserRequiresPasswordChange,
 		&i.UserTwoFactorSecret,
 		&i.UserTwoFactorSecretVerifiedAt,
-		&i.UserServiceRole,
 		&i.UserUserAccountStatus,
 		&i.UserUserAccountStatusExplanation,
 		&i.UserBirthday,
@@ -596,7 +590,6 @@ SELECT
 	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
-	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
@@ -671,7 +664,6 @@ type GetAccountInvitationByTokenRow struct {
 	UserRequiresPasswordChange               bool
 	UserTwoFactorSecret                      string
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
-	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
 	UserBirthday                             sql.NullTime
@@ -741,7 +733,6 @@ func (q *Queries) GetAccountInvitationByToken(ctx context.Context, db DBTX, toke
 		&i.UserRequiresPasswordChange,
 		&i.UserTwoFactorSecret,
 		&i.UserTwoFactorSecretVerifiedAt,
-		&i.UserServiceRole,
 		&i.UserUserAccountStatus,
 		&i.UserUserAccountStatusExplanation,
 		&i.UserBirthday,
@@ -811,7 +802,6 @@ SELECT
 	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
-	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
@@ -892,7 +882,6 @@ type GetAccountInvitationByTokenAndIDRow struct {
 	UserRequiresPasswordChange               bool
 	UserTwoFactorSecret                      string
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
-	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
 	UserBirthday                             sql.NullTime
@@ -962,7 +951,6 @@ func (q *Queries) GetAccountInvitationByTokenAndID(ctx context.Context, db DBTX,
 		&i.UserRequiresPasswordChange,
 		&i.UserTwoFactorSecret,
 		&i.UserTwoFactorSecretVerifiedAt,
-		&i.UserServiceRole,
 		&i.UserUserAccountStatus,
 		&i.UserUserAccountStatusExplanation,
 		&i.UserBirthday,
@@ -1032,7 +1020,6 @@ SELECT
 	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
-	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
@@ -1155,7 +1142,6 @@ type GetPendingInvitesForUserRow struct {
 	UserRequiresPasswordChange               bool
 	UserTwoFactorSecret                      string
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
-	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
 	UserBirthday                             sql.NullTime
@@ -1243,7 +1229,6 @@ func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *Ge
 			&i.UserRequiresPasswordChange,
 			&i.UserTwoFactorSecret,
 			&i.UserTwoFactorSecretVerifiedAt,
-			&i.UserServiceRole,
 			&i.UserUserAccountStatus,
 			&i.UserUserAccountStatusExplanation,
 			&i.UserBirthday,
@@ -1325,7 +1310,6 @@ SELECT
 	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
-	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
@@ -1447,7 +1431,6 @@ type GetPendingInvitesFromUserRow struct {
 	UserRequiresPasswordChange               bool
 	UserTwoFactorSecret                      string
 	UserTwoFactorSecretVerifiedAt            sql.NullTime
-	UserServiceRole                          string
 	UserUserAccountStatus                    string
 	UserUserAccountStatusExplanation         string
 	UserBirthday                             sql.NullTime
@@ -1535,7 +1518,6 @@ func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *G
 			&i.UserRequiresPasswordChange,
 			&i.UserTwoFactorSecret,
 			&i.UserTwoFactorSecretVerifiedAt,
-			&i.UserServiceRole,
 			&i.UserUserAccountStatus,
 			&i.UserUserAccountStatusExplanation,
 			&i.UserBirthday,

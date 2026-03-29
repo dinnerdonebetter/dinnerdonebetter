@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	authfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/fakes"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/converters"
@@ -15,6 +16,7 @@ import (
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -182,17 +184,18 @@ func TestQuerier_Integration_Users(t *testing.T) {
 
 	assert.NoError(t, dbc.MarkUserEmailAddressAsVerified(ctx, firstUser.ID, token))
 
-	res, err := dbc.writeDB.ExecContext(ctx, "UPDATE users SET service_role = $1, two_factor_secret_verified_at = NOW() WHERE id = $2", "service_admin", firstUser.ID)
+	// Promote to service_admin role and verify 2FA.
+	_, err = dbc.writeDB.ExecContext(ctx, "UPDATE user_role_assignments SET archived_at = NOW() WHERE user_id = $1 AND account_id IS NULL AND archived_at IS NULL", firstUser.ID)
 	assert.NoError(t, err)
-	rowsAffected, err := res.RowsAffected()
+	_, err = dbc.writeDB.ExecContext(ctx, "INSERT INTO user_role_assignments (id, user_id, role_id) VALUES ($1, $2, $3)", identifiers.New(), firstUser.ID, authorization.ServiceAdminRoleID)
 	assert.NoError(t, err)
-	assert.Equal(t, rowsAffected, int64(1))
+	_, err = dbc.writeDB.ExecContext(ctx, "UPDATE users SET two_factor_secret_verified_at = NOW() WHERE id = $1", firstUser.ID)
+	assert.NoError(t, err)
 
 	u, err = dbc.GetAdminUserByUsername(ctx, firstUser.Username)
 	assert.NoError(t, err)
 	firstUser.AccountStatus = u.AccountStatus
 	firstUser.AccountStatusExplanation = u.AccountStatusExplanation
-	firstUser.ServiceRole = u.ServiceRole
 	firstUser.EmailAddressVerifiedAt = u.EmailAddressVerifiedAt
 	firstUser.TwoFactorSecretVerifiedAt = u.TwoFactorSecretVerifiedAt
 	firstUser.LastUpdatedAt = u.LastUpdatedAt

@@ -93,11 +93,9 @@ func (r *repository) GetAccount(ctx context.Context, accountID string) (*identit
 				LastName:                   result.UserLastName,
 				EmailAddress:               result.UserEmailAddress,
 				EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.UserEmailAddressVerifiedAt),
-				ServiceRole:                result.UserServiceRole,
 				RequiresPasswordChange:     result.UserRequiresPasswordChange,
 			},
 			BelongsToAccount: result.MembershipBelongsToAccount,
-			AccountRole:      result.MembershipAccountRole,
 			DefaultAccount:   result.MembershipDefaultAccount,
 		})
 	}
@@ -267,10 +265,20 @@ func (r *repository) CreateAccount(ctx context.Context, input *identity.AccountD
 		ID:               accountMembershipID,
 		BelongsToUser:    account.BelongsToUser,
 		BelongsToAccount: account.ID,
-		AccountRole:      authorization.AccountAdminRole.String(),
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing account membership creation query")
+	}
+
+	// Account creators get account_admin role.
+	if err = r.generatedQuerier.AssignRoleToUser(ctx, tx, &generated.AssignRoleToUserParams{
+		ID:        identifiers.New(),
+		UserID:    account.BelongsToUser,
+		RoleID:    authorization.AccountAdminRoleID,
+		AccountID: sql.NullString{String: account.ID, Valid: true},
+	}); err != nil {
+		r.RollbackTransaction(ctx, tx)
+		return nil, observability.PrepareAndLogError(err, logger, span, "assigning account role")
 	}
 
 	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{

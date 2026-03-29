@@ -1,29 +1,15 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
-var _ gorbac.Permission = (*Permission)(nil)
-
 type (
+	role int
+
 	// Permission is a simple string alias.
 	Permission string
 )
 
-// ID implements the gorbac Permission interface.
-func (p Permission) ID() string {
-	return string(p)
-}
-
-// Match implements the gorbac Permission interface.
-func (p Permission) Match(perm gorbac.Permission) bool {
-	return p.ID() == perm.ID()
-}
-
 var (
 	// ServiceAdminPermissions is every service admin permission.
-	ServiceAdminPermissions = []gorbac.Permission{
+	ServiceAdminPermissions = []Permission{
 		ReadUserDataPermission,
 		UpdateUserStatusPermission,
 		ReadUserPermission,
@@ -54,8 +40,8 @@ var (
 		ArchiveSubscriptionsPermission,
 	}
 
-	// ServiceDataAdminPermissions is every service admin permission.
-	ServiceDataAdminPermissions = []gorbac.Permission{
+	// ServiceDataAdminPermissions is every service data admin permission.
+	ServiceDataAdminPermissions = []Permission{
 		CreateValidInstrumentsPermission,
 		UpdateValidInstrumentsPermission,
 		ArchiveValidInstrumentsPermission,
@@ -101,7 +87,7 @@ var (
 	}
 
 	// AccountAdminPermissions is every account admin permission.
-	AccountAdminPermissions = []gorbac.Permission{
+	AccountAdminPermissions = []Permission{
 		UpdateAccountPermission,
 		ArchiveAccountPermission,
 		TransferAccountPermission,
@@ -148,7 +134,7 @@ var (
 	}
 
 	// AccountMemberPermissions is every account member permission.
-	AccountMemberPermissions = []gorbac.Permission{
+	AccountMemberPermissions = []Permission{
 		ReportAnalyticsEventsPermission,
 		ReadWebhooksPermission,
 		ReadIssueReportsPermission,
@@ -273,9 +259,6 @@ var (
 		ArchiveWaitlistSignupsPermission,
 		ReadWaitlistsPermission,
 		ReadWaitlistSignupsPermission,
-		CreateWaitlistSignupsPermission,
-		UpdateWaitlistSignupsPermission,
-		ArchiveWaitlistSignupsPermission,
 		ReadValidPrepTaskConfigsPermission,
 		CreateCheckoutSessionPermission,
 		CancelSubscriptionPermission,
@@ -284,26 +267,3 @@ var (
 		ReadSubscriptionsPermission,
 	}
 )
-
-func init() {
-	// assign service admin permissions.
-	for _, perm := range ServiceAdminPermissions {
-		must(serviceAdmin.Assign(perm))
-	}
-
-	// assign service data admin permissions.
-	for _, perm := range ServiceDataAdminPermissions {
-		must(serviceDataAdmin.Assign(perm))
-		must(serviceAdmin.Assign(perm)) // these aren't separate things yet
-	}
-
-	// assign account admin permissions.
-	for _, perm := range AccountAdminPermissions {
-		must(accountAdmin.Assign(perm))
-	}
-
-	// assign account member permissions.
-	for _, perm := range AccountMemberPermissions {
-		must(accountMember.Assign(perm))
-	}
-}

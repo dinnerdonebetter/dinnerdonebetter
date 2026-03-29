@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// CreateUploadedMediaPermission is an account member permission.
 	CreateUploadedMediaPermission Permission = "create.uploaded_media"
@@ -17,7 +13,7 @@ const (
 
 var (
 	// UploadedMediaPermissions contains all uploaded media-related permissions.
-	UploadedMediaPermissions = []gorbac.Permission{
+	UploadedMediaPermissions = []Permission{
 		CreateUploadedMediaPermission,
 		ReadUploadedMediaPermission,
 		UpdateUploadedMediaPermission,

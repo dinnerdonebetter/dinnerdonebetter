@@ -1,6 +1,7 @@
 package authorization
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,9 @@ func TestPermissions(T *testing.T) {
 	T.Run("account admin", func(t *testing.T) {
 		t.Parallel()
 
-		permissionChecker := NewAccountRolePermissionChecker(AccountAdminRoleName)
+		// account admin gets its own permissions plus inherited account member permissions
+		allPerms := slices.Concat(AccountAdminPermissions, AccountMemberPermissions)
+		permissionChecker := NewAccountRolePermissionChecker(allPerms)
 
 		assert.False(t, permissionChecker.HasPermission(UpdateUserStatusPermission))
 		assert.False(t, permissionChecker.HasPermission(ReadUserPermission))
@@ -139,7 +142,7 @@ func TestPermissions(T *testing.T) {
 	T.Run("account member", func(t *testing.T) {
 		t.Parallel()
 
-		permissionChecker := NewAccountRolePermissionChecker(AccountMemberRoleName)
+		permissionChecker := NewAccountRolePermissionChecker(AccountMemberPermissions)
 
 		assert.False(t, permissionChecker.HasPermission(UpdateUserStatusPermission))
 		assert.False(t, permissionChecker.HasPermission(ReadUserPermission))

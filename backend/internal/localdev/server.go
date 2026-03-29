@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	apiserver "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
@@ -34,6 +35,7 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/redis"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
@@ -71,9 +73,12 @@ func CreatePremadeAdminUser(
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	// one-off query because I really don't want to make this functionality concrete
-	if _, err = dbClient.WriteDB().Exec(fmt.Sprintf("UPDATE users SET service_role='service_admin' WHERE id='%s'", user.ID)); err != nil {
-		return nil, fmt.Errorf("failed to update user: %w", err)
+	// Promote user to service_admin by archiving old service role and assigning new one.
+	if _, err = dbClient.WriteDB().Exec("UPDATE user_role_assignments SET archived_at = NOW() WHERE user_id = $1 AND account_id IS NULL AND archived_at IS NULL", user.ID); err != nil {
+		return nil, fmt.Errorf("failed to archive old service role: %w", err)
+	}
+	if _, err = dbClient.WriteDB().Exec("INSERT INTO user_role_assignments (id, user_id, role_id) VALUES ($1, $2, $3)", identifiers.New(), user.ID, authorization.ServiceAdminRoleID); err != nil {
+		return nil, fmt.Errorf("failed to assign service_admin role: %w", err)
 	}
 
 	if err = identityRepo.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {

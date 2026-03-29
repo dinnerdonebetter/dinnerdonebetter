@@ -107,15 +107,15 @@ func TestUsers_PermissionChecking(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		response, err := testClient.CheckPermissions(ctx, &authsvc.UserPermissionsRequestInput{Permissions: []string{
-			authorization.ImpersonateUserPermission.ID(),
-			authorization.ReadWebhooksPermission.ID(), // permission everyone has
+			string(authorization.ImpersonateUserPermission),
+			string(authorization.ReadWebhooksPermission), // permission everyone has
 		}})
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
 		assert.Equal(t, response.Permissions, map[string]bool{
-			authorization.ImpersonateUserPermission.ID(): false,
-			authorization.ReadWebhooksPermission.ID():    true,
+			string(authorization.ImpersonateUserPermission): false,
+			string(authorization.ReadWebhooksPermission):    true,
 		})
 	})
 
@@ -125,7 +125,7 @@ func TestUsers_PermissionChecking(T *testing.T) {
 
 		testClient := buildUnauthenticatedGRPCClientForTest(t)
 
-		response, err := testClient.CheckPermissions(ctx, &authsvc.UserPermissionsRequestInput{Permissions: []string{authorization.ReadWebhooksPermission.ID()}})
+		response, err := testClient.CheckPermissions(ctx, &authsvc.UserPermissionsRequestInput{Permissions: []string{string(authorization.ReadWebhooksPermission)}})
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})

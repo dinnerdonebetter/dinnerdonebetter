@@ -21,7 +21,6 @@ var userSchema = map[string]any{
 	"FirstName":     stringField("The user's first name"),
 	"LastName":      stringField("The user's last name"),
 	"AccountStatus": stringField("The user's account status (good, unverified, banned, terminated)"),
-	"ServiceRole":   stringField("The user's service role"),
 	"CreatedAt":     timestampField("When the user was created"),
 	"LastUpdatedAt": timestampField("When the user was last updated"),
 	"ArchivedAt":    timestampField("When the user was archived"),

@@ -13,13 +13,11 @@ const addUserToAccount = `-- name: AddUserToAccount :exec
 INSERT INTO account_user_memberships (
 	id,
 	belongs_to_account,
-	belongs_to_user,
-	account_role
+	belongs_to_user
 ) VALUES (
 	$1,
 	$2,
-	$3,
-	$4
+	$3
 )
 `
 
@@ -27,16 +25,10 @@ type AddUserToAccountParams struct {
 	ID               string
 	BelongsToAccount string
 	BelongsToUser    string
-	AccountRole      string
 }
 
 func (q *Queries) AddUserToAccount(ctx context.Context, db DBTX, arg *AddUserToAccountParams) error {
-	_, err := db.ExecContext(ctx, addUserToAccount,
-		arg.ID,
-		arg.BelongsToAccount,
-		arg.BelongsToUser,
-		arg.AccountRole,
-	)
+	_, err := db.ExecContext(ctx, addUserToAccount, arg.ID, arg.BelongsToAccount, arg.BelongsToUser)
 	return err
 }
 
@@ -60,14 +52,12 @@ INSERT INTO account_user_memberships (
 	id,
 	belongs_to_account,
 	belongs_to_user,
-	default_account,
-	account_role
+	default_account
 ) VALUES (
 	$1,
 	$2,
 	$3,
-	$4,
-	$5
+	$4
 )
 `
 
@@ -76,7 +66,6 @@ type CreateAccountUserMembershipForNewUserParams struct {
 	BelongsToAccount string
 	BelongsToUser    string
 	DefaultAccount   bool
-	AccountRole      string
 }
 
 func (q *Queries) CreateAccountUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateAccountUserMembershipForNewUserParams) error {
@@ -85,7 +74,6 @@ func (q *Queries) CreateAccountUserMembershipForNewUser(ctx context.Context, db 
 		arg.BelongsToAccount,
 		arg.BelongsToUser,
 		arg.DefaultAccount,
-		arg.AccountRole,
 	)
 	return err
 }
@@ -96,7 +84,6 @@ SELECT
 	account_user_memberships.belongs_to_account,
 	account_user_memberships.belongs_to_user,
 	account_user_memberships.default_account,
-	account_user_memberships.account_role,
 	account_user_memberships.created_at,
 	account_user_memberships.last_updated_at,
 	account_user_memberships.archived_at
@@ -120,7 +107,6 @@ func (q *Queries) GetAccountUserMembershipsForUser(ctx context.Context, db DBTX,
 			&i.BelongsToAccount,
 			&i.BelongsToUser,
 			&i.DefaultAccount,
-			&i.AccountRole,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -167,24 +153,6 @@ type MarkAccountUserMembershipAsUserDefaultParams struct {
 
 func (q *Queries) MarkAccountUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkAccountUserMembershipAsUserDefaultParams) error {
 	_, err := db.ExecContext(ctx, markAccountUserMembershipAsUserDefault, arg.BelongsToUser, arg.BelongsToAccount)
-	return err
-}
-
-const modifyAccountUserPermissions = `-- name: ModifyAccountUserPermissions :exec
-UPDATE account_user_memberships SET
-	account_role = $1
-WHERE belongs_to_account = $2
-	AND belongs_to_user = $3
-`
-
-type ModifyAccountUserPermissionsParams struct {
-	AccountRole      string
-	BelongsToAccount string
-	BelongsToUser    string
-}
-
-func (q *Queries) ModifyAccountUserPermissions(ctx context.Context, db DBTX, arg *ModifyAccountUserPermissionsParams) error {
-	_, err := db.ExecContext(ctx, modifyAccountUserPermissions, arg.AccountRole, arg.BelongsToAccount, arg.BelongsToUser)
 	return err
 }
 

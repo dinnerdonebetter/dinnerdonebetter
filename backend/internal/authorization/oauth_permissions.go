@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// CreateOAuth2ClientsPermission is an account admin permission.
 	CreateOAuth2ClientsPermission Permission = "create.oauth2_clients"
@@ -15,7 +11,7 @@ const (
 
 var (
 	// OAuthPermissions contains all OAuth-related permissions.
-	OAuthPermissions = []gorbac.Permission{
+	OAuthPermissions = []Permission{
 		CreateOAuth2ClientsPermission,
 		ReadOAuth2ClientsPermission,
 		ArchiveOAuth2ClientsPermission,

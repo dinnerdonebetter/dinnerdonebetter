@@ -1,7 +1,6 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -13,7 +12,6 @@ func BuildFakeAccountUserMembership() *types.AccountUserMembership {
 		ID:               BuildFakeID(),
 		BelongsToUser:    BuildFakeID(),
 		BelongsToAccount: fake.UUID(),
-		AccountRole:      authorization.AccountMemberRole.String(),
 		CreatedAt:        BuildFakeTime(),
 		ArchivedAt:       nil,
 	}
@@ -28,7 +26,6 @@ func BuildFakeAccountUserMembershipWithUser() *types.AccountUserMembershipWithUs
 		ID:               BuildFakeID(),
 		BelongsToUser:    u,
 		BelongsToAccount: fake.UUID(),
-		AccountRole:      authorization.AccountMemberRole.String(),
 		CreatedAt:        BuildFakeTime(),
 		ArchivedAt:       nil,
 	}

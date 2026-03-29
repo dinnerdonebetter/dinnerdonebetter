@@ -40,15 +40,14 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID,
 	logger := r.logger.WithValue(identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 
-	results, err := r.generatedQuerier.GetAccountUserMembershipsForUser(ctx, r.readDB, userID)
+	// Get account memberships for default_account logic.
+	memberships, err := r.generatedQuerier.GetAccountUserMembershipsForUser(ctx, r.readDB, userID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching user's memberships from database")
 	}
 
-	accountRolesMap := map[string]authorization.AccountRolePermissionsChecker{}
 	defaultAccountID := ""
-	for _, result := range results {
-		accountRolesMap[result.BelongsToAccount] = authorization.NewAccountRolePermissionChecker(result.AccountRole)
+	for _, result := range memberships {
 		if result.DefaultAccount {
 			defaultAccountID = result.BelongsToAccount
 		}
@@ -66,6 +65,40 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID,
 		effectiveAccountID = activeAccountID
 	}
 
+	// Load service-level permissions and role names from DB.
+	servicePermNames, err := r.generatedQuerier.GetServicePermissionsForUser(ctx, r.readDB, userID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching service permissions for user")
+	}
+
+	servicePerms := make([]authorization.Permission, len(servicePermNames))
+	for i, name := range servicePermNames {
+		servicePerms[i] = authorization.Permission(name)
+	}
+
+	serviceRoleNames, err := r.generatedQuerier.GetServiceRoleNamesForUser(ctx, r.readDB, userID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching service role names for user")
+	}
+
+	// Load account-level permissions from DB (all accounts).
+	accountPermRows, err := r.generatedQuerier.GetAccountPermissionsForUser(ctx, r.readDB, userID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account permissions for user")
+	}
+
+	accountPermsMap := map[string][]authorization.Permission{}
+	for _, row := range accountPermRows {
+		if row.AccountID.Valid {
+			accountPermsMap[row.AccountID.String] = append(accountPermsMap[row.AccountID.String], authorization.Permission(row.PermissionName))
+		}
+	}
+
+	accountRolesMap := map[string]authorization.AccountRolePermissionsChecker{}
+	for accountID, perms := range accountPermsMap {
+		accountRolesMap[accountID] = authorization.NewAccountRolePermissionChecker(perms)
+	}
+
 	user, err := r.GetUser(ctx, userID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching user from database")
@@ -78,7 +111,7 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID,
 			EmailAddress:             user.EmailAddress,
 			AccountStatus:            user.AccountStatus,
 			AccountStatusExplanation: user.AccountStatusExplanation,
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker(user.ServiceRole),
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(serviceRoleNames, servicePerms),
 		},
 		AccountPermissions: accountRolesMap,
 		ActiveAccountID:    effectiveAccountID,
@@ -214,33 +247,25 @@ func (r *repository) ModifyUserPermissions(ctx context.Context, accountID, userI
 	tracing.AttachToSpan(span, identitykeys.UserIDKey, userID)
 	tracing.AttachToSpan(span, identitykeys.AccountIDKey, accountID)
 
+	// Look up the new role by name.
+	newRole, roleErr := r.generatedQuerier.GetUserRoleByName(ctx, r.readDB, input.NewRole)
+	if roleErr != nil {
+		return observability.PrepareAndLogError(roleErr, logger, span, "fetching role by name")
+	}
+
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	memberships, err := r.generatedQuerier.GetAccountUserMembershipsForUser(ctx, tx, userID)
-	if err != nil {
+	// Update the user's account-level role assignment.
+	if err = r.generatedQuerier.UpdateAccountRoleAssignment(ctx, tx, &generated.UpdateAccountRoleAssignmentParams{
+		NewRoleID: newRole.ID,
+		UserID:    userID,
+		AccountID: sql.NullString{String: accountID, Valid: true},
+	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
-		return observability.PrepareAndLogError(err, logger, span, "fetching user account memberships")
-	}
-
-	var existingRole string
-	for _, membership := range memberships {
-		if membership.BelongsToUser == userID && membership.BelongsToAccount == accountID {
-			existingRole = membership.AccountRole
-			break
-		}
-	}
-
-	// modify the membership.
-	if err = r.generatedQuerier.ModifyAccountUserPermissions(ctx, tx, &generated.ModifyAccountUserPermissionsParams{
-		AccountRole:      input.NewRole,
-		BelongsToAccount: accountID,
-		BelongsToUser:    userID,
-	}); err != nil && !errors.Is(err, sql.ErrNoRows) {
-		r.RollbackTransaction(ctx, tx)
-		return observability.PrepareAndLogError(err, logger, span, "modifying user account permissions")
+		return observability.PrepareAndLogError(err, logger, span, "updating account role assignment")
 	}
 
 	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
@@ -250,8 +275,7 @@ func (r *repository) ModifyUserPermissions(ctx context.Context, accountID, userI
 		EventType:        audit.AuditLogEventTypeUpdated,
 		BelongsToUser:    userID,
 		Changes: map[string]*audit.ChangeLog{
-			"account_role": {
-				OldValue: existingRole,
+			"role": {
 				NewValue: input.NewRole,
 			},
 		},
@@ -331,11 +355,10 @@ func (r *repository) TransferAccountOwnership(ctx context.Context, accountID str
 
 	if !isMember {
 		if err = r.addUserToAccount(ctx, tx, &identity.AccountUserMembershipDatabaseCreationInput{
-			ID:          identifiers.New(),
-			Reason:      "transferred ownership",
-			UserID:      input.NewOwner,
-			AccountID:   accountID,
-			AccountRole: "account_admin",
+			ID:        identifiers.New(),
+			Reason:    "transferred ownership",
+			UserID:    input.NewOwner,
+			AccountID: accountID,
 		}); err != nil {
 			r.RollbackTransaction(ctx, tx)
 			return observability.PrepareAndLogError(err, logger, span, "adding user to account")
@@ -381,9 +404,18 @@ func (r *repository) addUserToAccount(ctx context.Context, querier database.SQLQ
 		ID:               input.ID,
 		BelongsToUser:    input.UserID,
 		BelongsToAccount: input.AccountID,
-		AccountRole:      input.AccountRole,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "performing user account membership creation query")
+	}
+
+	// Assign account_member role for this account.
+	if err := r.generatedQuerier.AssignRoleToUser(ctx, querier, &generated.AssignRoleToUserParams{
+		ID:        identifiers.New(),
+		UserID:    input.UserID,
+		RoleID:    authorization.AccountMemberRoleID,
+		AccountID: sql.NullString{String: input.AccountID, Valid: true},
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "assigning account role to user")
 	}
 
 	if _, err := r.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
@@ -416,6 +448,15 @@ func (r *repository) removeUserFromAccount(ctx context.Context, querier database
 		identitykeys.UserIDKey:    userID,
 		identitykeys.AccountIDKey: accountID,
 	})
+
+	// archive role assignments for this account.
+	if err := r.generatedQuerier.ArchiveRoleAssignmentsForUserAndAccount(ctx, querier, &generated.ArchiveRoleAssignmentsForUserAndAccountParams{
+		UserID:    userID,
+		AccountID: sql.NullString{String: accountID, Valid: true},
+	}); err != nil {
+		r.RollbackTransaction(ctx, querier)
+		return observability.PrepareAndLogError(err, logger, span, "archiving role assignments")
+	}
 
 	// remove the membership.
 	if err := r.generatedQuerier.RemoveUserFromAccount(ctx, querier, &generated.RemoveUserFromAccountParams{

@@ -3,8 +3,6 @@ package authorization
 import (
 	"encoding/gob"
 	"slices"
-
-	"github.com/mikespook/gorbac/v2"
 )
 
 func init() {
@@ -16,6 +14,13 @@ const (
 	serviceDataAdminRoleName = "service_data_admin"
 	serviceUserRoleName      = "service_user"
 
+	// ServiceUserRoleID is the database ID for the service_user role.
+	ServiceUserRoleID = "role_service_user"
+	// ServiceAdminRoleID is the database ID for the service_admin role.
+	ServiceAdminRoleID = "role_service_admin"
+	// ServiceDataAdminRoleID is the database ID for the service_data_admin role.
+	ServiceDataAdminRoleID = "role_service_data_admin"
+
 	invalidServiceRoleWarning = "INVALID_SERVICE_ROLE"
 
 	// invalidServiceRole is a service role to apply for non-admin users to have one.
@@ -24,12 +29,6 @@ const (
 	ServiceUserRole ServiceRole = iota
 	// ServiceAdminRole is a role that allows a user to do basically anything.
 	ServiceAdminRole ServiceRole = iota
-)
-
-var (
-	serviceUser      = gorbac.NewStdRole(serviceUserRoleName)
-	serviceAdmin     = gorbac.NewStdRole(serviceAdminRoleName)
-	serviceDataAdmin = gorbac.NewStdRole(serviceDataAdminRoleName)
 )
 
 type (
@@ -48,7 +47,8 @@ type (
 	}
 
 	serviceRoleCollection struct {
-		Roles []string
+		Permissions map[Permission]bool
+		RoleNames   []string
 	}
 )
 
@@ -65,38 +65,47 @@ func (r ServiceRole) String() string {
 	}
 }
 
-// NewServiceRolePermissionChecker returns a new checker for a set of Roles.
-func NewServiceRolePermissionChecker(roles ...string) ServiceRolePermissionChecker {
+// NewServiceRolePermissionChecker returns a new checker from role names and a set of permissions.
+func NewServiceRolePermissionChecker(roleNames []string, perms []Permission) ServiceRolePermissionChecker {
+	m := make(map[Permission]bool, len(perms))
+	for _, p := range perms {
+		m[p] = true
+	}
 	return &serviceRoleCollection{
-		Roles: roles,
+		Permissions: m,
+		RoleNames:   roleNames,
 	}
 }
 
 func (r serviceRoleCollection) AsAccountRolePermissionChecker() AccountRolePermissionsChecker {
-	return NewAccountRolePermissionChecker(r.Roles...)
+	perms := make([]Permission, 0, len(r.Permissions))
+	for p := range r.Permissions {
+		perms = append(perms, p)
+	}
+	return NewAccountRolePermissionChecker(perms)
 }
 
 // HasPermission returns whether a user can do something or not.
 func (r serviceRoleCollection) HasPermission(p Permission) bool {
-	return hasPermission(p, r.Roles...)
+	return r.Permissions[p]
 }
 
 // IsServiceAdmin returns if a role is an admin.
 func (r serviceRoleCollection) IsServiceAdmin() bool {
-	return slices.Contains(r.Roles, ServiceAdminRole.String())
+	return slices.Contains(r.RoleNames, serviceAdminRoleName)
 }
 
 // CanUpdateUserAccountStatuses returns whether a user can update user account statuses.
 func (r serviceRoleCollection) CanUpdateUserAccountStatuses() bool {
-	return hasPermission(UpdateUserStatusPermission, r.Roles...)
+	return r.Permissions[UpdateUserStatusPermission]
 }
 
 // CanImpersonateUsers returns whether a user can impersonate others.
 func (r serviceRoleCollection) CanImpersonateUsers() bool {
-	return hasPermission(ImpersonateUserPermission, r.Roles...)
+	return r.Permissions[ImpersonateUserPermission]
 }
 
 // CanManageUserSessions returns whether a user can manage other users' sessions.
 func (r serviceRoleCollection) CanManageUserSessions() bool {
-	return hasPermission(ManageUserSessionsPermission, r.Roles...)
+	return r.Permissions[ManageUserSessionsPermission]
 }

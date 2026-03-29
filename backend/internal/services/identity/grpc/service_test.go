@@ -47,11 +47,11 @@ func buildTestServiceWithUploadMocks(t *testing.T) (*serviceImpl, *managermock.I
 				Requester: sessions.RequesterInfo{
 					UserID:             identityfakes.BuildFakeID(),
 					AccountStatus:      identity.GoodStandingUserAccountStatus.String(),
-					ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
+					ServicePermissions: authorization.NewServiceRolePermissionChecker([]string{authorization.ServiceUserRole.String()}, nil),
 				},
 				ActiveAccountID: identityfakes.BuildFakeID(),
 				AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
-					identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
+					identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker(nil),
 				},
 			}, nil
 		},

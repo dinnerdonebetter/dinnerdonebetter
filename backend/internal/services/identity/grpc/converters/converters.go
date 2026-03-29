@@ -56,7 +56,6 @@ func ConvertUserToGRPCUser(input *identity.User) *identitysvc.User {
 		TwoFactorSecret:            input.TwoFactorSecret,
 		EmailAddress:               input.EmailAddress,
 		Avatar:                     convertUserAvatarToGRPC(input.Avatar),
-		ServiceRole:                input.ServiceRole,
 		RequiresPasswordChange:     input.RequiresPasswordChange,
 	}
 }
@@ -82,7 +81,6 @@ func ConvertGRPCUserToUser(input *identitysvc.User) *identity.User {
 		TwoFactorSecret:            input.TwoFactorSecret,
 		EmailAddress:               input.EmailAddress,
 		Avatar:                     convertGRPCAvatarToUser(input.Avatar),
-		ServiceRole:                input.ServiceRole,
 		RequiresPasswordChange:     input.RequiresPasswordChange,
 	}
 }
@@ -167,7 +165,6 @@ func ConvertAccountUserMembershipWithUserToGRPCAccountUserMembershipWithUser(inp
 		BelongsToUser:    ConvertUserToGRPCUser(input.BelongsToUser),
 		Id:               input.ID,
 		BelongsToAccount: input.BelongsToAccount,
-		AccountRole:      input.AccountRole,
 		DefaultAccount:   input.DefaultAccount,
 	}
 }
@@ -210,7 +207,6 @@ func ConvertGRPCAccountUserMembershipWithUserToAccountUserMembershipWithUser(inp
 		BelongsToUser:    ConvertGRPCUserToUser(input.BelongsToUser),
 		ID:               input.Id,
 		BelongsToAccount: input.BelongsToAccount,
-		AccountRole:      input.AccountRole,
 		DefaultAccount:   input.DefaultAccount,
 	}
 }

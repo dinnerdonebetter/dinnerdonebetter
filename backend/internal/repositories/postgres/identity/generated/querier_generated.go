@@ -15,19 +15,30 @@ type Querier interface {
 	AddToAccountDuringCreation(ctx context.Context, db DBTX, arg *AddToAccountDuringCreationParams) error
 	AddUserToAccount(ctx context.Context, db DBTX, arg *AddUserToAccountParams) error
 	ArchiveAccount(ctx context.Context, db DBTX, arg *ArchiveAccountParams) (int64, error)
+	ArchivePermission(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveRoleAssignment(ctx context.Context, db DBTX, arg *ArchiveRoleAssignmentParams) error
+	ArchiveRoleAssignmentsForUserAndAccount(ctx context.Context, db DBTX, arg *ArchiveRoleAssignmentsForUserAndAccountParams) error
 	ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveUserAvatar(ctx context.Context, db DBTX, belongsToUser string) error
 	ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveUserRole(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveUserRoleHierarchy(ctx context.Context, db DBTX, arg *ArchiveUserRoleHierarchyParams) error
+	ArchiveUserRolePermission(ctx context.Context, db DBTX, arg *ArchiveUserRolePermissionParams) error
 	ArchiveWebAuthnCredential(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveWebAuthnCredentialForUser(ctx context.Context, db DBTX, arg *ArchiveWebAuthnCredentialForUserParams) (int64, error)
 	AssignInvitationsToUserByEmail(ctx context.Context, db DBTX, arg *AssignInvitationsToUserByEmailParams) (int64, error)
+	AssignRoleToUser(ctx context.Context, db DBTX, arg *AssignRoleToUserParams) error
 	AttachAccountInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachAccountInvitationsToUserIDParams) (int64, error)
 	CheckAccountInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CreateAccount(ctx context.Context, db DBTX, arg *CreateAccountParams) error
 	CreateAccountInvitation(ctx context.Context, db DBTX, arg *CreateAccountInvitationParams) error
 	CreateAccountUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateAccountUserMembershipForNewUserParams) error
+	CreatePermission(ctx context.Context, db DBTX, arg *CreatePermissionParams) error
 	CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error
 	CreateUserAvatar(ctx context.Context, db DBTX, arg *CreateUserAvatarParams) error
+	CreateUserRole(ctx context.Context, db DBTX, arg *CreateUserRoleParams) error
+	CreateUserRoleHierarchy(ctx context.Context, db DBTX, arg *CreateUserRoleHierarchyParams) error
+	CreateUserRolePermission(ctx context.Context, db DBTX, arg *CreateUserRolePermissionParams) error
 	CreateWebAuthnCredential(ctx context.Context, db DBTX, arg *CreateWebAuthnCredentialParams) error
 	DeleteUser(ctx context.Context, db DBTX, id string) (int64, error)
 	GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetAccountByIDWithMembershipsRow, error)
@@ -35,6 +46,7 @@ type Querier interface {
 	GetAccountInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetAccountInvitationByEmailAndTokenParams) (*GetAccountInvitationByEmailAndTokenRow, error)
 	GetAccountInvitationByToken(ctx context.Context, db DBTX, token string) (*GetAccountInvitationByTokenRow, error)
 	GetAccountInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByTokenAndIDParams) (*GetAccountInvitationByTokenAndIDRow, error)
+	GetAccountPermissionsForUser(ctx context.Context, db DBTX, userID string) ([]*GetAccountPermissionsForUserRow, error)
 	GetAccountUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*AccountUserMemberships, error)
 	GetAccountsForUser(ctx context.Context, db DBTX, arg *GetAccountsForUserParams) ([]*GetAccountsForUserRow, error)
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)
@@ -42,11 +54,21 @@ type Querier interface {
 	GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX, id string) (sql.NullString, error)
 	GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *GetPendingInvitesForUserParams) ([]*GetPendingInvitesForUserRow, error)
 	GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *GetPendingInvitesFromUserParams) ([]*GetPendingInvitesFromUserRow, error)
+	GetPermissionByID(ctx context.Context, db DBTX, id string) (*Permissions, error)
+	GetPermissionByName(ctx context.Context, db DBTX, name string) (*Permissions, error)
+	GetPermissions(ctx context.Context, db DBTX, arg *GetPermissionsParams) ([]*GetPermissionsRow, error)
+	GetServicePermissionsForUser(ctx context.Context, db DBTX, userID string) ([]string, error)
+	GetServiceRoleNamesForUser(ctx context.Context, db DBTX, userID string) ([]string, error)
 	GetUserByEmail(ctx context.Context, db DBTX, emailAddress string) (*GetUserByEmailRow, error)
 	GetUserByEmailAddressVerificationToken(ctx context.Context, db DBTX, emailAddressVerificationToken sql.NullString) (*GetUserByEmailAddressVerificationTokenRow, error)
 	GetUserByID(ctx context.Context, db DBTX, id string) (*GetUserByIDRow, error)
 	GetUserByUsername(ctx context.Context, db DBTX, username string) (*GetUserByUsernameRow, error)
 	GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
+	GetUserRoleByID(ctx context.Context, db DBTX, id string) (*UserRoles, error)
+	GetUserRoleByName(ctx context.Context, db DBTX, name string) (*UserRoles, error)
+	GetUserRoleHierarchy(ctx context.Context, db DBTX) ([]*UserRoleHierarchy, error)
+	GetUserRolePermissionsForRole(ctx context.Context, db DBTX, roleID string) ([]*UserRolePermissions, error)
+	GetUserRoles(ctx context.Context, db DBTX, arg *GetUserRolesParams) ([]*GetUserRolesRow, error)
 	GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithUnverifiedTwoFactorRow, error)
 	GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithVerifiedTwoFactorRow, error)
 	GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error)
@@ -59,7 +81,6 @@ type Querier interface {
 	MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *MarkEmailAddressAsVerifiedParams) error
 	MarkTwoFactorSecretAsUnverified(ctx context.Context, db DBTX, arg *MarkTwoFactorSecretAsUnverifiedParams) error
 	MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, id string) error
-	ModifyAccountUserPermissions(ctx context.Context, db DBTX, arg *ModifyAccountUserPermissionsParams) error
 	RemoveUserFromAccount(ctx context.Context, db DBTX, arg *RemoveUserFromAccountParams) error
 	SearchUsersByUsername(ctx context.Context, db DBTX, arg *SearchUsersByUsernameParams) ([]*SearchUsersByUsernameRow, error)
 	SetAccountInvitationStatus(ctx context.Context, db DBTX, arg *SetAccountInvitationStatusParams) error
@@ -68,6 +89,7 @@ type Querier interface {
 	TransferAccountOwnership(ctx context.Context, db DBTX, arg *TransferAccountOwnershipParams) error
 	UpdateAccount(ctx context.Context, db DBTX, arg *UpdateAccountParams) (int64, error)
 	UpdateAccountBillingFields(ctx context.Context, db DBTX, arg *UpdateAccountBillingFieldsParams) (int64, error)
+	UpdateAccountRoleAssignment(ctx context.Context, db DBTX, arg *UpdateAccountRoleAssignmentParams) error
 	UpdateAccountWebhookEncryptionKey(ctx context.Context, db DBTX, arg *UpdateAccountWebhookEncryptionKeyParams) (int64, error)
 	UpdateUserDetails(ctx context.Context, db DBTX, arg *UpdateUserDetailsParams) (int64, error)
 	UpdateUserEmailAddress(ctx context.Context, db DBTX, arg *UpdateUserEmailAddressParams) (int64, error)

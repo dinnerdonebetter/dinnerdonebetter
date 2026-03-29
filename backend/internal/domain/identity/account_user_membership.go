@@ -20,7 +20,6 @@ type (
 		ID               string     `json:"id"`
 		BelongsToUser    string     `json:"belongsToUser"`
 		BelongsToAccount string     `json:"belongsToAccount"`
-		AccountRole      string     `json:"accountRole"`
 		DefaultAccount   bool       `json:"defaultAccount"`
 	}
 
@@ -34,7 +33,6 @@ type (
 		ArchivedAt       *time.Time `json:"archivedAt"`
 		ID               string     `json:"id"`
 		BelongsToAccount string     `json:"belongsToAccount"`
-		AccountRole      string     `json:"accountRole"`
 		DefaultAccount   bool       `json:"defaultAccount"`
 	}
 
@@ -42,11 +40,10 @@ type (
 	AccountUserMembershipDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID          string `json:"-"`
-		Reason      string `json:"-"`
-		UserID      string `json:"-"`
-		AccountID   string `json:"-"`
-		AccountRole string `json:"-"`
+		ID        string `json:"-"`
+		Reason    string `json:"-"`
+		UserID    string `json:"-"`
+		AccountID string `json:"-"`
 	}
 
 	// AccountOwnershipTransferInput represents what a User could set as input for updating account user memberships.

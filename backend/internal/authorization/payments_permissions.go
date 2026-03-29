@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	CreateProductsPermission  Permission = "create.products"
 	ReadProductsPermission    Permission = "read.products"
@@ -23,7 +19,7 @@ const (
 )
 
 var (
-	PaymentsPermissions = []gorbac.Permission{
+	PaymentsPermissions = []Permission{
 		CreateProductsPermission,
 		ReadProductsPermission,
 		UpdateProductsPermission,

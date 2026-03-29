@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"github.com/mikespook/gorbac/v2"
-)
-
 const (
 	// CreateWaitlistsPermission is an account admin permission.
 	CreateWaitlistsPermission Permission = "create.waitlists"
@@ -25,7 +21,7 @@ const (
 
 var (
 	// WaitlistsPermissions contains all waitlist-related permissions.
-	WaitlistsPermissions = []gorbac.Permission{
+	WaitlistsPermissions = []Permission{
 		CreateWaitlistsPermission,
 		ReadWaitlistsPermission,
 		UpdateWaitlistsPermission,

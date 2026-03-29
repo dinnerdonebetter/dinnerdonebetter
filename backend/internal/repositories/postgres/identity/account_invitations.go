@@ -130,7 +130,6 @@ func (r *repository) GetAccountInvitationByAccountAndID(ctx context.Context, acc
 			LastName:                   result.UserLastName,
 			EmailAddress:               result.UserEmailAddress,
 			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.UserEmailAddressVerifiedAt),
-			ServiceRole:                result.UserServiceRole,
 			RequiresPasswordChange:     result.UserRequiresPasswordChange,
 		},
 	}
@@ -219,7 +218,6 @@ func (r *repository) GetAccountInvitationByTokenAndID(ctx context.Context, token
 			LastName:                   result.UserLastName,
 			EmailAddress:               result.UserEmailAddress,
 			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.UserEmailAddressVerifiedAt),
-			ServiceRole:                result.UserServiceRole,
 			RequiresPasswordChange:     result.UserRequiresPasswordChange,
 		},
 	}
@@ -299,7 +297,6 @@ func (r *repository) GetAccountInvitationByToken(ctx context.Context, token stri
 			LastName:                   result.UserLastName,
 			EmailAddress:               result.UserEmailAddress,
 			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.UserEmailAddressVerifiedAt),
-			ServiceRole:                result.UserServiceRole,
 			RequiresPasswordChange:     result.UserRequiresPasswordChange,
 		},
 	}
@@ -388,7 +385,6 @@ func (r *repository) GetAccountInvitationByEmailAndToken(ctx context.Context, em
 			LastName:                   result.UserLastName,
 			EmailAddress:               result.UserEmailAddress,
 			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.UserEmailAddressVerifiedAt),
-			ServiceRole:                result.UserServiceRole,
 			RequiresPasswordChange:     result.UserRequiresPasswordChange,
 		},
 	}
@@ -546,7 +542,6 @@ func (r *repository) GetPendingAccountInvitationsFromUser(ctx context.Context, u
 				LastName:                   result.UserLastName,
 				EmailAddress:               result.UserEmailAddress,
 				EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.UserEmailAddressVerifiedAt),
-				ServiceRole:                result.UserServiceRole,
 				RequiresPasswordChange:     result.UserRequiresPasswordChange,
 			},
 		})
@@ -653,7 +648,6 @@ func (r *repository) GetPendingAccountInvitationsForUser(ctx context.Context, us
 				LastName:                   result.UserLastName,
 				EmailAddress:               result.UserEmailAddress,
 				EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.UserEmailAddressVerifiedAt),
-				ServiceRole:                result.UserServiceRole,
 				RequiresPasswordChange:     result.UserRequiresPasswordChange,
 			},
 		})
@@ -739,10 +733,9 @@ func (r *repository) AcceptAccountInvitation(ctx context.Context, accountID, acc
 	}
 
 	addUserInput := &identity.AccountUserMembershipDatabaseCreationInput{
-		ID:          identifiers.New(),
-		Reason:      fmt.Sprintf("accepted account invitation %s", accountInvitationID),
-		AccountID:   invitation.DestinationAccount.ID,
-		AccountRole: "account_member",
+		ID:        identifiers.New(),
+		Reason:    fmt.Sprintf("accepted account invitation %s", accountInvitationID),
+		AccountID: invitation.DestinationAccount.ID,
 	}
 	if invitation.ToUser != nil {
 		addUserInput.UserID = *invitation.ToUser
@@ -811,11 +804,21 @@ func (r *repository) acceptInvitationForUser(ctx context.Context, querier databa
 		ID:               identifiers.New(),
 		BelongsToUser:    input.ID,
 		BelongsToAccount: input.DestinationAccountID,
-		AccountRole:      authorization.AccountMemberRole.String(),
 		DefaultAccount:   true,
 	}); err != nil {
 		r.RollbackTransaction(ctx, querier)
 		return observability.PrepareAndLogError(err, logger, span, "writing destination account membership")
+	}
+
+	// Assign account_member role for the invited account.
+	if err := r.generatedQuerier.AssignRoleToUser(ctx, querier, &generated.AssignRoleToUserParams{
+		ID:        identifiers.New(),
+		UserID:    input.ID,
+		RoleID:    authorization.AccountMemberRoleID,
+		AccountID: sql.NullString{String: input.DestinationAccountID, Valid: true},
+	}); err != nil {
+		r.RollbackTransaction(ctx, querier)
+		return observability.PrepareAndLogError(err, logger, span, "assigning account role for invitation")
 	}
 
 	logger.Debug("created membership via invitation")

@@ -33,11 +33,11 @@ func buildFakeSessionContextData() *sessions.ContextData {
 			UserID:                   identityfakes.BuildFakeID(),
 			AccountStatus:            identity.GoodStandingUserAccountStatus.String(),
 			AccountStatusExplanation: "",
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker("service_user"),
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker([]string{"service_user"}, nil),
 		},
 		ActiveAccountID: identityfakes.BuildFakeID(),
 		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
-			identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker("account_member"),
+			identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker(nil),
 		},
 	}
 }
@@ -45,7 +45,7 @@ func buildFakeSessionContextData() *sessions.ContextData {
 func buildContextWithSessionData(t *testing.T) context.Context {
 	t.Helper()
 	sessionData := buildFakeSessionContextData()
-	sessionData.AccountPermissions[sessionData.ActiveAccountID] = authorization.NewAccountRolePermissionChecker("account_member")
+	sessionData.AccountPermissions[sessionData.ActiveAccountID] = authorization.NewAccountRolePermissionChecker(nil)
 	return context.WithValue(t.Context(), sessions.SessionContextDataKey, sessionData)
 }
 
@@ -1211,15 +1211,15 @@ func buildContextWithSessionDataAndSessionID(t *testing.T) (context.Context, *se
 			UserID:                   identityfakes.BuildFakeID(),
 			AccountStatus:            identity.GoodStandingUserAccountStatus.String(),
 			AccountStatusExplanation: "",
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker("service_user"),
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker([]string{"service_user"}, nil),
 		},
 		ActiveAccountID: identityfakes.BuildFakeID(),
 		SessionID:       identityfakes.BuildFakeID(),
 		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
-			identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker("account_member"),
+			identityfakes.BuildFakeID(): authorization.NewAccountRolePermissionChecker(nil),
 		},
 	}
-	sessionData.AccountPermissions[sessionData.ActiveAccountID] = authorization.NewAccountRolePermissionChecker("account_member")
+	sessionData.AccountPermissions[sessionData.ActiveAccountID] = authorization.NewAccountRolePermissionChecker(nil)
 	ctx := context.WithValue(t.Context(), sessions.SessionContextDataKey, sessionData)
 	return ctx, sessionData
 }
