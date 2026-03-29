@@ -169,6 +169,10 @@ build-api: $(ARTIFACTS_DIR)
 build-bootstrap: $(ARTIFACTS_DIR)
 	$(SCRIPTS_DIR)/build.sh -o $(ARTIFACTS_DIR)/bootstrap $(THIS)/cmd/tools/bootstrap
 
+.PHONY: build-migrate
+build-migrate: $(ARTIFACTS_DIR)
+	$(SCRIPTS_DIR)/build.sh -o $(ARTIFACTS_DIR)/migrate $(THIS)/cmd/tools/migrate
+
 .PHONY: test
 test: $(ARTIFACTS_DIR) vendor
 	$(SCRIPTS_DIR)/test.sh

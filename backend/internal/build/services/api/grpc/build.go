@@ -62,7 +62,6 @@ import (
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/analytics/multisource"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
 	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v4/featureflags/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
@@ -100,8 +99,8 @@ func BuildInjector(
 	httpclient.RegisterHTTPClient(i)
 	msgconfig.RegisterMessageQueue(i)
 	random.RegisterGenerator(i)
-	databasecfg.RegisterClientConfig(i)
-	postgres.RegisterDatabaseClient(i)
+	repositories.RegisterMigrator(i)
+	databasecfg.RegisterDatabase(i)
 	grpc.RegisterGRPCServer(i)
 	qrcodes.RegisterBuilder(i)
 	uploadscfg.RegisterStorageConfig(i)
@@ -116,7 +115,6 @@ func BuildInjector(
 	interceptors.RegisterAuthInterceptor(i)
 
 	// repositories
-	repositories.RegisterMigrator(i)
 	auditrepo.RegisterAuditLogRepository(i)
 	authrepo.RegisterAuthRepository(i)
 	commentsrepo.RegisterCommentsRepository(i)
