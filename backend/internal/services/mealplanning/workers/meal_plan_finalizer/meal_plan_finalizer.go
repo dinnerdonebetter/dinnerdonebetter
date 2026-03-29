@@ -2,10 +2,12 @@ package mealplanfinalizer
 
 import (
 	"context"
+	"errors"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
@@ -81,6 +83,10 @@ func (w *Worker) Work(ctx context.Context) (int64, error) {
 		var changed bool
 		changed, err = w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToAccount)
 		if err != nil {
+			if errors.Is(err, mealplanningrepo.ErrAlreadyFinalized) {
+				logger.WithValue(mealplanningkeys.MealPlanIDKey, mealPlan.ID).Info("meal plan already finalized, skipping")
+				continue
+			}
 			return -1, observability.PrepareError(err, span, "finalizing meal plan")
 		}
 
