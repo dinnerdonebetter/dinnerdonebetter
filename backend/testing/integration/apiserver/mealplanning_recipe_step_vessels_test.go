@@ -49,7 +49,6 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var createdRecipeStepID string
@@ -67,7 +66,7 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		createdValidPreparationVessel := createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
 
 		// Get existing vessels to determine the next available index
-		existingVesselsRes, err := userClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
+		existingVesselsRes, err := adminClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -86,7 +85,7 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		// Set Index (required for individual creation) - use nextIndex to ensure uniqueness
 		exampleRecipeStepVesselInput.Index = new(nextIndex)
 
-		createdRecipeStepVesselRes, err := userClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
+		createdRecipeStepVesselRes, err := adminClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 			Input:        converters.ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRequestInput(exampleRecipeStepVesselInput),
@@ -96,7 +95,7 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		createdRecipeStepVessel := converters.ConvertGRPCRecipeStepVesselToRecipeStepVessel(createdRecipeStepVesselRes.Created)
 		checkRecipeStepVesselEquality(t, -1, -1, exampleRecipeStepVessel, createdRecipeStepVessel)
 
-		retrievedRecipeStepVesselRes, err := userClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
+		retrievedRecipeStepVesselRes, err := adminClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
 			RecipeId:           createdRecipe.ID,
 			RecipeStepId:       createdRecipeStepID,
 			RecipeStepVesselId: createdRecipeStepVessel.ID,
@@ -126,7 +125,7 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		retrievedRecipeStepVesselRes, err = userClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
+		retrievedRecipeStepVesselRes, err = adminClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
 			RecipeId:           createdRecipe.ID,
 			RecipeStepId:       createdRecipeStepID,
 			RecipeStepVesselId: createdRecipeStepVessel.ID,
@@ -136,14 +135,14 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		createdRecipeStepVessel = converters.ConvertGRPCRecipeStepVesselToRecipeStepVessel(retrievedRecipeStepVesselRes.Result)
 		checkRecipeStepVesselEquality(t, -1, -1, exampleRecipeStepVessel, createdRecipeStepVessel)
 
-		_, err = userClient.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
+		_, err = adminClient.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
 			RecipeId:           createdRecipe.ID,
 			RecipeStepId:       createdRecipeStepID,
 			RecipeStepVesselId: createdRecipeStepVessel.ID,
 		})
 		assert.NoError(t, err)
 
-		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
+		_, err = adminClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -160,8 +159,6 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 	T.Run("should be able to use a recipe step vessel that was the product of a prior recipe step", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
-
-		_, userClient := createUserAndClientForTest(t)
 
 		line := createValidPreparationForTest(t)
 		roast := createValidPreparationForTest(t)
@@ -290,7 +287,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		expected.Status = created.Status
 		checkRecipeEquality(t, expected, created)
 
-		retrievedRes, err := userClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: created.ID})
+		retrievedRes, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: created.ID})
 		require.NotNil(t, retrievedRes)
 		require.NoError(t, err)
 		checkRecipeEquality(t, expected, created)
@@ -315,7 +312,6 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var createdRecipeStepID string
@@ -333,7 +329,7 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 		createdValidPreparationVessel := createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
 
 		// Get existing vessels to determine the next available index
-		existingVesselsRes, err := userClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
+		existingVesselsRes, err := adminClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -364,7 +360,7 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 			createdRecipeStepVessel := converters.ConvertGRPCRecipeStepVesselToRecipeStepVessel(createdRecipeStepVesselRes.Created)
 			checkRecipeStepVesselEquality(t, i, i, exampleRecipeStepVessel, createdRecipeStepVessel)
 
-			retrievedRecipeStepVesselRes, getErr := userClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
+			retrievedRecipeStepVesselRes, getErr := adminClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
 				RecipeId:           createdRecipe.ID,
 				RecipeStepId:       createdRecipeStepID,
 				RecipeStepVesselId: createdRecipeStepVessel.ID,
@@ -379,7 +375,7 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 		}
 
 		// assert recipe step vessel list equality
-		actual, err := userClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
+		actual, err := adminClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -394,7 +390,7 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 		)
 
 		for _, createdRecipeStepVessel := range expected {
-			_, err = userClient.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
+			_, err = adminClient.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
 				RecipeId:           createdRecipe.ID,
 				RecipeStepId:       createdRecipeStepID,
 				RecipeStepVesselId: createdRecipeStepVessel.ID,
@@ -402,10 +398,72 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 			assert.NoError(t, err)
 		}
 
-		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{RecipeId: createdRecipe.ID, RecipeStepId: createdRecipeStepID})
+		_, err = adminClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{RecipeId: createdRecipe.ID, RecipeStepId: createdRecipeStepID})
 		assert.NoError(t, err)
 
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
+	})
+}
+
+func TestRecipeStepVessels_OwnershipDenial(T *testing.T) {
+	T.Parallel()
+
+	T.Run("non-owner cannot create recipe step vessel", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+
+		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
+		exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
+		_, err := otherUserClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStep.ID,
+			Input:        converters.ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRequestInput(exampleRecipeStepVesselInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("non-owner cannot update recipe step vessel", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+		createdRecipeStepVessel := createdRecipeStep.Vessels[0]
+
+		newRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
+		updateInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(newRecipeStepVessel)
+		_, err := otherUserClient.UpdateRecipeStepVessel(ctx, &mealplanninggrpc.UpdateRecipeStepVesselRequest{
+			RecipeId:           createdRecipe.ID,
+			RecipeStepId:       createdRecipeStep.ID,
+			RecipeStepVesselId: createdRecipeStepVessel.ID,
+			Input:              converters.ConvertRecipeStepVesselUpdateRequestInputToGRPCRecipeStepVesselUpdateRequestInput(updateInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("non-owner cannot archive recipe step vessel", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+		createdRecipeStepVessel := createdRecipeStep.Vessels[0]
+
+		_, err := otherUserClient.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
+			RecipeId:           createdRecipe.ID,
+			RecipeStepId:       createdRecipeStep.ID,
+			RecipeStepVesselId: createdRecipeStepVessel.ID,
+		})
+		require.Error(t, err)
 	})
 }

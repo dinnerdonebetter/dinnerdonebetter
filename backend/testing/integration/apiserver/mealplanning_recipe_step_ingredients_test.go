@@ -58,7 +58,6 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		firstStep := createdRecipe.Steps[0]
@@ -68,7 +67,7 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 		require.NotEmpty(t, createdRecipeStepID, "created recipe step MealPlanTaskID must not be empty")
 		require.NotEmpty(t, createdRecipeStepIngredientID, "created recipe step ingredient MealPlanTaskID must not be empty")
 
-		createdRecipeStepIngredientRes, err := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
+		createdRecipeStepIngredientRes, err := adminClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
 			RecipeId:               createdRecipe.ID,
 			RecipeStepId:           createdRecipeStepID,
 			RecipeStepIngredientId: createdRecipeStepIngredientID,
@@ -100,7 +99,7 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 		})
 		require.NoError(t, err)
 
-		retrievedRes, err := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
+		retrievedRes, err := adminClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
 			RecipeId:               createdRecipe.ID,
 			RecipeStepId:           createdRecipeStepID,
 			RecipeStepIngredientId: createdRecipeStepIngredientID,
@@ -114,14 +113,14 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 		checkRecipeStepIngredientEquality(t, -1, -1, newRecipeStepIngredient, actual)
 		assert.NotNil(t, actual.LastUpdatedAt)
 
-		_, err = userClient.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
+		_, err = adminClient.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
 			RecipeId:               createdRecipe.ID,
 			RecipeStepId:           createdRecipeStepID,
 			RecipeStepIngredientId: createdRecipeStepIngredientID,
 		})
 		assert.NoError(t, err)
 
-		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{RecipeId: createdRecipe.ID, RecipeStepId: createdRecipeStepID})
+		_, err = adminClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{RecipeId: createdRecipe.ID, RecipeStepId: createdRecipeStepID})
 		assert.NoError(t, err)
 
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
@@ -136,7 +135,6 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var (
@@ -152,7 +150,7 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 		createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
 
 		// Get existing ingredients to determine the next available index
-		existingIngredientsRes, err := userClient.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
+		existingIngredientsRes, err := adminClient.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -194,7 +192,7 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 			createdRecipeStepIngredient := converters.ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(createdRecipeStepIngredientRes.Created)
 			checkRecipeStepIngredientEquality(t, -1, -1, exampleRecipeStepIngredient, createdRecipeStepIngredient)
 
-			retrievedRecipeStepIngredientRes, getErr := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
+			retrievedRecipeStepIngredientRes, getErr := adminClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
 				RecipeId:               createdRecipe.ID,
 				RecipeStepId:           createdRecipeStepID,
 				RecipeStepIngredientId: createdRecipeStepIngredient.ID,
@@ -207,7 +205,7 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 		}
 
 		// assert recipe step ingredient list equality
-		actual, err := userClient.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
+		actual, err := adminClient.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -222,7 +220,7 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 		)
 
 		for _, createdRecipeStepIngredient := range expected {
-			_, err = userClient.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
+			_, err = adminClient.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
 				RecipeId:               createdRecipe.ID,
 				RecipeStepId:           createdRecipeStepID,
 				RecipeStepIngredientId: createdRecipeStepIngredient.ID,
@@ -230,7 +228,7 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 			assert.NoError(t, err)
 		}
 
-		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
+		_, err = adminClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
 		})
@@ -238,5 +236,69 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
+	})
+}
+
+func TestRecipeStepIngredients_OwnershipDenial(T *testing.T) {
+	T.Parallel()
+
+	T.Run("Create", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+		_, otherUserClient := createUserAndClientForTest(t)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+
+		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+		exampleInput := mpconverters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredient)
+
+		_, err := otherUserClient.CreateRecipeStepIngredient(ctx, &mealplanninggrpc.CreateRecipeStepIngredientRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStep.ID,
+			Input:        converters.ConvertRecipeStepIngredientCreationRequestInputToGRPCRecipeStepIngredientCreationRequestInput(exampleInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("Update", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+		_, otherUserClient := createUserAndClientForTest(t)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+		existingIngredient := createdRecipeStep.Ingredients[0]
+
+		updateInput := mpconverters.ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(existingIngredient)
+
+		_, err := otherUserClient.UpdateRecipeStepIngredient(ctx, &mealplanninggrpc.UpdateRecipeStepIngredientRequest{
+			RecipeId:               createdRecipe.ID,
+			RecipeStepId:           createdRecipeStep.ID,
+			RecipeStepIngredientId: existingIngredient.ID,
+			Input:                  converters.ConvertRecipeStepIngredientUpdateRequestInputToGRPCRecipeStepIngredientUpdateRequestInput(updateInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("Archive", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+		_, otherUserClient := createUserAndClientForTest(t)
+
+		createdRecipeStep := createdRecipe.Steps[0]
+		existingIngredient := createdRecipeStep.Ingredients[0]
+
+		_, err := otherUserClient.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
+			RecipeId:               createdRecipe.ID,
+			RecipeStepId:           createdRecipeStep.ID,
+			RecipeStepIngredientId: existingIngredient.ID,
+		})
+		require.Error(t, err)
 	})
 }

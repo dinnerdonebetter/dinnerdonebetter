@@ -2905,6 +2905,38 @@ func TestRecipes_Archiving(T *testing.T) {
 	})
 }
 
+func TestRecipes_OwnershipDenial(T *testing.T) {
+	T.Parallel()
+
+	T.Run("non-owner cannot update recipe", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		name := "updated name"
+		_, err := otherUserClient.UpdateRecipe(ctx, &mealplanninggrpc.UpdateRecipeRequest{
+			RecipeId: createdRecipe.ID,
+			Input: &mealplanninggrpc.RecipeUpdateRequestInput{
+				Name: &name,
+			},
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("non-owner cannot archive recipe", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, otherUserClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		_, err := otherUserClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
+		require.Error(t, err)
+	})
+}
+
 func TestRecipes_Listing(T *testing.T) {
 	T.Parallel()
 

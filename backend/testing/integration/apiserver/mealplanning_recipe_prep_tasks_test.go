@@ -8,7 +8,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -56,7 +55,7 @@ func checkRecipePrepTaskEquality(t *testing.T, taskIndex int, expected, actual *
 	checkRecipePrepTaskStepSliceEquality(t, taskIndex, expected.TaskSteps, actual.TaskSteps)
 }
 
-func createRecipePrepTaskForTest(t *testing.T, userClient client.Client) (*mealplanning.Recipe, *mealplanning.RecipePrepTask) {
+func createRecipePrepTaskForTest(t *testing.T) (*mealplanning.Recipe, *mealplanning.RecipePrepTask) {
 	t.Helper()
 	ctx := t.Context()
 
@@ -81,14 +80,14 @@ func createRecipePrepTaskForTest(t *testing.T, userClient client.Client) (*mealp
 
 	exampleInput := mpconverters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
-	createdRecipePrepTaskRes, err := userClient.CreateRecipePrepTask(ctx, &mealplanninggrpc.CreateRecipePrepTaskRequest{
+	createdRecipePrepTaskRes, err := adminClient.CreateRecipePrepTask(ctx, &mealplanninggrpc.CreateRecipePrepTaskRequest{
 		RecipeId: createdRecipe.ID,
 		Input:    converters.ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationRequestInput(exampleInput),
 	})
 	require.NoError(t, err)
 	createdRecipePrepTask := converters.ConvertGRPCRecipePrepTaskToRecipePrepTask(createdRecipePrepTaskRes.Created)
 
-	retrievedRes, err := userClient.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
+	retrievedRes, err := adminClient.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
 		RecipeId:         createdRecipe.ID,
 		RecipePrepTaskId: createdRecipePrepTask.ID,
 	})
@@ -107,8 +106,7 @@ func TestRecipePrepTasks_CompleteLifecycle(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
-		createdRecipe, actual := createRecipePrepTaskForTest(t, userClient)
+		createdRecipe, actual := createRecipePrepTaskForTest(t)
 
 		newRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 		newRecipePrepTask.ID = actual.ID
@@ -125,7 +123,7 @@ func TestRecipePrepTasks_CompleteLifecycle(T *testing.T) {
 		})
 		require.NoError(t, err)
 
-		retrievedRes, err := userClient.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
+		retrievedRes, err := adminClient.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
 			RecipeId:         createdRecipe.ID,
 			RecipePrepTaskId: actual.ID,
 		})
@@ -137,7 +135,7 @@ func TestRecipePrepTasks_CompleteLifecycle(T *testing.T) {
 		checkRecipePrepTaskEquality(t, -1, actual, retrieved)
 		assert.NotNil(t, retrieved.LastUpdatedAt)
 
-		_, err = userClient.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
+		_, err = adminClient.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
 			RecipeId:         createdRecipe.ID,
 			RecipePrepTaskId: actual.ID,
 		})
@@ -155,7 +153,6 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var createdRecipeStep *mealplanning.RecipeStep
@@ -194,7 +191,7 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 
 			checkRecipePrepTaskEquality(t, -1, exampleRecipePrepTask, createdRecipePrepTask)
 
-			retrievedRecipePrepTaskRes, err := userClient.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
+			retrievedRecipePrepTaskRes, err := adminClient.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
 				RecipeId:         createdRecipe.ID,
 				RecipePrepTaskId: createdRecipePrepTask.ID,
 			})
@@ -207,7 +204,7 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 		}
 
 		// assert recipe prep task list equality
-		actual, err := userClient.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{RecipeId: createdRecipe.ID})
+		actual, err := adminClient.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{RecipeId: createdRecipe.ID})
 		require.NoError(t, err)
 		assert.True(
 			t,
@@ -218,7 +215,7 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 		)
 
 		for _, createdRecipePrepTask := range expected {
-			_, err = userClient.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
+			_, err = adminClient.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
 				RecipeId:         createdRecipe.ID,
 				RecipePrepTaskId: createdRecipePrepTask.ID,
 			})
@@ -227,5 +224,73 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
+	})
+}
+
+func TestRecipePrepTasks_OwnershipDenial(T *testing.T) {
+	T.Parallel()
+
+	T.Run("Create", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+		_, otherUserClient := createUserAndClientForTest(t)
+
+		var createdRecipeStep *mealplanning.RecipeStep
+		for _, step := range createdRecipe.Steps {
+			createdRecipeStep = step
+			break
+		}
+		require.NotNil(t, createdRecipeStep)
+
+		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
+		exampleRecipePrepTask.BelongsToRecipe = createdRecipe.ID
+		exampleRecipePrepTask.TaskSteps = []*mealplanning.RecipePrepTaskStep{
+			{
+				BelongsToRecipeStep:     createdRecipeStep.ID,
+				BelongsToRecipePrepTask: exampleRecipePrepTask.ID,
+				SatisfiesRecipeStep:     true,
+			},
+		}
+
+		exampleInput := mpconverters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
+
+		_, err := otherUserClient.CreateRecipePrepTask(ctx, &mealplanninggrpc.CreateRecipePrepTaskRequest{
+			RecipeId: createdRecipe.ID,
+			Input:    converters.ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationRequestInput(exampleInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("Update", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		createdRecipe, actual := createRecipePrepTaskForTest(t)
+		_, otherUserClient := createUserAndClientForTest(t)
+
+		updateInput := mpconverters.ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(actual)
+
+		_, err := otherUserClient.UpdateRecipePrepTask(ctx, &mealplanninggrpc.UpdateRecipePrepTaskRequest{
+			RecipeId:         createdRecipe.ID,
+			RecipePrepTaskId: actual.ID,
+			Input:            converters.ConvertRecipePrepTaskUpdateRequestInputToGRPCRecipePrepTaskUpdateRequestInput(updateInput),
+		})
+		require.Error(t, err)
+	})
+
+	T.Run("Archive", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		createdRecipe, actual := createRecipePrepTaskForTest(t)
+		_, otherUserClient := createUserAndClientForTest(t)
+
+		_, err := otherUserClient.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
+			RecipeId:         createdRecipe.ID,
+			RecipePrepTaskId: actual.ID,
+		})
+		require.Error(t, err)
 	})
 }
