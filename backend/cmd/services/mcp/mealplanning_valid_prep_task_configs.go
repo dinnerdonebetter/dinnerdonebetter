@@ -44,8 +44,13 @@ var getValidPrepTaskConfigTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPrepTaskConfig() mcp.ToolHandlerFor[*GetValidPrepTaskConfigInvocation, *mealplanning.ValidPrepTaskConfig] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPrepTaskConfigInvocation) (*mcp.CallToolResult, *mealplanning.ValidPrepTaskConfig, error) {
-		result, err := h.client.GetValidPrepTaskConfig(ctx, &mealplanninggrpc.GetValidPrepTaskConfigRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigInvocation) (*mcp.CallToolResult, *mealplanning.ValidPrepTaskConfig, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetValidPrepTaskConfig(ctx, &mealplanninggrpc.GetValidPrepTaskConfigRequest{
 			ValidPrepTaskConfigId: x.ValidPrepTaskConfigID,
 		})
 		if err != nil {
@@ -78,8 +83,13 @@ var getValidPrepTaskConfigsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPrepTaskConfigs() mcp.ToolHandlerFor[*GetValidPrepTaskConfigsInvocation, *GetValidPrepTaskConfigsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPrepTaskConfigsInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
-		results, err := h.client.GetValidPrepTaskConfigs(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigsInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetValidPrepTaskConfigs(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -115,8 +125,13 @@ var getValidPrepTaskConfigsByIngredientTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPrepTaskConfigsByIngredient() mcp.ToolHandlerFor[*GetValidPrepTaskConfigsByIngredientInvocation, *GetValidPrepTaskConfigsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPrepTaskConfigsByIngredientInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
-		results, err := h.client.GetValidPrepTaskConfigsByIngredient(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigsByIngredientInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetValidPrepTaskConfigsByIngredient(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientRequest{
 			ValidIngredientId: x.ValidIngredientID,
 			Filter:            grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
@@ -153,8 +168,13 @@ var getValidPrepTaskConfigsByPreparationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPrepTaskConfigsByPreparation() mcp.ToolHandlerFor[*GetValidPrepTaskConfigsByPreparationInvocation, *GetValidPrepTaskConfigsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPrepTaskConfigsByPreparationInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
-		results, err := h.client.GetValidPrepTaskConfigsByPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByPreparationRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigsByPreparationInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetValidPrepTaskConfigsByPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByPreparationRequest{
 			ValidPreparationId: x.ValidPreparationID,
 			Filter:             grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
@@ -193,8 +213,13 @@ var getValidPrepTaskConfigsByIngredientAndPreparationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPrepTaskConfigsByIngredientAndPreparation() mcp.ToolHandlerFor[*GetValidPrepTaskConfigsByIngredientAndPreparationInvocation, *GetValidPrepTaskConfigsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPrepTaskConfigsByIngredientAndPreparationInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
-		results, err := h.client.GetValidPrepTaskConfigsByIngredientAndPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientAndPreparationRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigsByIngredientAndPreparationInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetValidPrepTaskConfigsByIngredientAndPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientAndPreparationRequest{
 			ValidIngredientId:  x.ValidIngredientID,
 			ValidPreparationId: x.ValidPreparationID,
 			Filter:             grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
@@ -229,8 +254,13 @@ var validPrepTaskConfigCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateValidPrepTaskConfig() mcp.ToolHandlerFor[*mealplanning.ValidPrepTaskConfigCreationRequestInput, *mealplanning.ValidPrepTaskConfig] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *mealplanning.ValidPrepTaskConfigCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPrepTaskConfig, error) {
-		result, err := h.client.CreateValidPrepTaskConfig(ctx, &mealplanninggrpc.CreateValidPrepTaskConfigRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidPrepTaskConfigCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPrepTaskConfig, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateValidPrepTaskConfig(ctx, &mealplanninggrpc.CreateValidPrepTaskConfigRequest{
 			Input: mealplanningconverters.ConvertValidPrepTaskConfigCreationRequestInputToGRPCValidPrepTaskConfigCreationRequestInput(x),
 		})
 		if err != nil {
@@ -266,8 +296,13 @@ var validPrepTaskConfigUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateValidPrepTaskConfig() mcp.ToolHandlerFor[*UpdateValidPrepTaskConfigInvocation, *mealplanning.ValidPrepTaskConfig] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidPrepTaskConfigInvocation) (*mcp.CallToolResult, *mealplanning.ValidPrepTaskConfig, error) {
-		result, err := h.client.UpdateValidPrepTaskConfig(ctx, &mealplanninggrpc.UpdateValidPrepTaskConfigRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidPrepTaskConfigInvocation) (*mcp.CallToolResult, *mealplanning.ValidPrepTaskConfig, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateValidPrepTaskConfig(ctx, &mealplanninggrpc.UpdateValidPrepTaskConfigRequest{
 			ValidPrepTaskConfigId: x.ValidPrepTaskConfigID,
 			Input:                 mealplanningconverters.ConvertValidPrepTaskConfigUpdateRequestInputToGRPCValidPrepTaskConfigUpdateRequestInput(x.ValidPrepTaskConfigUpdateRequestInput),
 		})

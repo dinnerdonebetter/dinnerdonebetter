@@ -58,8 +58,13 @@ type GetWebhookInvocation struct {
 }
 
 func (h *mcpToolManager) GetWebhook() mcp.ToolHandlerFor[*GetWebhookInvocation, *webhooks.Webhook] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetWebhookInvocation) (*mcp.CallToolResult, *webhooks.Webhook, error) {
-		result, err := h.client.GetWebhook(ctx, &webhooksgrpc.GetWebhookRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetWebhookInvocation) (*mcp.CallToolResult, *webhooks.Webhook, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetWebhook(ctx, &webhooksgrpc.GetWebhookRequest{
 			WebhookId: x.WebhookID,
 		})
 		if err != nil {
@@ -91,8 +96,13 @@ type (
 )
 
 func (h *mcpToolManager) GetWebhooks() mcp.ToolHandlerFor[*GetWebhooksInvocation, *GetWebhooksResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetWebhooksInvocation) (*mcp.CallToolResult, *GetWebhooksResult, error) {
-		results, err := h.client.GetWebhooks(ctx, &webhooksgrpc.GetWebhooksRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetWebhooksInvocation) (*mcp.CallToolResult, *GetWebhooksResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetWebhooks(ctx, &webhooksgrpc.GetWebhooksRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -129,8 +139,13 @@ type CreateWebhookInvocation struct {
 }
 
 func (h *mcpToolManager) CreateWebhook() mcp.ToolHandlerFor[*CreateWebhookInvocation, *webhooks.Webhook] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateWebhookInvocation) (*mcp.CallToolResult, *webhooks.Webhook, error) {
-		result, err := h.client.CreateWebhook(ctx, &webhooksgrpc.CreateWebhookRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateWebhookInvocation) (*mcp.CallToolResult, *webhooks.Webhook, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateWebhook(ctx, &webhooksgrpc.CreateWebhookRequest{
 			Input: webhooksconverters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(x.WebhookCreationRequestInput),
 		})
 		if err != nil {
@@ -156,8 +171,13 @@ type ArchiveWebhookInvocation struct {
 }
 
 func (h *mcpToolManager) ArchiveWebhook() mcp.ToolHandlerFor[*ArchiveWebhookInvocation, *boolResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *ArchiveWebhookInvocation) (*mcp.CallToolResult, *boolResult, error) {
-		_, err := h.client.ArchiveWebhook(ctx, &webhooksgrpc.ArchiveWebhookRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *ArchiveWebhookInvocation) (*mcp.CallToolResult, *boolResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		_, err = c.ArchiveWebhook(ctx, &webhooksgrpc.ArchiveWebhookRequest{
 			WebhookId: x.WebhookID,
 		})
 		if err != nil {
@@ -189,8 +209,13 @@ type (
 )
 
 func (h *mcpToolManager) GetWebhookTriggerEvents() mcp.ToolHandlerFor[*GetWebhookTriggerEventsInvocation, *GetWebhookTriggerEventsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetWebhookTriggerEventsInvocation) (*mcp.CallToolResult, *GetWebhookTriggerEventsResult, error) {
-		results, err := h.client.GetWebhookTriggerEvents(ctx, &webhooksgrpc.GetWebhookTriggerEventsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetWebhookTriggerEventsInvocation) (*mcp.CallToolResult, *GetWebhookTriggerEventsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetWebhookTriggerEvents(ctx, &webhooksgrpc.GetWebhookTriggerEventsRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -228,8 +253,13 @@ type CreateWebhookTriggerEventInvocation struct {
 }
 
 func (h *mcpToolManager) CreateWebhookTriggerEvent() mcp.ToolHandlerFor[*CreateWebhookTriggerEventInvocation, *webhooks.WebhookTriggerEvent] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateWebhookTriggerEventInvocation) (*mcp.CallToolResult, *webhooks.WebhookTriggerEvent, error) {
-		result, err := h.client.CreateWebhookTriggerEvent(ctx, &webhooksgrpc.CreateWebhookTriggerEventRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateWebhookTriggerEventInvocation) (*mcp.CallToolResult, *webhooks.WebhookTriggerEvent, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateWebhookTriggerEvent(ctx, &webhooksgrpc.CreateWebhookTriggerEventRequest{
 			Input: &webhooksgrpc.WebhookTriggerEventCreationRequestInput{
 				Name:        x.Name,
 				Description: x.Description,
@@ -266,8 +296,13 @@ type AddWebhookTriggerConfigInvocation struct {
 }
 
 func (h *mcpToolManager) AddWebhookTriggerConfig() mcp.ToolHandlerFor[*AddWebhookTriggerConfigInvocation, *webhooks.WebhookTriggerConfig] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *AddWebhookTriggerConfigInvocation) (*mcp.CallToolResult, *webhooks.WebhookTriggerConfig, error) {
-		result, err := h.client.AddWebhookTriggerConfig(ctx, &webhooksgrpc.AddWebhookTriggerConfigRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *AddWebhookTriggerConfigInvocation) (*mcp.CallToolResult, *webhooks.WebhookTriggerConfig, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.AddWebhookTriggerConfig(ctx, &webhooksgrpc.AddWebhookTriggerConfigRequest{
 			WebhookId: x.WebhookID,
 			Input: &webhooksgrpc.WebhookTriggerConfigCreationRequestInput{
 				BelongsToWebhook: x.WebhookID,
@@ -299,8 +334,13 @@ type ArchiveWebhookTriggerConfigInvocation struct {
 }
 
 func (h *mcpToolManager) ArchiveWebhookTriggerConfig() mcp.ToolHandlerFor[*ArchiveWebhookTriggerConfigInvocation, *boolResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *ArchiveWebhookTriggerConfigInvocation) (*mcp.CallToolResult, *boolResult, error) {
-		_, err := h.client.ArchiveWebhookTriggerConfig(ctx, &webhooksgrpc.ArchiveWebhookTriggerConfigRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *ArchiveWebhookTriggerConfigInvocation) (*mcp.CallToolResult, *boolResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		_, err = c.ArchiveWebhookTriggerConfig(ctx, &webhooksgrpc.ArchiveWebhookTriggerConfigRequest{
 			WebhookId:              x.WebhookID,
 			WebhookTriggerConfigId: x.WebhookTriggerConfigID,
 		})

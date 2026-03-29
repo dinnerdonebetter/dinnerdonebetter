@@ -78,6 +78,11 @@ patches:
       version: v1
       kind: Deployment
       name: dinner-done-better-service-api-deployment
+  - path: patches/deployment-database-password-api-server.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-service-api-deployment
   - path: patches/deployment-pubsub-env.yaml
     target:
       version: v1
@@ -154,6 +159,11 @@ patches:
       version: v1
       kind: Deployment
       name: dinner-done-better-async-message-handler-deployment
+  - path: patches/deployment-database-password-async-message-handler.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-async-message-handler-deployment
   - path: patches/deployment-pubsub-env.yaml
     target:
       version: v1
@@ -201,6 +211,10 @@ patches:
     target:
       kind: CronJob
       name: dinner-done-better-job-queue-test
+  - path: patches/cronjob-database-password-queue-test.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-queue-test
   - path: patches/cronjob-pubsub-env.yaml
     target:
       kind: CronJob
@@ -211,9 +225,17 @@ patches:
     target:
       kind: CronJob
       name: dinner-done-better-job-db-cleaner
+  - path: patches/cronjob-database-password-db-cleaner.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-db-cleaner
 
   ### Meal Plan Finalizer CronJob - needs database, pubsub
   - path: patches/cronjob-database-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-meal-plan-finalizer
+  - path: patches/cronjob-database-password-meal-plan-finalizer.yaml
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-finalizer
@@ -224,6 +246,10 @@ patches:
 
   ### Meal Plan Grocery List Init CronJob - needs database, pubsub, posthog
   - path: patches/cronjob-database-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-meal-plan-grocery-list-init
+  - path: patches/cronjob-database-password-meal-plan-grocery-list-init.yaml
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-grocery-list-init
@@ -241,6 +267,10 @@ patches:
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-task-creator
+  - path: patches/cronjob-database-password-meal-plan-task-creator.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-meal-plan-task-creator
   - path: patches/cronjob-pubsub-env.yaml
     target:
       kind: CronJob
@@ -255,6 +285,10 @@ patches:
     target:
       kind: CronJob
       name: dinner-done-better-job-search-data-index-scheduler
+  - path: patches/cronjob-database-password-search-data-index-scheduler.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-search-data-index-scheduler
   - path: patches/cronjob-pubsub-env.yaml
     target:
       kind: CronJob
@@ -262,6 +296,10 @@ patches:
 
   ### Mobile Notification Scheduler CronJob - needs database, pubsub
   - path: patches/cronjob-database-env.yaml
+    target:
+      kind: CronJob
+      name: dinner-done-better-job-mobile-notification-scheduler
+  - path: patches/cronjob-database-password-mobile-notification-scheduler.yaml
     target:
       kind: CronJob
       name: dinner-done-better-job-mobile-notification-scheduler

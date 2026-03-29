@@ -39,8 +39,13 @@ var getValidIngredientStateIngredientTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidIngredientStateIngredient() mcp.ToolHandlerFor[*GetValidIngredientStateIngredientInvocation, *mealplanning.ValidIngredientStateIngredient] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidIngredientStateIngredientInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientStateIngredient, error) {
-		result, err := h.client.GetValidIngredientStateIngredient(ctx, &mealplanninggrpc.GetValidIngredientStateIngredientRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidIngredientStateIngredientInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientStateIngredient, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetValidIngredientStateIngredient(ctx, &mealplanninggrpc.GetValidIngredientStateIngredientRequest{
 			ValidIngredientStateIngredientId: x.ValidIngredientStateIngredientID,
 		})
 		if err != nil {
@@ -73,8 +78,13 @@ var getValidIngredientStateIngredientsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidIngredientStateIngredients() mcp.ToolHandlerFor[*GetValidIngredientStateIngredientsInvocation, *GetValidIngredientStateIngredientsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidIngredientStateIngredientsInvocation) (*mcp.CallToolResult, *GetValidIngredientStateIngredientsResult, error) {
-		results, err := h.client.GetValidIngredientStateIngredients(ctx, &mealplanninggrpc.GetValidIngredientStateIngredientsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidIngredientStateIngredientsInvocation) (*mcp.CallToolResult, *GetValidIngredientStateIngredientsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetValidIngredientStateIngredients(ctx, &mealplanninggrpc.GetValidIngredientStateIngredientsRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -102,8 +112,13 @@ var validIngredientStateIngredientCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateValidIngredientStateIngredient() mcp.ToolHandlerFor[*mealplanning.ValidIngredientStateIngredientCreationRequestInput, *mealplanning.ValidIngredientStateIngredient] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *mealplanning.ValidIngredientStateIngredientCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidIngredientStateIngredient, error) {
-		result, err := h.client.CreateValidIngredientStateIngredient(ctx, &mealplanninggrpc.CreateValidIngredientStateIngredientRequest{Input: mealplanningconverters.ConvertCreateValidIngredientStateIngredientRequestToGRPCValidIngredientStateIngredientCreationRequestInput(x)})
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidIngredientStateIngredientCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidIngredientStateIngredient, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateValidIngredientStateIngredient(ctx, &mealplanninggrpc.CreateValidIngredientStateIngredientRequest{Input: mealplanningconverters.ConvertCreateValidIngredientStateIngredientRequestToGRPCValidIngredientStateIngredientCreationRequestInput(x)})
 		if err != nil {
 			return nil, nil, err
 		}
@@ -132,8 +147,13 @@ var validIngredientStateIngredientUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateValidIngredientStateIngredient() mcp.ToolHandlerFor[*UpdateValidIngredientStateIngredientInvocation, *mealplanning.ValidIngredientStateIngredient] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidIngredientStateIngredientInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientStateIngredient, error) {
-		result, err := h.client.UpdateValidIngredientStateIngredient(ctx, &mealplanninggrpc.UpdateValidIngredientStateIngredientRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidIngredientStateIngredientInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientStateIngredient, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateValidIngredientStateIngredient(ctx, &mealplanninggrpc.UpdateValidIngredientStateIngredientRequest{
 			ValidIngredientStateIngredientId: x.ValidIngredientStateIngredientID,
 			Input:                            mealplanningconverters.ConvertValidIngredientStateIngredientUpdateRequestInputToGRPCValidIngredientStateIngredientUpdateRequestInput(x.ValidIngredientStateIngredientUpdateRequestInput),
 		})

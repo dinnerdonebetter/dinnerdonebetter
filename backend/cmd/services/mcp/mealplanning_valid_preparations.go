@@ -51,8 +51,13 @@ var getValidPreparationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPreparation() mcp.ToolHandlerFor[*GetValidPreparationInvocation, *mealplanning.ValidPreparation] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
-		result, err := h.client.GetValidPreparation(ctx, &mealplanninggrpc.GetValidPreparationRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetValidPreparation(ctx, &mealplanninggrpc.GetValidPreparationRequest{
 			ValidPreparationId: x.ValidPreparationID,
 		})
 		if err != nil {
@@ -95,8 +100,13 @@ var searchForValidPreparationsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) SearchForValidPreparations() mcp.ToolHandlerFor[*SearchValidPreparationsInvocation, *SearchValidPreparationsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *SearchValidPreparationsInvocation) (*mcp.CallToolResult, *SearchValidPreparationsResult, error) {
-		results, err := h.client.SearchForValidPreparations(ctx, &mealplanninggrpc.SearchForValidPreparationsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *SearchValidPreparationsInvocation) (*mcp.CallToolResult, *SearchValidPreparationsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.SearchForValidPreparations(ctx, &mealplanninggrpc.SearchForValidPreparationsRequest{
 			Filter:           grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 			Query:            x.Query,
 			UseSearchService: x.UseSearchService,
@@ -138,8 +148,13 @@ var validPreparationCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateValidPreparation() mcp.ToolHandlerFor[*mealplanning.ValidPreparationCreationRequestInput, *mealplanning.ValidPreparation] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *mealplanning.ValidPreparationCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
-		result, err := h.client.CreateValidPreparation(ctx, &mealplanninggrpc.CreateValidPreparationRequest{Input: mealplanningconverters.ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRequestInput(x)})
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidPreparationCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateValidPreparation(ctx, &mealplanninggrpc.CreateValidPreparationRequest{Input: mealplanningconverters.ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRequestInput(x)})
 		if err != nil {
 			return nil, nil, err
 		}
@@ -180,8 +195,13 @@ var validPreparationUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateValidPreparation() mcp.ToolHandlerFor[*UpdateValidPreparationInvocation, *mealplanning.ValidPreparation] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
-		result, err := h.client.UpdateValidPreparation(ctx, &mealplanninggrpc.UpdateValidPreparationRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateValidPreparation(ctx, &mealplanninggrpc.UpdateValidPreparationRequest{
 			ValidPreparationId: x.ValidPreparationID,
 			Input:              mealplanningconverters.ConvertValidPreparationUpdateRequestInputToGRPCValidPreparationUpdateRequestInput(x.ValidPreparationUpdateRequestInput),
 		})

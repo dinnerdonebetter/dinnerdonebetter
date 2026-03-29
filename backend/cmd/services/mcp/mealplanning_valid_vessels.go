@@ -50,8 +50,13 @@ var getValidVesselTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidVessel() mcp.ToolHandlerFor[*GetValidVesselInvocation, *mealplanning.ValidVessel] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidVessel, error) {
-		result, err := h.client.GetValidVessel(ctx, &mealplanninggrpc.GetValidVesselRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidVessel, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetValidVessel(ctx, &mealplanninggrpc.GetValidVesselRequest{
 			ValidVesselId: x.ValidVesselID,
 		})
 		if err != nil {
@@ -94,8 +99,13 @@ var searchForValidVesselsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) SearchForValidVessels() mcp.ToolHandlerFor[*SearchValidVesselsInvocation, *SearchValidVesselsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *SearchValidVesselsInvocation) (*mcp.CallToolResult, *SearchValidVesselsResult, error) {
-		results, err := h.client.SearchForValidVessels(ctx, &mealplanninggrpc.SearchForValidVesselsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *SearchValidVesselsInvocation) (*mcp.CallToolResult, *SearchValidVesselsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.SearchForValidVessels(ctx, &mealplanninggrpc.SearchForValidVesselsRequest{
 			Filter:           grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 			Query:            x.Query,
 			UseSearchService: x.UseSearchService,
@@ -136,8 +146,13 @@ var validVesselCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateValidVessel() mcp.ToolHandlerFor[*mealplanning.ValidVesselCreationRequestInput, *mealplanning.ValidVessel] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *mealplanning.ValidVesselCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidVessel, error) {
-		result, err := h.client.CreateValidVessel(ctx, &mealplanninggrpc.CreateValidVesselRequest{Input: mealplanningconverters.ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput(x)})
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidVesselCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidVessel, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateValidVessel(ctx, &mealplanninggrpc.CreateValidVesselRequest{Input: mealplanningconverters.ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput(x)})
 		if err != nil {
 			return nil, nil, err
 		}
@@ -177,8 +192,13 @@ var validVesselUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateValidVessel() mcp.ToolHandlerFor[*UpdateValidVesselInvocation, *mealplanning.ValidVessel] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidVessel, error) {
-		result, err := h.client.UpdateValidVessel(ctx, &mealplanninggrpc.UpdateValidVesselRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidVessel, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateValidVessel(ctx, &mealplanninggrpc.UpdateValidVesselRequest{
 			ValidVesselId: x.ValidVesselID,
 			Input:         mealplanningconverters.ConvertValidVesselUpdateRequestInputToGRPCValidVesselUpdateRequestInput(x.ValidVesselUpdateRequestInput),
 		})

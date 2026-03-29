@@ -39,8 +39,13 @@ var getValidPreparationVesselTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPreparationVessel() mcp.ToolHandlerFor[*GetValidPreparationVesselInvocation, *mealplanning.ValidPreparationVessel] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPreparationVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationVessel, error) {
-		result, err := h.client.GetValidPreparationVessel(ctx, &mealplanninggrpc.GetValidPreparationVesselRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPreparationVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationVessel, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetValidPreparationVessel(ctx, &mealplanninggrpc.GetValidPreparationVesselRequest{
 			ValidPreparationVesselId: x.ValidPreparationVesselID,
 		})
 		if err != nil {
@@ -73,8 +78,13 @@ var getValidPreparationVesselsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPreparationVessels() mcp.ToolHandlerFor[*GetValidPreparationVesselsInvocation, *GetValidPreparationVesselsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPreparationVesselsInvocation) (*mcp.CallToolResult, *GetValidPreparationVesselsResult, error) {
-		results, err := h.client.GetValidPreparationVessels(ctx, &mealplanninggrpc.GetValidPreparationVesselsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPreparationVesselsInvocation) (*mcp.CallToolResult, *GetValidPreparationVesselsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetValidPreparationVessels(ctx, &mealplanninggrpc.GetValidPreparationVesselsRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -102,8 +112,13 @@ var validPreparationVesselCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateValidPreparationVessel() mcp.ToolHandlerFor[*mealplanning.ValidPreparationVesselCreationRequestInput, *mealplanning.ValidPreparationVessel] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *mealplanning.ValidPreparationVesselCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPreparationVessel, error) {
-		result, err := h.client.CreateValidPreparationVessel(ctx, &mealplanninggrpc.CreateValidPreparationVesselRequest{Input: mealplanningconverters.ConvertCreateValidPreparationVesselRequestToGRPCValidPreparationVesselCreationRequestInput(x)})
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidPreparationVesselCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPreparationVessel, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateValidPreparationVessel(ctx, &mealplanninggrpc.CreateValidPreparationVesselRequest{Input: mealplanningconverters.ConvertCreateValidPreparationVesselRequestToGRPCValidPreparationVesselCreationRequestInput(x)})
 		if err != nil {
 			return nil, nil, err
 		}
@@ -132,8 +147,13 @@ var validPreparationVesselUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateValidPreparationVessel() mcp.ToolHandlerFor[*UpdateValidPreparationVesselInvocation, *mealplanning.ValidPreparationVessel] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidPreparationVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationVessel, error) {
-		result, err := h.client.UpdateValidPreparationVessel(ctx, &mealplanninggrpc.UpdateValidPreparationVesselRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidPreparationVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationVessel, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateValidPreparationVessel(ctx, &mealplanninggrpc.UpdateValidPreparationVesselRequest{
 			ValidPreparationVesselId: x.ValidPreparationVesselID,
 			Input:                    mealplanningconverters.ConvertValidPreparationVesselUpdateRequestInputToGRPCValidPreparationVesselUpdateRequestInput(x.ValidPreparationVesselUpdateRequestInput),
 		})

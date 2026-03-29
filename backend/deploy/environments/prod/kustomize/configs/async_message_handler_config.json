@@ -185,7 +185,7 @@
 		"userDeviceTokenEncryptionKey": "",
 		"provider": "postgres",
 		"readConnection": {
-			"username": "api_db_user",
+			"username": "async_message_handler",
 			"password": "",
 			"database": "dinner-done-better",
 			"hostname": "",
@@ -193,7 +193,7 @@
 			"disableSSL": false
 		},
 		"writeConnection": {
-			"username": "api_db_user",
+			"username": "async_message_handler",
 			"password": "",
 			"database": "dinner-done-better",
 			"hostname": "",

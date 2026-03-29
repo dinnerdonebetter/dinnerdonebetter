@@ -49,8 +49,13 @@ var getRecipeStepInstrumentTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetRecipeStepInstrument() mcp.ToolHandlerFor[*GetRecipeStepInstrumentInvocation, *mealplanning.RecipeStepInstrument] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeStepInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepInstrument, error) {
-		result, err := h.client.GetRecipeStepInstrument(ctx, &mealplanninggrpc.GetRecipeStepInstrumentRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipeStepInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepInstrument, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetRecipeStepInstrument(ctx, &mealplanninggrpc.GetRecipeStepInstrumentRequest{
 			RecipeId:               x.RecipeID,
 			RecipeStepId:           x.RecipeStepID,
 			RecipeStepInstrumentId: x.RecipeStepInstrumentID,
@@ -89,8 +94,13 @@ var getRecipeStepInstrumentsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetRecipeStepInstruments() mcp.ToolHandlerFor[*GetRecipeStepInstrumentsInvocation, *GetRecipeStepInstrumentsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeStepInstrumentsInvocation) (*mcp.CallToolResult, *GetRecipeStepInstrumentsResult, error) {
-		results, err := h.client.GetRecipeStepInstruments(ctx, &mealplanninggrpc.GetRecipeStepInstrumentsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipeStepInstrumentsInvocation) (*mcp.CallToolResult, *GetRecipeStepInstrumentsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetRecipeStepInstruments(ctx, &mealplanninggrpc.GetRecipeStepInstrumentsRequest{
 			RecipeId:     x.RecipeID,
 			RecipeStepId: x.RecipeStepID,
 			Filter:       grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
@@ -137,8 +147,13 @@ var recipeStepInstrumentCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateRecipeStepInstrument() mcp.ToolHandlerFor[*CreateRecipeStepInstrumentInvocation, *mealplanning.RecipeStepInstrument] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateRecipeStepInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepInstrument, error) {
-		result, err := h.client.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateRecipeStepInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepInstrument, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
 			RecipeId:     x.RecipeID,
 			RecipeStepId: x.RecipeStepID,
 			Input:        mealplanningconverters.ConvertRecipeStepInstrumentCreationRequestInputToGRPCRecipeStepInstrumentCreationRequestInput(x.RecipeStepInstrumentCreationRequestInput),
@@ -180,8 +195,13 @@ var recipeStepInstrumentUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateRecipeStepInstrument() mcp.ToolHandlerFor[*UpdateRecipeStepInstrumentInvocation, *mealplanning.RecipeStepInstrument] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateRecipeStepInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepInstrument, error) {
-		result, err := h.client.UpdateRecipeStepInstrument(ctx, &mealplanninggrpc.UpdateRecipeStepInstrumentRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateRecipeStepInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepInstrument, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateRecipeStepInstrument(ctx, &mealplanninggrpc.UpdateRecipeStepInstrumentRequest{
 			RecipeId:               x.RecipeID,
 			RecipeStepId:           x.RecipeStepID,
 			RecipeStepInstrumentId: x.RecipeStepInstrumentID,
