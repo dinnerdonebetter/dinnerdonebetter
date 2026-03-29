@@ -110,7 +110,7 @@ test:
 
 .PHONY: pre_commit
 pre_commit: proto format test lint
-	(cd backend && ($MAKE) generated_files)
+	(cd backend && $($MAKE) generated_files)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Frontend dev

@@ -61,6 +61,7 @@ export interface GetAuthStatusResponse {
   accountStatus: string;
   accountStatusExplanation: string;
   activeAccount: string;
+  requiresPasswordChange: boolean;
 }
 
 export interface RedeemPasswordResetTokenRequest {
@@ -1044,7 +1045,14 @@ export const GetAuthStatusRequest: MessageFns<GetAuthStatusRequest> = {
 };
 
 function createBaseGetAuthStatusResponse(): GetAuthStatusResponse {
-  return { responseDetails: undefined, userId: '', accountStatus: '', accountStatusExplanation: '', activeAccount: '' };
+  return {
+    responseDetails: undefined,
+    userId: '',
+    accountStatus: '',
+    accountStatusExplanation: '',
+    activeAccount: '',
+    requiresPasswordChange: false,
+  };
 }
 
 export const GetAuthStatusResponse: MessageFns<GetAuthStatusResponse> = {
@@ -1063,6 +1071,9 @@ export const GetAuthStatusResponse: MessageFns<GetAuthStatusResponse> = {
     }
     if (message.activeAccount !== '') {
       writer.uint32(42).string(message.activeAccount);
+    }
+    if (message.requiresPasswordChange !== false) {
+      writer.uint32(48).bool(message.requiresPasswordChange);
     }
     return writer;
   },
@@ -1114,6 +1125,14 @@ export const GetAuthStatusResponse: MessageFns<GetAuthStatusResponse> = {
           message.activeAccount = reader.string();
           continue;
         }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.requiresPasswordChange = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1150,6 +1169,11 @@ export const GetAuthStatusResponse: MessageFns<GetAuthStatusResponse> = {
         : isSet(object.active_account)
           ? globalThis.String(object.active_account)
           : '',
+      requiresPasswordChange: isSet(object.requiresPasswordChange)
+        ? globalThis.Boolean(object.requiresPasswordChange)
+        : isSet(object.requires_password_change)
+          ? globalThis.Boolean(object.requires_password_change)
+          : false,
     };
   },
 
@@ -1170,6 +1194,9 @@ export const GetAuthStatusResponse: MessageFns<GetAuthStatusResponse> = {
     if (message.activeAccount !== '') {
       obj.activeAccount = message.activeAccount;
     }
+    if (message.requiresPasswordChange !== false) {
+      obj.requiresPasswordChange = message.requiresPasswordChange;
+    }
     return obj;
   },
 
@@ -1186,6 +1213,7 @@ export const GetAuthStatusResponse: MessageFns<GetAuthStatusResponse> = {
     message.accountStatus = object.accountStatus ?? '';
     message.accountStatusExplanation = object.accountStatusExplanation ?? '';
     message.activeAccount = object.activeAccount ?? '';
+    message.requiresPasswordChange = object.requiresPasswordChange ?? false;
     return message;
   },
 };

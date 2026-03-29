@@ -55,7 +55,6 @@ gcloud services enable \
   storage.googleapis.com \
   artifactregistry.googleapis.com \
   iam.googleapis.com \
-  certificatemanager.googleapis.com \
   fcm.googleapis.com \
   firebase.googleapis.com \
   --project=YOUR_PROJECT_ID
@@ -83,7 +82,7 @@ gcloud services enable \
 
 ### Domain ownership
 
-Cloudflare, SendGrid domain auth, and cert-manager (Let's Encrypt) all assume you control your domain. Ensure:
+Cloudflare, SendGrid domain auth, and Caddy (Let's Encrypt) all assume you control your domain. Ensure:
 
 - The domain is added to Cloudflare
 - DNS is managed by Cloudflare (or the zone ID is available)
@@ -141,7 +140,7 @@ Each service requires sign-up, credentials, and (where applicable) Terraform Clo
 
 - **Organization**: Your Terraform Cloud organization (configure in `_terraform_.tf`)
 - **Workspaces**:
-  - `prod-infra` — GKE cluster, networking, SendGrid, Cloudflare, cert-manager
+  - `prod-infra` — GKE cluster, networking, SendGrid, Cloudflare, Caddy
   - `prod-backend` — Cloud SQL, Pub/Sub, storage, Algolia indices, K8s secrets
 
 ### Variables

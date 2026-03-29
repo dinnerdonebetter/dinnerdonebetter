@@ -22,6 +22,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	IdentityService_AdminSetPasswordChangeRequired_FullMethodName = "/identity.IdentityService/AdminSetPasswordChangeRequired"
 	IdentityService_AdminUpdateUserStatus_FullMethodName          = "/identity.IdentityService/AdminUpdateUserStatus"
 	IdentityService_AcceptAccountInvitation_FullMethodName        = "/identity.IdentityService/AcceptAccountInvitation"
 	IdentityService_ArchiveAccount_FullMethodName                 = "/identity.IdentityService/ArchiveAccount"
@@ -56,6 +57,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type IdentityServiceClient interface {
+	AdminSetPasswordChangeRequired(ctx context.Context, in *AdminSetPasswordChangeRequiredRequest, opts ...grpc.CallOption) (*AdminSetPasswordChangeRequiredResponse, error)
 	AdminUpdateUserStatus(ctx context.Context, in *AdminUpdateUserStatusRequest, opts ...grpc.CallOption) (*AdminUpdateUserStatusResponse, error)
 	AcceptAccountInvitation(ctx context.Context, in *AcceptAccountInvitationRequest, opts ...grpc.CallOption) (*AcceptAccountInvitationResponse, error)
 	ArchiveAccount(ctx context.Context, in *ArchiveAccountRequest, opts ...grpc.CallOption) (*ArchiveAccountResponse, error)
@@ -92,6 +94,16 @@ type identityServiceClient struct {
 
 func NewIdentityServiceClient(cc grpc.ClientConnInterface) IdentityServiceClient {
 	return &identityServiceClient{cc}
+}
+
+func (c *identityServiceClient) AdminSetPasswordChangeRequired(ctx context.Context, in *AdminSetPasswordChangeRequiredRequest, opts ...grpc.CallOption) (*AdminSetPasswordChangeRequiredResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AdminSetPasswordChangeRequiredResponse)
+	err := c.cc.Invoke(ctx, IdentityService_AdminSetPasswordChangeRequired_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *identityServiceClient) AdminUpdateUserStatus(ctx context.Context, in *AdminUpdateUserStatusRequest, opts ...grpc.CallOption) (*AdminUpdateUserStatusResponse, error) {
@@ -381,6 +393,7 @@ type IdentityService_UploadUserAvatarClient = grpc.ClientStreamingClient[uploade
 // All implementations must embed UnimplementedIdentityServiceServer
 // for forward compatibility.
 type IdentityServiceServer interface {
+	AdminSetPasswordChangeRequired(context.Context, *AdminSetPasswordChangeRequiredRequest) (*AdminSetPasswordChangeRequiredResponse, error)
 	AdminUpdateUserStatus(context.Context, *AdminUpdateUserStatusRequest) (*AdminUpdateUserStatusResponse, error)
 	AcceptAccountInvitation(context.Context, *AcceptAccountInvitationRequest) (*AcceptAccountInvitationResponse, error)
 	ArchiveAccount(context.Context, *ArchiveAccountRequest) (*ArchiveAccountResponse, error)
@@ -419,6 +432,9 @@ type IdentityServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedIdentityServiceServer struct{}
 
+func (UnimplementedIdentityServiceServer) AdminSetPasswordChangeRequired(context.Context, *AdminSetPasswordChangeRequiredRequest) (*AdminSetPasswordChangeRequiredResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdminSetPasswordChangeRequired not implemented")
+}
 func (UnimplementedIdentityServiceServer) AdminUpdateUserStatus(context.Context, *AdminUpdateUserStatusRequest) (*AdminUpdateUserStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminUpdateUserStatus not implemented")
 }
@@ -522,6 +538,24 @@ func RegisterIdentityServiceServer(s grpc.ServiceRegistrar, srv IdentityServiceS
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&IdentityService_ServiceDesc, srv)
+}
+
+func _IdentityService_AdminSetPasswordChangeRequired_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdminSetPasswordChangeRequiredRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServiceServer).AdminSetPasswordChangeRequired(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IdentityService_AdminSetPasswordChangeRequired_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServiceServer).AdminSetPasswordChangeRequired(ctx, req.(*AdminSetPasswordChangeRequiredRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _IdentityService_AdminUpdateUserStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1024,6 +1058,10 @@ var IdentityService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "identity.IdentityService",
 	HandlerType: (*IdentityServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AdminSetPasswordChangeRequired",
+			Handler:    _IdentityService_AdminSetPasswordChangeRequired_Handler,
+		},
 		{
 			MethodName: "AdminUpdateUserStatus",
 			Handler:    _IdentityService_AdminUpdateUserStatus_Handler,

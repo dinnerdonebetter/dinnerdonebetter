@@ -122,6 +122,11 @@ func (s *serviceImpl) GetAuthStatus(ctx context.Context, _ *authsvc.GetAuthStatu
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
+	requiresPasswordChange, pcErr := s.identityDataManager.UserRequiresPasswordChange(ctx, sessionContextData.GetUserID())
+	if pcErr != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(pcErr, logger, span, codes.Internal, "checking password change requirement")
+	}
+
 	x := &authsvc.GetAuthStatusResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
@@ -130,6 +135,7 @@ func (s *serviceImpl) GetAuthStatus(ctx context.Context, _ *authsvc.GetAuthStatu
 		AccountStatus:            sessionContextData.Requester.AccountStatus,
 		AccountStatusExplanation: sessionContextData.Requester.AccountStatusExplanation,
 		ActiveAccount:            sessionContextData.GetActiveAccountID(),
+		RequiresPasswordChange:   requiresPasswordChange,
 	}
 
 	return x, nil

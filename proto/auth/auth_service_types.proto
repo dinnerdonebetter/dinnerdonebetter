@@ -57,6 +57,7 @@ message GetAuthStatusResponse {
   string account_status = 3;
   string account_status_explanation = 4;
   string active_account = 5;
+  bool requires_password_change = 6;
 }
 
 message RedeemPasswordResetTokenRequest {

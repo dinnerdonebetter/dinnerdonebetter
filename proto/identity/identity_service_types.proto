@@ -340,6 +340,15 @@ message UsernameUpdateRequest {
   string totp_token = 3;
 }
 
+message AdminSetPasswordChangeRequiredRequest {
+  string target_user_id = 1;
+  bool requires_password_change = 2;
+}
+
+message AdminSetPasswordChangeRequiredResponse {
+  common.ResponseDetails response_details = 1;
+}
+
 message AdminUpdateUserStatusRequest {
   string target_user_id = 1;
   string new_status = 2;

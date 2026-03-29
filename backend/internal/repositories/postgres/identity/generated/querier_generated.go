@@ -64,6 +64,7 @@ type Querier interface {
 	GetUserByID(ctx context.Context, db DBTX, id string) (*GetUserByIDRow, error)
 	GetUserByUsername(ctx context.Context, db DBTX, username string) (*GetUserByUsernameRow, error)
 	GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
+	GetUserRequiresPasswordChange(ctx context.Context, db DBTX, id string) (bool, error)
 	GetUserRoleByID(ctx context.Context, db DBTX, id string) (*UserRoles, error)
 	GetUserRoleByName(ctx context.Context, db DBTX, name string) (*UserRoles, error)
 	GetUserRoleHierarchy(ctx context.Context, db DBTX) ([]*UserRoleHierarchy, error)
@@ -85,6 +86,7 @@ type Querier interface {
 	SearchUsersByUsername(ctx context.Context, db DBTX, arg *SearchUsersByUsernameParams) ([]*SearchUsersByUsernameRow, error)
 	SetAccountInvitationStatus(ctx context.Context, db DBTX, arg *SetAccountInvitationStatusParams) error
 	SetUserAccountStatus(ctx context.Context, db DBTX, arg *SetUserAccountStatusParams) (int64, error)
+	SetUserRequiresPasswordChange(ctx context.Context, db DBTX, arg *SetUserRequiresPasswordChangeParams) (int64, error)
 	TransferAccountMembership(ctx context.Context, db DBTX, arg *TransferAccountMembershipParams) error
 	TransferAccountOwnership(ctx context.Context, db DBTX, arg *TransferAccountOwnershipParams) error
 	UpdateAccount(ctx context.Context, db DBTX, arg *UpdateAccountParams) (int64, error)

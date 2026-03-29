@@ -81,6 +81,73 @@ func buildTestServiceWithInsufficientPermissions(t *testing.T) *serviceImpl {
 	return service
 }
 
+func TestServiceImpl_AdminSetPasswordChangeRequired(t *testing.T) {
+	t.Parallel()
+
+	t.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		service, identityDataManager := buildTestServiceWithAdminPermissions(t)
+
+		exampleUserID := identityfakes.BuildFakeID()
+
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.AdminSetPasswordChangeRequired), testutils.ContextMatcher, exampleUserID, true).Return(nil)
+
+		request := &identitysvc.AdminSetPasswordChangeRequiredRequest{
+			TargetUserId:           exampleUserID,
+			RequiresPasswordChange: true,
+		}
+
+		result, err := service.AdminSetPasswordChangeRequired(t.Context(), request)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.NotNil(t, result.ResponseDetails)
+	})
+
+	t.Run("with session error", func(t *testing.T) {
+		t.Parallel()
+
+		service := buildTestServiceWithSessionError(t)
+
+		request := &identitysvc.AdminSetPasswordChangeRequiredRequest{
+			TargetUserId:           identityfakes.BuildFakeID(),
+			RequiresPasswordChange: true,
+		}
+
+		result, err := service.AdminSetPasswordChangeRequired(t.Context(), request)
+
+		assert.Error(t, err)
+		assert.Nil(t, result)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.Unauthenticated, grpcErr.Code())
+	})
+
+	t.Run("with error from data manager", func(t *testing.T) {
+		t.Parallel()
+
+		service, identityDataManager := buildTestServiceWithAdminPermissions(t)
+
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.AdminSetPasswordChangeRequired), testutils.ContextMatcher, mock.AnythingOfType("string"), true).Return(errors.New("update error"))
+
+		request := &identitysvc.AdminSetPasswordChangeRequiredRequest{
+			TargetUserId:           identityfakes.BuildFakeID(),
+			RequiresPasswordChange: true,
+		}
+
+		result, err := service.AdminSetPasswordChangeRequired(t.Context(), request)
+
+		assert.Error(t, err)
+		assert.Nil(t, result)
+
+		grpcErr, ok := status.FromError(err)
+		assert.True(t, ok)
+		assert.Equal(t, codes.Internal, grpcErr.Code())
+	})
+}
+
 func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 	t.Parallel()
 

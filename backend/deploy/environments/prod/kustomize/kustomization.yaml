@@ -6,7 +6,6 @@ kind: Kustomization
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
   - ../../../kustomize/components/api_server
-  - backend_config_api_grpc.yaml
   - ../../../kustomize/components/workers
   - ../../../kustomize/components/async_functions
   # - ../../../kustomize/components/mcp_server
@@ -58,15 +57,6 @@ images:
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches:
-  - path: patches/service-api-backendconfig.yaml
-    target:
-      kind: Service
-      name: dinner-done-better-api-svc
-  - path: patches/deployment-grpc-tls.yaml
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
   ### API Server - needs database, pubsub, service secrets (from Terraform api-service-config), workload identity
   - path: patches/deployment-workload-identity.yaml
     target:

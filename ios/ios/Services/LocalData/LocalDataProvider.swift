@@ -949,7 +949,9 @@ private func validVesselShapeFromString(_ s: String) -> Mealplanning_ValidVessel
   }
 }
 
-private func ingredientStateAttributeTypeFromString(_ s: String) -> Mealplanning_ValidIngredientStateAttributeType {
+private func ingredientStateAttributeTypeFromString(_ s: String)
+  -> Mealplanning_ValidIngredientStateAttributeType
+{
   switch s {
   case "texture": return .texture
   case "consistency": return .consistency

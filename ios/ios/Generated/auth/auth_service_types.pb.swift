@@ -251,6 +251,8 @@ public struct Auth_GetAuthStatusResponse: Sendable {
 
   public var activeAccount: String = String()
 
+  public var requiresPasswordChange: Bool = false
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1638,7 +1640,7 @@ extension Auth_GetAuthStatusRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuthStatusResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}user_id\0\u{3}account_status\0\u{3}account_status_explanation\0\u{3}active_account\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}user_id\0\u{3}account_status\0\u{3}account_status_explanation\0\u{3}active_account\0\u{3}requires_password_change\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1651,6 +1653,7 @@ extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
       case 3: try { try decoder.decodeSingularStringField(value: &self.accountStatus) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.accountStatusExplanation) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.activeAccount) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self.requiresPasswordChange) }()
       default: break
       }
     }
@@ -1676,6 +1679,9 @@ extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if !self.activeAccount.isEmpty {
       try visitor.visitSingularStringField(value: self.activeAccount, fieldNumber: 5)
     }
+    if self.requiresPasswordChange != false {
+      try visitor.visitSingularBoolField(value: self.requiresPasswordChange, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1685,6 +1691,7 @@ extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if lhs.accountStatus != rhs.accountStatus {return false}
     if lhs.accountStatusExplanation != rhs.accountStatusExplanation {return false}
     if lhs.activeAccount != rhs.activeAccount {return false}
+    if lhs.requiresPasswordChange != rhs.requiresPasswordChange {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -8,6 +8,7 @@ import "uploaded_media/uploaded_media_messages.proto";
 option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity";
 
 service IdentityService {
+  rpc AdminSetPasswordChangeRequired(AdminSetPasswordChangeRequiredRequest) returns (AdminSetPasswordChangeRequiredResponse);
   rpc AdminUpdateUserStatus(AdminUpdateUserStatusRequest) returns (AdminUpdateUserStatusResponse);
   rpc AcceptAccountInvitation(AcceptAccountInvitationRequest) returns (AcceptAccountInvitationResponse);
   rpc ArchiveAccount(ArchiveAccountRequest) returns (ArchiveAccountResponse);

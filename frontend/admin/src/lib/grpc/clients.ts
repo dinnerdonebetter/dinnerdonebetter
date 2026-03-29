@@ -22,6 +22,7 @@ export const searchForUsers = clients.searchForUsers;
 export const getUsersForAccount = clients.getUsersForAccount;
 export const getAccountsForUser = clients.getAccountsForUser;
 export const adminUpdateUserStatus = clients.adminUpdateUserStatus;
+export const adminSetPasswordChangeRequired = clients.adminSetPasswordChangeRequired;
 export const updateUserDetails = clients.updateUserDetails;
 export const updateAccount = clients.updateAccount;
 export const getOAuth2Clients = clients.getOAuth2Clients;

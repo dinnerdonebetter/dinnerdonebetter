@@ -198,6 +198,11 @@ export function createAdminGrpcClients(config: GrpcClientConfig) {
         request as unknown as Parameters<IdentityServiceClient['adminUpdateUserStatus']>[0],
         authMetadata(token),
       ),
+    adminSetPasswordChangeRequired: (token: string, request: Record<string, unknown>) =>
+      promisifyUnary(get.identity().adminSetPasswordChangeRequired.bind(get.identity()))(
+        request as unknown as Parameters<IdentityServiceClient['adminSetPasswordChangeRequired']>[0],
+        authMetadata(token),
+      ),
     updateUserDetails: (token: string, request: Record<string, unknown>) =>
       promisifyUnary(get.identity().updateUserDetails.bind(get.identity()))(
         request as unknown as Parameters<IdentityServiceClient['updateUserDetails']>[0],

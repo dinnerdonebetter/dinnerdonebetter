@@ -192,14 +192,16 @@ jobs:
       - name: setup Skaffold
         run: gcloud components update --quiet && gcloud components install skaffold --quiet
 
-      - name: deploy kubernetes deps
-        run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+      - name: Build and push Caddy image
+        run: |
+          docker build -t us-central1-docker.pkg.dev/dinner-done-better-prod/containers/caddy-cloudflare:2 infra/docker/caddy-cloudflare
+          docker push us-central1-docker.pkg.dev/dinner-done-better-prod/containers/caddy-cloudflare:2
 
       # At least once (this has already been done manually)
       # - name: Enable Secret Manager secret sync
       #   run: gcloud beta container clusters update prod --region us-central1 --enable-secret-sync
 
-      - name: Apply infra kustomize (SecretProviderClass, SecretSync, api-service-account)
+      - name: Apply infra kustomize (Caddy, SecretProviderClass, SecretSync, api-service-account)
         run: kubectl apply -k infra/deploy/environments/prod/kustomize
 
       - name: Skaffold deploy

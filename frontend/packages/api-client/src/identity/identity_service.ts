@@ -23,6 +23,8 @@ import { UploadRequest } from '../uploaded_media/uploaded_media_messages';
 import {
   AcceptAccountInvitationRequest,
   AcceptAccountInvitationResponse,
+  AdminSetPasswordChangeRequiredRequest,
+  AdminSetPasswordChangeRequiredResponse,
   AdminUpdateUserStatusRequest,
   AdminUpdateUserStatusResponse,
   ArchiveAccountRequest,
@@ -82,6 +84,19 @@ export const protobufPackage = 'identity';
 
 export type IdentityServiceService = typeof IdentityServiceService;
 export const IdentityServiceService = {
+  adminSetPasswordChangeRequired: {
+    path: '/identity.IdentityService/AdminSetPasswordChangeRequired' as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: AdminSetPasswordChangeRequiredRequest): Buffer =>
+      Buffer.from(AdminSetPasswordChangeRequiredRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): AdminSetPasswordChangeRequiredRequest =>
+      AdminSetPasswordChangeRequiredRequest.decode(value),
+    responseSerialize: (value: AdminSetPasswordChangeRequiredResponse): Buffer =>
+      Buffer.from(AdminSetPasswordChangeRequiredResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AdminSetPasswordChangeRequiredResponse =>
+      AdminSetPasswordChangeRequiredResponse.decode(value),
+  },
   adminUpdateUserStatus: {
     path: '/identity.IdentityService/AdminUpdateUserStatus' as const,
     requestStream: false as const,
@@ -391,6 +406,10 @@ export const IdentityServiceService = {
 } as const;
 
 export interface IdentityServiceServer extends UntypedServiceImplementation {
+  adminSetPasswordChangeRequired: handleUnaryCall<
+    AdminSetPasswordChangeRequiredRequest,
+    AdminSetPasswordChangeRequiredResponse
+  >;
   adminUpdateUserStatus: handleUnaryCall<AdminUpdateUserStatusRequest, AdminUpdateUserStatusResponse>;
   acceptAccountInvitation: handleUnaryCall<AcceptAccountInvitationRequest, AcceptAccountInvitationResponse>;
   archiveAccount: handleUnaryCall<ArchiveAccountRequest, ArchiveAccountResponse>;
@@ -428,6 +447,21 @@ export interface IdentityServiceServer extends UntypedServiceImplementation {
 }
 
 export interface IdentityServiceClient extends Client {
+  adminSetPasswordChangeRequired(
+    request: AdminSetPasswordChangeRequiredRequest,
+    callback: (error: ServiceError | null, response: AdminSetPasswordChangeRequiredResponse) => void,
+  ): ClientUnaryCall;
+  adminSetPasswordChangeRequired(
+    request: AdminSetPasswordChangeRequiredRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AdminSetPasswordChangeRequiredResponse) => void,
+  ): ClientUnaryCall;
+  adminSetPasswordChangeRequired(
+    request: AdminSetPasswordChangeRequiredRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AdminSetPasswordChangeRequiredResponse) => void,
+  ): ClientUnaryCall;
   adminUpdateUserStatus(
     request: AdminUpdateUserStatusRequest,
     callback: (error: ServiceError | null, response: AdminUpdateUserStatusResponse) => void,

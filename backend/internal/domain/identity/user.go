@@ -24,6 +24,8 @@ const (
 	UserArchivedServiceEventType = "user_archived"
 	// UserStatusChangedServiceEventType indicates a user had their user status changed.
 	UserStatusChangedServiceEventType = "user_status_changed"
+	// UserPasswordChangeRequiredServiceEventType indicates a user was marked as requiring a password change.
+	UserPasswordChangeRequiredServiceEventType = "user_password_change_required"
 
 	// GoodStandingUserAccountStatus indicates a User's account is in good standing.
 	GoodStandingUserAccountStatus userAccountStatus = "good"
@@ -160,6 +162,8 @@ type (
 	// UserDataManager describes a structure which can manage users in persistent storage.
 	UserDataManager interface {
 		UpdateUserAccountStatus(ctx context.Context, userID string, input *UserAccountStatusUpdateInput) error
+		SetUserRequiresPasswordChange(ctx context.Context, userID string, requiresChange bool) error
+		UserRequiresPasswordChange(ctx context.Context, userID string) (bool, error)
 		GetUser(ctx context.Context, userID string) (*User, error)
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)

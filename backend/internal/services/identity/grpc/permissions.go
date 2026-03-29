@@ -13,6 +13,9 @@ var noPerms = []authorization.Permission{}
 // ProvideMethodPermissions returns a Wire provider for the identity service's method permissions.
 func ProvideMethodPermissions() IdentityMethodPermissions {
 	return IdentityMethodPermissions{
+		identitysvc.IdentityService_AdminSetPasswordChangeRequired_FullMethodName: {
+			authorization.UpdateUserStatusPermission,
+		},
 		identitysvc.IdentityService_AdminUpdateUserStatus_FullMethodName: {
 			authorization.UpdateUserStatusPermission,
 		},

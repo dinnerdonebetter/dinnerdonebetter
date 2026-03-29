@@ -55,8 +55,10 @@ func TestServiceImpl_GetAuthStatus(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		service, _, _, _, _ := buildTestService(t)
+		service, identityDataManager, _, _, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
+
+		identityDataManager.On("UserRequiresPasswordChange", mock.Anything, mock.AnythingOfType("string")).Return(false, nil)
 
 		request := &authsvc.GetAuthStatusRequest{}
 
@@ -69,6 +71,7 @@ func TestServiceImpl_GetAuthStatus(t *testing.T) {
 		assert.NotEmpty(t, response.UserId)
 		assert.NotEmpty(t, response.ActiveAccount)
 		assert.Equal(t, identity.GoodStandingUserAccountStatus.String(), response.AccountStatus)
+		assert.False(t, response.RequiresPasswordChange)
 	})
 
 	t.Run("error fetching session context", func(t *testing.T) {

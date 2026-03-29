@@ -28,6 +28,23 @@ WHERE %s IS NULL
 					idColumn, idColumn,
 				)),
 			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "SetUserRequiresPasswordChange",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = %s,
+	%s = sqlc.arg(%s)
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
+					usersTableName,
+					lastUpdatedAtColumn, currentTimeExpression,
+					requiresPasswordChangeColumn, requiresPasswordChangeColumn,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
+			},
 		}
 	default:
 		return nil

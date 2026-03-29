@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: caddy-config
+  namespace: prod
+data:
+  Caddyfile: |
+    {
+        # Let's Encrypt staging — generous rate limits, untrusted certs.
+        # Use this until the full flow is validated end-to-end.
+        acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+        # Let's Encrypt production — switch to this once staging works:
+        # acme_ca https://acme-v02.api.letsencrypt.org/directory
+        acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
+
+    api.dinnerdonebetter.com {
+        reverse_proxy dinner-done-better-api-svc.prod.svc.cluster.local:8001 {
+            flush_interval -1
+            transport http {
+                versions h2c 2
+            }
+        }
+    }
+
+    http-api.dinnerdonebetter.com {
+        reverse_proxy dinner-done-better-api-svc.prod.svc.cluster.local:8000
+    }
+
+    admin.dinnerdonebetter.com {
+        reverse_proxy dinner-done-better-admin-webapp-svc.prod.svc.cluster.local:8888
+    }
+
+    dinnerdonebetter.com, www.dinnerdonebetter.com {
+        reverse_proxy dinner-done-better-consumer-webapp-svc.prod.svc.cluster.local:80
+    }

@@ -351,6 +351,15 @@ export interface UsernameUpdateRequest {
   totpToken: string;
 }
 
+export interface AdminSetPasswordChangeRequiredRequest {
+  targetUserId: string;
+  requiresPasswordChange: boolean;
+}
+
+export interface AdminSetPasswordChangeRequiredResponse {
+  responseDetails: ResponseDetails | undefined;
+}
+
 export interface AdminUpdateUserStatusRequest {
   targetUserId: string;
   newStatus: string;
@@ -5962,6 +5971,165 @@ export const UsernameUpdateRequest: MessageFns<UsernameUpdateRequest> = {
     message.newUsername = object.newUsername ?? '';
     message.currentPassword = object.currentPassword ?? '';
     message.totpToken = object.totpToken ?? '';
+    return message;
+  },
+};
+
+function createBaseAdminSetPasswordChangeRequiredRequest(): AdminSetPasswordChangeRequiredRequest {
+  return { targetUserId: '', requiresPasswordChange: false };
+}
+
+export const AdminSetPasswordChangeRequiredRequest: MessageFns<AdminSetPasswordChangeRequiredRequest> = {
+  encode(message: AdminSetPasswordChangeRequiredRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.targetUserId !== '') {
+      writer.uint32(10).string(message.targetUserId);
+    }
+    if (message.requiresPasswordChange !== false) {
+      writer.uint32(16).bool(message.requiresPasswordChange);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AdminSetPasswordChangeRequiredRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminSetPasswordChangeRequiredRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.targetUserId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.requiresPasswordChange = reader.bool();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminSetPasswordChangeRequiredRequest {
+    return {
+      targetUserId: isSet(object.targetUserId)
+        ? globalThis.String(object.targetUserId)
+        : isSet(object.target_user_id)
+          ? globalThis.String(object.target_user_id)
+          : '',
+      requiresPasswordChange: isSet(object.requiresPasswordChange)
+        ? globalThis.Boolean(object.requiresPasswordChange)
+        : isSet(object.requires_password_change)
+          ? globalThis.Boolean(object.requires_password_change)
+          : false,
+    };
+  },
+
+  toJSON(message: AdminSetPasswordChangeRequiredRequest): unknown {
+    const obj: any = {};
+    if (message.targetUserId !== '') {
+      obj.targetUserId = message.targetUserId;
+    }
+    if (message.requiresPasswordChange !== false) {
+      obj.requiresPasswordChange = message.requiresPasswordChange;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AdminSetPasswordChangeRequiredRequest>, I>>(
+    base?: I,
+  ): AdminSetPasswordChangeRequiredRequest {
+    return AdminSetPasswordChangeRequiredRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AdminSetPasswordChangeRequiredRequest>, I>>(
+    object: I,
+  ): AdminSetPasswordChangeRequiredRequest {
+    const message = createBaseAdminSetPasswordChangeRequiredRequest();
+    message.targetUserId = object.targetUserId ?? '';
+    message.requiresPasswordChange = object.requiresPasswordChange ?? false;
+    return message;
+  },
+};
+
+function createBaseAdminSetPasswordChangeRequiredResponse(): AdminSetPasswordChangeRequiredResponse {
+  return { responseDetails: undefined };
+}
+
+export const AdminSetPasswordChangeRequiredResponse: MessageFns<AdminSetPasswordChangeRequiredResponse> = {
+  encode(message: AdminSetPasswordChangeRequiredResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.responseDetails !== undefined) {
+      ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AdminSetPasswordChangeRequiredResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminSetPasswordChangeRequiredResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminSetPasswordChangeRequiredResponse {
+    return {
+      responseDetails: isSet(object.responseDetails)
+        ? ResponseDetails.fromJSON(object.responseDetails)
+        : isSet(object.response_details)
+          ? ResponseDetails.fromJSON(object.response_details)
+          : undefined,
+    };
+  },
+
+  toJSON(message: AdminSetPasswordChangeRequiredResponse): unknown {
+    const obj: any = {};
+    if (message.responseDetails !== undefined) {
+      obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AdminSetPasswordChangeRequiredResponse>, I>>(
+    base?: I,
+  ): AdminSetPasswordChangeRequiredResponse {
+    return AdminSetPasswordChangeRequiredResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AdminSetPasswordChangeRequiredResponse>, I>>(
+    object: I,
+  ): AdminSetPasswordChangeRequiredResponse {
+    const message = createBaseAdminSetPasswordChangeRequiredResponse();
+    message.responseDetails =
+      object.responseDetails !== undefined && object.responseDetails !== null
+        ? ResponseDetails.fromPartial(object.responseDetails)
+        : undefined;
     return message;
   },
 };

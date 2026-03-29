@@ -43,6 +43,8 @@ type (
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
 		SetUserAvatar(ctx context.Context, userID, uploadedMediaID string) error
 		AdminUpdateUserStatus(ctx context.Context, input *identity.UserAccountStatusUpdateInput) error
+		AdminSetPasswordChangeRequired(ctx context.Context, userID string, requiresChange bool) error
+		UserRequiresPasswordChange(ctx context.Context, userID string) (bool, error)
 
 		// Session/context helpers used by auth service and interceptors.
 		GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error)
