@@ -7,11 +7,7 @@ metadata:
 data:
   Caddyfile: |
     {
-        # Let's Encrypt staging — generous rate limits, untrusted certs.
-        # Use this until the full flow is validated end-to-end.
-        acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
-        # Let's Encrypt production — switch to this once staging works:
-        # acme_ca https://acme-v02.api.letsencrypt.org/directory
+        acme_ca https://acme-v02.api.letsencrypt.org/directory
         acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
     }
 

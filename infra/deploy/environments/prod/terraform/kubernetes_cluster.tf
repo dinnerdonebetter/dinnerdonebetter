@@ -40,6 +40,7 @@ resource "google_project_iam_member" "prod_cluster" {
 }
 
 resource "google_container_cluster" "primary" {
+  provider = google-beta
   name     = local.environment
   location = local.gcp_region
 
@@ -56,6 +57,11 @@ resource "google_container_cluster" "primary" {
   # Enable the Secret Manager add-on for native GCP Secret Manager integration
   # This allows pods to mount secrets from GCP Secret Manager as volumes
   secret_manager_config {
+    enabled = true
+  }
+
+  # Enable SecretSync to sync GCP secrets into native Kubernetes Secrets
+  secret_sync_config {
     enabled = true
   }
 

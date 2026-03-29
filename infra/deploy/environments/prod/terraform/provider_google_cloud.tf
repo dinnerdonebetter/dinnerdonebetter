@@ -11,3 +11,10 @@ provider "google" {
   zone        = local.gcp_main_zone
   credentials = var.GOOGLE_CLOUD_CREDENTIALS
 }
+
+provider "google-beta" {
+  project     = local.gcp_project_id
+  region      = local.gcp_region
+  zone        = local.gcp_main_zone
+  credentials = var.GOOGLE_CLOUD_CREDENTIALS
+}
