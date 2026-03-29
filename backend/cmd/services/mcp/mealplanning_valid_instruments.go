@@ -44,8 +44,13 @@ var getValidInstrumentTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidInstrument() mcp.ToolHandlerFor[*GetValidInstrumentInvocation, *mealplanning.ValidInstrument] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidInstrument, error) {
-		result, err := h.client.GetValidInstrument(ctx, &mealplanninggrpc.GetValidInstrumentRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidInstrument, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetValidInstrument(ctx, &mealplanninggrpc.GetValidInstrumentRequest{
 			ValidInstrumentId: x.ValidInstrumentID,
 		})
 		if err != nil {
@@ -88,8 +93,13 @@ var searchForValidInstrumentsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) SearchForValidInstruments() mcp.ToolHandlerFor[*SearchValidInstrumentsInvocation, *SearchValidInstrumentsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *SearchValidInstrumentsInvocation) (*mcp.CallToolResult, *SearchValidInstrumentsResult, error) {
-		results, err := h.client.SearchForValidInstruments(ctx, &mealplanninggrpc.SearchForValidInstrumentsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *SearchValidInstrumentsInvocation) (*mcp.CallToolResult, *SearchValidInstrumentsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.SearchForValidInstruments(ctx, &mealplanninggrpc.SearchForValidInstrumentsRequest{
 			Filter:           grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 			Query:            x.Query,
 			UseSearchService: x.UseSearchService,
@@ -124,8 +134,13 @@ var validInstrumentCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateValidInstrument() mcp.ToolHandlerFor[*mealplanning.ValidInstrumentCreationRequestInput, *mealplanning.ValidInstrument] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *mealplanning.ValidInstrumentCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidInstrument, error) {
-		result, err := h.client.CreateValidInstrument(ctx, &mealplanninggrpc.CreateValidInstrumentRequest{Input: mealplanningconverters.ConvertValidInstrumentCreationRequestInputToGRPCValidInstrumentCreationRequestInput(x)})
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidInstrumentCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidInstrument, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateValidInstrument(ctx, &mealplanninggrpc.CreateValidInstrumentRequest{Input: mealplanningconverters.ConvertValidInstrumentCreationRequestInputToGRPCValidInstrumentCreationRequestInput(x)})
 		if err != nil {
 			return nil, nil, err
 		}
@@ -159,8 +174,13 @@ var validInstrumentUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateValidInstrument() mcp.ToolHandlerFor[*UpdateValidInstrumentInvocation, *mealplanning.ValidInstrument] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidInstrument, error) {
-		result, err := h.client.UpdateValidInstrument(ctx, &mealplanninggrpc.UpdateValidInstrumentRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidInstrument, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateValidInstrument(ctx, &mealplanninggrpc.UpdateValidInstrumentRequest{
 			ValidInstrumentId: x.ValidInstrumentID,
 			Input:             mealplanningconverters.ConvertValidInstrumentUpdateRequestInputToGRPCValidInstrumentUpdateRequestInput(x.ValidInstrumentUpdateRequestInput),
 		})

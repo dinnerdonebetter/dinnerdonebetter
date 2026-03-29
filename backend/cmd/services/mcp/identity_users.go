@@ -57,8 +57,13 @@ type GetUserInvocation struct {
 }
 
 func (h *mcpToolManager) GetUser() mcp.ToolHandlerFor[*GetUserInvocation, *identity.User] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetUserInvocation) (*mcp.CallToolResult, *identity.User, error) {
-		result, err := h.client.GetUser(ctx, &identitygrpc.GetUserRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetUserInvocation) (*mcp.CallToolResult, *identity.User, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetUser(ctx, &identitygrpc.GetUserRequest{
 			UserId: x.UserID,
 		})
 		if err != nil {
@@ -90,8 +95,13 @@ type (
 )
 
 func (h *mcpToolManager) GetUsers() mcp.ToolHandlerFor[*GetUsersInvocation, *GetUsersResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetUsersInvocation) (*mcp.CallToolResult, *GetUsersResult, error) {
-		results, err := h.client.GetUsers(ctx, &identitygrpc.GetUsersRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetUsersInvocation) (*mcp.CallToolResult, *GetUsersResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetUsers(ctx, &identitygrpc.GetUsersRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -132,8 +142,13 @@ type (
 )
 
 func (h *mcpToolManager) SearchForUsers() mcp.ToolHandlerFor[*SearchForUsersInvocation, *SearchForUsersResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *SearchForUsersInvocation) (*mcp.CallToolResult, *SearchForUsersResult, error) {
-		results, err := h.client.SearchForUsers(ctx, &identitygrpc.SearchForUsersRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *SearchForUsersInvocation) (*mcp.CallToolResult, *SearchForUsersResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.SearchForUsers(ctx, &identitygrpc.SearchForUsersRequest{
 			Query:            x.Query,
 			UseSearchService: x.UseSearchService,
 			Filter:           grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
@@ -164,8 +179,13 @@ type GetAccountInvocation struct {
 }
 
 func (h *mcpToolManager) GetAccount() mcp.ToolHandlerFor[*GetAccountInvocation, *identity.Account] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetAccountInvocation) (*mcp.CallToolResult, *identity.Account, error) {
-		result, err := h.client.GetAccount(ctx, &identitygrpc.GetAccountRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetAccountInvocation) (*mcp.CallToolResult, *identity.Account, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetAccount(ctx, &identitygrpc.GetAccountRequest{
 			AccountId: x.AccountID,
 		})
 		if err != nil {
@@ -199,8 +219,13 @@ type (
 )
 
 func (h *mcpToolManager) GetAccountsForUser() mcp.ToolHandlerFor[*GetAccountsForUserInvocation, *GetAccountsForUserResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetAccountsForUserInvocation) (*mcp.CallToolResult, *GetAccountsForUserResult, error) {
-		results, err := h.client.GetAccountsForUser(ctx, &identitygrpc.GetAccountsForUserRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetAccountsForUserInvocation) (*mcp.CallToolResult, *GetAccountsForUserResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetAccountsForUser(ctx, &identitygrpc.GetAccountsForUserRequest{
 			UserId: x.UserID,
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
@@ -240,8 +265,13 @@ type UpdateUserDetailsInvocation struct {
 }
 
 func (h *mcpToolManager) UpdateUserDetails() mcp.ToolHandlerFor[*UpdateUserDetailsInvocation, *boolResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateUserDetailsInvocation) (*mcp.CallToolResult, *boolResult, error) {
-		_, err := h.client.UpdateUserDetails(ctx, &identitygrpc.UpdateUserDetailsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateUserDetailsInvocation) (*mcp.CallToolResult, *boolResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		_, err = c.UpdateUserDetails(ctx, &identitygrpc.UpdateUserDetailsRequest{
 			Input: &identitygrpc.UserDetailsUpdateRequestInput{
 				FirstName:       x.FirstName,
 				LastName:        x.LastName,

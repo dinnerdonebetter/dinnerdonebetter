@@ -16,26 +16,22 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config/envvars"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
-	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
+	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/pquerna/otp/totp"
 	"github.com/spf13/pflag"
 )
 
 const (
 	defaultMcpServerConfigurationFilepath = "deploy/environments/localdev/config_files/mcp_server_config.json"
 
-	// TODO: get these values another way.
-	tempUsername     = "admin_user"
-	tempPassword     = "admin_pass"
-	tempTOTPTokenKey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-
 	transportStdio = "stdio"
 	transportSSE   = "sse"
 	transportHTTP  = "http"
+
+	defaultPort    = 8888
+	defaultBaseURL = "http://localhost:8888"
 )
 
 func must(err error) {
@@ -47,12 +43,18 @@ func must(err error) {
 func main() {
 	// Parse command-line flags
 	transport := pflag.String("transport", transportHTTP, fmt.Sprintf("Transport method: %s, %s, or %s", transportStdio, transportSSE, transportHTTP))
+	baseURL := pflag.String("base-url", defaultBaseURL, "Public base URL of the MCP server (used for OAuth2 metadata)")
 	pflag.Parse()
 
 	// Validate transport flag
 	validTransports := map[string]bool{transportStdio: true, transportSSE: true, transportHTTP: true}
 	if !validTransports[*transport] {
 		log.Fatalf("Invalid transport method: %s. Allowed values are: %s, %s, %s", *transport, transportStdio, transportSSE, transportHTTP)
+	}
+
+	// Allow override via env var
+	if envBase := os.Getenv("MCP_BASE_URL"); envBase != "" {
+		*baseURL = envBase
 	}
 
 	ctx := context.Background()
@@ -64,8 +66,6 @@ func main() {
 
 	// When running locally (not in Kubernetes), override with localhost values
 	if os.Getenv(config.RunningInKubernetesEnvVarKey) != "true" {
-		// Override API connection for local dev when not running in Kubernetes.
-		// This approach is an atrocious hack that I have to employ because I wasn't smart enough to design a better config generation system.
 		must(os.Setenv(envvars.APIServiceHTTPAPIServerURLEnvVarKey, "http://localhost:8000"))
 		must(os.Setenv(envvars.APIServiceGrpcAPIServerURLEnvVarKey, ":8001"))
 		must(os.Setenv(envvars.APIServiceOauth2APIClientIDEnvVarKey, strings.Repeat("A", oauth.ClientIDSize)))
@@ -87,46 +87,28 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Build gRPC client
+	// gRPC address for backend
 	grpcAddr := cfg.APIServiceConnection.GRPCAPIServerURL
 	if grpcAddr == "" {
-		grpcAddr = ":8001" // fallback to default
+		grpcAddr = ":8001"
 	}
 
+	// Build unauthenticated client for LoginForToken calls during OAuth2 flow.
 	unauthedClient, err := client.BuildUnauthenticatedGRPCClient(grpcAddr)
 	if err != nil {
-		log.Fatalf("failed to build gRPC client: %v", err)
+		log.Fatalf("failed to build unauthenticated gRPC client: %v", err)
 	}
 
-	totpToken, err := totp.GenerateCode(strings.ToUpper(tempTOTPTokenKey), time.Now().UTC())
-	if err != nil {
-		log.Fatalf("failed to build generate TOTP code: %v", err)
-	}
-
-	tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
-		Input: &authsvc.UserLoginInput{
-			Username:  tempUsername,
-			Password:  tempPassword,
-			TotpToken: totpToken,
-		},
-	})
-	if err != nil {
-		log.Fatalf("failed to get access token: %v", err)
-	}
-
-	c, err := localdev.BuildInsecureOAuthedGRPCClient(
-		ctx,
+	// Create token store for per-user auth.
+	tokens := newTokenStore(
+		grpcAddr,
 		cfg.APIServiceConnection.OAuth2APIClientID,
 		cfg.APIServiceConnection.OAuth2APIClientSecret,
 		cfg.APIServiceConnection.HTTPAPIServerURL,
-		grpcAddr,
-		tokenRes.Result.AccessToken,
 	)
-	if err != nil {
-		log.Fatalf("failed to build authenticated gRPC client: %v", err)
-	}
+	tokens.startCleanupLoop(ctx)
 
-	helper := &mcpToolManager{client: c}
+	helper := &mcpToolManager{tokens: tokens}
 	server := helper.setupServer()
 
 	log.Printf("serving now with transport: %s", *transport)
@@ -147,20 +129,20 @@ func main() {
 
 	switch *transport {
 	case transportStdio:
-		// Serve using stdio transport
 		if err = server.Run(ctx, &mcp.StdioTransport{}); err != nil {
 			logger.Error("serving MCP server via stdio", err)
 			log.Fatal(err)
 		}
 	case transportSSE:
-		// Serve using SSE transport
-		handler := mcp.NewSSEHandler(func(request *http.Request) *mcp.Server {
+		sseHandler := mcp.NewSSEHandler(func(request *http.Request) *mcp.Server {
 			return server
 		}, &mcp.SSEOptions{})
 
+		mux := buildHTTPMux(sseHandler, tokens, *baseURL, unauthedClient)
+
 		srv := &http.Server{
-			Addr:              fmt.Sprintf(":%d", 8888),
-			Handler:           handler,
+			Addr:              fmt.Sprintf(":%d", defaultPort),
+			Handler:           mux,
 			ReadTimeout:       15 * time.Second,
 			WriteTimeout:      15 * time.Second,
 			IdleTimeout:       60 * time.Second,
@@ -170,7 +152,6 @@ func main() {
 			logger.Error("starting MCP server via SSE", err)
 		}
 	case transportHTTP:
-		// Serve using HTTP transport
 		handlerOpts := &mcp.StreamableHTTPOptions{
 			Stateless:      true,
 			JSONResponse:   true,
@@ -178,13 +159,15 @@ func main() {
 			EventStore:     mcp.NewMemoryEventStore(nil),
 			SessionTimeout: 0,
 		}
-		handler := mcp.NewStreamableHTTPHandler(func(request *http.Request) *mcp.Server {
+		streamHandler := mcp.NewStreamableHTTPHandler(func(request *http.Request) *mcp.Server {
 			return server
 		}, handlerOpts)
 
+		mux := buildHTTPMux(streamHandler, tokens, *baseURL, unauthedClient)
+
 		srv := &http.Server{
-			Addr:              fmt.Sprintf(":%d", 8888),
-			Handler:           handler,
+			Addr:              fmt.Sprintf(":%d", defaultPort),
+			Handler:           mux,
 			ReadTimeout:       15 * time.Second,
 			WriteTimeout:      15 * time.Second,
 			IdleTimeout:       60 * time.Second,
@@ -196,8 +179,36 @@ func main() {
 	}
 }
 
+// buildHTTPMux creates an HTTP mux with OAuth2 routes (unauthenticated) and the MCP handler (authenticated).
+func buildHTTPMux(mcpHandler http.Handler, tokens *tokenStore, baseURL string, unauthedClient client.Client) *http.ServeMux {
+	mux := http.NewServeMux()
+
+	// Register OAuth2 routes (no auth middleware — these handle authentication themselves).
+	registerOAuth2Routes(mux, tokens, baseURL, unauthedClient)
+
+	// Wrap the MCP handler with bearer token auth middleware.
+	authMiddleware := auth.RequireBearerToken(tokens.verifyToken, &auth.RequireBearerTokenOptions{
+		ResourceMetadataURL: baseURL + "/.well-known/oauth-protected-resource",
+	})
+	mux.Handle("/mcp", authMiddleware(mcpHandler))
+
+	return mux
+}
+
 type mcpToolManager struct {
-	client client.Client
+	tokens *tokenStore
+}
+
+// clientFromRequest resolves the per-user gRPC client from the MCP request's auth token.
+func (h *mcpToolManager) clientFromRequest(req *mcp.CallToolRequest) (client.Client, error) {
+	if req.Extra == nil || req.Extra.TokenInfo == nil {
+		return nil, fmt.Errorf("not authenticated")
+	}
+	rawToken, ok := req.Extra.TokenInfo.Extra["raw_token"].(string)
+	if !ok || rawToken == "" {
+		return nil, fmt.Errorf("bearer token not found in request")
+	}
+	return h.tokens.clientForToken(rawToken)
 }
 
 func (h *mcpToolManager) setupServer() *mcp.Server {

@@ -1,26 +1,13 @@
 locals {
   api_database_username                       = "api_db_user"
-  db_user_manager_username                    = "db_user_manager"
   async_message_handler_database_username     = "async_message_handler"
   db_cleaner_username                         = "db_cleaner"
   meal_plan_finalizer_username                = "meal_plan_finalizer"
   meal_plan_grocery_list_initializer_username = "meal_plan_grocery_list_initializer"
   meal_plan_task_creator_username             = "meal_plan_task_creator"
   search_data_index_scheduler_username        = "search_data_index_scheduler"
-}
-
-# db_user_manager
-
-resource "random_password" "db_user_manager_username_database_password" {
-  length           = 64
-  special          = true
-  override_special = "#$*-_=+[]"
-}
-
-resource "google_sql_user" "db_user_manager_username" {
-  name     = local.db_user_manager_username
-  instance = google_sql_database_instance.prod.name
-  password = random_password.db_user_manager_username_database_password.result
+  mobile_notification_scheduler_username      = "mobile_notification_scheduler"
+  queue_test_username                         = "queue_test"
 }
 
 # api_database_username
@@ -119,4 +106,32 @@ resource "google_sql_user" "search_data_index_scheduler_user" {
   name     = local.search_data_index_scheduler_username
   instance = google_sql_database_instance.prod.name
   password = random_password.search_data_index_scheduler_user_database_password.result
+}
+
+# mobile_notification_scheduler_username
+
+resource "random_password" "mobile_notification_scheduler_user_database_password" {
+  length           = 64
+  special          = true
+  override_special = "#$*-_=+[]"
+}
+
+resource "google_sql_user" "mobile_notification_scheduler_user" {
+  name     = local.mobile_notification_scheduler_username
+  instance = google_sql_database_instance.prod.name
+  password = random_password.mobile_notification_scheduler_user_database_password.result
+}
+
+# queue_test_username
+
+resource "random_password" "queue_test_user_database_password" {
+  length           = 64
+  special          = true
+  override_special = "#$*-_=+[]"
+}
+
+resource "google_sql_user" "queue_test_user" {
+  name     = local.queue_test_username
+  instance = google_sql_database_instance.prod.name
+  password = random_password.queue_test_user_database_password.result
 }

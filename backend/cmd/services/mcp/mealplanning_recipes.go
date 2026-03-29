@@ -52,8 +52,13 @@ var getRecipeTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetRecipe() mcp.ToolHandlerFor[*GetRecipeInvocation, *mealplanning.Recipe] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeInvocation) (*mcp.CallToolResult, *mealplanning.Recipe, error) {
-		result, err := h.client.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipeInvocation) (*mcp.CallToolResult, *mealplanning.Recipe, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{
 			RecipeId: x.RecipeID,
 		})
 		if err != nil {
@@ -86,8 +91,13 @@ var getRecipesTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetRecipes() mcp.ToolHandlerFor[*GetRecipesInvocation, *GetRecipesResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipesInvocation) (*mcp.CallToolResult, *GetRecipesResult, error) {
-		results, err := h.client.GetRecipes(ctx, &mealplanninggrpc.GetRecipesRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipesInvocation) (*mcp.CallToolResult, *GetRecipesResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetRecipes(ctx, &mealplanninggrpc.GetRecipesRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -129,8 +139,13 @@ var searchForRecipesTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) SearchForRecipes() mcp.ToolHandlerFor[*SearchForRecipesInvocation, *SearchForRecipesResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *SearchForRecipesInvocation) (*mcp.CallToolResult, *SearchForRecipesResult, error) {
-		results, err := h.client.SearchForRecipes(ctx, &mealplanninggrpc.SearchForRecipesRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *SearchForRecipesInvocation) (*mcp.CallToolResult, *SearchForRecipesResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.SearchForRecipes(ctx, &mealplanninggrpc.SearchForRecipesRequest{
 			Query:            x.Query,
 			UseSearchService: x.UseSearchService,
 			Filter:           grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
@@ -267,8 +282,13 @@ var recipeCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateRecipe() mcp.ToolHandlerFor[*CreateRecipeInvocation, *mealplanning.Recipe] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateRecipeInvocation) (*mcp.CallToolResult, *mealplanning.Recipe, error) {
-		result, err := h.client.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateRecipeInvocation) (*mcp.CallToolResult, *mealplanning.Recipe, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
 			Input: mealplanningconverters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(x.RecipeCreationRequestInput),
 		})
 		if err != nil {
@@ -308,8 +328,13 @@ var recipeUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateRecipe() mcp.ToolHandlerFor[*UpdateRecipeInvocation, *mealplanning.Recipe] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateRecipeInvocation) (*mcp.CallToolResult, *mealplanning.Recipe, error) {
-		result, err := h.client.UpdateRecipe(ctx, &mealplanninggrpc.UpdateRecipeRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateRecipeInvocation) (*mcp.CallToolResult, *mealplanning.Recipe, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateRecipe(ctx, &mealplanninggrpc.UpdateRecipeRequest{
 			RecipeId: x.RecipeID,
 			Input:    mealplanningconverters.ConvertRecipeUpdateRequestInputToGRPCRecipeUpdateRequestInput(x.RecipeUpdateRequestInput),
 		})

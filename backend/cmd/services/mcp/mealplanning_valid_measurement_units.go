@@ -45,8 +45,13 @@ var getValidMeasurementUnitTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidMeasurementUnit() mcp.ToolHandlerFor[*GetValidMeasurementUnitInvocation, *mealplanning.ValidMeasurementUnit] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidMeasurementUnitInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnit, error) {
-		result, err := h.client.GetValidMeasurementUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidMeasurementUnitInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnit, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetValidMeasurementUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitRequest{
 			ValidMeasurementUnitId: x.ValidMeasurementUnitID,
 		})
 		if err != nil {
@@ -89,8 +94,13 @@ var searchForValidMeasurementUnitsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) SearchForValidMeasurementUnits() mcp.ToolHandlerFor[*SearchValidMeasurementUnitsInvocation, *SearchValidMeasurementUnitsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *SearchValidMeasurementUnitsInvocation) (*mcp.CallToolResult, *SearchValidMeasurementUnitsResult, error) {
-		results, err := h.client.SearchForValidMeasurementUnits(ctx, &mealplanninggrpc.SearchForValidMeasurementUnitsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *SearchValidMeasurementUnitsInvocation) (*mcp.CallToolResult, *SearchValidMeasurementUnitsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.SearchForValidMeasurementUnits(ctx, &mealplanninggrpc.SearchForValidMeasurementUnitsRequest{
 			Filter:           grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 			Query:            x.Query,
 			UseSearchService: x.UseSearchService,
@@ -126,8 +136,13 @@ var validMeasurementUnitCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateValidMeasurementUnit() mcp.ToolHandlerFor[*mealplanning.ValidMeasurementUnitCreationRequestInput, *mealplanning.ValidMeasurementUnit] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *mealplanning.ValidMeasurementUnitCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnit, error) {
-		result, err := h.client.CreateValidMeasurementUnit(ctx, &mealplanninggrpc.CreateValidMeasurementUnitRequest{Input: mealplanningconverters.ConvertValidMeasurementUnitCreationRequestInputToGRPCValidMeasurementUnitCreationRequestInput(x)})
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidMeasurementUnitCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnit, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateValidMeasurementUnit(ctx, &mealplanninggrpc.CreateValidMeasurementUnitRequest{Input: mealplanningconverters.ConvertValidMeasurementUnitCreationRequestInputToGRPCValidMeasurementUnitCreationRequestInput(x)})
 		if err != nil {
 			return nil, nil, err
 		}
@@ -162,8 +177,13 @@ var validMeasurementUnitUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateValidMeasurementUnit() mcp.ToolHandlerFor[*UpdateValidMeasurementUnitInvocation, *mealplanning.ValidMeasurementUnit] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidMeasurementUnitInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnit, error) {
-		result, err := h.client.UpdateValidMeasurementUnit(ctx, &mealplanninggrpc.UpdateValidMeasurementUnitRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidMeasurementUnitInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnit, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateValidMeasurementUnit(ctx, &mealplanninggrpc.UpdateValidMeasurementUnitRequest{
 			ValidMeasurementUnitId: x.ValidMeasurementUnitID,
 			Input:                  mealplanningconverters.ConvertValidMeasurementUnitUpdateRequestInputToGRPCValidMeasurementUnitUpdateRequestInput(x.ValidMeasurementUnitUpdateRequestInput),
 		})

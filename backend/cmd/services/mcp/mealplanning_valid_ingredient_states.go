@@ -42,8 +42,13 @@ var getValidIngredientStateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidIngredientState() mcp.ToolHandlerFor[*GetValidIngredientStateInvocation, *mealplanning.ValidIngredientState] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidIngredientStateInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientState, error) {
-		result, err := h.client.GetValidIngredientState(ctx, &mealplanninggrpc.GetValidIngredientStateRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidIngredientStateInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientState, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetValidIngredientState(ctx, &mealplanninggrpc.GetValidIngredientStateRequest{
 			ValidIngredientStateId: x.ValidIngredientStateID,
 		})
 		if err != nil {
@@ -86,8 +91,13 @@ var searchForValidIngredientStatesTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) SearchForValidIngredientStates() mcp.ToolHandlerFor[*SearchValidIngredientStatesInvocation, *SearchValidIngredientStatesResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *SearchValidIngredientStatesInvocation) (*mcp.CallToolResult, *SearchValidIngredientStatesResult, error) {
-		results, err := h.client.SearchForValidIngredientStates(ctx, &mealplanninggrpc.SearchForValidIngredientStatesRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *SearchValidIngredientStatesInvocation) (*mcp.CallToolResult, *SearchValidIngredientStatesResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.SearchForValidIngredientStates(ctx, &mealplanninggrpc.SearchForValidIngredientStatesRequest{
 			Filter:           grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 			Query:            x.Query,
 			UseSearchService: x.UseSearchService,
@@ -120,8 +130,13 @@ var validIngredientStateCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateValidIngredientState() mcp.ToolHandlerFor[*mealplanning.ValidIngredientStateCreationRequestInput, *mealplanning.ValidIngredientState] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *mealplanning.ValidIngredientStateCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidIngredientState, error) {
-		result, err := h.client.CreateValidIngredientState(ctx, &mealplanninggrpc.CreateValidIngredientStateRequest{Input: mealplanningconverters.ConvertValidIngredientStateCreationRequestInputToGRPCValidIngredientStateCreationRequestInput(x)})
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidIngredientStateCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidIngredientState, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateValidIngredientState(ctx, &mealplanninggrpc.CreateValidIngredientStateRequest{Input: mealplanningconverters.ConvertValidIngredientStateCreationRequestInputToGRPCValidIngredientStateCreationRequestInput(x)})
 		if err != nil {
 			return nil, nil, err
 		}
@@ -153,8 +168,13 @@ var validIngredientStateUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateValidIngredientState() mcp.ToolHandlerFor[*UpdateValidIngredientStateInvocation, *mealplanning.ValidIngredientState] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidIngredientStateInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientState, error) {
-		result, err := h.client.UpdateValidIngredientState(ctx, &mealplanninggrpc.UpdateValidIngredientStateRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidIngredientStateInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientState, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateValidIngredientState(ctx, &mealplanninggrpc.UpdateValidIngredientStateRequest{
 			ValidIngredientStateId: x.ValidIngredientStateID,
 			Input:                  mealplanningconverters.ConvertValidIngredientStateUpdateRequestInputToGRPCValidIngredientStateUpdateRequestInput(x.ValidIngredientStateUpdateRequestInput),
 		})

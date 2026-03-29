@@ -48,8 +48,13 @@ var getRecipeStepVesselTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetRecipeStepVessel() mcp.ToolHandlerFor[*GetRecipeStepVesselInvocation, *mealplanning.RecipeStepVessel] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeStepVesselInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepVessel, error) {
-		result, err := h.client.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipeStepVesselInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepVessel, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
 			RecipeId:           x.RecipeID,
 			RecipeStepId:       x.RecipeStepID,
 			RecipeStepVesselId: x.RecipeStepVesselID,
@@ -88,8 +93,13 @@ var getRecipeStepVesselsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetRecipeStepVessels() mcp.ToolHandlerFor[*GetRecipeStepVesselsInvocation, *GetRecipeStepVesselsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeStepVesselsInvocation) (*mcp.CallToolResult, *GetRecipeStepVesselsResult, error) {
-		results, err := h.client.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipeStepVesselsInvocation) (*mcp.CallToolResult, *GetRecipeStepVesselsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
 			RecipeId:     x.RecipeID,
 			RecipeStepId: x.RecipeStepID,
 			Filter:       grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
@@ -135,8 +145,13 @@ var recipeStepVesselCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateRecipeStepVessel() mcp.ToolHandlerFor[*CreateRecipeStepVesselInvocation, *mealplanning.RecipeStepVessel] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateRecipeStepVesselInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepVessel, error) {
-		result, err := h.client.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateRecipeStepVesselInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepVessel, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
 			RecipeId:     x.RecipeID,
 			RecipeStepId: x.RecipeStepID,
 			Input:        mealplanningconverters.ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRequestInput(x.RecipeStepVesselCreationRequestInput),
@@ -177,8 +192,13 @@ var recipeStepVesselUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateRecipeStepVessel() mcp.ToolHandlerFor[*UpdateRecipeStepVesselInvocation, *mealplanning.RecipeStepVessel] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateRecipeStepVesselInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepVessel, error) {
-		result, err := h.client.UpdateRecipeStepVessel(ctx, &mealplanninggrpc.UpdateRecipeStepVesselRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateRecipeStepVesselInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepVessel, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateRecipeStepVessel(ctx, &mealplanninggrpc.UpdateRecipeStepVesselRequest{
 			RecipeId:           x.RecipeID,
 			RecipeStepId:       x.RecipeStepID,
 			RecipeStepVesselId: x.RecipeStepVesselID,

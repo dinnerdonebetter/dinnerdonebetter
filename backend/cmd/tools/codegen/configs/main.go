@@ -53,6 +53,16 @@ func main() {
 		},
 		"deploy/environments/prod/kustomize/configs": {
 			RootConfig: buildProdConfig(),
+			ServiceDatabaseUsers: map[string]string{
+				"db_cleaner":                         "db_cleaner",
+				"meal_plan_finalizer":                "meal_plan_finalizer",
+				"meal_plan_grocery_list_initializer": "meal_plan_grocery_list_initializer",
+				"meal_plan_task_creator":             "meal_plan_task_creator",
+				"search_data_index_scheduler":        "search_data_index_scheduler",
+				"mobile_notification_scheduler":      "mobile_notification_scheduler",
+				"async_message_handler":              "async_message_handler",
+				"queue_test":                         "queue_test",
+			},
 		},
 	}
 

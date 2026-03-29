@@ -39,8 +39,13 @@ var getValidPreparationInstrumentTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPreparationInstrument() mcp.ToolHandlerFor[*GetValidPreparationInstrumentInvocation, *mealplanning.ValidPreparationInstrument] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPreparationInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationInstrument, error) {
-		result, err := h.client.GetValidPreparationInstrument(ctx, &mealplanninggrpc.GetValidPreparationInstrumentRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPreparationInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationInstrument, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetValidPreparationInstrument(ctx, &mealplanninggrpc.GetValidPreparationInstrumentRequest{
 			ValidPreparationInstrumentId: x.ValidPreparationInstrumentID,
 		})
 		if err != nil {
@@ -73,8 +78,13 @@ var getValidPreparationInstrumentsTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetValidPreparationInstruments() mcp.ToolHandlerFor[*GetValidPreparationInstrumentsInvocation, *GetValidPreparationInstrumentsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPreparationInstrumentsInvocation) (*mcp.CallToolResult, *GetValidPreparationInstrumentsResult, error) {
-		results, err := h.client.GetValidPreparationInstruments(ctx, &mealplanninggrpc.GetValidPreparationInstrumentsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPreparationInstrumentsInvocation) (*mcp.CallToolResult, *GetValidPreparationInstrumentsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetValidPreparationInstruments(ctx, &mealplanninggrpc.GetValidPreparationInstrumentsRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -102,8 +112,13 @@ var validPreparationInstrumentCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateValidPreparationInstrument() mcp.ToolHandlerFor[*mealplanning.ValidPreparationInstrumentCreationRequestInput, *mealplanning.ValidPreparationInstrument] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *mealplanning.ValidPreparationInstrumentCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPreparationInstrument, error) {
-		result, err := h.client.CreateValidPreparationInstrument(ctx, &mealplanninggrpc.CreateValidPreparationInstrumentRequest{Input: mealplanningconverters.ConvertCreateValidPreparationInstrumentRequestToGRPCValidPreparationInstrumentCreationRequestInput(x)})
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidPreparationInstrumentCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPreparationInstrument, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateValidPreparationInstrument(ctx, &mealplanninggrpc.CreateValidPreparationInstrumentRequest{Input: mealplanningconverters.ConvertCreateValidPreparationInstrumentRequestToGRPCValidPreparationInstrumentCreationRequestInput(x)})
 		if err != nil {
 			return nil, nil, err
 		}
@@ -132,8 +147,13 @@ var validPreparationInstrumentUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateValidPreparationInstrument() mcp.ToolHandlerFor[*UpdateValidPreparationInstrumentInvocation, *mealplanning.ValidPreparationInstrument] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidPreparationInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationInstrument, error) {
-		result, err := h.client.UpdateValidPreparationInstrument(ctx, &mealplanninggrpc.UpdateValidPreparationInstrumentRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidPreparationInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationInstrument, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateValidPreparationInstrument(ctx, &mealplanninggrpc.UpdateValidPreparationInstrumentRequest{
 			ValidPreparationInstrumentId: x.ValidPreparationInstrumentID,
 			Input:                        mealplanningconverters.ConvertValidPreparationInstrumentUpdateRequestInputToGRPCValidPreparationInstrumentUpdateRequestInput(x.ValidPreparationInstrumentUpdateRequestInput),
 		})

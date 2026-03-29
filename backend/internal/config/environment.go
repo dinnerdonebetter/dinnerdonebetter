@@ -8,6 +8,7 @@ import (
 	"path"
 	"strings"
 
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -17,6 +18,7 @@ import (
 // EnvironmentConfigSet contains a way of rendering a set of every config for a given environment to a given folder.
 type EnvironmentConfigSet struct {
 	RootConfig                               *APIServiceConfig
+	ServiceDatabaseUsers                     map[string]string
 	SearchDataIndexSchedulerConfigPath       string
 	MealPlanFinalizerConfigPath              string
 	MealPlanGroceryListInitializerConfigPath string
@@ -71,6 +73,17 @@ func disableWorkerOtelMetrics(obs *observability.Config) {
 	obs.Metrics.Otel = &copied
 }
 
+// databaseConfigForService returns a copy of the given database config with the username
+// overridden for the named service, if a mapping exists in users. Otherwise returns a copy unchanged.
+func databaseConfigForService(cfg *databasecfg.Config, users map[string]string, serviceName string) databasecfg.Config {
+	out := *cfg
+	if username, ok := users[serviceName]; ok {
+		out.ReadConnection.Username = username
+		out.WriteConnection.Username = username
+	}
+	return out
+}
+
 const (
 	apiConfigObservabilityServiceName   = "api_server"
 	dbcConfigObservabilityServiceName   = "db_cleaner"
@@ -109,7 +122,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 
 	dbcConfig := &DBCleanerConfig{
 		Observability: s.RootConfig.Observability,
-		Database:      s.RootConfig.Database,
+		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, dbcConfigObservabilityServiceName),
 	}
 	dbcConfig.Observability.Tracing.ServiceName = dbcConfigObservabilityServiceName
 	dbcConfig.Observability.Metrics.ServiceName = dbcConfigObservabilityServiceName
@@ -120,7 +133,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mpfConfig := &MealPlanFinalizerConfig{
 		Observability: s.RootConfig.Observability,
 		Events:        s.RootConfig.Events,
-		Database:      s.RootConfig.Database,
+		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, mpfConfigObservabilityServiceName),
 		Queues:        s.RootConfig.Queues,
 	}
 	mpfConfig.Observability.Tracing.ServiceName = mpfConfigObservabilityServiceName
@@ -133,7 +146,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Observability: s.RootConfig.Observability,
 		Analytics:     s.RootConfig.Analytics,
 		Events:        s.RootConfig.Events,
-		Database:      s.RootConfig.Database,
+		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, mpgliConfigObservabilityServiceName),
 		Queues:        s.RootConfig.Queues,
 	}
 	mpgliConfig.Observability.Tracing.ServiceName = mpgliConfigObservabilityServiceName
@@ -146,7 +159,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Observability: s.RootConfig.Observability,
 		Analytics:     s.RootConfig.Analytics,
 		Events:        s.RootConfig.Events,
-		Database:      s.RootConfig.Database,
+		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, mptcConfigObservabilityServiceName),
 		Queues:        s.RootConfig.Queues,
 	}
 	mptcConfig.Observability.Tracing.ServiceName = mptcConfigObservabilityServiceName
@@ -158,7 +171,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	sdisConfig := &SearchDataIndexSchedulerConfig{
 		Observability: s.RootConfig.Observability,
 		Events:        s.RootConfig.Events,
-		Database:      s.RootConfig.Database,
+		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, sdisConfigObservabilityServiceName),
 		Queues:        s.RootConfig.Queues,
 	}
 	sdisConfig.Observability.Tracing.ServiceName = sdisConfigObservabilityServiceName
@@ -170,7 +183,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mnsConfig := &MobileNotificationSchedulerConfig{
 		Observability: s.RootConfig.Observability,
 		Events:        s.RootConfig.Events,
-		Database:      s.RootConfig.Database,
+		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, mnsConfigObservabilityServiceName),
 		Queues:        s.RootConfig.Queues,
 	}
 	mnsConfig.Observability.Tracing.ServiceName = mnsConfigObservabilityServiceName
@@ -187,7 +200,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Search:            s.RootConfig.TextSearch,
 		Events:            s.RootConfig.Events,
 		Observability:     s.RootConfig.Observability,
-		Database:          s.RootConfig.Database,
+		Database:          databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, amhConfigObservabilityServiceName),
 		PushNotifications: s.RootConfig.PushNotifications,
 		BaseURL:           s.RootConfig.BaseURL,
 	}
@@ -217,7 +230,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	qtConfig := &QueueTestJobConfig{
 		Observability: s.RootConfig.Observability,
 		Events:        s.RootConfig.Events,
-		Database:      s.RootConfig.Database,
+		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, qtConfigObservabilityServiceName),
 		Queues:        s.RootConfig.Queues,
 	}
 	qtConfig.Observability.Tracing.ServiceName = qtConfigObservabilityServiceName

@@ -55,8 +55,13 @@ var getRecipePrepTaskTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetRecipePrepTask() mcp.ToolHandlerFor[*GetRecipePrepTaskInvocation, *mealplanning.RecipePrepTask] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
-		result, err := h.client.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
 			RecipeId:         x.RecipeID,
 			RecipePrepTaskId: x.RecipePrepTaskID,
 		})
@@ -92,8 +97,13 @@ var getRecipePrepTasksTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) GetRecipePrepTasks() mcp.ToolHandlerFor[*GetRecipePrepTasksInvocation, *GetRecipePrepTasksResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipePrepTasksInvocation) (*mcp.CallToolResult, *GetRecipePrepTasksResult, error) {
-		results, err := h.client.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipePrepTasksInvocation) (*mcp.CallToolResult, *GetRecipePrepTasksResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{
 			RecipeId: x.RecipeID,
 			Filter:   grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
@@ -136,8 +146,13 @@ var recipePrepTaskCreationTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) CreateRecipePrepTask() mcp.ToolHandlerFor[*CreateRecipePrepTaskInvocation, *mealplanning.RecipePrepTask] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
-		result, err := h.client.CreateRecipePrepTask(ctx, &mealplanninggrpc.CreateRecipePrepTaskRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateRecipePrepTask(ctx, &mealplanninggrpc.CreateRecipePrepTaskRequest{
 			RecipeId: x.RecipeID,
 			Input:    mealplanningconverters.ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationRequestInput(x.RecipePrepTaskCreationRequestInput),
 		})
@@ -177,8 +192,13 @@ var recipePrepTaskUpdateTool = &mcp.Tool{
 }
 
 func (h *mcpToolManager) UpdateRecipePrepTask() mcp.ToolHandlerFor[*UpdateRecipePrepTaskInvocation, *mealplanning.RecipePrepTask] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
-		result, err := h.client.UpdateRecipePrepTask(ctx, &mealplanninggrpc.UpdateRecipePrepTaskRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.UpdateRecipePrepTask(ctx, &mealplanninggrpc.UpdateRecipePrepTaskRequest{
 			RecipeId:         x.RecipeID,
 			RecipePrepTaskId: x.RecipePrepTaskID,
 			Input:            mealplanningconverters.ConvertRecipePrepTaskUpdateRequestInputToGRPCRecipePrepTaskUpdateRequestInput(x.RecipePrepTaskUpdateRequestInput),

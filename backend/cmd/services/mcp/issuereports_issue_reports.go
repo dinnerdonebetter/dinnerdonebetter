@@ -45,8 +45,13 @@ type GetIssueReportInvocation struct {
 }
 
 func (h *mcpToolManager) GetIssueReport() mcp.ToolHandlerFor[*GetIssueReportInvocation, *issuereports.IssueReport] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetIssueReportInvocation) (*mcp.CallToolResult, *issuereports.IssueReport, error) {
-		result, err := h.client.GetIssueReport(ctx, &issuereportsgrpc.GetIssueReportRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetIssueReportInvocation) (*mcp.CallToolResult, *issuereports.IssueReport, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetIssueReport(ctx, &issuereportsgrpc.GetIssueReportRequest{
 			IssueReportId: x.IssueReportID,
 		})
 		if err != nil {
@@ -78,8 +83,13 @@ type (
 )
 
 func (h *mcpToolManager) GetIssueReports() mcp.ToolHandlerFor[*GetIssueReportsInvocation, *GetIssueReportsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetIssueReportsInvocation) (*mcp.CallToolResult, *GetIssueReportsResult, error) {
-		results, err := h.client.GetIssueReports(ctx, &issuereportsgrpc.GetIssueReportsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetIssueReportsInvocation) (*mcp.CallToolResult, *GetIssueReportsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetIssueReports(ctx, &issuereportsgrpc.GetIssueReportsRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -118,8 +128,13 @@ type (
 )
 
 func (h *mcpToolManager) GetIssueReportsForAccount() mcp.ToolHandlerFor[*GetIssueReportsForAccountInvocation, *GetIssueReportsForAccountResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetIssueReportsForAccountInvocation) (*mcp.CallToolResult, *GetIssueReportsForAccountResult, error) {
-		results, err := h.client.GetIssueReportsForAccount(ctx, &issuereportsgrpc.GetIssueReportsForAccountRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetIssueReportsForAccountInvocation) (*mcp.CallToolResult, *GetIssueReportsForAccountResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetIssueReportsForAccount(ctx, &issuereportsgrpc.GetIssueReportsForAccountRequest{
 			AccountId: x.AccountID,
 			Filter:    grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
@@ -152,8 +167,13 @@ type CreateIssueReportInvocation struct {
 }
 
 func (h *mcpToolManager) CreateIssueReport() mcp.ToolHandlerFor[*CreateIssueReportInvocation, *issuereports.IssueReport] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateIssueReportInvocation) (*mcp.CallToolResult, *issuereports.IssueReport, error) {
-		result, err := h.client.CreateIssueReport(ctx, &issuereportsgrpc.CreateIssueReportRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateIssueReportInvocation) (*mcp.CallToolResult, *issuereports.IssueReport, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateIssueReport(ctx, &issuereportsgrpc.CreateIssueReportRequest{
 			Input: issuereportsconverters.ConvertIssueReportCreationRequestInputToGRPCIssueReportCreationRequestInput(x.IssueReportCreationRequestInput),
 		})
 		if err != nil {
@@ -185,7 +205,12 @@ type UpdateIssueReportInvocation struct {
 }
 
 func (h *mcpToolManager) UpdateIssueReport() mcp.ToolHandlerFor[*UpdateIssueReportInvocation, *issuereports.IssueReport] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateIssueReportInvocation) (*mcp.CallToolResult, *issuereports.IssueReport, error) {
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateIssueReportInvocation) (*mcp.CallToolResult, *issuereports.IssueReport, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
 		input := &issuereportsgrpc.IssueReportUpdateRequestInput{}
 		if x.IssueType != "" {
 			input.IssueType = &x.IssueType
@@ -200,7 +225,7 @@ func (h *mcpToolManager) UpdateIssueReport() mcp.ToolHandlerFor[*UpdateIssueRepo
 			input.RelevantRecordId = &x.RelevantRecordID
 		}
 
-		result, err := h.client.UpdateIssueReport(ctx, &issuereportsgrpc.UpdateIssueReportRequest{
+		result, err := c.UpdateIssueReport(ctx, &issuereportsgrpc.UpdateIssueReportRequest{
 			IssueReportId: x.IssueReportID,
 			Input:         input,
 		})
@@ -227,8 +252,13 @@ type ArchiveIssueReportInvocation struct {
 }
 
 func (h *mcpToolManager) ArchiveIssueReport() mcp.ToolHandlerFor[*ArchiveIssueReportInvocation, *boolResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *ArchiveIssueReportInvocation) (*mcp.CallToolResult, *boolResult, error) {
-		_, err := h.client.ArchiveIssueReport(ctx, &issuereportsgrpc.ArchiveIssueReportRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *ArchiveIssueReportInvocation) (*mcp.CallToolResult, *boolResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		_, err = c.ArchiveIssueReport(ctx, &issuereportsgrpc.ArchiveIssueReportRequest{
 			IssueReportId: x.IssueReportID,
 		})
 		if err != nil {

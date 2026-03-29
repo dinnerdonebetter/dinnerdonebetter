@@ -49,8 +49,13 @@ type GetWaitlistInvocation struct {
 }
 
 func (h *mcpToolManager) GetWaitlist() mcp.ToolHandlerFor[*GetWaitlistInvocation, *waitlists.Waitlist] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetWaitlistInvocation) (*mcp.CallToolResult, *waitlists.Waitlist, error) {
-		result, err := h.client.GetWaitlist(ctx, &waitlistsgrpc.GetWaitlistRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetWaitlistInvocation) (*mcp.CallToolResult, *waitlists.Waitlist, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetWaitlist(ctx, &waitlistsgrpc.GetWaitlistRequest{
 			WaitlistId: x.WaitlistID,
 		})
 		if err != nil {
@@ -82,8 +87,13 @@ type (
 )
 
 func (h *mcpToolManager) GetWaitlists() mcp.ToolHandlerFor[*GetWaitlistsInvocation, *GetWaitlistsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetWaitlistsInvocation) (*mcp.CallToolResult, *GetWaitlistsResult, error) {
-		results, err := h.client.GetWaitlists(ctx, &waitlistsgrpc.GetWaitlistsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetWaitlistsInvocation) (*mcp.CallToolResult, *GetWaitlistsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetWaitlists(ctx, &waitlistsgrpc.GetWaitlistsRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -120,8 +130,13 @@ type (
 )
 
 func (h *mcpToolManager) GetActiveWaitlists() mcp.ToolHandlerFor[*GetActiveWaitlistsInvocation, *GetActiveWaitlistsResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetActiveWaitlistsInvocation) (*mcp.CallToolResult, *GetActiveWaitlistsResult, error) {
-		results, err := h.client.GetActiveWaitlists(ctx, &waitlistsgrpc.GetActiveWaitlistsRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetActiveWaitlistsInvocation) (*mcp.CallToolResult, *GetActiveWaitlistsResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetActiveWaitlists(ctx, &waitlistsgrpc.GetActiveWaitlistsRequest{
 			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -154,8 +169,13 @@ type CreateWaitlistInvocation struct {
 }
 
 func (h *mcpToolManager) CreateWaitlist() mcp.ToolHandlerFor[*CreateWaitlistInvocation, *waitlists.Waitlist] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateWaitlistInvocation) (*mcp.CallToolResult, *waitlists.Waitlist, error) {
-		result, err := h.client.CreateWaitlist(ctx, &waitlistsgrpc.CreateWaitlistRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateWaitlistInvocation) (*mcp.CallToolResult, *waitlists.Waitlist, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateWaitlist(ctx, &waitlistsgrpc.CreateWaitlistRequest{
 			Input: &waitlistsgrpc.WaitlistCreationRequestInput{
 				Name:        x.Name,
 				Description: x.Description,
@@ -185,8 +205,13 @@ type ArchiveWaitlistInvocation struct {
 }
 
 func (h *mcpToolManager) ArchiveWaitlist() mcp.ToolHandlerFor[*ArchiveWaitlistInvocation, *boolResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *ArchiveWaitlistInvocation) (*mcp.CallToolResult, *boolResult, error) {
-		_, err := h.client.ArchiveWaitlist(ctx, &waitlistsgrpc.ArchiveWaitlistRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *ArchiveWaitlistInvocation) (*mcp.CallToolResult, *boolResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		_, err = c.ArchiveWaitlist(ctx, &waitlistsgrpc.ArchiveWaitlistRequest{
 			WaitlistId: x.WaitlistID,
 		})
 		if err != nil {
@@ -212,8 +237,13 @@ type GetWaitlistSignupInvocation struct {
 }
 
 func (h *mcpToolManager) GetWaitlistSignup() mcp.ToolHandlerFor[*GetWaitlistSignupInvocation, *waitlists.WaitlistSignup] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetWaitlistSignupInvocation) (*mcp.CallToolResult, *waitlists.WaitlistSignup, error) {
-		result, err := h.client.GetWaitlistSignup(ctx, &waitlistsgrpc.GetWaitlistSignupRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetWaitlistSignupInvocation) (*mcp.CallToolResult, *waitlists.WaitlistSignup, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.GetWaitlistSignup(ctx, &waitlistsgrpc.GetWaitlistSignupRequest{
 			WaitlistSignupId: x.WaitlistSignupID,
 			WaitlistId:       x.WaitlistID,
 		})
@@ -248,8 +278,13 @@ type (
 )
 
 func (h *mcpToolManager) GetWaitlistSignupsForWaitlist() mcp.ToolHandlerFor[*GetWaitlistSignupsForWaitlistInvocation, *GetWaitlistSignupsForWaitlistResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetWaitlistSignupsForWaitlistInvocation) (*mcp.CallToolResult, *GetWaitlistSignupsForWaitlistResult, error) {
-		results, err := h.client.GetWaitlistSignupsForWaitlist(ctx, &waitlistsgrpc.GetWaitlistSignupsForWaitlistRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetWaitlistSignupsForWaitlistInvocation) (*mcp.CallToolResult, *GetWaitlistSignupsForWaitlistResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		results, err := c.GetWaitlistSignupsForWaitlist(ctx, &waitlistsgrpc.GetWaitlistSignupsForWaitlistRequest{
 			WaitlistId: x.WaitlistID,
 			Filter:     grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
@@ -285,8 +320,13 @@ type CreateWaitlistSignupInvocation struct {
 }
 
 func (h *mcpToolManager) CreateWaitlistSignup() mcp.ToolHandlerFor[*CreateWaitlistSignupInvocation, *waitlists.WaitlistSignup] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateWaitlistSignupInvocation) (*mcp.CallToolResult, *waitlists.WaitlistSignup, error) {
-		result, err := h.client.CreateWaitlistSignup(ctx, &waitlistsgrpc.CreateWaitlistSignupRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateWaitlistSignupInvocation) (*mcp.CallToolResult, *waitlists.WaitlistSignup, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		result, err := c.CreateWaitlistSignup(ctx, &waitlistsgrpc.CreateWaitlistSignupRequest{
 			Input: &waitlistsgrpc.WaitlistSignupCreationRequestInput{
 				Notes:             x.Notes,
 				BelongsToWaitlist: x.BelongsToWaitlist,
@@ -317,8 +357,13 @@ type ArchiveWaitlistSignupInvocation struct {
 }
 
 func (h *mcpToolManager) ArchiveWaitlistSignup() mcp.ToolHandlerFor[*ArchiveWaitlistSignupInvocation, *boolResult] {
-	return func(ctx context.Context, _ *mcp.CallToolRequest, x *ArchiveWaitlistSignupInvocation) (*mcp.CallToolResult, *boolResult, error) {
-		_, err := h.client.ArchiveWaitlistSignup(ctx, &waitlistsgrpc.ArchiveWaitlistSignupRequest{
+	return func(ctx context.Context, req *mcp.CallToolRequest, x *ArchiveWaitlistSignupInvocation) (*mcp.CallToolResult, *boolResult, error) {
+		c, err := h.clientFromRequest(req)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		_, err = c.ArchiveWaitlistSignup(ctx, &waitlistsgrpc.ArchiveWaitlistSignupRequest{
 			WaitlistSignupId: x.WaitlistSignupID,
 		})
 		if err != nil {

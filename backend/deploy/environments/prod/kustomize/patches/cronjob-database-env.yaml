@@ -1,5 +1,5 @@
-# Database connection environment variables for CronJobs
-# Applied via JSON patch to inject database secrets
+# Shared database environment variables for CronJobs (host + encryption keys).
+# Per-service password patches are applied separately.
 - op: add
   path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
   value:
@@ -11,27 +11,11 @@
 - op: add
   path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
   value:
-    name: DINNER_DONE_BETTER_DATABASE_READ_CONNECTION_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: api-service-config
-        key: DATABASE_PASSWORD
-- op: add
-  path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
-  value:
     name: DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_HOST
     valueFrom:
       secretKeyRef:
         name: api-service-config
         key: DATABASE_HOST
-- op: add
-  path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
-  value:
-    name: DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: api-service-config
-        key: DATABASE_PASSWORD
 - op: add
   path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
   value:

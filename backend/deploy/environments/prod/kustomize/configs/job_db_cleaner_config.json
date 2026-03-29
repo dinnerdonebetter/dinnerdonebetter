@@ -50,7 +50,7 @@
 		"userDeviceTokenEncryptionKey": "",
 		"provider": "postgres",
 		"readConnection": {
-			"username": "api_db_user",
+			"username": "db_cleaner",
 			"password": "",
 			"database": "dinner-done-better",
 			"hostname": "",
@@ -58,7 +58,7 @@
 			"disableSSL": false
 		},
 		"writeConnection": {
-			"username": "api_db_user",
+			"username": "db_cleaner",
 			"password": "",
 			"database": "dinner-done-better",
 			"hostname": "",
