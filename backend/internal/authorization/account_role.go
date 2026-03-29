@@ -23,6 +23,11 @@ const (
 
 	AccountAdminRoleName  = "account_admin"
 	AccountMemberRoleName = "account_member"
+
+	// AccountAdminRoleID is the database ID for the account_admin role.
+	AccountAdminRoleID = "role_account_admin"
+	// AccountMemberRoleID is the database ID for the account_member role.
+	AccountMemberRoleID = "role_account_member"
 )
 
 type accountRoleCollection struct {

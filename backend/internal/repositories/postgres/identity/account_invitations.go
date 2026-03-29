@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
@@ -813,7 +814,7 @@ func (r *repository) acceptInvitationForUser(ctx context.Context, querier databa
 	if err := r.generatedQuerier.AssignRoleToUser(ctx, querier, &generated.AssignRoleToUserParams{
 		ID:        identifiers.New(),
 		UserID:    input.ID,
-		RoleID:    "role_account_member",
+		RoleID:    authorization.AccountMemberRoleID,
 		AccountID: sql.NullString{String: input.DestinationAccountID, Valid: true},
 	}); err != nil {
 		r.RollbackTransaction(ctx, querier)

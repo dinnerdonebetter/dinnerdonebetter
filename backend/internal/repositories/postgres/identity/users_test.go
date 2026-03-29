@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	authfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/fakes"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/converters"
@@ -186,7 +187,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	// Promote to service_admin role and verify 2FA.
 	_, err = dbc.writeDB.ExecContext(ctx, "UPDATE user_role_assignments SET archived_at = NOW() WHERE user_id = $1 AND account_id IS NULL AND archived_at IS NULL", firstUser.ID)
 	assert.NoError(t, err)
-	_, err = dbc.writeDB.ExecContext(ctx, "INSERT INTO user_role_assignments (id, user_id, role_id) VALUES ($1, $2, 'role_service_admin')", identifiers.New(), firstUser.ID)
+	_, err = dbc.writeDB.ExecContext(ctx, "INSERT INTO user_role_assignments (id, user_id, role_id) VALUES ($1, $2, $3)", identifiers.New(), firstUser.ID, authorization.ServiceAdminRoleID)
 	assert.NoError(t, err)
 	_, err = dbc.writeDB.ExecContext(ctx, "UPDATE users SET two_factor_secret_verified_at = NOW() WHERE id = $1", firstUser.ID)
 	assert.NoError(t, err)

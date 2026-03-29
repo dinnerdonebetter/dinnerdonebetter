@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
@@ -273,7 +274,7 @@ func (r *repository) CreateAccount(ctx context.Context, input *identity.AccountD
 	if err = r.generatedQuerier.AssignRoleToUser(ctx, tx, &generated.AssignRoleToUserParams{
 		ID:        identifiers.New(),
 		UserID:    account.BelongsToUser,
-		RoleID:    "role_account_admin",
+		RoleID:    authorization.AccountAdminRoleID,
 		AccountID: sql.NullString{String: account.ID, Valid: true},
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
@@ -644,7 +645,7 @@ func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabas
 	if err = r.generatedQuerier.AssignRoleToUser(ctx, tx, &generated.AssignRoleToUserParams{
 		ID:        identifiers.New(),
 		UserID:    user.ID,
-		RoleID:    "role_service_user",
+		RoleID:    authorization.ServiceUserRoleID,
 		AccountID: sql.NullString{},
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
@@ -753,7 +754,7 @@ func (r *repository) createAccountForUser(ctx context.Context, querier database.
 	if err := r.generatedQuerier.AssignRoleToUser(ctx, querier, &generated.AssignRoleToUserParams{
 		ID:        identifiers.New(),
 		UserID:    userID,
-		RoleID:    "role_account_admin",
+		RoleID:    authorization.AccountAdminRoleID,
 		AccountID: sql.NullString{String: accountID, Valid: true},
 	}); err != nil {
 		r.RollbackTransaction(ctx, querier)

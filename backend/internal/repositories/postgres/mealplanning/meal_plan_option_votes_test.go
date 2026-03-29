@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
@@ -327,8 +328,8 @@ func TestQuerier_Integration_MealPlanOptionVotes_CursorBasedPagination(t *testin
 			identifiers.New(), userID, account.ID, false)
 		require.NoError(t, execErr)
 		_, execErr = dbc.writeDB.ExecContext(ctx,
-			`INSERT INTO user_role_assignments (id, user_id, role_id, account_id) VALUES ($1, $2, 'role_account_member', $3)`,
-			identifiers.New(), userID, account.ID)
+			`INSERT INTO user_role_assignments (id, user_id, role_id, account_id) VALUES ($1, $2, $3, $4)`,
+			identifiers.New(), userID, authorization.AccountMemberRoleID, account.ID)
 		require.NoError(t, execErr)
 	}
 	// Add one extra non-voting user

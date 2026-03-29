@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
@@ -208,7 +209,7 @@ func CreateUserForTest(t *testing.T, exampleUser *identity.User, db *sql.DB) *id
 	require.NoError(t, dbc.AssignRoleToUser(ctx, db, &generated.AssignRoleToUserParams{
 		ID:        identifiers.New(),
 		UserID:    exampleUser.ID,
-		RoleID:    "role_service_user",
+		RoleID:    authorization.ServiceUserRoleID,
 		AccountID: sql.NullString{},
 	}))
 
@@ -266,7 +267,7 @@ func CreateAccountForTest(t *testing.T, exampleAccount *identity.Account, userID
 	require.NoError(t, dbc.AssignRoleToUser(ctx, db, &generated.AssignRoleToUserParams{
 		ID:        identifiers.New(),
 		UserID:    userID,
-		RoleID:    "role_account_admin",
+		RoleID:    authorization.AccountAdminRoleID,
 		AccountID: sql.NullString{String: exampleAccount.ID, Valid: true},
 	}))
 

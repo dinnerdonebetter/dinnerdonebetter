@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	mealplangrocerylistinitializerbuild "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/meal_plan_grocery_list_initializer"
 	mealplantaskcreatorbuild "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/jobs/meal_plan_task_creator"
@@ -158,7 +159,7 @@ func main() {
 						if err = generatedQuerier.AssignRoleToUser(ctx, dbClient.WriteDB(), &identitygenerated.AssignRoleToUserParams{
 							ID:        identifiers.New(),
 							UserID:    existingUser.ID,
-							RoleID:    "role_account_member",
+							RoleID:    authorization.AccountMemberRoleID,
 							AccountID: sql.NullString{String: adminAccountID, Valid: true},
 						}); err != nil {
 							return fmt.Errorf("failed to assign account role to existing user %s: %w", memberUser.username, err)
@@ -209,7 +210,7 @@ func main() {
 				if err = generatedQuerier.AssignRoleToUser(ctx, dbClient.WriteDB(), &identitygenerated.AssignRoleToUserParams{
 					ID:        identifiers.New(),
 					UserID:    user.ID,
-					RoleID:    "role_account_member",
+					RoleID:    authorization.AccountMemberRoleID,
 					AccountID: sql.NullString{String: adminAccountID, Valid: true},
 				}); err != nil {
 					return fmt.Errorf("failed to assign account role to user %s: %w", memberUser.username, err)

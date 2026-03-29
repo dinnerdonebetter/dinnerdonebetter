@@ -412,7 +412,7 @@ func (r *repository) addUserToAccount(ctx context.Context, querier database.SQLQ
 	if err := r.generatedQuerier.AssignRoleToUser(ctx, querier, &generated.AssignRoleToUserParams{
 		ID:        identifiers.New(),
 		UserID:    input.UserID,
-		RoleID:    "role_account_member",
+		RoleID:    authorization.AccountMemberRoleID,
 		AccountID: sql.NullString{String: input.AccountID, Valid: true},
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "assigning account role to user")

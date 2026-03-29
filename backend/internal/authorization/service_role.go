@@ -14,6 +14,13 @@ const (
 	serviceDataAdminRoleName = "service_data_admin"
 	serviceUserRoleName      = "service_user"
 
+	// ServiceUserRoleID is the database ID for the service_user role.
+	ServiceUserRoleID = "role_service_user"
+	// ServiceAdminRoleID is the database ID for the service_admin role.
+	ServiceAdminRoleID = "role_service_admin"
+	// ServiceDataAdminRoleID is the database ID for the service_data_admin role.
+	ServiceDataAdminRoleID = "role_service_data_admin"
+
 	invalidServiceRoleWarning = "INVALID_SERVICE_ROLE"
 
 	// invalidServiceRole is a service role to apply for non-admin users to have one.

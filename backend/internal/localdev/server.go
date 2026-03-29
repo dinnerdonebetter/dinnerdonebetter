@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	apiserver "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
@@ -76,7 +77,7 @@ func CreatePremadeAdminUser(
 	if _, err = dbClient.WriteDB().Exec("UPDATE user_role_assignments SET archived_at = NOW() WHERE user_id = $1 AND account_id IS NULL AND archived_at IS NULL", user.ID); err != nil {
 		return nil, fmt.Errorf("failed to archive old service role: %w", err)
 	}
-	if _, err = dbClient.WriteDB().Exec("INSERT INTO user_role_assignments (id, user_id, role_id) VALUES ($1, $2, 'role_service_admin')", identifiers.New(), user.ID); err != nil {
+	if _, err = dbClient.WriteDB().Exec("INSERT INTO user_role_assignments (id, user_id, role_id) VALUES ($1, $2, $3)", identifiers.New(), user.ID, authorization.ServiceAdminRoleID); err != nil {
 		return nil, fmt.Errorf("failed to assign service_admin role: %w", err)
 	}
 
