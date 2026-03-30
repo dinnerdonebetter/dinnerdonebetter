@@ -20,7 +20,6 @@ import (
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/healthcheck"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
@@ -56,8 +55,8 @@ func BuildInjector(
 	encoding.RegisterServerEncoderDecoder(i)
 	msgconfig.RegisterMessageQueue(i)
 	analyticscfg.RegisterEventReporter(i)
-	databasecfg.RegisterClientConfig(i)
-	postgres.RegisterDatabaseClient(i)
+	repositories.RegisterMigrator(i)
+	databasecfg.RegisterDatabase(i)
 	do.Provide[healthcheck.Registry](i, func(i do.Injector) (healthcheck.Registry, error) {
 		registry := healthcheck.NewRegistry()
 		dbClient := do.MustInvoke[database.Client](i)
@@ -75,7 +74,6 @@ func BuildInjector(
 	authcfg.RegisterConfigs(i)
 
 	// repos
-	repositories.RegisterMigrator(i)
 	auditrepo.RegisterAuditLogRepository(i)
 	identityrepo.RegisterIdentityRepository(i)
 	oauthrepo.RegisterOAuthRepository(i)

@@ -5,7 +5,6 @@ import (
 	domaindataprivacy "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
@@ -28,13 +27,13 @@ func RegisterDataPrivacyRepository(i do.Injector) {
 			do.MustInvoke[audit.Repository](i),
 			do.MustInvoke[identity.Repository](i),
 			do.MustInvoke[issuereports.Repository](i),
-			do.MustInvoke[mealplanning.Repository](i),
 			do.MustInvoke[notifications.Repository](i),
 			do.MustInvoke[settings.Repository](i),
 			do.MustInvoke[uploadedmedia.Repository](i),
 			do.MustInvoke[waitlists.Repository](i),
 			do.MustInvoke[webhooks.Repository](i),
 			do.MustInvoke[database.Client](i),
+			do.MustInvoke[[]domaindataprivacy.UserDataCollector](i),
 		), nil
 	})
 }

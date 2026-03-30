@@ -20,7 +20,7 @@ func createCommentForRecipeForTest(t *testing.T, recipeID string, clientToUse cl
 		content = "test comment on recipe"
 	}
 
-	res, err := clientToUse.AddCommentToRecipe(ctx, &commentsgrpc.AddCommentToRecipeRequest{
+	res, err := clientToUse.AddCommentToRecipe(ctx, &mealplanninggrpc.AddCommentToRecipeRequest{
 		RecipeId: recipeID,
 		Input:    &commentsgrpc.CommentCreationRequestInput{Content: content},
 	})
@@ -120,7 +120,7 @@ func TestComments_RecipeCompleteLifecycle(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		res, err := c.AddCommentToRecipe(ctx, &commentsgrpc.AddCommentToRecipeRequest{
+		res, err := c.AddCommentToRecipe(ctx, &mealplanninggrpc.AddCommentToRecipeRequest{
 			RecipeId: createdRecipe.ID,
 			Input:    &commentsgrpc.CommentCreationRequestInput{Content: "test"},
 		})
@@ -197,7 +197,7 @@ func TestComments_MealCompleteLifecycle(T *testing.T) {
 		user, userClient := createUserAndClientForTest(t)
 		createdMeal := createMealForTest(t, userClient, nil)
 
-		res, err := userClient.AddCommentToMeal(ctx, &commentsgrpc.AddCommentToMealRequest{
+		res, err := userClient.AddCommentToMeal(ctx, &mealplanninggrpc.AddCommentToMealRequest{
 			MealId: createdMeal.ID,
 			Input:  &commentsgrpc.CommentCreationRequestInput{Content: "comment on meal"},
 		})
@@ -232,7 +232,7 @@ func TestComments_MealPlanCompleteLifecycle(T *testing.T) {
 		user, userClient := createUserAndClientForTest(t)
 		createdMealPlan := createMealPlanForTest(t, userClient, nil)
 
-		res, err := userClient.AddCommentToMealPlan(ctx, &commentsgrpc.AddCommentToMealPlanRequest{
+		res, err := userClient.AddCommentToMealPlan(ctx, &mealplanninggrpc.AddCommentToMealPlanRequest{
 			MealPlanId: createdMealPlan.ID,
 			Input:      &commentsgrpc.CommentCreationRequestInput{Content: "comment on meal plan"},
 		})

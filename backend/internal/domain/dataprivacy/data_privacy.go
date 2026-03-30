@@ -57,6 +57,8 @@ type (
 	}
 
 	// UserDataCollection contains all user-associated data for GDPR/CCPA disclosure.
+	// This type intentionally aggregates all domain types as a cross-cutting concern.
+	// When adding or removing a domain from this template, update the fields here accordingly.
 	UserDataCollection struct {
 		Identity        identity.UserDataCollection      `json:"identity"`
 		MealPlanning    mealplanning.UserDataCollection  `json:"meal_planning"`
@@ -87,6 +89,14 @@ type (
 		ExpiresAt     time.Time `json:"expiresAt"`
 		ID            string    `json:"-"`
 		BelongsToUser string    `json:"-"`
+	}
+
+	// UserDataCollector collects domain-specific user data for GDPR/CCPA disclosure.
+	// Each domain implements this interface to contribute its data to the aggregate collection.
+	// When adding or removing a domain from this template, implement this interface and register the collector.
+	UserDataCollector interface {
+		CollectUserData(ctx context.Context, collection *UserDataCollection, userID string) error
+		CollectAccountData(ctx context.Context, collection *UserDataCollection, accountID string) error
 	}
 
 	// DataPrivacyDataManager contains data privacy management functions.

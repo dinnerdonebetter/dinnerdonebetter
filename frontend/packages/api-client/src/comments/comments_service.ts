@@ -18,12 +18,6 @@ import {
   type UntypedServiceImplementation,
 } from '@grpc/grpc-js';
 import {
-  AddCommentToMealPlanRequest,
-  AddCommentToMealPlanResponse,
-  AddCommentToMealRequest,
-  AddCommentToMealResponse,
-  AddCommentToRecipeRequest,
-  AddCommentToRecipeResponse,
   ArchiveCommentRequest,
   ArchiveCommentResponse,
   CreateCommentRequest,
@@ -38,39 +32,6 @@ export const protobufPackage = 'comments';
 
 export type CommentsServiceService = typeof CommentsServiceService;
 export const CommentsServiceService = {
-  addCommentToMeal: {
-    path: '/comments.CommentsService/AddCommentToMeal' as const,
-    requestStream: false as const,
-    responseStream: false as const,
-    requestSerialize: (value: AddCommentToMealRequest): Buffer =>
-      Buffer.from(AddCommentToMealRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): AddCommentToMealRequest => AddCommentToMealRequest.decode(value),
-    responseSerialize: (value: AddCommentToMealResponse): Buffer =>
-      Buffer.from(AddCommentToMealResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AddCommentToMealResponse => AddCommentToMealResponse.decode(value),
-  },
-  addCommentToMealPlan: {
-    path: '/comments.CommentsService/AddCommentToMealPlan' as const,
-    requestStream: false as const,
-    responseStream: false as const,
-    requestSerialize: (value: AddCommentToMealPlanRequest): Buffer =>
-      Buffer.from(AddCommentToMealPlanRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): AddCommentToMealPlanRequest => AddCommentToMealPlanRequest.decode(value),
-    responseSerialize: (value: AddCommentToMealPlanResponse): Buffer =>
-      Buffer.from(AddCommentToMealPlanResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AddCommentToMealPlanResponse => AddCommentToMealPlanResponse.decode(value),
-  },
-  addCommentToRecipe: {
-    path: '/comments.CommentsService/AddCommentToRecipe' as const,
-    requestStream: false as const,
-    responseStream: false as const,
-    requestSerialize: (value: AddCommentToRecipeRequest): Buffer =>
-      Buffer.from(AddCommentToRecipeRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): AddCommentToRecipeRequest => AddCommentToRecipeRequest.decode(value),
-    responseSerialize: (value: AddCommentToRecipeResponse): Buffer =>
-      Buffer.from(AddCommentToRecipeResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): AddCommentToRecipeResponse => AddCommentToRecipeResponse.decode(value),
-  },
   createComment: {
     path: '/comments.CommentsService/CreateComment' as const,
     requestStream: false as const,
@@ -117,9 +78,6 @@ export const CommentsServiceService = {
 } as const;
 
 export interface CommentsServiceServer extends UntypedServiceImplementation {
-  addCommentToMeal: handleUnaryCall<AddCommentToMealRequest, AddCommentToMealResponse>;
-  addCommentToMealPlan: handleUnaryCall<AddCommentToMealPlanRequest, AddCommentToMealPlanResponse>;
-  addCommentToRecipe: handleUnaryCall<AddCommentToRecipeRequest, AddCommentToRecipeResponse>;
   createComment: handleUnaryCall<CreateCommentRequest, CreateCommentResponse>;
   archiveComment: handleUnaryCall<ArchiveCommentRequest, ArchiveCommentResponse>;
   getCommentsForReference: handleUnaryCall<GetCommentsForReferenceRequest, GetCommentsForReferenceResponse>;
@@ -127,51 +85,6 @@ export interface CommentsServiceServer extends UntypedServiceImplementation {
 }
 
 export interface CommentsServiceClient extends Client {
-  addCommentToMeal(
-    request: AddCommentToMealRequest,
-    callback: (error: ServiceError | null, response: AddCommentToMealResponse) => void,
-  ): ClientUnaryCall;
-  addCommentToMeal(
-    request: AddCommentToMealRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: AddCommentToMealResponse) => void,
-  ): ClientUnaryCall;
-  addCommentToMeal(
-    request: AddCommentToMealRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AddCommentToMealResponse) => void,
-  ): ClientUnaryCall;
-  addCommentToMealPlan(
-    request: AddCommentToMealPlanRequest,
-    callback: (error: ServiceError | null, response: AddCommentToMealPlanResponse) => void,
-  ): ClientUnaryCall;
-  addCommentToMealPlan(
-    request: AddCommentToMealPlanRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: AddCommentToMealPlanResponse) => void,
-  ): ClientUnaryCall;
-  addCommentToMealPlan(
-    request: AddCommentToMealPlanRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AddCommentToMealPlanResponse) => void,
-  ): ClientUnaryCall;
-  addCommentToRecipe(
-    request: AddCommentToRecipeRequest,
-    callback: (error: ServiceError | null, response: AddCommentToRecipeResponse) => void,
-  ): ClientUnaryCall;
-  addCommentToRecipe(
-    request: AddCommentToRecipeRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: AddCommentToRecipeResponse) => void,
-  ): ClientUnaryCall;
-  addCommentToRecipe(
-    request: AddCommentToRecipeRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AddCommentToRecipeResponse) => void,
-  ): ClientUnaryCall;
   createComment(
     request: CreateCommentRequest,
     callback: (error: ServiceError | null, response: CreateCommentResponse) => void,

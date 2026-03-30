@@ -127,6 +127,15 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 		pushNotificationSender:           pushNotificationSender,
 	}
 
+	handler.searchIndexHandlers = []SearchIndexEventHandler{
+		handler.handleMealPlanningSearchIndexUpdate,
+		handler.handleIdentitySearchIndexUpdate,
+	}
+	handler.outboundNotificationHandlers = []OutboundNotificationHandler{
+		handler.handleMealPlanningOutboundNotification,
+		handler.handleIdentityOutboundNotification,
+	}
+
 	return handler, identityRepo, webhookRepo, consumerProvider, publisherProvider, analyticsEventReporter, emailer, uploadManager, metricsProvider, decoder, dataPrivacyRepo
 }
 

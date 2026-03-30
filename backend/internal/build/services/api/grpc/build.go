@@ -13,9 +13,7 @@ import (
 	dataprivacymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy/manager"
 	identitymgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	issuereportsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/manager"
-	grocerylistpreparation "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
-	mealplanningmgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
-	recipeanalysis "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	mealplanningregistration "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/registration"
 	notificationsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/manager"
 	oauthmgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/manager"
 	paymentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/manager"
@@ -31,7 +29,6 @@ import (
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	internalopsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	issuereportsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
-	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	oauthrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	paymentsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/payments"
 	uploadedmediarepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
@@ -46,10 +43,6 @@ import (
 	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/grpc"
 	internalopssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/internalops/grpc"
 	issuereportssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/issuereports/grpc"
-	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
-	mealplanfinalizer "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
-	mealplangrocerylistinitializer "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
-	mealplantaskcreator "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	oauthsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/oauth/grpc"
 	paymentsadapters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/adapters"
@@ -62,7 +55,6 @@ import (
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/analytics/multisource"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
 	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v4/featureflags/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
 	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
@@ -100,8 +92,8 @@ func BuildInjector(
 	httpclient.RegisterHTTPClient(i)
 	msgconfig.RegisterMessageQueue(i)
 	random.RegisterGenerator(i)
-	databasecfg.RegisterClientConfig(i)
-	postgres.RegisterDatabaseClient(i)
+	repositories.RegisterMigrator(i)
+	databasecfg.RegisterDatabase(i)
 	grpc.RegisterGRPCServer(i)
 	qrcodes.RegisterBuilder(i)
 	uploadscfg.RegisterStorageConfig(i)
@@ -115,8 +107,7 @@ func BuildInjector(
 	tokenscfg.RegisterTokenIssuer(i)
 	interceptors.RegisterAuthInterceptor(i)
 
-	// repositories
-	repositories.RegisterMigrator(i)
+	// repositories (core)
 	auditrepo.RegisterAuditLogRepository(i)
 	authrepo.RegisterAuthRepository(i)
 	commentsrepo.RegisterCommentsRepository(i)
@@ -126,7 +117,6 @@ func BuildInjector(
 	webhooksrepo.RegisterWebhooksRepository(i)
 	oauthrepo.RegisterOAuthRepository(i)
 	paymentsrepo.RegisterPaymentsRepository(i)
-	mealplanningrepo.RegisterMealPlanningRepository(i)
 	dataprivacyrepo.RegisterDataPrivacyRepository(i)
 	internalopsrepo.RegisterInternalOpsRepository(i)
 
@@ -139,7 +129,6 @@ func BuildInjector(
 	settingsmanager.RegisterSettingsDataManager(i)
 	paymentsmanager.RegisterPaymentsDataManager(i)
 	oauthmgr.RegisterOAuth2Manager(i)
-	mealplanningmgr.RegisterManagers(i)
 	webhooksmanager.RegisterWebhookDataManager(i)
 	waitlistsmanager.RegisterWaitlistDataManager(i)
 	issuereportsmanager.RegisterIssueReportsDataManager(i)
@@ -163,18 +152,11 @@ func BuildInjector(
 	webhookssvc.RegisterWebhooksService(i)
 	oauthsvc.RegisterOAuthService(i)
 	paymentssvc.RegisterPaymentsService(i)
-	mealplanningsvc.RegisterMealPlanningService(i)
 	waitlistssvc.RegisterWaitlistsService(i)
 	uploadedmediacfg.RegisterUploadedMediaConfig(i)
 
-	// workers
-	mealplanfinalizer.RegisterMealPlanFinalizer(i)
-	mealplangrocerylistinitializer.RegisterMealPlanGroceryListInitializer(i)
-	mealplantaskcreator.RegisterMealPlanTaskCreator(i)
-
-	// misc
-	recipeanalysis.RegisterRecipeAnalyzer(i)
-	grocerylistpreparation.RegisterGroceryListCreator(i)
+	// Domain: mealplanning
+	mealplanningregistration.RegisterForGRPCAPI(i)
 
 	// extras (functions from extras.go)
 	RegisterExtras(i)

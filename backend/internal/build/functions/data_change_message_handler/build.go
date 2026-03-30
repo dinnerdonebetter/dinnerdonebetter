@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	mealplanningregistration "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/registration"
 	notificationsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/manager"
 	settingsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/manager"
 	waitlistsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/manager"
@@ -14,11 +15,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	internalopsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	issue_reports "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
-	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
 	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
@@ -65,13 +64,15 @@ func BuildInjector(
 	objectstorage.RegisterUploadManager(i)
 	notificationscfg.RegisterPushSender(i)
 
+	// Domain: mealplanning
+	mealplanningregistration.RegisterForDataChangeHandler(i)
+
 	// repos
 	auditlogentries.RegisterAuditLogRepository(i)
 	auth.RegisterAuthRepository(i)
 	dataprivacy.RegisterDataPrivacyRepository(i)
 	identity.RegisterIdentityRepository(i)
 	issue_reports.RegisterIssueReportsRepository(i)
-	mealplanning.RegisterMealPlanningRepository(i)
 	uploadedmedia.RegisterUploadedMediaRepository(i)
 	webhooks.RegisterWebhooksRepository(i)
 	internalopsrepo.RegisterInternalOpsRepository(i)
@@ -83,7 +84,6 @@ func BuildInjector(
 
 	// indexing
 	identityindexing.RegisterCoreDataIndexer(i)
-	eatingindexing.RegisterMealPlanningDataIndexer(i)
 
 	// searchers
 	RegisterSearchers(i)

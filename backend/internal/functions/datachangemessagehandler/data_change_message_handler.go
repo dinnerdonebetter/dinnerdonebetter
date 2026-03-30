@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
@@ -48,10 +49,22 @@ const (
 	unknownValue  = "unknown"
 )
 
+// SearchIndexEventHandler handles search index updates for a domain's events.
+// Returns true if the event was handled, false to fall through to other handlers.
+type SearchIndexEventHandler func(ctx context.Context, msg *audit.DataChangeMessage) (handled bool, err error)
+
+// OutboundNotificationHandler handles outbound notifications for a domain's events.
+// Returns true if the event was handled. May return emails to be published by the caller.
+type OutboundNotificationHandler func(ctx context.Context, msg *audit.DataChangeMessage, user *identity.User) (handled bool, emailType string, emails []*email.OutboundEmailMessage, err error)
+
 var (
 	errRequiredDataIsNil = errors.New("required data is nil")
 )
 
+// AsyncDataChangeMessageHandler is a cross-cutting event router that dispatches domain events to
+// search indexing, email, webhooks, and mobile notifications. It necessarily references all domain
+// repositories and event types. Domain-specific handler logic lives in dedicated files
+// (e.g., mealplanning_handlers.go) to keep concerns separable.
 type AsyncDataChangeMessageHandler struct {
 	uploadManager                             uploads.UploadManager
 	tracer                                    tracing.Tracer
@@ -87,6 +100,8 @@ type AsyncDataChangeMessageHandler struct {
 	mobileNotificationsExecutionTimeHistogram metrics.Float64Histogram
 	mealPlanningDataIndexer                   *mealplanningindexing.MealPlanningDataIndexer
 	userDataIndexer                           *identityindexing.UserDataIndexer
+	searchIndexHandlers                       []SearchIndexEventHandler
+	outboundNotificationHandlers              []OutboundNotificationHandler
 	queuesConfig                              msgconfig.QueuesConfig
 	baseURL                                   string
 	nonWebhookEventTypes                      []string
@@ -214,7 +229,7 @@ func NewAsyncDataChangeMessageHandler(
 		return nil, fmt.Errorf("configuring mobile notifications publisher: %w", err)
 	}
 
-	return &AsyncDataChangeMessageHandler{
+	handler := &AsyncDataChangeMessageHandler{
 		tracer:                               tracing.NewNamedTracer(tracerProvider, o11yName),
 		logger:                               logging.NewNamedLogger(logger, o11yName),
 		nonWebhookEventTypes:                 []string{},
@@ -252,7 +267,20 @@ func NewAsyncDataChangeMessageHandler(
 		notificationsRepo:                         notificationsRepo,
 		pushNotificationSender:                    pushNotificationSender,
 		baseURL:                                   cfg.BaseURL,
-	}, nil
+	}
+
+	// Register domain-specific event handlers.
+	// When adding or removing a domain from this template, update these registrations.
+	handler.searchIndexHandlers = []SearchIndexEventHandler{
+		handler.handleMealPlanningSearchIndexUpdate,
+		handler.handleIdentitySearchIndexUpdate,
+	}
+	handler.outboundNotificationHandlers = []OutboundNotificationHandler{
+		handler.handleMealPlanningOutboundNotification,
+		handler.handleIdentityOutboundNotification,
+	}
+
+	return handler, nil
 }
 
 func (a *AsyncDataChangeMessageHandler) ConsumeMessages(

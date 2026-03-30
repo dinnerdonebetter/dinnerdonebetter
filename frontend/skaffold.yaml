@@ -19,10 +19,20 @@ profiles:
           context: .
           docker:
             dockerfile: deploy/dockerfiles/consumer.Dockerfile
+            buildArgs:
+              COMMIT_HASH: '{{ cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown" }}'
+              COMMIT_TIME: '{{ cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown" }}'
+              BUILD_TIME: '{{ cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown" }}'
+              VERSION: '{{ default "dev" .VERSION }}'
         - image: dinner-done-better-admin-webapp
           context: .
           docker:
             dockerfile: deploy/dockerfiles/admin.Dockerfile
+            buildArgs:
+              COMMIT_HASH: '{{ cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown" }}'
+              COMMIT_TIME: '{{ cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown" }}'
+              BUILD_TIME: '{{ cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown" }}'
+              VERSION: '{{ default "dev" .VERSION }}'
 
     manifests:
       kustomize:
@@ -53,10 +63,20 @@ profiles:
           context: .
           docker:
             dockerfile: deploy/dockerfiles/consumer.Dockerfile
+            buildArgs:
+              COMMIT_HASH: '{{ cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown" }}'
+              COMMIT_TIME: '{{ cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown" }}'
+              BUILD_TIME: '{{ cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown" }}'
+              VERSION: '{{ default "dev" .VERSION }}'
         - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-admin-webapp
           context: .
           docker:
             dockerfile: deploy/dockerfiles/admin.Dockerfile
+            buildArgs:
+              COMMIT_HASH: '{{ cmd "bash" "-c" "git rev-parse HEAD 2>/dev/null || echo unknown" }}'
+              COMMIT_TIME: '{{ cmd "bash" "-c" "git log -1 --format=%cI HEAD 2>/dev/null || echo unknown" }}'
+              BUILD_TIME: '{{ cmd "bash" "-c" "date -u -Iseconds 2>/dev/null || echo unknown" }}'
+              VERSION: '{{ default "dev" .VERSION }}'
 
     manifests:
       kustomize:

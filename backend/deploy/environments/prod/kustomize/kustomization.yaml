@@ -8,7 +8,7 @@ resources:
   - ../../../kustomize/components/api_server
   - ../../../kustomize/components/workers
   - ../../../kustomize/components/async_functions
-  # - ../../../kustomize/components/mcp_server
+  - ../../../kustomize/components/mcp_server
 
 images:
   - name: dinner-done-better-service-api
@@ -51,9 +51,9 @@ images:
     newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-async-message-handler
     newTag: latest
 
-  # - name: dinner-done-better-mcp-server
-  #   newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-mcp-server
-  #   newTag: latest
+  - name: dinner-done-better-mcp-server
+    newName: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-mcp-server
+    newTag: latest
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches:
@@ -298,44 +298,28 @@ patches:
       kind: CronJob
       name: dinner-done-better-job-mobile-notification-scheduler
 
-  # ### MCP Server - needs API service URL from dinner-done-better-admin-webapp-config, OAuth credentials from mcp-server-config
-  # - patch: |-
-  #     - op: add
-  #       path: "/spec/template/spec/containers/0/env/-"
-  #       value:
-  #         name: DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL
-  #         valueFrom:
-  #           configMapKeyRef:
-  #             name: dinner-done-better-admin-webapp-config
-  #             key: API_SERVER_HTTP_URL
-  #     - op: add
-  #       path: "/spec/template/spec/containers/0/env/-"
-  #       value:
-  #         name: DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL
-  #         valueFrom:
-  #           configMapKeyRef:
-  #             name: dinner-done-better-admin-webapp-config
-  #             key: API_SERVER_GRPC_URL
-  #     - op: add
-  #       path: "/spec/template/spec/containers/0/env/-"
-  #       value:
-  #         name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID
-  #         valueFrom:
-  #           secretKeyRef:
-  #             name: mcp-server-config
-  #             key: OAUTH2_CLIENT_ID
-  #     - op: add
-  #       path: "/spec/template/spec/containers/0/env/-"
-  #       value:
-  #         name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET
-  #         valueFrom:
-  #           secretKeyRef:
-  #             name: mcp-server-config
-  #             key: OAUTH2_CLIENT_SECRET
-  #   target:
-  #     version: v1
-  #     kind: Deployment
-  #     name: dinner-done-better-mcp-server-deployment
+  ### MCP Server - OAuth credentials from mcp-server-config secret (API URLs are in config JSON)
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: mcp-server-config
+              key: OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: mcp-server-config
+              key: OAUTH2_CLIENT_SECRET
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-mcp-server-deployment
 
 labels:
   - pairs:
@@ -393,10 +377,10 @@ configMapGenerator:
     files:
       - config.json=./configs/job_mobile_notification_scheduler_config.json
 
-  # - name: dinner-done-better-mcp-server-config
-  #   namespace: prod
-  #   files:
-  #     - config.json=./configs/mcp_server_config.json
+  - name: dinner-done-better-mcp-server-config
+    namespace: prod
+    files:
+      - config.json=./configs/mcp_server_config.json
 
 generatorOptions:
   disableNameSuffixHash: true

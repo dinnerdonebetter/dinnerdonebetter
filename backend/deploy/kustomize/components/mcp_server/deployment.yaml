@@ -34,6 +34,8 @@ spec:
               value: "dinner_done_better_mcp_server"
             - name: "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME"
               value: "dinner_done_better_mcp_server"
+            - name: "MCP_BASE_URL"
+              value: "https://mcp.dinnerdonebetter.com"
           volumeMounts:
             - name: "config"
               mountPath: "/etc/service-config.json"
@@ -42,13 +44,15 @@ spec:
             - containerPort: 8888
               name: http
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: "/_ops_/live"
               port: 8888
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 3
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: "/_ops_/ready"
               port: 8888
             initialDelaySeconds: 10
             periodSeconds: 5

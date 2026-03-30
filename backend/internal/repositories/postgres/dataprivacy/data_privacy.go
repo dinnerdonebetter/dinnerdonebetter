@@ -5,7 +5,6 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
@@ -28,7 +27,6 @@ func (r *repository) FetchUserDataCollection(ctx context.Context, userID string)
 
 	collection := &dataprivacy.UserDataCollection{
 		Identity:      identity.UserDataCollection{},
-		MealPlanning:  mealplanning.UserDataCollection{},
 		Webhooks:      webhooks.UserDataCollection{Data: make(map[string][]webhooks.Webhook)},
 		Settings:      settings.UserDataCollection{},
 		Notifications: notifications.UserDataCollection{},
@@ -80,37 +78,11 @@ func (r *repository) FetchUserDataCollection(ctx context.Context, userID string)
 		collection.AuditLogEntries = append(collection.AuditLogEntries, *entry)
 	}
 
-	// Fetch meal planning data - user scoped
-	recipes, err := r.mealPlanningRepo.GetRecipesCreatedByUser(ctx, userID, nil)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipes")
-	}
-	for _, recipe := range recipes.Data {
-		collection.MealPlanning.Recipes = append(collection.MealPlanning.Recipes, *recipe)
-	}
-
-	meals, err := r.mealPlanningRepo.GetMealsCreatedByUser(ctx, userID, nil)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meals")
-	}
-	for _, meal := range meals.Data {
-		collection.MealPlanning.Meals = append(collection.MealPlanning.Meals, *meal)
-	}
-
-	preferences, err := r.mealPlanningRepo.GetUserIngredientPreferences(ctx, userID, nil)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching ingredient preferences")
-	}
-	for _, pref := range preferences.Data {
-		collection.MealPlanning.UserIngredientPreferences = append(collection.MealPlanning.UserIngredientPreferences, *pref)
-	}
-
-	ratings, err := r.mealPlanningRepo.GetRecipeRatingsForUser(ctx, userID, nil)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe ratings")
-	}
-	for _, rating := range ratings.Data {
-		collection.MealPlanning.RecipeRatings = append(collection.MealPlanning.RecipeRatings, *rating)
+	// Collect domain-specific user-scoped data via registered collectors
+	for _, collector := range r.dataCollectors {
+		if err = collector.CollectUserData(ctx, collection, userID); err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "collecting domain user data")
+		}
 	}
 
 	// Fetch notifications
@@ -153,22 +125,11 @@ func (r *repository) FetchUserDataCollection(ctx context.Context, userID string)
 	for _, account := range accounts.Data {
 		accountLogger := logger.WithValue("account_id", account.ID)
 
-		// Meal plans
-		mealPlans, mealPlanErr := r.mealPlanningRepo.GetMealPlansForAccount(ctx, account.ID, nil)
-		if mealPlanErr != nil {
-			return nil, observability.PrepareAndLogError(mealPlanErr, accountLogger, span, "fetching meal plans")
-		}
-		for _, mp := range mealPlans.Data {
-			collection.MealPlanning.MealPlans = append(collection.MealPlanning.MealPlans, *mp)
-		}
-
-		// Account instrument ownerships
-		ownerships, ownershipErr := r.mealPlanningRepo.GetAccountInstrumentOwnerships(ctx, account.ID, nil)
-		if ownershipErr != nil {
-			return nil, observability.PrepareAndLogError(ownershipErr, accountLogger, span, "fetching instrument ownerships")
-		}
-		for _, ownership := range ownerships.Data {
-			collection.MealPlanning.AccountInstrumentOwnerships = append(collection.MealPlanning.AccountInstrumentOwnerships, *ownership)
+		// Collect domain-specific account-scoped data via registered collectors
+		for _, collector := range r.dataCollectors {
+			if collectorErr := collector.CollectAccountData(ctx, collection, account.ID); collectorErr != nil {
+				return nil, observability.PrepareAndLogError(collectorErr, accountLogger, span, "collecting domain account data")
+			}
 		}
 
 		// Webhooks

@@ -8,36 +8,6 @@ import "filtering.proto";
 
 option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments";
 
-message AddCommentToMealPlanRequest {
-  string meal_plan_id = 1;
-  CommentCreationRequestInput input = 2;
-}
-
-message AddCommentToMealPlanResponse {
-  common.ResponseDetails response_details = 1;
-  Comment comment = 2;
-}
-
-message AddCommentToMealRequest {
-  string meal_id = 1;
-  CommentCreationRequestInput input = 2;
-}
-
-message AddCommentToMealResponse {
-  common.ResponseDetails response_details = 1;
-  Comment comment = 2;
-}
-
-message AddCommentToRecipeRequest {
-  string recipe_id = 1;
-  CommentCreationRequestInput input = 2;
-}
-
-message AddCommentToRecipeResponse {
-  common.ResponseDetails response_details = 1;
-  Comment comment = 2;
-}
-
 message CreateCommentRequest {
   CommentCreationRequestInput input = 1;
 }

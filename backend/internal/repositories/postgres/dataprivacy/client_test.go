@@ -5,9 +5,11 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	mealplanningprivacy "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/privacy"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	issue_reports "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
@@ -50,19 +52,21 @@ func buildDatabaseClientForTest(t *testing.T) (repo *repository, auditRepo audit
 	waitlistsRepo := waitlists.ProvideWaitlistsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
 	webhooksRepo := webhooks.ProvideWebhooksRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
 
+	mealPlanningCollector := mealplanningprivacy.NewCollector(mealPlanningRepo, logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+
 	c := ProvideDataPrivacyRepository(
 		logging.NewNoopLogger(),
 		tracing.NewNoopTracerProvider(),
 		auditLogEntryRepo,
 		identityRepo,
 		issueReportsRepo,
-		mealPlanningRepo,
 		notificationsRepo,
 		settingsRepo,
 		uploadedMediaRepo,
 		waitlistsRepo,
 		webhooksRepo,
 		pgc,
+		[]dataprivacy.UserDataCollector{mealPlanningCollector},
 	)
 
 	return c.(*repository), auditLogEntryRepo, identityRepo, container
@@ -77,13 +81,13 @@ func buildInertClientForTest(t *testing.T) *repository {
 		nil, // auditLogRepo
 		nil, // identityRepo
 		nil, // issueReportsRepo
-		nil, // mealPlanningRepo
 		nil, // notificationsRepo
 		nil, // settingsRepo
 		nil, // uploadedMediaRepo
 		nil, // waitlistsRepo
 		nil, // webhooksRepo
 		&database.MockClient{},
+		nil, // dataCollectors
 	)
 
 	return c.(*repository)
