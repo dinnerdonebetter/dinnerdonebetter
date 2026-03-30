@@ -114,7 +114,7 @@ func BuildInjector(
 	tokenscfg.RegisterTokenIssuer(i)
 	interceptors.RegisterAuthInterceptor(i)
 
-	// repositories
+	// repositories (core)
 	auditrepo.RegisterAuditLogRepository(i)
 	authrepo.RegisterAuthRepository(i)
 	commentsrepo.RegisterCommentsRepository(i)
@@ -124,6 +124,7 @@ func BuildInjector(
 	webhooksrepo.RegisterWebhooksRepository(i)
 	oauthrepo.RegisterOAuthRepository(i)
 	paymentsrepo.RegisterPaymentsRepository(i)
+	// repositories (domain: mealplanning)
 	mealplanningrepo.RegisterMealPlanningRepository(i)
 	dataprivacyrepo.RegisterDataPrivacyRepository(i)
 	internalopsrepo.RegisterInternalOpsRepository(i)
@@ -137,6 +138,7 @@ func BuildInjector(
 	settingsmanager.RegisterSettingsDataManager(i)
 	paymentsmanager.RegisterPaymentsDataManager(i)
 	oauthmgr.RegisterOAuth2Manager(i)
+	// managers (domain: mealplanning)
 	mealplanningmgr.RegisterManagers(i)
 	webhooksmanager.RegisterWebhookDataManager(i)
 	waitlistsmanager.RegisterWaitlistDataManager(i)
@@ -161,16 +163,17 @@ func BuildInjector(
 	webhookssvc.RegisterWebhooksService(i)
 	oauthsvc.RegisterOAuthService(i)
 	paymentssvc.RegisterPaymentsService(i)
+	// services (domain: mealplanning)
 	mealplanningsvc.RegisterMealPlanningService(i)
 	waitlistssvc.RegisterWaitlistsService(i)
 	uploadedmediacfg.RegisterUploadedMediaConfig(i)
 
-	// workers
+	// workers (domain: mealplanning)
 	mealplanfinalizer.RegisterMealPlanFinalizer(i)
 	mealplangrocerylistinitializer.RegisterMealPlanGroceryListInitializer(i)
 	mealplantaskcreator.RegisterMealPlanTaskCreator(i)
 
-	// misc
+	// misc (domain: mealplanning)
 	recipeanalysis.RegisterRecipeAnalyzer(i)
 	grocerylistpreparation.RegisterGroceryListCreator(i)
 

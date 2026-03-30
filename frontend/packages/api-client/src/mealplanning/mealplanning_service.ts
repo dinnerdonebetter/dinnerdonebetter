@@ -20,12 +20,6 @@ import {
   type UntypedServiceImplementation,
 } from '@grpc/grpc-js';
 import {
-  AddCommentToMealPlanRequest,
-  AddCommentToMealPlanResponse,
-  AddCommentToMealRequest,
-  AddCommentToMealResponse,
-  AddCommentToRecipeRequest,
-  AddCommentToRecipeResponse,
   ArchiveCommentRequest,
   ArchiveCommentResponse,
   CreateCommentRequest,
@@ -36,6 +30,12 @@ import {
   UpdateCommentResponse,
 } from '../comments/comments_service_types';
 import {
+  AddCommentToMealPlanRequest,
+  AddCommentToMealPlanResponse,
+  AddCommentToMealRequest,
+  AddCommentToMealResponse,
+  AddCommentToRecipeRequest,
+  AddCommentToRecipeResponse,
   ArchiveAccountInstrumentOwnershipRequest,
   ArchiveAccountInstrumentOwnershipResponse,
   ArchiveMealListItemRequest,

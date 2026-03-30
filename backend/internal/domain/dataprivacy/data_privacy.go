@@ -57,6 +57,8 @@ type (
 	}
 
 	// UserDataCollection contains all user-associated data for GDPR/CCPA disclosure.
+	// This type intentionally aggregates all domain types as a cross-cutting concern.
+	// When adding or removing a domain from this template, update the fields here accordingly.
 	UserDataCollection struct {
 		Identity        identity.UserDataCollection      `json:"identity"`
 		MealPlanning    mealplanning.UserDataCollection  `json:"meal_planning"`

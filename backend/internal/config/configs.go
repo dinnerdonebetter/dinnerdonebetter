@@ -102,6 +102,7 @@ type (
 	}
 
 	// MealPlanFinalizerConfig configures an instance of the meal plan finalizer job.
+	// Domain: mealplanning
 	MealPlanFinalizerConfig struct {
 		_ struct{} `json:"-"`
 
@@ -112,6 +113,7 @@ type (
 	}
 
 	// MealPlanGroceryListInitializerConfig configures an instance of the meal plan grocery list initializer job.
+	// Domain: mealplanning
 	MealPlanGroceryListInitializerConfig struct {
 		_ struct{} `json:"-"`
 
@@ -123,6 +125,7 @@ type (
 	}
 
 	// MealPlanTaskCreatorConfig configures an instance of the meal plan task creator job.
+	// Domain: mealplanning
 	MealPlanTaskCreatorConfig struct {
 		_ struct{} `json:"-"`
 

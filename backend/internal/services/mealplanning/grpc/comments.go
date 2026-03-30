@@ -8,6 +8,7 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
 	commentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
+	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/comments/grpc/converters"
 
@@ -19,7 +20,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (s *serviceImpl) AddCommentToRecipe(ctx context.Context, request *commentssvc.AddCommentToRecipeRequest) (*commentssvc.AddCommentToRecipeResponse, error) {
+func (s *serviceImpl) AddCommentToRecipe(ctx context.Context, request *mealplanningsvc.AddCommentToRecipeRequest) (*mealplanningsvc.AddCommentToRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -47,7 +48,7 @@ func (s *serviceImpl) AddCommentToRecipe(ctx context.Context, request *commentss
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
 	}
 
-	return &commentssvc.AddCommentToRecipeResponse{
+	return &mealplanningsvc.AddCommentToRecipeResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
 		},
@@ -55,7 +56,7 @@ func (s *serviceImpl) AddCommentToRecipe(ctx context.Context, request *commentss
 	}, nil
 }
 
-func (s *serviceImpl) AddCommentToMeal(ctx context.Context, request *commentssvc.AddCommentToMealRequest) (*commentssvc.AddCommentToMealResponse, error) {
+func (s *serviceImpl) AddCommentToMeal(ctx context.Context, request *mealplanningsvc.AddCommentToMealRequest) (*mealplanningsvc.AddCommentToMealResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -83,7 +84,7 @@ func (s *serviceImpl) AddCommentToMeal(ctx context.Context, request *commentssvc
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
 	}
 
-	return &commentssvc.AddCommentToMealResponse{
+	return &mealplanningsvc.AddCommentToMealResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
 		},
@@ -91,7 +92,7 @@ func (s *serviceImpl) AddCommentToMeal(ctx context.Context, request *commentssvc
 	}, nil
 }
 
-func (s *serviceImpl) AddCommentToMealPlan(ctx context.Context, request *commentssvc.AddCommentToMealPlanRequest) (*commentssvc.AddCommentToMealPlanResponse, error) {
+func (s *serviceImpl) AddCommentToMealPlan(ctx context.Context, request *mealplanningsvc.AddCommentToMealPlanRequest) (*mealplanningsvc.AddCommentToMealPlanResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -123,7 +124,7 @@ func (s *serviceImpl) AddCommentToMealPlan(ctx context.Context, request *comment
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating comment")
 	}
 
-	return &commentssvc.AddCommentToMealPlanResponse{
+	return &mealplanningsvc.AddCommentToMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
 		},
