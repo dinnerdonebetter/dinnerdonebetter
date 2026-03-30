@@ -34,8 +34,17 @@ COPY --from=builder /app/admin/build ./admin/build
 
 WORKDIR /app/admin
 
+ARG COMMIT_HASH=unknown
+ARG COMMIT_TIME=unknown
+ARG BUILD_TIME=unknown
+ARG VERSION=unknown
+
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV COMMIT_HASH=$COMMIT_HASH
+ENV COMMIT_TIME=$COMMIT_TIME
+ENV BUILD_TIME=$BUILD_TIME
+ENV VERSION=$VERSION
 EXPOSE 3000
 
 CMD ["node", "build"]

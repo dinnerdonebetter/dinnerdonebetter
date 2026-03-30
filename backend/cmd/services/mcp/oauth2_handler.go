@@ -167,8 +167,8 @@ func handleAuthorizePOST(ts *tokenStore, unauthedClient client.Client) http.Hand
 			return
 		}
 
-		// Authenticate with the backend via LoginForToken.
-		tokenRes, err := unauthedClient.LoginForToken(r.Context(), &authsvc.LoginForTokenRequest{
+		// Authenticate with the backend via AdminLoginForToken (admin-only).
+		tokenRes, err := unauthedClient.AdminLoginForToken(r.Context(), &authsvc.AdminLoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
 				Username:  username,
 				Password:  password,
@@ -185,7 +185,7 @@ func handleAuthorizePOST(ts *tokenStore, unauthedClient client.Client) http.Hand
 				State:               state,
 				CodeChallenge:       codeChallenge,
 				CodeChallengeMethod: codeChallengeMethod,
-				Error:               "Invalid credentials. Please try again.",
+				Error:               "Access denied. Admin credentials required.",
 			}); tmplErr != nil {
 				log.Printf("error rendering login form: %v", tmplErr)
 			}

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
@@ -19,10 +18,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/version"
+
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/pflag"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/version"
 )
 
 const (
@@ -140,7 +143,7 @@ func main() {
 			return server
 		}, &mcp.SSEOptions{})
 
-		mux := buildHTTPMux(sseHandler, tokens, *baseURL, unauthedClient)
+		mux := buildHTTPMux(sseHandler, tokens, pillars.Logger, pillars.TracerProvider, *baseURL, unauthedClient)
 
 		srv := &http.Server{
 			Addr:              fmt.Sprintf(":%d", defaultPort),
@@ -165,7 +168,7 @@ func main() {
 			return server
 		}, handlerOpts)
 
-		mux := buildHTTPMux(streamHandler, tokens, *baseURL, unauthedClient)
+		mux := buildHTTPMux(streamHandler, tokens, pillars.Logger, pillars.TracerProvider, *baseURL, unauthedClient)
 
 		srv := &http.Server{
 			Addr:              fmt.Sprintf(":%d", defaultPort),
@@ -182,9 +185,10 @@ func main() {
 }
 
 // buildHTTPMux creates an HTTP mux with OAuth2 routes (unauthenticated) and the MCP handler (authenticated).
-func buildHTTPMux(mcpHandler http.Handler, tokens *tokenStore, baseURL string, unauthedClient client.Client) *http.ServeMux {
+func buildHTTPMux(mcpHandler http.Handler, tokens *tokenStore, logger logging.Logger, tracerProvider tracing.TracerProvider, baseURL string, unauthedClient client.Client) *http.ServeMux {
 	mux := http.NewServeMux()
 
+	encoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON)
 	// Ops routes (unauthenticated).
 	mux.HandleFunc("GET /_ops_/live", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusOK)
@@ -194,7 +198,7 @@ func buildHTTPMux(mcpHandler http.Handler, tokens *tokenStore, baseURL string, u
 	})
 	mux.HandleFunc("GET /_ops_/version", func(res http.ResponseWriter, req *http.Request) {
 		res.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(res).Encode(version.Get())
+		encoder.EncodeResponseWithStatus(req.Context(), res, version.Get(), http.StatusOK)
 	})
 
 	// Register OAuth2 routes (no auth middleware — these handle authentication themselves).
