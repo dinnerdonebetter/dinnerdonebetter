@@ -60,17 +60,19 @@ func (a *AsyncDataChangeMessageHandler) handleIdentityOutboundNotification(
 	ctx context.Context,
 	changeMessage *audit.DataChangeMessage,
 	user *identity.User,
-) (bool, string, []*email.OutboundEmailMessage, error) {
+) (
+	handled bool,
+	emailType string,
+	outboundEmailMessages []*email.OutboundEmailMessage,
+	err error,
+) {
 	ctx, span := a.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := a.logger.WithValue("event_type", changeMessage.EventType)
 
 	var (
-		emailType             string
-		msg                   *email.OutboundEmailMessage
-		outboundEmailMessages []*email.OutboundEmailMessage
-		err                   error
+		msg *email.OutboundEmailMessage
 	)
 
 	switch changeMessage.EventType {

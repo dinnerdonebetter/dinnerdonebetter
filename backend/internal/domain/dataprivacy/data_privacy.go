@@ -91,6 +91,14 @@ type (
 		BelongsToUser string    `json:"-"`
 	}
 
+	// UserDataCollector collects domain-specific user data for GDPR/CCPA disclosure.
+	// Each domain implements this interface to contribute its data to the aggregate collection.
+	// When adding or removing a domain from this template, implement this interface and register the collector.
+	UserDataCollector interface {
+		CollectUserData(ctx context.Context, collection *UserDataCollection, userID string) error
+		CollectAccountData(ctx context.Context, collection *UserDataCollection, accountID string) error
+	}
+
 	// DataPrivacyDataManager contains data privacy management functions.
 	DataPrivacyDataManager interface {
 		FetchUserDataCollection(ctx context.Context, userID string) (*UserDataCollection, error)

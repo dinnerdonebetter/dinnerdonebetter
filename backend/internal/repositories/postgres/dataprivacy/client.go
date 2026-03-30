@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
@@ -26,21 +25,21 @@ const (
 
 // repository is the data privacy repository client.
 type repository struct {
-	database.Client
-	tracer            tracing.Tracer
+	issueReportsRepo  issuereports.Repository
+	uploadedMediaRepo uploadedmedia.Repository
 	logger            logging.Logger
 	generatedQuerier  generated.Querier
 	auditLogRepo      audit.Repository
 	identityRepo      identity.Repository
-	issueReportsRepo  issuereports.Repository
-	mealPlanningRepo  mealplanning.Repository
-	notificationsRepo notifications.Repository
-	settingsRepo      settings.Repository
-	uploadedMediaRepo uploadedmedia.Repository
-	waitlistsRepo     waitlists.Repository
+	tracer            tracing.Tracer
 	webhooksRepo      webhooks.Repository
+	database.Client
+	settingsRepo      settings.Repository
+	notificationsRepo notifications.Repository
+	waitlistsRepo     waitlists.Repository
 	readDB            *sql.DB
 	writeDB           *sql.DB
+	dataCollectors    []dataprivacy.UserDataCollector
 }
 
 // ProvideDataPrivacyRepository provides a new repository.
@@ -50,13 +49,13 @@ func ProvideDataPrivacyRepository(
 	auditLogRepo audit.Repository,
 	identityRepo identity.Repository,
 	issueReportsRepo issuereports.Repository,
-	mealPlanningRepo mealplanning.Repository,
 	notificationsRepo notifications.Repository,
 	settingsRepo settings.Repository,
 	uploadedMediaRepo uploadedmedia.Repository,
 	waitlistsRepo waitlists.Repository,
 	webhooksRepo webhooks.Repository,
 	client database.Client,
+	dataCollectors []dataprivacy.UserDataCollector,
 ) dataprivacy.Repository {
 	c := &repository{
 		Client:            client,
@@ -68,12 +67,12 @@ func ProvideDataPrivacyRepository(
 		auditLogRepo:      auditLogRepo,
 		identityRepo:      identityRepo,
 		issueReportsRepo:  issueReportsRepo,
-		mealPlanningRepo:  mealPlanningRepo,
 		notificationsRepo: notificationsRepo,
 		settingsRepo:      settingsRepo,
 		uploadedMediaRepo: uploadedMediaRepo,
 		waitlistsRepo:     waitlistsRepo,
 		webhooksRepo:      webhooksRepo,
+		dataCollectors:    dataCollectors,
 	}
 
 	return c

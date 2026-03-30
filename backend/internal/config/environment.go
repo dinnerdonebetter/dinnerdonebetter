@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"os"
 	"path"
 	"strings"
@@ -20,9 +21,9 @@ type EnvironmentConfigSet struct {
 	RootConfig                               *APIServiceConfig
 	ServiceDatabaseUsers                     map[string]string
 	SearchDataIndexSchedulerConfigPath       string
-	MealPlanFinalizerConfigPath              string
-	MealPlanGroceryListInitializerConfigPath string
-	MealPlanTaskCreatorConfigPath            string
+	MealPlanFinalizerConfigPath              string // Domain: mealplanning
+	MealPlanGroceryListInitializerConfigPath string // Domain: mealplanning
+	MealPlanTaskCreatorConfigPath            string // Domain: mealplanning
 	DBCleanerConfigPath                      string
 	MobileNotificationSchedulerConfigPath    string
 	AsyncMessageHandlerConfigPath            string
@@ -88,17 +89,14 @@ func databaseConfigForService(cfg *databasecfg.Config, users map[string]string, 
 }
 
 const (
-	apiConfigObservabilityServiceName   = "api_server"
-	dbcConfigObservabilityServiceName   = "db_cleaner"
-	mpfConfigObservabilityServiceName   = "meal_plan_finalizer"
-	mpgliConfigObservabilityServiceName = "meal_plan_grocery_list_initializer"
-	mptcConfigObservabilityServiceName  = "meal_plan_task_creator"
-	sdisConfigObservabilityServiceName  = "search_data_index_scheduler"
-	mnsConfigObservabilityServiceName   = "mobile_notification_scheduler"
-	amhConfigObservabilityServiceName   = "async_message_handler"
-	edtConfigObservabilityServiceName   = "email_deliverability_test"
-	qtConfigObservabilityServiceName    = "queue_test"
-	mcpConfigObservabilityServiceName   = "dinner_done_better_mcp_server"
+	apiConfigObservabilityServiceName  = "api_server"
+	dbcConfigObservabilityServiceName  = "db_cleaner"
+	sdisConfigObservabilityServiceName = "search_data_index_scheduler"
+	mnsConfigObservabilityServiceName  = "mobile_notification_scheduler"
+	amhConfigObservabilityServiceName  = "async_message_handler"
+	edtConfigObservabilityServiceName  = "email_deliverability_test"
+	qtConfigObservabilityServiceName   = "queue_test"
+	mcpConfigObservabilityServiceName  = "dinner_done_better_mcp_server"
 )
 
 func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) error {
@@ -134,43 +132,8 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	dbcConfig.Observability.Profiling.ServiceName = dbcConfigObservabilityServiceName
 	disableWorkerOtelMetrics(&dbcConfig.Observability)
 
-	mpfConfig := &MealPlanFinalizerConfig{
-		Observability: s.RootConfig.Observability,
-		Events:        s.RootConfig.Events,
-		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, mpfConfigObservabilityServiceName),
-		Queues:        s.RootConfig.Queues,
-	}
-	mpfConfig.Observability.Tracing.ServiceName = mpfConfigObservabilityServiceName
-	mpfConfig.Observability.Metrics.ServiceName = mpfConfigObservabilityServiceName
-	mpfConfig.Observability.Logging.ServiceName = mpfConfigObservabilityServiceName
-	mpfConfig.Observability.Profiling.ServiceName = mpfConfigObservabilityServiceName
-	disableWorkerOtelMetrics(&mpfConfig.Observability)
-
-	mpgliConfig := &MealPlanGroceryListInitializerConfig{
-		Observability: s.RootConfig.Observability,
-		Analytics:     s.RootConfig.Analytics,
-		Events:        s.RootConfig.Events,
-		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, mpgliConfigObservabilityServiceName),
-		Queues:        s.RootConfig.Queues,
-	}
-	mpgliConfig.Observability.Tracing.ServiceName = mpgliConfigObservabilityServiceName
-	mpgliConfig.Observability.Metrics.ServiceName = mpgliConfigObservabilityServiceName
-	mpgliConfig.Observability.Logging.ServiceName = mpgliConfigObservabilityServiceName
-	mpgliConfig.Observability.Profiling.ServiceName = mpgliConfigObservabilityServiceName
-	disableWorkerOtelMetrics(&mpgliConfig.Observability)
-
-	mptcConfig := &MealPlanTaskCreatorConfig{
-		Observability: s.RootConfig.Observability,
-		Analytics:     s.RootConfig.Analytics,
-		Events:        s.RootConfig.Events,
-		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, mptcConfigObservabilityServiceName),
-		Queues:        s.RootConfig.Queues,
-	}
-	mptcConfig.Observability.Tracing.ServiceName = mptcConfigObservabilityServiceName
-	mptcConfig.Observability.Metrics.ServiceName = mptcConfigObservabilityServiceName
-	mptcConfig.Observability.Logging.ServiceName = mptcConfigObservabilityServiceName
-	mptcConfig.Observability.Profiling.ServiceName = mptcConfigObservabilityServiceName
-	disableWorkerOtelMetrics(&mptcConfig.Observability)
+	// Domain: mealplanning
+	mealPlanningConfigs, mealPlanningFiles := s.renderMealPlanningConfigs(outputDir, pretty)
 
 	sdisConfig := &SearchDataIndexSchedulerConfig{
 		Observability: s.RootConfig.Observability,
@@ -264,9 +227,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		allConfigs := []validation.ValidatableWithContext{
 			s.RootConfig,
 			dbcConfig,
-			mpfConfig,
-			mpgliConfig,
-			mptcConfig,
 			sdisConfig,
 			mnsConfig,
 			amhConfig,
@@ -274,6 +234,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 			qtConfig,
 			mcpConfig,
 		}
+		allConfigs = append(allConfigs, mealPlanningConfigs...)
 		for i, cfg := range allConfigs {
 			if err := cfg.ValidateWithContext(context.Background()); err != nil {
 				errs = multierror.Append(errs, fmt.Errorf("validating config %d: %w", i, err))
@@ -287,17 +248,17 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	}
 
 	pathToConfigMap := map[string][]byte{
-		path.Join(outputDir, stringOrDefault(s.DBCleanerConfigPath, "job_db_cleaner_config.json")):                                              renderJSON(dbcConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.MealPlanFinalizerConfigPath, "job_meal_plan_finalizer_config.json")):                             renderJSON(mpfConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.MealPlanGroceryListInitializerConfigPath, "job_meal_plan_grocery_list_initializer_config.json")): renderJSON(mpgliConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.MealPlanTaskCreatorConfigPath, "job_meal_plan_task_creator_config.json")):                        renderJSON(mptcConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "job_search_data_index_scheduler_config.json")):              renderJSON(sdisConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.MobileNotificationSchedulerConfigPath, "job_mobile_notification_scheduler_config.json")):         renderJSON(mnsConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                             renderJSON(amhConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.EmailDeliverabilityTestConfigPath, "job_email_deliverability_test_config.json")):                 renderJSON(edtConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.QueueTestJobConfigPath, "job_queue_test_config.json")):                                           renderJSON(qtConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.MCPServiceConfigPath, "mcp_server_config.json")):                                                 renderJSON(mcpConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.DBCleanerConfigPath, "job_db_cleaner_config.json")):                                      renderJSON(dbcConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "job_search_data_index_scheduler_config.json")):      renderJSON(sdisConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.MobileNotificationSchedulerConfigPath, "job_mobile_notification_scheduler_config.json")): renderJSON(mnsConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                     renderJSON(amhConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.EmailDeliverabilityTestConfigPath, "job_email_deliverability_test_config.json")):         renderJSON(edtConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.QueueTestJobConfigPath, "job_queue_test_config.json")):                                   renderJSON(qtConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.MCPServiceConfigPath, "mcp_server_config.json")):                                         renderJSON(mcpConfig, pretty),
 	}
+
+	// Domain: mealplanning
+	maps.Copy(pathToConfigMap, mealPlanningFiles)
 
 	for p, b := range pathToConfigMap {
 		if err := writeFile(p, b); err != nil {

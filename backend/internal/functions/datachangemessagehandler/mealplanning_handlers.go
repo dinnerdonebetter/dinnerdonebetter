@@ -249,7 +249,12 @@ func (a *AsyncDataChangeMessageHandler) handleMealPlanningOutboundNotification(
 	ctx context.Context,
 	changeMessage *audit.DataChangeMessage,
 	_ *identity.User,
-) (bool, string, []*email.OutboundEmailMessage, error) {
+) (
+	handled bool,
+	emailType string,
+	outgoingMessages []*email.OutboundEmailMessage,
+	err error,
+) {
 	if changeMessage.EventType != mealplanning.MealPlanCreatedServiceEventType {
 		return false, "", nil, nil
 	}

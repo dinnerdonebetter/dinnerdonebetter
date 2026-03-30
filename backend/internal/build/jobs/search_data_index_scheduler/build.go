@@ -43,6 +43,7 @@ func BuildInjector(
 	postgres.RegisterDatabaseClient(i)
 	auditlogentries.RegisterAuditLogRepository(i)
 	identityrepo.RegisterIdentityRepository(i)
+	// Domain: mealplanning
 	mealplanningrepo.RegisterMealPlanningRepository(i)
 
 	do.Provide[map[string]indexing.Function](i, func(i do.Injector) (map[string]indexing.Function, error) {
