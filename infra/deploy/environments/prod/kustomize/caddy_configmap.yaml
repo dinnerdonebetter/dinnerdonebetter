@@ -31,3 +31,7 @@ data:
     dinnerdonebetter.com, www.dinnerdonebetter.com {
         reverse_proxy dinner-done-better-consumer-webapp-svc.prod.svc.cluster.local:80
     }
+
+    mcp.dinnerdonebetter.com {
+        reverse_proxy dinner-done-better-mcp-server-svc.prod.svc.cluster.local:8888
+    }

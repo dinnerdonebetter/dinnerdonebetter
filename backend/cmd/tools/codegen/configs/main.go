@@ -42,17 +42,23 @@ func main() {
 
 	envConfigs := map[string]*config.EnvironmentConfigSet{
 		"deploy/environments/localdev/config_files": {
-			RootConfig: localdevConfig,
+			RootConfig:                 localdevConfig,
+			MCPServiceHTTPAPIServerURL: "http://localhost:8000",
+			MCPServiceGRPCAPIServerURL: ":8001",
 		},
 		"deploy/environments/localdev/kustomize/configs": {
-			RootConfig: localdevConfig,
+			RootConfig:                 localdevConfig,
+			MCPServiceHTTPAPIServerURL: "http://localhost:8000",
+			MCPServiceGRPCAPIServerURL: ":8001",
 		},
 		"deploy/environments/testing/config_files": {
 			APIServiceConfigPath: "integration-tests-config.json",
 			RootConfig:           buildIntegrationTestsConfig(),
 		},
 		"deploy/environments/prod/kustomize/configs": {
-			RootConfig: buildProdConfig(),
+			RootConfig:                 buildProdConfig(),
+			MCPServiceHTTPAPIServerURL: "https://http-api.dinnerdonebetter.com",
+			MCPServiceGRPCAPIServerURL: "https://api.dinnerdonebetter.com",
 			ServiceDatabaseUsers: map[string]string{
 				"db_cleaner":                         "db_cleaner",
 				"meal_plan_finalizer":                "meal_plan_finalizer",

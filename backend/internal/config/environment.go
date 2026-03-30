@@ -29,6 +29,9 @@ type EnvironmentConfigSet struct {
 	EmailDeliverabilityTestConfigPath        string
 	QueueTestJobConfigPath                   string
 	APIServiceConfigPath                     string
+	MCPServiceConfigPath                     string
+	MCPServiceHTTPAPIServerURL               string
+	MCPServiceGRPCAPIServerURL               string
 }
 
 func stringOrDefault(s, defaultStr string) string {
@@ -95,6 +98,7 @@ const (
 	amhConfigObservabilityServiceName   = "async_message_handler"
 	edtConfigObservabilityServiceName   = "email_deliverability_test"
 	qtConfigObservabilityServiceName    = "queue_test"
+	mcpConfigObservabilityServiceName   = "dinner_done_better_mcp_server"
 )
 
 func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) error {
@@ -239,6 +243,23 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	qtConfig.Observability.Profiling.ServiceName = qtConfigObservabilityServiceName
 	disableWorkerOtelMetrics(&qtConfig.Observability)
 
+	mcpObservability := s.RootConfig.Observability
+	mcpObservability.Tracing.ServiceName = mcpConfigObservabilityServiceName
+	mcpObservability.Metrics.ServiceName = mcpConfigObservabilityServiceName
+	mcpObservability.Logging.ServiceName = mcpConfigObservabilityServiceName
+	mcpObservability.Profiling.ServiceName = mcpConfigObservabilityServiceName
+	disableWorkerOtelMetrics(&mcpObservability)
+
+	mcpConfig := &MCPServiceConfig{
+		APIServiceConnection: APIServiceUserConnectionConfig{
+			HTTPAPIServerURL: s.MCPServiceHTTPAPIServerURL,
+			GRPCAPIServerURL: s.MCPServiceGRPCAPIServerURL,
+		},
+		Observability: mcpObservability,
+		Meta:          s.RootConfig.Meta,
+		HTTPServer:    s.RootConfig.HTTPServer,
+	}
+
 	if validate {
 		allConfigs := []validation.ValidatableWithContext{
 			s.RootConfig,
@@ -251,6 +272,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 			amhConfig,
 			edtConfig,
 			qtConfig,
+			mcpConfig,
 		}
 		for i, cfg := range allConfigs {
 			if err := cfg.ValidateWithContext(context.Background()); err != nil {
@@ -274,6 +296,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                             renderJSON(amhConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.EmailDeliverabilityTestConfigPath, "job_email_deliverability_test_config.json")):                 renderJSON(edtConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.QueueTestJobConfigPath, "job_queue_test_config.json")):                                           renderJSON(qtConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.MCPServiceConfigPath, "mcp_server_config.json")):                                                 renderJSON(mcpConfig, pretty),
 	}
 
 	for p, b := range pathToConfigMap {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
@@ -21,6 +22,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/pflag"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/version"
 )
 
 const (
@@ -182,6 +184,18 @@ func main() {
 // buildHTTPMux creates an HTTP mux with OAuth2 routes (unauthenticated) and the MCP handler (authenticated).
 func buildHTTPMux(mcpHandler http.Handler, tokens *tokenStore, baseURL string, unauthedClient client.Client) *http.ServeMux {
 	mux := http.NewServeMux()
+
+	// Ops routes (unauthenticated).
+	mux.HandleFunc("GET /_ops_/live", func(res http.ResponseWriter, req *http.Request) {
+		res.WriteHeader(http.StatusOK)
+	})
+	mux.HandleFunc("GET /_ops_/ready", func(res http.ResponseWriter, req *http.Request) {
+		res.WriteHeader(http.StatusOK)
+	})
+	mux.HandleFunc("GET /_ops_/version", func(res http.ResponseWriter, req *http.Request) {
+		res.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(res).Encode(version.Get())
+	})
 
 	// Register OAuth2 routes (no auth middleware — these handle authentication themselves).
 	registerOAuth2Routes(mux, tokens, baseURL, unauthedClient)
