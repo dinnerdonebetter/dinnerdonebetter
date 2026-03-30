@@ -202,6 +202,7 @@ type (
 
 		APIServiceConnection APIServiceUserConnectionConfig `envPrefix:"API_SERVICE_"   json:"apiServiceConfig"`
 		Observability        observability.Config           `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Routing              routingcfg.Config              `envPrefix:"ROUTING_"       json:"routing"`
 		GRPCServer           grpc.Config                    `envPrefix:"GRPC_"          json:"grpc"`
 		Meta                 MetaSettings                   `envPrefix:"META_"          json:"meta"`
 		HTTPServer           http.Config                    `envPrefix:"HTTP_"          json:"http"`
@@ -398,6 +399,7 @@ func (cfg *MCPServiceConfig) ValidateWithContext(ctx context.Context) error {
 	validators := map[string]func(context.Context) error{
 		"Meta":          cfg.Meta.ValidateWithContext,
 		"Observability": cfg.Observability.ValidateWithContext,
+		"Routing":       cfg.Routing.ValidateWithContext,
 		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
 	}
 

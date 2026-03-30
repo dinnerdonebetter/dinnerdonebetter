@@ -11,22 +11,24 @@ import (
 	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
+	"github.com/verygoodsoftwarenotvirus/platform/v4/routing"
+
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 )
 
-// registerOAuth2Routes adds all OAuth2 authorization server endpoints to the mux.
-func registerOAuth2Routes(mux *http.ServeMux, ts *tokenStore, baseURL string, unauthedClient client.Client) {
+// registerOAuth2Routes adds all OAuth2 authorization server endpoints to the router.
+func registerOAuth2Routes(router routing.Router, ts *tokenStore, baseURL string, unauthedClient client.Client) {
 	// Protected Resource Metadata (RFC 9728)
-	mux.Handle("GET /.well-known/oauth-protected-resource", auth.ProtectedResourceMetadataHandler(&oauthex.ProtectedResourceMetadata{
+	router.Get("/.well-known/oauth-protected-resource", auth.ProtectedResourceMetadataHandler(&oauthex.ProtectedResourceMetadata{
 		Resource:               baseURL,
 		AuthorizationServers:   []string{baseURL},
 		BearerMethodsSupported: []string{"header"},
 		ResourceName:           "Dinner Done Better MCP Server",
-	}))
+	}).ServeHTTP)
 
 	// Authorization Server Metadata (RFC 8414)
-	mux.HandleFunc("GET /.well-known/oauth-authorization-server", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/.well-known/oauth-authorization-server", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		if err := json.NewEncoder(w).Encode(map[string]any{
@@ -44,14 +46,14 @@ func registerOAuth2Routes(mux *http.ServeMux, ts *tokenStore, baseURL string, un
 	})
 
 	// Authorization endpoint — serves login form and processes login
-	mux.HandleFunc("GET /authorize", handleAuthorizeGET)
-	mux.HandleFunc("POST /authorize", handleAuthorizePOST(ts, unauthedClient))
+	router.Get("/authorize", handleAuthorizeGET)
+	router.Post("/authorize", handleAuthorizePOST(ts, unauthedClient))
 
 	// Token endpoint — exchanges codes for tokens and handles refresh
-	mux.HandleFunc("POST /token", handleToken(ts))
+	router.Post("/token", handleToken(ts))
 
 	// Dynamic Client Registration (RFC 7591)
-	mux.HandleFunc("POST /register", handleRegister(ts))
+	router.Post("/register", handleRegister(ts))
 }
 
 // loginFormData is template data for the login form.

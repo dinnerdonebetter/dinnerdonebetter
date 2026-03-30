@@ -2,7 +2,7 @@
   "mcpServers": {
     "default-server": {
       "type": "streamable-http",
-      "url": "http://localhost:8888"
+      "url": "http://localhost:8888/mcp"
     }
   }
 }

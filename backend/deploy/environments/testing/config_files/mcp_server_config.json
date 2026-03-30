@@ -23,6 +23,13 @@
 			"service_name": "dinner_done_better_mcp_server"
 		}
 	},
+	"routing": {
+		"chiConfig": {
+			"serviceName": "dinner_done_better_mcp_server",
+			"enableCORSForLocalhost": true
+		},
+		"provider": "chi"
+	},
 	"grpc": {
 		"port": 0
 	},

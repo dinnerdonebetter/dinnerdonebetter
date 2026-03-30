@@ -19,8 +19,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/routing"
+	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/routing/config"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/version"
 
 	"github.com/modelcontextprotocol/go-sdk/auth"
@@ -143,11 +144,14 @@ func main() {
 			return server
 		}, &mcp.SSEOptions{})
 
-		mux := buildHTTPMux(sseHandler, tokens, pillars.Logger, pillars.TracerProvider, *baseURL, unauthedClient)
+		router, routerErr := buildRouter(sseHandler, tokens, pillars, &cfg.Routing, *baseURL, unauthedClient)
+		if routerErr != nil {
+			log.Fatalf("failed to build router: %v", routerErr)
+		}
 
 		srv := &http.Server{
 			Addr:              fmt.Sprintf(":%d", defaultPort),
-			Handler:           mux,
+			Handler:           router.Handler(),
 			ReadTimeout:       15 * time.Second,
 			WriteTimeout:      15 * time.Second,
 			IdleTimeout:       60 * time.Second,
@@ -168,11 +172,14 @@ func main() {
 			return server
 		}, handlerOpts)
 
-		mux := buildHTTPMux(streamHandler, tokens, pillars.Logger, pillars.TracerProvider, *baseURL, unauthedClient)
+		router, routerErr := buildRouter(streamHandler, tokens, pillars, &cfg.Routing, *baseURL, unauthedClient)
+		if routerErr != nil {
+			log.Fatalf("failed to build router: %v", routerErr)
+		}
 
 		srv := &http.Server{
 			Addr:              fmt.Sprintf(":%d", defaultPort),
-			Handler:           mux,
+			Handler:           router.Handler(),
 			ReadTimeout:       15 * time.Second,
 			WriteTimeout:      15 * time.Second,
 			IdleTimeout:       60 * time.Second,
@@ -184,33 +191,39 @@ func main() {
 	}
 }
 
-// buildHTTPMux creates an HTTP mux with OAuth2 routes (unauthenticated) and the MCP handler (authenticated).
-func buildHTTPMux(mcpHandler http.Handler, tokens *tokenStore, logger logging.Logger, tracerProvider tracing.TracerProvider, baseURL string, unauthedClient client.Client) *http.ServeMux {
-	mux := http.NewServeMux()
+// buildRouter creates a router with OAuth2 routes (unauthenticated) and the MCP handler (authenticated).
+func buildRouter(mcpHandler http.Handler, tokens *tokenStore, pillars *observability.Pillars, routingCfg *routingcfg.Config, baseURL string, unauthedClient client.Client) (routing.Router, error) {
+	router, err := routingCfg.ProvideRouter(pillars.Logger, pillars.TracerProvider, pillars.MetricsProvider)
+	if err != nil {
+		return nil, err
+	}
 
-	encoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON)
+	encoder := encoding.ProvideServerEncoderDecoder(pillars.Logger, pillars.TracerProvider, encoding.ContentTypeJSON)
+
 	// Ops routes (unauthenticated).
-	mux.HandleFunc("GET /_ops_/live", func(res http.ResponseWriter, req *http.Request) {
-		res.WriteHeader(http.StatusOK)
-	})
-	mux.HandleFunc("GET /_ops_/ready", func(res http.ResponseWriter, req *http.Request) {
-		res.WriteHeader(http.StatusOK)
-	})
-	mux.HandleFunc("GET /_ops_/version", func(res http.ResponseWriter, req *http.Request) {
-		res.Header().Set("Content-Type", "application/json")
-		encoder.EncodeResponseWithStatus(req.Context(), res, version.Get(), http.StatusOK)
+	router.Route("/_ops_", func(opsRouter routing.Router) {
+		opsRouter.Get("/live", func(res http.ResponseWriter, req *http.Request) {
+			res.WriteHeader(http.StatusOK)
+		})
+		opsRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
+			res.WriteHeader(http.StatusOK)
+		})
+		opsRouter.Get("/version", func(res http.ResponseWriter, req *http.Request) {
+			res.Header().Set("Content-Type", "application/json")
+			encoder.EncodeResponseWithStatus(req.Context(), res, version.Get(), http.StatusOK)
+		})
 	})
 
 	// Register OAuth2 routes (no auth middleware — these handle authentication themselves).
-	registerOAuth2Routes(mux, tokens, baseURL, unauthedClient)
+	registerOAuth2Routes(router, tokens, baseURL, unauthedClient)
 
 	// Wrap the MCP handler with bearer token auth middleware.
 	authMiddleware := auth.RequireBearerToken(tokens.verifyToken, &auth.RequireBearerTokenOptions{
 		ResourceMetadataURL: baseURL + "/.well-known/oauth-protected-resource",
 	})
-	mux.Handle("/mcp", authMiddleware(mcpHandler))
+	router.Handle("/mcp", authMiddleware(mcpHandler))
 
-	return mux
+	return router, nil
 }
 
 type mcpToolManager struct {

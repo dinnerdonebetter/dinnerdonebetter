@@ -213,12 +213,21 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	mcpObservability.Profiling.ServiceName = mcpConfigObservabilityServiceName
 	disableWorkerOtelMetrics(&mcpObservability)
 
+	mcpRouting := s.RootConfig.Routing
+	if mcpRouting.Chi != nil {
+		mcpRouting.Chi.ServiceName = mcpConfigObservabilityServiceName
+		// MCP clients (e.g. the MCP inspector) run in browsers on localhost,
+		// so the MCP server must always allow localhost CORS origins.
+		mcpRouting.Chi.EnableCORSForLocalhost = true
+	}
+
 	mcpConfig := &MCPServiceConfig{
 		APIServiceConnection: APIServiceUserConnectionConfig{
 			HTTPAPIServerURL: s.MCPServiceHTTPAPIServerURL,
 			GRPCAPIServerURL: s.MCPServiceGRPCAPIServerURL,
 		},
 		Observability: mcpObservability,
+		Routing:       mcpRouting,
 		Meta:          s.RootConfig.Meta,
 		HTTPServer:    s.RootConfig.HTTPServer,
 	}
