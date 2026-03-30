@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
@@ -22,69 +24,148 @@ import (
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
 	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+	"github.com/verygoodsoftwarenotvirus/platform/v4/secrets/kubectl"
 
 	"github.com/spf13/cobra"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 const (
 	// Placeholder TOTP secret for bootstrap admin (2FA is marked verified without real TOTP).
 	twoFactorSecretPlaceholder = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-	bootstrapEncryptionKey     = "bootstrap-placeholder-encryption-key-32chars"
+	bootstrapEncryptionKey     = "bootstrap-placeholder-encrypt32!" // exactly 32 bytes
+
+	// Prod Kubernetes secret coordinates.
+	prodNamespace              = "prod"
+	prodSecretName             = "api-service-config"
+	prodDBHostKey              = "DATABASE_HOST"
+	prodDBPassKey              = "DATABASE_API_PASSWORD"
+	prodOAuth2EncryptionKeyKey = "OAUTH2_TOKEN_ENCRYPTION_KEY"
+	prodDBUser                 = "api_db_user"
 )
 
+// dbFlags holds database connection flags shared across subcommands.
+type dbFlags struct {
+	host                     string
+	port                     uint16
+	user                     string
+	password                 string
+	name                     string
+	sslDisable               bool
+	prod                     bool
+	kubeconfig               string
+	oauth2TokenEncryptionKey string
+}
+
 func main() {
+	var db dbFlags
+
+	root := &cobra.Command{
+		Use:   "bootstrap",
+		Short: "Bootstrap tooling for database initialization",
+		Long: `Bootstrap tooling for initializing an empty database.
+
+The --prod flag fetches DB connection details (host, password, OAuth2 token
+encryption key) from the "api-service-config" Kubernetes secret in the "prod"
+namespace. It uses your current kubeconfig context by default. NOTE: You MUST
+be proxied into production via 'make proxy_db' for this to work in production.
+
+The remaining DB defaults (host=127.0.0.1, port=5434, user=api_db_user,
+dbname=dinner-done-better, sslmode=disable) assume a local Cloud SQL Auth
+Proxy is running. Override any of them with the corresponding --db-* flag.
+
+Quick start (prod, via Cloud SQL Auth Proxy):
+
+  bootstrap --prod init --username=you --password="hunter2" --email="you@example.com"
+
+Local dev (explicit credentials):
+
+  bootstrap --db-password=localpass init --username=admin --password=admin123`,
+	}
+
+	root.PersistentFlags().StringVar(&db.host, "db-host", "127.0.0.1", "Postgres host")
+	root.PersistentFlags().Uint16Var(&db.port, "db-port", 5434, "Postgres port")
+	root.PersistentFlags().StringVar(&db.user, "db-user", prodDBUser, "Postgres username")
+	root.PersistentFlags().StringVar(&db.password, "db-password", "", "Postgres password")
+	root.PersistentFlags().StringVar(&db.name, "db-name", branding.CompanySlug, "Postgres database name")
+	root.PersistentFlags().BoolVar(&db.sslDisable, "db-ssl-disable", true, "Disable SSL for DB connection (default: true for local/proxy)")
+	root.PersistentFlags().BoolVar(&db.prod, "prod", false, "Fetch DB connection details from prod Kubernetes secrets")
+	root.PersistentFlags().StringVar(&db.kubeconfig, "kubeconfig", "", "Path to kubeconfig file (defaults to ~/.kube/config)")
+
+	// init subcommand
 	var (
-		dbHost        string
-		dbPort        uint16
-		dbUser        string
-		dbPassword    string
-		dbName        string
-		dbSSLDisable  bool
 		adminUsername string
 		adminPassword string
 		adminEmail    string
 	)
 
-	root := &cobra.Command{
-		Use:   "bootstrap",
-		Short: "Bootstrap an empty database with an admin user and OAuth2 clients",
-		Long:  "Creates an admin user (with 2FA pre-verified) and three OAuth2 clients for Admin Webapp, Consumer Webapp, and iOS App.",
-		RunE: func(_ *cobra.Command, _ []string) error {
-			return runBootstrap(dbHost, dbPort, dbUser, dbPassword, dbName, dbSSLDisable, adminUsername, adminPassword, adminEmail)
+	initCmd := &cobra.Command{
+		Use:   "init",
+		Short: "Create admin user and OAuth2 clients",
+		Long: `Creates an admin user (with 2FA pre-verified) and OAuth2 clients for
+Admin Webapp, Consumer Webapp, iOS App, and MCP Server.
+
+Idempotent: safe to run multiple times. Existing users, roles, and OAuth2
+clients are detected by name and skipped.`,
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			if err := resolveDBFlags(cmd, &db); err != nil {
+				return err
+			}
+			return runInit(db, adminUsername, adminPassword, adminEmail)
 		},
 	}
 
-	root.Flags().StringVar(&dbHost, "db-host", "", "Postgres host (or DB_HOST)")
-	root.Flags().Uint16Var(&dbPort, "db-port", 5432, "Postgres port (or DB_PORT)")
-	root.Flags().StringVar(&dbUser, "db-user", "", "Postgres username (or DB_USER)")
-	root.Flags().StringVar(&dbPassword, "db-password", "", "Postgres password (or DB_PASSWORD)")
-	root.Flags().StringVar(&dbName, "db-name", "", "Postgres database name (or DB_NAME)")
-	root.Flags().BoolVar(&dbSSLDisable, "db-ssl-disable", true, "Disable SSL for DB connection (default: true for local/proxy)")
-	root.Flags().StringVar(&adminUsername, "username", "", "Admin username to create")
-	root.Flags().StringVar(&adminPassword, "password", "", "Admin password (will be hashed with Argon2)")
-	root.Flags().StringVar(&adminEmail, "email", "", "Admin email")
+	initCmd.Flags().StringVar(&adminUsername, "username", "", "Admin username to create")
+	initCmd.Flags().StringVar(&adminPassword, "password", "", "Admin password (will be hashed with Argon2)")
+	initCmd.Flags().StringVar(&adminEmail, "email", "", "Admin email (defaults to <username>@bootstrap.local)")
 
-	requiredFlags := []string{"username", "email", "password", "db-host", "db-user", "db-password", "db-name"}
-	for _, flag := range requiredFlags {
-		if err := root.MarkFlagRequired(flag); err != nil {
+	for _, flag := range []string{"username", "password"} {
+		if err := initCmd.MarkFlagRequired(flag); err != nil {
 			log.Fatalln(err)
 		}
 	}
+
+	root.AddCommand(initCmd)
 
 	if err := root.Execute(); err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func runBootstrap(
-	dbHost string, dbPort uint16, dbUser, dbPassword, dbName string, dbSSLDisable bool,
-	adminUsername, adminPassword, adminEmail string,
-) error {
-	if dbHost == "" || dbUser == "" || dbPassword == "" || dbName == "" {
-		return errors.New("database connection requires --db-host, --db-user, --db-password, --db-name (or DB_HOST, DB_USER, DB_PASSWORD, DB_NAME env vars)")
+// resolveDBFlags applies --prod defaults and validates that all DB fields are set.
+func resolveDBFlags(cmd *cobra.Command, db *dbFlags) error {
+	if db.prod {
+		kubecfgPath := db.kubeconfig
+		if kubecfgPath == "" {
+			kubecfgPath = clientcmd.RecommendedHomeFile
+		}
+
+		secrets, err := fetchProdSecrets(cmd.Context(), kubecfgPath)
+		if err != nil {
+			return fmt.Errorf("fetching prod secrets: %w", err)
+		}
+
+		if !cmd.Flags().Changed("db-password") {
+			db.password = secrets.dbPassword
+		}
+		db.oauth2TokenEncryptionKey = secrets.oauth2TokenEncryptionKey
 	}
+
+	if db.host == "" || db.user == "" || db.password == "" || db.name == "" {
+		return errors.New("database connection requires --db-host, --db-user, --db-password, --db-name (or use --prod)")
+	}
+
+	if db.oauth2TokenEncryptionKey == "" {
+		db.oauth2TokenEncryptionKey = bootstrapEncryptionKey
+	}
+
+	return nil
+}
+
+func runInit(db dbFlags, adminUsername, adminPassword, adminEmail string) error {
 	if adminEmail == "" {
 		adminEmail = adminUsername + "@bootstrap.local"
 	}
@@ -94,12 +175,12 @@ func runBootstrap(
 	tracerProvider := tracing.NewNoopTracerProvider()
 
 	connDetails := databasecfg.ConnectionDetails{
-		Host:       dbHost,
-		Port:       dbPort,
-		Username:   dbUser,
-		Password:   dbPassword,
-		Database:   dbName,
-		DisableSSL: dbSSLDisable,
+		Host:       db.host,
+		Port:       db.port,
+		Username:   db.user,
+		Password:   db.password,
+		Database:   db.name,
+		DisableSSL: db.sslDisable,
 	}
 
 	dbConfig := &databasecfg.Config{
@@ -109,13 +190,10 @@ func runBootstrap(
 		ReadConnection:           connDetails,
 		WriteConnection:          connDetails,
 		Encryption:               encryptioncfg.Config{Provider: encryptioncfg.ProviderSalsa20},
-		OAuth2TokenEncryptionKey: bootstrapEncryptionKey,
+		OAuth2TokenEncryptionKey: db.oauth2TokenEncryptionKey,
 	}
 
-	// Use client config that includes sslmode=disable when DisableSSL is true
-	clientConfig := &bootstrapClientConfig{
-		connDetails: connDetails,
-	}
+	clientConfig := &bootstrapClientConfig{connDetails: connDetails}
 	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig, nil)
 	if err != nil {
 		return fmt.Errorf("connecting to database: %w", err)
@@ -126,96 +204,141 @@ func runBootstrap(
 		}
 	}()
 
+	if err = client.ReadDB().Ping(); err != nil {
+		return fmt.Errorf("pinging database client: %w", err)
+	}
+
 	auditRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
 	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditRepo, client)
 	oauthRepo := oauthrepo.ProvideOAuthRepository(logger, tracerProvider, auditRepo, dbConfig, client)
 
-	hasher := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	hashedPassword, err := hasher.HashPassword(ctx, adminPassword)
+	// --- Admin user (idempotent) ---
+	user, err := identityRepo.GetUserByUsername(ctx, adminUsername)
 	if err != nil {
-		return fmt.Errorf("hashing password: %w", err)
-	}
-
-	userInput := &identity.UserDatabaseCreationInput{
-		ID:              identifiers.New(),
-		Username:        strings.TrimSpace(adminUsername),
-		EmailAddress:    strings.TrimSpace(strings.ToLower(adminEmail)),
-		FirstName:       "Admin",
-		LastName:        "",
-		HashedPassword:  hashedPassword,
-		TwoFactorSecret: twoFactorSecretPlaceholder,
-		AccountName:     "Bootstrap account",
-	}
-
-	user, err := identityRepo.CreateUser(ctx, userInput)
-	if err != nil {
-		if errors.Is(err, database.ErrUserAlreadyExists) {
-			return fmt.Errorf("user %q already exists: %w", adminUsername, err)
+		hasher := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
+		hashedPassword, hashErr := hasher.HashPassword(ctx, adminPassword)
+		if hashErr != nil {
+			return fmt.Errorf("hashing password: %w", hashErr)
 		}
-		return fmt.Errorf("creating user: %w", err)
+
+		user, err = identityRepo.CreateUser(ctx, &identity.UserDatabaseCreationInput{
+			ID:              identifiers.New(),
+			Username:        strings.TrimSpace(adminUsername),
+			EmailAddress:    strings.TrimSpace(strings.ToLower(adminEmail)),
+			FirstName:       "Admin",
+			LastName:        "",
+			HashedPassword:  hashedPassword,
+			TwoFactorSecret: twoFactorSecretPlaceholder,
+			AccountName:     "Bootstrap account",
+		})
+		if err != nil {
+			if errors.Is(err, database.ErrUserAlreadyExists) {
+				return fmt.Errorf("user %q already exists but could not be fetched: %w", adminUsername, err)
+			}
+			return fmt.Errorf("creating user: %w", err)
+		}
+		fmt.Printf("Admin user %q created.\n", adminUsername)
+	} else {
+		fmt.Printf("Admin user %q already exists, skipping creation.\n", adminUsername)
 	}
 
-	// Promote user to service_admin by archiving old service role and assigning new one.
-	if _, err = client.WriteDB().ExecContext(ctx, "UPDATE user_role_assignments SET archived_at = NOW() WHERE user_id = $1 AND account_id IS NULL AND archived_at IS NULL", user.ID); err != nil {
-		return fmt.Errorf("archiving old service role: %w", err)
-	}
-	if _, err = client.WriteDB().ExecContext(ctx, "INSERT INTO user_role_assignments (id, user_id, role_id) VALUES ($1, $2, $3)", identifiers.New(), user.ID, authorization.ServiceAdminRoleID); err != nil {
-		return fmt.Errorf("promoting user to admin: %w", err)
-	}
-
-	if err = identityRepo.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
-		return fmt.Errorf("marking 2FA as verified: %w", err)
+	// --- Service admin role (idempotent) ---
+	var hasAdminRole bool
+	err = client.ReadDB().QueryRowContext(ctx,
+		"SELECT EXISTS(SELECT 1 FROM user_role_assignments WHERE user_id = $1 AND role_id = $2 AND archived_at IS NULL)",
+		user.ID, authorization.ServiceAdminRoleID,
+	).Scan(&hasAdminRole)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return fmt.Errorf("checking admin role: %w", err)
 	}
 
-	oauthClients := []*struct {
+	if !hasAdminRole {
+		if _, err = client.WriteDB().ExecContext(ctx,
+			"UPDATE user_role_assignments SET archived_at = NOW() WHERE user_id = $1 AND account_id IS NULL AND archived_at IS NULL",
+			user.ID,
+		); err != nil {
+			return fmt.Errorf("archiving old service role: %w", err)
+		}
+		if _, err = client.WriteDB().ExecContext(ctx,
+			"INSERT INTO user_role_assignments (id, user_id, role_id) VALUES ($1, $2, $3)",
+			identifiers.New(), user.ID, authorization.ServiceAdminRoleID,
+		); err != nil {
+			return fmt.Errorf("promoting user to admin: %w", err)
+		}
+		fmt.Println("Promoted user to service_admin.")
+	} else {
+		fmt.Println("User already has service_admin role, skipping promotion.")
+	}
+
+	// --- 2FA verification (idempotent) ---
+	if user.TwoFactorSecretVerifiedAt == nil {
+		if err = identityRepo.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
+			return fmt.Errorf("marking 2FA as verified: %w", err)
+		}
+		fmt.Println("Marked 2FA as verified.")
+	} else {
+		fmt.Println("2FA already verified, skipping.")
+	}
+
+	// --- OAuth2 clients (idempotent) ---
+	wantClients := []struct {
 		name string
 		desc string
 	}{
 		{"Admin Webapp", "Admin web application OAuth2 client"},
 		{"Consumer Webapp", "Consumer web application OAuth2 client"},
 		{"iOS App", "iOS mobile application OAuth2 client"},
+		{"MCP Server", "MCP server OAuth2 client"},
 	}
 
-	var createdClients []*oauth.OAuth2Client
-	for _, oc := range oauthClients {
+	existingClients, err := oauthRepo.GetOAuth2Clients(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("listing existing OAuth2 clients: %w", err)
+	}
+
+	existingByName := make(map[string]*oauth.OAuth2Client)
+	for _, c := range existingClients.Data {
+		existingByName[c.Name] = c
+	}
+
+	fmt.Println()
+	fmt.Println("OAuth2 clients:")
+	for _, want := range wantClients {
+		if existing, ok := existingByName[want.name]; ok {
+			fmt.Printf("  %s: already exists (client_id=%s)\n", want.name, existing.ClientID)
+			continue
+		}
+
 		clientID, clientIDErr := random.GenerateHexEncodedString(ctx, oauth.ClientIDSize)
 		if clientIDErr != nil {
-			return fmt.Errorf("generating client ID for %s: %w", oc.name, clientIDErr)
+			return fmt.Errorf("generating client ID for %s: %w", want.name, clientIDErr)
 		}
 
 		clientSecret, clientSecErr := random.GenerateHexEncodedString(ctx, oauth.ClientSecretSize)
 		if clientSecErr != nil {
-			return fmt.Errorf("generating client secret for %s: %w", oc.name, clientSecErr)
+			return fmt.Errorf("generating client secret for %s: %w", want.name, clientSecErr)
 		}
 
 		created, creationErr := oauthRepo.CreateOAuth2Client(ctx, &oauth.OAuth2ClientDatabaseCreationInput{
 			ID:           identifiers.New(),
-			Name:         oc.name,
-			Description:  oc.desc,
+			Name:         want.name,
+			Description:  want.desc,
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
 		})
 		if creationErr != nil {
-			return fmt.Errorf("creating OAuth2 client %s: %w", oc.name, creationErr)
+			return fmt.Errorf("creating OAuth2 client %s: %w", want.name, creationErr)
 		}
-		createdClients = append(createdClients, created)
+		fmt.Printf("  %s: created (client_id=%s client_secret=%s)\n", want.name, created.ClientID, created.ClientSecret)
 	}
 
-	fmt.Println("Bootstrap complete.")
 	fmt.Println()
-	fmt.Printf("Admin user: %s created\n", adminUsername)
-	fmt.Println("  - Log in at the admin interface with the provided username and password")
-	fmt.Println()
-	fmt.Println("OAuth2 clients created:")
-	for i, c := range createdClients {
-		fmt.Printf("  %s:    client_id=%s client_secret=%s\n", oauthClients[i].name, c.ClientID, c.ClientSecret)
-	}
+	fmt.Println("Bootstrap init complete.")
 
 	return nil
 }
 
-// bootstrapClientConfig implements database.ClientConfig for bootstrap, using URI format
-// (with sslmode=disable) when DisableSSL is true.
+// bootstrapClientConfig implements database.ClientConfig for bootstrap.
 type bootstrapClientConfig struct {
 	connDetails databasecfg.ConnectionDetails
 }
@@ -223,10 +346,11 @@ type bootstrapClientConfig struct {
 var _ database.ClientConfig = (*bootstrapClientConfig)(nil)
 
 func (b *bootstrapClientConfig) GetReadConnectionString() string {
+	s := b.connDetails.String()
 	if b.connDetails.DisableSSL {
-		return b.connDetails.URI()
+		s += " sslmode=disable"
 	}
-	return b.connDetails.String()
+	return s
 }
 
 func (b *bootstrapClientConfig) GetWriteConnectionString() string {
@@ -251,4 +375,46 @@ func (b *bootstrapClientConfig) GetMaxOpenConns() int {
 
 func (b *bootstrapClientConfig) GetConnMaxLifetime() time.Duration {
 	return 30 * time.Minute
+}
+
+type prodSecrets struct {
+	dbHost                   string
+	dbPassword               string
+	oauth2TokenEncryptionKey string
+}
+
+func fetchProdSecrets(ctx context.Context, kubeconfigPath string) (*prodSecrets, error) {
+	logger := logging.NewNoopLogger()
+	tracerProvider := tracing.NewNoopTracerProvider()
+	metricsProvider := metrics.NewNoopMetricsProvider()
+
+	cfg := &kubectl.Config{
+		Namespace:  prodNamespace,
+		Kubeconfig: kubeconfigPath,
+	}
+
+	secretSource, err := kubectl.NewKubectlSecretSource(ctx, cfg, nil, logger, tracerProvider, metricsProvider)
+	if err != nil {
+		return nil, fmt.Errorf("creating kubectl secret source: %w", err)
+	}
+	defer secretSource.Close()
+
+	var s prodSecrets
+
+	s.dbHost, err = secretSource.GetSecret(ctx, prodSecretName+"/"+prodDBHostKey)
+	if err != nil {
+		return nil, fmt.Errorf("fetching %s/%s: %w", prodSecretName, prodDBHostKey, err)
+	}
+
+	s.dbPassword, err = secretSource.GetSecret(ctx, prodSecretName+"/"+prodDBPassKey)
+	if err != nil {
+		return nil, fmt.Errorf("fetching %s/%s: %w", prodSecretName, prodDBPassKey, err)
+	}
+
+	s.oauth2TokenEncryptionKey, err = secretSource.GetSecret(ctx, prodSecretName+"/"+prodOAuth2EncryptionKeyKey)
+	if err != nil {
+		return nil, fmt.Errorf("fetching %s/%s: %w", prodSecretName, prodOAuth2EncryptionKeyKey, err)
+	}
+
+	return &s, nil
 }
