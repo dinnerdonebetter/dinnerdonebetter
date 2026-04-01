@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -40,19 +37,16 @@ var getValidPreparationVesselTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidPreparationVessel() mcp.ToolHandlerFor[*GetValidPreparationVesselInvocation, *mealplanning.ValidPreparationVessel] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPreparationVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationVessel, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetValidPreparationVessel(ctx, x.ValidPreparationVesselID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetValidPreparationVessel(ctx, &mealplanninggrpc.GetValidPreparationVesselRequest{
-			ValidPreparationVesselId: x.ValidPreparationVesselID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidPreparationVesselToValidPreparationVessel(result.Result), nil
+		return nil, result, nil
 	}
 }
 
@@ -79,89 +73,18 @@ var getValidPreparationVesselsTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidPreparationVessels() mcp.ToolHandlerFor[*GetValidPreparationVesselsInvocation, *GetValidPreparationVesselsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPreparationVesselsInvocation) (*mcp.CallToolResult, *GetValidPreparationVesselsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetValidPreparationVessels(ctx, &mealplanninggrpc.GetValidPreparationVesselsRequest{
-			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetValidPreparationVessels(ctx, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetValidPreparationVesselsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidPreparationVesselToValidPreparationVessel(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
-	}
-}
-
-var validPreparationVesselCreationTool = &mcp.Tool{
-	Name:        "CreateValidPreparationVessel",
-	Description: "Create a valid preparation vessel linking a preparation to a vessel.",
-	InputSchema: schemaObject(map[string]any{
-		"Notes":              stringField("Notes about the preparation vessel"),
-		"ValidPreparationID": stringField("The ID of the valid preparation"),
-		"ValidVesselID":      stringField("The ID of the valid vessel"),
-	}),
-	OutputSchema: schemaObject(validPreparationVesselsSchema),
-}
-
-func (h *mcpToolManager) CreateValidPreparationVessel() mcp.ToolHandlerFor[*mealplanning.ValidPreparationVesselCreationRequestInput, *mealplanning.ValidPreparationVessel] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidPreparationVesselCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPreparationVessel, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateValidPreparationVessel(ctx, &mealplanninggrpc.CreateValidPreparationVesselRequest{Input: mealplanningconverters.ConvertCreateValidPreparationVesselRequestToGRPCValidPreparationVesselCreationRequestInput(x)})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidPreparationVesselToValidPreparationVessel(result.Result), nil
-	}
-}
-
-type (
-	UpdateValidPreparationVesselInvocation struct {
-		*mealplanning.ValidPreparationVesselUpdateRequestInput
-		ValidPreparationVesselID string `jsonschema:"required,description=The preparation vessel ID"`
-	}
-)
-
-var validPreparationVesselUpdateTool = &mcp.Tool{
-	Name:        "UpdateValidPreparationVessel",
-	Description: "Update a valid preparation vessel.",
-	InputSchema: schemaObject(map[string]any{
-		"ValidPreparationVesselID": stringField("The ID of the valid preparation vessel to update"),
-		"Notes":                    stringField("Notes about the preparation vessel"),
-		"ValidPreparationID":       stringField("The ID of the valid preparation"),
-		"ValidVesselID":            stringField("The ID of the valid vessel"),
-	}),
-	OutputSchema: schemaObject(validPreparationVesselsSchema),
-}
-
-func (h *mcpToolManager) UpdateValidPreparationVessel() mcp.ToolHandlerFor[*UpdateValidPreparationVesselInvocation, *mealplanning.ValidPreparationVessel] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidPreparationVesselInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparationVessel, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateValidPreparationVessel(ctx, &mealplanninggrpc.UpdateValidPreparationVesselRequest{
-			ValidPreparationVesselId: x.ValidPreparationVesselID,
-			Input:                    mealplanningconverters.ConvertValidPreparationVesselUpdateRequestInputToGRPCValidPreparationVesselUpdateRequestInput(x.ValidPreparationVesselUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidPreparationVesselToValidPreparationVessel(result.Result), nil
 	}
 }
 

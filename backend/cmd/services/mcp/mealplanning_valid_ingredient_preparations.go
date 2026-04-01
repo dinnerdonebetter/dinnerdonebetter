@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -40,19 +37,16 @@ var getValidIngredientPreparationTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidIngredientPreparation() mcp.ToolHandlerFor[*GetValidIngredientPreparationInvocation, *mealplanning.ValidIngredientPreparation] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidIngredientPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientPreparation, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetValidIngredientPreparation(ctx, x.ValidIngredientPreparationID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetValidIngredientPreparation(ctx, &mealplanninggrpc.GetValidIngredientPreparationRequest{
-			ValidIngredientPreparationId: x.ValidIngredientPreparationID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(result.Result), nil
+		return nil, result, nil
 	}
 }
 
@@ -79,89 +73,18 @@ var getValidIngredientPreparationsTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidIngredientPreparations() mcp.ToolHandlerFor[*GetValidIngredientPreparationsInvocation, *GetValidIngredientPreparationsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidIngredientPreparationsInvocation) (*mcp.CallToolResult, *GetValidIngredientPreparationsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetValidIngredientPreparations(ctx, &mealplanninggrpc.GetValidIngredientPreparationsRequest{
-			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetValidIngredientPreparations(ctx, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetValidIngredientPreparationsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
-	}
-}
-
-var validIngredientPreparationCreationTool = &mcp.Tool{
-	Name:        "CreateValidIngredientPreparation",
-	Description: "Create a valid ingredient preparation linking an ingredient to a preparation.",
-	InputSchema: schemaObject(map[string]any{
-		"Notes":              stringField("Notes about the ingredient preparation"),
-		"ValidPreparationID": stringField("The ID of the valid preparation"),
-		"ValidIngredientID":  stringField("The ID of the valid ingredient"),
-	}),
-	OutputSchema: schemaObject(validIngredientPreparationsSchema),
-}
-
-func (h *mcpToolManager) CreateValidIngredientPreparation() mcp.ToolHandlerFor[*mealplanning.ValidIngredientPreparationCreationRequestInput, *mealplanning.ValidIngredientPreparation] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidIngredientPreparationCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidIngredientPreparation, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateValidIngredientPreparation(ctx, &mealplanninggrpc.CreateValidIngredientPreparationRequest{Input: mealplanningconverters.ConvertCreateValidIngredientPreparationRequestToGRPCValidIngredientPreparationCreationRequestInput(x)})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(result.Result), nil
-	}
-}
-
-type (
-	UpdateValidIngredientPreparationInvocation struct {
-		*mealplanning.ValidIngredientPreparationUpdateRequestInput
-		ValidIngredientPreparationID string `jsonschema:"required,description=The ingredient preparation ID"`
-	}
-)
-
-var validIngredientPreparationUpdateTool = &mcp.Tool{
-	Name:        "UpdateValidIngredientPreparation",
-	Description: "Update a valid ingredient preparation.",
-	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientPreparationID": stringField("The ID of the valid ingredient preparation to update"),
-		"Notes":                        stringField("Notes about the ingredient preparation"),
-		"ValidPreparationID":           stringField("The ID of the valid preparation"),
-		"ValidIngredientID":            stringField("The ID of the valid ingredient"),
-	}),
-	OutputSchema: schemaObject(validIngredientPreparationsSchema),
-}
-
-func (h *mcpToolManager) UpdateValidIngredientPreparation() mcp.ToolHandlerFor[*UpdateValidIngredientPreparationInvocation, *mealplanning.ValidIngredientPreparation] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidIngredientPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientPreparation, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateValidIngredientPreparation(ctx, &mealplanninggrpc.UpdateValidIngredientPreparationRequest{
-			ValidIngredientPreparationId: x.ValidIngredientPreparationID,
-			Input:                        mealplanningconverters.ConvertValidIngredientPreparationUpdateRequestInputToGRPCValidIngredientPreparationUpdateRequestInput(x.ValidIngredientPreparationUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(result.Result), nil
 	}
 }
 

@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -55,21 +52,16 @@ var getRecipeStepCompletionConditionTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetRecipeStepCompletionCondition() mcp.ToolHandlerFor[*GetRecipeStepCompletionConditionInvocation, *mealplanning.RecipeStepCompletionCondition] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipeStepCompletionConditionInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepCompletionCondition, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetRecipeStepCompletionCondition(ctx, x.RecipeID, x.RecipeStepID, x.RecipeStepCompletionConditionID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetRecipeStepCompletionCondition(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionRequest{
-			RecipeId:                        x.RecipeID,
-			RecipeStepId:                    x.RecipeStepID,
-			RecipeStepCompletionConditionId: x.RecipeStepCompletionConditionID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCRecipeStepCompletionConditionToRecipeStepCompletionCondition(result.Result), nil
+		return nil, result, nil
 	}
 }
 
@@ -100,116 +92,18 @@ var getRecipeStepCompletionConditionsTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetRecipeStepCompletionConditions() mcp.ToolHandlerFor[*GetRecipeStepCompletionConditionsInvocation, *GetRecipeStepCompletionConditionsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipeStepCompletionConditionsInvocation) (*mcp.CallToolResult, *GetRecipeStepCompletionConditionsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetRecipeStepCompletionConditions(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionsRequest{
-			RecipeId:     x.RecipeID,
-			RecipeStepId: x.RecipeStepID,
-			Filter:       grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetRecipeStepCompletionConditions(ctx, x.RecipeID, x.RecipeStepID, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetRecipeStepCompletionConditionsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCRecipeStepCompletionConditionToRecipeStepCompletionCondition(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
-	}
-}
-
-type (
-	CreateRecipeStepCompletionConditionInvocation struct {
-		*mealplanning.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput
-		RecipeID     string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID string `jsonschema:"required,description=The recipe step ID"`
-	}
-)
-
-var recipeStepCompletionConditionCreationTool = &mcp.Tool{
-	Name:        "CreateRecipeStepCompletionCondition",
-	Description: "Create a recipe step completion condition",
-	InputSchema: schemaObject(map[string]any{
-		"RecipeID":            stringField("The ID of the recipe"),
-		"RecipeStepID":        stringField("The ID of the recipe step"),
-		"IngredientStateID":   stringField("The ID of the ingredient state"),
-		"BelongsToRecipeStep": stringField("The ID of the recipe step this completion condition belongs to"),
-		"Notes":               stringField("Notes about the completion condition"),
-		"Ingredients": arrayType(objectType(map[string]any{
-			"RecipeStepIngredient": stringField("The ID of the recipe step ingredient"),
-		})),
-		"Optional": boolField("Whether this completion condition is optional"),
-	}),
-	OutputSchema: schemaObject(recipeStepCompletionConditionsSchema),
-}
-
-func (h *mcpToolManager) CreateRecipeStepCompletionCondition() mcp.ToolHandlerFor[*CreateRecipeStepCompletionConditionInvocation, *mealplanning.RecipeStepCompletionCondition] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateRecipeStepCompletionConditionInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepCompletionCondition, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateRecipeStepCompletionCondition(ctx, &mealplanninggrpc.CreateRecipeStepCompletionConditionRequest{
-			RecipeId:     x.RecipeID,
-			RecipeStepId: x.RecipeStepID,
-			Input:        mealplanningconverters.ConvertRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToGRPCRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(x.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCRecipeStepCompletionConditionToRecipeStepCompletionCondition(result.Created), nil
-	}
-}
-
-type (
-	UpdateRecipeStepCompletionConditionInvocation struct {
-		*mealplanning.RecipeStepCompletionConditionUpdateRequestInput
-		RecipeID                        string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID                    string `jsonschema:"required,description=The recipe step ID"`
-		RecipeStepCompletionConditionID string `jsonschema:"required,description=The recipe step completion condition ID"`
-	}
-)
-
-var recipeStepCompletionConditionUpdateTool = &mcp.Tool{
-	Name:        "UpdateRecipeStepCompletionCondition",
-	Description: "Update a recipe step completion condition",
-	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The ID of the recipe"),
-		"RecipeStepID":                    stringField("The ID of the recipe step"),
-		"RecipeStepCompletionConditionID": stringField("The ID of the recipe step completion condition to update"),
-		"IngredientStateID":               stringField("The ID of the ingredient state"),
-		"BelongsToRecipeStep":             stringField("The ID of the recipe step this completion condition belongs to"),
-		"Notes":                           stringField("Notes about the completion condition"),
-		"Optional":                        boolField("Whether this completion condition is optional"),
-	}),
-	OutputSchema: schemaObject(recipeStepCompletionConditionsSchema),
-}
-
-func (h *mcpToolManager) UpdateRecipeStepCompletionCondition() mcp.ToolHandlerFor[*UpdateRecipeStepCompletionConditionInvocation, *mealplanning.RecipeStepCompletionCondition] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateRecipeStepCompletionConditionInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepCompletionCondition, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateRecipeStepCompletionCondition(ctx, &mealplanninggrpc.UpdateRecipeStepCompletionConditionRequest{
-			RecipeId:                        x.RecipeID,
-			RecipeStepId:                    x.RecipeStepID,
-			RecipeStepCompletionConditionId: x.RecipeStepCompletionConditionID,
-			Input:                           mealplanningconverters.ConvertRecipeStepCompletionConditionUpdateRequestInputToGRPCRecipeStepCompletionConditionUpdateRequestInput(x.RecipeStepCompletionConditionUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCRecipeStepCompletionConditionToRecipeStepCompletionCondition(result.Updated), nil
 	}
 }
 

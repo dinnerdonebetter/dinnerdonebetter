@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/url"
 
-	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/routing"
 
@@ -18,7 +18,7 @@ import (
 )
 
 // registerOAuth2Routes adds all OAuth2 authorization server endpoints to the router.
-func registerOAuth2Routes(router routing.Router, ts *tokenStore, baseURL string, unauthedClient client.Client) {
+func registerOAuth2Routes(router routing.Router, ts *tokenStore, baseURL string, identityRepo identity.Repository, authenticator authentication.Authenticator) {
 	// Protected Resource Metadata (RFC 9728)
 	router.Get("/.well-known/oauth-protected-resource", auth.ProtectedResourceMetadataHandler(&oauthex.ProtectedResourceMetadata{
 		Resource:               baseURL,
@@ -47,7 +47,7 @@ func registerOAuth2Routes(router routing.Router, ts *tokenStore, baseURL string,
 
 	// Authorization endpoint — serves login form and processes login
 	router.Get("/authorize", handleAuthorizeGET)
-	router.Post("/authorize", handleAuthorizePOST(ts, unauthedClient))
+	router.Post("/authorize", handleAuthorizePOST(ts, identityRepo, authenticator))
 
 	// Token endpoint — exchanges codes for tokens and handles refresh
 	router.Post("/token", handleToken(ts))
@@ -147,8 +147,8 @@ func handleAuthorizeGET(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleAuthorizePOST processes the login form submission.
-func handleAuthorizePOST(ts *tokenStore, unauthedClient client.Client) http.HandlerFunc {
+// handleAuthorizePOST processes the login form submission by validating credentials directly against the database.
+func handleAuthorizePOST(ts *tokenStore, identityRepo identity.Repository, authenticator authentication.Authenticator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, "invalid form data", http.StatusBadRequest)
@@ -169,16 +169,7 @@ func handleAuthorizePOST(ts *tokenStore, unauthedClient client.Client) http.Hand
 			return
 		}
 
-		// Authenticate with the backend via AdminLoginForToken (admin-only).
-		tokenRes, err := unauthedClient.AdminLoginForToken(r.Context(), &authsvc.AdminLoginForTokenRequest{
-			Input: &authsvc.UserLoginInput{
-				Username:  username,
-				Password:  password,
-				TotpToken: totpToken,
-			},
-		})
-		if err != nil {
-			// Re-render form with error.
+		renderLoginError := func(errMsg string) {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.WriteHeader(http.StatusUnauthorized)
 			if tmplErr := loginFormTemplate.Execute(w, &loginFormData{
@@ -187,17 +178,47 @@ func handleAuthorizePOST(ts *tokenStore, unauthedClient client.Client) http.Hand
 				State:               state,
 				CodeChallenge:       codeChallenge,
 				CodeChallengeMethod: codeChallengeMethod,
-				Error:               "Access denied. Admin credentials required.",
+				Error:               errMsg,
 			}); tmplErr != nil {
 				log.Printf("error rendering login form: %v", tmplErr)
 			}
+		}
+
+		// Look up user by username (admin-only).
+		user, err := identityRepo.GetAdminUserByUsername(r.Context(), username)
+		if err != nil || user == nil {
+			renderLoginError("Access denied. Admin credentials required.")
 			return
 		}
 
-		backendJWT := tokenRes.Result.AccessToken
+		if user.IsBanned() {
+			renderLoginError("Access denied. Account is banned.")
+			return
+		}
+
+		// Validate password and TOTP.
+		valid, err := authenticator.CredentialsAreValid(r.Context(), user.HashedPassword, password, user.TwoFactorSecret, totpToken)
+		if err != nil || !valid {
+			renderLoginError("Access denied. Admin credentials required.")
+			return
+		}
+
+		// Check if TOTP is required but not provided.
+		if user.TwoFactorSecretVerifiedAt != nil && totpToken == "" {
+			renderLoginError("TOTP code is required.")
+			return
+		}
+
+		// Get the user's default account.
+		accountID, err := identityRepo.GetDefaultAccountIDForUser(r.Context(), user.ID)
+		if err != nil {
+			log.Printf("error getting default account for user: %v", err)
+			http.Error(w, "internal error resolving account", http.StatusInternalServerError)
+			return
+		}
 
 		// Create authorization code.
-		code, err := ts.createAuthCode(backendJWT, codeChallenge, redirectURI, clientID)
+		code, err := ts.createAuthCode(user.ID, accountID, codeChallenge, redirectURI, clientID)
 		if err != nil {
 			http.Error(w, "internal error creating authorization code", http.StatusInternalServerError)
 			return

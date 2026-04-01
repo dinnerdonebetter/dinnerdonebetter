@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -43,27 +40,23 @@ var getValidIngredientStateTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidIngredientState() mcp.ToolHandlerFor[*GetValidIngredientStateInvocation, *mealplanning.ValidIngredientState] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidIngredientStateInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientState, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetValidIngredientState(ctx, x.ValidIngredientStateID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetValidIngredientState(ctx, &mealplanninggrpc.GetValidIngredientStateRequest{
-			ValidIngredientStateId: x.ValidIngredientStateID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidIngredientStateToValidIngredientState(result.Result), nil
+		return nil, result, nil
 	}
 }
 
 type (
 	SearchValidIngredientStatesInvocation struct {
-		Filter           *filtering.QueryFilter
-		Query            string `jsonschema_description:"The ingredient state name query"`
-		UseSearchService bool   `jsonschema_description:"Whether or not to use a search index or just a database search"`
+		Filter *filtering.QueryFilter
+		Query  string `jsonschema_description:"The ingredient state name query"`
 	}
 
 	SearchValidIngredientStatesResult struct {
@@ -80,10 +73,6 @@ var searchForValidIngredientStatesTool = &mcp.Tool{
 			"type":        strType,
 			"description": "The ingredient state name query",
 		},
-		"UseSearchService": map[string]any{
-			"type":        boolType,
-			"description": "Whether or not to use a search index or just a database search",
-		},
 	}),
 	OutputSchema: schemaObject(map[string]any{
 		"Results": arrayType(schemaObject(validIngredientStatesSchema)),
@@ -92,97 +81,18 @@ var searchForValidIngredientStatesTool = &mcp.Tool{
 
 func (h *mcpToolManager) SearchForValidIngredientStates() mcp.ToolHandlerFor[*SearchValidIngredientStatesInvocation, *SearchValidIngredientStatesResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *SearchValidIngredientStatesInvocation) (*mcp.CallToolResult, *SearchValidIngredientStatesResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.SearchForValidIngredientStates(ctx, &mealplanninggrpc.SearchForValidIngredientStatesRequest{
-			Filter:           grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-			Query:            x.Query,
-			UseSearchService: x.UseSearchService,
-		})
+		results, err := h.mealplanningRepo.SearchForValidIngredientStates(ctx, x.Query, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &SearchValidIngredientStatesResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidIngredientStateToValidIngredientState(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
-	}
-}
-
-var validIngredientStateCreationTool = &mcp.Tool{
-	Name:        "CreateValidIngredientState",
-	Description: "Create a valid ingredient state for use in recipes.",
-	InputSchema: schemaObject(map[string]any{
-		"Name":          stringField("Name of the ingredient state"),
-		"Description":   stringField("Description of the ingredient state"),
-		"IconPath":      stringField("The URL for the icon for the item"),
-		"Slug":          stringField("An easy-to-use URL slug for the ingredient state"),
-		"PastTense":     stringField("The past tense form of the ingredient state name (e.g., 'chopped' for 'chop')"),
-		"AttributeType": stringField("The attribute type of the ingredient state (texture, consistency, temperature, color, appearance, odor, taste, sound, or other)"),
-	}),
-	OutputSchema: schemaObject(validIngredientStatesSchema),
-}
-
-func (h *mcpToolManager) CreateValidIngredientState() mcp.ToolHandlerFor[*mealplanning.ValidIngredientStateCreationRequestInput, *mealplanning.ValidIngredientState] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidIngredientStateCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidIngredientState, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateValidIngredientState(ctx, &mealplanninggrpc.CreateValidIngredientStateRequest{Input: mealplanningconverters.ConvertValidIngredientStateCreationRequestInputToGRPCValidIngredientStateCreationRequestInput(x)})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidIngredientStateToValidIngredientState(result.Result), nil
-	}
-}
-
-type (
-	UpdateValidIngredientStateInvocation struct {
-		*mealplanning.ValidIngredientStateUpdateRequestInput
-		ValidIngredientStateID string `jsonschema:"required,description=The ingredient state ID"`
-	}
-)
-
-var validIngredientStateUpdateTool = &mcp.Tool{
-	Name:        "UpdateValidIngredientState",
-	Description: "Update a valid ingredient state for use in recipes.",
-	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientStateID": stringField("The ID of the valid ingredient state to update"),
-		"Name":                   stringField("Name of the ingredient state"),
-		"Description":            stringField("Description of the ingredient state"),
-		"IconPath":               stringField("The URL for the icon for the item"),
-		"Slug":                   stringField("An easy-to-use URL slug for the ingredient state"),
-		"PastTense":              stringField("The past tense form of the ingredient state name (e.g., 'chopped' for 'chop')"),
-		"AttributeType":          stringField("The attribute type of the ingredient state (texture, consistency, temperature, color, appearance, odor, taste, sound, or other)"),
-	}),
-	OutputSchema: schemaObject(validIngredientStatesSchema),
-}
-
-func (h *mcpToolManager) UpdateValidIngredientState() mcp.ToolHandlerFor[*UpdateValidIngredientStateInvocation, *mealplanning.ValidIngredientState] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidIngredientStateInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientState, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateValidIngredientState(ctx, &mealplanninggrpc.UpdateValidIngredientStateRequest{
-			ValidIngredientStateId: x.ValidIngredientStateID,
-			Input:                  mealplanningconverters.ConvertValidIngredientStateUpdateRequestInputToGRPCValidIngredientStateUpdateRequestInput(x.ValidIngredientStateUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidIngredientStateToValidIngredientState(result.Result), nil
 	}
 }
 

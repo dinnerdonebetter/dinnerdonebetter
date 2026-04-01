@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -55,21 +52,16 @@ var getRecipeStepIngredientTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetRecipeStepIngredient() mcp.ToolHandlerFor[*GetRecipeStepIngredientInvocation, *mealplanning.RecipeStepIngredient] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipeStepIngredientInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepIngredient, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetRecipeStepIngredient(ctx, x.RecipeID, x.RecipeStepID, x.RecipeStepIngredientID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
-			RecipeId:               x.RecipeID,
-			RecipeStepId:           x.RecipeStepID,
-			RecipeStepIngredientId: x.RecipeStepIngredientID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(result.Result), nil
+		return nil, result, nil
 	}
 }
 
@@ -100,133 +92,18 @@ var getRecipeStepIngredientsTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetRecipeStepIngredients() mcp.ToolHandlerFor[*GetRecipeStepIngredientsInvocation, *GetRecipeStepIngredientsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipeStepIngredientsInvocation) (*mcp.CallToolResult, *GetRecipeStepIngredientsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
-			RecipeId:     x.RecipeID,
-			RecipeStepId: x.RecipeStepID,
-			Filter:       grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetRecipeStepIngredients(ctx, x.RecipeID, x.RecipeStepID, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetRecipeStepIngredientsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
-	}
-}
-
-type (
-	CreateRecipeStepIngredientInvocation struct {
-		*mealplanning.RecipeStepIngredientCreationRequestInput
-		RecipeID     string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID string `jsonschema:"required,description=The recipe step ID"`
-	}
-)
-
-var recipeStepIngredientCreationTool = &mcp.Tool{
-	Name:        "CreateRecipeStepIngredient",
-	Description: "Create a recipe step ingredient",
-	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The ID of the recipe"),
-		"RecipeStepID":                    stringField("The ID of the recipe step"),
-		"IngredientID":                    stringField("The ID of the ingredient"),
-		"ProductOfRecipeID":               stringField("The ID of the recipe that produces this ingredient, if any"),
-		"ProductOfRecipeStepIndex":        uintField("The index of the recipe step that produces this ingredient, if any"),
-		"ProductOfRecipeStepProductIndex": uintField("The index of the recipe step product that produces this ingredient, if any"),
-		"RecipeStepProductID":             stringField("The ID of the recipe step product this ingredient is associated with, if any"),
-		"MeasurementUnitID":               stringField("The ID of the measurement unit"),
-		"Name":                            stringField("Name of the ingredient"),
-		"QuantityNotes":                   stringField("Notes about the quantity"),
-		"IngredientNotes":                 stringField("Notes about the ingredient"),
-		"MeasurementQuantity":             float32RangeWithOptionalMaxSchema(),
-		"VesselIndex":                     uintField("The index of the vessel this ingredient is in, if any"),
-		"ProductPercentageToUse":          floatField("The percentage of the product to use, if any"),
-		"OptionIndex":                     uintField("The option index for this ingredient"),
-		"Optional":                        boolField("Whether this ingredient is optional"),
-		"ToTaste":                         boolField("Whether this ingredient is 'to taste'"),
-	}),
-	OutputSchema: schemaObject(recipeStepIngredientsSchema),
-}
-
-func (h *mcpToolManager) CreateRecipeStepIngredient() mcp.ToolHandlerFor[*CreateRecipeStepIngredientInvocation, *mealplanning.RecipeStepIngredient] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateRecipeStepIngredientInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepIngredient, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateRecipeStepIngredient(ctx, &mealplanninggrpc.CreateRecipeStepIngredientRequest{
-			RecipeId:     x.RecipeID,
-			RecipeStepId: x.RecipeStepID,
-			Input:        mealplanningconverters.ConvertRecipeStepIngredientCreationRequestInputToGRPCRecipeStepIngredientCreationRequestInput(x.RecipeStepIngredientCreationRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(result.Created), nil
-	}
-}
-
-type (
-	UpdateRecipeStepIngredientInvocation struct {
-		*mealplanning.RecipeStepIngredientUpdateRequestInput
-		RecipeID               string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID           string `jsonschema:"required,description=The recipe step ID"`
-		RecipeStepIngredientID string `jsonschema:"required,description=The recipe step ingredient ID"`
-	}
-)
-
-var recipeStepIngredientUpdateTool = &mcp.Tool{
-	Name:        "UpdateRecipeStepIngredient",
-	Description: "Update a recipe step ingredient",
-	InputSchema: schemaObject(map[string]any{
-		"RecipeID":               stringField("The ID of the recipe"),
-		"RecipeStepID":           stringField("The ID of the recipe step"),
-		"RecipeStepIngredientID": stringField("The ID of the recipe step ingredient to update"),
-		"IngredientID":           stringField("The ID of the ingredient"),
-		"RecipeStepProductID":    stringField("The ID of the recipe step product this ingredient is associated with, if any"),
-		"ProductOfRecipeID":      stringField("The ID of the recipe that produces this ingredient, if any"),
-		"MeasurementUnitID":      stringField("The ID of the measurement unit"),
-		"Name":                   stringField("Name of the ingredient"),
-		"QuantityNotes":          stringField("Notes about the quantity"),
-		"IngredientNotes":        stringField("Notes about the ingredient"),
-		"MeasurementQuantity":    float32RangeWithOptionalMaxSchema(),
-		"VesselIndex":            uintField("The index of the vessel this ingredient is in, if any"),
-		"ProductPercentageToUse": floatField("The percentage of the product to use, if any"),
-		"OptionIndex":            uintField("The option index for this ingredient"),
-		"Optional":               boolField("Whether this ingredient is optional"),
-		"ToTaste":                boolField("Whether this ingredient is 'to taste'"),
-	}),
-	OutputSchema: schemaObject(recipeStepIngredientsSchema),
-}
-
-func (h *mcpToolManager) UpdateRecipeStepIngredient() mcp.ToolHandlerFor[*UpdateRecipeStepIngredientInvocation, *mealplanning.RecipeStepIngredient] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateRecipeStepIngredientInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepIngredient, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateRecipeStepIngredient(ctx, &mealplanninggrpc.UpdateRecipeStepIngredientRequest{
-			RecipeId:               x.RecipeID,
-			RecipeStepId:           x.RecipeStepID,
-			RecipeStepIngredientId: x.RecipeStepIngredientID,
-			Input:                  mealplanningconverters.ConvertRecipeStepIngredientUpdateRequestInputToGRPCRecipeStepIngredientUpdateRequestInput(x.RecipeStepIngredientUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(result.Updated), nil
 	}
 }
 

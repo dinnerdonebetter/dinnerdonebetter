@@ -31,8 +31,6 @@ type EnvironmentConfigSet struct {
 	QueueTestJobConfigPath                   string
 	APIServiceConfigPath                     string
 	MCPServiceConfigPath                     string
-	MCPServiceHTTPAPIServerURL               string
-	MCPServiceGRPCAPIServerURL               string
 }
 
 func stringOrDefault(s, defaultStr string) string {
@@ -222,10 +220,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	}
 
 	mcpConfig := &MCPServiceConfig{
-		APIServiceConnection: APIServiceUserConnectionConfig{
-			HTTPAPIServerURL: s.MCPServiceHTTPAPIServerURL,
-			GRPCAPIServerURL: s.MCPServiceGRPCAPIServerURL,
-		},
+		Database:      databaseConfigForService(&s.RootConfig.Database, s.ServiceDatabaseUsers, mcpConfigObservabilityServiceName),
 		Observability: mcpObservability,
 		Routing:       mcpRouting,
 		Meta:          s.RootConfig.Meta,

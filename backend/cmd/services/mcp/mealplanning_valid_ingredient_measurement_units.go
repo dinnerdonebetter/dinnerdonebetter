@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -41,19 +38,16 @@ var getValidIngredientMeasurementUnitTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidIngredientMeasurementUnit() mcp.ToolHandlerFor[*GetValidIngredientMeasurementUnitInvocation, *mealplanning.ValidIngredientMeasurementUnit] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidIngredientMeasurementUnitInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientMeasurementUnit, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetValidIngredientMeasurementUnit(ctx, x.ValidIngredientMeasurementUnitID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetValidIngredientMeasurementUnit(ctx, &mealplanninggrpc.GetValidIngredientMeasurementUnitRequest{
-			ValidIngredientMeasurementUnitId: x.ValidIngredientMeasurementUnitID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(result.Result), nil
+		return nil, result, nil
 	}
 }
 
@@ -80,91 +74,18 @@ var getValidIngredientMeasurementUnitsTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidIngredientMeasurementUnits() mcp.ToolHandlerFor[*GetValidIngredientMeasurementUnitsInvocation, *GetValidIngredientMeasurementUnitsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidIngredientMeasurementUnitsInvocation) (*mcp.CallToolResult, *GetValidIngredientMeasurementUnitsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetValidIngredientMeasurementUnits(ctx, &mealplanninggrpc.GetValidIngredientMeasurementUnitsRequest{
-			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetValidIngredientMeasurementUnits(ctx, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetValidIngredientMeasurementUnitsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
-	}
-}
-
-var validIngredientMeasurementUnitCreationTool = &mcp.Tool{
-	Name:        "CreateValidIngredientMeasurementUnit",
-	Description: "Create a valid ingredient measurement unit linking an ingredient to a measurement unit.",
-	InputSchema: schemaObject(map[string]any{
-		"Notes":                  stringField("Notes about the ingredient measurement unit"),
-		"ValidMeasurementUnitID": stringField("The ID of the valid measurement unit"),
-		"ValidIngredientID":      stringField("The ID of the valid ingredient"),
-		"AllowableQuantity":      float32RangeWithOptionalMaxSchema(),
-	}),
-	OutputSchema: schemaObject(validIngredientMeasurementUnitsSchema),
-}
-
-func (h *mcpToolManager) CreateValidIngredientMeasurementUnit() mcp.ToolHandlerFor[*mealplanning.ValidIngredientMeasurementUnitCreationRequestInput, *mealplanning.ValidIngredientMeasurementUnit] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidIngredientMeasurementUnit, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateValidIngredientMeasurementUnit(ctx, &mealplanninggrpc.CreateValidIngredientMeasurementUnitRequest{Input: mealplanningconverters.ConvertCreateValidIngredientMeasurementUnitRequestToGRPCValidIngredientMeasurementUnitCreationRequestInput(x)})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(result.Result), nil
-	}
-}
-
-type (
-	UpdateValidIngredientMeasurementUnitInvocation struct {
-		*mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput
-		ValidIngredientMeasurementUnitID string `jsonschema:"required,description=The ingredient measurement unit ID"`
-	}
-)
-
-var validIngredientMeasurementUnitUpdateTool = &mcp.Tool{
-	Name:        "UpdateValidIngredientMeasurementUnit",
-	Description: "Update a valid ingredient measurement unit.",
-	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientMeasurementUnitID": stringField("The ID of the valid ingredient measurement unit to update"),
-		"Notes":                            stringField("Notes about the ingredient measurement unit"),
-		"ValidMeasurementUnitID":           stringField("The ID of the valid measurement unit"),
-		"ValidIngredientID":                stringField("The ID of the valid ingredient"),
-		"AllowableQuantity":                float32RangeWithOptionalMaxSchema(),
-	}),
-	OutputSchema: schemaObject(validIngredientMeasurementUnitsSchema),
-}
-
-func (h *mcpToolManager) UpdateValidIngredientMeasurementUnit() mcp.ToolHandlerFor[*UpdateValidIngredientMeasurementUnitInvocation, *mealplanning.ValidIngredientMeasurementUnit] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidIngredientMeasurementUnitInvocation) (*mcp.CallToolResult, *mealplanning.ValidIngredientMeasurementUnit, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateValidIngredientMeasurementUnit(ctx, &mealplanninggrpc.UpdateValidIngredientMeasurementUnitRequest{
-			ValidIngredientMeasurementUnitId: x.ValidIngredientMeasurementUnitID,
-			Input:                            mealplanningconverters.ConvertValidIngredientMeasurementUnitUpdateRequestInputToGRPCValidIngredientMeasurementUnitUpdateRequestInput(x.ValidIngredientMeasurementUnitUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(result.Result), nil
 	}
 }
 
