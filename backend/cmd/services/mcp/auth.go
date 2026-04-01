@@ -6,14 +6,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/localdev"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/modelcontextprotocol/go-sdk/auth"
 )
@@ -28,24 +24,25 @@ const (
 // authCodeEntry stores a pending authorization code.
 type authCodeEntry struct {
 	expiresAt     time.Time
-	backendJWT    string
+	userID        string
+	accountID     string
 	codeChallenge string
 	redirectURI   string
 	clientID      string
 }
 
-// accessTokenEntry maps an MCP access token to a per-user gRPC client.
+// accessTokenEntry maps an MCP access token to a user.
 type accessTokenEntry struct {
 	expiresAt time.Time
-	client    client.Client
 	userID    string
+	accountID string
 }
 
-// refreshTokenEntry stores data needed to rebuild a per-user gRPC client.
+// refreshTokenEntry stores data needed to issue new access tokens.
 type refreshTokenEntry struct {
-	expiresAt  time.Time
-	userID     string
-	backendJWT string
+	expiresAt time.Time
+	userID    string
+	accountID string
 }
 
 // registeredClient stores a dynamically registered OAuth2 client.
@@ -59,27 +56,19 @@ type registeredClient struct {
 
 // tokenStore manages all auth state for the MCP server's OAuth2 authorization server.
 type tokenStore struct {
-	authCodes          map[string]*authCodeEntry
-	accessTokens       map[string]*accessTokenEntry
-	refreshTokens      map[string]*refreshTokenEntry
-	clients            map[string]*registeredClient
-	grpcAddr           string
-	oauth2ClientID     string
-	oauth2ClientSecret string
-	httpAPIServerURL   string
-	mu                 sync.RWMutex
+	authCodes     map[string]*authCodeEntry
+	accessTokens  map[string]*accessTokenEntry
+	refreshTokens map[string]*refreshTokenEntry
+	clients       map[string]*registeredClient
+	mu            sync.RWMutex
 }
 
-func newTokenStore(grpcAddr, oauth2ClientID, oauth2ClientSecret, httpAPIServerURL string) *tokenStore {
+func newTokenStore() *tokenStore {
 	return &tokenStore{
-		authCodes:          make(map[string]*authCodeEntry),
-		accessTokens:       make(map[string]*accessTokenEntry),
-		refreshTokens:      make(map[string]*refreshTokenEntry),
-		clients:            make(map[string]*registeredClient),
-		grpcAddr:           grpcAddr,
-		oauth2ClientID:     oauth2ClientID,
-		oauth2ClientSecret: oauth2ClientSecret,
-		httpAPIServerURL:   httpAPIServerURL,
+		authCodes:     make(map[string]*authCodeEntry),
+		accessTokens:  make(map[string]*accessTokenEntry),
+		refreshTokens: make(map[string]*refreshTokenEntry),
+		clients:       make(map[string]*registeredClient),
 	}
 }
 
@@ -141,24 +130,24 @@ func (ts *tokenStore) verifyToken(_ context.Context, token string, _ *http.Reque
 	}, nil
 }
 
-// clientForToken returns the per-user gRPC client associated with an MCP access token.
-func (ts *tokenStore) clientForToken(token string) (client.Client, error) {
+// userContextForToken returns the user ID and account ID associated with an MCP access token.
+func (ts *tokenStore) userContextForToken(token string) (userID, accountID string, err error) {
 	ts.mu.RLock()
 	entry, ok := ts.accessTokens[token]
 	ts.mu.RUnlock()
 
 	if !ok {
-		return nil, fmt.Errorf("no client for token")
+		return "", "", fmt.Errorf("no entry for token")
 	}
 	if time.Now().After(entry.expiresAt) {
-		return nil, fmt.Errorf("token expired")
+		return "", "", fmt.Errorf("token expired")
 	}
 
-	return entry.client, nil
+	return entry.userID, entry.accountID, nil
 }
 
 // createAuthCode stores an authorization code that can be exchanged for tokens.
-func (ts *tokenStore) createAuthCode(backendJWT, codeChallenge, redirectURI, clientID string) (string, error) {
+func (ts *tokenStore) createAuthCode(userID, accountID, codeChallenge, redirectURI, clientID string) (string, error) {
 	code, err := generateOpaqueToken(32)
 	if err != nil {
 		return "", fmt.Errorf("generating auth code: %w", err)
@@ -166,7 +155,8 @@ func (ts *tokenStore) createAuthCode(backendJWT, codeChallenge, redirectURI, cli
 
 	ts.mu.Lock()
 	ts.authCodes[code] = &authCodeEntry{
-		backendJWT:    backendJWT,
+		userID:        userID,
+		accountID:     accountID,
 		codeChallenge: codeChallenge,
 		redirectURI:   redirectURI,
 		clientID:      clientID,
@@ -177,9 +167,8 @@ func (ts *tokenStore) createAuthCode(backendJWT, codeChallenge, redirectURI, cli
 	return code, nil
 }
 
-// exchangeCode validates an authorization code and PKCE verifier, builds a per-user gRPC client,
-// and returns MCP access and refresh tokens.
-func (ts *tokenStore) exchangeCode(ctx context.Context, code, codeVerifier, clientID, redirectURI string) (accessToken, refreshToken string, expiresIn int, err error) {
+// exchangeCode validates an authorization code and PKCE verifier, and returns MCP access and refresh tokens.
+func (ts *tokenStore) exchangeCode(_ context.Context, code, codeVerifier, clientID, redirectURI string) (accessToken, refreshToken string, expiresIn int, err error) {
 	ts.mu.Lock()
 	entry, ok := ts.authCodes[code]
 	if ok {
@@ -205,22 +194,6 @@ func (ts *tokenStore) exchangeCode(ctx context.Context, code, codeVerifier, clie
 		return "", "", 0, fmt.Errorf("PKCE verification failed")
 	}
 
-	// Build per-user gRPC client using the backend JWT.
-	c, clientErr := localdev.BuildInsecureOAuthedGRPCClient(
-		ctx,
-		ts.oauth2ClientID,
-		ts.oauth2ClientSecret,
-		ts.httpAPIServerURL,
-		ts.grpcAddr,
-		entry.backendJWT,
-	)
-	if clientErr != nil {
-		return "", "", 0, fmt.Errorf("building per-user gRPC client: %w", clientErr)
-	}
-
-	// Extract user ID from JWT (best-effort, backend validates fully).
-	userID := extractSubjectFromJWT(entry.backendJWT)
-
 	// Generate opaque tokens.
 	accessToken, err = generateOpaqueToken(32)
 	if err != nil {
@@ -234,22 +207,22 @@ func (ts *tokenStore) exchangeCode(ctx context.Context, code, codeVerifier, clie
 	now := time.Now()
 	ts.mu.Lock()
 	ts.accessTokens[accessToken] = &accessTokenEntry{
-		userID:    userID,
-		client:    c,
+		userID:    entry.userID,
+		accountID: entry.accountID,
 		expiresAt: now.Add(accessTokenLifetime),
 	}
 	ts.refreshTokens[refreshToken] = &refreshTokenEntry{
-		userID:     userID,
-		backendJWT: entry.backendJWT,
-		expiresAt:  now.Add(refreshTokenLifetime),
+		userID:    entry.userID,
+		accountID: entry.accountID,
+		expiresAt: now.Add(refreshTokenLifetime),
 	}
 	ts.mu.Unlock()
 
 	return accessToken, refreshToken, int(accessTokenLifetime.Seconds()), nil
 }
 
-// refreshAccessToken uses a refresh token to build a new per-user gRPC client and issue new tokens.
-func (ts *tokenStore) refreshAccessToken(ctx context.Context, oldRefreshToken string) (accessToken, refreshToken string, expiresIn int, err error) {
+// refreshAccessToken uses a refresh token to issue new tokens.
+func (ts *tokenStore) refreshAccessToken(_ context.Context, oldRefreshToken string) (accessToken, refreshToken string, expiresIn int, err error) {
 	ts.mu.Lock()
 	entry, ok := ts.refreshTokens[oldRefreshToken]
 	if ok {
@@ -262,19 +235,6 @@ func (ts *tokenStore) refreshAccessToken(ctx context.Context, oldRefreshToken st
 	}
 	if time.Now().After(entry.expiresAt) {
 		return "", "", 0, fmt.Errorf("refresh token expired")
-	}
-
-	// Rebuild per-user gRPC client.
-	c, clientErr := localdev.BuildInsecureOAuthedGRPCClient(
-		ctx,
-		ts.oauth2ClientID,
-		ts.oauth2ClientSecret,
-		ts.httpAPIServerURL,
-		ts.grpcAddr,
-		entry.backendJWT,
-	)
-	if clientErr != nil {
-		return "", "", 0, fmt.Errorf("rebuilding per-user gRPC client: %w", clientErr)
 	}
 
 	accessToken, err = generateOpaqueToken(32)
@@ -290,13 +250,13 @@ func (ts *tokenStore) refreshAccessToken(ctx context.Context, oldRefreshToken st
 	ts.mu.Lock()
 	ts.accessTokens[accessToken] = &accessTokenEntry{
 		userID:    entry.userID,
-		client:    c,
+		accountID: entry.accountID,
 		expiresAt: now.Add(accessTokenLifetime),
 	}
 	ts.refreshTokens[refreshToken] = &refreshTokenEntry{
-		userID:     entry.userID,
-		backendJWT: entry.backendJWT,
-		expiresAt:  now.Add(refreshTokenLifetime),
+		userID:    entry.userID,
+		accountID: entry.accountID,
+		expiresAt: now.Add(refreshTokenLifetime),
 	}
 	ts.mu.Unlock()
 
@@ -343,43 +303,4 @@ func validatePKCES256(codeVerifier, codeChallenge string) bool {
 	h := sha256.Sum256([]byte(codeVerifier))
 	computed := base64.RawURLEncoding.EncodeToString(h[:])
 	return computed == codeChallenge
-}
-
-// extractSubjectFromJWT does a best-effort extraction of the "sub" claim from a JWT
-// without full validation (the backend handles that).
-func extractSubjectFromJWT(tokenStr string) string {
-	// JWT is header.payload.signature — we only need the payload.
-	parts := splitJWT(tokenStr)
-	if len(parts) != 3 {
-		return ""
-	}
-
-	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
-	if err != nil {
-		return ""
-	}
-
-	type claims struct {
-		Sub string `json:"sub"`
-	}
-
-	var c claims
-	if unmarshalErr := json.Unmarshal(payload, &c); unmarshalErr != nil {
-		return ""
-	}
-	return c.Sub
-}
-
-// splitJWT splits a JWT into its three parts.
-func splitJWT(token string) []string {
-	var parts []string
-	start := 0
-	for i := range token {
-		if token[i] == '.' {
-			parts = append(parts, token[start:i])
-			start = i + 1
-		}
-	}
-	parts = append(parts, token[start:])
-	return parts
 }

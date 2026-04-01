@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -56,20 +53,16 @@ var getRecipePrepTaskTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetRecipePrepTask() mcp.ToolHandlerFor[*GetRecipePrepTaskInvocation, *mealplanning.RecipePrepTask] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetRecipePrepTask(ctx, x.RecipeID, x.RecipePrepTaskID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
-			RecipeId:         x.RecipeID,
-			RecipePrepTaskId: x.RecipePrepTaskID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCRecipePrepTaskToRecipePrepTask(result.Result), nil
+		return nil, result, nil
 	}
 }
 
@@ -98,116 +91,18 @@ var getRecipePrepTasksTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetRecipePrepTasks() mcp.ToolHandlerFor[*GetRecipePrepTasksInvocation, *GetRecipePrepTasksResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetRecipePrepTasksInvocation) (*mcp.CallToolResult, *GetRecipePrepTasksResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{
-			RecipeId: x.RecipeID,
-			Filter:   grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetRecipePrepTasks(ctx, x.RecipeID, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetRecipePrepTasksResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCRecipePrepTaskToRecipePrepTask(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
-	}
-}
-
-type (
-	CreateRecipePrepTaskInvocation struct {
-		*mealplanning.RecipePrepTaskCreationRequestInput
-		RecipeID string `jsonschema:"required,description=The recipe ID"`
-	}
-)
-
-var recipePrepTaskCreationTool = &mcp.Tool{
-	Name:        "CreateRecipePrepTask",
-	Description: "Create a recipe prep task",
-	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The ID of the recipe"),
-		"Name":                            stringField("Name of the prep task"),
-		"Description":                     stringField("Description of the prep task"),
-		"Notes":                           stringField("Notes about the prep task"),
-		"StorageType":                     stringField("The storage type for the prep task (e.g., 'covered', 'uncovered', 'on a wire rack')"),
-		"ExplicitStorageInstructions":     stringField("Explicit storage instructions for the prep task"),
-		"StorageTemperatureInCelsius":     optionalFloatRangeSchema(),
-		"TimeBufferBeforeRecipeInSeconds": uint32RangeWithOptionalMaxSchema(),
-		"Optional":                        boolField("Whether this prep task is optional"),
-		"RecipeSteps":                     arrayType(schemaObject(recipePrepTaskStepSchema)),
-	}),
-	OutputSchema: schemaObject(recipePrepTasksSchema),
-}
-
-func (h *mcpToolManager) CreateRecipePrepTask() mcp.ToolHandlerFor[*CreateRecipePrepTaskInvocation, *mealplanning.RecipePrepTask] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *CreateRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateRecipePrepTask(ctx, &mealplanninggrpc.CreateRecipePrepTaskRequest{
-			RecipeId: x.RecipeID,
-			Input:    mealplanningconverters.ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationRequestInput(x.RecipePrepTaskCreationRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCRecipePrepTaskToRecipePrepTask(result.Created), nil
-	}
-}
-
-type (
-	UpdateRecipePrepTaskInvocation struct {
-		*mealplanning.RecipePrepTaskUpdateRequestInput
-		RecipeID         string `jsonschema:"required,description=The recipe ID"`
-		RecipePrepTaskID string `jsonschema:"required,description=The recipe prep task ID"`
-	}
-)
-
-var recipePrepTaskUpdateTool = &mcp.Tool{
-	Name:        "UpdateRecipePrepTask",
-	Description: "Update a recipe prep task",
-	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The ID of the recipe"),
-		"RecipePrepTaskID":                stringField("The ID of the recipe prep task to update"),
-		"Name":                            stringField("Name of the prep task"),
-		"Description":                     stringField("Description of the prep task"),
-		"Notes":                           stringField("Notes about the prep task"),
-		"StorageType":                     stringField("The storage type for the prep task (e.g., 'covered', 'uncovered', 'on a wire rack')"),
-		"ExplicitStorageInstructions":     stringField("Explicit storage instructions for the prep task"),
-		"StorageTemperatureInCelsius":     optionalFloatRangeSchema(),
-		"TimeBufferBeforeRecipeInSeconds": uint32RangeWithOptionalMaxSchema(),
-		"Optional":                        boolField("Whether this prep task is optional"),
-		"RecipeSteps":                     arrayType(schemaObject(recipePrepTaskStepSchema)),
-	}),
-	OutputSchema: schemaObject(recipePrepTasksSchema),
-}
-
-func (h *mcpToolManager) UpdateRecipePrepTask() mcp.ToolHandlerFor[*UpdateRecipePrepTaskInvocation, *mealplanning.RecipePrepTask] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateRecipePrepTask(ctx, &mealplanninggrpc.UpdateRecipePrepTaskRequest{
-			RecipeId:         x.RecipeID,
-			RecipePrepTaskId: x.RecipePrepTaskID,
-			Input:            mealplanningconverters.ConvertRecipePrepTaskUpdateRequestInputToGRPCRecipePrepTaskUpdateRequestInput(x.RecipePrepTaskUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCRecipePrepTaskToRecipePrepTask(result.Updated), nil
 	}
 }
 

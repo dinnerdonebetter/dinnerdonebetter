@@ -39,25 +39,25 @@ const (
 	bootstrapEncryptionKey     = "bootstrap-placeholder-encrypt32!" // exactly 32 bytes
 
 	// Prod Kubernetes secret coordinates.
-	prodNamespace              = "prod"
-	prodSecretName             = "api-service-config"
-	prodDBHostKey              = "DATABASE_HOST"
+	prodNamespace  = "prod"
+	prodSecretName = "api-service-config"
+	prodDBUser     = "api_db_user"
+	/* #nosec G101 */
 	prodDBPassKey              = "DATABASE_API_PASSWORD"
 	prodOAuth2EncryptionKeyKey = "OAUTH2_TOKEN_ENCRYPTION_KEY"
-	prodDBUser                 = "api_db_user"
 )
 
 // dbFlags holds database connection flags shared across subcommands.
 type dbFlags struct {
 	host                     string
-	port                     uint16
 	user                     string
 	password                 string
 	name                     string
-	sslDisable               bool
-	prod                     bool
 	kubeconfig               string
 	oauth2TokenEncryptionKey string
+	port                     uint16
+	sslDisable               bool
+	prod                     bool
 }
 
 func main() {
@@ -114,7 +114,7 @@ clients are detected by name and skipped.`,
 			if err := resolveDBFlags(cmd, &db); err != nil {
 				return err
 			}
-			return runInit(db, adminUsername, adminPassword, adminEmail)
+			return runInit(&db, adminUsername, adminPassword, adminEmail)
 		},
 	}
 
@@ -165,7 +165,7 @@ func resolveDBFlags(cmd *cobra.Command, db *dbFlags) error {
 	return nil
 }
 
-func runInit(db dbFlags, adminUsername, adminPassword, adminEmail string) error {
+func runInit(db *dbFlags, adminUsername, adminPassword, adminEmail string) error {
 	if adminEmail == "" {
 		adminEmail = adminUsername + "@bootstrap.local"
 	}
@@ -204,7 +204,7 @@ func runInit(db dbFlags, adminUsername, adminPassword, adminEmail string) error 
 		}
 	}()
 
-	if err = client.ReadDB().Ping(); err != nil {
+	if err = client.ReadDB().PingContext(ctx); err != nil {
 		return fmt.Errorf("pinging database client: %w", err)
 	}
 
@@ -281,7 +281,7 @@ func runInit(db dbFlags, adminUsername, adminPassword, adminEmail string) error 
 	}
 
 	// --- OAuth2 clients (idempotent) ---
-	wantClients := []struct {
+	wantClients := []*struct {
 		name string
 		desc string
 	}{
@@ -378,7 +378,6 @@ func (b *bootstrapClientConfig) GetConnMaxLifetime() time.Duration {
 }
 
 type prodSecrets struct {
-	dbHost                   string
 	dbPassword               string
 	oauth2TokenEncryptionKey string
 }
@@ -397,14 +396,13 @@ func fetchProdSecrets(ctx context.Context, kubeconfigPath string) (*prodSecrets,
 	if err != nil {
 		return nil, fmt.Errorf("creating kubectl secret source: %w", err)
 	}
-	defer secretSource.Close()
+	defer func() {
+		if err = secretSource.Close(); err != nil {
+			logger.Error("closing secret source", err)
+		}
+	}()
 
 	var s prodSecrets
-
-	s.dbHost, err = secretSource.GetSecret(ctx, prodSecretName+"/"+prodDBHostKey)
-	if err != nil {
-		return nil, fmt.Errorf("fetching %s/%s: %w", prodSecretName, prodDBHostKey, err)
-	}
 
 	s.dbPassword, err = secretSource.GetSecret(ctx, prodSecretName+"/"+prodDBPassKey)
 	if err != nil {

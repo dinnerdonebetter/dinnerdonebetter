@@ -166,17 +166,6 @@ type (
 		OAuth2APIClientSecret string `env:"OAUTH2_API_CLIENT_SECRET" json:"oauth2APIClientSecret"`
 	}
 
-	APIServiceUserConnectionConfig struct {
-		_ struct{} `json:"-"`
-
-		HTTPAPIServerURL      string `env:"HTTP_API_SERVER_URL"      json:"httpAPIServerURL"`
-		GRPCAPIServerURL      string `env:"GRPC_API_SERVER_URL"      json:"grpcAPIServerURL"`
-		Username              string `env:"USERNAME"                 json:"username"`
-		Password              string `env:"PASSWORD"                 json:"password"`
-		OAuth2APIClientID     string `env:"OAUTH2_API_CLIENT_ID"     json:"oauth2APIClientID"`
-		OAuth2APIClientSecret string `env:"OAUTH2_API_CLIENT_SECRET" json:"oauth2APIClientSecret"`
-	}
-
 	NamedCacheConfig struct {
 		_ struct{} `json:"-"`
 
@@ -198,14 +187,12 @@ type (
 
 	// MCPServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	MCPServiceConfig struct {
-		_ struct{} `json:"-"`
-
-		APIServiceConnection APIServiceUserConnectionConfig `envPrefix:"API_SERVICE_"   json:"apiServiceConfig"`
-		Observability        observability.Config           `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Routing              routingcfg.Config              `envPrefix:"ROUTING_"       json:"routing"`
-		GRPCServer           grpc.Config                    `envPrefix:"GRPC_"          json:"grpc"`
-		Meta                 MetaSettings                   `envPrefix:"META_"          json:"meta"`
-		HTTPServer           http.Config                    `envPrefix:"HTTP_"          json:"http"`
+		_             struct{}             `json:"-"`
+		Routing       routingcfg.Config    `envPrefix:"ROUTING_"       json:"routing"`
+		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Meta          MetaSettings         `envPrefix:"META_"          json:"meta"`
+		HTTPServer    http.Config          `envPrefix:"HTTP_"          json:"http"`
+		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
 	}
 )
 
@@ -397,6 +384,7 @@ func (cfg *MCPServiceConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
 
 	validators := map[string]func(context.Context) error{
+		"Database":      cfg.Database.ValidateWithContext,
 		"Meta":          cfg.Meta.ValidateWithContext,
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Routing":       cfg.Routing.ValidateWithContext,

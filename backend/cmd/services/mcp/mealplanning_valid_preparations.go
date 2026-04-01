@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -52,27 +49,23 @@ var getValidPreparationTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidPreparation() mcp.ToolHandlerFor[*GetValidPreparationInvocation, *mealplanning.ValidPreparation] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetValidPreparation(ctx, x.ValidPreparationID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetValidPreparation(ctx, &mealplanninggrpc.GetValidPreparationRequest{
-			ValidPreparationId: x.ValidPreparationID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidPreparationToValidPreparation(result.Result), nil
+		return nil, result, nil
 	}
 }
 
 type (
 	SearchValidPreparationsInvocation struct {
-		Filter           *filtering.QueryFilter
-		Query            string `jsonschema_description:"The preparation name query"`
-		UseSearchService bool   `jsonschema_description:"Whether or not to use a search index or just a database search"`
+		Filter *filtering.QueryFilter
+		Query  string `jsonschema_description:"The preparation name query"`
 	}
 
 	SearchValidPreparationsResult struct {
@@ -89,10 +82,6 @@ var searchForValidPreparationsTool = &mcp.Tool{
 			"type":        strType,
 			"description": "The preparation name query",
 		},
-		"UseSearchService": map[string]any{
-			"type":        boolType,
-			"description": "Whether or not to use a search index or just a database search",
-		},
 	}),
 	OutputSchema: schemaObject(map[string]any{
 		"Results": arrayType(schemaObject(validPreparationsSchema)),
@@ -101,115 +90,18 @@ var searchForValidPreparationsTool = &mcp.Tool{
 
 func (h *mcpToolManager) SearchForValidPreparations() mcp.ToolHandlerFor[*SearchValidPreparationsInvocation, *SearchValidPreparationsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *SearchValidPreparationsInvocation) (*mcp.CallToolResult, *SearchValidPreparationsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.SearchForValidPreparations(ctx, &mealplanninggrpc.SearchForValidPreparationsRequest{
-			Filter:           grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-			Query:            x.Query,
-			UseSearchService: x.UseSearchService,
-		})
+		results, err := h.mealplanningRepo.SearchForValidPreparations(ctx, x.Query, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &SearchValidPreparationsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidPreparationToValidPreparation(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
-	}
-}
-
-var validPreparationCreationTool = &mcp.Tool{
-	Name:        "CreateValidPreparation",
-	Description: "Create a valid preparation for use in recipes.",
-	InputSchema: schemaObject(map[string]any{
-		"Name":                        stringField("Name of the preparation"),
-		"Description":                 stringField("Description of the preparation"),
-		"IconPath":                    stringField("The URL for the icon for the item"),
-		"Slug":                        stringField("An easy-to-use URL slug for the preparation"),
-		"PastTense":                   stringField("The past tense form of the preparation name (e.g., 'chopped' for 'chop')"),
-		"InstrumentCount":             uint16RangeWithOptionalMaxSchema(),
-		"IngredientCount":             uint16RangeWithOptionalMaxSchema(),
-		"VesselCount":                 uint16RangeWithOptionalMaxSchema(),
-		"RestrictToIngredients":       boolField("Whether or not the valid preparation is restricted to ingredients"),
-		"TemperatureRequired":         boolField("Whether or not the valid preparation requires a temperature"),
-		"TimeEstimateRequired":        boolField("Whether or not the valid preparation requires a time estimate"),
-		"ConditionExpressionRequired": boolField("Whether or not the valid preparation requires a condition expression"),
-		"ConsumesVessel":              boolField("Whether or not the valid preparation consumes a vessel"),
-		"OnlyForVessels":              boolField("Whether or not the valid preparation is only for vessels"),
-		"YieldsNothing":               boolField("Whether or not the valid preparation yields nothing"),
-	}),
-	OutputSchema: schemaObject(validPreparationsSchema),
-}
-
-func (h *mcpToolManager) CreateValidPreparation() mcp.ToolHandlerFor[*mealplanning.ValidPreparationCreationRequestInput, *mealplanning.ValidPreparation] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidPreparationCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateValidPreparation(ctx, &mealplanninggrpc.CreateValidPreparationRequest{Input: mealplanningconverters.ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRequestInput(x)})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidPreparationToValidPreparation(result.Result), nil
-	}
-}
-
-type (
-	UpdateValidPreparationInvocation struct {
-		*mealplanning.ValidPreparationUpdateRequestInput
-		ValidPreparationID string `jsonschema:"required,description=The preparation ID"`
-	}
-)
-
-var validPreparationUpdateTool = &mcp.Tool{
-	Name:        "UpdateValidPreparation",
-	Description: "Update a valid preparation for use in recipes.",
-	InputSchema: schemaObject(map[string]any{
-		"ValidPreparationID":          stringField("The ID of the valid preparation to update"),
-		"Name":                        stringField("Name of the preparation"),
-		"Description":                 stringField("Description of the preparation"),
-		"IconPath":                    stringField("The URL for the icon for the item"),
-		"Slug":                        stringField("An easy-to-use URL slug for the preparation"),
-		"PastTense":                   stringField("The past tense form of the preparation name (e.g., 'chopped' for 'chop')"),
-		"InstrumentCount":             uint16RangeWithOptionalMaxSchema(),
-		"IngredientCount":             uint16RangeWithOptionalMaxSchema(),
-		"VesselCount":                 uint16RangeWithOptionalMaxSchema(),
-		"RestrictToIngredients":       boolField("Whether or not the valid preparation is restricted to ingredients"),
-		"TemperatureRequired":         boolField("Whether or not the valid preparation requires a temperature"),
-		"TimeEstimateRequired":        boolField("Whether or not the valid preparation requires a time estimate"),
-		"ConditionExpressionRequired": boolField("Whether or not the valid preparation requires a condition expression"),
-		"ConsumesVessel":              boolField("Whether or not the valid preparation consumes a vessel"),
-		"OnlyForVessels":              boolField("Whether or not the valid preparation is only for vessels"),
-		"YieldsNothing":               boolField("Whether or not the valid preparation yields nothing"),
-	}),
-	OutputSchema: schemaObject(validPreparationsSchema),
-}
-
-func (h *mcpToolManager) UpdateValidPreparation() mcp.ToolHandlerFor[*UpdateValidPreparationInvocation, *mealplanning.ValidPreparation] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateValidPreparation(ctx, &mealplanninggrpc.UpdateValidPreparationRequest{
-			ValidPreparationId: x.ValidPreparationID,
-			Input:              mealplanningconverters.ConvertValidPreparationUpdateRequestInputToGRPCValidPreparationUpdateRequestInput(x.ValidPreparationUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidPreparationToValidPreparation(result.Result), nil
 	}
 }
 

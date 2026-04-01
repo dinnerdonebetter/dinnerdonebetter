@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -42,19 +39,16 @@ var getValidMeasurementUnitConversionTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidMeasurementUnitConversion() mcp.ToolHandlerFor[*GetValidMeasurementUnitConversionInvocation, *mealplanning.ValidMeasurementUnitConversion] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidMeasurementUnitConversionInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnitConversion, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetValidMeasurementUnitConversion(ctx, x.ValidMeasurementUnitConversionID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetValidMeasurementUnitConversion(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionRequest{
-			ValidMeasurementUnitConversionId: x.ValidMeasurementUnitConversionID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(result.Result), nil
+		return nil, result, nil
 	}
 }
 
@@ -83,24 +77,17 @@ var getValidMeasurementUnitConversionsForUnitTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidMeasurementUnitConversionsForUnit() mcp.ToolHandlerFor[*GetValidMeasurementUnitConversionsForUnitInvocation, *GetValidMeasurementUnitConversionsForUnitResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidMeasurementUnitConversionsForUnitInvocation) (*mcp.CallToolResult, *GetValidMeasurementUnitConversionsForUnitResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionsForUnitRequest{
-			Filter:                 grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-			ValidMeasurementUnitId: x.ValidMeasurementUnitID,
-		})
+		results, err := h.mealplanningRepo.GetValidMeasurementUnitConversionsForUnit(ctx, x.ValidMeasurementUnitID, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetValidMeasurementUnitConversionsForUnitResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
 	}
 }
@@ -128,93 +115,18 @@ var getValidMeasurementUnitConversionsForIngredientsTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidMeasurementUnitConversionsForIngredients() mcp.ToolHandlerFor[*GetValidMeasurementUnitConversionsForIngredientsInvocation, *GetValidMeasurementUnitConversionsForIngredientsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidMeasurementUnitConversionsForIngredientsInvocation) (*mcp.CallToolResult, *GetValidMeasurementUnitConversionsForIngredientsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetValidMeasurementUnitConversionsForIngredients(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionsForIngredientsRequest{
-			ValidIngredientIds: x.ValidIngredientIDs,
-		})
+		results, err := h.mealplanningRepo.GetValidMeasurementUnitConversionsForIngredients(ctx, x.ValidIngredientIDs)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetValidMeasurementUnitConversionsForIngredientsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(result))
-		}
-
+		out.Results = results
 		return nil, out, nil
-	}
-}
-
-var validMeasurementUnitConversionCreationTool = &mcp.Tool{
-	Name:        "CreateValidMeasurementUnitConversion",
-	Description: "Create a valid measurement unit conversion.",
-	InputSchema: schemaObject(map[string]any{
-		"From":              stringField("The ID of the measurement unit to convert from"),
-		"To":                stringField("The ID of the measurement unit to convert to"),
-		"Modifier":          floatField("The conversion modifier (multiplier to convert from 'From' unit to 'To' unit)"),
-		"Notes":             stringField("Notes about the measurement unit conversion"),
-		"OnlyForIngredient": stringField("The ID of the ingredient this conversion is specific to (optional, if not provided, conversion is universal)"),
-	}),
-	OutputSchema: schemaObject(validMeasurementUnitConversionsSchema),
-}
-
-func (h *mcpToolManager) CreateValidMeasurementUnitConversion() mcp.ToolHandlerFor[*mealplanning.ValidMeasurementUnitConversionCreationRequestInput, *mealplanning.ValidMeasurementUnitConversion] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidMeasurementUnitConversionCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnitConversion, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateValidMeasurementUnitConversion(ctx, &mealplanninggrpc.CreateValidMeasurementUnitConversionRequest{Input: mealplanningconverters.ConvertCreateValidMeasurementUnitConversionRequestToGRPCValidMeasurementUnitConversionCreationRequestInput(x)})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(result.Result), nil
-	}
-}
-
-type (
-	UpdateValidMeasurementUnitConversionInvocation struct {
-		*mealplanning.ValidMeasurementUnitConversionUpdateRequestInput
-		ValidMeasurementUnitConversionID string `jsonschema:"required,description=The measurement unit conversion ID"`
-	}
-)
-
-var validMeasurementUnitConversionUpdateTool = &mcp.Tool{
-	Name:        "UpdateValidMeasurementUnitConversion",
-	Description: "Update a valid measurement unit conversion.",
-	InputSchema: schemaObject(map[string]any{
-		"ValidMeasurementUnitConversionID": stringField("The ID of the valid measurement unit conversion to update"),
-		"From":                             stringField("The ID of the measurement unit to convert from"),
-		"To":                               stringField("The ID of the measurement unit to convert to"),
-		"Modifier":                         floatField("The conversion modifier (multiplier to convert from 'From' unit to 'To' unit)"),
-		"Notes":                            stringField("Notes about the measurement unit conversion"),
-		"OnlyForIngredient":                stringField("The ID of the ingredient this conversion is specific to (optional, if not provided, conversion is universal)"),
-	}),
-	OutputSchema: schemaObject(validMeasurementUnitConversionsSchema),
-}
-
-func (h *mcpToolManager) UpdateValidMeasurementUnitConversion() mcp.ToolHandlerFor[*UpdateValidMeasurementUnitConversionInvocation, *mealplanning.ValidMeasurementUnitConversion] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidMeasurementUnitConversionInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnitConversion, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateValidMeasurementUnitConversion(ctx, &mealplanninggrpc.UpdateValidMeasurementUnitConversionRequest{
-			ValidMeasurementUnitConversionId: x.ValidMeasurementUnitConversionID,
-			Input:                            mealplanningconverters.ConvertValidMeasurementUnitConversionUpdateRequestInputToGRPCValidMeasurementUnitConversionUpdateRequestInput(x.ValidMeasurementUnitConversionUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(result.Result), nil
 	}
 }
 

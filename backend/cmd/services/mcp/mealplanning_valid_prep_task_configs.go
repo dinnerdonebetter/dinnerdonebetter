@@ -4,9 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
 
@@ -45,19 +42,16 @@ var getValidPrepTaskConfigTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidPrepTaskConfig() mcp.ToolHandlerFor[*GetValidPrepTaskConfigInvocation, *mealplanning.ValidPrepTaskConfig] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigInvocation) (*mcp.CallToolResult, *mealplanning.ValidPrepTaskConfig, error) {
-		c, err := h.clientFromRequest(req)
+		if _, err := h.userFromRequest(req); err != nil {
+			return nil, nil, err
+		}
+
+		result, err := h.mealplanningRepo.GetValidPrepTaskConfig(ctx, x.ValidPrepTaskConfigID)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		result, err := c.GetValidPrepTaskConfig(ctx, &mealplanninggrpc.GetValidPrepTaskConfigRequest{
-			ValidPrepTaskConfigId: x.ValidPrepTaskConfigID,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(result.Result), nil
+		return nil, result, nil
 	}
 }
 
@@ -84,23 +78,17 @@ var getValidPrepTaskConfigsTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidPrepTaskConfigs() mcp.ToolHandlerFor[*GetValidPrepTaskConfigsInvocation, *GetValidPrepTaskConfigsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigsInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetValidPrepTaskConfigs(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsRequest{
-			Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetValidPrepTaskConfigs(ctx, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetValidPrepTaskConfigsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
 	}
 }
@@ -126,24 +114,17 @@ var getValidPrepTaskConfigsByIngredientTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidPrepTaskConfigsByIngredient() mcp.ToolHandlerFor[*GetValidPrepTaskConfigsByIngredientInvocation, *GetValidPrepTaskConfigsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigsByIngredientInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetValidPrepTaskConfigsByIngredient(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientRequest{
-			ValidIngredientId: x.ValidIngredientID,
-			Filter:            grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetValidPrepTaskConfigsForIngredient(ctx, x.ValidIngredientID, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetValidPrepTaskConfigsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
 	}
 }
@@ -169,24 +150,17 @@ var getValidPrepTaskConfigsByPreparationTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidPrepTaskConfigsByPreparation() mcp.ToolHandlerFor[*GetValidPrepTaskConfigsByPreparationInvocation, *GetValidPrepTaskConfigsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigsByPreparationInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetValidPrepTaskConfigsByPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByPreparationRequest{
-			ValidPreparationId: x.ValidPreparationID,
-			Filter:             grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetValidPrepTaskConfigsForPreparation(ctx, x.ValidPreparationID, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetValidPrepTaskConfigsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
 	}
 }
@@ -214,102 +188,17 @@ var getValidPrepTaskConfigsByIngredientAndPreparationTool = &mcp.Tool{
 
 func (h *mcpToolManager) GetValidPrepTaskConfigsByIngredientAndPreparation() mcp.ToolHandlerFor[*GetValidPrepTaskConfigsByIngredientAndPreparationInvocation, *GetValidPrepTaskConfigsResult] {
 	return func(ctx context.Context, req *mcp.CallToolRequest, x *GetValidPrepTaskConfigsByIngredientAndPreparationInvocation) (*mcp.CallToolResult, *GetValidPrepTaskConfigsResult, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
+		if _, err := h.userFromRequest(req); err != nil {
 			return nil, nil, err
 		}
 
-		results, err := c.GetValidPrepTaskConfigsByIngredientAndPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientAndPreparationRequest{
-			ValidIngredientId:  x.ValidIngredientID,
-			ValidPreparationId: x.ValidPreparationID,
-			Filter:             grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-		})
+		results, err := h.mealplanningRepo.GetValidPrepTaskConfigsForIngredientAndPreparation(ctx, x.ValidIngredientID, x.ValidPreparationID, x.Filter)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		out := &GetValidPrepTaskConfigsResult{}
-		for _, result := range results.Results {
-			out.Results = append(out.Results, mealplanningconverters.ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(result))
-		}
-
+		out.Results = results.Data
 		return nil, out, nil
-	}
-}
-
-var validPrepTaskConfigCreationTool = &mcp.Tool{
-	Name:        "CreateValidPrepTaskConfig",
-	Description: "Create a valid prep task config defining how long a prepped ingredient can be stored. For example, diced onions can be stored for 72 hours in an airtight container at refrigerator temperature.",
-	InputSchema: schemaObject(map[string]any{
-		"StorageDurationInSeconds":    uint32RangeWithOptionalMaxSchema(),
-		"StorageTemperatureInCelsius": optionalFloat32RangeSchema(),
-		"StorageType":                 stringField("The type of storage container (e.g., covered, airtight, uncovered)"),
-		"StorageInstructions":         stringField("Instructions for how to store the prepped ingredient"),
-		"Notes":                       stringField("Additional notes about the prep task config"),
-		"Source":                      stringField("The source of this prep task config information"),
-		"ValidPreparationID":          stringField("The MealPlanTaskID of the valid preparation (required)"),
-		"ValidIngredientID":           stringField("The MealPlanTaskID of the valid ingredient (required)"),
-	}),
-	OutputSchema: schemaObject(validPrepTaskConfigsSchema),
-}
-
-func (h *mcpToolManager) CreateValidPrepTaskConfig() mcp.ToolHandlerFor[*mealplanning.ValidPrepTaskConfigCreationRequestInput, *mealplanning.ValidPrepTaskConfig] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *mealplanning.ValidPrepTaskConfigCreationRequestInput) (*mcp.CallToolResult, *mealplanning.ValidPrepTaskConfig, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.CreateValidPrepTaskConfig(ctx, &mealplanninggrpc.CreateValidPrepTaskConfigRequest{
-			Input: mealplanningconverters.ConvertValidPrepTaskConfigCreationRequestInputToGRPCValidPrepTaskConfigCreationRequestInput(x),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(result.Result), nil
-	}
-}
-
-type (
-	UpdateValidPrepTaskConfigInvocation struct {
-		*mealplanning.ValidPrepTaskConfigUpdateRequestInput
-		ValidPrepTaskConfigID string `jsonschema:"required,description=The prep task config MealPlanTaskID"`
-	}
-)
-
-var validPrepTaskConfigUpdateTool = &mcp.Tool{
-	Name:        "UpdateValidPrepTaskConfig",
-	Description: "Update a valid prep task config.",
-	InputSchema: schemaObject(map[string]any{
-		"ValidPrepTaskConfigID":       stringField("The MealPlanTaskID of the valid prep task config to update"),
-		"StorageDurationInSeconds":    uint32RangeWithOptionalMaxSchema(),
-		"StorageTemperatureInCelsius": optionalFloat32RangeSchema(),
-		"StorageType":                 stringField("The type of storage container"),
-		"StorageInstructions":         stringField("Instructions for how to store the prepped ingredient"),
-		"Notes":                       stringField("Additional notes about the prep task config"),
-		"Source":                      stringField("The source of this prep task config information"),
-		"ValidPreparationID":          stringField("The MealPlanTaskID of the valid preparation"),
-		"ValidIngredientID":           stringField("The MealPlanTaskID of the valid ingredient"),
-	}),
-	OutputSchema: schemaObject(validPrepTaskConfigsSchema),
-}
-
-func (h *mcpToolManager) UpdateValidPrepTaskConfig() mcp.ToolHandlerFor[*UpdateValidPrepTaskConfigInvocation, *mealplanning.ValidPrepTaskConfig] {
-	return func(ctx context.Context, req *mcp.CallToolRequest, x *UpdateValidPrepTaskConfigInvocation) (*mcp.CallToolResult, *mealplanning.ValidPrepTaskConfig, error) {
-		c, err := h.clientFromRequest(req)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		result, err := c.UpdateValidPrepTaskConfig(ctx, &mealplanninggrpc.UpdateValidPrepTaskConfigRequest{
-			ValidPrepTaskConfigId: x.ValidPrepTaskConfigID,
-			Input:                 mealplanningconverters.ConvertValidPrepTaskConfigUpdateRequestInputToGRPCValidPrepTaskConfigUpdateRequestInput(x.ValidPrepTaskConfigUpdateRequestInput),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nil, mealplanningconverters.ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(result.Result), nil
 	}
 }
