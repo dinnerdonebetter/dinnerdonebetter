@@ -52,7 +52,7 @@ Structure your subtests with the happy path (successful operation) as the first 
 
 - **Unit tests**: Place alongside the code they test (`*_test.go` files)
 - **Integration tests**: Located in `testing/integration/` directory
-- **Test utilities**: Shared helpers in `internal/platform/testutils/`
+- **Test utilities**: Shared helpers in `github.com/verygoodsoftwarenotvirus/platform/v4/testutils`
 
 Note: The `tests/` directory contains only integration tests, not unit tests.
 
@@ -91,17 +91,21 @@ This codebase follows strict error handling practices:
 
 ```text
 internal/
+├── authentication/  # Auth manager, tokens, WebAuthn
+├── authorization/   # RBAC, permissions
+├── build/           # DI (samber/do) and router construction
+├── config/          # Configuration structs, env var loading
 ├── domain/          # Business logic and types
-├── platform/        # Infrastructure and utilities
 ├── repositories/    # Data access layer
 └── services/        # Application services
 ```
 
+The platform framework (database, cache, observability, messaging, etc.) is an external dependency at `github.com/verygoodsoftwarenotvirus/platform/v4`.
+
 #### Package Dependencies
 
-- Domain packages should not import platform packages
 - Keep dependencies flowing downward in the architecture
-- Use dependency injection (wire.go files)
+- Use dependency injection (samber/do service locator)
 
 ### Linting and Code Quality
 
@@ -144,7 +148,7 @@ The project uses `golangci-lint` with custom configuration:
 ### Functions and Methods
 
 - **Constructors**: Use `New` prefix (e.g., `NewService`, `NewGenerator`)
-- **Wire providers**: Many use `Provide` prefix but not universally enforced
+- **Providers**: Many use `Provide` prefix but not universally enforced
 - **Converters**: Use `Convert` prefix describing the transformation
 
 ## Struct Design Patterns
@@ -176,43 +180,9 @@ type (
 )
 ```
 
-## Dependency Injection with Wire
+## Dependency Injection with samber/do
 
-### Wire File Structure
-
-Each package that participates in dependency injection should have a `wire.go` file:
-
-```go
-package mypackage
-
-import "github.com/google/wire"
-
-var (
-    // Providers represents this package's offering to the dependency injector.
-    Providers = wire.NewSet(
-        NewService,
-        ProvideConfigFromEnvironment,
-        wire.FieldsOf(new(*Config), "Database", "Logger"),
-    )
-)
-```
-
-### Provider Functions
-
-Wire provider functions should be clearly named and documented:
-
-```go
-// ProvideHTTPServerConfigFromAPIServiceConfig extracts HTTP config from API service config.
-func ProvideHTTPServerConfigFromAPIServiceConfig(cfg *APIServiceConfig) http.Config {
-    return cfg.HTTPServer
-}
-```
-
-### Wire Sets Organization
-
-- **Package-level providers**: Group all providers a package offers
-- **Descriptive variable names**: Use `Providers`, `ConfigProviders`, `ServiceProviders` etc.
-- **Logical grouping**: Group related provider functions together
+The project uses [`samber/do`](https://github.com/samber/do) as a service locator for dependency injection. The DI container is built in `internal/build/services/api/grpc/build.go` via `BuildInjector`, which creates a `do.RootScope` and registers all services, repositories, and managers.
 
 ## Common Patterns
 
@@ -269,7 +239,7 @@ type Logger interface {
 
 ### Directory Organization
 
-The codebase follows a clean architecture approach with a framework-like platform layer:
+The codebase follows a clean architecture approach. The platform framework (`github.com/verygoodsoftwarenotvirus/platform/v4`) is an external dependency providing infrastructure (database, cache, observability, messaging, etc.).
 
 ```text
 ├── artifacts/           # Gitignored folder for temporary files and coverage output
@@ -278,11 +248,12 @@ The codebase follows a clean architecture approach with a framework-like platfor
 │   │   └── async_message_handler/  # Async message processing function
 │   ├── playground/      # Gitignored development sandbox for testing library interactions
 │   ├── services/        # Main application services
-│   │   └── api/         # Primary API server (HTTP + gRPC)
+│   │   ├── api/         # Primary API server (HTTP + gRPC)
+│   │   └── admin/       # Admin web app
 │   ├── tools/           # Repository-specific development tools
 │   │   ├── codegen/     # Code generation utilities
 │   │   │   ├── configs/     # Configuration struct generation
-│   │   │   ├── queries/     # Database query generation  
+│   │   │   ├── queries/     # Database query generation
 │   │   │   └── valid_env_vars/ # Environment variable validation
 │   │   ├── search_index_initializer/ # Search index setup (disabled)
 │   │   └── sqlc_struct_checker/      # Database struct validation
@@ -300,97 +271,43 @@ The codebase follows a clean architecture approach with a framework-like platfor
 │   │   └── testing/     # Testing environment
 │   └── kustomize/       # Kubernetes customization configs
 ├── internal/            # Private application code
-│   ├── authentication/ # Authentication utilities and implementations
+│   ├── authentication/  # Auth manager, tokens (JWT/PASETO), WebAuthn
 │   ├── authorization/   # Authorization and RBAC logic
-│   ├── build/           # Build-time dependency injection (Wire) and router construction
+│   ├── build/           # Dependency injection (samber/do) and router construction
 │   ├── config/          # Configuration management
 │   ├── domain/          # Business logic, entities, and domain services
-│   │   ├── audit/           # Audit logging domain
-│   │   ├── auth/            # Authentication domain
-│   │   ├── dataprivacy/     # Data privacy and GDPR compliance
-│   │   ├── identity/        # User and account management
-│   │   ├── maintenance/     # System maintenance operations
-│   │   ├── mealplanning/    # Core meal planning business logic
-│   │   ├── notifications/   # Notification system
-│   │   ├── oauth/           # OAuth2 implementation
-│   │   ├── settings/        # User and system settings
-│   │   └── webhooks/        # Webhook management
 │   ├── functions/       # Cloud function implementations
-│   ├── grpc/            # gRPC service implementations and generated code
-│   ├── platform/        # Framework-like infrastructure toolkit
-│   │   ├── analytics/       # Analytics and metrics collection
-│   │   ├── cache/           # Caching abstractions and implementations
-│   │   ├── capitalism/      # Payment processing infrastructure (never fully implemented)
-│   │   ├── circuitbreaking/ # Circuit breaker patterns for resilience
-│   │   ├── compression/     # Data compression utilities
-│   │   ├── cryptography/    # Encryption, hashing, and crypto utilities
-│   │   ├── database/        # Database abstractions and implementations
-│   │   ├── email/           # Email sending abstractions
-│   │   ├── encoding/        # JSON/XML encoding and content negotiation
-│   │   ├── fake/            # Test data generation utilities
-│   │   ├── featureflags/    # Feature flag management
-│   │   ├── identifiers/     # ID generation (UUIDs, etc.)
-│   │   ├── internalerrors/  # Internal error handling utilities
-│   │   ├── messagequeue/    # Message queue abstractions
-│   │   ├── observability/   # Logging, tracing, and metrics
-│   │   ├── panicking/       # Panic recovery and testing utilities
-│   │   ├── pointer/         # Pointer utility functions
-│   │   ├── qrcodes/         # QR code generation
-│   │   ├── random/          # Secure random number generation
-│   │   ├── routing/         # HTTP routing abstractions
-│   │   ├── search/          # Text and vector search indexing
-│   │   ├── server/          # HTTP/gRPC server utilities
-│   │   ├── testutils/       # Testing utilities and helpers
-│   │   ├── types/           # Common type definitions
-│   │   └── uploads/         # File upload handling
-│   ├── repositories/    # Data access implementations
-│   │   └── postgres/        # PostgreSQL-specific implementations
-│   └── services/        # Application services and handlers
-│       ├── audit/           # Audit service
-│       ├── auth/            # Authentication service
-│       ├── dataprivacy/     # Data privacy service
-│       ├── identity/        # Identity management service
-│       ├── internalops/     # Internal operations service
-│       ├── mealplanning/    # Meal planning service
-│       ├── notifications/   # Notification service
-│       ├── oauth/           # OAuth2 service
-│       ├── settings/        # Settings service
-│       └── webhooks/        # Webhook service
+│   ├── grpc/            # gRPC converters and generated code
+│   ├── repositories/    # Data access implementations (Postgres via sqlc)
+│   └── services/        # Application services and handlers (gRPC + HTTP)
 ├── pkg/                 # Public API packages
 │   └── client/          # Public API client library for external consumers
-├── testing/              # Integration and load tests
+├── testing/             # Integration and load tests
 │   ├── integration/
 │   │   └── apiserver/   # API server integration tests
 │   └── load/            # k6 load tests
 └── vendor/              # Go module dependencies (vendored)
 ```
 
-### Platform as Framework Philosophy
+### Platform as External Framework
 
-**`internal/platform`** is designed as a complete, reusable toolkit that could theoretically support any application - not just meal planning. Think of it as an internal framework providing:
+The platform framework lives in a separate repo at `github.com/verygoodsoftwarenotvirus/platform/v4`. It provides domain-agnostic infrastructure:
 
 - **Infrastructure abstractions**: Database clients, message queues, caching
-- **Utilities**: ID generation, encoding, compression, cryptography  
+- **Utilities**: ID generation, encoding, compression, cryptography
 - **Observability**: Logging, tracing, metrics collection
 - **Search capabilities**: Text indexing, vector search (future-ready)
 - **File handling**: Upload management and processing
 
-The goal is that everything needed to build the business logic exists in platform, but nothing meal-planning-specific lives there.
+Nothing meal-planning-specific lives in the platform package.
 
 ### Package Import Rules
 
-The architecture treats `internal/platform` as an internal framework:
-
-- **Platform packages**: Should contain no business-logic or domain-specific code
-- **Domain packages**: Can freely import platform utilities (it's your framework)
-- **Services**: Can import both domain and platform packages  
+- **Platform**: External dependency with no business-logic or domain-specific code
+- **Domain packages**: Can freely import platform utilities
+- **Services**: Can import both domain and platform packages
 - **Repositories**: Implement domain interfaces using platform infrastructure
 - **cmd/ binaries**: Import whatever they need to compile and run
-
-**Current State vs. Intended:**
-
-- Some auth concepts currently exist in platform but will be moved to domain
-- The goal is complete separation where platform could support any business domain
 
 ### Generated Code
 
@@ -435,7 +352,7 @@ Everything in `cmd/` compiles to a binary:
 1. **Read the existing tests** in your area of focus to understand patterns
 2. **Follow the subtest structure** even for simple tests  
 3. **Use the linter** to catch common issues early
-4. **Study the wire.go files** to understand dependency relationships
+4. **Study `internal/build/`** to understand dependency injection setup
 5. **Look at similar implementations** before writing new code
 6. **Run the full test suite** before submitting changes
 
