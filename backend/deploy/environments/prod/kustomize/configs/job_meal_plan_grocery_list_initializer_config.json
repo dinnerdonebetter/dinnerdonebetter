@@ -50,6 +50,10 @@
 	},
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "pubsub",
 			"sqs": {
 				"queueAddress": ""
@@ -63,6 +67,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "pubsub",
 			"sqs": {
 				"queueAddress": ""
@@ -107,7 +115,8 @@
 				"enableHostMetrics": false
 			},
 			"serviceName": "meal_plan_grocery_list_initializer",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {

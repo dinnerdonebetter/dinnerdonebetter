@@ -9,6 +9,10 @@
 	},
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -24,6 +28,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -49,7 +57,8 @@
 			"provider": "slog"
 		},
 		"metrics": {
-			"serviceName": "mobile_notification_scheduler"
+			"serviceName": "mobile_notification_scheduler",
+			"enabled": false
 		},
 		"tracing": {
 			"service_name": "mobile_notification_scheduler"

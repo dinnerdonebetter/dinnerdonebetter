@@ -13,7 +13,12 @@
 			"rootDirectory": "/tmp"
 		},
 		"bucketName": "userdata",
-		"provider": "filesystem"
+		"provider": "filesystem",
+		"circuitBreakerConfig": {
+			"name": "",
+			"circuitBreakerErrorPercentage": 0,
+			"circuitBreakerMinimumOccurrenceThreshold": 0
+		}
 	},
 	"pushNotifications": {
 		"apns": null,
@@ -26,6 +31,10 @@
 	"baseURL": "",
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -41,6 +50,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -85,7 +98,8 @@
 				"enableHostMetrics": false
 			},
 			"serviceName": "async_message_handler",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {
@@ -118,6 +132,7 @@
 		"mailjet": null,
 		"resend": null,
 		"postmark": null,
+		"ses": null,
 		"provider": "",
 		"baseURL": "",
 		"outboundInvitesEmailAddress": "",

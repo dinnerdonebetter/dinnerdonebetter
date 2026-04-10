@@ -26,6 +26,10 @@
 	"baseURL": "",
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -41,6 +45,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -66,7 +74,8 @@
 			"provider": "slog"
 		},
 		"metrics": {
-			"serviceName": "api_server"
+			"serviceName": "api_server",
+			"enabled": false
 		},
 		"tracing": {
 			"service_name": "api_server"
@@ -100,6 +109,7 @@
 		"mailjet": null,
 		"resend": null,
 		"postmark": null,
+		"ses": null,
 		"provider": "",
 		"baseURL": "",
 		"outboundInvitesEmailAddress": "",
@@ -195,7 +205,12 @@
 			"uploads": {
 				"storageConfig": {
 					"bucketName": "avatars",
-					"provider": "memory"
+					"provider": "memory",
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
 				},
 				"debug": false
 			}
@@ -207,7 +222,12 @@
 						"rootDirectory": "/tmp"
 					},
 					"bucketName": "userdata",
-					"provider": "filesystem"
+					"provider": "filesystem",
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
 				},
 				"debug": false
 			}
@@ -216,7 +236,12 @@
 			"uploads": {
 				"storageConfig": {
 					"bucketName": "avatars",
-					"provider": "memory"
+					"provider": "memory",
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
 				},
 				"debug": false
 			}
@@ -224,7 +249,13 @@
 		"mealPlanning": {
 			"mediaUploadPrefix": "",
 			"uploads": {
-				"storageConfig": {},
+				"storageConfig": {
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
+				},
 				"debug": false
 			},
 			"useSearchService": false

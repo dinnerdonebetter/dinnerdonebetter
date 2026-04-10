@@ -1,11 +1,10 @@
 {
-	"apiServiceConfig": {
-		"httpAPIServerURL": "https://http-api.dinnerdonebetter.com",
-		"grpcAPIServerURL": "https://api.dinnerdonebetter.com",
-		"username": "",
-		"password": "",
-		"oauth2APIClientID": "",
-		"oauth2APIClientSecret": ""
+	"routing": {
+		"chiConfig": {
+			"serviceName": "dinner_done_better_mcp_server",
+			"enableCORSForLocalhost": true
+		},
+		"provider": "chi"
 	},
 	"observability": {
 		"profiling": {
@@ -38,7 +37,8 @@
 				"enableHostMetrics": false
 			},
 			"serviceName": "dinner_done_better_mcp_server",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {
@@ -50,16 +50,6 @@
 			"spanCollectionProbability": 1
 		}
 	},
-	"routing": {
-		"chiConfig": {
-			"serviceName": "dinner_done_better_mcp_server",
-			"enableCORSForLocalhost": true
-		},
-		"provider": "chi"
-	},
-	"grpc": {
-		"port": 0
-	},
 	"meta": {
 		"runMode": "production",
 		"debug": false
@@ -68,5 +58,38 @@
 		"startupDeadline": 60000000000,
 		"port": 8000,
 		"debug": false
+	},
+	"database": {
+		"encryption": {
+			"provider": "salsa20"
+		},
+		"oauth2TokenEncryptionKey": "",
+		"userDeviceTokenEncryptionKey": "",
+		"provider": "postgres",
+		"readConnection": {
+			"username": "mcp_server",
+			"password": "",
+			"database": "dinner-done-better",
+			"hostname": "",
+			"port": 5432,
+			"disableSSL": false
+		},
+		"writeConnection": {
+			"username": "mcp_server",
+			"password": "",
+			"database": "dinner-done-better",
+			"hostname": "",
+			"port": 5432,
+			"disableSSL": false
+		},
+		"pingWaitPeriod": 1000000000,
+		"maxPingAttempts": 50,
+		"connMaxLifetime": 1800000000000,
+		"maxIdleConns": 5,
+		"maxOpenConns": 7,
+		"debug": false,
+		"logQueries": false,
+		"runMigrations": true,
+		"enableDatabaseMetrics": false
 	}
 }

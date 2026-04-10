@@ -13,7 +13,12 @@
 			"bucketName": "userdata.dinnerdonebetter.com"
 		},
 		"bucketName": "userdata.dinnerdonebetter.com",
-		"provider": "gcp"
+		"provider": "gcp",
+		"circuitBreakerConfig": {
+			"name": "",
+			"circuitBreakerErrorPercentage": 0,
+			"circuitBreakerMinimumOccurrenceThreshold": 0
+		}
 	},
 	"pushNotifications": {
 		"apns": {
@@ -34,6 +39,10 @@
 	"baseURL": "",
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "pubsub",
 			"sqs": {
 				"queueAddress": ""
@@ -47,6 +56,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "pubsub",
 			"sqs": {
 				"queueAddress": ""
@@ -91,7 +104,8 @@
 				"enableHostMetrics": true
 			},
 			"serviceName": "async_message_handler",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {
@@ -152,6 +166,7 @@
 			"apiToken": "placeholder"
 		},
 		"postmark": null,
+		"ses": null,
 		"provider": "resend",
 		"baseURL": "",
 		"outboundInvitesEmailAddress": "",

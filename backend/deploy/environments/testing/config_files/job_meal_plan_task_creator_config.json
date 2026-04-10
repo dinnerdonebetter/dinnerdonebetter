@@ -24,6 +24,10 @@
 	},
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -39,6 +43,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -64,7 +72,8 @@
 			"provider": "slog"
 		},
 		"metrics": {
-			"serviceName": "meal_plan_task_creator"
+			"serviceName": "meal_plan_task_creator",
+			"enabled": false
 		},
 		"tracing": {
 			"service_name": "meal_plan_task_creator"

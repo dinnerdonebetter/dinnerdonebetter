@@ -12,7 +12,8 @@
 			"provider": "slog"
 		},
 		"metrics": {
-			"serviceName": "email_deliverability_test"
+			"serviceName": "email_deliverability_test",
+			"enabled": false
 		},
 		"tracing": {
 			"service_name": "email_deliverability_test"
@@ -24,6 +25,7 @@
 		"mailjet": null,
 		"resend": null,
 		"postmark": null,
+		"ses": null,
 		"provider": "",
 		"baseURL": "",
 		"outboundInvitesEmailAddress": "",
