@@ -6,12 +6,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	emaildeliverabilitytest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
 
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/config"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/config"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/config"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v5/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/httpclient"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging/config"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing/config"
 
 	"github.com/samber/do/v2"
 )

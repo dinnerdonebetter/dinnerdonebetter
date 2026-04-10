@@ -16,8 +16,9 @@ import (
 	_ "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/errors"
 	identityconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v5/errors"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v5/errors/grpc"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/featureflags"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -40,7 +41,7 @@ func (s *serviceImpl) EvaluateBooleanFeatureFlag(ctx context.Context, req *auths
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("feature_flag is required"), logger, span, codes.InvalidArgument, "feature_flag is required")
 	}
 
-	enabled, err := s.featureFlagManager.CanUseFeature(ctx, sessionContextData.GetUserID(), featureFlag)
+	enabled, err := s.featureFlagManager.CanUseFeature(ctx, featureFlag, featureflags.EvaluationContext{TargetingKey: sessionContextData.GetUserID()})
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to evaluate feature flag")
 	}
@@ -69,7 +70,7 @@ func (s *serviceImpl) EvaluateInt64FeatureFlag(ctx context.Context, req *authsvc
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("feature_flag is required"), logger, span, codes.InvalidArgument, "feature_flag is required")
 	}
 
-	value, err := s.featureFlagManager.GetInt64Value(ctx, sessionContextData.GetUserID(), featureFlag)
+	value, err := s.featureFlagManager.GetInt64Value(ctx, featureFlag, 0, featureflags.EvaluationContext{TargetingKey: sessionContextData.GetUserID()})
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to evaluate feature flag")
 	}
@@ -98,7 +99,7 @@ func (s *serviceImpl) EvaluateStringFeatureFlag(ctx context.Context, req *authsv
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(platformerrors.New("feature_flag is required"), logger, span, codes.InvalidArgument, "feature_flag is required")
 	}
 
-	value, err := s.featureFlagManager.GetStringValue(ctx, sessionContextData.GetUserID(), featureFlag)
+	value, err := s.featureFlagManager.GetStringValue(ctx, featureFlag, "", featureflags.EvaluationContext{TargetingKey: sessionContextData.GetUserID()})
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to evaluate feature flag")
 	}

@@ -13,11 +13,11 @@ import (
 	coreemails "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/emails"
 	coreindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/email"
-	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/email"
+	notifications "github.com/verygoodsoftwarenotvirus/platform/v5/notifications/mobile"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v5/search/text"
 )
 
 // handleIdentitySearchIndexUpdate handles search index updates for identity domain events.

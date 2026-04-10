@@ -11,9 +11,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
-	platformtypes "github.com/verygoodsoftwarenotvirus/platform/v4/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
+	platformtypes "github.com/verygoodsoftwarenotvirus/platform/v5/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -3,8 +3,8 @@ package converters
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/types"
 )
 
 // ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput creates a RecipeStepVesselUpdateRequestInput from a RecipeStepVessel.

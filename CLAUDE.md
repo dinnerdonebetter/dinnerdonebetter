@@ -13,7 +13,7 @@ Monorepo for a meal planning application built as a reusable service template.
 
 ## Template Philosophy
 
-This repo serves dual purposes: a working meal planning app and a reusable service template. The platform framework (database, cache, observability, messaging, etc.) lives in a separate repo at `github.com/verygoodsoftwarenotvirus/platform/v4` and is imported as a dependency. `internal/domain/mealplanning` is the example domain built on top. Someone should be able to fork this and swap the meal planning domain for their own without modifying core infrastructure.
+This repo serves dual purposes: a working meal planning app and a reusable service template. The platform framework (database, cache, observability, messaging, etc.) lives in a separate repo at `github.com/verygoodsoftwarenotvirus/platform/v5` and is imported as a dependency. `internal/domain/mealplanning` is the example domain built on top. Someone should be able to fork this and swap the meal planning domain for their own without modifying core infrastructure.
 
 ## Cross-Cutting Commands
 

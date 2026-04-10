@@ -20,7 +20,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"

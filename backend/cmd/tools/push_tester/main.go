@@ -6,11 +6,12 @@ import (
 	"log"
 	"strings"
 
-	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/apns"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/fcm"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	notifications "github.com/verygoodsoftwarenotvirus/platform/v5/notifications/mobile"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/notifications/mobile/apns"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/notifications/mobile/fcm"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
 
 	"github.com/spf13/pflag"
 )
@@ -58,6 +59,7 @@ func run() error {
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
 	tracerProvider := tracing.NewNoopTracerProvider()
+	metricsProvider := metrics.NewNoopMetricsProvider()
 
 	var sender notifications.PushNotificationSender
 
@@ -73,7 +75,7 @@ func run() error {
 			BundleID:    *bundleID,
 			Production:  *production,
 		}
-		apnsSender, err := apns.NewSender(apnsCfg, tracerProvider, logger)
+		apnsSender, err := apns.NewSender(apnsCfg, tracerProvider, logger, metricsProvider)
 		if err != nil {
 			return fmt.Errorf("creating APNs sender: %w", err)
 		}
@@ -81,7 +83,7 @@ func run() error {
 
 	case platformAndroid:
 		fcmCfg := &fcm.Config{CredentialsPath: *credentialsPath}
-		fcmSender, err := fcm.NewSender(ctx, fcmCfg, tracerProvider, logger)
+		fcmSender, err := fcm.NewSender(ctx, fcmCfg, tracerProvider, logger, metricsProvider)
 		if err != nil {
 			return fmt.Errorf("creating FCM sender: %w", err)
 		}

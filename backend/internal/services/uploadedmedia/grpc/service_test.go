@@ -6,9 +6,9 @@ import (
 	uploadedmediamock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia/mock"
 	uploadedmediasvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v5/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
 )

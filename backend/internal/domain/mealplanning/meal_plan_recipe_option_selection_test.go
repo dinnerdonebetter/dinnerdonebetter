@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -53,20 +53,20 @@ import (
 	waitlistssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/waitlists/grpc"
 	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/analytics/multisource"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v4/featureflags/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/config"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/config"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/qrcodes"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/server/grpc"
-	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/analytics/multisource"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
+	featureflagscfg "github.com/verygoodsoftwarenotvirus/platform/v5/featureflags/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/httpclient"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging/config"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/qrcodes"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/random"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/server/grpc"
+	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v5/uploads/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/uploads/objectstorage"
 
 	"github.com/samber/do/v2"
 )
@@ -95,6 +95,7 @@ func BuildInjector(
 	repositories.RegisterMigrator(i)
 	databasecfg.RegisterDatabase(i)
 	grpc.RegisterGRPCServer(i)
+	do.ProvideValue(i, qrcodes.Issuer("Dinner Done Better"))
 	qrcodes.RegisterBuilder(i)
 	uploadscfg.RegisterStorageConfig(i)
 	objectstorage.RegisterUploadManager(i)

@@ -10,12 +10,12 @@ import (
 	paymentsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/adapters"
 
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

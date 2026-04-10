@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/types"
 )
 
 // PanSearedSalmonFilletsRecipe creates the Crispy Pan-Seared Salmon Fillets recipe.

@@ -4,10 +4,10 @@ import (
 	"errors"
 	"testing"
 
-	emailmock "github.com/verygoodsoftwarenotvirus/platform/v4/email/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	emailmock "github.com/verygoodsoftwarenotvirus/platform/v5/email/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

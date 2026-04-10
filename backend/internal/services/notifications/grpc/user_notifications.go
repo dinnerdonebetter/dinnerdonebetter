@@ -11,7 +11,7 @@ import (
 	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v4/errors/grpc"
+	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v5/errors/grpc"
 
 	"google.golang.org/grpc/codes"
 )

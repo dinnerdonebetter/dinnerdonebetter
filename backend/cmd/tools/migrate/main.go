@@ -9,11 +9,11 @@ import (
 
 	postgresmigrations "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database/postgres"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
 
 	"github.com/spf13/cobra"
 )

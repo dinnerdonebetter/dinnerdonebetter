@@ -6,8 +6,8 @@ import (
 	"embed"
 	"fmt"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
 
 	"github.com/GuiaBolso/darwin"
 )

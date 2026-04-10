@@ -3,8 +3,8 @@ package dbcleaner
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
 
 	"github.com/samber/do/v2"
 )

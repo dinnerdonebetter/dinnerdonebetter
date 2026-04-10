@@ -16,16 +16,16 @@ import (
 	identityfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/qrcodes"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
-	randommock "github.com/verygoodsoftwarenotvirus/platform/v4/random/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/qrcodes"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/random"
+	randommock "github.com/verygoodsoftwarenotvirus/platform/v5/random/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/testutils"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
@@ -132,7 +132,7 @@ func TestProvideAuthManager(t *testing.T) {
 			&mockauthn.Authenticator{},
 			mpp,
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
-			qrcodes.NewBuilder(tracing.NewNoopTracerProvider(), logging.NewNoopLogger()),
+			qrcodes.NewBuilder(qrcodes.Issuer("test"), tracing.NewNoopTracerProvider(), logging.NewNoopLogger()),
 			queueCfg,
 		)
 
@@ -258,7 +258,7 @@ func TestProvideAuthManager_NilConfig(t *testing.T) {
 		&mockauthn.Authenticator{},
 		mpp,
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
-		qrcodes.NewBuilder(tracing.NewNoopTracerProvider(), logging.NewNoopLogger()),
+		qrcodes.NewBuilder(qrcodes.Issuer("test"), tracing.NewNoopTracerProvider(), logging.NewNoopLogger()),
 		nil, // nil config
 	)
 
@@ -780,7 +780,7 @@ func TestAuthManager_NewTOTPSecret_Success(t *testing.T) {
 	secretGen := &randommock.Generator{}
 	secretGen.On(reflection.GetMethodName(secretGen.GenerateBase32EncodedString), testutils.ContextMatcher, 64).Return("newsecretencoded", nil)
 
-	qrBuilder := qrcodes.NewBuilder(tracing.NewNoopTracerProvider(), logging.NewNoopLogger())
+	qrBuilder := qrcodes.NewBuilder(qrcodes.Issuer("test"), tracing.NewNoopTracerProvider(), logging.NewNoopLogger())
 
 	publisher := &mockpublishers.Publisher{}
 	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()

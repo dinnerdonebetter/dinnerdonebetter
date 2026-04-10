@@ -11,10 +11,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

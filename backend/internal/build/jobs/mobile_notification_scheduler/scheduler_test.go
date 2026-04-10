@@ -10,11 +10,11 @@ import (
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	mealplanningnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 
-	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/mock"
+	notifications "github.com/verygoodsoftwarenotvirus/platform/v5/notifications/mobile"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

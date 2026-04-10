@@ -10,10 +10,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
-	errorshttp "github.com/verygoodsoftwarenotvirus/platform/v4/errors/http"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+	errorshttp "github.com/verygoodsoftwarenotvirus/platform/v5/errors/http"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/types"
 
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"

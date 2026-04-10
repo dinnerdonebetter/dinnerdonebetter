@@ -17,10 +17,10 @@ import (
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	notificationsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/random"
 )
 
 const (

@@ -4,9 +4,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	queuetest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
 
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
 
 	"github.com/samber/do/v2"
 )

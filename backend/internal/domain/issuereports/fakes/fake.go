@@ -5,7 +5,7 @@ import (
 
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )

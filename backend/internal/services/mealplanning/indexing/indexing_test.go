@@ -6,12 +6,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
-	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v5/search/text"
+	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v5/search/text/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

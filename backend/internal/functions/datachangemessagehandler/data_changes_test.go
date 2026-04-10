@@ -17,9 +17,9 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
+	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/mock"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
+	textsearch "github.com/verygoodsoftwarenotvirus/platform/v5/search/text"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

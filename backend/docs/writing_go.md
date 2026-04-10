@@ -52,7 +52,7 @@ Structure your subtests with the happy path (successful operation) as the first 
 
 - **Unit tests**: Place alongside the code they test (`*_test.go` files)
 - **Integration tests**: Located in `testing/integration/` directory
-- **Test utilities**: Shared helpers in `github.com/verygoodsoftwarenotvirus/platform/v4/testutils`
+- **Test utilities**: Shared helpers in `github.com/verygoodsoftwarenotvirus/platform/v5/testutils`
 
 Note: The `tests/` directory contains only integration tests, not unit tests.
 
@@ -100,7 +100,7 @@ internal/
 └── services/        # Application services
 ```
 
-The platform framework (database, cache, observability, messaging, etc.) is an external dependency at `github.com/verygoodsoftwarenotvirus/platform/v4`.
+The platform framework (database, cache, observability, messaging, etc.) is an external dependency at `github.com/verygoodsoftwarenotvirus/platform/v5`.
 
 #### Package Dependencies
 
@@ -239,7 +239,7 @@ type Logger interface {
 
 ### Directory Organization
 
-The codebase follows a clean architecture approach. The platform framework (`github.com/verygoodsoftwarenotvirus/platform/v4`) is an external dependency providing infrastructure (database, cache, observability, messaging, etc.).
+The codebase follows a clean architecture approach. The platform framework (`github.com/verygoodsoftwarenotvirus/platform/v5`) is an external dependency providing infrastructure (database, cache, observability, messaging, etc.).
 
 ```text
 ├── artifacts/           # Gitignored folder for temporary files and coverage output
@@ -291,7 +291,7 @@ The codebase follows a clean architecture approach. The platform framework (`git
 
 ### Platform as External Framework
 
-The platform framework lives in a separate repo at `github.com/verygoodsoftwarenotvirus/platform/v4`. It provides domain-agnostic infrastructure:
+The platform framework lives in a separate repo at `github.com/verygoodsoftwarenotvirus/platform/v5`. It provides domain-agnostic infrastructure:
 
 - **Infrastructure abstractions**: Database clients, message queues, caching
 - **Utilities**: ID generation, encoding, compression, cryptography

@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
 
 	"github.com/samber/do/v2"
 )

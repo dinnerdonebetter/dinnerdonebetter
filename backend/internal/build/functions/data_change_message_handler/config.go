@@ -3,16 +3,16 @@ package datachangemessagehandler
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
-	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
+	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v5/analytics/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
+	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v5/email/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/encoding"
+	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v5/httpclient"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
+	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v5/notifications/mobile/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
+	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v5/search/text/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/uploads/objectstorage"
 
 	"github.com/samber/do/v2"
 )

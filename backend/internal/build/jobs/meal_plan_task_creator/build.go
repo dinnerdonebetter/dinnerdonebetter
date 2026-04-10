@@ -10,13 +10,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	mealplantaskcreator "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/config"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/config"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/config"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database/postgres"
+	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
+	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging/config"
+	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics/config"
+	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing/config"
 
 	"github.com/samber/do/v2"
 )

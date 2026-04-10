@@ -16,11 +16,11 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/retry"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database"
+	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
+	"github.com/verygoodsoftwarenotvirus/platform/v5/retry"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/assert"
@@ -167,7 +167,7 @@ func BuildDatabaseContainer(ctx context.Context, dbName string) (*postgres.Postg
 	// WriteConnection so ProvideDatabaseClient can open both handles.
 	dbConfig.WriteConnection = dbConfig.ReadConnection
 
-	db, err := dbConfig.ConnectToDatabase()
+	db, err := dbConfig.ConnectToWriteDatabase()
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to connect to postgres container: %w", err)
 	}
