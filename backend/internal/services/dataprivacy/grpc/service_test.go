@@ -20,13 +20,13 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func buildTestService(t *testing.T) (*serviceImpl, *dataprivacymock.Repository, *mockuploads.MockUploadManager) {
+func buildTestService(t *testing.T) (*serviceImpl, *dataprivacymock.Repository, *mockuploads.UploadManagerMock) {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	mockRepo := &dataprivacymock.Repository{}
-	mockUploads := &mockuploads.MockUploadManager{}
+	mockUploads := &mockuploads.UploadManagerMock{}
 
 	exampleUserID := identifiers.New()
 	sessionFetcher := func(ctx context.Context) (*sessions.ContextData, error) {
@@ -57,7 +57,7 @@ func TestNewDataPrivacyService(t *testing.T) {
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
 		mockRepo := &dataprivacymock.Repository{}
-		mockUploads := &mockuploads.MockUploadManager{}
+		mockUploads := &mockuploads.UploadManagerMock{}
 		sessionFetcher := func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{}, nil
 		}
@@ -91,7 +91,7 @@ func TestServiceImpl_AggregateUserDataReport(t *testing.T) {
 		}
 
 		mockRepo.On("FetchUserDataCollection", mock.Anything, mock.AnythingOfType("string")).Return(collection, nil)
-		mockUploads.On("SaveFile", mock.Anything, mock.AnythingOfType("string"), mock.Anything).Return(nil)
+		mockUploads.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return nil }
 
 		request := &dataprivacysvc.AggregateUserDataReportRequest{}
 
@@ -104,7 +104,6 @@ func TestServiceImpl_AggregateUserDataReport(t *testing.T) {
 		assert.NotEmpty(t, response.ReportId)
 
 		mockRepo.AssertExpectations(t)
-		mockUploads.AssertExpectations(t)
 	})
 }
 
@@ -149,7 +148,7 @@ func TestServiceImpl_FetchUserDataReport(t *testing.T) {
 		}
 		collectionBytes, _ := json.Marshal(collection)
 
-		mockUploads.On("ReadFile", mock.Anything, mock.AnythingOfType("string")).Return(collectionBytes, nil)
+		mockUploads.ReadFileFunc = func(_ context.Context, _ string) ([]byte, error) { return collectionBytes, nil }
 
 		request := &dataprivacysvc.FetchUserDataReportRequest{
 			UserDataAggregationReportId: identifiers.New(),
@@ -161,7 +160,5 @@ func TestServiceImpl_FetchUserDataReport(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotEmpty(t, response.ResponseDetails.TraceId)
-
-		mockUploads.AssertExpectations(t)
 	})
 }

@@ -1,6 +1,7 @@
 package waitlists
 
 import (
+	"database/sql"
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
@@ -8,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/primandproper/platform/database"
+	mockdatabase "github.com/primandproper/platform/database/mock"
 	"github.com/primandproper/platform/database/postgres"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
@@ -37,7 +38,7 @@ func buildDatabaseClientForTest(t *testing.T) (c *Repository, auditLogEntryRepo 
 func buildInertClientForTest(t *testing.T) *Repository {
 	t.Helper()
 
-	c := ProvideWaitlistsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{})
+	c := ProvideWaitlistsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &mockdatabase.ClientMock{ReadDBFunc: func() *sql.DB { return nil }, WriteDBFunc: func() *sql.DB { return nil }})
 
 	return c
 }

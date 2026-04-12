@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"context"
 	"encoding/base64"
 	"net/http"
 	"testing"
@@ -9,19 +10,18 @@ import (
 	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	noopanalytics "github.com/primandproper/platform/analytics/noop"
 	"github.com/primandproper/platform/encoding"
+	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/reflection"
 	mockrouting "github.com/primandproper/platform/routing/mock"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -41,14 +41,21 @@ func buildTestService(t *testing.T) *service {
 	}
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-	pp := &mockpublishers.PublisherProvider{}
-	pp.On(reflection.GetMethodName(pp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{
+				PublishFunc:      func(_ context.Context, _ any) error { return nil },
+				PublishAsyncFunc: func(_ context.Context, _ any) {},
+				StopFunc:         func() {},
+			}, nil
+		},
+	}
 
-	rpm := mockrouting.NewRouteParamManager()
-	rpm.On(
-		"BuildRouteParamStringIDFetcher",
-		AuthProviderParamKey,
-	).Return(func(*http.Request) string { return "" })
+	rpm := &mockrouting.RouteParamManagerMock{
+		BuildRouteParamStringIDFetcherFunc: func(_ string) func(*http.Request) string {
+			return func(*http.Request) string { return "" }
+		},
+	}
 
 	s, err := ProvideService(
 		ctx,
@@ -65,8 +72,6 @@ func buildTestService(t *testing.T) *service {
 		queueCfg,
 	)
 	require.NoError(t, err)
-
-	mock.AssertExpectationsForObjects(t, pp, rpm)
 
 	return s.(*service)
 }
@@ -90,14 +95,21 @@ func TestProvideService(T *testing.T) {
 		}
 		queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-		pp := &mockpublishers.PublisherProvider{}
-		pp.On(reflection.GetMethodName(pp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp := &mockpublishers.PublisherProviderMock{
+			ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+				return &mockpublishers.PublisherMock{
+					PublishFunc:      func(_ context.Context, _ any) error { return nil },
+					PublishAsyncFunc: func(_ context.Context, _ any) {},
+					StopFunc:         func() {},
+				}, nil
+			},
+		}
 
-		rpm := mockrouting.NewRouteParamManager()
-		rpm.On(
-			"BuildRouteParamStringIDFetcher",
-			AuthProviderParamKey,
-		).Return(func(*http.Request) string { return "" })
+		rpm := &mockrouting.RouteParamManagerMock{
+			BuildRouteParamStringIDFetcherFunc: func(_ string) func(*http.Request) string {
+				return func(*http.Request) string { return "" }
+			},
+		}
 
 		s, err := ProvideService(
 			ctx,

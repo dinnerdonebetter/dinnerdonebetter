@@ -1,6 +1,7 @@
 package oauth
 
 import (
+	"database/sql"
 	"testing"
 	"time"
 
@@ -9,8 +10,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/primandproper/platform/database"
 	databasecfg "github.com/primandproper/platform/database/config"
+	mockdatabase "github.com/primandproper/platform/database/mock"
 	"github.com/primandproper/platform/database/postgres"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
@@ -56,7 +57,7 @@ func buildInertClientForTest(t *testing.T) *repository {
 		OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
 	}
 
-	c := ProvideOAuthRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, config, &database.MockClient{})
+	c := ProvideOAuthRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, config, &mockdatabase.ClientMock{ReadDBFunc: func() *sql.DB { return nil }, WriteDBFunc: func() *sql.DB { return nil }})
 
 	return c.(*repository)
 }

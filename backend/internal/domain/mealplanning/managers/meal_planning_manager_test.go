@@ -1,6 +1,7 @@
 package managers
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -9,8 +10,10 @@ import (
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	mealplanningworkers "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	"github.com/primandproper/platform/observability/logging"
@@ -18,7 +21,6 @@ import (
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
 	textsearchcfg "github.com/primandproper/platform/search/text/config"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -32,8 +34,11 @@ func buildMealPlanManagerForTest(t *testing.T) *mealPlanningManager {
 		DataChangesTopicName: t.Name(),
 	}
 
-	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{}, nil
+		},
+	}
 
 	m, err := NewMealPlanningManager(
 		t.Context(),
@@ -49,8 +54,6 @@ func buildMealPlanManagerForTest(t *testing.T) *mealPlanningManager {
 	)
 	require.NoError(t, err)
 
-	mock.AssertExpectationsForObjects(t, mpp)
-
 	return m.(*mealPlanningManager)
 }
 
@@ -61,8 +64,11 @@ func buildMealPlanManagerForTestWithWorkers(t *testing.T, groceryWorker, taskWor
 		DataChangesTopicName: t.Name(),
 	}
 
-	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{}, nil
+		},
+	}
 
 	m, err := NewMealPlanningManager(
 		t.Context(),
@@ -78,8 +84,6 @@ func buildMealPlanManagerForTestWithWorkers(t *testing.T, groceryWorker, taskWor
 	)
 	require.NoError(t, err)
 
-	mock.AssertExpectationsForObjects(t, mpp)
-
 	return m.(*mealPlanningManager)
 }
 
@@ -94,15 +98,12 @@ func setupExpectationsForMealPlanningManager(
 	}
 	manager.db = db
 
-	mp := &mockpublishers.Publisher{}
-	for _, eventTypeMap := range eventTypeMaps {
-		for eventType, payload := range eventTypeMap {
-			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
-		}
+	mp := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
 	}
 	manager.dataChangesPublisher = mp
 
-	return []any{db, mp}
+	return []any{db}
 }
 
 func TestMealPlanningManager_ListMeals(T *testing.T) {

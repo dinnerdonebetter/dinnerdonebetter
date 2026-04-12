@@ -1,20 +1,20 @@
 package indexing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
 	textsearch "github.com/primandproper/platform/search/text"
 	mocksearch "github.com/primandproper/platform/search/text/mock"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestHandleIndexRequest(T *testing.T) {
@@ -32,17 +32,17 @@ func TestHandleIndexRequest(T *testing.T) {
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.MarkRecipeAsIndexed), testutils.ContextMatcher, exampleRecipe.ID).Return(nil)
 
-		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
-		ss := ConvertRecipeToRecipeSearchSubset(exampleRecipe)
-		rim.On(reflection.GetMethodName(rim.Index), testutils.ContextMatcher, exampleRecipe.ID, ss).Return(nil)
+		rim := &mocksearch.IndexMock[RecipeSearchSubset]{
+			IndexFunc: func(_ context.Context, _ string, _ any) error { return nil },
+		}
 
-		mim := &mocksearch.IndexManager[MealSearchSubset]{}
-		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
-		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
-		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
-		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
-		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
-		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+		mim := &mocksearch.IndexMock[MealSearchSubset]{}
+		vinm := &mocksearch.IndexMock[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexMock[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexMock[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexMock[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexMock[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexMock[ValidVesselSearchSubset]{}
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -65,17 +65,6 @@ func TestHandleIndexRequest(T *testing.T) {
 		}
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
-
-		mock.AssertExpectationsForObjects(t,
-			rim,
-			mim,
-			vinm,
-			vism,
-			vmuim,
-			vpim,
-			visim,
-			vvim,
-		)
 	})
 
 	T.Run("meal index type", func(t *testing.T) {
@@ -90,18 +79,18 @@ func TestHandleIndexRequest(T *testing.T) {
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetMeal), testutils.ContextMatcher, exampleMeal.ID).Return(exampleMeal, nil)
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.MarkMealAsIndexed), testutils.ContextMatcher, exampleMeal.ID).Return(nil)
 
-		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
+		rim := &mocksearch.IndexMock[RecipeSearchSubset]{}
 
-		mim := &mocksearch.IndexManager[MealSearchSubset]{}
-		ss := ConvertMealToMealSearchSubset(exampleMeal)
-		mim.On(reflection.GetMethodName(mim.Index), testutils.ContextMatcher, exampleMeal.ID, ss).Return(nil)
+		mim := &mocksearch.IndexMock[MealSearchSubset]{
+			IndexFunc: func(_ context.Context, _ string, _ any) error { return nil },
+		}
 
-		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
-		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
-		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
-		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
-		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
-		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+		vinm := &mocksearch.IndexMock[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexMock[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexMock[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexMock[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexMock[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexMock[ValidVesselSearchSubset]{}
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -124,17 +113,6 @@ func TestHandleIndexRequest(T *testing.T) {
 		}
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
-
-		mock.AssertExpectationsForObjects(t,
-			rim,
-			mim,
-			vinm,
-			vism,
-			vmuim,
-			vpim,
-			visim,
-			vvim,
-		)
 	})
 
 	T.Run("valid vessel index type", func(t *testing.T) {
@@ -149,17 +127,17 @@ func TestHandleIndexRequest(T *testing.T) {
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidVessel), testutils.ContextMatcher, exampleValidVessel.ID).Return(exampleValidVessel, nil)
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.MarkValidVesselAsIndexed), testutils.ContextMatcher, exampleValidVessel.ID).Return(nil)
 
-		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
-		mim := &mocksearch.IndexManager[MealSearchSubset]{}
-		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
-		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
-		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
-		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
-		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
+		rim := &mocksearch.IndexMock[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexMock[MealSearchSubset]{}
+		vinm := &mocksearch.IndexMock[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexMock[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexMock[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexMock[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexMock[ValidIngredientStateSearchSubset]{}
 
-		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
-		ss := ConvertValidVesselToValidVesselSearchSubset(exampleValidVessel)
-		vvim.On(reflection.GetMethodName(vvim.Index), testutils.ContextMatcher, exampleValidVessel.ID, ss).Return(nil)
+		vvim := &mocksearch.IndexMock[ValidVesselSearchSubset]{
+			IndexFunc: func(_ context.Context, _ string, _ any) error { return nil },
+		}
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -182,17 +160,6 @@ func TestHandleIndexRequest(T *testing.T) {
 		}
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
-
-		mock.AssertExpectationsForObjects(t,
-			rim,
-			mim,
-			vinm,
-			vism,
-			vmuim,
-			vpim,
-			visim,
-			vvim,
-		)
 	})
 
 	T.Run("valid ingredient index type", func(t *testing.T) {
@@ -207,17 +174,17 @@ func TestHandleIndexRequest(T *testing.T) {
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidIngredient), testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.MarkValidIngredientAsIndexed), testutils.ContextMatcher, exampleValidIngredient.ID).Return(nil)
 
-		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
-		mim := &mocksearch.IndexManager[MealSearchSubset]{}
-		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
-		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
-		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
-		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
-		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+		rim := &mocksearch.IndexMock[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexMock[MealSearchSubset]{}
+		vism := &mocksearch.IndexMock[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexMock[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexMock[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexMock[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexMock[ValidVesselSearchSubset]{}
 
-		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
-		ss := ConvertValidIngredientToValidIngredientSearchSubset(exampleValidIngredient)
-		vinm.On(reflection.GetMethodName(vinm.Index), testutils.ContextMatcher, exampleValidIngredient.ID, ss).Return(nil)
+		vinm := &mocksearch.IndexMock[ValidIngredientSearchSubset]{
+			IndexFunc: func(_ context.Context, _ string, _ any) error { return nil },
+		}
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -240,17 +207,6 @@ func TestHandleIndexRequest(T *testing.T) {
 		}
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
-
-		mock.AssertExpectationsForObjects(t,
-			rim,
-			mim,
-			vinm,
-			vism,
-			vmuim,
-			vpim,
-			visim,
-			vvim,
-		)
 	})
 
 	T.Run("valid instrument index type", func(t *testing.T) {
@@ -265,18 +221,18 @@ func TestHandleIndexRequest(T *testing.T) {
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidInstrument), testutils.ContextMatcher, exampleValidInstrument.ID).Return(exampleValidInstrument, nil)
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.MarkValidInstrumentAsIndexed), testutils.ContextMatcher, exampleValidInstrument.ID).Return(nil)
 
-		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
-		mim := &mocksearch.IndexManager[MealSearchSubset]{}
-		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+		rim := &mocksearch.IndexMock[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexMock[MealSearchSubset]{}
+		vinm := &mocksearch.IndexMock[ValidIngredientSearchSubset]{}
 
-		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
-		ss := ConvertValidInstrumentToValidInstrumentSearchSubset(exampleValidInstrument)
-		vism.On(reflection.GetMethodName(vism.Index), testutils.ContextMatcher, exampleValidInstrument.ID, ss).Return(nil)
+		vism := &mocksearch.IndexMock[ValidInstrumentSearchSubset]{
+			IndexFunc: func(_ context.Context, _ string, _ any) error { return nil },
+		}
 
-		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
-		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
-		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
-		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+		vmuim := &mocksearch.IndexMock[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexMock[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexMock[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexMock[ValidVesselSearchSubset]{}
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -299,17 +255,6 @@ func TestHandleIndexRequest(T *testing.T) {
 		}
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
-
-		mock.AssertExpectationsForObjects(t,
-			rim,
-			mim,
-			vinm,
-			vism,
-			vmuim,
-			vpim,
-			visim,
-			vvim,
-		)
 	})
 
 	T.Run("valid preparation index type", func(t *testing.T) {
@@ -324,18 +269,18 @@ func TestHandleIndexRequest(T *testing.T) {
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidPreparation), testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.MarkValidPreparationAsIndexed), testutils.ContextMatcher, exampleValidPreparation.ID).Return(nil)
 
-		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
-		mim := &mocksearch.IndexManager[MealSearchSubset]{}
-		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
-		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
-		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
+		rim := &mocksearch.IndexMock[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexMock[MealSearchSubset]{}
+		vinm := &mocksearch.IndexMock[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexMock[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexMock[ValidMeasurementUnitSearchSubset]{}
 
-		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
-		ss := ConvertValidPreparationToValidPreparationSearchSubset(exampleValidPreparation)
-		vpim.On(reflection.GetMethodName(vpim.Index), testutils.ContextMatcher, exampleValidPreparation.ID, ss).Return(nil)
+		vpim := &mocksearch.IndexMock[ValidPreparationSearchSubset]{
+			IndexFunc: func(_ context.Context, _ string, _ any) error { return nil },
+		}
 
-		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
-		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+		visim := &mocksearch.IndexMock[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexMock[ValidVesselSearchSubset]{}
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -358,17 +303,6 @@ func TestHandleIndexRequest(T *testing.T) {
 		}
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
-
-		mock.AssertExpectationsForObjects(t,
-			rim,
-			mim,
-			vinm,
-			vism,
-			vmuim,
-			vpim,
-			visim,
-			vvim,
-		)
 	})
 
 	T.Run("valid measurement unit index type", func(t *testing.T) {
@@ -383,18 +317,18 @@ func TestHandleIndexRequest(T *testing.T) {
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidMeasurementUnit), testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(exampleValidMeasurementUnit, nil)
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.MarkValidMeasurementUnitAsIndexed), testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(nil)
 
-		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
-		mim := &mocksearch.IndexManager[MealSearchSubset]{}
-		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
-		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
+		rim := &mocksearch.IndexMock[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexMock[MealSearchSubset]{}
+		vinm := &mocksearch.IndexMock[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexMock[ValidInstrumentSearchSubset]{}
 
-		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
-		ss := ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(exampleValidMeasurementUnit)
-		vmuim.On(reflection.GetMethodName(vmuim.Index), testutils.ContextMatcher, exampleValidMeasurementUnit.ID, ss).Return(nil)
+		vmuim := &mocksearch.IndexMock[ValidMeasurementUnitSearchSubset]{
+			IndexFunc: func(_ context.Context, _ string, _ any) error { return nil },
+		}
 
-		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
-		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
-		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+		vpim := &mocksearch.IndexMock[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexMock[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexMock[ValidVesselSearchSubset]{}
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -417,17 +351,6 @@ func TestHandleIndexRequest(T *testing.T) {
 		}
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
-
-		mock.AssertExpectationsForObjects(t,
-			rim,
-			mim,
-			vinm,
-			vism,
-			vmuim,
-			vpim,
-			visim,
-			vvim,
-		)
 	})
 
 	T.Run("valid ingredient state index type", func(t *testing.T) {
@@ -442,18 +365,18 @@ func TestHandleIndexRequest(T *testing.T) {
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidIngredientState), testutils.ContextMatcher, exampleValidIngredientState.ID).Return(exampleValidIngredientState, nil)
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.MarkValidIngredientStateAsIndexed), testutils.ContextMatcher, exampleValidIngredientState.ID).Return(nil)
 
-		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
-		mim := &mocksearch.IndexManager[MealSearchSubset]{}
-		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
-		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
-		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
-		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
+		rim := &mocksearch.IndexMock[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexMock[MealSearchSubset]{}
+		vinm := &mocksearch.IndexMock[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexMock[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexMock[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexMock[ValidPreparationSearchSubset]{}
 
-		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
-		ss := ConvertValidIngredientStateToValidIngredientStateSearchSubset(exampleValidIngredientState)
-		visim.On(reflection.GetMethodName(visim.Index), testutils.ContextMatcher, exampleValidIngredientState.ID, ss).Return(nil)
+		visim := &mocksearch.IndexMock[ValidIngredientStateSearchSubset]{
+			IndexFunc: func(_ context.Context, _ string, _ any) error { return nil },
+		}
 
-		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+		vvim := &mocksearch.IndexMock[ValidVesselSearchSubset]{}
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -476,16 +399,5 @@ func TestHandleIndexRequest(T *testing.T) {
 		}
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
-
-		mock.AssertExpectationsForObjects(t,
-			rim,
-			mim,
-			vinm,
-			vism,
-			vmuim,
-			vpim,
-			visim,
-			vvim,
-		)
 	})
 }

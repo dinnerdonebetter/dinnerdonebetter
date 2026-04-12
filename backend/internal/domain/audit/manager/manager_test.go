@@ -7,13 +7,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/converters"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/fakes"
 	auditmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
+	mockdatabase "github.com/primandproper/platform/database/mock"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -81,7 +81,7 @@ func TestAuditDataManager_CreateAuditLogEntry(t *testing.T) {
 
 		exampleEntry := fakes.BuildFakeAuditLogEntry()
 		dbInput := converters.ConvertAuditLogEntryToAuditLogEntryDatabaseCreationInput(exampleEntry)
-		querier := &database.MockQueryExecutor{}
+		querier := &mockdatabase.SQLQueryExecutorMock{}
 
 		repo.On(reflection.GetMethodName(repo.CreateAuditLogEntry), testutils.ContextMatcher, mock.Anything, mock.MatchedBy(func(in *types.AuditLogEntryDatabaseCreationInput) bool {
 			return in.ID == dbInput.ID && in.BelongsToUser == dbInput.BelongsToUser

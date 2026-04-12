@@ -34,7 +34,7 @@ func buildTestServiceWithUploadMocks(t *testing.T) (*serviceImpl, *managermock.I
 	tracer := tracing.NewTracerForTest(t.Name())
 	identityDataManager := &managermock.IdentityDataManager{}
 	uploadedMediaRepo := &uploadedmediamock.Repository{}
-	uploadManager := &mockuploads.MockUploadManager{}
+	uploadManager := &mockuploads.UploadManagerMock{}
 
 	service := &serviceImpl{
 		tracer:               tracer,
@@ -72,7 +72,7 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 		logger:               logger,
 		identityDataManager:  identityDataManager,
 		uploadedMediaManager: &uploadedmediamock.Repository{},
-		uploadManager:        &mockuploads.MockUploadManager{},
+		uploadManager:        &mockuploads.UploadManagerMock{},
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		},
@@ -95,7 +95,7 @@ func TestNewService(t *testing.T) {
 		identityDataManager := &managermock.IdentityDataManager{}
 
 		uploadedMediaManager := &uploadedmediamock.Repository{}
-		uploadManager := &mockuploads.MockUploadManager{}
+		uploadManager := &mockuploads.UploadManagerMock{}
 		service := NewService(logger, tracerProvider, sessionContextDataFetcher, identityDataManager, uploadedMediaManager, uploadManager)
 
 		assert.NotNil(t, service)

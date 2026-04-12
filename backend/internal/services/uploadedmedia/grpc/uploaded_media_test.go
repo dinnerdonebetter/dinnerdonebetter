@@ -13,12 +13,12 @@ import (
 	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	uploadedmediasvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/database/filtering"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/testutils"
 	mockuploads "github.com/primandproper/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -28,13 +28,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func buildTestService(t *testing.T) (*serviceImpl, *uploadedmediamock.Repository, *mockuploads.MockUploadManager) {
+func buildTestService(t *testing.T) (*serviceImpl, *uploadedmediamock.Repository, *mockuploads.UploadManagerMock) {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	uploadedMediaRepo := &uploadedmediamock.Repository{}
-	uploadManager := &mockuploads.MockUploadManager{}
+	uploadManager := &mockuploads.UploadManagerMock{}
 
 	service := &serviceImpl{
 		tracer: tracer,
@@ -67,7 +67,7 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 			return nil, errors.New("session error")
 		},
 		uploadedMediaManager: &uploadedmediamock.Repository{},
-		uploadManager:        &mockuploads.MockUploadManager{},
+		uploadManager:        &mockuploads.UploadManagerMock{},
 	}
 
 	return service
@@ -798,7 +798,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		mockStream.On(reflection.GetMethodName(mockStream.SendAndClose), mock.AnythingOfType("*uploaded_media.UploadResponse")).Return(nil).Once()
 
 		// Setup mock upload manager expectation
-		mockUploadMgr.On(reflection.GetMethodName(mockUploadMgr.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+		mockUploadMgr.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return nil }
 
 		// Setup mock repo expectation
 		mockRepo.On(reflection.GetMethodName(mockRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(fakeUploadedMedia, nil)
@@ -808,7 +808,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 
 		// Assert
 		assert.NoError(t, err)
-		mock.AssertExpectationsForObjects(t, mockStream, mockUploadMgr, mockRepo)
+		mock.AssertExpectationsForObjects(t, mockStream, mockRepo)
 	})
 
 	t.Run("session context error", func(t *testing.T) {
@@ -1045,13 +1045,13 @@ func TestServiceImpl_Upload(t *testing.T) {
 		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(nil, io.EOF).Once()
 
 		// Mock upload manager to return error
-		mockUploadMgr.On(reflection.GetMethodName(mockUploadMgr.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(errors.New("storage error"))
+		mockUploadMgr.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return errors.New("storage error") }
 
 		err := service.Upload(mockStream)
 
 		assert.Error(t, err)
 		assert.Equal(t, codes.Internal, status.Code(err))
-		mock.AssertExpectationsForObjects(t, mockStream, mockUploadMgr)
+		mock.AssertExpectationsForObjects(t, mockStream)
 	})
 
 	t.Run("repository error", func(t *testing.T) {
@@ -1086,7 +1086,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(chunkReq, nil).Once()
 		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(nil, io.EOF).Once()
 
-		mockUploadMgr.On(reflection.GetMethodName(mockUploadMgr.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+		mockUploadMgr.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return nil }
 
 		// Mock repo to return error
 		mockRepo.On(reflection.GetMethodName(mockRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(nil, errors.New("database error"))
@@ -1095,6 +1095,6 @@ func TestServiceImpl_Upload(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Equal(t, codes.Internal, status.Code(err))
-		mock.AssertExpectationsForObjects(t, mockStream, mockUploadMgr, mockRepo)
+		mock.AssertExpectationsForObjects(t, mockStream, mockRepo)
 	})
 }

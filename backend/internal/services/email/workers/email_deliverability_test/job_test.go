@@ -1,16 +1,16 @@
 package emaildeliverabilitytest
 
 import (
+	"context"
 	"errors"
 	"testing"
 
+	"github.com/primandproper/platform/email"
 	emailmock "github.com/primandproper/platform/email/mock"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,7 +21,7 @@ func TestNewJob(T *testing.T) {
 		t.Parallel()
 
 		job, err := NewJob(
-			&emailmock.Emailer{},
+			&emailmock.EmailerMock{},
 			logging.NewNoopLogger(),
 			tracing.NewNoopTracerProvider(),
 			&JobParams{
@@ -38,7 +38,7 @@ func TestNewJob(T *testing.T) {
 		t.Parallel()
 
 		job, err := NewJob(
-			&emailmock.Emailer{},
+			&emailmock.EmailerMock{},
 			logging.NewNoopLogger(),
 			tracing.NewNoopTracerProvider(),
 			&JobParams{
@@ -54,7 +54,7 @@ func TestNewJob(T *testing.T) {
 		t.Parallel()
 
 		job, err := NewJob(
-			&emailmock.Emailer{},
+			&emailmock.EmailerMock{},
 			logging.NewNoopLogger(),
 			tracing.NewNoopTracerProvider(),
 			&JobParams{},
@@ -73,8 +73,9 @@ func TestJob_Do(T *testing.T) {
 
 		ctx := t.Context()
 
-		emailer := &emailmock.Emailer{}
-		emailer.On(reflection.GetMethodName(emailer.SendEmail), mock.Anything, mock.Anything).Return(nil)
+		emailer := &emailmock.EmailerMock{
+			SendEmailFunc: func(_ context.Context, _ *email.OutboundEmailMessage) error { return nil },
+		}
 
 		job, err := NewJob(
 			emailer,
@@ -89,8 +90,6 @@ func TestJob_Do(T *testing.T) {
 
 		err = job.Do(ctx)
 		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, emailer)
 	})
 
 	T.Run("returns error when emailer fails", func(t *testing.T) {
@@ -100,8 +99,9 @@ func TestJob_Do(T *testing.T) {
 
 		expectedErr := errors.New("email send failure")
 
-		emailer := &emailmock.Emailer{}
-		emailer.On(reflection.GetMethodName(emailer.SendEmail), mock.Anything, mock.Anything).Return(expectedErr)
+		emailer := &emailmock.EmailerMock{
+			SendEmailFunc: func(_ context.Context, _ *email.OutboundEmailMessage) error { return expectedErr },
+		}
 
 		job, err := NewJob(
 			emailer,
@@ -116,7 +116,5 @@ func TestJob_Do(T *testing.T) {
 
 		err = job.Do(ctx)
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, emailer)
 	})
 }

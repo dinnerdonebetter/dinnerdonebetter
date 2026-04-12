@@ -12,6 +12,7 @@ import (
 	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 
 	"github.com/primandproper/platform/encoding"
+	"github.com/primandproper/platform/featureflags"
 	"github.com/primandproper/platform/featureflags/mock"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
@@ -19,7 +20,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.IdentityDataManager, *authmock.AuthManager, *authenticationmock.Manager, *mock.FeatureFlagManager) {
+func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.IdentityDataManager, *authmock.AuthManager, *authenticationmock.Manager, *mock.FeatureFlagManagerMock) {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
@@ -28,7 +29,24 @@ func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.Identity
 	identityDataManager := &identitymanagermock.IdentityDataManager{}
 	authManager := &authmock.AuthManager{}
 	authenticationManager := &authenticationmock.Manager{}
-	featureFlagManager := &mock.FeatureFlagManager{}
+	featureFlagManager := &mock.FeatureFlagManagerMock{
+		CanUseFeatureFunc: func(_ context.Context, _ string, _ featureflags.EvaluationContext) (bool, error) {
+			return false, nil
+		},
+		GetStringValueFunc: func(_ context.Context, _ string, defaultValue string, _ featureflags.EvaluationContext) (string, error) {
+			return defaultValue, nil
+		},
+		GetInt64ValueFunc: func(_ context.Context, _ string, defaultValue int64, _ featureflags.EvaluationContext) (int64, error) {
+			return defaultValue, nil
+		},
+		GetFloat64ValueFunc: func(_ context.Context, _ string, defaultValue float64, _ featureflags.EvaluationContext) (float64, error) {
+			return defaultValue, nil
+		},
+		GetObjectValueFunc: func(_ context.Context, _ string, defaultValue any, _ featureflags.EvaluationContext) (any, error) {
+			return defaultValue, nil
+		},
+		CloseFunc: func() error { return nil },
+	}
 
 	jsonEncoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON)
 
@@ -57,7 +75,12 @@ func TestNewAuthService(t *testing.T) {
 		authManager := &authmock.AuthManager{}
 		authenticationManager := &authenticationmock.Manager{}
 
-		featureFlagManager := &mock.FeatureFlagManager{}
+		featureFlagManager := &mock.FeatureFlagManagerMock{
+			CanUseFeatureFunc: func(_ context.Context, _ string, _ featureflags.EvaluationContext) (bool, error) {
+				return false, nil
+			},
+			CloseFunc: func() error { return nil },
+		}
 		service := NewAuthService(logger, tracerProvider, identityDataManager, authManager, authenticationManager, featureFlagManager, nil)
 
 		assert.NotNil(t, service)

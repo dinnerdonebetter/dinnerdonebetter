@@ -61,7 +61,7 @@ func TestNewService(t *testing.T) {
 		mealPlanTaskCreatorWorker := &mealplantaskcreator.Worker{}
 		commentsManager := &noopCommentsManager{}
 		uploadedMediaManager := &uploadedmediamock.Repository{}
-		uploadManager := &mockuploads.MockUploadManager{}
+		uploadManager := &mockuploads.UploadManagerMock{}
 
 		service := NewService(
 			logger,

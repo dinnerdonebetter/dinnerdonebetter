@@ -12,10 +12,10 @@ import (
 	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	uploadedmediasvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/database/filtering"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/testutils"
 	mockuploads "github.com/primandproper/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -652,8 +652,8 @@ func TestServiceImpl_UploadUserAvatar(T *testing.T) {
 		mockStream.On("RecvMsg").Return(nil, io.EOF).Once()
 		mockStream.On("SendMsg", mock.AnythingOfType("*identity.UploadUserAvatarResponse")).Return(nil).Once()
 
-		uploadManager := service.uploadManager.(*mockuploads.MockUploadManager)
-		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+		uploadManager := service.uploadManager.(*mockuploads.UploadManagerMock)
+		uploadManager.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return nil }
 		uploadedMediaRepo.On(reflection.GetMethodName(uploadedMediaRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(&uploadedmedia.UploadedMedia{ID: identityfakes.BuildFakeID()}, nil)
 		identityDataManager.On(reflection.GetMethodName(identityDataManager.SetUserAvatar), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
 
@@ -661,7 +661,7 @@ func TestServiceImpl_UploadUserAvatar(T *testing.T) {
 		err := service.UploadUserAvatar(stream)
 
 		assert.NoError(t, err)
-		mock.AssertExpectationsForObjects(t, mockStream, identityDataManager, uploadedMediaRepo, uploadManager)
+		mock.AssertExpectationsForObjects(t, mockStream, identityDataManager, uploadedMediaRepo)
 	})
 
 	T.Run("with session error", func(t *testing.T) {
@@ -704,8 +704,8 @@ func TestServiceImpl_UploadUserAvatar(T *testing.T) {
 		mockStream.On("RecvMsg").Return(chunkReq, nil).Once()
 		mockStream.On("RecvMsg").Return(nil, io.EOF).Once()
 
-		uploadManager := service.uploadManager.(*mockuploads.MockUploadManager)
-		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+		uploadManager := service.uploadManager.(*mockuploads.UploadManagerMock)
+		uploadManager.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return nil }
 		uploadedMediaRepo.On(reflection.GetMethodName(uploadedMediaRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(&uploadedmedia.UploadedMedia{ID: identityfakes.BuildFakeID()}, nil)
 		identityDataManager.On(reflection.GetMethodName(identityDataManager.SetUserAvatar), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("set avatar error"))
 
@@ -716,6 +716,6 @@ func TestServiceImpl_UploadUserAvatar(T *testing.T) {
 		grpcErr, ok := status.FromError(err)
 		assert.True(t, ok)
 		assert.Equal(t, codes.Internal, grpcErr.Code())
-		mock.AssertExpectationsForObjects(t, mockStream, identityDataManager, uploadedMediaRepo, uploadManager)
+		mock.AssertExpectationsForObjects(t, mockStream, identityDataManager, uploadedMediaRepo)
 	})
 }

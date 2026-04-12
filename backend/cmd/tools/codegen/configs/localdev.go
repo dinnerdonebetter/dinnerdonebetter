@@ -10,6 +10,7 @@ import (
 	dataprivacycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/dataprivacy/config"
 	identitycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/config"
 	uploadedmediacfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	analyticscfg "github.com/primandproper/platform/analytics/config"
 	circuitbreakingcfg "github.com/primandproper/platform/circuitbreaking/config"
@@ -35,7 +36,6 @@ import (
 	"github.com/primandproper/platform/search/text/algolia"
 	textsearchcfg "github.com/primandproper/platform/search/text/config"
 	"github.com/primandproper/platform/server/http"
-	"github.com/primandproper/platform/testutils"
 	uploadscfg "github.com/primandproper/platform/uploads/config"
 	"github.com/primandproper/platform/uploads/objectstorage"
 )

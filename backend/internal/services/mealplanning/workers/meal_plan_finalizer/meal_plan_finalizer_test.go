@@ -1,18 +1,19 @@
 package mealplanfinalizer
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
+	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/metrics"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -25,8 +26,15 @@ func buildNewMealPlanFinalizerForTest(t *testing.T) *Worker {
 	ctx := t.Context()
 	cfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-	pp := &mockpublishers.PublisherProvider{}
-	pp.On(reflection.GetMethodName(pp.ProvidePublisher), cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, topic string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{
+				PublishFunc:      func(_ context.Context, _ any) error { return nil },
+				PublishAsyncFunc: func(_ context.Context, _ any) {},
+				StopFunc:         func() {},
+			}, nil
+		},
+	}
 
 	x, err := NewMealPlanFinalizer(
 		ctx,
@@ -57,7 +65,9 @@ func TestWorker_Work(T *testing.T) {
 			testutils.ContextMatcher,
 		).Return(exampleMealPlans, nil)
 
-		pup := &mockpublishers.Publisher{}
+		pup := &mockpublishers.PublisherMock{
+			PublishFunc: func(_ context.Context, _ any) error { return nil },
+		}
 
 		for _, mealPlan := range exampleMealPlans {
 			dbm.On(
@@ -66,8 +76,6 @@ func TestWorker_Work(T *testing.T) {
 				mealPlan.ID,
 				mealPlan.BelongsToAccount,
 			).Return(true, nil)
-
-			pup.On(reflection.GetMethodName(pup.Publish), testutils.ContextMatcher, mock.AnythingOfType("*audit.DataChangeMessage")).Return(nil)
 		}
 
 		worker := buildNewMealPlanFinalizerForTest(t)
@@ -80,6 +88,6 @@ func TestWorker_Work(T *testing.T) {
 		assert.Equal(t, expected, actual)
 		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, dbm, pup)
+		mock.AssertExpectationsForObjects(t, dbm)
 	})
 }

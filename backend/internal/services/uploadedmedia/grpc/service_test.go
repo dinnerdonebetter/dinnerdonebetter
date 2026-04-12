@@ -23,7 +23,7 @@ func TestNewService(t *testing.T) {
 		tracerProvider := tracing.NewNoopTracerProvider()
 		uploadedMediaManager := &uploadedmediamock.Repository{}
 
-		service := NewService(logger, tracerProvider, uploadedMediaManager, &mockuploads.MockUploadManager{})
+		service := NewService(logger, tracerProvider, uploadedMediaManager, &mockuploads.UploadManagerMock{})
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*uploadedmediasvc.UploadedMediaServiceServer)(nil), service)

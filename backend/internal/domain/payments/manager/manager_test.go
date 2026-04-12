@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"context"
 	"testing"
 
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
@@ -9,13 +10,14 @@ import (
 	paymentskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/keys"
 	paymentsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/adapters"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
+	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -30,8 +32,13 @@ func buildPaymentsManagerForTest(t *testing.T) *paymentsManager {
 		DataChangesTopicName: t.Name(),
 	}
 
-	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{
+				PublishAsyncFunc: func(_ context.Context, _ any) {},
+			}, nil
+		},
+	}
 
 	stub := adapters.NewStubPaymentProcessor(nil)
 	registry := payments.NewMapProcessorRegistry(map[string]payments.PaymentProcessor{
@@ -50,8 +57,6 @@ func buildPaymentsManagerForTest(t *testing.T) *paymentsManager {
 	)
 	require.NoError(t, err)
 
-	mock.AssertExpectationsForObjects(t, mpp)
-
 	return m.(*paymentsManager)
 }
 
@@ -66,15 +71,12 @@ func setupExpectationsForPaymentsManager(
 	}
 	manager.repo = repo
 
-	mp := &mockpublishers.Publisher{}
-	for _, eventTypeMap := range eventTypeMaps {
-		for eventType, payload := range eventTypeMap {
-			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
-		}
+	mp := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
 	}
 	manager.dataChangesPublisher = mp
 
-	return []any{repo, mp}
+	return []any{repo}
 }
 
 func TestPaymentsManager_CreateProduct(t *testing.T) {

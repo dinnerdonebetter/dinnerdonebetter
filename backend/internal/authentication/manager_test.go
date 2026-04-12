@@ -86,7 +86,7 @@ type managerTestMocks struct {
 	authenticator       *mockAuthenticator
 	userAuthDataManager *identitymock.RepositoryMock
 	sessionDataManager  *mockSessionDataManager
-	publisher           *mockpublishers.Publisher
+	publisher           *mockpublishers.PublisherMock
 }
 
 // helper to build a minimal manager for testing.
@@ -98,7 +98,10 @@ func buildTestManager(t *testing.T) (*manager, *managerTestMocks) {
 		authenticator:       &mockAuthenticator{},
 		userAuthDataManager: &identitymock.RepositoryMock{},
 		sessionDataManager:  &mockSessionDataManager{},
-		publisher:           &mockpublishers.Publisher{},
+		publisher: &mockpublishers.PublisherMock{
+			PublishFunc:      func(_ context.Context, _ any) error { return nil },
+			PublishAsyncFunc: func(_ context.Context, _ any) {},
+		},
 	}
 
 	m := &manager{
@@ -218,8 +221,6 @@ func TestManager_ProcessLogin(T *testing.T) {
 
 		mocks.sessionDataManager.On("CreateUserSession", mock.Anything, mock.AnythingOfType("*auth.UserSessionDatabaseCreationInput")).Return(&auth.UserSession{}, nil)
 
-		mocks.publisher.On("Publish", mock.Anything, mock.Anything).Return(nil)
-
 		response, err := m.ProcessLogin(ctx, false, loginInput, &LoginMetadata{
 			ClientIP:  "127.0.0.1",
 			UserAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
@@ -232,7 +233,7 @@ func TestManager_ProcessLogin(T *testing.T) {
 		assert.Equal(t, user.ID, response.UserID)
 		assert.Equal(t, "account123", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager, mocks.publisher)
+		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with desired account ID", func(t *testing.T) {
@@ -256,7 +257,6 @@ func TestManager_ProcessLogin(T *testing.T) {
 		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "specific-account", mock.AnythingOfType("string")).Return("refresh-token", "refresh-jti", nil).Once()
 
 		mocks.sessionDataManager.On("CreateUserSession", mock.Anything, mock.AnythingOfType("*auth.UserSessionDatabaseCreationInput")).Return(&auth.UserSession{}, nil)
-		mocks.publisher.On("Publish", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := m.ProcessLogin(ctx, false, loginInput, nil)
 
@@ -264,7 +264,7 @@ func TestManager_ProcessLogin(T *testing.T) {
 		require.NotNil(t, response)
 		assert.Equal(t, "specific-account", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager, mocks.publisher)
+		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with invalid credentials", func(t *testing.T) {
@@ -429,14 +429,13 @@ func TestManager_ProcessLogin(T *testing.T) {
 		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "account123", mock.AnythingOfType("string")).Return("refresh-token", "refresh-jti", nil).Once()
 
 		mocks.sessionDataManager.On("CreateUserSession", mock.Anything, mock.AnythingOfType("*auth.UserSessionDatabaseCreationInput")).Return(&auth.UserSession{}, nil)
-		mocks.publisher.On("Publish", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := m.ProcessLogin(ctx, true, loginInput, nil)
 
 		require.NoError(t, err)
 		require.NotNil(t, response)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager, mocks.publisher)
+		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 }
 
@@ -464,8 +463,6 @@ func TestManager_ProcessPasskeyLogin(T *testing.T) {
 			}).
 			Return(&auth.UserSession{}, nil)
 
-		mocks.publisher.On("Publish", mock.Anything, mock.Anything).Return(nil)
-
 		response, err := m.ProcessPasskeyLogin(ctx, user.ID, "", &LoginMetadata{
 			ClientIP:  "10.0.0.1",
 			UserAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)",
@@ -478,7 +475,7 @@ func TestManager_ProcessPasskeyLogin(T *testing.T) {
 		assert.Equal(t, user.ID, response.UserID)
 		assert.Equal(t, "account123", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager, mocks.publisher)
+		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with desired account ID", func(t *testing.T) {
@@ -496,7 +493,6 @@ func TestManager_ProcessPasskeyLogin(T *testing.T) {
 		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "specific-account", mock.AnythingOfType("string")).Return("refresh-token", "refresh-jti", nil).Once()
 
 		mocks.sessionDataManager.On("CreateUserSession", mock.Anything, mock.AnythingOfType("*auth.UserSessionDatabaseCreationInput")).Return(&auth.UserSession{}, nil)
-		mocks.publisher.On("Publish", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := m.ProcessPasskeyLogin(ctx, user.ID, "specific-account", nil)
 
@@ -504,7 +500,7 @@ func TestManager_ProcessPasskeyLogin(T *testing.T) {
 		require.NotNil(t, response)
 		assert.Equal(t, "specific-account", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager, mocks.publisher)
+		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with banned user", func(t *testing.T) {
@@ -594,8 +590,6 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 
 		mocks.sessionDataManager.On("UpdateSessionTokenIDs", mock.Anything, "session-abc", "new-access-jti", "new-refresh-jti", mock.AnythingOfType("time.Time")).Return(nil)
 
-		mocks.publisher.On("Publish", mock.Anything, mock.Anything).Return(nil)
-
 		response, err := m.ExchangeTokenForUser(ctx, refreshToken, "")
 
 		require.NoError(t, err)
@@ -605,7 +599,7 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		assert.Equal(t, user.ID, response.UserID)
 		assert.Equal(t, "account123", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager, mocks.publisher)
+		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with revoked session", func(t *testing.T) {
@@ -661,15 +655,13 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 
 		mocks.sessionDataManager.On("UpdateSessionTokenIDs", mock.Anything, "session-abc", "new-access-jti", "new-refresh-jti", mock.AnythingOfType("time.Time")).Return(nil)
 
-		mocks.publisher.On("Publish", mock.Anything, mock.Anything).Return(nil)
-
 		response, err := m.ExchangeTokenForUser(ctx, refreshToken, "desired-account")
 
 		require.NoError(t, err)
 		require.NotNil(t, response)
 		assert.Equal(t, "desired-account", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager, mocks.publisher)
+		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with banned user", func(t *testing.T) {
@@ -720,15 +712,13 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 
 		// UpdateSessionTokenIDs should NOT be called because sessionID is empty
 
-		mocks.publisher.On("Publish", mock.Anything, mock.Anything).Return(nil)
-
 		response, err := m.ExchangeTokenForUser(ctx, refreshToken, "")
 
 		require.NoError(t, err)
 		require.NotNil(t, response)
 		assert.Equal(t, "new-access-token", response.AccessToken)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.publisher)
+		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager)
 	})
 
 	T.Run("with invalid refresh token", func(t *testing.T) {

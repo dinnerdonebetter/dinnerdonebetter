@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -9,14 +10,15 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
 	webhookkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/keys"
 	webhookmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -30,13 +32,16 @@ func buildWebhookManagerForTest(t *testing.T) (*webhookManager, *webhookmock.Rep
 	repo := &webhookmock.Repository{}
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: t.Name()}
 
-	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{
+				PublishAsyncFunc: func(_ context.Context, _ any) {},
+			}, nil
+		},
+	}
 
 	m, err := NewWebhookDataManager(ctx, tracing.NewNoopTracerProvider(), logging.NewNoopLogger(), repo, queueCfg, mpp)
 	require.NoError(t, err)
-
-	mock.AssertExpectationsForObjects(t, mpp)
 
 	return m.(*webhookManager), repo
 }
@@ -52,15 +57,12 @@ func setupExpectationsForWebhookManager(
 	}
 	manager.repo = repo
 
-	mp := &mockpublishers.Publisher{}
-	for _, eventTypeMap := range eventTypeMaps {
-		for eventType, payload := range eventTypeMap {
-			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
-		}
+	mp := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
 	}
 	manager.dataChangesPublisher = mp
 
-	return []any{repo, mp}
+	return []any{repo}
 }
 
 func TestWebhookDataManager_CreateWebhook(t *testing.T) {

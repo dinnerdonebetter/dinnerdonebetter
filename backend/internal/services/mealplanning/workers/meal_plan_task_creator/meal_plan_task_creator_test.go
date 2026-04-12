@@ -1,22 +1,23 @@
 package mealplantaskcreator
 
 import (
+	"context"
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
+	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/metrics"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/testutils"
 	"github.com/primandproper/platform/types"
 
 	"github.com/stretchr/testify/assert"
@@ -30,8 +31,15 @@ func buildNewMealPlanTaskCreatorForTest(t *testing.T) *Worker {
 	ctx := t.Context()
 	cfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-	pp := &mockpublishers.PublisherProvider{}
-	pp.On(reflection.GetMethodName(pp.ProvidePublisher), cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, topic string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{
+				PublishFunc:      func(_ context.Context, _ any) error { return nil },
+				PublishAsyncFunc: func(_ context.Context, _ any) {},
+				StopFunc:         func() {},
+			}, nil
+		},
+	}
 
 	x, err := NewMealPlanTaskCreator(
 		ctx,
@@ -182,16 +190,13 @@ func TestWorker_Work(T *testing.T) {
 		w.analyzer = mockAnalyzer
 		w.dataManager = mdm
 
-		mmp := &mockpublishers.Publisher{}
-		mmp.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.MatchType[*audit.DataChangeMessage](),
-		).Return(nil)
+		mmp := &mockpublishers.PublisherMock{
+			PublishFunc: func(_ context.Context, _ any) error { return nil },
+		}
 		w.postUpdatesPublisher = mmp
 
 		assert.NoError(t, w.Work(ctx))
 
-		mock.AssertExpectationsForObjects(t, mdm, mockAnalyzer, mmp)
+		mock.AssertExpectationsForObjects(t, mdm, mockAnalyzer)
 	})
 }

@@ -15,8 +15,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identityfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	"github.com/primandproper/platform/observability/logging"
@@ -25,7 +27,6 @@ import (
 	"github.com/primandproper/platform/random"
 	randommock "github.com/primandproper/platform/random/mock"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
@@ -119,8 +120,11 @@ func TestProvideAuthManager(t *testing.T) {
 		ctx := t.Context()
 		queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: t.Name()}
 
-		mpp := &mockpublishers.PublisherProvider{}
-		mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		mpp := &mockpublishers.PublisherProviderMock{
+			ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+				return &mockpublishers.PublisherMock{}, nil
+			},
+		}
 
 		m, err := ProvideAuthManager(
 			ctx,
@@ -138,7 +142,6 @@ func TestProvideAuthManager(t *testing.T) {
 
 		require.NoError(t, err)
 		assert.NotNil(t, m)
-		mock.AssertExpectationsForObjects(t, mpp)
 	})
 }
 
@@ -246,7 +249,7 @@ func TestProvideAuthManager_NilConfig(t *testing.T) {
 	t.Parallel()
 
 	ctx := t.Context()
-	mpp := &mockpublishers.PublisherProvider{}
+	mpp := &mockpublishers.PublisherProviderMock{}
 
 	m, err := ProvideAuthManager(
 		ctx,
@@ -331,8 +334,9 @@ func TestAuthManager_TOTPSecretVerification_Success(t *testing.T) {
 	userDataManager.On(reflection.GetMethodName(userDataManager.GetUserWithUnverifiedTwoFactorSecret), testutils.ContextMatcher, user.ID).Return(user, nil)
 	userDataManager.On(reflection.GetMethodName(userDataManager.MarkUserTwoFactorSecretAsVerified), testutils.ContextMatcher, user.ID).Return(nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	manager := &AuthManager{
 		userDataManager:           userDataManager,
@@ -346,7 +350,7 @@ func TestAuthManager_TOTPSecretVerification_Success(t *testing.T) {
 	err = manager.TOTPSecretVerification(ctx, input)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager)
 }
 
 func TestAuthManager_TOTPSecretVerification_InvalidInput(t *testing.T) {
@@ -401,8 +405,9 @@ func TestAuthManager_RequestUsernameReminder_Success(t *testing.T) {
 	userDataManager := &identitymock.RepositoryMock{}
 	userDataManager.On(reflection.GetMethodName(userDataManager.GetUserByEmail), testutils.ContextMatcher, input.EmailAddress).Return(user, nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	manager := &AuthManager{
 		userDataManager:           userDataManager,
@@ -415,7 +420,7 @@ func TestAuthManager_RequestUsernameReminder_Success(t *testing.T) {
 	err := manager.RequestUsernameReminder(ctx, input)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager)
 }
 
 func TestAuthManager_RequestUsernameReminder_UserNotFound(t *testing.T) {
@@ -451,16 +456,20 @@ func TestAuthManager_CreatePasswordResetToken_Success(t *testing.T) {
 	userDataManager := &identitymock.RepositoryMock{}
 	userDataManager.On(reflection.GetMethodName(userDataManager.GetUserByEmail), testutils.ContextMatcher, input.EmailAddress).Return(user, nil)
 
-	secretGen := &randommock.Generator{}
-	secretGen.On(reflection.GetMethodName(secretGen.GenerateBase32EncodedString), testutils.ContextMatcher, 32).Return("faketoken123", nil)
+	secretGen := &randommock.GeneratorMock{
+		GenerateBase32EncodedStringFunc: func(_ context.Context, _ int) (string, error) {
+			return "faketoken123", nil
+		},
+	}
 
 	prtManager := &mockPasswordResetTokenDataManager{}
 	createdToken := authfakes.BuildFakePasswordResetToken()
 	createdToken.BelongsToUser = user.ID
 	prtManager.On(reflection.GetMethodName(prtManager.CreatePasswordResetToken), testutils.ContextMatcher, mock.Anything).Return(createdToken, nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	manager := &AuthManager{
 		userDataManager:               userDataManager,
@@ -475,7 +484,7 @@ func TestAuthManager_CreatePasswordResetToken_Success(t *testing.T) {
 	err := manager.CreatePasswordResetToken(ctx, input)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, secretGen, prtManager, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager, prtManager)
 }
 
 func TestAuthManager_CreatePasswordResetToken_UserNotFound(t *testing.T) {
@@ -510,8 +519,9 @@ func TestAuthManager_RequestEmailVerificationEmail_Success(t *testing.T) {
 	userDataManager := &identitymock.RepositoryMock{}
 	userDataManager.On(reflection.GetMethodName(userDataManager.GetEmailAddressVerificationTokenForUser), testutils.ContextMatcher, userID).Return("verification-token-123", nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	sessionData := &sessions.ContextData{Requester: sessions.RequesterInfo{UserID: userID}}
 
@@ -526,7 +536,7 @@ func TestAuthManager_RequestEmailVerificationEmail_Success(t *testing.T) {
 	err := manager.RequestEmailVerificationEmail(ctx)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager)
 }
 
 func TestAuthManager_VerifyUserEmailAddress_Success(t *testing.T) {
@@ -540,8 +550,9 @@ func TestAuthManager_VerifyUserEmailAddress_Success(t *testing.T) {
 	userDataManager.On(reflection.GetMethodName(userDataManager.GetUserByEmailAddressVerificationToken), testutils.ContextMatcher, input.Token).Return(user, nil)
 	userDataManager.On(reflection.GetMethodName(userDataManager.MarkUserEmailAddressAsVerified), testutils.ContextMatcher, user.ID, input.Token).Return(nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	manager := &AuthManager{
 		userDataManager:           userDataManager,
@@ -554,7 +565,7 @@ func TestAuthManager_VerifyUserEmailAddress_Success(t *testing.T) {
 	err := manager.VerifyUserEmailAddress(ctx, input)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager)
 }
 
 func TestAuthManager_VerifyUserEmailAddressByToken_Success(t *testing.T) {
@@ -568,8 +579,9 @@ func TestAuthManager_VerifyUserEmailAddressByToken_Success(t *testing.T) {
 	userDataManager.On(reflection.GetMethodName(userDataManager.GetUserByEmailAddressVerificationToken), testutils.ContextMatcher, token).Return(user, nil)
 	userDataManager.On(reflection.GetMethodName(userDataManager.MarkUserEmailAddressAsVerified), testutils.ContextMatcher, user.ID, token).Return(nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	manager := &AuthManager{
 		userDataManager:      userDataManager,
@@ -581,7 +593,7 @@ func TestAuthManager_VerifyUserEmailAddressByToken_Success(t *testing.T) {
 	err := manager.VerifyUserEmailAddressByToken(ctx, token)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager)
 }
 
 func TestAuthManager_VerifyUserEmailAddressByToken_UserNotFound(t *testing.T) {
@@ -624,8 +636,9 @@ func TestAuthManager_UpdatePassword_Success(t *testing.T) {
 	authenticator.On(reflection.GetMethodName(authenticator.CredentialsAreValid), testutils.ContextMatcher, user.HashedPassword, "current", "", "").Return(true, nil)
 	authenticator.On(reflection.GetMethodName(authenticator.HashPassword), testutils.ContextMatcher, "Abcdefghij123!@#$%^&*()").Return("hashed", nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	sessionData := &sessions.ContextData{Requester: sessions.RequesterInfo{UserID: user.ID}}
 
@@ -641,7 +654,7 @@ func TestAuthManager_UpdatePassword_Success(t *testing.T) {
 	err := manager.UpdatePassword(ctx, password)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, authenticator, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
 }
 
 func TestAuthManager_UpdateUserEmailAddress_Success(t *testing.T) {
@@ -660,8 +673,9 @@ func TestAuthManager_UpdateUserEmailAddress_Success(t *testing.T) {
 	authenticator := &mockauthn.Authenticator{}
 	authenticator.On(reflection.GetMethodName(authenticator.CredentialsAreValid), testutils.ContextMatcher, user.HashedPassword, "current", "", "").Return(true, nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	sessionData := &sessions.ContextData{Requester: sessions.RequesterInfo{UserID: user.ID}}
 
@@ -677,7 +691,7 @@ func TestAuthManager_UpdateUserEmailAddress_Success(t *testing.T) {
 	err := manager.UpdateUserEmailAddress(ctx, input)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, authenticator, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
 }
 
 func TestAuthManager_UpdateUserUsername_Success(t *testing.T) {
@@ -696,8 +710,9 @@ func TestAuthManager_UpdateUserUsername_Success(t *testing.T) {
 	authenticator := &mockauthn.Authenticator{}
 	authenticator.On(reflection.GetMethodName(authenticator.CredentialsAreValid), testutils.ContextMatcher, user.HashedPassword, "current", "", "").Return(true, nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	sessionData := &sessions.ContextData{Requester: sessions.RequesterInfo{UserID: user.ID}}
 
@@ -713,7 +728,7 @@ func TestAuthManager_UpdateUserUsername_Success(t *testing.T) {
 	err := manager.UpdateUserUsername(ctx, input)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, userDataManager, authenticator, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
 }
 
 func TestAuthManager_PasswordResetTokenRedemption_Success(t *testing.T) {
@@ -739,8 +754,9 @@ func TestAuthManager_PasswordResetTokenRedemption_Success(t *testing.T) {
 	authenticator := &mockauthn.Authenticator{}
 	authenticator.On(reflection.GetMethodName(authenticator.HashPassword), testutils.ContextMatcher, "Abcdefghij123!@#$%^&*()").Return("hashed", nil)
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	manager := &AuthManager{
 		passwordResetTokenDataManager: prtManager,
@@ -755,7 +771,7 @@ func TestAuthManager_PasswordResetTokenRedemption_Success(t *testing.T) {
 	err := manager.PasswordResetTokenRedemption(ctx, input)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, prtManager, userDataManager, authenticator, publisher)
+	mock.AssertExpectationsForObjects(t, prtManager, userDataManager, authenticator)
 }
 
 func TestAuthManager_NewTOTPSecret_Success(t *testing.T) {
@@ -777,13 +793,17 @@ func TestAuthManager_NewTOTPSecret_Success(t *testing.T) {
 	authenticator := &mockauthn.Authenticator{}
 	authenticator.On(reflection.GetMethodName(authenticator.CredentialsAreValid), testutils.ContextMatcher, user.HashedPassword, "current", user.TwoFactorSecret, token).Return(true, nil)
 
-	secretGen := &randommock.Generator{}
-	secretGen.On(reflection.GetMethodName(secretGen.GenerateBase32EncodedString), testutils.ContextMatcher, 64).Return("newsecretencoded", nil)
+	secretGen := &randommock.GeneratorMock{
+		GenerateBase32EncodedStringFunc: func(_ context.Context, _ int) (string, error) {
+			return "newsecretencoded", nil
+		},
+	}
 
 	qrBuilder := qrcodes.NewBuilder(qrcodes.Issuer("test"), tracing.NewNoopTracerProvider(), logging.NewNoopLogger())
 
-	publisher := &mockpublishers.Publisher{}
-	publisher.On(reflection.GetMethodName(publisher.PublishAsync), testutils.ContextMatcher, mock.Anything).Return()
+	publisher := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 
 	sessionData := &sessions.ContextData{Requester: sessions.RequesterInfo{UserID: user.ID}}
 
@@ -804,7 +824,7 @@ func TestAuthManager_NewTOTPSecret_Success(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, "newsecretencoded", result.TwoFactorSecret)
 	assert.NotEmpty(t, result.TwoFactorQRCode)
-	mock.AssertExpectationsForObjects(t, userDataManager, authenticator, secretGen, publisher)
+	mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
 }
 
 func TestAuthManager_PasswordResetTokenRedemption_TokenNotFound(t *testing.T) {

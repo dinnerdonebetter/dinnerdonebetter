@@ -1,6 +1,7 @@
 package notifications
 
 import (
+	"database/sql"
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
@@ -8,8 +9,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/primandproper/platform/database"
 	databasecfg "github.com/primandproper/platform/database/config"
+	mockdatabase "github.com/primandproper/platform/database/mock"
 	"github.com/primandproper/platform/database/postgres"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
@@ -46,7 +47,7 @@ func buildInertClientForTest(t *testing.T) *Repository {
 	cfg := &databasecfg.Config{
 		UserDeviceTokenEncryptionKey: "blahblahblahblahblahblahblahblah",
 	}
-	c := ProvideNotificationsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, cfg, &database.MockClient{})
+	c := ProvideNotificationsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, cfg, &mockdatabase.ClientMock{ReadDBFunc: func() *sql.DB { return nil }, WriteDBFunc: func() *sql.DB { return nil }})
 
 	return c
 }

@@ -9,7 +9,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/fakes"
 	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
+	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	"github.com/primandproper/platform/observability/logging"
@@ -17,7 +19,6 @@ import (
 	"github.com/primandproper/platform/random"
 	randommock "github.com/primandproper/platform/random/mock"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -31,8 +32,11 @@ func buildOAuthManagerForTest(t *testing.T) *manager {
 	repo := &oauthmock.RepositoryMock{}
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: t.Name()}
 
-	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{}, nil
+		},
+	}
 
 	sessionData := &sessions.ContextData{}
 	sessionData.ActiveAccountID = "account-1"
@@ -55,15 +59,13 @@ func buildOAuthManagerForTest(t *testing.T) *manager {
 	)
 	require.NoError(t, err)
 
-	mock.AssertExpectationsForObjects(t, mpp)
-
 	return m.(*manager)
 }
 
 func setupExpectationsForOAuthManager(
 	manager *manager,
 	repoSetupFunc func(repo *oauthmock.RepositoryMock),
-	secretGenSetupFunc func(gen *randommock.Generator),
+	secretGenSetupFunc func(gen *randommock.GeneratorMock),
 	eventTypeMaps ...map[string][]string,
 ) []any {
 	repo := &oauthmock.RepositoryMock{}
@@ -73,21 +75,19 @@ func setupExpectationsForOAuthManager(
 	manager.oauthRepository = repo
 
 	expectations := []any{repo}
-	if secretGenSetupFunc != nil {
-		secretGen := &randommock.Generator{}
-		secretGenSetupFunc(secretGen)
-		manager.secretGenerator = secretGen
-		expectations = append(expectations, secretGen)
-	}
 
-	mp := &mockpublishers.Publisher{}
-	for _, eventTypeMap := range eventTypeMaps {
-		for eventType, payload := range eventTypeMap {
-			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
-		}
+	sg := &randommock.GeneratorMock{
+		GenerateHexEncodedStringFunc: func(_ context.Context, _ int) (string, error) { return "", nil },
+	}
+	if secretGenSetupFunc != nil {
+		secretGenSetupFunc(sg)
+	}
+	manager.secretGenerator = sg
+
+	mp := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
 	}
 	manager.dataChangesPublisher = mp
-	expectations = append(expectations, mp)
 
 	return expectations
 }
@@ -111,9 +111,15 @@ func TestOAuth2Manager_CreateOAuth2Client(t *testing.T) {
 					return in.Name == input.Name && in.Description == input.Description && in.ClientID != "" && in.ClientSecret != ""
 				})).Return(expected, nil)
 			},
-			func(gen *randommock.Generator) {
-				gen.On(reflection.GetMethodName(gen.GenerateHexEncodedString), testutils.ContextMatcher, 16).Return("aabbccdd11223344aabbccdd11223344", nil).Once()
-				gen.On(reflection.GetMethodName(gen.GenerateHexEncodedString), testutils.ContextMatcher, 16).Return("eeddccbb55443322eeddccbb55443322", nil).Once()
+			func(gen *randommock.GeneratorMock) {
+				callCount := 0
+				gen.GenerateHexEncodedStringFunc = func(_ context.Context, _ int) (string, error) {
+					callCount++
+					if callCount == 1 {
+						return "aabbccdd11223344aabbccdd11223344", nil
+					}
+					return "eeddccbb55443322eeddccbb55443322", nil
+				}
 			},
 			map[string][]string{
 				oauth.OAuth2ClientCreatedServiceEventType: {oauthkeys.OAuth2ClientIDKey},

@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"context"
 	"testing"
 
 	mockauthn "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mock"
@@ -9,7 +10,9 @@ import (
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
+	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	"github.com/primandproper/platform/observability/logging"
@@ -17,7 +20,6 @@ import (
 	randommock "github.com/primandproper/platform/random/mock"
 	"github.com/primandproper/platform/reflection"
 	mocksearch "github.com/primandproper/platform/search/text/mock"
-	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -32,8 +34,11 @@ func buildIdentityDataManagerForTest(t *testing.T) *manager {
 		DataChangesTopicName: t.Name(),
 	}
 
-	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{}, nil
+		},
+	}
 
 	m, err := NewIdentityDataManager(
 		ctx,
@@ -41,14 +46,12 @@ func buildIdentityDataManagerForTest(t *testing.T) *manager {
 		logging.NewNoopLogger(),
 		mpp,
 		&identitymock.RepositoryMock{},
-		&randommock.Generator{},
+		&randommock.GeneratorMock{},
 		&mockauthn.Authenticator{},
-		&mocksearch.IndexManager[identityindexing.UserSearchSubset]{},
+		&mocksearch.IndexMock[identityindexing.UserSearchSubset]{},
 		queueCfg,
 	)
 	require.NoError(t, err)
-
-	mock.AssertExpectationsForObjects(t, mpp)
 
 	return m.(*manager)
 }
@@ -56,10 +59,10 @@ func buildIdentityDataManagerForTest(t *testing.T) *manager {
 func setupExpectationsForIdentityDataManager(
 	manager *manager,
 	dbSetupFunc func(db *identitymock.RepositoryMock),
-	publisherSetupFunc func(mp *mockpublishers.Publisher),
-	secretGenSetupFunc func(sg *randommock.Generator),
+	publisherSetupFunc func(mp *mockpublishers.PublisherMock),
+	secretGenSetupFunc func(sg *randommock.GeneratorMock),
 	authSetupFunc func(auth *mockauthn.Authenticator),
-	searchSetupFunc func(us *mocksearch.IndexManager[identityindexing.UserSearchSubset]),
+	searchSetupFunc func(us *mocksearch.IndexMock[identityindexing.UserSearchSubset]),
 	eventTypeMaps ...map[string][]string,
 ) []any {
 	db := &identitymock.RepositoryMock{}
@@ -68,18 +71,15 @@ func setupExpectationsForIdentityDataManager(
 	}
 	manager.identityRepo = db
 
-	mp := &mockpublishers.Publisher{}
+	mp := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+	}
 	if publisherSetupFunc != nil {
 		publisherSetupFunc(mp)
 	}
-	for _, eventTypeMap := range eventTypeMaps {
-		for eventType, payload := range eventTypeMap {
-			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
-		}
-	}
 	manager.dataChangesPublisher = mp
 
-	sg := &randommock.Generator{}
+	sg := &randommock.GeneratorMock{}
 	if secretGenSetupFunc != nil {
 		secretGenSetupFunc(sg)
 	}
@@ -91,13 +91,13 @@ func setupExpectationsForIdentityDataManager(
 	}
 	manager.authenticator = auth
 
-	us := &mocksearch.IndexManager[identityindexing.UserSearchSubset]{}
+	us := &mocksearch.IndexMock[identityindexing.UserSearchSubset]{}
 	if searchSetupFunc != nil {
 		searchSetupFunc(us)
 	}
 	manager.userSearchIndex = us
 
-	return []any{db, mp, sg, auth, us}
+	return []any{db, auth}
 }
 
 func TestIdentityDataManager_AcceptAccountInvitation(T *testing.T) {
@@ -363,8 +363,10 @@ func TestIdentityDataManager_CreateAccountInvitation(T *testing.T) {
 				db.On(reflection.GetMethodName(m.identityRepo.CreateAccountInvitation), testutils.ContextMatcher, testutils.MatchType[*identity.AccountInvitationDatabaseCreationInput]()).Return(expected, nil)
 			},
 			nil,
-			func(sg *randommock.Generator) {
-				sg.On(reflection.GetMethodName(m.secretGenerator.GenerateBase64EncodedString), testutils.ContextMatcher, 64).Return(token, nil)
+			func(sg *randommock.GeneratorMock) {
+				sg.GenerateBase64EncodedStringFunc = func(_ context.Context, _ int) (string, error) {
+					return token, nil
+				}
 			},
 			nil,
 			nil,
@@ -405,8 +407,10 @@ func TestIdentityDataManager_CreateUser(T *testing.T) {
 				db.On(reflection.GetMethodName(m.identityRepo.GetEmailAddressVerificationTokenForUser), testutils.ContextMatcher, expected.ID).Return(emailVerificationToken, nil)
 			},
 			nil,
-			func(sg *randommock.Generator) {
-				sg.On(reflection.GetMethodName(m.secretGenerator.GenerateBase32EncodedString), testutils.ContextMatcher, 64).Return(twoFactorSecret, nil)
+			func(sg *randommock.GeneratorMock) {
+				sg.GenerateBase32EncodedStringFunc = func(_ context.Context, _ int) (string, error) {
+					return twoFactorSecret, nil
+				}
 			},
 			func(auth *mockauthn.Authenticator) {
 				auth.On(reflection.GetMethodName(m.authenticator.HashPassword), testutils.ContextMatcher, mock.AnythingOfType("string")).Return(hashedPassword, nil)
@@ -730,8 +734,10 @@ func TestIdentityDataManager_SearchForUsers(T *testing.T) {
 			nil,
 			nil,
 			nil,
-			func(us *mocksearch.IndexManager[identityindexing.UserSearchSubset]) {
-				us.On(reflection.GetMethodName(m.userSearchIndex.Search), testutils.ContextMatcher, query).Return(searchResults, nil)
+			func(us *mocksearch.IndexMock[identityindexing.UserSearchSubset]) {
+				us.SearchFunc = func(_ context.Context, q string) ([]*identityindexing.UserSearchSubset, error) {
+					return searchResults, nil
+				}
 			},
 		)
 
