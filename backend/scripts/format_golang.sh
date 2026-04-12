@@ -6,10 +6,16 @@ set -euo pipefail
 
 PROJECT_ROOT="${1:-$(pwd)}"
 
+if sed --version 2>/dev/null | grep -q 'GNU'; then
+  SED_INPLACE=(sed -i)
+else
+  SED_INPLACE=(sed -i '')
+fi
+
 while IFS= read -r -d '' file; do
   # Ensure a blank line after the sentinel `_ struct{}` field
   # shellcheck disable=SC2016
-  sed -i '' '/_ struct{} `json:"-"`/{
+  "${SED_INPLACE[@]}" '/_ struct{} `json:"-"`/{
 N
 /\n[[:space:]]*$/!s/\n/\n\n/
 }' "${file}"
