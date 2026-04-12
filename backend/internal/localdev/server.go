@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
@@ -32,20 +34,61 @@ import (
 	webhooksrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/redis"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+	"github.com/primandproper/platform/database"
+	databasecfg "github.com/primandproper/platform/database/config"
+	"github.com/primandproper/platform/httpclient"
+	"github.com/primandproper/platform/identifiers"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	"github.com/primandproper/platform/messagequeue/redis"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/random"
 
+	"github.com/testcontainers/testcontainers-go"
+	rediscontainers "github.com/testcontainers/testcontainers-go/modules/redis"
+	"github.com/testcontainers/testcontainers-go/wait"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
+
+const (
+	redisProtocolPrefix      = "redis://"
+	redisContainerImageToUse = "redis:7-bullseye"
+)
+
+// buildContainerBackedRedisConfig spins up a Redis testcontainer and returns a
+// *redis.Config pointed at it. v5 moved the equivalent helper into
+// test-only code, so we inline the setup here for local dev usage.
+func buildContainerBackedRedisConfig(ctx context.Context) (*redis.Config, func(context.Context) error, error) {
+	redisContainer, err := rediscontainers.Run(
+		ctx,
+		redisContainerImageToUse,
+		rediscontainers.WithLogLevel(rediscontainers.LogLevelNotice),
+		testcontainers.WithWaitStrategyAndDeadline(30*time.Second, wait.ForListeningPort("6379/tcp")),
+	)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to build redis container: %w", err)
+	}
+
+	redisAddress, err := redisContainer.ConnectionString(ctx)
+	if err != nil {
+		if termErr := redisContainer.Terminate(ctx); termErr != nil {
+			slog.Error("failed to terminate redis container", slog.Any("error", termErr))
+		}
+		return nil, nil, fmt.Errorf("failed to build redis connection string: %w", err)
+	}
+
+	cfg := &redis.Config{
+		QueueAddresses: []string{strings.TrimPrefix(redisAddress, redisProtocolPrefix)},
+	}
+
+	shutdown := func(shutdownCtx context.Context) error {
+		return redisContainer.Terminate(shutdownCtx)
+	}
+
+	return cfg, shutdown, nil
+}
 
 func CreatePremadeAdminUser(
 	ctx context.Context,
@@ -112,7 +155,7 @@ func BuildInProcessServer(ctx context.Context, cfg *config.APIServiceConfig) (se
 	}
 	logger := pillars.Logger
 
-	redisConfig, _, err := redis.BuildContainerBackedRedisConfig(ctx)
+	redisConfig, _, err := buildContainerBackedRedisConfig(ctx)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("connecting to redis: %w", err)
 	}

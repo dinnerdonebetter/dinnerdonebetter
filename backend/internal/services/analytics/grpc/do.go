@@ -3,9 +3,9 @@ package grpc
 import (
 	analyticspb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/analytics/multisource"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/primandproper/platform/analytics/multisource"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/samber/do/v2"
 )

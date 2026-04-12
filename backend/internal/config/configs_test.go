@@ -10,11 +10,11 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config/envvars"
 
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/server/http"
+	databasecfg "github.com/primandproper/platform/database/config"
+	"github.com/primandproper/platform/encoding"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	"github.com/primandproper/platform/observability"
+	"github.com/primandproper/platform/server/http"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

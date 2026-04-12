@@ -9,7 +9,8 @@
 			"provider": "slog"
 		},
 		"metrics": {
-			"serviceName": "db_cleaner"
+			"serviceName": "db_cleaner",
+			"enabled": false
 		},
 		"tracing": {
 			"service_name": "db_cleaner"

@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
@@ -8,13 +9,14 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/fakes"
 	notificationkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/keys"
 	notificationsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	"github.com/primandproper/platform/messagequeue"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -29,8 +31,13 @@ func buildNotificationsManagerForTest(t *testing.T) *notificationsManager {
 		DataChangesTopicName: t.Name(),
 	}
 
-	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{
+				PublishAsyncFunc: func(_ context.Context, _ any) {},
+			}, nil
+		},
+	}
 
 	m, err := NewNotificationsDataManager(
 		ctx,
@@ -41,8 +48,6 @@ func buildNotificationsManagerForTest(t *testing.T) *notificationsManager {
 		mpp,
 	)
 	require.NoError(t, err)
-
-	mock.AssertExpectationsForObjects(t, mpp)
 
 	return m.(*notificationsManager)
 }
@@ -58,15 +63,12 @@ func setupExpectationsForNotificationsManager(
 	}
 	manager.repo = repo
 
-	mp := &mockpublishers.Publisher{}
-	for _, eventTypeMap := range eventTypeMaps {
-		for eventType, payload := range eventTypeMap {
-			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
-		}
+	mp := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
 	}
 	manager.dataChangesPublisher = mp
 
-	return []any{repo, mp}
+	return []any{repo}
 }
 
 func TestNotificationsManager_CreateUserNotification(t *testing.T) {

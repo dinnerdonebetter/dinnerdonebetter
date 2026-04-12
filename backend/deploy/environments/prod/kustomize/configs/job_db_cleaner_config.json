@@ -30,7 +30,8 @@
 				"enableHostMetrics": false
 			},
 			"serviceName": "db_cleaner",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {

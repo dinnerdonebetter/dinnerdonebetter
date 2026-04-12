@@ -8,8 +8,8 @@ import (
 	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/pointer"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+	"github.com/primandproper/platform/pointer"
+	"github.com/primandproper/platform/types"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

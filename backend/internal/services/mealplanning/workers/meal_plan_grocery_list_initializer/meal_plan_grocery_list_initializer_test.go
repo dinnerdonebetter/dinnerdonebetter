@@ -1,21 +1,23 @@
 package mealplangrocerylistinitializer
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	grocerylistpreparation2 "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+	"github.com/primandproper/platform/messagequeue"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/metrics"
+	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/reflection"
+	"github.com/primandproper/platform/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -28,8 +30,15 @@ func buildNewMealPlanGroceryListInitializerForTest(t *testing.T) *Worker {
 	ctx := t.Context()
 	cfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-	pp := &mockpublishers.PublisherProvider{}
-	pp.On(reflection.GetMethodName(pp.ProvidePublisher), cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, topic string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{
+				PublishFunc:      func(_ context.Context, _ any) error { return nil },
+				PublishAsyncFunc: func(_ context.Context, _ any) {},
+				StopFunc:         func() {},
+			}, nil
+		},
+	}
 
 	x, err := NewMealPlanGroceryListInitializer(
 		ctx,
@@ -275,11 +284,12 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		).Return(firstMealPlanExpectedGroceryListItemInputs, nil)
 		w.groceryListCreator = mglm
 
-		pup := &mockpublishers.Publisher{}
+		pup := &mockpublishers.PublisherMock{
+			PublishFunc: func(_ context.Context, _ any) error { return nil },
+		}
 		for _, inputs := range expectedInputSets {
 			for _, input := range inputs {
 				mdm.On(reflection.GetMethodName(mdm.CreateMealPlanGroceryListItem), testutils.ContextMatcher, input).Return(fakes.BuildFakeMealPlanGroceryListItem(), nil)
-				pup.On(reflection.GetMethodName(pup.Publish), testutils.ContextMatcher, mock.AnythingOfType("*audit.DataChangeMessage")).Return(nil)
 			}
 		}
 

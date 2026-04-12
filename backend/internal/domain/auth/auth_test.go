@@ -6,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
+	"github.com/primandproper/platform/observability/logging"
 
 	"github.com/stretchr/testify/assert"
 )

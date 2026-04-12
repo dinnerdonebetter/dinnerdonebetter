@@ -6,9 +6,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	"github.com/primandproper/platform/database"
+	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/observability"
 )
 
 var _ mealplanning.UploadedMediaFetcher = (*repository)(nil)

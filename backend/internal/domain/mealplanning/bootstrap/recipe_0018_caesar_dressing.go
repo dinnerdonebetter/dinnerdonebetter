@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+	"github.com/primandproper/platform/types"
 )
 
 // CaesarDressingRecipe creates the Caesar Dressing recipe.

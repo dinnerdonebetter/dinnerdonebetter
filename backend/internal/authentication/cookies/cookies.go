@@ -5,9 +5,9 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	perrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	perrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/observability"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/gorilla/securecookie"
 )

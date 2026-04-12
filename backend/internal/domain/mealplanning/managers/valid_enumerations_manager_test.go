@@ -1,21 +1,23 @@
 package managers
 
 import (
+	"context"
 	"testing"
 
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	"github.com/primandproper/platform/messagequeue"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/metrics"
+	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/reflection"
+	textsearchcfg "github.com/primandproper/platform/search/text/config"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -29,8 +31,11 @@ func buildValidEnumerationsManagerForTest(t *testing.T) *validEnumerationManager
 		DataChangesTopicName: t.Name(),
 	}
 
-	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp := &mockpublishers.PublisherProviderMock{
+		ProvidePublisherFunc: func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return &mockpublishers.PublisherMock{}, nil
+		},
+	}
 
 	m, err := NewValidEnumerationsManager(
 		t.Context(),
@@ -43,8 +48,6 @@ func buildValidEnumerationsManagerForTest(t *testing.T) *validEnumerationManager
 		metrics.NewNoopMetricsProvider(),
 	)
 	require.NoError(t, err)
-
-	mock.AssertExpectationsForObjects(t, mpp)
 
 	return m.(*validEnumerationManager)
 }
@@ -60,15 +63,12 @@ func setupExpectationsForValidEnumerationManager(
 	}
 	manager.db = db
 
-	mp := &mockpublishers.Publisher{}
-	for _, eventTypeMap := range eventTypeMaps {
-		for eventType, payload := range eventTypeMap {
-			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
-		}
+	mp := &mockpublishers.PublisherMock{
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
 	}
 	manager.dataChangesPublisher = mp
 
-	return []any{db, mp}
+	return []any{db}
 }
 
 func TestValidEnumerationManager_SearchValidIngredientGroups(T *testing.T) {

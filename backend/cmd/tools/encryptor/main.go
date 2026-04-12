@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/primandproper/platform/cryptography/encryption"
+	"github.com/primandproper/platform/cryptography/encryption/config"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/spf13/cobra"
 )

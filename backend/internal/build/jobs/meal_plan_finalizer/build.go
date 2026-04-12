@@ -9,13 +9,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	mealplanfinalizer "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
 
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging/config"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/config"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing/config"
+	databasecfg "github.com/primandproper/platform/database/config"
+	"github.com/primandproper/platform/database/postgres"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	"github.com/primandproper/platform/observability"
+	loggingcfg "github.com/primandproper/platform/observability/logging/config"
+	metricscfg "github.com/primandproper/platform/observability/metrics/config"
+	tracingcfg "github.com/primandproper/platform/observability/tracing/config"
 
 	"github.com/samber/do/v2"
 )

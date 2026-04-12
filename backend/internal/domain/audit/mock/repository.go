@@ -5,8 +5,8 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/primandproper/platform/database"
+	"github.com/primandproper/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
 )

@@ -8,9 +8,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/types"
+	"github.com/primandproper/platform/identifiers"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/types"
 )
 
 // Enumerations holds all the created valid enumerations and their bridge types.

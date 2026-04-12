@@ -12,8 +12,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
+	"github.com/primandproper/platform/database/filtering"
+	platformerrors "github.com/primandproper/platform/errors"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

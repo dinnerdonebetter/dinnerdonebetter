@@ -5,7 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
+	"github.com/primandproper/platform/database/filtering"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )

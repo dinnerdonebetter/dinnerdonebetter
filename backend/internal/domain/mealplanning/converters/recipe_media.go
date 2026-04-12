@@ -3,7 +3,7 @@ package converters
 import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
+	"github.com/primandproper/platform/identifiers"
 )
 
 // ConvertRecipeMediaToRecipeMediaUpdateRequestInput creates a RecipeMediaUpdateRequestInput from a RecipeMedia.

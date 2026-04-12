@@ -34,6 +34,10 @@
 	"baseURL": "",
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "pubsub",
 			"sqs": {
 				"queueAddress": ""
@@ -47,6 +51,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "pubsub",
 			"sqs": {
 				"queueAddress": ""
@@ -91,7 +99,8 @@
 				"enableHostMetrics": true
 			},
 			"serviceName": "api_server",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {
@@ -159,6 +168,7 @@
 			"apiToken": "placeholder"
 		},
 		"postmark": null,
+		"ses": null,
 		"provider": "resend",
 		"baseURL": "",
 		"outboundInvitesEmailAddress": "",
@@ -282,7 +292,12 @@
 					"bucketPrefix": "avatars/",
 					"bucketName": "media.dinnerdonebetter.com",
 					"uploadFilenameKey": "avatar",
-					"provider": "gcp"
+					"provider": "gcp",
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
 				},
 				"debug": false
 			}
@@ -294,7 +309,12 @@
 						"bucketName": "userdata.dinnerdonebetter.com"
 					},
 					"bucketName": "userdata.dinnerdonebetter.com",
-					"provider": "gcp"
+					"provider": "gcp",
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
 				},
 				"debug": false
 			}
@@ -308,7 +328,12 @@
 					"bucketPrefix": "avatars/",
 					"bucketName": "media.dinnerdonebetter.com",
 					"uploadFilenameKey": "avatar",
-					"provider": "gcp"
+					"provider": "gcp",
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
 				},
 				"debug": false
 			}
@@ -316,7 +341,13 @@
 		"mealPlanning": {
 			"mediaUploadPrefix": "",
 			"uploads": {
-				"storageConfig": {},
+				"storageConfig": {
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
+				},
 				"debug": false
 			},
 			"useSearchService": true

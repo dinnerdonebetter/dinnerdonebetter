@@ -6,12 +6,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/notifications/generated"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/cryptography/encryption/salsa20"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/primandproper/platform/cryptography/encryption"
+	"github.com/primandproper/platform/cryptography/encryption/salsa20"
+	"github.com/primandproper/platform/database"
+	databasecfg "github.com/primandproper/platform/database/config"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 )
 
 const (

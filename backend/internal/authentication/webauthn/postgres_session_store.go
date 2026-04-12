@@ -5,12 +5,12 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/primandproper/platform/database"
+	"github.com/primandproper/platform/encoding"
+	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/observability"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/go-webauthn/webauthn/webauthn"
 )

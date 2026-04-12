@@ -6,8 +6,8 @@ import (
 
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/pointer"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/pointer"
 
 	"github.com/stretchr/testify/require"
 )

@@ -47,7 +47,7 @@ go install github.com/daixiang0/gci@v0.13.5
 make setup
 ```
 
-Runs: `revendor`, `rewire`, `configs`, and ensures Wire, fieldalignment, tagalign, and gci are installed.
+Runs: `revendor`, `configs`, and ensures fieldalignment, tagalign, and gci are installed.
 
 ### Running locally
 

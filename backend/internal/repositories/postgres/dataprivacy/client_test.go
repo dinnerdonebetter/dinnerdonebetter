@@ -2,6 +2,7 @@ package dataprivacy
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
@@ -22,10 +23,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	mockdatabase "github.com/primandproper/platform/database/mock"
+	"github.com/primandproper/platform/database/postgres"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/stretchr/testify/require"
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -86,7 +87,7 @@ func buildInertClientForTest(t *testing.T) *repository {
 		nil, // uploadedMediaRepo
 		nil, // waitlistsRepo
 		nil, // webhooksRepo
-		&database.MockClient{},
+		&mockdatabase.ClientMock{ReadDBFunc: func() *sql.DB { return nil }, WriteDBFunc: func() *sql.DB { return nil }},
 		nil, // dataCollectors
 	)
 

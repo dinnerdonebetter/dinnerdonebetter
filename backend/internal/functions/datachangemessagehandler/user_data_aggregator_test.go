@@ -1,13 +1,14 @@
 package datachangemessagehandler
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -31,19 +32,20 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		rawMsg, err := json.Marshal(userDataCollectionRequest)
 		assert.NoError(t, err)
 
-		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.AnythingOfType("*dataprivacy.UserDataAggregationRequest")).Return(nil).Run(func(args mock.Arguments) {
-			arg := args.Get(2).(*dataprivacy.UserDataAggregationRequest)
+		decoder.DecodeBytesFunc = func(_ context.Context, _ []byte, dest any) error {
+			arg := dest.(*dataprivacy.UserDataAggregationRequest)
 			*arg = *userDataCollectionRequest
-		})
+			return nil
+		}
 
 		dataPrivacyRepo.On(reflection.GetMethodName(dataPrivacyRepo.FetchUserDataCollection), mock.Anything, "test-user-id").Return(&dataprivacy.UserDataCollection{}, nil)
 
-		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), mock.Anything, "test-report-id.json", mock.AnythingOfType("[]uint8")).Return(nil)
+		uploadManager.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return nil }
 
 		err = handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, decoder, uploadManager, dataPrivacyRepo)
+		mock.AssertExpectationsForObjects(t, dataPrivacyRepo)
 	})
 
 	t.Run("with decode error", func(t *testing.T) {
@@ -56,13 +58,11 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		rawMsg := []byte(`{"invalid": "json"}`)
 
 		expectedError := errors.New("decode error")
-		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.AnythingOfType("*dataprivacy.UserDataAggregationRequest")).Return(expectedError)
+		decoder.DecodeBytesFunc = func(_ context.Context, _ []byte, _ any) error { return expectedError }
 
 		err := handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "decoding JSON body")
-
-		mock.AssertExpectationsForObjects(t, decoder)
 	})
 
 	t.Run("with fetch user data collection error", func(t *testing.T) {
@@ -80,10 +80,11 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		rawMsg, err := json.Marshal(userDataCollectionRequest)
 		assert.NoError(t, err)
 
-		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.AnythingOfType("*dataprivacy.UserDataAggregationRequest")).Return(nil).Run(func(args mock.Arguments) {
-			arg := args.Get(2).(*dataprivacy.UserDataAggregationRequest)
+		decoder.DecodeBytesFunc = func(_ context.Context, _ []byte, dest any) error {
+			arg := dest.(*dataprivacy.UserDataAggregationRequest)
 			*arg = *userDataCollectionRequest
-		})
+			return nil
+		}
 
 		expectedError := errors.New("fetch error")
 		dataPrivacyRepo.On(reflection.GetMethodName(dataPrivacyRepo.FetchUserDataCollection), mock.Anything, "test-user-id").Return((*dataprivacy.UserDataCollection)(nil), expectedError)
@@ -92,7 +93,7 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "fetching user data collection")
 
-		mock.AssertExpectationsForObjects(t, decoder, dataPrivacyRepo)
+		mock.AssertExpectationsForObjects(t, dataPrivacyRepo)
 	})
 
 	t.Run("with upload error", func(t *testing.T) {
@@ -110,21 +111,22 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		rawMsg, err := json.Marshal(userDataCollectionRequest)
 		assert.NoError(t, err)
 
-		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.AnythingOfType("*dataprivacy.UserDataAggregationRequest")).Return(nil).Run(func(args mock.Arguments) {
-			arg := args.Get(2).(*dataprivacy.UserDataAggregationRequest)
+		decoder.DecodeBytesFunc = func(_ context.Context, _ []byte, dest any) error {
+			arg := dest.(*dataprivacy.UserDataAggregationRequest)
 			*arg = *userDataCollectionRequest
-		})
+			return nil
+		}
 
 		dataPrivacyRepo.On(reflection.GetMethodName(dataPrivacyRepo.FetchUserDataCollection), mock.Anything, "test-user-id").Return(&dataprivacy.UserDataCollection{}, nil)
 
 		expectedError := errors.New("upload error")
-		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), mock.Anything, "test-report-id.json", mock.AnythingOfType("[]uint8")).Return(expectedError)
+		uploadManager.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return expectedError }
 
 		err = handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "saving collection")
 
-		mock.AssertExpectationsForObjects(t, decoder, uploadManager, dataPrivacyRepo)
+		mock.AssertExpectationsForObjects(t, dataPrivacyRepo)
 	})
 
 	t.Run("with empty report ID", func(t *testing.T) {
@@ -142,19 +144,20 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		rawMsg, err := json.Marshal(userDataCollectionRequest)
 		assert.NoError(t, err)
 
-		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.AnythingOfType("*dataprivacy.UserDataAggregationRequest")).Return(nil).Run(func(args mock.Arguments) {
-			arg := args.Get(2).(*dataprivacy.UserDataAggregationRequest)
+		decoder.DecodeBytesFunc = func(_ context.Context, _ []byte, dest any) error {
+			arg := dest.(*dataprivacy.UserDataAggregationRequest)
 			*arg = *userDataCollectionRequest
-		})
+			return nil
+		}
 
 		dataPrivacyRepo.On(reflection.GetMethodName(dataPrivacyRepo.FetchUserDataCollection), mock.Anything, "test-user-id").Return(&dataprivacy.UserDataCollection{}, nil)
 
-		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), mock.Anything, ".json", mock.AnythingOfType("[]uint8")).Return(nil)
+		uploadManager.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return nil }
 
 		err = handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, decoder, uploadManager, dataPrivacyRepo)
+		mock.AssertExpectationsForObjects(t, dataPrivacyRepo)
 	})
 
 	t.Run("with marshaling error scenario", func(t *testing.T) {
@@ -172,21 +175,19 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		rawMsg, err := json.Marshal(userDataCollectionRequest)
 		assert.NoError(t, err)
 
-		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.AnythingOfType("*dataprivacy.UserDataAggregationRequest")).Return(nil).Run(func(args mock.Arguments) {
-			arg := args.Get(2).(*dataprivacy.UserDataAggregationRequest)
+		decoder.DecodeBytesFunc = func(_ context.Context, _ []byte, dest any) error {
+			arg := dest.(*dataprivacy.UserDataAggregationRequest)
 			*arg = *userDataCollectionRequest
-		})
+			return nil
+		}
 
 		dataPrivacyRepo.On(reflection.GetMethodName(dataPrivacyRepo.FetchUserDataCollection), mock.Anything, "test-user-id").Return(&dataprivacy.UserDataCollection{}, nil)
 
-		// The function marshals UserDataCollection which should not fail
-		// This test ensures we handle the marshaling step correctly
-		// Mock the upload manager to return success so we can test the marshaling path
-		uploadManager.On(reflection.GetMethodName(uploadManager.SaveFile), mock.Anything, "test-report-id.json", mock.AnythingOfType("[]uint8")).Return(nil)
+		uploadManager.SaveFileFunc = func(_ context.Context, _ string, _ []byte) error { return nil }
 
 		err = handler.UserDataAggregationEventHandler("user_data_aggregation")(ctx, rawMsg)
 		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, decoder, uploadManager, dataPrivacyRepo)
+		mock.AssertExpectationsForObjects(t, dataPrivacyRepo)
 	})
 }

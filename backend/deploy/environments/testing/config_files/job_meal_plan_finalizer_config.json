@@ -9,6 +9,10 @@
 	},
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -24,6 +28,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -49,7 +57,8 @@
 			"provider": "slog"
 		},
 		"metrics": {
-			"serviceName": "meal_plan_finalizer"
+			"serviceName": "meal_plan_finalizer",
+			"enabled": false
 		},
 		"tracing": {
 			"service_name": "meal_plan_finalizer"

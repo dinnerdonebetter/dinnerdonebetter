@@ -4,9 +4,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	emaildeliverabilitytest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/email/workers/email_deliverability_test"
 
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
-	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	emailcfg "github.com/primandproper/platform/email/config"
+	httpclientcfg "github.com/primandproper/platform/httpclient"
+	"github.com/primandproper/platform/observability"
 
 	"github.com/samber/do/v2"
 )

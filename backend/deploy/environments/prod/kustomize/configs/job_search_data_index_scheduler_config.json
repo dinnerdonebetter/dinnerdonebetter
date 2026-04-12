@@ -9,6 +9,10 @@
 	},
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "pubsub",
 			"sqs": {
 				"queueAddress": ""
@@ -22,6 +26,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "pubsub",
 			"sqs": {
 				"queueAddress": ""
@@ -66,7 +74,8 @@
 				"enableHostMetrics": false
 			},
 			"serviceName": "search_data_index_scheduler",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {

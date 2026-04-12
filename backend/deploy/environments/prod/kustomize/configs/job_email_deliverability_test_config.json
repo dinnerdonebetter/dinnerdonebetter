@@ -33,7 +33,8 @@
 				"enableHostMetrics": false
 			},
 			"serviceName": "email_deliverability_test",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {
@@ -53,6 +54,7 @@
 			"apiToken": "placeholder"
 		},
 		"postmark": null,
+		"ses": null,
 		"provider": "resend",
 		"baseURL": "",
 		"outboundInvitesEmailAddress": "",

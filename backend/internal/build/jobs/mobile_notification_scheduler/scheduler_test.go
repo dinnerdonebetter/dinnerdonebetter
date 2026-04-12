@@ -1,6 +1,7 @@
 package mobilenotificationscheduler
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -10,11 +11,11 @@ import (
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	mealplanningnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/notifications"
 
-	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	msgqueuemock "github.com/primandproper/platform/messagequeue/mock"
+	notifications "github.com/primandproper/platform/notifications/mobile"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -37,7 +38,7 @@ func TestScheduler_ScheduleNotifications_publishesMobileNotificationRequest(t *t
 
 	mealPlanRepo := &mealplanningmock.Repository{}
 	identityRepo := &identitymock.RepositoryMock{}
-	publisher := &msgqueuemock.Publisher{}
+	publisher := &msgqueuemock.PublisherMock{}
 
 	notificationCtx := &mealplanning.MealPlanTaskNotificationContext{
 		PrepTaskName:        "Chop onions",
@@ -52,16 +53,17 @@ func TestScheduler_ScheduleNotifications_publishesMobileNotificationRequest(t *t
 	// With AssignedToUser set, GetMealPlanTaskAccountID and GetUsersForAccount are not called
 
 	var publishedPayload any
-	publisher.On(reflection.GetMethodName(publisher.Publish), mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
-		publishedPayload = args.Get(1)
-	}).Return(nil).Once()
+	publisher.PublishFunc = func(_ context.Context, data any) error {
+		publishedPayload = data
+		return nil
+	}
 
 	scheduler := NewScheduler(logger, tracerProvider, mealPlanRepo, identityRepo, publisher)
 
 	err := scheduler.ScheduleNotifications(ctx)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, mealPlanRepo, publisher)
+	mock.AssertExpectationsForObjects(t, mealPlanRepo)
 
 	req, ok := publishedPayload.(*notifications.MobileNotificationRequest)
 	require.True(t, ok, "expected MobileNotificationRequest to be published")

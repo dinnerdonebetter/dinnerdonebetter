@@ -3,16 +3,16 @@ package datachangemessagehandler
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	emailcfg "github.com/verygoodsoftwarenotvirus/platform/v4/email/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/encoding"
-	httpclientcfg "github.com/verygoodsoftwarenotvirus/platform/v4/httpclient"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	notificationscfg "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/uploads/objectstorage"
+	analyticscfg "github.com/primandproper/platform/analytics/config"
+	databasecfg "github.com/primandproper/platform/database/config"
+	emailcfg "github.com/primandproper/platform/email/config"
+	"github.com/primandproper/platform/encoding"
+	httpclientcfg "github.com/primandproper/platform/httpclient"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	notificationscfg "github.com/primandproper/platform/notifications/mobile/config"
+	"github.com/primandproper/platform/observability"
+	textsearchcfg "github.com/primandproper/platform/search/text/config"
+	"github.com/primandproper/platform/uploads/objectstorage"
 
 	"github.com/samber/do/v2"
 )

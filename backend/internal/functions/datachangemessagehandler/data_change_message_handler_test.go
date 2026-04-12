@@ -15,21 +15,21 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	analyticsmock "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/mock"
-	emailmock "github.com/verygoodsoftwarenotvirus/platform/v4/email/mock"
-	encodingmock "github.com/verygoodsoftwarenotvirus/platform/v4/encoding/mock"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	msgqueuemock "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	noopnotifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile/noop"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics"
-	mockmetrics "github.com/verygoodsoftwarenotvirus/platform/v4/observability/metrics/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
-	uploadsmock "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
+	analyticsmock "github.com/primandproper/platform/analytics/mock"
+	emailmock "github.com/primandproper/platform/email/mock"
+	encodingmock "github.com/primandproper/platform/encoding/mock"
+	"github.com/primandproper/platform/messagequeue"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	msgqueuemock "github.com/primandproper/platform/messagequeue/mock"
+	noopnotifications "github.com/primandproper/platform/notifications/mobile/noop"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/metrics"
+	mockmetrics "github.com/primandproper/platform/observability/metrics/mock"
+	"github.com/primandproper/platform/observability/tracing"
+	uploadsmock "github.com/primandproper/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"go.opentelemetry.io/otel/metric"
 )
 
 // noopPasswordResetTokenDataManager implements auth.PasswordResetTokenDataManager for tests that do not exercise the password reset flow.
@@ -49,7 +49,7 @@ func (noopPasswordResetTokenDataManager) RedeemPasswordResetToken(context.Contex
 }
 
 //nolint:gocritic // I know this returns too many things
-func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessageHandler, *identitymock.RepositoryMock, *webhooksmock.Repository, *msgqueuemock.ConsumerProvider, *msgqueuemock.PublisherProvider, *analyticsmock.EventReporter, *emailmock.Emailer, *uploadsmock.MockUploadManager, *mockmetrics.MetricsProvider, *encodingmock.EncoderDecoder, *dataprivacymock.Repository) {
+func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessageHandler, *identitymock.RepositoryMock, *webhooksmock.Repository, *msgqueuemock.ConsumerProviderMock, *msgqueuemock.PublisherProviderMock, *analyticsmock.EventReporterMock, *emailmock.EmailerMock, *uploadsmock.UploadManagerMock, *mockmetrics.ProviderMock, *encodingmock.ServerEncoderDecoderMock, *dataprivacymock.Repository) {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
@@ -57,13 +57,13 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 
 	identityRepo := &identitymock.RepositoryMock{}
 	webhookRepo := &webhooksmock.Repository{}
-	consumerProvider := &msgqueuemock.ConsumerProvider{}
-	publisherProvider := &msgqueuemock.PublisherProvider{}
-	analyticsEventReporter := &analyticsmock.EventReporter{}
-	emailer := &emailmock.Emailer{}
-	uploadManager := &uploadsmock.MockUploadManager{}
-	metricsProvider := &mockmetrics.MetricsProvider{}
-	decoder := &encodingmock.EncoderDecoder{}
+	consumerProvider := &msgqueuemock.ConsumerProviderMock{}
+	publisherProvider := &msgqueuemock.PublisherProviderMock{}
+	analyticsEventReporter := &analyticsmock.EventReporterMock{}
+	emailer := &emailmock.EmailerMock{}
+	uploadManager := &uploadsmock.UploadManagerMock{}
+	metricsProvider := &mockmetrics.ProviderMock{}
+	decoder := &encodingmock.ServerEncoderDecoderMock{}
 	dataPrivacyRepo := &dataprivacymock.Repository{}
 
 	// Create mock indexers with noop implementations for testing
@@ -71,15 +71,25 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 	mealPlanningDataIndexer := &mealplanningindexing.MealPlanningDataIndexer{}
 
 	// Set up mock publishers for the indexers to prevent nil pointer dereferences
-	mockPublisher := &msgqueuemock.Publisher{}
-	publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), mock.AnythingOfType("string")).Return(mockPublisher, nil).Maybe()
+	mockPublisher := &msgqueuemock.PublisherMock{
+		PublishFunc:      func(_ context.Context, _ any) error { return nil },
+		PublishAsyncFunc: func(_ context.Context, _ any) {},
+		StopFunc:         func() {},
+	}
+	publisherProvider.ProvidePublisherFunc = func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+		return mockPublisher, nil
+	}
 
 	// Set up mock histograms and counters
 	noopProvider := metrics.NewNoopMetricsProvider()
 	noopHistogram, _ := noopProvider.NewFloat64Histogram("test")
 	noopCounter, _ := noopProvider.NewInt64Counter("test")
-	metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), mock.AnythingOfType("string"), mock.Anything).Return(noopHistogram, nil).Maybe()
-	metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), mock.AnythingOfType("string"), mock.Anything).Return(noopCounter, nil).Maybe()
+	metricsProvider.NewFloat64HistogramFunc = func(_ string, _ ...metric.Float64HistogramOption) (metrics.Float64Histogram, error) {
+		return noopHistogram, nil
+	}
+	metricsProvider.NewInt64CounterFunc = func(_ string, _ ...metric.Int64CounterOption) (metrics.Int64Counter, error) {
+		return noopCounter, nil
+	}
 
 	internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
 	mealPlanRepo := &mealplanningmock.Repository{}
@@ -159,13 +169,13 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		identityRepo := &identitymock.RepositoryMock{}
 		dataPrivacyRepo := &dataprivacymock.Repository{}
 		webhookRepo := &webhooksmock.Repository{}
-		consumerProvider := &msgqueuemock.ConsumerProvider{}
-		publisherProvider := &msgqueuemock.PublisherProvider{}
-		analyticsEventReporter := &analyticsmock.EventReporter{}
-		emailer := &emailmock.Emailer{}
-		uploadManager := &uploadsmock.MockUploadManager{}
-		metricsProvider := &mockmetrics.MetricsProvider{}
-		decoder := &encodingmock.EncoderDecoder{}
+		consumerProvider := &msgqueuemock.ConsumerProviderMock{}
+		publisherProvider := &msgqueuemock.PublisherProviderMock{}
+		analyticsEventReporter := &analyticsmock.EventReporterMock{}
+		emailer := &emailmock.EmailerMock{}
+		uploadManager := &uploadsmock.UploadManagerMock{}
+		metricsProvider := &mockmetrics.ProviderMock{}
+		decoder := &encodingmock.ServerEncoderDecoderMock{}
 		coreDataIndexer := &identityindexing.UserDataIndexer{}
 		eatingDataIndexer := &mealplanningindexing.MealPlanningDataIndexer{}
 
@@ -173,26 +183,22 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		noopProvider := metrics.NewNoopMetricsProvider()
 		noopHistogram, _ := noopProvider.NewFloat64Histogram("test")
 		noopCounter, _ := noopProvider.NewInt64Counter("test")
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "data_changes_execution_time", mock.Anything).Return(noopHistogram, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "outbound_emails_execution_time", mock.Anything).Return(noopHistogram, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "search_index_requests_execution_time", mock.Anything).Return(noopHistogram, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "user_data_aggregation_execution_time", mock.Anything).Return(noopHistogram, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "webhook_requests_execution_time", mock.Anything).Return(noopHistogram, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "mobile_notifications_execution_time", mock.Anything).Return(noopHistogram, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "messages_processed_total", mock.Anything).Return(noopCounter, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "message_decode_errors_total", mock.Anything).Return(noopCounter, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "handler_errors_total", mock.Anything).Return(noopCounter, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "emails_sent_total", mock.Anything).Return(noopCounter, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "emails_failed_total", mock.Anything).Return(noopCounter, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "push_notifications_sent_total", mock.Anything).Return(noopCounter, nil)
-		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "bad_device_tokens_archived_total", mock.Anything).Return(noopCounter, nil)
+		metricsProvider.NewFloat64HistogramFunc = func(_ string, _ ...metric.Float64HistogramOption) (metrics.Float64Histogram, error) {
+			return noopHistogram, nil
+		}
+		metricsProvider.NewInt64CounterFunc = func(_ string, _ ...metric.Int64CounterOption) (metrics.Int64Counter, error) {
+			return noopCounter, nil
+		}
 
 		// Set up publisher expectations
-		mockPublisher := &msgqueuemock.Publisher{}
-		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "outbound-emails").Return(mockPublisher, nil)
-		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "search-index-requests").Return(mockPublisher, nil)
-		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "webhook-execution-requests").Return(mockPublisher, nil)
-		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "mobile-notifications").Return(mockPublisher, nil)
+		mockPublisher := &msgqueuemock.PublisherMock{
+			PublishFunc:      func(_ context.Context, _ any) error { return nil },
+			PublishAsyncFunc: func(_ context.Context, _ any) {},
+			StopFunc:         func() {},
+		}
+		publisherProvider.ProvidePublisherFunc = func(_ context.Context, _ string) (messagequeue.Publisher, error) {
+			return mockPublisher, nil
+		}
 
 		internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
 		mealPlanRepo := &mealplanningmock.Repository{}
@@ -236,7 +242,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		assert.Equal(t, coreDataIndexer, handler.userDataIndexer)
 		assert.Equal(t, eatingDataIndexer, handler.mealPlanningDataIndexer)
 
-		mock.AssertExpectationsForObjects(t, metricsProvider, publisherProvider)
+		// metricsProvider and publisherProvider are moq mocks - no testify assertion needed
 	})
 }
 

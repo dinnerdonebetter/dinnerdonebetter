@@ -17,17 +17,17 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	perrors "github.com/verygoodsoftwarenotvirus/platform/v4/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v4/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/qrcodes"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/random"
+	"github.com/primandproper/platform/database/filtering"
+	perrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/identifiers"
+	"github.com/primandproper/platform/messagequeue"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	"github.com/primandproper/platform/observability"
+	platformkeys "github.com/primandproper/platform/observability/keys"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/qrcodes"
+	"github.com/primandproper/platform/random"
 
 	"github.com/pquerna/otp/totp"
 	passwordvalidator "github.com/wagslane/go-password-validator"
@@ -280,9 +280,14 @@ func (l *AuthManager) NewTOTPSecret(ctx context.Context, input *auth.TOTPSecretR
 
 	l.dataChangesPublisher.PublishAsync(ctx, dcm)
 
+	qrCode, err := l.qrCodeBuilder.BuildQRCode(ctx, user.Username, user.TwoFactorSecret)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "building QR code")
+	}
+
 	result := &auth.TOTPSecretRefreshResponse{
 		TwoFactorSecret: user.TwoFactorSecret,
-		TwoFactorQRCode: l.qrCodeBuilder.BuildQRCode(ctx, user.Username, user.TwoFactorSecret),
+		TwoFactorQRCode: qrCode,
 	}
 
 	return result, nil

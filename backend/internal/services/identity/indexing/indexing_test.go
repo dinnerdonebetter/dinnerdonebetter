@@ -1,17 +1,18 @@
 package indexing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text"
-	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v4/search/text/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/reflection"
+	textsearch "github.com/primandproper/platform/search/text"
+	mocksearch "github.com/primandproper/platform/search/text/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -32,10 +33,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
 		identityRepo.On(reflection.GetMethodName(identityRepo.MarkUserAsIndexed), testutils.ContextMatcher, exampleUser.ID).Return(nil)
 
-		uss := ConvertUserToUserSearchSubset(exampleUser)
-
-		mim := &mocksearch.IndexManager[UserSearchSubset]{}
-		mim.On(reflection.GetMethodName(mim.Index), testutils.ContextMatcher, exampleUser.ID, uss).Return(nil)
+		mim := &mocksearch.IndexMock[UserSearchSubset]{
+			IndexFunc: func(_ context.Context, _ string, _ any) error { return nil },
+		}
 
 		cdi := NewCoreDataIndexer(
 			logger,
@@ -52,7 +52,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
 
-		mock.AssertExpectationsForObjects(t, identityRepo, mim)
+		mock.AssertExpectationsForObjects(t, identityRepo)
 	})
 
 	T.Run("deleting user index type", func(t *testing.T) {
@@ -66,8 +66,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		identityRepo := &identitymock.RepositoryMock{}
 		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
 
-		mim := &mocksearch.IndexManager[UserSearchSubset]{}
-		mim.On(reflection.GetMethodName(mim.Delete), testutils.ContextMatcher, exampleUser.ID).Return(nil)
+		mim := &mocksearch.IndexMock[UserSearchSubset]{
+			DeleteFunc: func(_ context.Context, _ string) error { return nil },
+		}
 
 		cdi := NewCoreDataIndexer(
 			logger,
@@ -84,6 +85,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
 
-		mock.AssertExpectationsForObjects(t, identityRepo, mim)
+		mock.AssertExpectationsForObjects(t, identityRepo)
 	})
 }

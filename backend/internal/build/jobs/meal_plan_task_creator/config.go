@@ -3,10 +3,10 @@ package mealplantaskcreator
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	analyticscfg "github.com/verygoodsoftwarenotvirus/platform/v4/analytics/config"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
+	analyticscfg "github.com/primandproper/platform/analytics/config"
+	databasecfg "github.com/primandproper/platform/database/config"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	"github.com/primandproper/platform/observability"
 
 	"github.com/samber/do/v2"
 )

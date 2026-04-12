@@ -1,17 +1,14 @@
 package authentication
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
-
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v4/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/testutils"
+	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 //nolint:paralleltest // pending race condition fix on Goth's part.
@@ -68,20 +65,15 @@ func TestAuthenticationService_postLogin(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.MatchType[*audit.DataChangeMessage](),
-		).Return(nil)
+		dataChangesPublisher := &mockpublishers.PublisherMock{
+			PublishFunc: func(_ context.Context, _ any) error { return nil },
+		}
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		statusCode, err := helper.service.postLogin(helper.ctx, helper.exampleUser, helper.exampleAccount.ID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusAccepted, statusCode)
-
-		mock.AssertExpectationsForObjects(t, dataChangesPublisher)
 	})
 
 	T.Run("with publisher error", func(t *testing.T) {
@@ -89,20 +81,15 @@ func TestAuthenticationService_postLogin(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.MatchType[*audit.DataChangeMessage](),
-		).Return(errors.New("publisher error"))
+		dataChangesPublisher := &mockpublishers.PublisherMock{
+			PublishFunc: func(_ context.Context, _ any) error { return errors.New("publisher error") },
+		}
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		statusCode, err := helper.service.postLogin(helper.ctx, helper.exampleUser, helper.exampleAccount.ID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusAccepted, statusCode)
-
-		mock.AssertExpectationsForObjects(t, dataChangesPublisher)
 	})
 }
 

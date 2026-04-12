@@ -13,10 +13,10 @@ import (
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 	mealplantaskcreator "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
-	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/mock"
+	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
+	mockuploads "github.com/primandproper/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -61,7 +61,7 @@ func TestNewService(t *testing.T) {
 		mealPlanTaskCreatorWorker := &mealplantaskcreator.Worker{}
 		commentsManager := &noopCommentsManager{}
 		uploadedMediaManager := &uploadedmediamock.Repository{}
-		uploadManager := &mockuploads.MockUploadManager{}
+		uploadManager := &mockuploads.UploadManagerMock{}
 
 		service := NewService(
 			logger,

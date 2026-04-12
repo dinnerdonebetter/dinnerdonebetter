@@ -16,8 +16,9 @@ import (
 	identityfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/featureflags"
+	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -102,7 +103,9 @@ func TestServiceImpl_EvaluateBooleanFeatureFlag(t *testing.T) {
 		service, _, _, _, featureFlagManager := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		featureFlagManager.On("CanUseFeature", mock.Anything, mock.Anything, "test-flag").Return(true, nil)
+		featureFlagManager.CanUseFeatureFunc = func(_ context.Context, _ string, _ featureflags.EvaluationContext) (bool, error) {
+			return true, nil
+		}
 
 		response, err := service.EvaluateBooleanFeatureFlag(ctx, &authsvc.EvaluateBooleanFeatureFlagRequest{
 			FeatureFlag: "test-flag",
@@ -155,7 +158,9 @@ func TestServiceImpl_EvaluateStringFeatureFlag(t *testing.T) {
 		service, _, _, _, featureFlagManager := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		featureFlagManager.On("GetStringValue", mock.Anything, mock.Anything, "test-flag").Return("variant-a", nil)
+		featureFlagManager.GetStringValueFunc = func(_ context.Context, _ string, _ string, _ featureflags.EvaluationContext) (string, error) {
+			return "variant-a", nil
+		}
 
 		response, err := service.EvaluateStringFeatureFlag(ctx, &authsvc.EvaluateStringFeatureFlagRequest{
 			FeatureFlag: "test-flag",
@@ -176,7 +181,9 @@ func TestServiceImpl_EvaluateInt64FeatureFlag(t *testing.T) {
 		service, _, _, _, featureFlagManager := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		featureFlagManager.On("GetInt64Value", mock.Anything, mock.Anything, "test-flag").Return(int64(42), nil)
+		featureFlagManager.GetInt64ValueFunc = func(_ context.Context, _ string, _ int64, _ featureflags.EvaluationContext) (int64, error) {
+			return int64(42), nil
+		}
 
 		response, err := service.EvaluateInt64FeatureFlag(ctx, &authsvc.EvaluateInt64FeatureFlagRequest{
 			FeatureFlag: "test-flag",

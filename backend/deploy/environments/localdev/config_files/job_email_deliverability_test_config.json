@@ -31,7 +31,8 @@
 				"enableHostMetrics": false
 			},
 			"serviceName": "email_deliverability_test",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {
@@ -49,6 +50,7 @@
 		"mailjet": null,
 		"resend": null,
 		"postmark": null,
+		"ses": null,
 		"provider": "",
 		"baseURL": "",
 		"outboundInvitesEmailAddress": "",

@@ -26,6 +26,10 @@
 	"baseURL": "",
 	"events": {
 		"consumers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -41,6 +45,10 @@
 			}
 		},
 		"publishers": {
+			"kafka": {
+				"groupId": "",
+				"brokers": null
+			},
 			"provider": "redis",
 			"sqs": {
 				"queueAddress": ""
@@ -85,7 +93,8 @@
 				"enableHostMetrics": false
 			},
 			"serviceName": "api_server",
-			"provider": "otelgrpc"
+			"provider": "otelgrpc",
+			"enabled": false
 		},
 		"tracing": {
 			"otelgrpc": {
@@ -125,6 +134,7 @@
 		"mailjet": null,
 		"resend": null,
 		"postmark": null,
+		"ses": null,
 		"provider": "",
 		"baseURL": "",
 		"outboundInvitesEmailAddress": "",
@@ -228,7 +238,12 @@
 					},
 					"bucketName": "avatars",
 					"uploadFilenameKey": "avatar",
-					"provider": "filesystem"
+					"provider": "filesystem",
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
 				},
 				"debug": true
 			}
@@ -240,7 +255,12 @@
 						"rootDirectory": "/tmp"
 					},
 					"bucketName": "userdata",
-					"provider": "filesystem"
+					"provider": "filesystem",
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
 				},
 				"debug": false
 			}
@@ -253,7 +273,12 @@
 					},
 					"bucketName": "avatars",
 					"uploadFilenameKey": "avatar",
-					"provider": "filesystem"
+					"provider": "filesystem",
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
 				},
 				"debug": true
 			}
@@ -261,7 +286,13 @@
 		"mealPlanning": {
 			"mediaUploadPrefix": "",
 			"uploads": {
-				"storageConfig": {},
+				"storageConfig": {
+					"circuitBreakerConfig": {
+						"name": "",
+						"circuitBreakerErrorPercentage": 0,
+						"circuitBreakerMinimumOccurrenceThreshold": 0
+					}
+				},
 				"debug": false
 			},
 			"useSearchService": false

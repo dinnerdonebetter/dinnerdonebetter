@@ -18,7 +18,7 @@ if [ ${#go_files[@]} -gt 0 ]; then
     --section standard \
     --section "prefix(${PACKAGE_PREFIX})" \
     --section "prefix($(dirname "${PACKAGE_PREFIX}"))" \
-    --section "prefix(github.com/verygoodsoftwarenotvirus)" \
+    --section "prefix(github.com/primandproper)" \
     --section default \
     --custom-order \
     "${go_files[@]}"

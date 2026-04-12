@@ -11,8 +11,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/jwt"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/paseto"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability/tracing"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

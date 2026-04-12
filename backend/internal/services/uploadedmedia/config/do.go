@@ -1,7 +1,7 @@
 package config
 
 import (
-	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v4/uploads/config"
+	uploadscfg "github.com/primandproper/platform/uploads/config"
 
 	"github.com/samber/do/v2"
 )

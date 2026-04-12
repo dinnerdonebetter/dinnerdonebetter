@@ -3,9 +3,9 @@ package mcpbuild
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v4/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/observability"
-	routingcfg "github.com/verygoodsoftwarenotvirus/platform/v4/routing/config"
+	databasecfg "github.com/primandproper/platform/database/config"
+	"github.com/primandproper/platform/observability"
+	routingcfg "github.com/primandproper/platform/routing/config"
 
 	"github.com/samber/do/v2"
 )

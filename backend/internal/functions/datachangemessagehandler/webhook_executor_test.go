@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 	webhooksfakes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

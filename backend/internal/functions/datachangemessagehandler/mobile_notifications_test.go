@@ -10,9 +10,9 @@ import (
 	domainnotifications "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 	notificationsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications/mock"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v4/database/filtering"
-	notifications "github.com/verygoodsoftwarenotvirus/platform/v4/notifications/mobile"
-	"github.com/verygoodsoftwarenotvirus/platform/v4/reflection"
+	"github.com/primandproper/platform/database/filtering"
+	notifications "github.com/primandproper/platform/notifications/mobile"
+	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

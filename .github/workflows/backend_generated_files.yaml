@@ -15,7 +15,7 @@ concurrency:
 
 name: backend - generated files
 jobs:
-  dependency_injection:
+  configs:
     timeout-minutes: 20
     strategy:
       matrix:
@@ -32,32 +32,18 @@ jobs:
           cache: true
           cache-dependency-path: backend/go.sum
 
-      - name: Install wire
-        run: go install github.com/google/wire/cmd/wire@latest
-
-      - name: Ensure dependency injection code can be generated
-        working-directory: backend
-        run: make rewire format_golang
-
-      - name: Check for changes
-        run: git diff --exit-code
-
-  configs:
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        go-version: ['1.26.x']
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Install Go
-        uses: actions/setup-go@v6
+      - name: Cache vendor directory
+        uses: actions/cache@v4
         with:
-          go-version: '${{ matrix.go-version }}'
-          cache: true
-          cache-dependency-path: backend/go.sum
+          path: backend/vendor
+          key: go-vendor-${{ hashFiles('backend/go.sum') }}
+
+      - name: Vendor dependencies
+        working-directory: backend
+        run: |
+          if [ ! -d vendor ]; then
+            make vendor
+          fi
 
       - name: Ensure configs can be generated
         working-directory: backend
@@ -67,7 +53,7 @@ jobs:
         run: git diff --exit-code
 
   queries:
-    timeout-minutes: 10
+    timeout-minutes: 20
     strategy:
       matrix:
         go-version: ['1.26.x']
@@ -82,6 +68,19 @@ jobs:
           go-version: '${{ matrix.go-version }}'
           cache: true
           cache-dependency-path: backend/go.sum
+
+      - name: Cache vendor directory
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: go-vendor-${{ hashFiles('backend/go.sum') }}
+
+      - name: Vendor dependencies
+        working-directory: backend
+        run: |
+          if [ ! -d vendor ]; then
+            make vendor
+          fi
 
       - name: Ensure queries and querier can be generated
         working-directory: backend
@@ -91,7 +90,7 @@ jobs:
         run: git diff --exit-code
 
   env_vars_file:
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       matrix:
         go-version: ['1.26.x']
@@ -107,15 +106,28 @@ jobs:
           cache: true
           cache-dependency-path: backend/go.sum
 
+      - name: Cache vendor directory
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: go-vendor-${{ hashFiles('backend/go.sum') }}
+
+      - name: Vendor dependencies
+        working-directory: backend
+        run: |
+          if [ ! -d vendor ]; then
+            make vendor
+          fi
+
       - name: generate env vars file
         working-directory: backend
-        run: make vendor env_vars
+        run: make env_vars
 
       - name: Fail on changes
         run: git diff --exit-code
 
   go_mod_tidy:
-    timeout-minutes: 10
+    timeout-minutes: 20
     strategy:
       matrix:
         go-version: ['1.26.x']
