@@ -3,7 +3,7 @@ package payments
 import (
 	"context"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	"github.com/primandproper/platform/database/filtering"
 )
 
 // Repository defines the data access interface for payments entities.

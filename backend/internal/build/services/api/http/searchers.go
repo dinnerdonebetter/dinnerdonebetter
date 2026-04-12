@@ -6,10 +6,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v5/search/text/config"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/metrics"
+	"github.com/primandproper/platform/observability/tracing"
+	textsearchcfg "github.com/primandproper/platform/search/text/config"
 
 	"github.com/samber/do/v2"
 )

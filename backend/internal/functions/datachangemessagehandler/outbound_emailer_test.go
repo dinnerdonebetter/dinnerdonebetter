@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/email"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
+	"github.com/primandproper/platform/email"
+	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

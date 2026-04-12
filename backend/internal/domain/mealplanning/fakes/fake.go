@@ -4,8 +4,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/types"
+	"github.com/primandproper/platform/identifiers"
+	"github.com/primandproper/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )

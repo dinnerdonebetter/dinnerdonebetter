@@ -6,9 +6,9 @@ import (
 
 	paymentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/payments/manager"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/primandproper/platform/observability"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/go-chi/chi/v5"
 )

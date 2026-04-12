@@ -11,17 +11,17 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v5/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v5/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v5/search/text"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v5/search/text/config"
+	"github.com/primandproper/platform/database/filtering"
+	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/messagequeue"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	"github.com/primandproper/platform/observability"
+	platformkeys "github.com/primandproper/platform/observability/keys"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/metrics"
+	"github.com/primandproper/platform/observability/tracing"
+	textsearch "github.com/primandproper/platform/search/text"
+	textsearchcfg "github.com/primandproper/platform/search/text/config"
 )
 
 const (

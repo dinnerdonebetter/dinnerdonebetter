@@ -3,7 +3,7 @@ package config
 import (
 	"context"
 
-	uploadscfg "github.com/verygoodsoftwarenotvirus/platform/v5/uploads/config"
+	uploadscfg "github.com/primandproper/platform/uploads/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

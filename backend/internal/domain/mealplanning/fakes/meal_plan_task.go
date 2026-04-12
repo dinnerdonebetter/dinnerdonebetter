@@ -4,7 +4,7 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	"github.com/primandproper/platform/database/filtering"
 )
 
 // BuildFakeMealPlanTask builds a faked meal plan task.

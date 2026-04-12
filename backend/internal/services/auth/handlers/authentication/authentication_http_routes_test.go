@@ -7,8 +7,8 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 
-	mockpublishers "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/testutils"
+	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
+	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

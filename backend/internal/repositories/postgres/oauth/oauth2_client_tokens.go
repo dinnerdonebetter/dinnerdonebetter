@@ -7,9 +7,9 @@ import (
 	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
 
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v5/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/observability"
+	"github.com/primandproper/platform/observability/tracing"
 )
 
 var _ types.OAuth2ClientTokenDataManager = (*repository)(nil)

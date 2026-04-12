@@ -13,10 +13,10 @@ import (
 	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	uploadedmediasvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/testutils"
-	mockuploads "github.com/verygoodsoftwarenotvirus/platform/v5/uploads/mock"
+	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/reflection"
+	"github.com/primandproper/platform/testutils"
+	mockuploads "github.com/primandproper/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

@@ -3,7 +3,7 @@ package config
 import (
 	"testing"
 
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
 
 	"github.com/stretchr/testify/assert"
 )

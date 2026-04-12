@@ -3,9 +3,9 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/pointer"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/types"
+	"github.com/primandproper/platform/identifiers"
+	"github.com/primandproper/platform/pointer"
+	"github.com/primandproper/platform/types"
 )
 
 // AllMeals returns all bootstrap meal creation inputs.

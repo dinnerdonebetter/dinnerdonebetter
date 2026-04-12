@@ -6,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments"
 	commentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	"github.com/primandproper/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
 )

@@ -4,8 +4,8 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/pointer"
+	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )

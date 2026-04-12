@@ -6,7 +6,7 @@ import (
 
 	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
+	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

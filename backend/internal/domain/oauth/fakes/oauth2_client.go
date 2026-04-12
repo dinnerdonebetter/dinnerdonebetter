@@ -5,7 +5,7 @@ import (
 
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	"github.com/primandproper/platform/database/filtering"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )

@@ -9,9 +9,9 @@ import (
 	grpcfiltering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/testutils"
+	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/reflection"
+	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

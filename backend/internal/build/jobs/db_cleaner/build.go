@@ -7,12 +7,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	dbcleaner "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/oauth/workers/db_cleaner"
 
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/postgres"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
-	loggingcfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging/config"
-	metricscfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics/config"
-	tracingcfg "github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing/config"
+	databasecfg "github.com/primandproper/platform/database/config"
+	"github.com/primandproper/platform/database/postgres"
+	"github.com/primandproper/platform/observability"
+	loggingcfg "github.com/primandproper/platform/observability/logging/config"
+	metricscfg "github.com/primandproper/platform/observability/metrics/config"
+	tracingcfg "github.com/primandproper/platform/observability/tracing/config"
 
 	"github.com/samber/do/v2"
 )

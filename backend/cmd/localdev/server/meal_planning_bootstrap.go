@@ -17,13 +17,13 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
-	noopmq "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/noop"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
-	textsearchcfg "github.com/verygoodsoftwarenotvirus/platform/v5/search/text/config"
+	"github.com/primandproper/platform/identifiers"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	noopmq "github.com/primandproper/platform/messagequeue/noop"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/metrics"
+	"github.com/primandproper/platform/observability/tracing"
+	textsearchcfg "github.com/primandproper/platform/search/text/config"
 )
 
 var createMealPlansAndVotes = true // os.Getenv("CREATE_MEAL_PLANS_AND_VOTES") == "true"

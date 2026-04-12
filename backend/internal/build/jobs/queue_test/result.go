@@ -5,7 +5,7 @@ import (
 
 	queuetest "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/internalops/workers/queue_test"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics"
+	"github.com/primandproper/platform/observability/metrics"
 )
 
 // BuildResult holds the queue test job and a cleanup that flushes metrics so

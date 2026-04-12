@@ -6,12 +6,12 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/reflection"
-	textsearch "github.com/verygoodsoftwarenotvirus/platform/v5/search/text"
-	mocksearch "github.com/verygoodsoftwarenotvirus/platform/v5/search/text/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/testutils"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/reflection"
+	textsearch "github.com/primandproper/platform/search/text"
+	mocksearch "github.com/primandproper/platform/search/text/mock"
+	"github.com/primandproper/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

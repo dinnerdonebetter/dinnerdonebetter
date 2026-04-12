@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
+	"github.com/primandproper/platform/database"
+	"github.com/primandproper/platform/database/filtering"
 )
 
 const (

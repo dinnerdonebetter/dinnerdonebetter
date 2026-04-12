@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/types"
+	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/types"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"

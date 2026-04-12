@@ -3,9 +3,9 @@ package searchdataindexscheduler
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
-	msgconfig "github.com/verygoodsoftwarenotvirus/platform/v5/messagequeue/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
+	databasecfg "github.com/primandproper/platform/database/config"
+	msgconfig "github.com/primandproper/platform/messagequeue/config"
+	"github.com/primandproper/platform/observability"
 
 	"github.com/samber/do/v2"
 )

@@ -11,10 +11,10 @@ import (
 	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/featureflags/mock"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/primandproper/platform/encoding"
+	"github.com/primandproper/platform/featureflags/mock"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 )

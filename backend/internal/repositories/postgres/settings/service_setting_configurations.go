@@ -11,12 +11,12 @@ import (
 	settingskeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/keys"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v5/errors"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/primandproper/platform/database"
+	"github.com/primandproper/platform/database/filtering"
+	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/identifiers"
+	"github.com/primandproper/platform/observability"
+	"github.com/primandproper/platform/observability/tracing"
 )
 
 const (

@@ -4,10 +4,10 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	domainoauth "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/primandproper/platform/database"
+	databasecfg "github.com/primandproper/platform/database/config"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/samber/do/v2"
 )

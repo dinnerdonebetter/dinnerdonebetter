@@ -3,7 +3,7 @@ package fakes
 import (
 	"time"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
+	"github.com/primandproper/platform/identifiers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )

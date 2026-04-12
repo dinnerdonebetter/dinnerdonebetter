@@ -16,9 +16,9 @@ import (
 	_ "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/errors"
 	identityconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
-	platformerrors "github.com/verygoodsoftwarenotvirus/platform/v5/errors"
-	errorsgrpc "github.com/verygoodsoftwarenotvirus/platform/v5/errors/grpc"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/featureflags"
+	platformerrors "github.com/primandproper/platform/errors"
+	errorsgrpc "github.com/primandproper/platform/errors/grpc"
+	"github.com/primandproper/platform/featureflags"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

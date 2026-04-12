@@ -1,9 +1,9 @@
 package emaildeliverabilitytest
 
 import (
-	"github.com/verygoodsoftwarenotvirus/platform/v5/email"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/primandproper/platform/email"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/samber/do/v2"
 )

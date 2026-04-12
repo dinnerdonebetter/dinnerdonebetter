@@ -16,11 +16,11 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database"
-	databasecfg "github.com/verygoodsoftwarenotvirus/platform/v5/database/config"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/database/filtering"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/identifiers"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/retry"
+	"github.com/primandproper/platform/database"
+	databasecfg "github.com/primandproper/platform/database/config"
+	"github.com/primandproper/platform/database/filtering"
+	"github.com/primandproper/platform/identifiers"
+	"github.com/primandproper/platform/retry"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/assert"

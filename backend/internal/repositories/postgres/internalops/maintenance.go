@@ -3,7 +3,7 @@ package internalops
 import (
 	"context"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
+	"github.com/primandproper/platform/observability"
 )
 
 // DeleteExpiredOAuth2ClientTokens deletes expired oauth2 client tokens.

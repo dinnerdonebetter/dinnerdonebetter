@@ -6,12 +6,12 @@ import (
 	"log"
 	"strings"
 
-	notifications "github.com/verygoodsoftwarenotvirus/platform/v5/notifications/mobile"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/notifications/mobile/apns"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/notifications/mobile/fcm"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/logging"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/metrics"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	notifications "github.com/primandproper/platform/notifications/mobile"
+	"github.com/primandproper/platform/notifications/mobile/apns"
+	"github.com/primandproper/platform/notifications/mobile/fcm"
+	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/observability/metrics"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/spf13/pflag"
 )

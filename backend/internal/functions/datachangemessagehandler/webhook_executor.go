@@ -14,11 +14,11 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 
-	"github.com/verygoodsoftwarenotvirus/platform/v5/encoding"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/httpclient"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability"
-	platformkeys "github.com/verygoodsoftwarenotvirus/platform/v5/observability/keys"
-	"github.com/verygoodsoftwarenotvirus/platform/v5/observability/tracing"
+	"github.com/primandproper/platform/encoding"
+	"github.com/primandproper/platform/httpclient"
+	"github.com/primandproper/platform/observability"
+	platformkeys "github.com/primandproper/platform/observability/keys"
+	"github.com/primandproper/platform/observability/tracing"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
