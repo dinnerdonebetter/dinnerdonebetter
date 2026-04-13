@@ -15,7 +15,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
 
@@ -28,7 +28,7 @@ import (
 func buildTestService(t *testing.T) (*serviceImpl, *issuereportmock.Repository) {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
+	logger := loggingnoop.NewLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	issueReportRepo := &issuereportmock.Repository{}
 
@@ -52,7 +52,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *issuereportmock.Repository) 
 func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
+	logger := loggingnoop.NewLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 
 	service := &serviceImpl{

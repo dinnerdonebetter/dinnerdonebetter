@@ -11,10 +11,10 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	platformkeys "github.com/primandproper/platform/observability/keys"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -86,7 +86,7 @@ func (q *repository) GetValidIngredientGroup(ctx context.Context, validIngredien
 				CreatedAt:     memberResult.ValidIngredientCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(memberResult.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(memberResult.ValidIngredientArchivedAt),
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+				StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(memberResult.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(memberResult.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				},
@@ -198,7 +198,7 @@ func (q *repository) SearchForValidIngredientGroups(ctx context.Context, query s
 					CreatedAt:     memberResult.ValidIngredientCreatedAt,
 					LastUpdatedAt: database.TimePointerFromNullTime(memberResult.ValidIngredientLastUpdatedAt),
 					ArchivedAt:    database.TimePointerFromNullTime(memberResult.ValidIngredientArchivedAt),
-					StorageTemperatureInCelsius: types.OptionalFloat32Range{
+					StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 						Max: database.Float32PointerFromNullString(memberResult.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 						Min: database.Float32PointerFromNullString(memberResult.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 					},
@@ -310,7 +310,7 @@ func (q *repository) GetValidIngredientGroups(ctx context.Context, filter *filte
 					CreatedAt:     memberResult.ValidIngredientCreatedAt,
 					LastUpdatedAt: database.TimePointerFromNullTime(memberResult.ValidIngredientLastUpdatedAt),
 					ArchivedAt:    database.TimePointerFromNullTime(memberResult.ValidIngredientArchivedAt),
-					StorageTemperatureInCelsius: types.OptionalFloat32Range{
+					StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 						Max: database.Float32PointerFromNullString(memberResult.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 						Min: database.Float32PointerFromNullString(memberResult.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 					},

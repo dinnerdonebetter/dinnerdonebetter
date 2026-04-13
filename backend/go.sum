@@ -763,6 +763,8 @@ github.com/prashantv/gostub v1.1.0 h1:BTyx3RfQjRHnUWaGF9oQos79AlQ5k8WNktv7VGvVH4
 github.com/prashantv/gostub v1.1.0/go.mod h1:A5zLQHz7ieHGG7is6LLXLz7I8+3LZzsrV0P1IAHhP5U=
 github.com/primandproper/platform v0.0.1 h1:W8YAFWoH2dAywo3S4C2G46mizGsh699RE8hADeu+cBU=
 github.com/primandproper/platform v0.0.1/go.mod h1:/W9Q189aEwUpbjhNnTY+ArvxUzXRAXTRAeLY+23hEtA=
+github.com/primandproper/platform v0.0.2 h1:5kcsYcRhGNkLD+Ema3DrdSySI+adWvVhQPhkdY6gOjI=
+github.com/primandproper/platform v0.0.2/go.mod h1:/W9Q189aEwUpbjhNnTY+ArvxUzXRAXTRAeLY+23hEtA=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
 github.com/redis/go-redis/v9 v9.18.0 h1:pMkxYPkEbMPwRdenAzUNyFNrDgHx9U+DrBabWNfSRQs=
 github.com/redis/go-redis/v9 v9.18.0/go.mod h1:k3ufPphLU5YXwNTUcCRXGxUoF1fqxnhFQmscfkCoDA0=

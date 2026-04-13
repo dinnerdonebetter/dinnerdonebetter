@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
@@ -129,7 +129,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -138,7 +138,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -147,7 +147,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -160,7 +160,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -177,7 +177,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &dryRibeyeVIP.ID,
 				ValidIngredientMeasurementUnitID: &ribeyeGramVIMU.ID,
 				Name:                             "bone-in ribeye steak",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 700,               // 24 ounces = ~680g, rounded to 700g
 					Max: new(float32(900)), // 32 ounces = ~907g, rounded to 900g
 				},
@@ -186,7 +186,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &dryPaperTowelsVIP.ID,
 				ValidIngredientMeasurementUnitID: &paperTowelsUnitVIMU.ID,
 				Name:                             "paper towels",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 				Index:       new(uint16(1)),
@@ -197,7 +197,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &dryBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -208,7 +208,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(700)),
 					Max: new(float32(900)),
 				},
@@ -226,7 +226,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dried bone-in ribeye steak",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 700,
 					Max: new(float32(900)),
 				},
@@ -235,7 +235,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 				ToTaste:     true,
@@ -246,7 +246,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 				ToTaste:     true,
@@ -258,7 +258,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationVesselID: &seasonSheetPanVPV.ID,
 				Name:                     "sheet pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -269,7 +269,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(700)),
 					Max: new(float32(900)),
 				},
@@ -278,7 +278,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Name:  "sheet pan",
 				Index: 1,
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -291,7 +291,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		Index:                3,
 		Optional:             true,
 		ExplicitInstructions: "If desired, let the steak rest at room temperature for 45 minutes, or refrigerate it, loosely covered, for up to 3 days.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(2700)),   // 45 minutes minimum
 			Max: new(uint32(259200)), // 3 days maximum
 		},
@@ -300,7 +300,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned bone-in ribeye steak",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 700,
 					Max: new(float32(900)),
 				},
@@ -312,7 +312,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &restSheetPanVPV.ID,
 				Name:                            "sheet pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -323,7 +323,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(700)),
 					Max: new(float32(900)),
 				},
@@ -342,7 +342,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &sliceShallotVIP.ID,
 				ValidIngredientMeasurementUnitID: &shallotGramVIMU.ID,
 				Name:                             "shallot",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 28, // About 1 large shallot
 				},
 			},
@@ -351,7 +351,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -360,7 +360,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -371,7 +371,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(28)),
 				},
 			},
@@ -383,7 +383,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		PreparationID:        heatPrep.ID,
 		Index:                5,
 		ExplicitInstructions: "In a 12-inch heavy-bottomed cast iron skillet, heat the oil over high heat until it just begins to smoke.",
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(200)), // High heat, approximately 200°C
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -391,7 +391,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &heatVegetableOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilMilliliterVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 60, // 1/4 cup = 60 ml
 				},
 				Index:       new(uint16(0)),
@@ -401,7 +401,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &heatCanolaOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &canolaOilMilliliterVIMU.ID,
 				Name:                             "canola oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 60, // 1/4 cup = 60 ml
 				},
 				Index:       new(uint16(0)),
@@ -412,7 +412,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &heatStovetopVPI.ID,
 				Name:                         "stovetop",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -421,7 +421,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
 				Name:                     "cast iron skillet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -432,7 +432,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &milliliterMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(60)),
 				},
 			},
@@ -440,7 +440,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Name:  "cast iron skillet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -460,7 +460,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		PreparationID:        panSearPrep.ID,
 		Index:                6,
 		ExplicitInstructions: "Carefully add the steak to the hot skillet and cook, flipping frequently, until a pale golden-brown crust starts to develop, about 4 minutes total.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(240)), // 4 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -468,7 +468,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "rested seasoned bone-in ribeye steak",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 700,
 					Max: new(float32(900)),
 				},
@@ -477,7 +477,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated smoking oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 60,
 				},
 				Index:       new(uint16(1)),
@@ -488,7 +488,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -499,7 +499,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Name:                            "cast iron skillet",
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -510,7 +510,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(700)),
 					Max: new(float32(900)),
 				},
@@ -519,7 +519,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Name:  "cast iron skillet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -531,11 +531,11 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		PreparationID:        bastePrep.ID,
 		Index:                7,
 		ExplicitInstructions: "Add butter, herbs (if using), and shallot (if using) to the skillet and continue cooking, flipping the steak occasionally and basting any light spots with foaming butter. If the butter begins to smoke excessively or the steak begins to burn, reduce the heat to medium. To baste, tilt the pan slightly so the butter collects near the handle. Use a spoon to pick up the butter and pour it over the steak, aiming at light spots. Continue flipping and basting until an instant-read thermometer inserted into the thickest part of the tenderloin side registers 120 to 125°F (49 to 52°C) for medium-rare or 130°F (54°C) for medium, 8 to 10 minutes total.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(480)), // 8 minutes
 			Max: new(uint32(600)), // 10 minutes
 		},
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(49)), // 120°F = 49°C
 			Max: new(float32(54)), // 130°F = 54°C
 		},
@@ -544,7 +544,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "pan-seared bone-in ribeye steak",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 700,
 					Max: new(float32(900)),
 				},
@@ -553,7 +553,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &basteButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterGramVIMU.ID,
 				Name:                             "unsalted butter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 45, // 3 tablespoons = 45g
 				},
 				Index:       new(uint16(1)),
@@ -563,7 +563,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &basteThymeVIP.ID,
 				ValidIngredientMeasurementUnitID: &thymeSprigVIMU.ID,
 				Name:                             "thyme",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 6,
 				},
 				Optional:    true,
@@ -574,7 +574,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &basteRosemaryVIP.ID,
 				ValidIngredientMeasurementUnitID: &rosemarySprigVIMU.ID,
 				Name:                             "rosemary",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 6,
 				},
 				Optional:    true,
@@ -585,7 +585,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "finely sliced shallots",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 28,
 				},
 				Optional:    true,
@@ -597,14 +597,14 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &basteSpoonVPI.ID,
 				Name:                         "spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationInstrumentID: &basteThermometerVPI.ID,
 				Name:                         "instant-read thermometer",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(1)),
@@ -613,7 +613,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &basteTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(2)),
@@ -626,7 +626,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Name:                            "cast iron skillet",
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -637,7 +637,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(700)),
 					Max: new(float32(900)),
 				},
@@ -658,7 +658,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		PreparationID:        restPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Immediately transfer the steak to a large heatproof plate and pour the pan juices on top. Let rest for 5 to 10 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(300)), // 5 minutes
 			Max: new(uint32(600)), // 10 minutes
 		},
@@ -667,7 +667,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "butter-basted bone-in ribeye steak",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 700,
 					Max: new(float32(900)),
 				},
@@ -677,7 +677,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &restTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -686,7 +686,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationVesselID: &restPlateVPV.ID,
 				Name:                     "serving plate",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -697,7 +697,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(700)),
 					Max: new(float32(900)),
 				},
@@ -716,7 +716,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &carveRibeyeVIP.ID,
 				Name:                            "rested pan-seared butter-basted bone-in ribeye steak",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 700,
 					Max: new(float32(900)),
 				},
@@ -726,7 +726,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationInstrumentID: &carveCarvingKnifeVPI.ID,
 				Name:                         "carving knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -735,7 +735,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			{
 				ValidPreparationVesselID: &carveCarvingBoardVPV.ID,
 				Name:                     "carving board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -746,7 +746,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(700)),
 					Max: new(float32(900)),
 				},
@@ -774,10 +774,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the seasoned steak on a wire rack set in a rimmed baking sheet in the refrigerator, loosely covered, for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days
 		},
@@ -796,7 +796,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 			Source:              "https://www.seriouseats.com/butter-basted-pan-seared-steaks-recipe",
 			Description:         "Thick and meaty pan-seared steak, slicked with butter and infused with flavor from aromatics. This recipe is designed for very large steaks, at least one and a half inches thick and weighing 24 to 32 ounces (700 to 900g) with the bone in.",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 2,
 				Max: new(float32(3)),
 			},

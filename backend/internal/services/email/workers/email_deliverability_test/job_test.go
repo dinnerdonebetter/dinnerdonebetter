@@ -7,8 +7,8 @@ import (
 
 	"github.com/primandproper/platform/email"
 	emailmock "github.com/primandproper/platform/email/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,8 +22,8 @@ func TestNewJob(T *testing.T) {
 
 		job, err := NewJob(
 			&emailmock.EmailerMock{},
-			logging.NewNoopLogger(),
-			tracing.NewNoopTracerProvider(),
+			loggingnoop.NewLogger(),
+			tracingnoop.NewTracerProvider(),
 			&JobParams{
 				RecipientEmailAddress: "test@example.com",
 				ServiceEnvironment:    "test",
@@ -39,8 +39,8 @@ func TestNewJob(T *testing.T) {
 
 		job, err := NewJob(
 			&emailmock.EmailerMock{},
-			logging.NewNoopLogger(),
-			tracing.NewNoopTracerProvider(),
+			loggingnoop.NewLogger(),
+			tracingnoop.NewTracerProvider(),
 			&JobParams{
 				RecipientEmailAddress: "test@example.com",
 			},
@@ -55,8 +55,8 @@ func TestNewJob(T *testing.T) {
 
 		job, err := NewJob(
 			&emailmock.EmailerMock{},
-			logging.NewNoopLogger(),
-			tracing.NewNoopTracerProvider(),
+			loggingnoop.NewLogger(),
+			tracingnoop.NewTracerProvider(),
 			&JobParams{},
 		)
 
@@ -79,8 +79,8 @@ func TestJob_Do(T *testing.T) {
 
 		job, err := NewJob(
 			emailer,
-			logging.NewNoopLogger(),
-			tracing.NewNoopTracerProvider(),
+			loggingnoop.NewLogger(),
+			tracingnoop.NewTracerProvider(),
 			&JobParams{
 				RecipientEmailAddress: "test@example.com",
 				ServiceEnvironment:    "test",
@@ -105,8 +105,8 @@ func TestJob_Do(T *testing.T) {
 
 		job, err := NewJob(
 			emailer,
-			logging.NewNoopLogger(),
-			tracing.NewNoopTracerProvider(),
+			loggingnoop.NewLogger(),
+			tracingnoop.NewTracerProvider(),
 			&JobParams{
 				RecipientEmailAddress: "test@example.com",
 				ServiceEnvironment:    "test",

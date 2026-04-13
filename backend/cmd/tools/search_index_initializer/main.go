@@ -20,8 +20,11 @@ import (
 	"github.com/primandproper/platform/database/filtering"
 	"github.com/primandproper/platform/database/postgres"
 	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/metrics"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	textsearch "github.com/primandproper/platform/search/text"
 	"github.com/primandproper/platform/search/text/algolia"
 	textsearchcfg "github.com/primandproper/platform/search/text/config"
@@ -114,9 +117,9 @@ func runInit(databaseURL, searchProvider, algoliaAppID, algoliaAPIKey, indicesSt
 	}
 
 	ctx := context.Background()
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
-	metricsProvider := metrics.NewNoopMetricsProvider()
+	logger := loggingnoop.NewLogger()
+	tracerProvider := tracingnoop.NewTracerProvider()
+	metricsProvider := metricsnoop.NewMetricsProvider()
 
 	dbConfig := &databasecfg.Config{
 		Provider:        databasecfg.ProviderPostgres,
@@ -429,8 +432,8 @@ func getIndexManager(
 	indexType string,
 	searchCfg *textsearchcfg.Config,
 ) (textsearch.IndexManager, error) {
-	tracerProvider := tracing.NewNoopTracerProvider()
-	metricsProvider := metrics.NewNoopMetricsProvider()
+	tracerProvider := tracingnoop.NewTracerProvider()
+	metricsProvider := metricsnoop.NewMetricsProvider()
 
 	switch indexType {
 	case mealplanningindexing.IndexTypeRecipes:

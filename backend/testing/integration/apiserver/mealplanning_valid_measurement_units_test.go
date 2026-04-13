@@ -16,7 +16,7 @@ import (
 func checkValidMeasurementUnitEquality(t *testing.T, expected, actual *mealplanning.ValidMeasurementUnit) {
 	t.Helper()
 
-	assert.NotEmpty(t, actual.ID, "expected ValidMeasurementUnit to have MealPlanTaskID")
+	assert.NotEmpty(t, actual.ID, "expected ValidMeasurementUnit to have ID")
 	assert.NotZero(t, actual.CreatedAt, "expected ValidMeasurementUnit to have CreatedAt")
 
 	assert.Equal(t, expected.Name, actual.Name, "expected ValidMeasurementUnit Name")
@@ -144,7 +144,7 @@ func TestValidMeasurementUnits_Reading(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -253,7 +253,7 @@ func TestValidMeasurementUnits_Archiving(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 

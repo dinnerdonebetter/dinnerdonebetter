@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +16,7 @@ func TestValidIngredientMeasurementUnit_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnit{
-			AllowableQuantity: types.Float32RangeWithOptionalMax{Max: new(float32(3.21))},
+			AllowableQuantity: numbers.MinRange[float32]{Max: new(float32(3.21))},
 		}
 		input := &ValidIngredientMeasurementUnitUpdateRequestInput{}
 
@@ -37,7 +37,7 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 			Notes:                  t.Name(),
 			ValidMeasurementUnitID: t.Name(),
 			ValidIngredientID:      t.Name(),
-			AllowableQuantity: types.Float32RangeWithOptionalMax{
+			AllowableQuantity: numbers.MinRange[float32]{
 				Max: new(fake.Float32()),
 				Min: fake.Float32(),
 			},
@@ -67,7 +67,7 @@ func TestValidIngredientMeasurementUnitDatabaseCreationInput_Validate(T *testing
 			ID:                     t.Name(),
 			ValidMeasurementUnitID: t.Name(),
 			ValidIngredientID:      t.Name(),
-			AllowableQuantity: types.Float32RangeWithOptionalMax{
+			AllowableQuantity: numbers.MinRange[float32]{
 				Min: fake.Float32(),
 			},
 		}
@@ -96,7 +96,7 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 			Notes:                  new(t.Name()),
 			ValidMeasurementUnitID: new(t.Name()),
 			ValidIngredientID:      new(t.Name()),
-			AllowableQuantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+			AllowableQuantity: numbers.OpenRangeUpdateRequestInput[float32]{
 				Min: new(fake.Float32()),
 				Max: new(fake.Float32()),
 			},

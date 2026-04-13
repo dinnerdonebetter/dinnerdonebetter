@@ -8,8 +8,8 @@ import (
 	mealplanningmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 	textsearch "github.com/primandproper/platform/search/text"
 	mocksearch "github.com/primandproper/platform/search/text/mock"
@@ -26,7 +26,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleRecipe := fakes.BuildFakeRecipe()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
@@ -46,7 +46,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			mealPlanningRepo,
 			rim,
 			mim,
@@ -73,7 +73,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetMeal), testutils.ContextMatcher, exampleMeal.ID).Return(exampleMeal, nil)
@@ -94,7 +94,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			mealPlanningRepo,
 			rim,
 			mim,
@@ -121,7 +121,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleValidVessel := fakes.BuildFakeValidVessel()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidVessel), testutils.ContextMatcher, exampleValidVessel.ID).Return(exampleValidVessel, nil)
@@ -141,7 +141,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			mealPlanningRepo,
 			rim,
 			mim,
@@ -168,7 +168,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidIngredient), testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
@@ -188,7 +188,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			mealPlanningRepo,
 			rim,
 			mim,
@@ -215,7 +215,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidInstrument), testutils.ContextMatcher, exampleValidInstrument.ID).Return(exampleValidInstrument, nil)
@@ -236,7 +236,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			mealPlanningRepo,
 			rim,
 			mim,
@@ -263,7 +263,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidPreparation), testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
@@ -284,7 +284,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			mealPlanningRepo,
 			rim,
 			mim,
@@ -311,7 +311,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidMeasurementUnit), testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(exampleValidMeasurementUnit, nil)
@@ -332,7 +332,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			mealPlanningRepo,
 			rim,
 			mim,
@@ -359,7 +359,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
 		mealPlanningRepo.On(reflection.GetMethodName(mealPlanningRepo.GetValidIngredientState), testutils.ContextMatcher, exampleValidIngredientState.ID).Return(exampleValidIngredientState, nil)
@@ -380,7 +380,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			mealPlanningRepo,
 			rim,
 			mim,

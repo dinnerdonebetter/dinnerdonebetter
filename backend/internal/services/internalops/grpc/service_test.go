@@ -6,8 +6,8 @@ import (
 	settingssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -18,8 +18,8 @@ func TestNewService(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		msgConfig := &msgconfig.Config{}
 		service := NewService(logger, tracerProvider, msgConfig, nil)
 

@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput creates a RecipeStepInstrumentUpdateRequestInput from a RecipeStepInstrument.
@@ -19,7 +19,7 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 		Optional:            &input.Optional,
 		Index:               &input.Index,
 		OptionIndex:         &input.OptionIndex,
-		Quantity: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
+		Quantity: numbers.OpenRangeUpdateRequestInput[uint32]{
 			Min: &input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},

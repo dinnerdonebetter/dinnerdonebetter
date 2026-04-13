@@ -8,8 +8,8 @@ import (
 
 	"github.com/primandproper/platform/cryptography/encryption"
 	"github.com/primandproper/platform/cryptography/encryption/config"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/spf13/cobra"
 )
@@ -100,8 +100,8 @@ func newEncryptorDecryptor(key, provider string) (encryption.EncryptorDecryptor,
 
 	encDec, err := config.ProvideEncryptorDecryptor(
 		&config.Config{Provider: provider},
-		tracing.NewNoopTracerProvider(),
-		logging.NewNoopLogger(),
+		tracingnoop.NewTracerProvider(),
+		loggingnoop.NewLogger(),
 		[]byte(key),
 	)
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput creates a RecipeStepVesselUpdateRequestInput from a RecipeStepVessel.
@@ -15,7 +15,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *mealplan
 		RecipeStepProductID: input.RecipeStepProductID,
 		Name:                &input.Name,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
-		Quantity: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+		Quantity: numbers.OpenRangeUpdateRequestInput[uint16]{
 			Min: &input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},

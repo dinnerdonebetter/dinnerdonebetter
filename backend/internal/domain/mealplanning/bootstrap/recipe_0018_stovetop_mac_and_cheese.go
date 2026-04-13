@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // StovetopMacAndCheeseRecipe creates the Ultra-Gooey Stovetop Mac and Cheese recipe.
@@ -127,7 +127,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &submergeMacaroniVIP.ID,
 				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
 				Name:                             "elbow macaroni",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -136,7 +136,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientMeasurementUnitID: &enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID].ID,
 				QuantityNotes:                    "enough to cover macaroni by 2 inches",
 				Name:                             "water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 8,
 				},
 			},
@@ -145,7 +145,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientMeasurementUnitID: &enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID].ID,
 				QuantityNotes:                    "to taste",
 				Name:                             "kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -154,7 +154,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationVesselID: &submergeSaucepanVPV.ID,
 				Name:                     "large saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -165,7 +165,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -187,7 +187,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "macaroni in salted water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -196,7 +196,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationInstrumentID: &boilWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -206,7 +206,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -217,7 +217,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -239,7 +239,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "boiling macaroni",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -249,7 +249,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -260,7 +260,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -282,7 +282,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "covered macaroni",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -292,7 +292,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -303,7 +303,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -320,7 +320,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		PreparationID:        restPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Let stand until the pasta is barely al dente, about 8 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(480)), // 8 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -328,7 +328,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "covered macaroni off heat",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -338,7 +338,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -357,7 +357,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -380,7 +380,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientMeasurementUnitID: &evaporatedMilkFluidOzVIMU.ID,
 				Name:                             "evaporated milk",
 				QuantityNotes:                    "one 12-ounce can",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 12,
 				},
 			},
@@ -388,7 +388,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &mixEggsVIP.ID,
 				ValidIngredientMeasurementUnitID: &eggsUnitVIMU.ID,
 				Name:                             "large eggs",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -396,7 +396,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &mixHotSauceVIP.ID,
 				ValidIngredientMeasurementUnitID: &hotSauceTeaspoonVIMU.ID,
 				Name:                             "hot sauce",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -404,7 +404,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &mixGroundMustardVIP.ID,
 				ValidIngredientMeasurementUnitID: &groundMustardTeaspoonVIMU.ID,
 				Name:                             "ground mustard",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -413,7 +413,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationInstrumentID: &mixWhiskVPI.ID,
 				Name:                         "whisk",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -422,7 +422,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationVesselID: &mixMediumBowlVPV.ID,
 				Name:                     "bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -433,7 +433,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -450,7 +450,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &grateCheddarVIP.ID,
 				ValidIngredientMeasurementUnitID: &cheddarPoundVIMU.ID,
 				Name:                             "extra-sharp cheddar cheese",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -459,7 +459,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationInstrumentID: &grateMicroplaneVPI.ID,
 				Name:                         "microplane",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -470,7 +470,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -487,7 +487,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &cutAmericanCheeseVIP.ID,
 				ValidIngredientMeasurementUnitID: &americanOunceVIMU.ID,
 				Name:                             "American cheese",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 8,
 				},
 			},
@@ -496,7 +496,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationInstrumentID: &cutKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -505,7 +505,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationVesselID: &cutCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -516,7 +516,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &ounceMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(8)),
 				},
 			},
@@ -533,7 +533,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "grated cheddar cheese",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -541,7 +541,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "American cheese, cut into 1/2-inch cubes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 8,
 				},
 			},
@@ -549,7 +549,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &tossCornstarchVIP.ID,
 				ValidIngredientMeasurementUnitID: &cornstarchTablespoonVIMU.ID,
 				Name:                             "cornstarch",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -558,7 +558,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
 				Name:                     "large bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -569,7 +569,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -586,7 +586,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "al dente macaroni",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -595,7 +595,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationVesselID: &drainColanderVPV.ID,
 				Name:                     "colander",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -606,7 +606,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -623,7 +623,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "drained macaroni",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -633,7 +633,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -644,7 +644,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -666,7 +666,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &cutButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
 				Name:                             "unsalted butter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 8, // 8 tablespoons = 1 stick
 				},
 			},
@@ -675,7 +675,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationInstrumentID: &cutKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -684,7 +684,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationVesselID: &cutCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -695,7 +695,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &tablespoonMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(8))},
+				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(8))},
 			},
 		},
 	}
@@ -710,7 +710,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "macaroni in saucepan",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -718,7 +718,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "butter, cut into 4 chunks",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 8, // 8 tablespoons = 1 stick
 				},
 			},
@@ -728,7 +728,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -747,7 +747,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -769,7 +769,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "buttered macaroni",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -777,7 +777,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "milk mixture",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -785,7 +785,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cheese mixture",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -794,7 +794,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			{
 				ValidPreparationInstrumentID: &cookWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -804,7 +804,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -823,7 +823,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -845,7 +845,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "mac and cheese",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -854,7 +854,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientMeasurementUnitID: &enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID].ID,
 				Name:                             "salt",
 				QuantityNotes:                    "to taste",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 				Optional: true,
@@ -864,7 +864,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientMeasurementUnitID: &hotSauceTeaspoonVIMU.ID,
 				Name:                             "hot sauce",
 				QuantityNotes:                    "to taste",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 				Optional: true,
@@ -875,7 +875,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -886,7 +886,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -900,10 +900,10 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the cornstarch-coated cheese mixture in an airtight container in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(172800)), // 2 days
 		},
@@ -921,7 +921,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 			Source:              "https://www.seriouseats.com/the-food-labs-ultra-gooey-stovetop-mac-cheese",
 			Description:         "A homemade stovetop mac and cheese recipe that's ultra-gooey with the consistency of the blue box but with the complex flavor of real cheese.",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 4,
 				Max: new(float32(6)),
 			},

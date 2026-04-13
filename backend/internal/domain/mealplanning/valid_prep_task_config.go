@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -34,61 +34,61 @@ type (
 	ValidPrepTaskConfig struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt                   time.Time                        `json:"createdAt"`
-		LastUpdatedAt               *time.Time                       `json:"lastUpdatedAt"`
-		ArchivedAt                  *time.Time                       `json:"archivedAt"`
-		StorageDurationInSeconds    types.Uint32RangeWithOptionalMax `json:"storageDurationInSeconds"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range       `json:"storageTemperatureInCelsius"`
-		ID                          string                           `json:"id"`
-		StorageType                 string                           `json:"storageType"`
-		StorageInstructions         string                           `json:"storageInstructions"`
-		Notes                       string                           `json:"notes"`
-		Source                      string                           `json:"source"`
-		Preparation                 ValidPreparation                 `json:"preparation"`
-		Ingredient                  ValidIngredient                  `json:"ingredient"`
+		CreatedAt                   time.Time                  `json:"createdAt"`
+		LastUpdatedAt               *time.Time                 `json:"lastUpdatedAt"`
+		ArchivedAt                  *time.Time                 `json:"archivedAt"`
+		StorageDurationInSeconds    numbers.MinRange[uint32]   `json:"storageDurationInSeconds"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"storageTemperatureInCelsius"`
+		ID                          string                     `json:"id"`
+		StorageType                 string                     `json:"storageType"`
+		StorageInstructions         string                     `json:"storageInstructions"`
+		Notes                       string                     `json:"notes"`
+		Source                      string                     `json:"source"`
+		Preparation                 ValidPreparation           `json:"preparation"`
+		Ingredient                  ValidIngredient            `json:"ingredient"`
 	}
 
 	// ValidPrepTaskConfigCreationRequestInput represents what a user could set as input for creating valid ingredient preparation storage configs.
 	ValidPrepTaskConfigCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		StorageDurationInSeconds    types.Uint32RangeWithOptionalMax `json:"storageDurationInSeconds"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range       `json:"storageTemperatureInCelsius"`
-		StorageType                 string                           `json:"storageType"`
-		StorageInstructions         string                           `json:"storageInstructions"`
-		Notes                       string                           `json:"notes"`
-		Source                      string                           `json:"source"`
-		ValidPreparationID          string                           `json:"validPreparationID"`
-		ValidIngredientID           string                           `json:"validIngredientID"`
+		StorageDurationInSeconds    numbers.MinRange[uint32]   `json:"storageDurationInSeconds"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"storageTemperatureInCelsius"`
+		StorageType                 string                     `json:"storageType"`
+		StorageInstructions         string                     `json:"storageInstructions"`
+		Notes                       string                     `json:"notes"`
+		Source                      string                     `json:"source"`
+		ValidPreparationID          string                     `json:"validPreparationID"`
+		ValidIngredientID           string                     `json:"validIngredientID"`
 	}
 
 	// ValidPrepTaskConfigDatabaseCreationInput represents what a user could set as input for creating valid ingredient preparation storage configs.
 	ValidPrepTaskConfigDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		StorageDurationInSeconds    types.Uint32RangeWithOptionalMax `json:"-"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range       `json:"-"`
-		ID                          string                           `json:"-"`
-		StorageType                 string                           `json:"-"`
-		StorageInstructions         string                           `json:"-"`
-		Notes                       string                           `json:"-"`
-		Source                      string                           `json:"-"`
-		ValidPreparationID          string                           `json:"-"`
-		ValidIngredientID           string                           `json:"-"`
+		StorageDurationInSeconds    numbers.MinRange[uint32]   `json:"-"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"-"`
+		ID                          string                     `json:"-"`
+		StorageType                 string                     `json:"-"`
+		StorageInstructions         string                     `json:"-"`
+		Notes                       string                     `json:"-"`
+		Source                      string                     `json:"-"`
+		ValidPreparationID          string                     `json:"-"`
+		ValidIngredientID           string                     `json:"-"`
 	}
 
 	// ValidPrepTaskConfigUpdateRequestInput represents what a user could set as input for updating valid ingredient preparation storage configs.
 	ValidPrepTaskConfigUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		StorageDurationInSeconds    types.Uint32RangeWithOptionalMaxUpdateRequestInput `json:"storageDurationInSeconds"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range                         `json:"storageTemperatureInCelsius"`
-		StorageType                 *string                                            `json:"storageType,omitempty"`
-		StorageInstructions         *string                                            `json:"storageInstructions,omitempty"`
-		Notes                       *string                                            `json:"notes,omitempty"`
-		Source                      *string                                            `json:"source,omitempty"`
-		ValidPreparationID          *string                                            `json:"validPreparationID,omitempty"`
-		ValidIngredientID           *string                                            `json:"validIngredientID,omitempty"`
+		StorageDurationInSeconds    numbers.OpenRangeUpdateRequestInput[uint32] `json:"storageDurationInSeconds"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32]                  `json:"storageTemperatureInCelsius"`
+		StorageType                 *string                                     `json:"storageType,omitempty"`
+		StorageInstructions         *string                                     `json:"storageInstructions,omitempty"`
+		Notes                       *string                                     `json:"notes,omitempty"`
+		Source                      *string                                     `json:"source,omitempty"`
+		ValidPreparationID          *string                                     `json:"validPreparationID,omitempty"`
+		ValidIngredientID           *string                                     `json:"validIngredientID,omitempty"`
 	}
 
 	// ValidPrepTaskConfigDataManager describes a structure capable of storing valid ingredient preparation storage configs permanently.

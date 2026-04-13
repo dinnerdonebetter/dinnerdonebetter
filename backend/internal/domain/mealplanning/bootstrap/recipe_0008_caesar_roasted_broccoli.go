@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // CaesarRoastedBroccoliRecipe creates the Caesar Roasted Broccoli recipe.
@@ -106,7 +106,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -115,7 +115,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -124,7 +124,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -137,7 +137,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -154,7 +154,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &addAluminumFoilVIP.ID,
 				ValidIngredientMeasurementUnitID: &aluminumFoilUnitVIMU.ID,
 				Name:                             "aluminum foil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -163,7 +163,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationVesselID: &addBakingSheetVPV.ID,
 				Name:                     "rimmed baking sheet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -173,7 +173,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Name:  "foil-lined baking sheet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -189,7 +189,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationVesselID: &adjustOvenVPV.ID,
 				Name:                     "oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -199,7 +199,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Name:  "oven with rack adjusted",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -211,7 +211,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		PreparationID:        preheatPrep.ID,
 		Index:                3,
 		ExplicitInstructions: "Preheat the oven to 500°F (260°C).",
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(260)),
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -220,7 +220,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &preheatOvenVPV.ID,
 				Name:                            "oven with rack adjusted",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -230,7 +230,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Name:  "preheated oven",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -242,7 +242,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		PreparationID:        preheatPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Place the foil-lined baking sheet on the oven rack to preheat.",
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(260)),
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -251,7 +251,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &preheatBakingSheetVPV.ID,
 				Name:                            "foil-lined baking sheet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -259,7 +259,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "preheated oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -269,7 +269,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Name:  "preheated baking sheet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -287,7 +287,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientMeasurementUnitID: &broccoliPoundVIMU.ID,
 				Name:                             "broccoli florets",
 				QuantityNotes:                    "cut into 1 1/2 to 2-inch pieces",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -295,7 +295,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &tossOliveOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
 				Name:                             "extra-virgin olive oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -303,7 +303,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &tossSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.75,
 				},
 			},
@@ -311,7 +311,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -320,7 +320,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
 				Name:                     "large bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -331,7 +331,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -350,7 +350,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &transferBroccoliVIP.ID,
 				ValidIngredientMeasurementUnitID: &broccoliPoundVIMU.ID,
 				Name:                             "seasoned broccoli",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -361,7 +361,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &transferBakingSheetVPV.ID,
 				Name:                            "preheated baking sheet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -372,7 +372,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -384,10 +384,10 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		PreparationID:        roastPrep.ID,
 		Index:                7,
 		ExplicitInstructions: "Roast until the broccoli is tender and deeply browned in spots, about 20 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(1200)), // 20 minutes
 		},
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(260)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -397,7 +397,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &roastBroccoliVIP.ID,
 				ValidIngredientMeasurementUnitID: &broccoliPoundVIMU.ID,
 				Name:                             "broccoli on baking sheet",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -406,7 +406,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationVesselID: &roastBakingSheetVPV.ID,
 				Name:                     "baking sheet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -417,7 +417,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -434,7 +434,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &zestLemonVIP.ID,
 				ValidIngredientMeasurementUnitID: &lemonUnitVIMU.ID,
 				Name:                             "lemon",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -443,7 +443,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationInstrumentID: &zestMicroplaneVPI.ID,
 				Name:                         "microplane",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -454,7 +454,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &teaspoonMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -471,7 +471,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "roasted broccoli",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -479,7 +479,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "lemon zest",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -488,7 +488,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
 				Name:                     "large bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -499,7 +499,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -516,7 +516,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "broccoli with lemon zest",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -525,7 +525,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationVesselID: &transferServingPlatterVPV.ID,
 				Name:                     "serving platter",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -536,7 +536,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -556,7 +556,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &topBroccoliVIP.ID,
 				ValidIngredientMeasurementUnitID: &broccoliPoundVIMU.ID,
 				Name:                             "broccoli on serving platter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -568,7 +568,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &topBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
 				Name:                             "caesar breadcrumbs",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -576,7 +576,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				ValidIngredientPreparationID:     &topParmesanVIP.ID,
 				ValidIngredientMeasurementUnitID: &parmesanTablespoonVIMU.ID,
 				Name:                             "grated Parmigiano-Reggiano cheese",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -585,7 +585,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidPreparationVesselID: &topServingPlatterVPV.ID,
 				Name:                     "serving platter",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -596,7 +596,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -609,7 +609,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 		Source:              "https://www.seriouseats.com/caesar-roasted-broccoli-recipe-8672043",
 		Description:         "Dress up sweet and nutty roasted broccoli with savory, crisp Caesar-flavored breadcrumbs.",
 		YieldsComponentType: mealplanning.MealComponentTypesSide,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Min: 4,
 		},
 		PortionName:       "serving",

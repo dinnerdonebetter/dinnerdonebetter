@@ -14,8 +14,9 @@ import (
 	"github.com/primandproper/platform/identifiers"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/metrics"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"google.golang.org/grpc/codes"
 )
@@ -86,7 +87,7 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "building queue test message")
 	}
 
-	pp, err := msgconfig.ProvidePublisherProvider(ctx, s.logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), s.msgConfig)
+	pp, err := msgconfig.ProvidePublisherProvider(ctx, s.logger, tracingnoop.NewTracerProvider(), metricsnoop.NewMetricsProvider(), s.msgConfig)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "establishing publisher provider")
 	}

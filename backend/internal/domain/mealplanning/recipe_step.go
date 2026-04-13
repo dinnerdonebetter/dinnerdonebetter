@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -42,8 +42,8 @@ type (
 	RecipeStep struct {
 		_                       struct{}                         `json:"-"`
 		CreatedAt               time.Time                        `json:"createdAt"`
-		EstimatedTimeInSeconds  types.OptionalUint32Range        `json:"estimatedTimeInSeconds"`
-		TemperatureInCelsius    types.OptionalFloat32Range       `json:"temperatureInCelsius"`
+		EstimatedTimeInSeconds  numbers.OpenRange[uint32]        `json:"estimatedTimeInSeconds"`
+		TemperatureInCelsius    numbers.OpenRange[float32]       `json:"temperatureInCelsius"`
 		ArchivedAt              *time.Time                       `json:"archivedAt"`
 		LastUpdatedAt           *time.Time                       `json:"lastUpdatedAt"`
 		BelongsToRecipe         string                           `json:"belongsToRecipe"`
@@ -71,8 +71,8 @@ type (
 	RecipeStepCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedTimeInSeconds  types.OptionalUint32Range                            `json:"estimatedTimeInSeconds"`
-		TemperatureInCelsius    types.OptionalFloat32Range                           `json:"temperatureInCelsius"`
+		EstimatedTimeInSeconds  numbers.OpenRange[uint32]                            `json:"estimatedTimeInSeconds"`
+		TemperatureInCelsius    numbers.OpenRange[float32]                           `json:"temperatureInCelsius"`
 		PreparationID           string                                               `json:"preparationID"`
 		Notes                   string                                               `json:"notes"`
 		ConditionExpression     string                                               `json:"conditionExpression"`
@@ -91,8 +91,8 @@ type (
 	RecipeStepDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedTimeInSeconds  types.OptionalUint32Range                             `json:"-"`
-		TemperatureInCelsius    types.OptionalFloat32Range                            `json:"-"`
+		EstimatedTimeInSeconds  numbers.OpenRange[uint32]                             `json:"-"`
+		TemperatureInCelsius    numbers.OpenRange[float32]                            `json:"-"`
 		BelongsToRecipe         string                                                `json:"-"`
 		PreparationID           string                                                `json:"-"`
 		ID                      string                                                `json:"-"`
@@ -113,8 +113,8 @@ type (
 	RecipeStepUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedTimeInSeconds  types.OptionalUint32Range  `json:"estimatedTimeInSeconds"`
-		TemperatureInCelsius    types.OptionalFloat32Range `json:"temperatureInCelsius"`
+		EstimatedTimeInSeconds  numbers.OpenRange[uint32]  `json:"estimatedTimeInSeconds"`
+		TemperatureInCelsius    numbers.OpenRange[float32] `json:"temperatureInCelsius"`
 		Notes                   *string                    `json:"notes,omitempty"`
 		Preparation             *ValidPreparation          `json:"preparation,omitempty"`
 		Index                   *uint32                    `json:"index,omitempty"`

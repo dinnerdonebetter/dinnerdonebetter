@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -32,43 +32,43 @@ type (
 	ValidIngredientMeasurementUnit struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt         time.Time                         `json:"createdAt"`
-		LastUpdatedAt     *time.Time                        `json:"lastUpdatedAt"`
-		ArchivedAt        *time.Time                        `json:"archivedAt"`
-		Notes             string                            `json:"notes"`
-		ID                string                            `json:"id"`
-		AllowableQuantity types.Float32RangeWithOptionalMax `json:"allowableQuantity"`
-		MeasurementUnit   ValidMeasurementUnit              `json:"measurementUnit"`
-		Ingredient        ValidIngredient                   `json:"ingredient"`
+		CreatedAt         time.Time                 `json:"createdAt"`
+		LastUpdatedAt     *time.Time                `json:"lastUpdatedAt"`
+		ArchivedAt        *time.Time                `json:"archivedAt"`
+		Notes             string                    `json:"notes"`
+		ID                string                    `json:"id"`
+		AllowableQuantity numbers.MinRange[float32] `json:"allowableQuantity"`
+		MeasurementUnit   ValidMeasurementUnit      `json:"measurementUnit"`
+		Ingredient        ValidIngredient           `json:"ingredient"`
 	}
 
 	// ValidIngredientMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitCreationRequestInput struct {
-		_                      struct{}                          `json:"-"`
-		AllowableQuantity      types.Float32RangeWithOptionalMax `json:"allowableQuantity"`
-		Notes                  string                            `json:"notes"`
-		ValidMeasurementUnitID string                            `json:"validMeasurementUnitID"`
-		ValidIngredientID      string                            `json:"validIngredientID"`
+		_                      struct{}                  `json:"-"`
+		AllowableQuantity      numbers.MinRange[float32] `json:"allowableQuantity"`
+		Notes                  string                    `json:"notes"`
+		ValidMeasurementUnitID string                    `json:"validMeasurementUnitID"`
+		ValidIngredientID      string                    `json:"validIngredientID"`
 	}
 
 	// ValidIngredientMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitDatabaseCreationInput struct {
-		_                      struct{}                          `json:"-"`
-		AllowableQuantity      types.Float32RangeWithOptionalMax `json:"-"`
-		ID                     string                            `json:"-"`
-		Notes                  string                            `json:"-"`
-		ValidMeasurementUnitID string                            `json:"-"`
-		ValidIngredientID      string                            `json:"-"`
+		_                      struct{}                  `json:"-"`
+		AllowableQuantity      numbers.MinRange[float32] `json:"-"`
+		ID                     string                    `json:"-"`
+		Notes                  string                    `json:"-"`
+		ValidMeasurementUnitID string                    `json:"-"`
+		ValidIngredientID      string                    `json:"-"`
 	}
 
 	// ValidIngredientMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Notes                  *string                                             `json:"notes,omitempty"`
-		ValidMeasurementUnitID *string                                             `json:"validMeasurementUnitID,omitempty"`
-		ValidIngredientID      *string                                             `json:"validIngredientID,omitempty"`
-		AllowableQuantity      types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"allowableQuantity"`
+		Notes                  *string                                      `json:"notes,omitempty"`
+		ValidMeasurementUnitID *string                                      `json:"validMeasurementUnitID,omitempty"`
+		ValidIngredientID      *string                                      `json:"validIngredientID,omitempty"`
+		AllowableQuantity      numbers.OpenRangeUpdateRequestInput[float32] `json:"allowableQuantity"`
 	}
 
 	// ValidIngredientMeasurementUnitDataManager describes a structure capable of storing valid ingredient measurement units permanently.

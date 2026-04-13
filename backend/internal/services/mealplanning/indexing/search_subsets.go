@@ -4,8 +4,15 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	textsearch "github.com/primandproper/platform/search/text"
-	"github.com/primandproper/platform/types"
 )
+
+// NamedID pairs an identifier with a human-readable name.
+type NamedID struct {
+	_ struct{} `json:"-"`
+
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
 
 type ValidMeasurementUnitTextSearcher textsearch.Index[ValidMeasurementUnitSearchSubset]
 
@@ -35,10 +42,10 @@ type MealTextSearcher textsearch.Index[MealSearchSubset]
 type MealSearchSubset struct {
 	_ struct{} `json:"-"`
 
-	ID          string          `json:"id,omitempty"`
-	Name        string          `json:"name,omitempty"`
-	Description string          `json:"description,omitempty"`
-	Recipes     []types.NamedID `json:"recipes,omitempty"`
+	ID          string    `json:"id,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Recipes     []NamedID `json:"recipes,omitempty"`
 }
 
 func ConvertMealToMealSearchSubset(r *mealplanning.Meal) *MealSearchSubset {
@@ -49,7 +56,7 @@ func ConvertMealToMealSearchSubset(r *mealplanning.Meal) *MealSearchSubset {
 	}
 
 	for _, component := range r.Components {
-		x.Recipes = append(x.Recipes, types.NamedID{ID: component.Recipe.ID, Name: component.Recipe.Name})
+		x.Recipes = append(x.Recipes, NamedID{ID: component.Recipe.ID, Name: component.Recipe.Name})
 	}
 
 	return x
@@ -88,10 +95,10 @@ type RecipeStepTextSearcher textsearch.Index[RecipeStepSearchSubset]
 type RecipeStepSearchSubset struct {
 	_ struct{} `json:"-"`
 
-	Preparation string          `json:"preparation,omitempty"`
-	Ingredients []types.NamedID `json:"ingredients,omitempty"`
-	Instruments []types.NamedID `json:"instruments,omitempty"`
-	Vessels     []types.NamedID `json:"vessels,omitempty"`
+	Preparation string    `json:"preparation,omitempty"`
+	Ingredients []NamedID `json:"ingredients,omitempty"`
+	Instruments []NamedID `json:"instruments,omitempty"`
+	Vessels     []NamedID `json:"vessels,omitempty"`
 }
 
 func ConvertRecipeStepToRecipeStepSearchSubset(x *mealplanning.RecipeStep) *RecipeStepSearchSubset {
@@ -100,15 +107,15 @@ func ConvertRecipeStepToRecipeStepSearchSubset(x *mealplanning.RecipeStep) *Reci
 	}
 
 	for _, ingredient := range x.Ingredients {
-		stepSubset.Ingredients = append(stepSubset.Ingredients, types.NamedID{ID: ingredient.ID, Name: ingredient.Name})
+		stepSubset.Ingredients = append(stepSubset.Ingredients, NamedID{ID: ingredient.ID, Name: ingredient.Name})
 	}
 
 	for _, instrument := range x.Instruments {
-		stepSubset.Instruments = append(stepSubset.Instruments, types.NamedID{ID: instrument.ID, Name: instrument.Name})
+		stepSubset.Instruments = append(stepSubset.Instruments, NamedID{ID: instrument.ID, Name: instrument.Name})
 	}
 
 	for _, vessel := range x.Vessels {
-		stepSubset.Vessels = append(stepSubset.Vessels, types.NamedID{ID: vessel.ID, Name: vessel.Name})
+		stepSubset.Vessels = append(stepSubset.Vessels, NamedID{ID: vessel.ID, Name: vessel.Name})
 	}
 
 	return stepSubset

@@ -14,8 +14,8 @@ import (
 	mealplantaskcreator "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	mockuploads "github.com/primandproper/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -51,8 +51,8 @@ func TestNewService(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		recipeManager := &mockmanagers.MockRecipeManager{}
 		validEnumerationsManager := &mockmanagers.MockValidEnumerationsManager{}
 		mealPlanningManager := &mockmanagers.MockMealPlanningManager{}

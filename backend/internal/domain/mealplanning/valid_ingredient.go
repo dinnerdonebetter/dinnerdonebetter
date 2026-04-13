@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -34,7 +34,7 @@ type (
 	ValidIngredient struct {
 		_                           struct{}                       `json:"-"`
 		CreatedAt                   time.Time                      `json:"createdAt"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range     `json:"storageTemperatureInCelsius"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32]     `json:"storageTemperatureInCelsius"`
 		LastUpdatedAt               *time.Time                     `json:"lastUpdatedAt"`
 		ArchivedAt                  *time.Time                     `json:"archivedAt"`
 		Warning                     string                         `json:"warning"`
@@ -87,7 +87,7 @@ type (
 		PluralName                  *string
 		StorageInstructions         *string
 		Name                        *string
-		StorageTemperatureInCelsius types.OptionalFloat32Range
+		StorageTemperatureInCelsius numbers.OpenRange[float32]
 		ContainsShellfish           *bool
 		ContainsDairy               *bool
 		AnimalFlesh                 *bool
@@ -120,7 +120,7 @@ type (
 	ValidIngredientCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"storageTemperatureInCelsius"`
 		Warning                     string                     `json:"warning"`
 		IconPath                    string                     `json:"iconPath"`
 		PluralName                  string                     `json:"pluralName"`
@@ -159,7 +159,7 @@ type (
 	ValidIngredientDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"-"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"-"`
 		ID                          string                     `json:"-"`
 		Warning                     string                     `json:"-"`
 		IconPath                    string                     `json:"-"`
@@ -219,7 +219,7 @@ type (
 		AnimalDerived               *bool                      `json:"animalDerived,omitempty"`
 		RestrictToPreparations      *bool                      `json:"restrictToPreparations,omitempty"`
 		ContaminatesEquipment       *bool                      `json:"contaminatesEquipment,omitempty"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"storageTemperatureInCelsius"`
 		StorageInstructions         *string                    `json:"storageInstructions,omitempty"`
 		Slug                        *string                    `json:"slug,omitempty"`
 		ContainsAlcohol             *bool                      `json:"containsAlcohol,omitempty"`

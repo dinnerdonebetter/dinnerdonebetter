@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -314,7 +314,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 					},
 				},
 			},
-			EstimatedPortions: types.Float32RangeWithOptionalMax{Min: fake.Float32()},
+			EstimatedPortions: numbers.MinRange[float32]{Min: fake.Float32()},
 		}
 
 		assert.NoError(t, x.ValidateWithContext(t.Context()))
@@ -357,7 +357,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 					},
 				},
 			},
-			EstimatedPortions: types.Float32RangeWithOptionalMax{Min: fake.Float32()},
+			EstimatedPortions: numbers.MinRange[float32]{Min: fake.Float32()},
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -873,7 +873,7 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 			Source:             new(t.Name()),
 			Description:        new(t.Name()),
 			InspiredByRecipeID: new(t.Name()),
-			EstimatedPortions:  types.Float32RangeWithOptionalMaxUpdateRequestInput{Min: new(fake.Float32())},
+			EstimatedPortions:  numbers.OpenRangeUpdateRequestInput[float32]{Min: new(fake.Float32())},
 		}
 
 		actual := x.ValidateWithContext(t.Context())

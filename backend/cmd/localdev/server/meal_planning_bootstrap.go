@@ -21,7 +21,7 @@ import (
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	noopmq "github.com/primandproper/platform/messagequeue/noop"
 	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/metrics"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
 	"github.com/primandproper/platform/observability/tracing"
 	textsearchcfg "github.com/primandproper/platform/search/text/config"
 )
@@ -44,7 +44,7 @@ func bootstrapEnumerationsAndRecipes(ctx context.Context, repo mealplanning.Repo
 	publisherProvider := noopmq.NewPublisherProvider()
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
 	searchConfig := &textsearchcfg.Config{}
-	metricsProvider := metrics.NewNoopMetricsProvider()
+	metricsProvider := metricsnoop.NewMetricsProvider()
 
 	recipeManager, recipeManagerErr := managers.NewRecipeManager(
 		ctx,

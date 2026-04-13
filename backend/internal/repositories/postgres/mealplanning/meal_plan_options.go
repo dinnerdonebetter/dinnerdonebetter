@@ -14,9 +14,9 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 
 	"resenje.org/schulze"
 )
@@ -114,7 +114,7 @@ func (q *repository) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 			Description:   result.MealDescription,
 			CreatedByUser: result.MealCreatedByUser,
 			Name:          result.MealName,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: database.Float32FromString(result.MealMinEstimatedPortions),
 				Max: database.Float32PointerFromNullString(result.MealMaxEstimatedPortions),
 			},
@@ -160,7 +160,7 @@ func (q *repository) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID
 			CreatedAt:     result.MealCreatedAt,
 			ArchivedAt:    database.TimePointerFromNullTime(result.MealArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.MealLastUpdatedAt),
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: database.Float32FromString(result.MealMinEstimatedPortions),
 				Max: database.Float32PointerFromNullString(result.MealMaxEstimatedPortions),
 			},

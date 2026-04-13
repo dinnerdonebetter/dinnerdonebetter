@@ -138,7 +138,7 @@ func TestAccountInstrumentOwnerships_Reading(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -183,7 +183,7 @@ func TestAccountInstrumentOwnerships_Archiving(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -274,7 +274,7 @@ func TestAccountInstrumentOwnerships_Updating(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 

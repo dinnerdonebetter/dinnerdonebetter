@@ -11,10 +11,10 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	platformkeys "github.com/primandproper/platform/observability/keys"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -64,7 +64,7 @@ func (q *repository) GetValidIngredient(ctx context.Context, validIngredientID s
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 			Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 		},
@@ -120,7 +120,7 @@ func (q *repository) GetRandomValidIngredient(ctx context.Context) (*mealplannin
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 			Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 		},
@@ -201,7 +201,7 @@ func (q *repository) SearchForValidIngredients(ctx context.Context, query string
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 			},
@@ -292,7 +292,7 @@ func (q *repository) SearchForValidIngredientsForPreparation(ctx context.Context
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 			},
@@ -384,7 +384,7 @@ func (q *repository) GetValidIngredients(ctx context.Context, filter *filtering.
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 			},
@@ -459,7 +459,7 @@ func (q *repository) GetValidIngredientsWithIDs(ctx context.Context, ids []strin
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 			},
@@ -599,7 +599,7 @@ func (q *repository) CreateValidIngredient(ctx context.Context, input *mealplann
 		IsHeat:                 input.IsHeat,
 		RestrictToPreparations: input.RestrictToPreparations,
 		ContaminatesEquipment:  input.ContaminatesEquipment,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: input.StorageTemperatureInCelsius.Max,
 			Min: input.StorageTemperatureInCelsius.Min,
 		},

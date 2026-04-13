@@ -10,10 +10,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
-	errorshttp "github.com/primandproper/platform/errors/http"
+	httperrors "github.com/primandproper/platform/errors/http"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
@@ -54,13 +53,13 @@ func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	responseDetails := types.ResponseDetails{
+	responseDetails := httperrors.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
 	providerName := s.authProviderFetcher(req)
 	if providerName == "" {
-		errRes := types.NewAPIErrorResponse("provider name is missing", types.ErrValidatingRequestInput, responseDetails)
+		errRes := httperrors.NewAPIErrorResponse("provider name is missing", httperrors.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
@@ -69,11 +68,11 @@ func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting provider")
 
-		errorResponse := &types.APIResponse[any]{
-			Details: types.ResponseDetails{
+		errorResponse := &httperrors.APIResponse[any]{
+			Details: httperrors.ResponseDetails{
 				TraceID: span.SpanContext().TraceID().String(),
 			},
-			Error: &types.APIError{
+			Error: &httperrors.APIError{
 				Message: "provider is not supported",
 			},
 		}
@@ -85,11 +84,11 @@ func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "beginning auth")
 
-		errorResponse := &types.APIResponse[any]{
-			Details: types.ResponseDetails{
+		errorResponse := &httperrors.APIResponse[any]{
+			Details: httperrors.ResponseDetails{
 				TraceID: span.SpanContext().TraceID().String(),
 			},
-			Error: &types.APIError{
+			Error: &httperrors.APIError{
 				Message: "failed to begin auth",
 			},
 		}
@@ -101,11 +100,11 @@ func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting auth url")
 
-		errorResponse := &types.APIResponse[any]{
-			Details: types.ResponseDetails{
+		errorResponse := &httperrors.APIResponse[any]{
+			Details: httperrors.ResponseDetails{
 				TraceID: span.SpanContext().TraceID().String(),
 			},
-			Error: &types.APIError{
+			Error: &httperrors.APIError{
 				Message: "failed to get auth url",
 			},
 		}
@@ -125,13 +124,13 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	responseDetails := types.ResponseDetails{
+	responseDetails := httperrors.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
 	providerName := s.authProviderFetcher(req)
 	if providerName == "" {
-		errRes := types.NewAPIErrorResponse("provider name is missing", types.ErrValidatingRequestInput, responseDetails)
+		errRes := httperrors.NewAPIErrorResponse("provider name is missing", httperrors.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
@@ -140,11 +139,11 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting provider")
 
-		errorResponse := &types.APIResponse[any]{
-			Details: types.ResponseDetails{
+		errorResponse := &httperrors.APIResponse[any]{
+			Details: httperrors.ResponseDetails{
 				TraceID: span.SpanContext().TraceID().String(),
 			},
-			Error: &types.APIError{
+			Error: &httperrors.APIError{
 				Message: "provider is not supported",
 			},
 		}
@@ -159,11 +158,11 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "unmarshaling session")
 
-		errorResponse := &types.APIResponse[any]{
-			Details: types.ResponseDetails{
+		errorResponse := &httperrors.APIResponse[any]{
+			Details: httperrors.ResponseDetails{
 				TraceID: span.SpanContext().TraceID().String(),
 			},
-			Error: &types.APIError{
+			Error: &httperrors.APIError{
 				Message: "failed to unmarshal session",
 			},
 		}
@@ -174,11 +173,11 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	if err = validateState(req, sess); err != nil {
 		observability.AcknowledgeError(err, logger, span, "validating state")
 
-		errorResponse := &types.APIResponse[any]{
-			Details: types.ResponseDetails{
+		errorResponse := &httperrors.APIResponse[any]{
+			Details: httperrors.ResponseDetails{
 				TraceID: span.SpanContext().TraceID().String(),
 			},
-			Error: &types.APIError{
+			Error: &httperrors.APIError{
 				Message: "failed to validate state",
 			},
 		}
@@ -191,11 +190,11 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user")
 
-		errorResponse := &types.APIResponse[any]{
-			Details: types.ResponseDetails{
+		errorResponse := &httperrors.APIResponse[any]{
+			Details: httperrors.ResponseDetails{
 				TraceID: span.SpanContext().TraceID().String(),
 			},
-			Error: &types.APIError{
+			Error: &httperrors.APIError{
 				Message: "failed to fetch user",
 			},
 		}
@@ -216,11 +215,11 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	if _, err = sess.Authorize(provider, params); err != nil {
 		observability.AcknowledgeError(err, logger, span, "authorizing session")
 
-		errorResponse := &types.APIResponse[any]{
-			Details: types.ResponseDetails{
+		errorResponse := &httperrors.APIResponse[any]{
+			Details: httperrors.ResponseDetails{
 				TraceID: span.SpanContext().TraceID().String(),
 			},
-			Error: &types.APIError{
+			Error: &httperrors.APIError{
 				Message: "failed to authorize session",
 			},
 		}
@@ -232,8 +231,8 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	user, err := s.identityDataManager.GetUserByEmail(ctx, providedUser.Email)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting user by email")
-		code, msg := errorshttp.ToAPIError(err)
-		errRes := types.NewAPIErrorResponse(msg, code, responseDetails)
+		code, msg := httperrors.ToAPIError(err)
+		errRes := httperrors.NewAPIErrorResponse(msg, code, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -243,8 +242,8 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	defaultAccountID, err := s.identityDataManager.GetDefaultAccountIDForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user memberships")
-		code, msg := errorshttp.ToAPIError(err)
-		errRes := types.NewAPIErrorResponse(msg, code, responseDetails)
+		code, msg := httperrors.ToAPIError(err)
+		errRes := httperrors.NewAPIErrorResponse(msg, code, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -254,12 +253,12 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	token, _, err = s.tokenIssuer.IssueToken(ctx, user, s.config.TokenLifetime, "", "")
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "signing token")
-		errRes := types.NewAPIErrorResponse(staticError, types.ErrEncryptionIssue, responseDetails)
+		errRes := httperrors.NewAPIErrorResponse(staticError, httperrors.ErrEncryptionIssue, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
-	responseValue := &types.APIResponse[*identity.TokenResponse]{
+	responseValue := &httperrors.APIResponse[*identity.TokenResponse]{
 		Details: responseDetails,
 		Data: &identity.TokenResponse{
 			AccountID:   defaultAccountID,
@@ -271,11 +270,11 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	responseCode, err := s.postLogin(ctx, user, defaultAccountID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "handling login status")
-		errorResponse := &types.APIResponse[any]{
-			Details: types.ResponseDetails{
+		errorResponse := &httperrors.APIResponse[any]{
+			Details: httperrors.ResponseDetails{
 				TraceID: span.SpanContext().TraceID().String(),
 			},
-			Error: &types.APIError{
+			Error: &httperrors.APIError{
 				Message: staticError,
 			},
 		}

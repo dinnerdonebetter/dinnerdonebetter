@@ -6,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput creates a RecipePrepTaskUpdateRequestInput from a RecipePrepTask.
@@ -27,7 +27,7 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *mealplanning
 		ExplicitStorageInstructions: &input.ExplicitStorageInstructions,
 		Optional:                    &input.Optional,
 		StorageTemperatureInCelsius: input.StorageTemperatureInCelsius,
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
+		TimeBufferBeforeRecipeInSeconds: numbers.OpenRangeUpdateRequestInput[uint32]{
 			Min: &input.TimeBufferBeforeRecipeInSeconds.Min,
 			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
 		},

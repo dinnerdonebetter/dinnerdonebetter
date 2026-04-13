@@ -12,8 +12,9 @@ import (
 	dataprivacysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	mockuploads "github.com/primandproper/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -23,7 +24,7 @@ import (
 func buildTestService(t *testing.T) (*serviceImpl, *dataprivacymock.Repository, *mockuploads.UploadManagerMock) {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
+	logger := loggingnoop.NewLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	mockRepo := &dataprivacymock.Repository{}
 	mockUploads := &mockuploads.UploadManagerMock{}
@@ -54,8 +55,8 @@ func TestNewDataPrivacyService(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		mockRepo := &dataprivacymock.Repository{}
 		mockUploads := &mockuploads.UploadManagerMock{}
 		sessionFetcher := func(ctx context.Context) (*sessions.ContextData, error) {

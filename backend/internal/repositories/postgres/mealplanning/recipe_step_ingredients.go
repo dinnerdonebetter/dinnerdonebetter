@@ -11,9 +11,9 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -124,7 +124,7 @@ func (q *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 			Metric:        result.ValidMeasurementUnitMetric,
 			Imperial:      result.ValidMeasurementUnitImperial,
 		},
-		Quantity: types.Float32RangeWithOptionalMax{
+		Quantity: numbers.MinRange[float32]{
 			Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
 			Min: database.Float32FromString(result.MinimumQuantityValue),
 		},
@@ -139,7 +139,7 @@ func (q *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 			CreatedAt:     result.ValidIngredientCreatedAt.Time,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			},
@@ -234,7 +234,7 @@ func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 				Metric:        result.ValidMeasurementUnitMetric,
 				Imperial:      result.ValidMeasurementUnitImperial,
 			},
-			Quantity: types.Float32RangeWithOptionalMax{
+			Quantity: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
 				Min: database.Float32FromString(result.MinimumQuantityValue),
 			},
@@ -249,7 +249,7 @@ func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 				CreatedAt:     result.ValidIngredientCreatedAt.Time,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+				StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				},
@@ -372,7 +372,7 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 				Metric:        result.ValidMeasurementUnitMetric,
 				Imperial:      result.ValidMeasurementUnitImperial,
 			},
-			Quantity: types.Float32RangeWithOptionalMax{
+			Quantity: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
 				Min: database.Float32FromString(result.MinimumQuantityValue),
 			},
@@ -387,7 +387,7 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 				CreatedAt:     result.ValidIngredientCreatedAt.Time,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+				StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				},
@@ -492,7 +492,7 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 		Name:            input.Name,
 		Optional:        input.Optional,
 		MeasurementUnit: mealplanning.ValidMeasurementUnit{ID: input.MeasurementUnitID},
-		Quantity: types.Float32RangeWithOptionalMax{
+		Quantity: numbers.MinRange[float32]{
 			Max: input.Quantity.Max,
 			Min: input.Quantity.Min,
 		},

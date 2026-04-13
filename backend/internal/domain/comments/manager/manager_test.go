@@ -13,8 +13,8 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
@@ -40,8 +40,8 @@ func buildCommentsManagerForTest(t *testing.T) *commentsManager {
 
 	m, err := NewCommentsDataManager(
 		ctx,
-		tracing.NewNoopTracerProvider(),
-		logging.NewNoopLogger(),
+		tracingnoop.NewTracerProvider(),
+		loggingnoop.NewLogger(),
 		&commentsmock.Repository{},
 		queueCfg,
 		mpp,

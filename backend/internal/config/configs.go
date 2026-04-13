@@ -22,8 +22,8 @@ import (
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	notificationscfg "github.com/primandproper/platform/notifications/mobile/config"
 	"github.com/primandproper/platform/observability"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	routingcfg "github.com/primandproper/platform/routing/config"
 	textsearchcfg "github.com/primandproper/platform/search/text/config"
 	"github.com/primandproper/platform/server/grpc"
@@ -426,7 +426,7 @@ func LoadConfigFromPath[T configurations](ctx context.Context, configurationFile
 		return nil, fmt.Errorf("failed to read api configuration file: %w", err)
 	}
 
-	decoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+	decoder := encoding.ProvideServerEncoderDecoder(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), encoding.ContentTypeJSON)
 
 	var x *T
 	if err = decoder.DecodeBytes(ctx, content, &x); err != nil {

@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // CornbreadRecipe creates the Cornbread recipe.
@@ -125,14 +125,14 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		PreparationID:        preheatPrep.ID,
 		Index:                0,
 		ExplicitInstructions: "Preheat the oven to 375°F.",
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(190)), // 375°F = ~190°C
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
 				Name:                     "oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -156,7 +156,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID: &greaseButterVIP.ID,
 				Name:                         "butter for greasing",
 				QuantityNotes:                "as needed",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -165,7 +165,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationVesselID: &greaseBakingPanVPV.ID,
 				Name:                     `9" square or round pan`,
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -189,7 +189,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
 				Name:                             "unsalted butter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 			},
@@ -198,7 +198,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationVesselID: &meltSmallSaucepanVPV.ID,
 				Name:                     "small saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -209,7 +209,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -227,7 +227,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &restButterVIP.ID,
 				Name:                            "melted butter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 			},
@@ -236,7 +236,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationVesselID: &restSmallBowlVPV.ID,
 				Name:                     "small bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -247,7 +247,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -259,7 +259,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		PreparationID:        heatPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Heat the milk in a small saucepan over low heat until lukewarm (about 100°F or 38°C).",
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(35)), // ~95°F
 			Max: new(float32(40)), // ~104°F
 		},
@@ -268,7 +268,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID:     &heatMilkVIP.ID,
 				ValidIngredientMeasurementUnitID: &milkCupVIMU.ID,
 				Name:                             "milk",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1.25,
 				},
 			},
@@ -277,7 +277,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationVesselID: &heatSmallSaucepanVPV.ID,
 				Name:                     "small saucepan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -288,7 +288,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1.25)),
 				},
 			},
@@ -306,7 +306,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientMeasurementUnitID: &flourCupVIMU.ID,
 				Name:                             "all-purpose flour",
 				QuantityNotes:                    "210g",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1.75,
 				},
 			},
@@ -315,7 +315,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientMeasurementUnitID: &cornmealCupVIMU.ID,
 				Name:                             "yellow cornmeal",
 				QuantityNotes:                    "156g",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -324,7 +324,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientMeasurementUnitID: &sugarCupVIMU.ID,
 				Name:                             "granulated sugar",
 				QuantityNotes:                    "50g",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -332,7 +332,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID:     &mixBakingPowderVIP.ID,
 				ValidIngredientMeasurementUnitID: &bakingPowderTeaspoonVIMU.ID,
 				Name:                             "baking powder",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -340,7 +340,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID:     &mixBakingSodaVIP.ID,
 				ValidIngredientMeasurementUnitID: &bakingSodaTeaspoonVIMU.ID,
 				Name:                             "baking soda",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -348,7 +348,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID:     &mixSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "table salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4.5, // about 3/4 tsp
 				},
 			},
@@ -357,7 +357,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationInstrumentID: &mixWhiskVPI.ID,
 				Name:                         "whisk",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -366,7 +366,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationVesselID: &mixMediumBowlVPV.ID,
 				Name:                     "medium bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -377,7 +377,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -400,7 +400,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &mixMilkVIP.ID,
 				Name:                            "lukewarm milk",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1.25,
 				},
 			},
@@ -409,7 +409,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &mixButterVIP.ID,
 				Name:                            "melted and cooled butter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 			},
@@ -417,7 +417,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID:     &mixVegetableOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilGramVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 56, // 1/4 cup
 				},
 			},
@@ -425,7 +425,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID:     &mixEggsVIP.ID,
 				ValidIngredientMeasurementUnitID: &eggsUnitVIMU.ID,
 				Name:                             "large egg",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -434,7 +434,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationInstrumentID: &mixWhiskVPI.ID,
 				Name:                         "whisk",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -443,7 +443,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationVesselID: &mixMediumBowlVPV.ID,
 				Name:                     "bowl or large measuring cup",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -454,7 +454,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -476,7 +476,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "wet ingredient mixture",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -484,7 +484,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dry ingredient mixture",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -495,7 +495,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &combineMediumBowlVPV.ID,
 				Name:                            "bowl with dry ingredients",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -506,7 +506,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -528,7 +528,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "combined wet and dry ingredients",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -537,7 +537,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationInstrumentID: &mixSpoonVPI.ID,
 				Name:                         "spoon or spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -548,7 +548,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &mixMediumBowlVPV.ID,
 				Name:                            "bowl with combined ingredients",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -567,7 +567,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -584,7 +584,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cornbread batter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -595,7 +595,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &pourBakingPanVPV.ID,
 				Name:                            "greased baking pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -606,7 +606,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -623,11 +623,11 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		PreparationID:        bakePrep.ID,
 		Index:                10,
 		ExplicitInstructions: "Bake the bread for 20 to 25 minutes, until the edges just begin to pull away from the pan and a cake tester or paring knife inserted in the center comes out clean.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(1200)), // 20 minutes
 			Max: new(uint32(1500)), // 25 minutes
 		},
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(190)), // 375°F
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -635,7 +635,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "unbaked cornbread in pan",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -646,7 +646,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &bakeOvenVPV.ID,
 				Name:                            "preheated oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -655,7 +655,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &bakeBakingPanVPV.ID,
 				Name:                            "pan with cornbread batter",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -674,7 +674,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -691,7 +691,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		PreparationID:        coolPrep.ID,
 		Index:                11,
 		ExplicitInstructions: "Remove the bread from the oven and cool it on a rack for 5 minutes before cutting; serve warm.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(300)), // 5 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -699,7 +699,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "baked cornbread",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -708,7 +708,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationVesselID: &coolWireRackVPV.ID,
 				Name:                     "wire rack",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -719,7 +719,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(12)),
 				},
 			},
@@ -733,11 +733,11 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the dry ingredient mixture in an airtight container at room temperature for up to 7 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(18)),
 			Max: new(float32(25)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(604800)), // 7 days
 		},
@@ -753,7 +753,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			Source:              "https://www.kingarthurbaking.com/recipes/cornbread-recipe",
 			Description:         "This cornbread is a rare compromise between Southern and Northern cornbreads: it's tender and moist, with pleasing corn flavor and just the right amount of sweetness.",
 			YieldsComponentType: mealplanning.MealComponentTypesSide,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 12,
 			},
 			PortionName:       "piece",

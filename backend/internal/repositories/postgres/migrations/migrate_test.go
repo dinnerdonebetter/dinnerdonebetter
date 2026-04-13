@@ -6,7 +6,7 @@ import (
 
 	pgtesting "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/testing"
 
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/pointer"
 
 	"github.com/stretchr/testify/require"
@@ -20,7 +20,7 @@ func TestQuerier_Migrate(T *testing.T) {
 
 		ctx := t.Context()
 		container, db, _ := pgtesting.BuildDatabaseContainerForTest(t)
-		require.NoError(t, NewMigrator(logging.NewNoopLogger()).Migrate(ctx, db))
+		require.NoError(t, NewMigrator(loggingnoop.NewLogger()).Migrate(ctx, db))
 
 		if err := container.Stop(ctx, pointer.To(time.Second*10)); err != nil {
 			t.Log(err)

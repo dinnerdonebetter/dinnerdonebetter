@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // UltraFluffyMashedPotatoesRecipe creates the Ultra-Fluffy Mashed Potatoes recipe.
@@ -140,7 +140,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -149,7 +149,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -158,7 +158,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -171,7 +171,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -188,7 +188,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &peelPotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "russet potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -197,7 +197,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationInstrumentID: &peelVegetablePeelerVPI.ID,
 				Name:                         "vegetable peeler",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -206,7 +206,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -217,7 +217,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -236,7 +236,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &cubePotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "peeled potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -245,7 +245,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationInstrumentID: &cubeKnifeVPI.ID,
 				Name:                         "chef's knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -254,7 +254,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationVesselID: &cubeCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -265,7 +265,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -284,7 +284,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &rinsePotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "cubed potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -293,7 +293,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationVesselID: &rinsePotVPV.ID,
 				Name:                     "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -304,7 +304,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -328,7 +328,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &submergePotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "rinsed potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -337,7 +337,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
 				QuantityNotes:                    "enough to cover potatoes",
 				Name:                             "cold water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 8, // enough to cover potatoes
 				},
 			},
@@ -347,7 +347,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -358,7 +358,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -380,7 +380,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "potatoes in water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -388,7 +388,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 15, // generous amount
 				},
 			},
@@ -398,7 +398,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -409,7 +409,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -433,7 +433,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &boilPotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "potatoes in salted water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -443,7 +443,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -454,7 +454,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -476,7 +476,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "potatoes at boil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -487,7 +487,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &adjustPotVPV.ID,
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -498,7 +498,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -515,7 +515,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		PreparationID:        simmerPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Cook until the potatoes are completely tender, about 15 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(900)), // 15 minutes
 		},
 		StartTimerAutomatically: true,
@@ -526,7 +526,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &simmerPotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "potatoes at boil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -537,7 +537,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &simmerPotVPV.ID,
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -548,7 +548,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -572,7 +572,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &drainPotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "boiled potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -581,7 +581,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationVesselID: &drainColanderVPV.ID,
 				Name:                     "colander",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -592,7 +592,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -604,7 +604,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		PreparationID:        rinsePrep.ID,
 		Index:                10,
 		ExplicitInstructions: "Rinse the potatoes under hot running water for 30 seconds to wash away excess starch.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(30)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -614,7 +614,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &rinsePotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "drained potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -623,7 +623,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationVesselID: &rinseColanderVPV.ID,
 				Name:                     "colander",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -634,7 +634,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -646,7 +646,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		PreparationID:        restPrep.ID,
 		Index:                11,
 		ExplicitInstructions: "Allow the potatoes to steam for 1 minute to remove excess moisture.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(60)), // 1 minute
 		},
 		StartTimerAutomatically: true,
@@ -657,7 +657,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &restPotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "rinsed hot potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -666,7 +666,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationVesselID: &restColanderVPV.ID,
 				Name:                     "colander",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -677,7 +677,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -696,7 +696,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &ricePotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoPoundVIMU.ID,
 				Name:                             "steamed potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -705,7 +705,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationInstrumentID: &ricePotatoRicerVPI.ID,
 				Name:                         "potato ricer",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -715,7 +715,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -726,7 +726,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -748,7 +748,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &sliceButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterGramVIMU.ID,
 				Name:                             "unsalted butter, room temperature",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 84, // 6 tablespoons (14g each)
 				},
 			},
@@ -757,7 +757,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -766,7 +766,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -777,7 +777,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(84)),
 				},
 			},
@@ -794,7 +794,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "riced potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -802,7 +802,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "butter pats (1/2-inch)",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 84, // 6 tablespoons (14g each)
 				},
 			},
@@ -811,7 +811,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationInstrumentID: &foldRubberSpatulaVPI.ID,
 				Name:                         "rubber spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -821,7 +821,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -832,7 +832,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -854,7 +854,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(14)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "buttered potatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -862,7 +862,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &addMilkVIP.ID,
 				ValidIngredientMeasurementUnitID: &milkCupVIMU.ID,
 				Name:                             "whole milk",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.5, // 1/2 cup, plus more as needed
 				},
 			},
@@ -873,7 +873,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -884,7 +884,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -908,7 +908,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ValidIngredientPreparationID:     &simmerMilkVIP.ID,
 				ValidIngredientMeasurementUnitID: &milkCupVIMU.ID,
 				Name:                             "potatoes with milk",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -918,7 +918,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(15)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -929,7 +929,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -952,7 +952,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &foldPotatoVIP.ID,
 				Name:                            "potatoes with simmering milk",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -961,7 +961,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ValidPreparationInstrumentID: &foldRubberSpatulaVPI.ID,
 				Name:                         "rubber spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -971,7 +971,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(16)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -982,7 +982,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1005,7 +1005,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &seasonPotatoVIP.ID,
 				Name:                            "mashed potatoes with milk",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -1013,7 +1013,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -1023,7 +1023,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				ProductOfRecipeStepIndex:        new(uint64(17)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1034,7 +1034,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1049,10 +1049,10 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the cubed and seasoned potatoes in the pot, covered with water, in the refrigerator for up to 24 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeCovered,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)), // Refrigerator temperature
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(86400)), // 24 hours
 		},
@@ -1071,7 +1071,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			Source:              "https://www.seriouseats.com/ultra-fluffy-mashed-potatoes-recipe",
 			Description:         "For the fluffiest and lightest mashed potatoes, use Russets and rinse off excess potato starch before and after cooking.",
 			YieldsComponentType: mealplanning.MealComponentTypesSide,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 4,
 				Max: new(float32(6)),
 			},

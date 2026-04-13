@@ -9,7 +9,7 @@ import (
 	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,7 +25,7 @@ func checkRecipeStepVesselSliceEquality(t *testing.T, stepIndex int, expected, a
 
 func checkRecipeStepVesselEquality(t *testing.T, stepIndex, vesselIndex int, expected, actual *mealplanning.RecipeStepVessel) {
 	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d vessel %d to have MealPlanTaskID", stepIndex, vesselIndex)
+	assert.NotEmpty(t, actual.ID, "expected step %d vessel %d to have ID", stepIndex, vesselIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d vessel %d to have CreatedAt", stepIndex, vesselIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d vessel %d to have BelongsToRecipeStep", stepIndex, vesselIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d vessel %d Name", stepIndex, vesselIndex)
@@ -37,8 +37,8 @@ func checkRecipeStepVesselEquality(t *testing.T, stepIndex, vesselIndex int, exp
 	assert.Equal(t, expected.UnavailableAfterStep, actual.UnavailableAfterStep, "expected step %d vessel %d UnavailableAfterStep", stepIndex, vesselIndex)
 	if expected.Vessel != nil {
 		require.NotNil(t, actual.Vessel, "expected step %d vessel %d Vessel non-nil", stepIndex, vesselIndex)
-		assert.NotEmpty(t, actual.Vessel.ID, "expected step %d vessel %d Vessel.MealPlanTaskID", stepIndex, vesselIndex)
-		assert.Equal(t, expected.Vessel.ID, actual.Vessel.ID, "expected step %d vessel %d Vessel.MealPlanTaskID", stepIndex, vesselIndex)
+		assert.NotEmpty(t, actual.Vessel.ID, "expected step %d vessel %d Vessel.ID", stepIndex, vesselIndex)
+		assert.Equal(t, expected.Vessel.ID, actual.Vessel.ID, "expected step %d vessel %d Vessel.ID", stepIndex, vesselIndex)
 	}
 }
 
@@ -186,7 +186,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
 			PortionName:         t.Name(),
 			PluralPortionName:   t.Name(),
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Max: nil,
 				Min: 1,
 			},
@@ -198,7 +198,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductVesselType,
 							MeasurementUnit: unit,
 							QuantityNotes:   "",
-							MeasurementQuantity: types.OptionalFloat32Range{
+							MeasurementQuantity: numbers.OpenRange[float32]{
 								Max: nil,
 								Min: new(float32(1)),
 							},
@@ -212,7 +212,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Ingredient:          aluminumFoil,
 							Name:                "aluminum foil",
 							MeasurementUnit:     *sheets,
-							Quantity: types.Float32RangeWithOptionalMax{
+							Quantity: numbers.MinRange[float32]{
 								Max: nil,
 								Min: 3,
 							},
@@ -222,7 +222,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 						{
 							Vessel: bakingSheet,
 							Name:   "baking sheet",
-							Quantity: types.Uint16RangeWithOptionalMax{
+							Quantity: numbers.MinRange[uint16]{
 								Max: nil,
 								Min: 1,
 							},
@@ -244,7 +244,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: head,
 							QuantityNotes:   "",
-							MeasurementQuantity: types.OptionalFloat32Range{
+							MeasurementQuantity: numbers.OpenRange[float32]{
 								Max: nil,
 								Min: new(float32(1)),
 							},
@@ -256,7 +256,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Ingredient:      garlic,
 							Name:            "garlic",
 							MeasurementUnit: *head,
-							Quantity: types.Float32RangeWithOptionalMax{
+							Quantity: numbers.MinRange[float32]{
 								Max: nil,
 								Min: 1,
 							},

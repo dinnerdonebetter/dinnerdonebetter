@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // SoySauceBraisedChickenThighsRecipe creates the Soy Sauce–Braised Chicken Thighs recipe.
@@ -167,7 +167,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &combineSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 18, // about 1 tbsp
 				},
 			},
@@ -175,7 +175,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &combineMSGVIP.ID,
 				ValidIngredientMeasurementUnitID: &msgTeaspoonVIMU.ID,
 				Name:                             "MSG",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -183,7 +183,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &combineFiveSpiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &fiveSpiceTeaspoonVIMU.ID,
 				Name:                             "five spice powder",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.5,
 				},
 			},
@@ -191,7 +191,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &combineDarkBrownSugarVIP.ID,
 				ValidIngredientMeasurementUnitID: &darkBrownSugarTablespoonVIMU.ID,
 				Name:                             "dark brown sugar",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 3,
 				},
 			},
@@ -199,7 +199,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &combineWhitePepperVIP.ID,
 				ValidIngredientMeasurementUnitID: &whitePepperTeaspoonVIMU.ID,
 				Name:                             "ground white pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -208,7 +208,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &combineWhiskVPI.ID,
 				Name:                         "whisk",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -217,7 +217,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationVesselID: &combineSmallBowlVPV.ID,
 				Name:                     "small bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -228,7 +228,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -245,7 +245,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &transferChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenThighsPoundVIMU.ID,
 				Name:                             "bone-in, skin-on chicken thighs",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -254,7 +254,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &transferTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -263,14 +263,14 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationVesselID: &transferWireRackVPV.ID,
 				Name:                     "wire rack",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationVesselID: &transferBakingSheetVPV.ID,
 				Name:                     "rimmed 13- by 18-inch baking sheet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -280,7 +280,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "chicken on wire rack",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -289,7 +289,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -306,7 +306,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "chicken",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -315,7 +315,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &dryPaperTowelsVPI.ID,
 				Name:                         "paper towels",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -325,7 +325,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "dried chicken on wire rack",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -334,7 +334,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -351,7 +351,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dried chicken on wire rack",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -359,7 +359,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dry brine mixture",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -368,7 +368,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -378,7 +378,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "chicken on wire rack",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -394,7 +394,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationVesselID: &adjustOvenVPV.ID,
 				Name:                     "oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -404,7 +404,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "oven with rack in middle position",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -416,7 +416,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		PreparationID:        preheatPrep.ID,
 		Index:                5,
 		ExplicitInstructions: "Preheat the oven to 300°F (150°C).",
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(150)), // 300°F
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -424,7 +424,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "oven with rack in middle position",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -434,7 +434,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "preheated oven at 300°F",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -452,7 +452,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientMeasurementUnitID: &scallionsUnitVIMU.ID,
 				Name:                             "scallions",
 				QuantityNotes:                    "8 scallions",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 8,
 				},
 			},
@@ -461,7 +461,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &cutKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -470,7 +470,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationVesselID: &cutCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -481,7 +481,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(8)),
 				},
 			},
@@ -499,7 +499,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientMeasurementUnitID: &gingerUnitVIMU.ID,
 				Name:                             "ginger",
 				QuantityNotes:                    "One 2-inch piece",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -508,7 +508,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &peelBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -517,7 +517,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -528,7 +528,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -545,7 +545,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "peeled ginger",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -554,7 +554,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -563,7 +563,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -574,7 +574,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -592,7 +592,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				Name:                             "garlic",
 				QuantityNotes:                    "5 medium cloves",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 5,
 				},
 			},
@@ -601,7 +601,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &peelBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -610,7 +610,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -621,7 +621,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cloveMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(5)),
 				},
 			},
@@ -639,7 +639,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &heatOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
 				Name:                             "neutral oil, such as vegetable",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -648,7 +648,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
 				Name:                     "large cast iron or carbon steel skillet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -658,7 +658,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "heated skillet with oil",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -678,7 +678,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		PreparationID:        panSearPrep.ID,
 		Index:                11,
 		ExplicitInstructions: "Working in batches if necessary, add the chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(240)), // 4 minutes
 			Max: new(uint32(360)), // 6 minutes
 		},
@@ -687,7 +687,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "chicken on wire rack",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -696,7 +696,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -706,7 +706,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated skillet with oil",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -717,7 +717,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -725,7 +725,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet with seared chicken",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -742,7 +742,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seared chicken thighs (skin-side)",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -751,7 +751,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &flipTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -761,7 +761,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with seared chicken",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -772,7 +772,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -780,7 +780,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet with flipped chicken",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -792,7 +792,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		PreparationID:        panSearPrep.ID,
 		Index:                13,
 		ExplicitInstructions: "Cook lightly on the second side, about 2 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(120)), // 2 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -800,7 +800,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "flipped chicken thighs",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -809,7 +809,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -819,7 +819,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with flipped chicken",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -830,7 +830,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -838,7 +838,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet with seared chicken",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -855,7 +855,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seared chicken thighs (both sides)",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -864,7 +864,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &transferTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -873,7 +873,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationVesselID: &transferLargePlateVPV.ID,
 				Name:                     "large plate",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -883,7 +883,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "seared chicken on plate",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -900,7 +900,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with seared chicken",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -910,7 +910,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet at medium-low heat",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -927,7 +927,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cut scallions",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 8,
 				},
 			},
@@ -935,7 +935,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "sliced ginger",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -943,7 +943,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "peeled garlic cloves",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 5,
 				},
 			},
@@ -951,7 +951,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &addFiveSpiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &fiveSpiceTeaspoonVIMU.ID,
 				Name:                             "five spice powder",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -959,7 +959,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &addDarkBrownSugarVIP.ID,
 				ValidIngredientMeasurementUnitID: &darkBrownSugarTablespoonVIMU.ID,
 				Name:                             "dark brown sugar",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 3,
 				},
 			},
@@ -969,7 +969,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(15)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "skillet at medium-low heat",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -980,7 +980,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -988,7 +988,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet with aromatics",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1000,7 +1000,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		PreparationID:        cookPrep.ID,
 		Index:                17,
 		ExplicitInstructions: "Cook, stirring, until the vegetables are softened and starting to brown, 3 to 5 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(180)), // 3 minutes
 			Max: new(uint32(300)), // 5 minutes
 		},
@@ -1009,7 +1009,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(16)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "aromatics in skillet",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -1018,7 +1018,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &cookWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -1028,7 +1028,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(16)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with aromatics",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1039,7 +1039,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1047,7 +1047,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet with aromatics",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1064,7 +1064,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(17)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cooked aromatics",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -1072,7 +1072,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &simmerStarAniseVIP.ID,
 				ValidIngredientMeasurementUnitID: &starAniseUnitVIMU.ID,
 				Name:                             "star anise",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 3,
 				},
 			},
@@ -1081,7 +1081,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientMeasurementUnitID: &cinnamonStickUnitVIMU.ID,
 				Name:                             "cinnamon stick",
 				QuantityNotes:                    "One 2-inch piece",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -1089,7 +1089,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &simmerLightSoySauceVIP.ID,
 				ValidIngredientMeasurementUnitID: &lightSoySauceCupVIMU.ID,
 				Name:                             "light soy sauce",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -1097,7 +1097,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &simmerShaoxingWineVIP.ID,
 				ValidIngredientMeasurementUnitID: &shaoxingWineCupVIMU.ID,
 				Name:                             "Shaoxing wine",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -1105,7 +1105,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientPreparationID:     &simmerWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
 				Name:                             "water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1.5,
 				},
 			},
@@ -1115,7 +1115,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(17)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with aromatics",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1126,7 +1126,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1134,7 +1134,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet with braising liquid",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1151,7 +1151,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(14)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seared chicken on plate",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -1160,7 +1160,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &transferTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -1170,7 +1170,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(18)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with braising liquid",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1181,7 +1181,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -1189,7 +1189,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet with chicken in braising liquid",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1206,7 +1206,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(19)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with chicken in braising liquid",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1214,7 +1214,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "preheated oven at 300°F",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1224,7 +1224,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet with chicken in oven",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1237,7 +1237,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		PreparationID:        braisePrep.ID,
 		Index:                21,
 		ExplicitInstructions: "Cook uncovered until the chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(1800)), // 30 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -1245,7 +1245,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(19)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "chicken in braising liquid",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -1254,7 +1254,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			{
 				ValidPreparationInstrumentID: &braiseThermometerVPI.ID,
 				Name:                         "instant-read thermometer",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -1264,7 +1264,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(20)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "skillet with chicken in oven",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1275,7 +1275,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -1283,7 +1283,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Name:  "skillet with braised chicken",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1308,7 +1308,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(21)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "braised chicken thighs",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -1318,7 +1318,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				ProductOfRecipeStepIndex:        new(uint64(21)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with braised chicken",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1329,7 +1329,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1344,10 +1344,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the seasoned chicken on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 8 hours and up to 72 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 28800,               // 8 hours
 			Max: new(uint32(259200)), // 72 hours
 		},
@@ -1366,10 +1366,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the prepared aromatics in separate airtight containers in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days
 		},
@@ -1387,7 +1387,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 			Source:              "https://www.seriouseats.com/soy-sauce-braised-chicken-thighs-recipe-8737800",
 			Description:         "Bathed in a fragrant blend of soy sauce, brown sugar, and warm spices, these tender chicken thighs evoke the flavors of classic Cantonese soy sauce chicken. The chicken is seared until crispy, then gently braised in the oven.",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 4,
 			},
 			PortionName:       "serving",

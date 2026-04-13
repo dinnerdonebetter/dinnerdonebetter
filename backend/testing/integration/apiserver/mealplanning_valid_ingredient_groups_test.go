@@ -16,7 +16,7 @@ import (
 func checkValidIngredientGroupEquality(t *testing.T, expected, actual *mealplanning.ValidIngredientGroup) {
 	t.Helper()
 
-	assert.NotEmpty(t, actual.ID, "expected ValidIngredientGroup to have MealPlanTaskID")
+	assert.NotEmpty(t, actual.ID, "expected ValidIngredientGroup to have ID")
 	assert.NotZero(t, actual.CreatedAt, "expected ValidIngredientGroup to have CreatedAt")
 
 	assert.Equal(t, expected.Name, actual.Name, "expected ValidIngredientGroup Name")
@@ -138,7 +138,7 @@ func TestValidIngredientGroups_Reading(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -247,7 +247,7 @@ func TestValidIngredientGroups_Archiving(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 

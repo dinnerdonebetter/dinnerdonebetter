@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertRecipeToRecipeUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
@@ -17,7 +17,7 @@ func ConvertRecipeToRecipeUpdateRequestInput(input *mealplanning.Recipe) *mealpl
 		Description:         &input.Description,
 		InspiredByRecipeID:  input.InspiredByRecipeID,
 		YieldsComponentType: &input.YieldsComponentType,
-		EstimatedPortions: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+		EstimatedPortions: numbers.OpenRangeUpdateRequestInput[float32]{
 			Max: input.EstimatedPortions.Max,
 			Min: &input.EstimatedPortions.Min,
 		},
@@ -40,7 +40,7 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *mealp
 		SourceISBN:         input.SourceISBN,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
@@ -87,7 +87,7 @@ func ConvertRecipeToRecipeCreationRequestInput(input *mealplanning.Recipe) *meal
 		SourceISBN:         input.SourceISBN,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
@@ -121,7 +121,7 @@ func ConvertRecipeToRecipeDatabaseCreationInput(input *mealplanning.Recipe) *mea
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		CreatedByUser:      input.CreatedByUser,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},

@@ -11,9 +11,9 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -93,19 +93,19 @@ func (q *repository) GetRecipeStepProduct(ctx context.Context, recipeID, recipeS
 
 	recipeStepProduct := &mealplanning.RecipeStepProduct{
 		CreatedAt: result.CreatedAt,
-		MeasurementQuantity: types.OptionalFloat32Range{
+		MeasurementQuantity: numbers.OpenRange[float32]{
 			Max: database.Float32PointerFromNullString(result.MaximumMeasurementQuantityValue),
 			Min: database.Float32PointerFromNullString(result.MinimumMeasurementQuantityValue),
 		},
-		ItemQuantity: types.OptionalFloat32Range{
+		ItemQuantity: numbers.OpenRange[float32]{
 			Max: database.Float32PointerFromNullString(result.MaximumItemQuantityValue),
 			Min: database.Float32PointerFromNullString(result.MinimumItemQuantityValue),
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
 			Min: database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
 		},
-		StorageDurationInSeconds: types.OptionalUint32Range{
+		StorageDurationInSeconds: numbers.OpenRange[uint32]{
 			Max: database.Uint32PointerFromNullInt32(result.MaximumStorageDurationInSeconds),
 		},
 		ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
@@ -167,19 +167,19 @@ func (q *repository) getRecipeStepProductsForRecipe(ctx context.Context, recipeI
 	for _, result := range results {
 		recipeStepProduct := &mealplanning.RecipeStepProduct{
 			CreatedAt: result.CreatedAt,
-			MeasurementQuantity: types.OptionalFloat32Range{
+			MeasurementQuantity: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumMeasurementQuantityValue),
 				Min: database.Float32PointerFromNullString(result.MinimumMeasurementQuantityValue),
 			},
-			ItemQuantity: types.OptionalFloat32Range{
+			ItemQuantity: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumItemQuantityValue),
 				Min: database.Float32PointerFromNullString(result.MinimumItemQuantityValue),
 			},
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
 			},
-			StorageDurationInSeconds: types.OptionalUint32Range{
+			StorageDurationInSeconds: numbers.OpenRange[uint32]{
 				Max: database.Uint32PointerFromNullInt32(result.MaximumStorageDurationInSeconds),
 			},
 			ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
@@ -275,19 +275,19 @@ func (q *repository) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 		}
 		recipeStepProduct := &mealplanning.RecipeStepProduct{
 			CreatedAt: result.CreatedAt,
-			MeasurementQuantity: types.OptionalFloat32Range{
+			MeasurementQuantity: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumMeasurementQuantityValue),
 				Min: database.Float32PointerFromNullString(result.MinimumMeasurementQuantityValue),
 			},
-			ItemQuantity: types.OptionalFloat32Range{
+			ItemQuantity: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumItemQuantityValue),
 				Min: database.Float32PointerFromNullString(result.MinimumItemQuantityValue),
 			},
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
 			},
-			StorageDurationInSeconds: types.OptionalUint32Range{
+			StorageDurationInSeconds: numbers.OpenRange[uint32]{
 				Max: database.Uint32PointerFromNullInt32(result.MaximumStorageDurationInSeconds),
 			},
 			ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
@@ -379,19 +379,19 @@ func (q *repository) createRecipeStepProduct(ctx context.Context, db database.SQ
 		QuantityNotes:       input.QuantityNotes,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Compostable:         input.Compostable,
-		MeasurementQuantity: types.OptionalFloat32Range{
+		MeasurementQuantity: numbers.OpenRange[float32]{
 			Max: input.MeasurementQuantity.Max,
 			Min: input.MeasurementQuantity.Min,
 		},
-		ItemQuantity: types.OptionalFloat32Range{
+		ItemQuantity: numbers.OpenRange[float32]{
 			Max: input.ItemQuantity.Max,
 			Min: input.ItemQuantity.Min,
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: input.StorageTemperatureInCelsius.Max,
 			Min: input.StorageTemperatureInCelsius.Min,
 		},
-		StorageDurationInSeconds: types.OptionalUint32Range{
+		StorageDurationInSeconds: numbers.OpenRange[uint32]{
 			Max: input.StorageDurationInSeconds.Max,
 		},
 		StorageInstructions:    input.StorageInstructions,

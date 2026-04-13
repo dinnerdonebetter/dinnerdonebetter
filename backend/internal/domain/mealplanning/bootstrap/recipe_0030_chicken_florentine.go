@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ChickenFlorentineRecipe creates the Chicken Florentine recipe.
@@ -138,7 +138,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &minceShallotVIP.ID,
 				ValidIngredientMeasurementUnitID: &shallotUnitVIMU.ID,
 				Name:                             "medium shallot",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -146,7 +146,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &minceGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				Name:                             "garlic cloves",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -155,7 +155,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationInstrumentID: &minceKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -164,7 +164,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationVesselID: &minceCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -175,7 +175,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -192,7 +192,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &combineFlourVIP.ID,
 				ValidIngredientMeasurementUnitID: &flourCupVIMU.ID,
 				Name:                             "all-purpose flour",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -200,7 +200,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &combineParmesanVIP.ID,
 				ValidIngredientMeasurementUnitID: &parmesanCupVIMU.ID,
 				Name:                             "grated Parmesan",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -208,7 +208,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &combineSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				Name:                             "salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -216,7 +216,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &combinePepperVIP.ID,
 				ValidIngredientMeasurementUnitID: &pepperTeaspoonVIMU.ID,
 				Name:                             "black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -225,7 +225,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationVesselID: &combinePlateVPV.ID,
 				Name:                     "plate",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -236,7 +236,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -260,7 +260,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &coatChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenPoundVIMU.ID,
 				Name:                             "thin-cut boneless skinless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -269,7 +269,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationInstrumentID: &coatBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -279,7 +279,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "plate with dredging mixture",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -290,10 +290,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -310,7 +310,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &meltOliveOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oliveOilTbspVIMU.ID,
 				Name:                             "olive oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -318,7 +318,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTbspVIMU.ID,
 				Name:                             "butter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -327,7 +327,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationInstrumentID: &meltSpoonVPI.ID,
 				Name:                         "spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -336,7 +336,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationVesselID: &meltPanVPV.ID,
 				Name:                     "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -347,7 +347,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -364,7 +364,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		PreparationID:        cookPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Add the chicken and cook until the first side is golden brown, about 4 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(240)),
 			Max: new(uint32(240)),
 		},
@@ -374,7 +374,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &cookChickenVIP.ID,
 				Name:                            "dredged chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -384,7 +384,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -403,10 +403,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -423,7 +423,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		PreparationID:        cookPrep.ID,
 		Index:                5,
 		ExplicitInstructions: "Flip the chicken and cook until the second side is golden brown (but not cooked through), about 4 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(240)),
 			Max: new(uint32(240)),
 		},
@@ -433,7 +433,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &cookChickenVIP.ID,
 				Name:                            "chicken with first side browned",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -443,7 +443,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -462,10 +462,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -488,7 +488,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &removeChickenVIP.ID,
 				Name:                            "seared chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -498,7 +498,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -509,10 +509,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -529,7 +529,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		PreparationID:        addPrep.ID,
 		Index:                7,
 		ExplicitInstructions: "Add remaining 2 tablespoons of butter to the pan and let it melt. Add shallot, garlic and a pinch of salt and cook, stirring until the shallot is softened and the garlic is aromatic, about 2 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(120)),
 			Max: new(uint32(120)),
 		},
@@ -538,7 +538,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTbspVIMU.ID,
 				Name:                             "remaining butter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -546,7 +546,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "minced shallot and garlic",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -554,7 +554,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID: &addSaltVIP.ID,
 				QuantityNotes:                "pinch",
 				Name:                         "salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 			},
@@ -563,7 +563,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationInstrumentID: &addSpoonVPI.ID,
 				Name:                         "spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -574,7 +574,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addPanVPV.ID,
 				Name:                            "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -593,7 +593,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -610,7 +610,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		PreparationID:        addPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Add wine, broth, basil and oregano, and stir, scraping the browned bits from the bottom of the pan, until the liquid has reduced by about half, 3 to 4 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(180)),
 			Max: new(uint32(240)),
 		},
@@ -619,7 +619,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cooked shallot and garlic",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -627,7 +627,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addWineVIP.ID,
 				ValidIngredientMeasurementUnitID: &wineCupVIMU.ID,
 				Name:                             "dry white wine",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.5,
 				},
 			},
@@ -635,7 +635,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addStockVIP.ID,
 				ValidIngredientMeasurementUnitID: &stockCupVIMU.ID,
 				Name:                             "chicken broth",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.5,
 				},
 			},
@@ -643,7 +643,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addDriedBasilVIP.ID,
 				ValidIngredientMeasurementUnitID: &driedBasilTeaspoonVIMU.ID,
 				Name:                             "dried basil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 				Index:       new(uint16(3)),
@@ -653,7 +653,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addBasilVIP.ID,
 				ValidIngredientMeasurementUnitID: &basilTablespoonVIMU.ID,
 				Name:                             "fresh basil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 				Index:       new(uint16(3)),
@@ -663,7 +663,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addOreganoVIP.ID,
 				ValidIngredientMeasurementUnitID: &oreganoTeaspoonVIMU.ID,
 				Name:                             "dried oregano",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 				Index:       new(uint16(4)),
@@ -673,7 +673,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addFreshOreganoVIP.ID,
 				ValidIngredientMeasurementUnitID: &freshOreganoTeaspoonVIMU.ID,
 				Name:                             "fresh oregano",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 				Index:       new(uint16(4)),
@@ -684,7 +684,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationInstrumentID: &addWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -694,7 +694,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -713,7 +713,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -730,7 +730,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		PreparationID:        addPrep.ID,
 		Index:                9,
 		ExplicitInstructions: "Add the heavy cream and cream cheese and stir, allowing the cream cheese to soften and melt, until a thick sauce forms, about 6 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(360)),
 			Max: new(uint32(360)),
 		},
@@ -739,7 +739,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "reduced wine-broth mixture",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -747,7 +747,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addCreamVIP.ID,
 				ValidIngredientMeasurementUnitID: &creamCupVIMU.ID,
 				Name:                             "heavy cream",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.5,
 				},
 			},
@@ -755,7 +755,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addCreamCheeseVIP.ID,
 				ValidIngredientMeasurementUnitID: &creamCheeseOunceVIMU.ID,
 				Name:                             "cream cheese, at room temperature",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -764,7 +764,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationInstrumentID: &addWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -774,7 +774,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -793,7 +793,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -810,7 +810,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		PreparationID:        addPrep.ID,
 		Index:                10,
 		ExplicitInstructions: "Add baby spinach and stir until it is folded into the cream sauce and the spinach is beginning to wilt, about 1 minute.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(60)),
 			Max: new(uint32(60)),
 		},
@@ -819,7 +819,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "thick cream sauce",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -827,7 +827,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addSpinachVIP.ID,
 				ValidIngredientMeasurementUnitID: &spinachCupVIMU.ID,
 				Name:                             "packed baby spinach",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -836,7 +836,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationInstrumentID: &addWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -846,7 +846,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -865,7 +865,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -882,7 +882,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		PreparationID:        simmerPrep.ID,
 		Index:                11,
 		ExplicitInstructions: "Return the chicken breasts to the pan and simmer until the chicken is cooked through, 4 to 5 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(240)),
 			Max: new(uint32(300)),
 		},
@@ -892,7 +892,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &simmerChickenVIP.ID,
 				Name:                            "seared chicken set aside",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -900,7 +900,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cream sauce with spinach",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -910,7 +910,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -929,7 +929,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -951,7 +951,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "chicken florentine",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -959,7 +959,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID: &topParmesanVIP.ID,
 				QuantityNotes:                "for serving",
 				Name:                         "freshly grated Parmesan",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 			},
@@ -970,7 +970,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &topPanVPV.ID,
 				Name:                            "large pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -981,7 +981,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -995,10 +995,10 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the minced shallot and garlic in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days
 		},
@@ -1013,7 +1013,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			Slug:                "chicken-florentine",
 			Description:         "Pan-seared chicken breasts in a creamy spinach sauce with Parmesan, white wine, and herbs. A classic Italian-American dish.",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 4,
 			},
 			Source:            "https://cooking.nytimes.com/recipes/1026291-chicken-florentine",

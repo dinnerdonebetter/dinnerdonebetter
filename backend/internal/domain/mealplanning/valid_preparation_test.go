@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -74,9 +74,9 @@ func TestValidPreparation_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparation{
-			InstrumentCount: types.Uint16RangeWithOptionalMax{Max: new(uint16(0))},
-			IngredientCount: types.Uint16RangeWithOptionalMax{Max: new(uint16(0))},
-			VesselCount:     types.Uint16RangeWithOptionalMax{Max: new(uint16(0))},
+			InstrumentCount: numbers.MinRange[uint16]{Max: new(uint16(0))},
+			IngredientCount: numbers.MinRange[uint16]{Max: new(uint16(0))},
+			VesselCount:     numbers.MinRange[uint16]{Max: new(uint16(0))},
 		}
 		input := &ValidPreparationUpdateRequestInput{}
 

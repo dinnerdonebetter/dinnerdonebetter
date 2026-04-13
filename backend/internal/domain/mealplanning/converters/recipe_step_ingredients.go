@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput creates a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredientCreationRequestInput.
@@ -20,7 +20,7 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 		ValidIngredientPreparationID:     input.ValidIngredientPreparationID,
 		ValidIngredientMeasurementUnitID: input.ValidIngredientMeasurementUnitID,
 		Name:                             input.Name,
-		Quantity: types.Float32RangeWithOptionalMax{
+		Quantity: numbers.MinRange[float32]{
 			Max: input.Quantity.Max,
 			Min: input.Quantity.Min,
 		},
@@ -51,7 +51,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 		QuantityNotes:       &input.QuantityNotes,
 		IngredientNotes:     &input.IngredientNotes,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
-		Quantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+		Quantity: numbers.OpenRangeUpdateRequestInput[float32]{
 			Max: input.Quantity.Max,
 			Min: &input.Quantity.Min,
 		},
@@ -78,7 +78,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input
 	return &mealplanning.RecipeStepIngredientCreationRequestInput{
 		Name:     input.Name,
 		Optional: input.Optional,
-		Quantity: types.Float32RangeWithOptionalMax{
+		Quantity: numbers.MinRange[float32]{
 			Max: input.Quantity.Max,
 			Min: input.Quantity.Min,
 		},
@@ -101,7 +101,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(inpu
 		Optional:          input.Optional,
 		IngredientID:      &input.Ingredient.ID,
 		MeasurementUnitID: input.MeasurementUnit.ID,
-		Quantity: types.Float32RangeWithOptionalMax{
+		Quantity: numbers.MinRange[float32]{
 			Max: input.Quantity.Max,
 			Min: input.Quantity.Min,
 		},

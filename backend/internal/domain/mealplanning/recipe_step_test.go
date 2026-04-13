@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -12,11 +12,11 @@ import (
 func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput {
 	return &RecipeStepCreationRequestInput{
 		PreparationID: "PreparationID",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Max: new(fake.Uint32()),
 			Min: new(fake.Uint32()),
 		},
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: nil,
 			Min: new(float32(123.45)),
 		},
@@ -26,7 +26,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 			{
 				ValidPreparationInstrumentID: new("ValidPreparationInstrumentID"),
 				Name:                         "Name",
-				Quantity:                     types.Uint32RangeWithOptionalMax{Min: fake.Uint32()},
+				Quantity:                     numbers.MinRange[uint32]{Min: fake.Uint32()},
 			},
 		},
 		Products: []*RecipeStepProductCreationRequestInput{
@@ -34,7 +34,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 				Name:                "Name",
 				Type:                RecipeStepProductIngredientType,
 				MeasurementUnitID:   new("MeasurementUnitID"),
-				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
+				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
 				QuantityNotes:       "QuantityNotes",
 			},
 		},
@@ -44,7 +44,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 				ValidIngredientMeasurementUnitID: new("ValidIngredientMeasurementUnitID"),
 				QuantityNotes:                    "QuantityNotes",
 				IngredientNotes:                  "IngredientNotes",
-				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+				Quantity:                         numbers.MinRange[float32]{Min: 1},
 			},
 		},
 	}
@@ -57,7 +57,7 @@ func TestRecipeStep_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStep{
-			TemperatureInCelsius: types.OptionalFloat32Range{Min: new(float32(123.45))},
+			TemperatureInCelsius: numbers.OpenRange[float32]{Min: new(float32(123.45))},
 		}
 
 		input := &RecipeStepUpdateRequestInput{}
@@ -97,11 +97,11 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepCreationRequestInput{
 			PreparationID: t.Name(),
-			EstimatedTimeInSeconds: types.OptionalUint32Range{
+			EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 				Max: new(fake.Uint32()),
 				Min: new(fake.Uint32()),
 			},
-			TemperatureInCelsius: types.OptionalFloat32Range{
+			TemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: nil,
 				Min: new(float32(123.45)),
 			},
@@ -121,7 +121,7 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 				ValidIngredientMeasurementUnitID: new(t.Name()),
 				QuantityNotes:                    t.Name(),
 				IngredientNotes:                  t.Name(),
-				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+				Quantity:                         numbers.MinRange[float32]{Min: 1},
 			})
 		}
 
@@ -172,11 +172,11 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepUpdateRequestInput{
 			Index:       new(fake.Uint32()),
 			Preparation: &ValidPreparation{},
-			EstimatedTimeInSeconds: types.OptionalUint32Range{
+			EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 				Max: new(fake.Uint32()),
 				Min: new(fake.Uint32()),
 			},
-			TemperatureInCelsius: types.OptionalFloat32Range{
+			TemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: nil,
 				Min: new(float32(123.45)),
 			},

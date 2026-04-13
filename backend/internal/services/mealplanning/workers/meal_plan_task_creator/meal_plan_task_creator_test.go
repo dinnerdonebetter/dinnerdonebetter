@@ -14,11 +14,11 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/metrics"
-	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/numbers"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -43,12 +43,12 @@ func buildNewMealPlanTaskCreatorForTest(t *testing.T) *Worker {
 
 	x, err := NewMealPlanTaskCreator(
 		ctx,
-		logging.NewNoopLogger(),
-		tracing.NewNoopTracerProvider(),
+		loggingnoop.NewLogger(),
+		tracingnoop.NewTracerProvider(),
 		&recipeanalysis.MockRecipeAnalyzer{},
 		&mealplanningmock.Repository{},
 		pp,
-		metrics.NewNoopMetricsProvider(),
+		metricsnoop.NewMetricsProvider(),
 		cfg,
 	)
 	require.NoError(t, err)
@@ -113,7 +113,7 @@ func TestWorker_Work(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
 							Ingredient: &mealplanning.ValidIngredient{
-								StorageTemperatureInCelsius: types.OptionalFloat32Range{
+								StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 									Min: new(float32(2.5)),
 								},
 								PluralName:          "chicken breasts",
@@ -125,7 +125,7 @@ func TestWorker_Work(T *testing.T) {
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     mealplanning.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
-							Quantity: types.Float32RangeWithOptionalMax{
+							Quantity: numbers.MinRange[float32]{
 								Max: new(float32(900)),
 								Min: 900,
 							},

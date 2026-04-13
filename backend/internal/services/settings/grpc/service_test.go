@@ -5,8 +5,8 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings/mock"
 
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -17,8 +17,8 @@ func TestNewService(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		settingsManager := &mock.Repository{}
 
 		service := NewService(

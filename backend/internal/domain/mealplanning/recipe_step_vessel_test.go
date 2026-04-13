@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +16,7 @@ func TestRecipeStepVessel_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVessel{
-			Quantity: types.Uint16RangeWithOptionalMax{
+			Quantity: numbers.MinRange[uint16]{
 				Max: new(uint16(1234)),
 				Min: 1234,
 			},
@@ -26,7 +26,7 @@ func TestRecipeStepVessel_Update(T *testing.T) {
 
 		assert.NoError(t, fake.Struct(&input))
 		input.UnavailableAfterStep = new(true)
-		input.Quantity = types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+		input.Quantity = numbers.OpenRangeUpdateRequestInput[uint16]{
 			Min: new(uint16(1)),
 			Max: new(uint16(1)),
 		}
@@ -58,7 +58,7 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 			Name:                     t.Name(),
 			RecipeStepProductID:      new(t.Name()),
 			Notes:                    t.Name(),
-			Quantity: types.Uint16RangeWithOptionalMax{
+			Quantity: numbers.MinRange[uint16]{
 				Max: new(fake.Uint16()),
 				Min: fake.Uint16(),
 			},
@@ -77,7 +77,7 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 			ProductOfRecipeStepProductIndex: new(uint64(0)),
 			Name:                            t.Name(),
 			Notes:                           t.Name(),
-			Quantity: types.Uint16RangeWithOptionalMax{
+			Quantity: numbers.MinRange[uint16]{
 				Max: new(fake.Uint16()),
 				Min: fake.Uint16(),
 			},
@@ -133,7 +133,7 @@ func TestRecipeStepVesselUpdateRequestInput_Validate(T *testing.T) {
 			BelongsToRecipeStep: new(t.Name()),
 			RecipeStepProductID: new(t.Name()),
 			Notes:               new(t.Name()),
-			Quantity: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+			Quantity: numbers.OpenRangeUpdateRequestInput[uint16]{
 				Max: new(fake.Uint16()),
 				Min: new(fake.Uint16()),
 			},

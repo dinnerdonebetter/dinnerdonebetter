@@ -14,8 +14,9 @@ import (
 	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	mockuploads "github.com/primandproper/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -30,7 +31,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *managermock.IdentityDataMana
 func buildTestServiceWithUploadMocks(t *testing.T) (*serviceImpl, *managermock.IdentityDataManager, *uploadedmediamock.Repository) {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
+	logger := loggingnoop.NewLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	identityDataManager := &managermock.IdentityDataManager{}
 	uploadedMediaRepo := &uploadedmediamock.Repository{}
@@ -63,7 +64,7 @@ func buildTestServiceWithUploadMocks(t *testing.T) (*serviceImpl, *managermock.I
 func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
+	logger := loggingnoop.NewLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	identityDataManager := &managermock.IdentityDataManager{}
 
@@ -87,8 +88,8 @@ func TestNewService(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		sessionContextDataFetcher := func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{}, nil
 		}

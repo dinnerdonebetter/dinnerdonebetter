@@ -41,7 +41,7 @@ require (
 	github.com/modelcontextprotocol/go-sdk v1.4.0
 	github.com/o1egl/paseto/v2 v2.1.1
 	github.com/pquerna/otp v1.5.0
-	github.com/primandproper/platform v0.0.1
+	github.com/primandproper/platform v0.0.2
 	github.com/samber/do/v2 v2.0.0
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/cobra v1.10.2

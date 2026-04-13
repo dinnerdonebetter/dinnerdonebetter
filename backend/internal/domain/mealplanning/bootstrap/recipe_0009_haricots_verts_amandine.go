@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // HaricotsVertsAmandineRecipe creates the Haricots Verts Amandine (French-Style Green Beans With Almonds) recipe.
@@ -172,7 +172,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -181,7 +181,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -190,7 +190,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -203,7 +203,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -221,7 +221,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientMeasurementUnitID: &waterTablespoonVIMU.ID,
 				Name:                             "water",
 				QuantityNotes:                    "enough to cover green beans",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -230,7 +230,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
 				QuantityNotes:                    "generously salted (about 2 tsp)",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 12,
 				},
 			},
@@ -239,7 +239,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &boilPotVPV.ID,
 				Name:                     "large pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -250,7 +250,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -258,7 +258,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "pot with boiling salted water",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -276,7 +276,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
 				Name:                             "cold water",
 				QuantityNotes:                    "enough to submerge green beans",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 			},
@@ -285,7 +285,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientMeasurementUnitID: &iceCubesTrayVIMU.ID,
 				Name:                             "ice cubes",
 				QuantityNotes:                    "about 1 tray",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -294,7 +294,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &stirLargeBowlVPV.ID,
 				Name:                     "large bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -304,7 +304,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "ice bath",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -322,7 +322,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &trimGreenBeansVIP.ID,
 				ValidIngredientMeasurementUnitID: &greenBeansPoundVIMU.ID,
 				Name:                             "green beans",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -331,7 +331,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &trimKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -340,7 +340,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &trimCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -351,7 +351,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -363,7 +363,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        blanchPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Add the green beans to the boiling water and cook until tender-crisp, about 3 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(180)), // 3 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -373,7 +373,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &blanchGreenBeansVIP.ID,
 				ValidIngredientMeasurementUnitID: &greenBeansPoundVIMU.ID,
 				Name:                             "trimmed green beans",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -381,7 +381,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "boiling salted water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -390,7 +390,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &blanchSpiderVPI.ID,
 				Name:                         "wire mesh spider",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -401,7 +401,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &blanchPotVPV.ID,
 				Name:                            "pot with boiling salted water",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -412,7 +412,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -431,7 +431,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &shockGreenBeansVIP.ID,
 				ValidIngredientMeasurementUnitID: &greenBeansPoundVIMU.ID,
 				Name:                             "blanched green beans",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -440,7 +440,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &shockSpiderVPI.ID,
 				Name:                         "wire mesh spider",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -451,7 +451,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &shockLargeBowlVPV.ID,
 				Name:                            "ice bath",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -462,7 +462,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -481,7 +481,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &drainGreenBeansVIP.ID,
 				ValidIngredientMeasurementUnitID: &greenBeansPoundVIMU.ID,
 				Name:                             "chilled green beans",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -490,7 +490,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &drainColanderVPV.ID,
 				Name:                     "colander",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -501,7 +501,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -520,7 +520,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &dryGreenBeansVIP.ID,
 				ValidIngredientMeasurementUnitID: &greenBeansPoundVIMU.ID,
 				Name:                             "drained green beans",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -529,14 +529,14 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &dryKitchenTowelsVPI.ID,
 				Name:                         "kitchen towels",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationInstrumentID: &dryPaperTowelsVPI.ID,
 				Name:                         "paper towels",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -547,7 +547,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -565,7 +565,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &heatButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
 				Name:                             "unsalted butter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 3,
 				},
 			},
@@ -573,7 +573,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &heatAlmondsVIP.ID,
 				ValidIngredientMeasurementUnitID: &almondsOunceVIMU.ID,
 				Name:                             "slivered almonds",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 3,
 				},
 			},
@@ -582,7 +582,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &heatSpatulaVPI.ID,
 				Name:                         "rubber spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -591,7 +591,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &heatMediumSkilletVPV.ID,
 				Name:                     "medium skillet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -602,7 +602,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -610,7 +610,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "heated skillet with butter and almonds",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -622,7 +622,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        toastPrep.ID,
 		Index:                9,
 		ExplicitInstructions: "Cook, stirring frequently, until the almonds are deeply browned and nutty, about 5 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(300)), // 5 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -632,7 +632,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &toastAlmondsVIP.ID,
 				ValidIngredientMeasurementUnitID: &almondsOunceVIMU.ID,
 				Name:                             "butter and almonds in skillet",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -641,7 +641,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &toastSpatulaVPI.ID,
 				Name:                         "rubber spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -652,7 +652,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &toastMediumSkilletVPV.ID,
 				Name:                            "heated skillet with butter and almonds",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -663,7 +663,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -671,7 +671,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "heated skillet with brown butter",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -697,7 +697,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        cookPrep.ID,
 		Index:                10,
 		ExplicitInstructions: "Add the garlic and shallot and cook, stirring, until lightly browned, about 2 minutes longer.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(120)), // 2 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -705,7 +705,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "toasted almonds in brown butter",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -714,7 +714,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientMeasurementUnitID: &garlicUnitVIMU.ID,
 				Name:                             "garlic, thinly sliced",
 				QuantityNotes:                    "2 medium cloves",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -723,7 +723,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientMeasurementUnitID: &shallotGramVIMU.ID,
 				Name:                             "shallot, thinly sliced",
 				QuantityNotes:                    "1 medium (about 30g)",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 30,
 				},
 			},
@@ -732,7 +732,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &cookSpatulaVPI.ID,
 				Name:                         "rubber spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -743,7 +743,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &cookSkilletVPV.ID,
 				Name:                            "heated skillet with brown butter",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -754,7 +754,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -762,7 +762,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "skillet with aromatics",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -779,7 +779,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "almond mixture with garlic and shallot",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -788,7 +788,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientMeasurementUnitID: &lemonTablespoonVIMU.ID,
 				Name:                             "lemon juice",
 				QuantityNotes:                    "juice from 1 lemon",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1.5,
 				},
 			},
@@ -796,7 +796,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &stirWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &waterTablespoonVIMU.ID,
 				Name:                             "water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 					Max: new(float32(2)),
 				},
@@ -808,7 +808,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &stirSkilletVPV.ID,
 				Name:                            "skillet with aromatics",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -819,7 +819,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -827,7 +827,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "skillet with sauce",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -845,7 +845,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &adjustMediumSkilletVPV.ID,
 				Name:                            "skillet with sauce",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -855,7 +855,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "skillet with sauce over high heat",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -868,7 +868,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        emulsifyPrep.ID,
 		Index:                13,
 		ExplicitInstructions: "Stir and shake the pan rapidly to emulsify, about 30 seconds. The sauce should have a glossy sheen and not appear watery or greasy. If it's still watery, continue to simmer and shake. If it looks greasy, add another tablespoon of water to re-emulsify.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(30)), // 30 seconds
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -876,7 +876,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "sauce mixture",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -887,7 +887,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &emulsifySkilletVPV.ID,
 				Name:                            "skillet with sauce over high heat",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -898,7 +898,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -906,7 +906,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "skillet with emulsified sauce",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -932,7 +932,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &removeFromHeatMediumSkilletVPV.ID,
 				Name:                            "skillet with emulsified sauce",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -942,7 +942,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "skillet with emulsified sauce, off heat",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -959,7 +959,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "emulsified brown butter sauce",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -968,7 +968,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
 				QuantityNotes:                    "to taste",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1.5,
 				},
 			},
@@ -977,7 +977,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
 				QuantityNotes:                   "to taste",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -988,7 +988,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &seasonSkilletVPV.ID,
 				Name:                            "skillet with emulsified sauce, off heat",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -999,7 +999,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1007,7 +1007,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "skillet with seasoned sauce",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1024,7 +1024,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(15)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned brown butter sauce with almonds",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -1034,7 +1034,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &tossGreenBeansVIP.ID,
 				ValidIngredientMeasurementUnitID: &greenBeansPoundVIMU.ID,
 				Name:                             "dried green beans",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -1045,7 +1045,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &tossSkilletVPV.ID,
 				Name:                            "skillet with seasoned sauce",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1056,7 +1056,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1064,7 +1064,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "skillet with green beans",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1076,7 +1076,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        cookPrep.ID,
 		Index:                17,
 		ExplicitInstructions: "Cook over medium heat, tossing, until heated through, about 1 minute.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(60)), // 1 minute
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -1084,7 +1084,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(16)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "green beans tossed in sauce",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -1095,7 +1095,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &cookSkilletVPV.ID,
 				Name:                            "skillet with green beans",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1106,7 +1106,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1125,7 +1125,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &transferGreenBeansVIP.ID,
 				ValidIngredientMeasurementUnitID: &greenBeansPoundVIMU.ID,
 				Name:                             "heated green beans amandine",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -1134,7 +1134,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &transferServingPlatterVPV.ID,
 				Name:                     "serving platter",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -1145,7 +1145,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -1160,10 +1160,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the blanched and dried green beans in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -1185,10 +1185,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the sauce in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 		},
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -1210,7 +1210,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			Source:              "https://www.seriouseats.com/green-beans-amandine-french-almondine-recipe",
 			Description:         "The classic French side dish of green beans with almonds, featuring blanched tender-crisp green beans tossed in a brown butter sauce with deeply toasted almonds, garlic, shallots, and a bright lemon finish.",
 			YieldsComponentType: mealplanning.MealComponentTypesSide,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 4,
 				Max: new(float32(6)),
 			},

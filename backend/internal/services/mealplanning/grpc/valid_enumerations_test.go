@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/fake"
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
 
@@ -23,7 +23,7 @@ func buildServiceImplForTest(t *testing.T) *serviceImpl {
 
 	return &serviceImpl{
 		tracer: tracing.NewTracerForTest(t.Name()),
-		logger: logging.NewNoopLogger(),
+		logger: loggingnoop.NewLogger(),
 	}
 }
 

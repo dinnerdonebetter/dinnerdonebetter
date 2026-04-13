@@ -19,7 +19,9 @@ import (
 	databasecfg "github.com/primandproper/platform/database/config"
 	"github.com/primandproper/platform/database/postgres"
 	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/spf13/cobra"
 )
@@ -88,8 +90,8 @@ type ExportedEnumerations struct {
 
 func runImport(dbHost string, dbPort uint16, dbUser, dbPassword, dbName string, dbSSLDisable bool, inputFile string) error {
 	ctx := context.Background()
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
+	logger := loggingnoop.NewLogger()
+	tracerProvider := tracingnoop.NewTracerProvider()
 
 	log.Printf("Reading input file: %s", inputFile)
 	data, err := os.ReadFile(inputFile)

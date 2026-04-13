@@ -6,17 +6,16 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
-	"github.com/primandproper/platform/errors/http"
-	"github.com/primandproper/platform/types"
+	httperrors "github.com/primandproper/platform/errors/http"
 )
 
 func init() {
-	http.RegisterHTTPErrorMapper(mealPlanningHTTPMapper{})
+	httperrors.RegisterHTTPErrorMapper(mealPlanningHTTPMapper{})
 }
 
 type mealPlanningHTTPMapper struct{}
 
-func (mealPlanningHTTPMapper) Map(err error) (code types.ErrorCode, msg string, ok bool) {
+func (mealPlanningHTTPMapper) Map(err error) (code httperrors.ErrorCode, msg string, ok bool) {
 	if err == nil {
 		return "", "", false
 	}
@@ -24,9 +23,9 @@ func (mealPlanningHTTPMapper) Map(err error) (code types.ErrorCode, msg string, 
 	case errors.Is(err, mealplanning.ErrDuplicateMeal),
 		errors.Is(err, mealplanning.ErrDuplicateMealInList),
 		errors.Is(err, mealplanning.ErrDuplicateMealPlanOption):
-		return types.ErrValidatingRequestInput, "duplicate entry", true
+		return httperrors.ErrValidatingRequestInput, "duplicate entry", true
 	case errors.Is(err, mealplanningrepo.ErrAlreadyFinalized):
-		return types.ErrValidatingRequestInput, "already finalized", true
+		return httperrors.ErrValidatingRequestInput, "already finalized", true
 	default:
 		return "", "", false
 	}

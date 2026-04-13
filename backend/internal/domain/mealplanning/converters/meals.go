@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertMealCreationRequestInputToMealDatabaseCreationInput creates a MealDatabaseCreationInput from a MealCreationRequestInput.
@@ -18,7 +18,7 @@ func ConvertMealCreationRequestInputToMealDatabaseCreationInput(input *mealplann
 		ID:          identifiers.New(),
 		Name:        input.Name,
 		Description: input.Description,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Min: input.EstimatedPortions.Min,
 			Max: input.EstimatedPortions.Max,
 		},
@@ -50,7 +50,7 @@ func ConvertMealToMealCreationRequestInput(meal *mealplanning.Meal) *mealplannin
 	return &mealplanning.MealCreationRequestInput{
 		Name:        meal.Name,
 		Description: meal.Description,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Min: meal.EstimatedPortions.Min,
 			Max: meal.EstimatedPortions.Max,
 		},
@@ -81,7 +81,7 @@ func ConvertMealToMealDatabaseCreationInput(meal *mealplanning.Meal) *mealplanni
 		ID:          meal.ID,
 		Name:        meal.Name,
 		Description: meal.Description,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Min: meal.EstimatedPortions.Min,
 			Max: meal.EstimatedPortions.Max,
 		},
@@ -112,7 +112,7 @@ func ConvertMealToMealUpdateRequestInput(meal *mealplanning.Meal) *mealplanning.
 	return &mealplanning.MealUpdateRequestInput{
 		Name:        &meal.Name,
 		Description: &meal.Description,
-		EstimatedPortions: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+		EstimatedPortions: numbers.OpenRangeUpdateRequestInput[float32]{
 			Min: &meal.EstimatedPortions.Min,
 			Max: meal.EstimatedPortions.Max,
 		},

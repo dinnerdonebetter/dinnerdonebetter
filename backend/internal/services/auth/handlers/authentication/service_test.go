@@ -17,8 +17,8 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	mockrouting "github.com/primandproper/platform/routing/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -29,8 +29,8 @@ func buildTestService(t *testing.T) *service {
 	t.Helper()
 
 	ctx := t.Context()
-	logger := logging.NewNoopLogger()
-	encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+	logger := loggingnoop.NewLogger()
+	encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracingnoop.NewTracerProvider(), encoding.ContentTypeJSON)
 
 	cfg := &Config{
 		Tokens: tokenscfg.Config{
@@ -65,7 +65,7 @@ func buildTestService(t *testing.T) *service {
 		&oauthmock.RepositoryMock{},
 		&identitymanagermock.IdentityDataManager{},
 		encoderDecoder,
-		tracing.NewNoopTracerProvider(),
+		tracingnoop.NewTracerProvider(),
 		pp,
 		noopanalytics.NewEventReporter(),
 		rpm,
@@ -83,8 +83,8 @@ func TestProvideService(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
-		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		logger := loggingnoop.NewLogger()
+		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracingnoop.NewTracerProvider(), encoding.ContentTypeJSON)
 
 		cfg := &Config{
 			Tokens: tokenscfg.Config{
@@ -119,7 +119,7 @@ func TestProvideService(T *testing.T) {
 			&oauthmock.RepositoryMock{},
 			&identitymanagermock.IdentityDataManager{},
 			encoderDecoder,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			pp,
 			noopanalytics.NewEventReporter(),
 			rpm,

@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput builds a MealPlanGroceryListItemDatabaseCreationInput from a MealPlanGroceryListItem.
@@ -14,7 +14,7 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInpu
 		BelongsToMealPlan:      input.BelongsToMealPlan,
 		ValidIngredientID:      input.Ingredient.ID,
 		ValidMeasurementUnitID: input.MeasurementUnit.ID,
-		QuantityNeeded: types.Float32RangeWithOptionalMax{
+		QuantityNeeded: numbers.MinRange[float32]{
 			Max: input.QuantityNeeded.Max,
 			Min: input.QuantityNeeded.Min,
 		},
@@ -48,7 +48,7 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput
 		BelongsToMealPlan:      input.BelongsToMealPlan,
 		ValidIngredientID:      input.Ingredient.ID,
 		ValidMeasurementUnitID: input.MeasurementUnit.ID,
-		QuantityNeeded: types.Float32RangeWithOptionalMax{
+		QuantityNeeded: numbers.MinRange[float32]{
 			Max: input.QuantityNeeded.Max,
 			Min: input.QuantityNeeded.Min,
 		},
@@ -73,7 +73,7 @@ func ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItem
 		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
 		ValidIngredientID:          input.ValidIngredientID,
 		BelongsToMealPlan:          input.BelongsToMealPlan,
-		QuantityNeeded: types.Float32RangeWithOptionalMax{
+		QuantityNeeded: numbers.MinRange[float32]{
 			Max: input.QuantityNeeded.Max,
 			Min: input.QuantityNeeded.Min,
 		},
@@ -92,7 +92,7 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(i
 		BelongsToMealPlan:      &input.BelongsToMealPlan,
 		ValidIngredientID:      &input.Ingredient.ID,
 		ValidMeasurementUnitID: &input.MeasurementUnit.ID,
-		QuantityNeeded: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+		QuantityNeeded: numbers.OpenRangeUpdateRequestInput[float32]{
 			Max: input.QuantityNeeded.Max,
 			Min: &input.QuantityNeeded.Min,
 		},

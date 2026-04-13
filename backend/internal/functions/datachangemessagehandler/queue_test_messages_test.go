@@ -6,7 +6,7 @@ import (
 
 	internalopsmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/internalops/mock"
 
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
 
@@ -24,7 +24,7 @@ func TestAsyncDataChangeMessageHandler_handleQueueTestMessage(t *testing.T) {
 
 		ctx := t.Context()
 		_, span := tracing.NewTracerForTest(t.Name()).StartSpan(ctx)
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		repo := &internalopsmock.InternalOpsDataManager{}
 		handler.internalOpsRepo = repo
@@ -45,7 +45,7 @@ func TestAsyncDataChangeMessageHandler_handleQueueTestMessage(t *testing.T) {
 
 		ctx := t.Context()
 		_, span := tracing.NewTracerForTest(t.Name()).StartSpan(ctx)
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		err := handler.handleQueueTestMessage(ctx, logger, span, "", "data-changes")
 
@@ -60,7 +60,7 @@ func TestAsyncDataChangeMessageHandler_handleQueueTestMessage(t *testing.T) {
 
 		ctx := t.Context()
 		_, span := tracing.NewTracerForTest(t.Name()).StartSpan(ctx)
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		repo := &internalopsmock.InternalOpsDataManager{}
 		handler.internalOpsRepo = repo
@@ -80,7 +80,7 @@ func TestAsyncDataChangeMessageHandler_handleQueueTestMessage(t *testing.T) {
 
 		ctx := t.Context()
 		_, span := tracing.NewTracerForTest(t.Name()).StartSpan(ctx)
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		repo := &internalopsmock.InternalOpsDataManager{}
 		handler.internalOpsRepo = repo
@@ -100,7 +100,7 @@ func TestAsyncDataChangeMessageHandler_handleQueueTestMessage(t *testing.T) {
 
 		ctx := t.Context()
 		_, span := tracing.NewTracerForTest(t.Name()).StartSpan(ctx)
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		repo := &internalopsmock.InternalOpsDataManager{}
 		handler.internalOpsRepo = repo

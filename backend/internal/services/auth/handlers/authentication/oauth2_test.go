@@ -15,8 +15,9 @@ import (
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/random"
 
 	oauth2errors "github.com/go-oauth2/oauth2/v4/errors"
@@ -31,8 +32,8 @@ func TestProvideOAuth2ClientManager(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		cfg := &OAuth2Config{
 			Domain: "example.com",
 		}
@@ -50,8 +51,8 @@ func TestProvideOAuth2ServerImplementation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		identityDataManager := &identitymanagermock.IdentityDataManager{}
 		authenticator := &mockauthn.Authenticator{}
 
@@ -78,7 +79,7 @@ func TestBuildOAuth2ErrorHandler(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		handler := buildOAuth2ErrorHandler(logger)
 
 		assert.NotNil(t, handler)
@@ -98,7 +99,7 @@ func TestBuildInternalErrorHandler(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		handler := buildInternalErrorHandler(logger)
 
 		assert.NotNil(t, handler)
@@ -183,7 +184,7 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		user := fakes.BuildFakeUser()
 
 		authenticator := &mockauthn.Authenticator{}
@@ -218,7 +219,7 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		authenticator := &mockauthn.Authenticator{}
 		dataManager := &identitymanagermock.IdentityDataManager{}
@@ -244,7 +245,7 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		user := fakes.BuildFakeUser()
 
 		authenticator := &mockauthn.Authenticator{}
@@ -280,7 +281,7 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		user := fakes.BuildFakeUser()
 
 		authenticator := &mockauthn.Authenticator{}
@@ -320,11 +321,11 @@ func TestBuildUserAuthorizationHandler(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		tracer := tracing.NewTracerForTest("test")
 
 		signingKey := random.MustGenerateRawBytes(ctx, 32)
-		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracing.NewNoopTracerProvider(), t.Name(), signingKey)
+		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracingnoop.NewTracerProvider(), t.Name(), signingKey)
 		require.NoError(t, err)
 
 		user := fakes.BuildFakeUser()
@@ -351,11 +352,11 @@ func TestBuildUserAuthorizationHandler(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		tracer := tracing.NewTracerForTest("test")
 
 		signingKey := random.MustGenerateRawBytes(ctx, 32)
-		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracing.NewNoopTracerProvider(), t.Name(), signingKey)
+		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracingnoop.NewTracerProvider(), t.Name(), signingKey)
 		require.NoError(t, err)
 
 		req := &http.Request{
@@ -382,7 +383,7 @@ func TestAuthorizeScopeHandler(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		handler := AuthorizeScopeHandler(logger)
 		assert.NotNil(t, handler)
 
@@ -405,7 +406,7 @@ func TestAccessTokenExpHandler(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		handler := AccessTokenExpHandler(logger)
 		assert.NotNil(t, handler)
 
@@ -422,7 +423,7 @@ func TestClientScopeHandler(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		handler := ClientScopeHandler(logger)
 		assert.NotNil(t, handler)
 

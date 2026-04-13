@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
 
@@ -52,7 +52,7 @@ func buildCommentsServiceImplForTest(t *testing.T) *serviceImpl {
 
 	return &serviceImpl{
 		tracer:          tracing.NewTracerForTest(t.Name()),
-		logger:          logging.NewNoopLogger(),
+		logger:          loggingnoop.NewLogger(),
 		commentsManager: &noopCommentsManager{},
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{

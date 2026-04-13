@@ -8,8 +8,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mocks"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -31,7 +31,7 @@ func Test_signer_IssueToken(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := t.Context()
@@ -51,7 +51,7 @@ func Test_signer_IssueToken(T *testing.T) {
 	T.Run("with account ID and session ID", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := t.Context()
@@ -92,7 +92,7 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := t.Context()
@@ -120,7 +120,7 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 
 		ctx := t.Context()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		actual, err := s.ParseUserIDFromToken(ctx, tokenString)
@@ -131,7 +131,7 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 	T.Run("with invalid key", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		s.(*signer).signingKey = nil
@@ -150,7 +150,7 @@ func Test_signer_ParseSessionIDFromToken(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := t.Context()
@@ -172,7 +172,7 @@ func Test_signer_ParseSessionIDFromToken(T *testing.T) {
 	T.Run("with missing field", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := t.Context()
@@ -192,7 +192,7 @@ func Test_signer_ParseSessionIDFromToken(T *testing.T) {
 	T.Run("with invalid token", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := t.Context()
@@ -209,7 +209,7 @@ func Test_signer_ParseJTIFromToken(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := t.Context()
@@ -230,7 +230,7 @@ func Test_signer_ParseJTIFromToken(T *testing.T) {
 	T.Run("with invalid token", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := t.Context()

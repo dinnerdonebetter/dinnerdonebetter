@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // GrilledPorkTenderloinRecipe creates the Grilled Pork Tenderloin recipe.
@@ -116,7 +116,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -125,7 +125,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -134,7 +134,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -147,7 +147,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -165,7 +165,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &trimPorkVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkTenderloinPoundVIMU.ID,
 				Name:                             "pork tenderloins",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -174,7 +174,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &trimChefsKnifeVPI.ID,
 				Name:                         "chef's knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -185,7 +185,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -203,7 +203,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &seasonPorkVIP.ID,
 				Name:                            "trimmed pork tenderloins",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -211,7 +211,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				Name:                             "Kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -220,7 +220,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -231,7 +231,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -249,7 +249,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &transferPorkVIP.ID,
 				Name:                            "salted pork tenderloins",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -258,14 +258,14 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &transferWireRackVPV.ID,
 				Name:                     "wire rack",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationVesselID: &transferBakingSheetVPV.ID,
 				Name:                     "rimmed baking sheet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -275,7 +275,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "pork tenderloins on wire rack",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -284,7 +284,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -296,7 +296,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        preheatPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "When ready to cook, light a chimney full of charcoal. When all charcoal is lit and covered with gray ash, pour out and arrange the coals on one side of the coal grate and set the grilling grate in place. Alternatively, set half the burners of a gas grill to high heat. Cover the grill and allow to preheat for 5 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(300)), // 5 minutes
 		},
 		StartTimerAutomatically: true,
@@ -304,7 +304,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &preheatGrillVPV.ID,
 				Name:                     "grill",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -314,7 +314,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "preheated grill",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -330,7 +330,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &cleanGrillingGrateVPV.ID,
 				Name:                     "grilling grate",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -339,7 +339,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &cleanGrillBrushVPI.ID,
 				Name:                         "grill brush",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -349,7 +349,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "cleaned grilling grate",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -366,7 +366,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &oilVegetableOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -377,7 +377,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &oilGrillingGrateVPV.ID,
 				Name:                            "cleaned grilling grate",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -386,7 +386,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &oilBrushVPI.ID,
 				Name:                         "brush",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -396,7 +396,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "oiled grilling grate",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -414,7 +414,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidIngredientPreparationID:    &seasonPorkVIP.ID,
 				Name:                            "pork tenderloins",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -422,7 +422,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.5,
 				},
 			},
@@ -431,7 +431,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -442,7 +442,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -455,7 +455,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        grillPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Set over the hot side of the grill and cook, turning often, until well browned on all sides, about 15 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(900)), // 15 minutes
 		},
 		StartTimerAutomatically: true,
@@ -465,7 +465,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &grillPorkVIP.ID,
 				Name:                            "seasoned pork tenderloins",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -474,7 +474,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &grillTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -485,7 +485,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &grillGrillVPV.ID,
 				Name:                            "preheated grill",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -494,7 +494,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &grillGrillingGrateVPV.ID,
 				Name:                            "oiled grilling grate",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -505,7 +505,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -532,7 +532,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &grillPorkVIP.ID,
 				Name:                            "browned pork tenderloins",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -541,14 +541,14 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &grillTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationInstrumentID: &grillThermometerVPI.ID,
 				Name:                         "instant-read thermometer",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -559,7 +559,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &grillGrillVPV.ID,
 				Name:                            "preheated grill",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -570,7 +570,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -596,7 +596,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &transferPorkVIP.ID,
 				Name:                            "cooked pork tenderloins",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -605,7 +605,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &transferCarvingBoardVPV.ID,
 				Name:                     "carving board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -615,7 +615,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "pork tenderloins on carving board",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -624,7 +624,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -636,7 +636,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        restPrep.ID,
 		Index:                11,
 		ExplicitInstructions: "Let rest for 10 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(600)), // 10 minutes
 		},
 		StartTimerAutomatically: true,
@@ -646,7 +646,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidIngredientPreparationID:    &restPorkVIP.ID,
 				Name:                            "cooked pork tenderloins",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -657,7 +657,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &restCarvingBoardVPV.ID,
 				Name:                            "pork tenderloins on carving board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -668,7 +668,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -686,7 +686,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &carvePorkVIP.ID,
 				Name:                            "rested pork tenderloins",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -695,7 +695,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &carveCarvingKnifeVPI.ID,
 				Name:                         "carving knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -706,7 +706,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &carveCarvingBoardVPV.ID,
 				Name:                            "pork tenderloins on carving board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -717,7 +717,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -732,10 +732,10 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the salted pork tenderloins on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 45 minutes and up to 24 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 2700,               // 45 minutes
 			Max: new(uint32(86400)), // 24 hours
 		},
@@ -752,7 +752,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			Source:              "https://www.seriouseats.com/grilled-pork-tenderloin-recipe-7505776",
 			Description:         "Salting in advance and grilling over high-heat are the key steps to great grilled pork tenderloin. The meat is grilled on the hot side until well-browned, then moved to the cooler side to finish cooking to the desired temperature.",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 4,
 			},
 			PortionName:       "serving",

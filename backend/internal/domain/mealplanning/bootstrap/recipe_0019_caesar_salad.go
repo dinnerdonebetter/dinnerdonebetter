@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // CaesarSaladRecipe creates the Caesar Salad recipe.
@@ -78,7 +78,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ValidIngredientMeasurementUnitID: &romaineUnitVIMU.ID,
 				Name:                             "romaine lettuce",
 				QuantityNotes:                    "select inner leaves only",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -87,7 +87,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ValidPreparationInstrumentID: &inspectBareHandsSaladVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -96,7 +96,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ValidPreparationVesselID: &inspectCuttingBoardSaladVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -107,7 +107,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -124,7 +124,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "inner romaine leaves",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -133,7 +133,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ValidPreparationVesselID: &rinseLargeBowlSaladVPV.ID,
 				Name:                     "large bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -144,7 +144,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -166,7 +166,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "washed inner romaine leaves",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -175,7 +175,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ValidPreparationVesselID: &drySaladSpinnerSaladVPV.ID,
 				Name:                     "salad spinner",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -186,7 +186,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -204,7 +204,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "romaine lettuce, inner leaves only, washed and carefully dried",
 				QuantityNotes:                   "large leaves torn into smaller pieces, smaller leaves left intact",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -218,7 +218,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				RecipeStepProductRecipeSlug:     new("caesar-dressing"),
 				Name:                            "Caesar dressing",
 				QuantityNotes:                   "add more if desired",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 3,
 					Max: new(float32(6)),
 				},
@@ -229,7 +229,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -240,7 +240,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -262,7 +262,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ValidIngredientPreparationID:     &grateParmesanVIP.ID,
 				ValidIngredientMeasurementUnitID: &parmesanCupVIMU.ID,
 				Name:                             "parmesan cheese",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -271,7 +271,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ValidPreparationInstrumentID: &grateCheeseGraterVPI.ID,
 				Name:                         "cheese grater",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -280,7 +280,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ValidPreparationVesselID: &grateCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -291,7 +291,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -308,7 +308,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dressed lettuce",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -317,7 +317,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "half of remaining cheese",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -331,7 +331,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				RecipeStepProductRecipeSlug:     new("garlic-parmesan-croutons"),
 				Name:                            "garlic parmesan croutons",
 				QuantityNotes:                   "three-quarters of croutons",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2.25,
 				},
 			},
@@ -341,7 +341,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -352,7 +352,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -369,7 +369,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "tossed Caesar salad",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -378,7 +378,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ValidPreparationVesselID: &transferServingBowlVPV.ID,
 				Name:                     "salad bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -389,7 +389,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -406,7 +406,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "Caesar salad in serving bowl",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -415,7 +415,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "remaining cheese",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -429,7 +429,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				RecipeStepProductRecipeSlug:     new("garlic-parmesan-croutons"),
 				Name:                            "garlic parmesan croutons",
 				QuantityNotes:                   "remaining croutons",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.75,
 				},
 			},
@@ -438,7 +438,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				ValidPreparationVesselID: &sprinkleServingBowlVPV.ID,
 				Name:                     "salad bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -449,7 +449,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -463,10 +463,10 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the washed and dried romaine leaves in an airtight container lined with paper towels in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(172800)), // 2 days
 		},
@@ -483,7 +483,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		Source:              "https://www.seriouseats.com/the-best-caesar-salad-recipe",
 		Description:         "The crowd-pleasing salad of crisp romaine leaves, crunchy croutons, and a creamy, emulsified dressing with just the right amount of anchovy.",
 		YieldsComponentType: mealplanning.MealComponentTypesSalad,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Min: 4,
 		},
 		PortionName:       "serving",

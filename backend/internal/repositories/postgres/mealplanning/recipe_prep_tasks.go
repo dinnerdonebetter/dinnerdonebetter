@@ -11,9 +11,9 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -80,11 +80,11 @@ func (q *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrep
 		if x == nil {
 			x = &mealplanning.RecipePrepTask{
 				CreatedAt: result.CreatedAt,
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+				StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
 				},
-				TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+				TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 					Max: database.Uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
 					Min: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
 				},
@@ -162,11 +162,11 @@ func (q *repository) createRecipePrepTask(ctx context.Context, querier database.
 		Notes:                       input.Notes,
 		Optional:                    input.Optional,
 		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: input.StorageTemperatureInCelsius.Max,
 			Min: input.StorageTemperatureInCelsius.Min,
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
 			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
 		},
@@ -296,11 +296,11 @@ func (q *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID s
 				CreatedAt:     result.CreatedAt,
 				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+				StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
 				},
-				TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+				TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 					Max: database.Uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
 					Min: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
 				},
