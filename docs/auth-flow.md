@@ -6,7 +6,7 @@ This document describes how authentication works across the Dinner Done Better a
 
 Authentication in this app is **convoluted by design**: there are several ways to log in, several token types, and the same token can flow through different paths depending on the client. The main sources of complexity:
 
-1. **Multiple auth methods**: Password+TOTP, Passkey (WebAuthn), and SSO (Google)
+1. **Multiple auth methods**: Password+TOTP and Passkey (WebAuthn)
 2. **Two token systems**: JWT (from `LoginForToken`) and OAuth2 (stored in DB, used for gRPC)
 3. **Multiple client types**: Consumer web app, Admin web app, mobile apps, API clients, integration tests
 4. **Different paths for different clients**: Web apps use cookies + OAuth2 exchange; some clients send JWT directly
@@ -74,19 +74,6 @@ Authentication in this app is **convoluted by design**: there are several ways t
 
 **Implementation**: [`internal/authentication/webauthn/service.go`](backend/internal/authentication/webauthn/service.go), [`internal/services/auth/handlers/passkey/handlers.go`](backend/internal/services/auth/handlers/passkey/handlers.go)
 
-### 3. SSO (Google)
-
-**Flow**:
-
-1. Client redirects to `/auth/{provider}` (e.g. `/auth/google`).
-2. `SSOLoginHandler` uses Goth to redirect user to Google.
-3. Google redirects back to callback URL (e.g. `https://app.dinnerdonebetter.dev/auth/google/callback`).
-4. `SSOLoginCallbackHandler` fetches user from provider, looks up or creates user by email, issues JWT via `tokenIssuer.IssueToken`, returns token in JSON response.
-
-**Note**: SSO handlers are part of `AuthDataService` but may not be mounted on all deployments. The API server HTTP routes only expose `/oauth2/*`; SSO routes (`/auth/{provider}`, `/auth/{provider}/callback`) must be mounted elsewhere (e.g. consumer app or ingress) if used.
-
-**Implementation**: [`internal/services/auth/handlers/authentication/authentication_http_routes.go`](backend/internal/services/auth/handlers/authentication/authentication_http_routes.go)
-
 ## Web App Auth Flow (Consumer / Admin)
 
 The consumer and admin frontends use the same pattern:
@@ -109,7 +96,7 @@ Every gRPC request (except unauthenticated routes) goes through `AuthInterceptor
 2. **Resolve session** (in order):
    - **OAuth2 first**: `oauth2ClientManager.LoadAccessToken(ctx, accessToken)` — if token is an OAuth2 access token, load from DB and get `user_id`.
    - **JWT fallback**: `tokenIssuer.ParseUserIDAndAccountIDFromToken(ctx, accessToken)` — if OAuth2 fails, treat as JWT.
-3. **Validate session** (JWT path only): If the token has a `sid` claim, extract the `jti` and look up the session in `user_sessions`. If the session has been revoked or expired, return 401. Tokens without `sid` (pre-session-management or SSO) skip this check. Asynchronously updates `last_active_at` on the session.
+3. **Validate session** (JWT path only): If the token has a `sid` claim, extract the `jti` and look up the session in `user_sessions`. If the session has been revoked or expired, return 401. Tokens without `sid` (pre-session-management) skip this check. Asynchronously updates `last_active_at` on the session.
 4. **Build session context**: `identityDataManager.BuildSessionContextDataForUser(ctx, userID, accountID)`. The session ID is attached to `ContextData.SessionID`.
 5. **Zuck mode** (optional): If `X-Zuck-Mode-User` header present and user can impersonate, override session with that user/account.
 6. **Permissions**: Check method’s required permissions against session; deny if missing.
@@ -212,7 +199,6 @@ flowchart TB
     subgraph "Login Entry Points"
         PW[Password + TOTP]
         PK[Passkey]
-        SSO[SSO Google]
     end
 
     subgraph "Token Issuance"
@@ -223,7 +209,6 @@ flowchart TB
 
     PW --> PM
     PK --> PM
-    SSO --> JWT
 
     PM --> SESS
     PM --> JWT

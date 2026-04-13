@@ -53,7 +53,7 @@ The system uses a clear data ownership model where most data is associated with 
 
 ## Authentication and Session Management
 
-**For a complete description of the auth flow, including password, passkey, SSO, OAuth2, and gRPC interceptor behavior, see [auth-flow.md](auth-flow.md).**
+**For a complete description of the auth flow, including password, passkey, OAuth2, and gRPC interceptor behavior, see [auth-flow.md](auth-flow.md).**
 
 ### Token-Based Authentication
 
@@ -61,7 +61,7 @@ The system uses token-based authentication with JWT and PASETO support (PASETO i
 
 ### Authentication Flow (Summary)
 
-1. User provides credentials (username/email + password + TOTP if 2FA is enabled), or uses passkey/SSO
+1. User provides credentials (username/email + password + TOTP if 2FA is enabled), or uses passkey
 2. System validates credentials and retrieves user information
 3. System issues a token (JWT/PASETO) containing user ID and account information
 4. Client uses this token to obtain OAuth2 credentials via the OAuth2 exchange process (web app) or sends JWT directly (some clients)
