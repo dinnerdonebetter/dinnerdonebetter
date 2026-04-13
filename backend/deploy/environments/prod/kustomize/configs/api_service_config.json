@@ -218,9 +218,6 @@
 		"debug": false
 	},
 	"auth": {
-		"sso": {
-			"google": {}
-		},
 		"sessionStore": {
 			"provider": ""
 		},
@@ -359,9 +356,6 @@
 				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
 				"maxAccessTokenLifetime": 0,
 				"maxRefreshTokenLifetime": 0
-			},
-			"sso": {
-				"google": {}
 			},
 			"oauth2": {
 				"domain": "https://dinnerdonebetter.com",

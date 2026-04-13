@@ -96,9 +96,6 @@ type (
 		StatusHandler(http.ResponseWriter, *http.Request)
 		BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *http.Request)
 
-		SSOLoginHandler(http.ResponseWriter, *http.Request)
-		SSOLoginCallbackHandler(http.ResponseWriter, *http.Request)
-
 		PermissionFilterMiddleware(permissions ...authorization.Permission) func(next http.Handler) http.Handler
 		UserAttributionMiddleware(next http.Handler) http.Handler
 		AuthorizationMiddleware(next http.Handler) http.Handler

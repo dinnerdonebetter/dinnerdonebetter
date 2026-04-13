@@ -13,10 +13,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 
-	"github.com/primandproper/platform/encoding"
-	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
-	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
-
 	"github.com/stretchr/testify/require"
 )
 
@@ -66,7 +62,6 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 	}
 
 	helper.setContextFetcher(t)
-	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), encoding.ContentTypeJSON)
 
 	var err error
 

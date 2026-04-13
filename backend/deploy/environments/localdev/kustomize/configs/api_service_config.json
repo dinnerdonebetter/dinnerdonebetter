@@ -176,9 +176,6 @@
 		"debug": true
 	},
 	"auth": {
-		"sso": {
-			"google": {}
-		},
 		"sessionStore": {
 			"provider": ""
 		},
@@ -304,11 +301,6 @@
 				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
 				"maxAccessTokenLifetime": 0,
 				"maxRefreshTokenLifetime": 0
-			},
-			"sso": {
-				"google": {
-					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
-				}
 			},
 			"oauth2": {
 				"domain": "http://localhost:9000",

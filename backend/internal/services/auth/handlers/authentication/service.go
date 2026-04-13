@@ -3,53 +3,34 @@ package authentication
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"sync"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
-	"github.com/primandproper/platform/analytics"
-	"github.com/primandproper/platform/encoding"
 	perrors "github.com/primandproper/platform/errors"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/routing"
 
 	"github.com/go-oauth2/oauth2/v4/server"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/providers/google"
 )
 
 const (
-	serviceName                = "auth_service"
-	AuthProviderParamKey       = "auth_provider"
-	rejectedRequestCounterName = "auth_service.rejected_requests"
+	serviceName = "auth_service"
 )
-
-// TODO: remove this when Goth can handle concurrency.
-var useProvidersMutex = sync.Mutex{}
 
 type (
 	// service handles passwords service-wide.
 	service struct {
-		config               *Config
 		logger               logging.Logger
 		authenticator        authentication.Authenticator
-		analyticsReporter    analytics.EventReporter
-		identityDataManager  identitymanager.IdentityDataManager
-		encoderDecoder       encoding.ServerEncoderDecoder
-		authProviderFetcher  func(*http.Request) string
 		tracer               tracing.Tracer
 		dataChangesPublisher messagequeue.Publisher
 		oauth2Server         *server.Server
 		oauthRepo            oauth.Repository
-		tokenIssuer          tokens.Issuer
 	}
 )
 
@@ -61,11 +42,8 @@ func ProvideService(
 	authenticator authentication.Authenticator,
 	oauthRepo oauth.Repository,
 	identityDataManager identitymanager.IdentityDataManager,
-	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
-	analyticsReporter analytics.EventReporter,
-	routeParamManager routing.RouteParamManager,
 	queuesConfig *msgconfig.QueuesConfig,
 ) (auth.AuthDataService, error) {
 	if queuesConfig == nil {
@@ -86,28 +64,12 @@ func ProvideService(
 
 	svc := &service{
 		logger:               logging.NewNamedLogger(logger, serviceName),
-		encoderDecoder:       encoder,
-		config:               cfg,
-		identityDataManager:  identityDataManager,
 		authenticator:        authenticator,
 		tracer:               tracing.NewNamedTracer(tracerProvider, serviceName),
 		dataChangesPublisher: dataChangesPublisher,
-		analyticsReporter:    analyticsReporter,
-		tokenIssuer:          signer,
-		authProviderFetcher:  routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
 		oauth2Server:         ProvideOAuth2ServerImplementation(logger, tracerProvider, identityDataManager, authenticator, signer, manager),
 		oauthRepo:            oauthRepo,
 	}
-
-	useProvidersMutex.Lock()
-	goth.UseProviders(
-		google.New(
-			svc.config.SSO.Google.ClientID,
-			svc.config.SSO.Google.ClientSecret,
-			svc.config.SSO.Google.CallbackURL,
-		),
-	)
-	useProvidersMutex.Unlock()
 
 	return svc, nil
 }

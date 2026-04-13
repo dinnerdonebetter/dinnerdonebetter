@@ -35,9 +35,7 @@ require (
 	github.com/heimdalr/dag v1.5.0
 	github.com/jackc/pgx/v5 v5.9.1
 	github.com/lib/pq v1.11.2
-	github.com/markbates/goth v1.82.0
 	github.com/matcornic/hermes/v2 v2.1.0
-	github.com/mitchellh/go-server-timing v1.0.1
 	github.com/modelcontextprotocol/go-sdk v1.4.0
 	github.com/o1egl/paseto/v2 v2.1.1
 	github.com/pquerna/otp v1.5.0
@@ -128,6 +126,7 @@ require (
 	github.com/mailgun/mailgun-go/v4 v4.23.0 // indirect
 	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.8 // indirect
 	github.com/mdelapenya/tlscert v0.2.0 // indirect
+	github.com/mitchellh/go-server-timing v1.0.1 // indirect
 	github.com/moby/go-archive v0.2.0 // indirect
 	github.com/moby/moby/api v1.54.1 // indirect
 	github.com/moby/moby/client v0.4.0 // indirect
@@ -303,7 +302,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.19.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
-	github.com/gorilla/sessions v1.4.0 // indirect
 	github.com/grafana/pyroscope-go v1.2.7 // indirect
 	github.com/grafana/pyroscope-go/godeltaprof v0.1.9 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect

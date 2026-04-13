@@ -105,10 +105,6 @@ func RegisterConfigs(i do.Injector) {
 		cfg := do.MustInvoke[*authentication.Config](i)
 		return &cfg.Tokens, nil
 	})
-	do.Provide[authentication.SSOConfigs](i, func(i do.Injector) (authentication.SSOConfigs, error) {
-		cfg := do.MustInvoke[*authentication.Config](i)
-		return cfg.SSO, nil
-	})
 	do.Provide[*authentication.OAuth2Config](i, func(i do.Injector) (*authentication.OAuth2Config, error) {
 		cfg := do.MustInvoke[*authentication.Config](i)
 		return &cfg.OAuth2, nil

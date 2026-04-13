@@ -11,18 +11,6 @@ import (
 )
 
 type (
-	GoogleSSOConfig struct {
-		_ struct{} `json:"-"`
-
-		ClientID     string `env:"CLIENT_ID"     json:"clientID,omitempty"`
-		ClientSecret string `env:"CLIENT_SECRET" json:"clientSecret,omitempty"`
-		CallbackURL  string `env:"CALLBACK_URL"  json:"callbackURL,omitempty"`
-	}
-
-	SSOConfigs struct {
-		Google GoogleSSOConfig `envPrefix:"GOOGLE_SSO_" json:"google"`
-	}
-
 	TokenRefreshConfig struct {
 		MaxAccessTokenLifetime  time.Duration `env:"MAX_ACCESS_TOKEN_LIFETIME"  json:"maxAccessTokenLifetime"`
 		MaxRefreshTokenLifetime time.Duration `env:"MAX_REFRESH_TOKEN_LIFETIME" json:"maxRefreshTokenLifetime"`
@@ -39,7 +27,6 @@ type (
 	// Config is our configuration.
 	Config struct {
 		_                     struct{}           `json:"-"`
-		SSO                   SSOConfigs         `envPrefix:"SSO_CONFIG_"       json:"sso"`
 		SessionStore          webauthncfg.Config `envPrefix:"SESSION_STORE_"    json:"sessionStore"`
 		Passkey               PasskeyConfig      `envPrefix:"PASSKEY_"          json:"passkey"`
 		Tokens                tokenscfg.Config   `envPrefix:"TOKENS_"           json:"tokens"`

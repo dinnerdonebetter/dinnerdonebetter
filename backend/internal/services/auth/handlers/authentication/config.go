@@ -9,29 +9,12 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-const (
-	staticError = "error encountered, please try again later"
-)
-
 type (
-	GoogleSSOConfig struct {
-		_ struct{} `json:"-"`
-
-		ClientID     string `env:"CLIENT_ID"     json:"clientID,omitempty"`
-		ClientSecret string `env:"CLIENT_SECRET" json:"clientSecret,omitempty"`
-		CallbackURL  string `env:"CALLBACK_URL"  json:"callbackURL,omitempty"`
-	}
-
-	SSOConfigs struct {
-		Google GoogleSSOConfig `envPrefix:"GOOGLE_" json:"google"`
-	}
-
 	// Config is our configuration.
 	Config struct {
 		_ struct{} `json:"-"`
 
 		Tokens                tokenscfg.Config `envPrefix:"TOKENS_"           json:"tokens"`
-		SSO                   SSOConfigs       `envPrefix:"SSO_CONFIG_"       json:"sso"`
 		OAuth2                OAuth2Config     `envPrefix:"OAUTH2"            json:"oauth2"`
 		TokenLifetime         time.Duration    `env:"JWT_LIFETIME"            json:"jwtLifetime"`
 		Debug                 bool             `env:"DEBUG"                   json:"debug,omitempty"`

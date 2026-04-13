@@ -251,7 +251,6 @@ func buildProdConfig() *config.APIServiceConfig {
 			},
 		},
 		Auth: authcfg.Config{
-			SSO: authcfg.SSOConfigs{Google: authcfg.GoogleSSOConfig{}},
 			Passkey: authcfg.PasskeyConfig{
 				RPID:          "dinnerdonebetter.com",
 				RPDisplayName: branding.CompanyName,
@@ -274,9 +273,6 @@ func buildProdConfig() *config.APIServiceConfig {
 					AccessTokenLifespan:  time.Hour,
 					RefreshTokenLifespan: time.Hour,
 					Debug:                false,
-				},
-				SSO: authservice.SSOConfigs{
-					Google: authservice.GoogleSSOConfig{},
 				},
 				Debug:                 false,
 				EnableUserSignup:      true,

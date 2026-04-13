@@ -3,7 +3,6 @@ package authentication
 import (
 	"context"
 	"encoding/base64"
-	"net/http"
 	"testing"
 
 	mockauthn "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mock"
@@ -12,14 +11,11 @@ import (
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	noopanalytics "github.com/primandproper/platform/analytics/noop"
-	"github.com/primandproper/platform/encoding"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
-	mockrouting "github.com/primandproper/platform/routing/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -30,7 +26,6 @@ func buildTestService(t *testing.T) *service {
 
 	ctx := t.Context()
 	logger := loggingnoop.NewLogger()
-	encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracingnoop.NewTracerProvider(), encoding.ContentTypeJSON)
 
 	cfg := &Config{
 		Tokens: tokenscfg.Config{
@@ -51,12 +46,6 @@ func buildTestService(t *testing.T) *service {
 		},
 	}
 
-	rpm := &mockrouting.RouteParamManagerMock{
-		BuildRouteParamStringIDFetcherFunc: func(_ string) func(*http.Request) string {
-			return func(*http.Request) string { return "" }
-		},
-	}
-
 	s, err := ProvideService(
 		ctx,
 		logger,
@@ -64,11 +53,8 @@ func buildTestService(t *testing.T) *service {
 		&mockauthn.Authenticator{},
 		&oauthmock.RepositoryMock{},
 		&identitymanagermock.IdentityDataManager{},
-		encoderDecoder,
 		tracingnoop.NewTracerProvider(),
 		pp,
-		noopanalytics.NewEventReporter(),
-		rpm,
 		queueCfg,
 	)
 	require.NoError(t, err)
@@ -84,7 +70,6 @@ func TestProvideService(T *testing.T) {
 
 		ctx := t.Context()
 		logger := loggingnoop.NewLogger()
-		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracingnoop.NewTracerProvider(), encoding.ContentTypeJSON)
 
 		cfg := &Config{
 			Tokens: tokenscfg.Config{
@@ -105,12 +90,6 @@ func TestProvideService(T *testing.T) {
 			},
 		}
 
-		rpm := &mockrouting.RouteParamManagerMock{
-			BuildRouteParamStringIDFetcherFunc: func(_ string) func(*http.Request) string {
-				return func(*http.Request) string { return "" }
-			},
-		}
-
 		s, err := ProvideService(
 			ctx,
 			logger,
@@ -118,11 +97,8 @@ func TestProvideService(T *testing.T) {
 			&mockauthn.Authenticator{},
 			&oauthmock.RepositoryMock{},
 			&identitymanagermock.IdentityDataManager{},
-			encoderDecoder,
 			tracingnoop.NewTracerProvider(),
 			pp,
-			noopanalytics.NewEventReporter(),
-			rpm,
 			queueCfg,
 		)
 
