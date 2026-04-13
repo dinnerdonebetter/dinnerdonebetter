@@ -106,7 +106,7 @@ Each service requires sign-up, credentials, and (where applicable) Terraform Clo
 | **Cloudflare**    | DNS, domain verification                | API token, Zone ID                  | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`                                                                                                  |
 | **APNs**          | iOS push notifications                  | .p8 key, Key ID, Team ID, Bundle ID | `APNS_KEY_ID`, `APNS_AUTH_KEY_P8`, `APNS_TEAM_ID`, `APNS_BUNDLE_ID`, `APNS_PRODUCTION`                                                        |
 | **Firebase**      | Android push (FCM)                      | Via GCP Workload Identity           | (no extra secrets)                                                                                                                            |
-| **Google OAuth**  | SSO, webapp OAuth clients               | Client ID/Secret per client         | `GOOGLE_SSO_OAUTH2_CLIENT_ID`, `GOOGLE_SSO_OAUTH2_CLIENT_SECRET`, `ADMIN_WEBAPP_OAUTH2_*`, `CONSUMER_WEBAPP_OAUTH2_*`, `MCP_SERVICE_OAUTH2_*` |
+| **Google OAuth**  | Webapp OAuth clients                    | Client ID/Secret per client         | `ADMIN_WEBAPP_OAUTH2_*`, `CONSUMER_WEBAPP_OAUTH2_*`, `MCP_SERVICE_OAUTH2_*`                                                                   |
 
 ### Per-service details
 
@@ -123,7 +123,7 @@ Each service requires sign-up, credentials, and (where applicable) Terraform Clo
 | **Cloudflare**    | [cloudflare.com](https://www.cloudflare.com/) — add domain, zone, create API token with Zone:DNS permissions            | Need Zone ID from dashboard                                                                                                                                                                                                      |
 | **APNs**          | Apple Developer — create .p8 key in Certificates, Identifiers & Profiles                                                | `APNS_PRODUCTION=false` for sandbox/TestFlight; `true` for App Store                                                                                                                                                             |
 | **Firebase**      | [console.firebase.google.com](https://console.firebase.google.com/) — add project, enable FCM                           | Workload Identity uses GCP project; no extra secrets                                                                                                                                                                             |
-| **Google OAuth**  | [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials — create OAuth 2.0 Client IDs | One for SSO; one each for Admin webapp, Consumer webapp, MCP server                                                                                                                                                              |
+| **Google OAuth**  | [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials — create OAuth 2.0 Client IDs | One each for Admin webapp, Consumer webapp, MCP server                                                                                                                                                                           |
 
 ### Optional / alternative services
 
@@ -152,8 +152,6 @@ Add all variables to Terraform Cloud. Sources: `secrets.tf`, `meta_variables.tf`
 | Variable                               | Description                          |
 |----------------------------------------|--------------------------------------|
 | `GOOGLE_CLOUD_CREDENTIALS`             | GCP service account JSON             |
-| `GOOGLE_SSO_OAUTH2_CLIENT_ID`          | Google OAuth2 client ID              |
-| `GOOGLE_SSO_OAUTH2_CLIENT_SECRET`      | Google OAuth2 client secret          |
 | `ADMIN_WEBAPP_OAUTH2_CLIENT_ID`        | Admin OAuth2 client ID               |
 | `ADMIN_WEBAPP_OAUTH2_CLIENT_SECRET`    | Admin OAuth2 client secret           |
 | `CONSUMER_WEBAPP_OAUTH2_CLIENT_ID`     | Consumer webapp OAuth2 client ID     |

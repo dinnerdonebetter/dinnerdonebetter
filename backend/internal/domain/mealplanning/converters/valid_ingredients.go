@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertValidIngredientToValidIngredientUpdateRequestInput creates a ValidIngredientUpdateRequestInput from a ValidIngredient.
@@ -30,7 +30,7 @@ func ConvertValidIngredientToValidIngredientUpdateRequestInput(x *mealplanning.V
 		AnimalDerived:          &x.AnimalDerived,
 		RestrictToPreparations: &x.RestrictToPreparations,
 		ContaminatesEquipment:  &x.ContaminatesEquipment,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
 		},
@@ -75,7 +75,7 @@ func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreation
 		AnimalDerived:          x.AnimalDerived,
 		RestrictToPreparations: x.RestrictToPreparations,
 		ContaminatesEquipment:  x.ContaminatesEquipment,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
 		},
@@ -119,7 +119,7 @@ func ConvertValidIngredientToValidIngredientCreationRequestInput(x *mealplanning
 		AnimalDerived:          x.AnimalDerived,
 		RestrictToPreparations: x.RestrictToPreparations,
 		ContaminatesEquipment:  x.ContaminatesEquipment,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
 		},
@@ -162,7 +162,7 @@ func ConvertValidIngredientToValidIngredientDatabaseCreationInput(x *mealplannin
 		AnimalDerived:          x.AnimalDerived,
 		RestrictToPreparations: x.RestrictToPreparations,
 		ContaminatesEquipment:  x.ContaminatesEquipment,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
 		},

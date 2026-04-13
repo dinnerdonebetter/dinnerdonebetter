@@ -12,8 +12,4 @@ func RegisterConfigs(i do.Injector) {
 		cfg := do.MustInvoke[*Config](i)
 		return &cfg.Tokens, nil
 	})
-	do.Provide[SSOConfigs](i, func(i do.Injector) (SSOConfigs, error) {
-		cfg := do.MustInvoke[*Config](i)
-		return cfg.SSO, nil
-	})
 }

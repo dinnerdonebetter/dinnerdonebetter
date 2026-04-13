@@ -7,9 +7,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
-	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/numbers"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 
 	"github.com/stretchr/testify/assert"
 	"gonum.org/v1/gonum/graph"
@@ -21,7 +21,7 @@ func newAnalyzerForTest(t *testing.T) *recipeAnalyzer {
 
 	return &recipeAnalyzer{
 		tracer: tracing.NewTracerForTest(t.Name()),
-		logger: logging.NewNoopLogger(),
+		logger: loggingnoop.NewLogger(),
 	}
 }
 
@@ -105,7 +105,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
 							Ingredient: &mealplanning.ValidIngredient{
-								StorageTemperatureInCelsius: types.OptionalFloat32Range{
+								StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 									Min: new(float32(2.5)),
 								},
 								PluralName:          "chicken breasts",
@@ -117,7 +117,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     mealplanning.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
-							Quantity: types.Float32RangeWithOptionalMax{
+							Quantity: numbers.MinRange[float32]{
 								Min: 900,
 								Max: new(float32(900)),
 							},
@@ -511,7 +511,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 				{
 					Index: 0,
 					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
-						{Name: "raw ingredient", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
+						{Name: "raw ingredient", Quantity: numbers.MinRange[float32]{Min: 1}},
 					},
 				},
 				{
@@ -520,7 +520,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "product from step 0",
 							ProductOfRecipeStepIndex: &step0Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 				},
@@ -553,19 +553,19 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "from step 0",
 							ProductOfRecipeStepIndex: &step0Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 						{
 							Name:                     "from step 1",
 							ProductOfRecipeStepIndex: &step1Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 						{
 							Name:                     "instrument from step 2",
 							ProductOfRecipeStepIndex: &step2Index,
-							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[uint32]{Min: 1},
 						},
 					},
 				},
@@ -594,7 +594,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "vessel from step 0",
 							ProductOfRecipeStepIndex: &step0Index,
-							Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[uint16]{Min: 1},
 						},
 					},
 				},
@@ -623,7 +623,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "from step 1",
 							ProductOfRecipeStepIndex: &step1Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 				},
@@ -633,7 +633,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "from step 0",
 							ProductOfRecipeStepIndex: &step0Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 				},
@@ -664,7 +664,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "from step 2",
 							ProductOfRecipeStepIndex: &step2Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 				},
@@ -674,7 +674,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "from step 0",
 							ProductOfRecipeStepIndex: &step0Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 				},
@@ -684,7 +684,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "from step 1",
 							ProductOfRecipeStepIndex: &step1Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 				},
@@ -714,7 +714,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "instrument from step 1",
 							ProductOfRecipeStepIndex: &step1Index,
-							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[uint32]{Min: 1},
 						},
 					},
 				},
@@ -724,7 +724,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "instrument from step 0",
 							ProductOfRecipeStepIndex: &step0Index,
-							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[uint32]{Min: 1},
 						},
 					},
 				},
@@ -754,7 +754,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "vessel from step 1",
 							ProductOfRecipeStepIndex: &step1Index,
-							Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[uint16]{Min: 1},
 						},
 					},
 				},
@@ -764,7 +764,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "vessel from step 0",
 							ProductOfRecipeStepIndex: &step0Index,
-							Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[uint16]{Min: 1},
 						},
 					},
 				},
@@ -793,7 +793,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "invalid reference",
 							ProductOfRecipeStepIndex: &invalidIndex,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 				},
@@ -822,7 +822,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "invalid instrument",
 							ProductOfRecipeStepIndex: &invalidIndex,
-							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[uint32]{Min: 1},
 						},
 					},
 				},
@@ -851,7 +851,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "invalid vessel",
 							ProductOfRecipeStepIndex: &invalidIndex,
-							Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[uint16]{Min: 1},
 						},
 					},
 				},
@@ -912,7 +912,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "self-reference",
 							ProductOfRecipeStepIndex: &step0Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 				},
@@ -946,12 +946,12 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "from step 0",
 							ProductOfRecipeStepIndex: &step0Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 						{
 							Name:                     "from step 1",
 							ProductOfRecipeStepIndex: &step1Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 				},
@@ -961,14 +961,14 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 						{
 							Name:                     "from step 2",
 							ProductOfRecipeStepIndex: &step2Index,
-							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[float32]{Min: 1},
 						},
 					},
 					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 						{
 							Name:                     "from step 3",
 							ProductOfRecipeStepIndex: new(uint64(3)),
-							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+							Quantity:                 numbers.MinRange[uint32]{Min: 1},
 						},
 					},
 				},

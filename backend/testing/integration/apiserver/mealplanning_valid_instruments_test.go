@@ -16,7 +16,7 @@ import (
 func checkValidInstrumentEquality(t *testing.T, expected, actual *mealplanning.ValidInstrument) {
 	t.Helper()
 
-	assert.NotEmpty(t, actual.ID, "expected ValidInstrument to have MealPlanTaskID")
+	assert.NotEmpty(t, actual.ID, "expected ValidInstrument to have ID")
 	assert.NotZero(t, actual.CreatedAt, "expected ValidInstrument to have CreatedAt")
 
 	assert.Equal(t, expected.Name, actual.Name, "expected ValidInstrument Name")
@@ -143,7 +143,7 @@ func TestValidInstruments_Reading(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -252,7 +252,7 @@ func TestValidInstruments_Archiving(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 

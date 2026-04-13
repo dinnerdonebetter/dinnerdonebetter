@@ -6,8 +6,8 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +23,7 @@ const (
 func TestArgon2_HashPassword(T *testing.T) {
 	T.Parallel()
 
-	x := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+	x := authentication.ProvideArgon2Authenticator(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider())
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -39,7 +39,7 @@ func TestArgon2_HashPassword(T *testing.T) {
 func TestArgon2_ValidateLogin(T *testing.T) {
 	T.Parallel()
 
-	x := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+	x := authentication.ProvideArgon2Authenticator(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider())
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -133,6 +133,6 @@ func TestProvideArgon2Authenticator(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+		authentication.ProvideArgon2Authenticator(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider())
 	})
 }

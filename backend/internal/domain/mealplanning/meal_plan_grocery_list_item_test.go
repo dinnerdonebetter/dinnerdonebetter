@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -21,7 +21,7 @@ func TestMealPlanGroceryListItemCreationRequestInput_ValidateWithContext(T *test
 			ValidIngredientID:      t.Name(),
 			ValidMeasurementUnitID: t.Name(),
 			Status:                 MealPlanGroceryListItemStatusUnknown,
-			QuantityNeeded:         types.Float32RangeWithOptionalMax{Min: 1.23},
+			QuantityNeeded:         numbers.MinRange[float32]{Min: 1.23},
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -40,7 +40,7 @@ func TestMealPlanGroceryListItemDatabaseCreationInput_ValidateWithContext(T *tes
 			BelongsToMealPlan:      t.Name(),
 			ValidIngredientID:      t.Name(),
 			ValidMeasurementUnitID: t.Name(),
-			QuantityNeeded: types.Float32RangeWithOptionalMax{
+			QuantityNeeded: numbers.MinRange[float32]{
 				Min: 1.23,
 				Max: new(float32(1.23)),
 			},
@@ -62,7 +62,7 @@ func TestMealPlanGroceryListItemUpdateRequestInput_ValidateWithContext(T *testin
 			BelongsToMealPlan:      new(t.Name()),
 			ValidIngredientID:      new(t.Name()),
 			ValidMeasurementUnitID: new(t.Name()),
-			QuantityNeeded: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+			QuantityNeeded: numbers.OpenRangeUpdateRequestInput[float32]{
 				Min: new(float32(1.23)),
 				Max: new(float32(1.23)),
 			},
@@ -81,7 +81,7 @@ func TestMealPlanGroceryListItem_Update(T *testing.T) {
 
 		x := &MealPlanGroceryListItem{
 			PurchasedMeasurementUnit: &ValidMeasurementUnit{},
-			QuantityNeeded:           types.Float32RangeWithOptionalMax{Max: new(float32(1.23))},
+			QuantityNeeded:           numbers.MinRange[float32]{Max: new(float32(1.23))},
 		}
 		input := &MealPlanGroceryListItemUpdateRequestInput{}
 

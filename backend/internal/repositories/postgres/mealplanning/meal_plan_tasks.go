@@ -12,9 +12,9 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	platformtypes "github.com/primandproper/platform/types"
 )
 
 var (
@@ -251,11 +251,11 @@ func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID
 					CreatedAt:                   result.PrepTaskCreatedAt,
 					LastUpdatedAt:               database.TimePointerFromNullTime(result.PrepTaskLastUpdatedAt),
 					ArchivedAt:                  database.TimePointerFromNullTime(result.PrepTaskArchivedAt),
-					StorageTemperatureInCelsius: platformtypes.OptionalFloat32Range{
+					StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 						Max: database.Float32PointerFromNullString(result.PrepTaskMaximumStorageTemperatureInCelsius),
 						Min: database.Float32PointerFromNullString(result.PrepTaskMinimumStorageTemperatureInCelsius),
 					},
-					TimeBufferBeforeRecipeInSeconds: platformtypes.Uint32RangeWithOptionalMax{
+					TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 						Max: database.Uint32PointerFromNullInt32(result.PrepTaskMaximumTimeBufferBeforeRecipeInSeconds),
 						Min: uint32(result.PrepTaskMinimumTimeBufferBeforeRecipeInSeconds),
 					},

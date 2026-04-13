@@ -23,9 +23,9 @@ import (
 	databasecfg "github.com/primandproper/platform/database/config"
 	"github.com/primandproper/platform/database/postgres"
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/metrics"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/random"
 	"github.com/primandproper/platform/secrets/kubectl"
 
@@ -171,8 +171,8 @@ func runInit(db *dbFlags, adminUsername, adminPassword, adminEmail string) error
 	}
 
 	ctx := context.Background()
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
+	logger := loggingnoop.NewLogger()
+	tracerProvider := tracingnoop.NewTracerProvider()
 
 	connDetails := databasecfg.ConnectionDetails{
 		Host:       db.host,
@@ -383,9 +383,9 @@ type prodSecrets struct {
 }
 
 func fetchProdSecrets(ctx context.Context, kubeconfigPath string) (*prodSecrets, error) {
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
-	metricsProvider := metrics.NewNoopMetricsProvider()
+	logger := loggingnoop.NewLogger()
+	tracerProvider := tracingnoop.NewTracerProvider()
+	metricsProvider := metricsnoop.NewMetricsProvider()
 
 	cfg := &kubectl.Config{
 		Namespace:  prodNamespace,

@@ -11,9 +11,9 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -67,11 +67,11 @@ func convertValidPrepTaskConfigRow(result *generated.GetValidPrepTaskConfigRow) 
 		CreatedAt:     result.ValidPrepTaskConfigCreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPrepTaskConfigLastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ValidPrepTaskConfigArchivedAt),
-		StorageDurationInSeconds: types.Uint32RangeWithOptionalMax{
+		StorageDurationInSeconds: numbers.MinRange[uint32]{
 			Min: uint32(result.ValidPrepTaskConfigMinimumStorageDurationInSeconds),
 			Max: database.Uint32PointerFromNullInt32(result.ValidPrepTaskConfigMaximumStorageDurationInSeconds),
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMinimumStorageTemperatureInCelsius),
 			Max: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMaximumStorageTemperatureInCelsius),
 		},
@@ -84,7 +84,7 @@ func convertValidPrepTaskConfigRow(result *generated.GetValidPrepTaskConfigRow) 
 			CreatedAt:     result.ValidIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			},
@@ -123,15 +123,15 @@ func convertValidPrepTaskConfigRow(result *generated.GetValidPrepTaskConfigRow) 
 		},
 		Preparation: mealplanning.ValidPreparation{
 			CreatedAt: result.ValidPreparationCreatedAt,
-			InstrumentCount: types.Uint16RangeWithOptionalMax{
+			InstrumentCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
 				Min: uint16(result.ValidPreparationMinimumInstrumentCount),
 			},
-			IngredientCount: types.Uint16RangeWithOptionalMax{
+			IngredientCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
 				Min: uint16(result.ValidPreparationMinimumIngredientCount),
 			},
-			VesselCount: types.Uint16RangeWithOptionalMax{
+			VesselCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				Min: uint16(result.ValidPreparationMinimumVesselCount),
 			},
@@ -210,11 +210,11 @@ func convertValidPrepTaskConfigsRow(result *generated.GetValidPrepTaskConfigsRow
 		CreatedAt:     result.ValidPrepTaskConfigCreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPrepTaskConfigLastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ValidPrepTaskConfigArchivedAt),
-		StorageDurationInSeconds: types.Uint32RangeWithOptionalMax{
+		StorageDurationInSeconds: numbers.MinRange[uint32]{
 			Min: uint32(result.ValidPrepTaskConfigMinimumStorageDurationInSeconds),
 			Max: database.Uint32PointerFromNullInt32(result.ValidPrepTaskConfigMaximumStorageDurationInSeconds),
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMinimumStorageTemperatureInCelsius),
 			Max: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMaximumStorageTemperatureInCelsius),
 		},
@@ -227,7 +227,7 @@ func convertValidPrepTaskConfigsRow(result *generated.GetValidPrepTaskConfigsRow
 			CreatedAt:     result.ValidIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			},
@@ -266,15 +266,15 @@ func convertValidPrepTaskConfigsRow(result *generated.GetValidPrepTaskConfigsRow
 		},
 		Preparation: mealplanning.ValidPreparation{
 			CreatedAt: result.ValidPreparationCreatedAt,
-			InstrumentCount: types.Uint16RangeWithOptionalMax{
+			InstrumentCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
 				Min: uint16(result.ValidPreparationMinimumInstrumentCount),
 			},
-			IngredientCount: types.Uint16RangeWithOptionalMax{
+			IngredientCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
 				Min: uint16(result.ValidPreparationMinimumIngredientCount),
 			},
-			VesselCount: types.Uint16RangeWithOptionalMax{
+			VesselCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				Min: uint16(result.ValidPreparationMinimumVesselCount),
 			},
@@ -360,11 +360,11 @@ func convertValidPrepTaskConfigsForPreparationRow(result *generated.GetValidPrep
 		CreatedAt:     result.ValidPrepTaskConfigCreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPrepTaskConfigLastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ValidPrepTaskConfigArchivedAt),
-		StorageDurationInSeconds: types.Uint32RangeWithOptionalMax{
+		StorageDurationInSeconds: numbers.MinRange[uint32]{
 			Min: uint32(result.ValidPrepTaskConfigMinimumStorageDurationInSeconds),
 			Max: database.Uint32PointerFromNullInt32(result.ValidPrepTaskConfigMaximumStorageDurationInSeconds),
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMinimumStorageTemperatureInCelsius),
 			Max: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMaximumStorageTemperatureInCelsius),
 		},
@@ -377,7 +377,7 @@ func convertValidPrepTaskConfigsForPreparationRow(result *generated.GetValidPrep
 			CreatedAt:     result.ValidIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			},
@@ -416,15 +416,15 @@ func convertValidPrepTaskConfigsForPreparationRow(result *generated.GetValidPrep
 		},
 		Preparation: mealplanning.ValidPreparation{
 			CreatedAt: result.ValidPreparationCreatedAt,
-			InstrumentCount: types.Uint16RangeWithOptionalMax{
+			InstrumentCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
 				Min: uint16(result.ValidPreparationMinimumInstrumentCount),
 			},
-			IngredientCount: types.Uint16RangeWithOptionalMax{
+			IngredientCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
 				Min: uint16(result.ValidPreparationMinimumIngredientCount),
 			},
-			VesselCount: types.Uint16RangeWithOptionalMax{
+			VesselCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				Min: uint16(result.ValidPreparationMinimumVesselCount),
 			},
@@ -510,11 +510,11 @@ func convertValidPrepTaskConfigsForIngredientRow(result *generated.GetValidPrepT
 		CreatedAt:     result.ValidPrepTaskConfigCreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPrepTaskConfigLastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ValidPrepTaskConfigArchivedAt),
-		StorageDurationInSeconds: types.Uint32RangeWithOptionalMax{
+		StorageDurationInSeconds: numbers.MinRange[uint32]{
 			Min: uint32(result.ValidPrepTaskConfigMinimumStorageDurationInSeconds),
 			Max: database.Uint32PointerFromNullInt32(result.ValidPrepTaskConfigMaximumStorageDurationInSeconds),
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMinimumStorageTemperatureInCelsius),
 			Max: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMaximumStorageTemperatureInCelsius),
 		},
@@ -527,7 +527,7 @@ func convertValidPrepTaskConfigsForIngredientRow(result *generated.GetValidPrepT
 			CreatedAt:     result.ValidIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			},
@@ -566,15 +566,15 @@ func convertValidPrepTaskConfigsForIngredientRow(result *generated.GetValidPrepT
 		},
 		Preparation: mealplanning.ValidPreparation{
 			CreatedAt: result.ValidPreparationCreatedAt,
-			InstrumentCount: types.Uint16RangeWithOptionalMax{
+			InstrumentCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
 				Min: uint16(result.ValidPreparationMinimumInstrumentCount),
 			},
-			IngredientCount: types.Uint16RangeWithOptionalMax{
+			IngredientCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
 				Min: uint16(result.ValidPreparationMinimumIngredientCount),
 			},
-			VesselCount: types.Uint16RangeWithOptionalMax{
+			VesselCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				Min: uint16(result.ValidPreparationMinimumVesselCount),
 			},
@@ -667,11 +667,11 @@ func convertValidPrepTaskConfigsForIngredientAndPreparationRow(result *generated
 		CreatedAt:     result.ValidPrepTaskConfigCreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPrepTaskConfigLastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ValidPrepTaskConfigArchivedAt),
-		StorageDurationInSeconds: types.Uint32RangeWithOptionalMax{
+		StorageDurationInSeconds: numbers.MinRange[uint32]{
 			Min: uint32(result.ValidPrepTaskConfigMinimumStorageDurationInSeconds),
 			Max: database.Uint32PointerFromNullInt32(result.ValidPrepTaskConfigMaximumStorageDurationInSeconds),
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMinimumStorageTemperatureInCelsius),
 			Max: database.Float32PointerFromNullString(result.ValidPrepTaskConfigMaximumStorageTemperatureInCelsius),
 		},
@@ -684,7 +684,7 @@ func convertValidPrepTaskConfigsForIngredientAndPreparationRow(result *generated
 			CreatedAt:     result.ValidIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			},
@@ -723,15 +723,15 @@ func convertValidPrepTaskConfigsForIngredientAndPreparationRow(result *generated
 		},
 		Preparation: mealplanning.ValidPreparation{
 			CreatedAt: result.ValidPreparationCreatedAt,
-			InstrumentCount: types.Uint16RangeWithOptionalMax{
+			InstrumentCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
 				Min: uint16(result.ValidPreparationMinimumInstrumentCount),
 			},
-			IngredientCount: types.Uint16RangeWithOptionalMax{
+			IngredientCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
 				Min: uint16(result.ValidPreparationMinimumIngredientCount),
 			},
-			VesselCount: types.Uint16RangeWithOptionalMax{
+			VesselCount: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				Min: uint16(result.ValidPreparationMinimumVesselCount),
 			},

@@ -12,12 +12,12 @@ import (
 
 type (
 	GetValidPrepTaskConfigInvocation struct {
-		ValidPrepTaskConfigID string `jsonschema:"description=The prep task config MealPlanTaskID"`
+		ValidPrepTaskConfigID string `jsonschema:"description=The prep task config ID"`
 	}
 )
 
 var validPrepTaskConfigsSchema = map[string]any{
-	"MealPlanTaskID":              stringField("The MealPlanTaskID of the valid prep task config"),
+	"ID":                          stringField("The ID of the valid prep task config"),
 	"CreatedAt":                   timestampField("When the valid prep task config was created"),
 	"LastUpdatedAt":               timestampField("When the valid prep task config was last updated"),
 	"ArchivedAt":                  timestampField("When the valid prep task config was soft deleted"),
@@ -33,9 +33,9 @@ var validPrepTaskConfigsSchema = map[string]any{
 
 var getValidPrepTaskConfigTool = &mcp.Tool{
 	Name:        "GetValidPrepTaskConfig",
-	Description: "Get a valid prep task config by its MealPlanTaskID. A prep task config defines how long a prepped ingredient can be stored under specific conditions.",
+	Description: "Get a valid prep task config by its ID. A prep task config defines how long a prepped ingredient can be stored under specific conditions.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidPrepTaskConfigID": stringField("The MealPlanTaskID of the valid prep task config to get"),
+		"ValidPrepTaskConfigID": stringField("The ID of the valid prep task config to get"),
 	}),
 	OutputSchema: schemaObject(validPrepTaskConfigsSchema),
 }
@@ -96,7 +96,7 @@ func (h *mcpToolManager) GetValidPrepTaskConfigs() mcp.ToolHandlerFor[*GetValidP
 type (
 	GetValidPrepTaskConfigsByIngredientInvocation struct {
 		Filter            *filtering.QueryFilter
-		ValidIngredientID string `jsonschema:"description=The ingredient MealPlanTaskID to filter by"`
+		ValidIngredientID string `jsonschema:"description=The ingredient ID to filter by"`
 	}
 )
 
@@ -104,7 +104,7 @@ var getValidPrepTaskConfigsByIngredientTool = &mcp.Tool{
 	Name:        "GetValidPrepTaskConfigsByIngredient",
 	Description: "Get valid prep task configs for a specific ingredient. Use this to find storage information for a particular ingredient.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientID": stringField("The MealPlanTaskID of the ingredient to get prep task configs for"),
+		"ValidIngredientID": stringField("The ID of the ingredient to get prep task configs for"),
 		"Filter":            queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
@@ -132,7 +132,7 @@ func (h *mcpToolManager) GetValidPrepTaskConfigsByIngredient() mcp.ToolHandlerFo
 type (
 	GetValidPrepTaskConfigsByPreparationInvocation struct {
 		Filter             *filtering.QueryFilter
-		ValidPreparationID string `jsonschema:"description=The preparation MealPlanTaskID to filter by"`
+		ValidPreparationID string `jsonschema:"description=The preparation ID to filter by"`
 	}
 )
 
@@ -140,7 +140,7 @@ var getValidPrepTaskConfigsByPreparationTool = &mcp.Tool{
 	Name:        "GetValidPrepTaskConfigsByPreparation",
 	Description: "Get valid prep task configs for a specific preparation method. Use this to find storage information for ingredients prepared a certain way.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidPreparationID": stringField("The MealPlanTaskID of the preparation to get prep task configs for"),
+		"ValidPreparationID": stringField("The ID of the preparation to get prep task configs for"),
 		"Filter":             queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
@@ -168,8 +168,8 @@ func (h *mcpToolManager) GetValidPrepTaskConfigsByPreparation() mcp.ToolHandlerF
 type (
 	GetValidPrepTaskConfigsByIngredientAndPreparationInvocation struct {
 		Filter             *filtering.QueryFilter
-		ValidIngredientID  string `jsonschema:"description=The ingredient MealPlanTaskID to filter by"`
-		ValidPreparationID string `jsonschema:"description=The preparation MealPlanTaskID to filter by"`
+		ValidIngredientID  string `jsonschema:"description=The ingredient ID to filter by"`
+		ValidPreparationID string `jsonschema:"description=The preparation ID to filter by"`
 	}
 )
 
@@ -177,8 +177,8 @@ var getValidPrepTaskConfigsByIngredientAndPreparationTool = &mcp.Tool{
 	Name:        "GetValidPrepTaskConfigsByIngredientAndPreparation",
 	Description: "Get valid prep task configs for a specific ingredient and preparation combination. Use this to find exactly how long a specific prepped ingredient (e.g., diced onions) can be stored.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientID":  stringField("The MealPlanTaskID of the ingredient"),
-		"ValidPreparationID": stringField("The MealPlanTaskID of the preparation"),
+		"ValidIngredientID":  stringField("The ID of the ingredient"),
+		"ValidPreparationID": stringField("The ID of the preparation"),
 		"Filter":             queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{

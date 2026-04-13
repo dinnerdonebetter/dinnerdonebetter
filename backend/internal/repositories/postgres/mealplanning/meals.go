@@ -15,9 +15,9 @@ import (
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
 	"github.com/primandproper/platform/identifiers"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -162,7 +162,7 @@ func (q *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.
 				CreatedByUser: result.CreatedByUser,
 				Name:          result.Name,
 				Components:    nil,
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
+				EstimatedPortions: numbers.MinRange[float32]{
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				},
@@ -248,7 +248,7 @@ func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 				CreatedByUser: result.CreatedByUser,
 				Name:          result.Name,
 				Components:    []*mealplanning.MealComponent{},
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
+				EstimatedPortions: numbers.MinRange[float32]{
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				},
@@ -355,7 +355,7 @@ func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 				CreatedByUser: result.CreatedByUser,
 				Name:          result.Name,
 				Components:    []*mealplanning.MealComponent{},
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
+				EstimatedPortions: numbers.MinRange[float32]{
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				},
@@ -439,7 +439,7 @@ func (q *repository) GetMealsWithIDs(ctx context.Context, ids []string) ([]*meal
 				CreatedByUser: result.CreatedByUser,
 				Name:          result.Name,
 				Components:    nil,
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
+				EstimatedPortions: numbers.MinRange[float32]{
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				},
@@ -537,7 +537,7 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 				CreatedByUser: result.CreatedByUser,
 				Name:          result.Name,
 				Components:    []*mealplanning.MealComponent{},
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
+				EstimatedPortions: numbers.MinRange[float32]{
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				},
@@ -609,7 +609,7 @@ func (q *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 		ID:          input.ID,
 		Name:        input.Name,
 		Description: input.Description,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Min: input.EstimatedPortions.Min,
 			Max: input.EstimatedPortions.Max,
 		},

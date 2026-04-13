@@ -13,9 +13,9 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/metrics"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 	textsearchcfg "github.com/primandproper/platform/search/text/config"
 
@@ -39,13 +39,13 @@ func buildValidEnumerationsManagerForTest(t *testing.T) *validEnumerationManager
 
 	m, err := NewValidEnumerationsManager(
 		t.Context(),
-		logging.NewNoopLogger(),
-		tracing.NewNoopTracerProvider(),
+		loggingnoop.NewLogger(),
+		tracingnoop.NewTracerProvider(),
 		&mealplanningmock.Repository{},
 		queueCfg,
 		mpp,
 		&textsearchcfg.Config{},
-		metrics.NewNoopMetricsProvider(),
+		metricsnoop.NewMetricsProvider(),
 	)
 	require.NoError(t, err)
 

@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // PanSearedSalmonFilletsRecipe creates the Crispy Pan-Seared Salmon Fillets recipe.
@@ -110,7 +110,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1, // approximately 0.5 teaspoon
 				},
 			},
@@ -119,7 +119,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -128,7 +128,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -141,7 +141,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -159,7 +159,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ValidIngredientMeasurementUnitID: &salmonFilletOunceVIMU.ID,
 				Name:                             "skin-on salmon fillets",
 				QuantityNotes:                    "4 fillets, about 6 ounces (170 g) each",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 24, // 4 fillets × 6 ounces
 				},
 			},
@@ -168,7 +168,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ValidPreparationInstrumentID: &dryPaperTowelsVPI.ID,
 				Name:                         "paper towels",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -179,7 +179,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &ounceMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(24)),
 				},
 			},
@@ -197,7 +197,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &seasonSalmonVIP.ID,
 				Name:                            "dried salmon fillets",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 24,
 				},
 			},
@@ -205,7 +205,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				Name:                             "Kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -213,7 +213,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -222,7 +222,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -233,7 +233,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &ounceMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(24)),
 				},
 			},
@@ -251,7 +251,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ValidIngredientPreparationID:     &heatOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -260,7 +260,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
 				Name:                     "large stainless, cast iron, or carbon steel skillet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -270,7 +270,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Name:  "heated skillet with shimmering oil",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -296,7 +296,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &reduceSkilletVPV.ID,
 				Name:                            "heated skillet with shimmering oil",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -306,7 +306,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Name:  "skillet at medium-low heat",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -318,7 +318,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		PreparationID:        pressPrep.ID,
 		Index:                5,
 		ExplicitInstructions: "Add a salmon fillet, skin side down. Press firmly in place for 10 seconds, using the back of a flexible fish spatula, to prevent the skin from buckling. Add the remaining fillets one at a time, pressing each with the spatula for 10 seconds, until all fillets are in the pan.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(40)), // 4 fillets × 10 seconds
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -327,7 +327,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &pressSalmonVIP.ID,
 				Name:                            "seasoned salmon fillets",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 24,
 				},
 			},
@@ -336,7 +336,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ValidPreparationInstrumentID: &pressFishSpatulaVPI.ID,
 				Name:                         "flexible fish spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -347,7 +347,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &pressSkilletVPV.ID,
 				Name:                            "skillet at medium-low heat",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -358,7 +358,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &ounceMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(24)),
 				},
 			},
@@ -366,7 +366,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Name:  "skillet with pressed salmon",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -379,7 +379,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		PreparationID:        panSearPrep.ID,
 		Index:                6,
 		ExplicitInstructions: "Cook, pressing gently on the back of the fillets occasionally to ensure good contact with the skin, until the skin releases easily from the pan, about 4 minutes. If the skin shows resistance when you attempt to lift a corner with the spatula, allow it to continue to cook until it lifts easily. Continue to cook until the salmon registers 110°F (43°C) in the very center for rare, 120°F (49°C) for medium-rare, or 130°F (54°C) for medium, 5 to 7 minutes total.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(300)), // 5 minutes
 			Max: new(uint32(420)), // 7 minutes
 		},
@@ -389,7 +389,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &panSearSalmonVIP.ID,
 				Name:                            "salmon fillets pressed in skillet",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 24,
 				},
 			},
@@ -398,14 +398,14 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ValidPreparationInstrumentID: &panSearFishSpatulaVPI.ID,
 				Name:                         "flexible fish spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationInstrumentID: &panSearThermometerVPI.ID,
 				Name:                         "instant-read thermometer",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -416,7 +416,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
 				Name:                            "skillet with pressed salmon",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -427,7 +427,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &ounceMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(24)),
 				},
 			},
@@ -435,7 +435,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Name:  "skillet with cooked salmon",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -461,7 +461,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &flipSalmonVIP.ID,
 				Name:                            "cooked salmon fillets (skin side)",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 24,
 				},
 			},
@@ -470,14 +470,14 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ValidPreparationInstrumentID: &flipFishSpatulaVPI.ID,
 				Name:                         "flexible fish spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationInstrumentID: &flipForkVPI.ID,
 				Name:                         "fork",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -488,7 +488,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &flipSkilletVPV.ID,
 				Name:                            "skillet with cooked salmon",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -499,7 +499,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &ounceMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(24)),
 				},
 			},
@@ -507,7 +507,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Name:  "skillet with flipped salmon",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -519,7 +519,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		PreparationID:        panSearPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Cook on the second side for 15 seconds.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(15)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -528,7 +528,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &panSearSalmonVIP.ID,
 				Name:                            "flipped salmon fillets",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 24,
 				},
 			},
@@ -539,7 +539,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
 				Name:                            "skillet with flipped salmon",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -550,7 +550,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &ounceMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(24)),
 				},
 			},
@@ -568,7 +568,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &transferSalmonVIP.ID,
 				Name:                            "fully cooked salmon fillets",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 24,
 				},
 			},
@@ -577,7 +577,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			{
 				ValidPreparationVesselID: &transferPlateVPV.ID,
 				Name:                     "paper towel–lined plate",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -587,7 +587,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Name:  "salmon fillets on plate",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -596,7 +596,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &ounceMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(24)),
 				},
 			},
@@ -614,7 +614,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidIngredientPreparationID:    &drainSalmonVIP.ID,
 				Name:                            "fully cooked salmon fillets",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 24,
 				},
 			},
@@ -625,7 +625,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &drainPlateVPV.ID,
 				Name:                            "salmon fillets on plate",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -636,7 +636,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &ounceMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(24)),
 				},
 			},
@@ -650,11 +650,11 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the ground pepper in an airtight container at room temperature for up to 7 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(18)),
 			Max: new(float32(25)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(604800)), // 7 days
 		},
@@ -670,7 +670,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 			Source:              "https://www.seriouseats.com/crispy-pan-seared-salmon-fillets-recipe",
 			Description:         "How to simultaneously achieve extra-crunchy skin and perfectly tender fish. The key is to cook the salmon most of the way through with the skin side down in order to insulate the delicate flesh from the direct heat of the pan.",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 4,
 			},
 			PortionName:       "serving",

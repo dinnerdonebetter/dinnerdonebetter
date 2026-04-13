@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // OnePanPastaRecipe creates the One-Pan Pasta with Tomatoes and Greens recipe.
@@ -123,7 +123,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &halveCherryTomatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &cherryTomatoCupVIMU.ID,
 				Name:                             "cherry tomatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 			},
@@ -132,7 +132,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationInstrumentID: &halveKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -141,7 +141,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationVesselID: &halveCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -152,7 +152,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -169,7 +169,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &zestLemonVIP.ID,
 				ValidIngredientMeasurementUnitID: &lemonUnitVIMU.ID,
 				Name:                             "lemons",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -178,7 +178,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationInstrumentID: &zestMicroplaneVPI.ID,
 				Name:                         "microplane",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -189,7 +189,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -206,7 +206,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &boilWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &waterQuartVIMU.ID,
 				Name:                             "water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1.25,
 				},
 			},
@@ -215,7 +215,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationVesselID: &boilPotVPV.ID,
 				Name:                     "pot",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -226,7 +226,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &quartMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1.25)),
 				},
 			},
@@ -248,7 +248,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &addSpaghettiVIP.ID,
 				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "spaghetti",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -257,7 +257,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addCherryTomatoVIP.ID,
 				Name:                            "halved cherry tomatoes",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -265,7 +265,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "lemon zest",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -273,7 +273,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &addOliveOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
 				Name:                             "olive oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 7,
 				},
 			},
@@ -281,7 +281,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &addSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -290,7 +290,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationVesselID: &addSautePanVPV.ID,
 				Name:                     "large shallow pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -301,7 +301,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -324,7 +324,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addWaterVIP.ID,
 				Name:                            "boiling water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -334,7 +334,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large shallow pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -345,7 +345,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -367,7 +367,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "spaghetti in water",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -378,7 +378,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &coverSautePanVPV.ID,
 				Name:                            "large shallow pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -397,7 +397,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -419,7 +419,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "covered spaghetti at boil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -430,7 +430,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &uncoverSautePanVPV.ID,
 				Name:                            "large shallow pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -441,7 +441,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -458,7 +458,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		PreparationID:        simmerPrep.ID,
 		Index:                7,
 		ExplicitInstructions: "Reduce the heat to a simmer and cook for about 6 minutes, using tongs to move the spaghetti around now and then so it doesn't stick.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(360)),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -467,7 +467,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &simmerSpaghettiVIP.ID,
 				Name:                            "uncovered spaghetti at boil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -476,7 +476,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationInstrumentID: &simmerTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -487,7 +487,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &simmerSautePanVPV.ID,
 				Name:                            "large shallow pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -498,7 +498,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -520,7 +520,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &rinseKaleVIP.ID,
 				ValidIngredientMeasurementUnitID: &kaleCupVIMU.ID,
 				Name:                             "kale (leaves only)",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 				Index:       new(uint16(0)),
@@ -530,7 +530,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &rinseSpinachVIP.ID,
 				ValidIngredientMeasurementUnitID: &spinachCupVIMU.ID,
 				Name:                             "spinach (leaves only)",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 				Index:       new(uint16(0)),
@@ -541,7 +541,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationVesselID: &rinseLargeBowlVPV.ID,
 				Name:                     "large bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -552,7 +552,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -571,7 +571,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &chopKaleVIP.ID,
 				ValidIngredientMeasurementUnitID: &kaleCupVIMU.ID,
 				Name:                             "washed kale",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 				Index:       new(uint16(0)),
@@ -583,7 +583,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID:     &chopSpinachVIP.ID,
 				ValidIngredientMeasurementUnitID: &spinachCupVIMU.ID,
 				Name:                             "washed spinach",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 				Index:       new(uint16(0)),
@@ -594,7 +594,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationInstrumentID: &chopKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -603,7 +603,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationVesselID: &chopCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -614,7 +614,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(4)),
 				},
 			},
@@ -631,7 +631,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "simmered spaghetti",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -639,7 +639,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "chopped kale or spinach",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 			},
@@ -650,7 +650,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addSautePanVPV.ID,
 				Name:                            "large shallow pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -661,7 +661,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -684,7 +684,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &cookSpaghettiVIP.ID,
 				Name:                            "spaghetti with greens",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -693,7 +693,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			{
 				ValidPreparationInstrumentID: &cookTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -704,7 +704,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &cookSautePanVPV.ID,
 				Name:                            "large shallow pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -729,7 +729,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -751,7 +751,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "one-pan pasta",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -759,7 +759,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID: &seasonSaltVIP.ID,
 				QuantityNotes:                "to taste",
 				Name:                         "salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 			},
@@ -767,7 +767,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID: &seasonPepperVIP.ID,
 				QuantityNotes:                "to taste",
 				Name:                         "black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 			},
@@ -778,7 +778,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &seasonSautePanVPV.ID,
 				Name:                            "large shallow pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -789,7 +789,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -811,7 +811,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned one-pan pasta",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -819,7 +819,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ValidIngredientPreparationID: &topParmesanVIP.ID,
 				QuantityNotes:                "for serving",
 				Name:                         "Parmesan",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 			},
@@ -830,7 +830,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &topSautePanVPV.ID,
 				Name:                            "large shallow pan",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -841,7 +841,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -855,10 +855,10 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store halved tomatoes and lemon zest in separate airtight containers in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(172800)), // 2 days
 		},
@@ -875,10 +875,10 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the washed and chopped greens in an airtight container in the refrigerator for up to 2 days (spinach) or 3 days (kale).",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)),
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days
 		},
@@ -895,7 +895,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 			Source:              "https://cooking.nytimes.com/recipes/1018322-one-pot-spaghetti-with-cherry-tomatoes-and-kale",
 			Description:         "A simple one-pan pasta where spaghetti cooks directly with cherry tomatoes, lemon zest, and olive oil. Add kale or spinach near the end and top with Parmesan.",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 4,
 			},
 			PortionName:       "serving",

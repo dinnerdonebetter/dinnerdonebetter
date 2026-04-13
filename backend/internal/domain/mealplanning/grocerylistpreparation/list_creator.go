@@ -11,7 +11,6 @@ import (
 	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 
 	"github.com/shopspring/decimal"
 )
@@ -142,7 +141,7 @@ func (g *groceryListCreator) processRecipeIngredients(
 					IngredientIndex:         &ingredientIndex,
 					OptionIndex:             &optionIndex,
 					ID:                      identifiers.New(),
-					QuantityNeeded: types.Float32RangeWithOptionalMax{
+					QuantityNeeded: numbers.MinRange[float32]{
 						Max: maxQty,
 						Min: minQty,
 					},
@@ -161,7 +160,7 @@ func (g *groceryListCreator) processRecipeIngredients(
 						ValidIngredientID:       ingredient.Ingredient.ID,
 						BelongsToMealPlan:       mealPlanID,
 						ID:                      identifiers.New(),
-						QuantityNeeded: types.Float32RangeWithOptionalMax{
+						QuantityNeeded: numbers.MinRange[float32]{
 							Max: maxQty,
 							Min: minQty,
 						},

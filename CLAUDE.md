@@ -28,7 +28,7 @@ make test     # tests the backend frontend and iOS folders
 ## Documentation
 
 - `docs/identity.md` — Users, accounts, memberships, roles
-- `docs/auth-flow.md` — Authentication flow (password, passkey, SSO, OAuth2, gRPC interceptor)
+- `docs/auth-flow.md` — Authentication flow (password, passkey, OAuth2, gRPC interceptor)
 - `docs/recipes.md` — Recipe object model, bridge tables, option groups, scaling
 - `docs/meals.md` — Meals, components, scaling
 - `docs/meal_planning.md` — Meal plans, voting (Schulze), grocery lists, background workers

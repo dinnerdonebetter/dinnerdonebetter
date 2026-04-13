@@ -13,8 +13,9 @@ import (
 
 	"github.com/primandproper/platform/database/filtering"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -107,8 +108,8 @@ func buildTestManager(t *testing.T) (*manager, *managerTestMocks) {
 	m := &manager{
 		tokenIssuer:             mocks.tokenIssuer,
 		authenticator:           mocks.authenticator,
-		tracer:                  tracing.NewNamedTracer(tracing.NewNoopTracerProvider(), "test"),
-		logger:                  logging.NewNoopLogger(),
+		tracer:                  tracing.NewNamedTracer(tracingnoop.NewTracerProvider(), "test"),
+		logger:                  loggingnoop.NewLogger(),
 		dataChangesPublisher:    mocks.publisher,
 		userAuthDataManager:     mocks.userAuthDataManager,
 		sessionDataManager:      mocks.sessionDataManager,

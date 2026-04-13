@@ -204,11 +204,6 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 					RefreshTokenLifespan: time.Hour,
 					Debug:                false,
 				},
-				SSO: authservice.SSOConfigs{
-					Google: authservice.GoogleSSOConfig{
-						CallbackURL: "https://app.dinnerdonebetter.dev/auth/google/callback",
-					},
-				},
 				Debug:                 true,
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,

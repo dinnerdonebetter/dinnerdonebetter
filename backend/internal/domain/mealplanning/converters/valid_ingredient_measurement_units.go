@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateRequestInput creates a ValidIngredientMeasurementUnitUpdateRequestInput from a ValidIngredientMeasurementUnit.
@@ -13,7 +13,7 @@ func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdate
 		Notes:                  &input.Notes,
 		ValidMeasurementUnitID: &input.MeasurementUnit.ID,
 		ValidIngredientID:      &input.Ingredient.ID,
-		AllowableQuantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+		AllowableQuantity: numbers.OpenRangeUpdateRequestInput[float32]{
 			Max: input.AllowableQuantity.Max,
 			Min: &input.AllowableQuantity.Min,
 		},

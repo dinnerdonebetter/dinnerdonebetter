@@ -9,8 +9,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
@@ -22,7 +22,7 @@ func buildUploadedMediaManagerForTest(t *testing.T) (*uploadedMediaManager, *upl
 	t.Helper()
 
 	repo := &uploadedmediamock.Repository{}
-	m := NewUploadedMediaDataManager(tracing.NewNoopTracerProvider(), logging.NewNoopLogger(), repo)
+	m := NewUploadedMediaDataManager(tracingnoop.NewTracerProvider(), loggingnoop.NewLogger(), repo)
 	return m.(*uploadedMediaManager), repo
 }
 

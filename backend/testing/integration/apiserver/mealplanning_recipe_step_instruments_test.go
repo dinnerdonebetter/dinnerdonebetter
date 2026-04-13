@@ -9,7 +9,7 @@ import (
 	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,7 +25,7 @@ func checkRecipeStepInstrumentSliceEquality(t *testing.T, stepIndex int, expecte
 
 func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, expected, actual *mealplanning.RecipeStepInstrument) {
 	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d instrument %d to have MealPlanTaskID", stepIndex, instrIndex)
+	assert.NotEmpty(t, actual.ID, "expected step %d instrument %d to have ID", stepIndex, instrIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d instrument %d to have CreatedAt", stepIndex, instrIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d instrument %d to have BelongsToRecipeStep", stepIndex, instrIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d instrument %d Name", stepIndex, instrIndex)
@@ -37,8 +37,8 @@ func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, 
 	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d instrument %d Optional", stepIndex, instrIndex)
 	if expected.Instrument != nil {
 		require.NotNil(t, actual.Instrument, "expected step %d instrument %d Instrument non-nil", stepIndex, instrIndex)
-		assert.NotEmpty(t, actual.Instrument.ID, "expected step %d instrument %d Instrument.MealPlanTaskID", stepIndex, instrIndex)
-		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected step %d instrument %d Instrument.MealPlanTaskID", stepIndex, instrIndex)
+		assert.NotEmpty(t, actual.Instrument.ID, "expected step %d instrument %d Instrument.ID", stepIndex, instrIndex)
+		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected step %d instrument %d Instrument.ID", stepIndex, instrIndex)
 	}
 }
 
@@ -186,7 +186,7 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
 			PortionName:         t.Name(),
 			PluralPortionName:   t.Name(),
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Max: nil,
 				Min: 1,
 			},
@@ -198,7 +198,7 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductInstrumentType,
 							MeasurementUnit:     unit,
 							QuantityNotes:       "",
-							MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
+							MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
 						},
 					},
 					Notes:       "first step",
@@ -225,7 +225,7 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit:     stick,
 							QuantityNotes:       "",
-							MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
+							MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
 						},
 					},
 					Notes: "second step",
@@ -234,7 +234,7 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 							Ingredient:      butter,
 							Name:            "butter",
 							MeasurementUnit: *stick,
-							Quantity: types.Float32RangeWithOptionalMax{
+							Quantity: numbers.MinRange[float32]{
 								Max: nil,
 								Min: 1,
 							},

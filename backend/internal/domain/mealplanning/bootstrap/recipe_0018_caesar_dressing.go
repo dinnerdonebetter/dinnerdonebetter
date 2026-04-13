@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // CaesarDressingRecipe creates the Caesar Dressing recipe.
@@ -126,7 +126,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1, // approximately 0.5 teaspoon
 				},
 			},
@@ -135,7 +135,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -144,7 +144,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -157,7 +157,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -175,7 +175,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				Name:                             "garlic cloves",
 				QuantityNotes:                    "about 2 teaspoons when minced",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -184,7 +184,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationInstrumentID: &minceKnifeDressingVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -193,7 +193,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationVesselID: &minceCuttingBoardDressingVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -204,7 +204,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &teaspoonMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -221,7 +221,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientPreparationID:     &combineOliveOilDressingVIP.ID,
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
 				Name:                             "extra-virgin olive oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 3,
 				},
 			},
@@ -230,7 +230,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &combineGarlicDressingVIP.ID,
 				Name:                            "minced garlic",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -239,7 +239,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationInstrumentID: &combineWhiskDressingVPI.ID,
 				Name:                         "whisk",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -248,7 +248,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationVesselID: &combineSmallBowlDressingVPV.ID,
 				Name:                     "small bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -259,7 +259,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -277,7 +277,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &pressGarlicDressingVIP.ID,
 				Name:                            "garlic oil mixture",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -286,7 +286,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationInstrumentID: &pressSpoonDressingVPI.ID,
 				Name:                         "spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -295,14 +295,14 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationVesselID: &pressFineMeshStrainerDressingVPV.ID,
 				Name:                     "fine-mesh strainer",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationVesselID: &pressLargeBowlDressingVPV.ID,
 				Name:                     "large bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -313,7 +313,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(3)),
 				},
 			},
@@ -322,7 +322,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &teaspoonMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(2)),
 				},
 			},
@@ -339,7 +339,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientPreparationID:     &blendEggYolkVIP.ID,
 				ValidIngredientMeasurementUnitID: &eggYolkUnitVIMU.ID,
 				Name:                             "large egg yolk",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -347,7 +347,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientPreparationID:     &blendLemonJuiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &lemonJuiceTablespoonVIMU.ID,
 				Name:                             "fresh lemon juice",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -356,7 +356,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientMeasurementUnitID: &anchoviesUnitVIMU.ID,
 				Name:                             "anchovies",
 				QuantityNotes:                    "amount can vary according to taste",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 					Max: new(float32(6)),
 				},
@@ -365,7 +365,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientPreparationID:     &blendWorcestershireVIP.ID,
 				ValidIngredientMeasurementUnitID: &worcestershireTeaspoonVIMU.ID,
 				Name:                             "Worcestershire sauce",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -374,7 +374,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidIngredientPreparationID:    &blendGarlicVIP.ID,
 				Name:                            "pressed garlic",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 2,
 				},
 			},
@@ -382,7 +382,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientPreparationID:     &blendParmesanVIP.ID,
 				ValidIngredientMeasurementUnitID: &parmesanCupVIMU.ID,
 				Name:                             "finely grated parmesan cheese",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -391,7 +391,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientMeasurementUnitID: &canolaOilCupVIMU.ID,
 				Name:                             "canola oil",
 				QuantityNotes:                    "drizzle in slowly while blending",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.33,
 				},
 			},
@@ -400,7 +400,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationInstrumentID: &blendStickBlenderVPI.ID,
 				Name:                         "immersion blender",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -409,7 +409,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationVesselID: &blendImmersionBlenderCupVPV.ID,
 				Name:                     "immersion blender cup",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -428,7 +428,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -445,7 +445,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "base emulsion",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -454,7 +454,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationVesselID: &transferMediumBowlVPV.ID,
 				Name:                     "medium bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -465,7 +465,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -488,7 +488,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &whiskCanolaOilVIP.ID,
 				Name:                            "emulsion in bowl",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -496,7 +496,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientPreparationID:     &whiskOliveOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oliveOilCupVIMU.ID,
 				Name:                             "extra-virgin olive oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.25,
 				},
 			},
@@ -505,7 +505,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 			{
 				ValidPreparationInstrumentID: &whiskWhiskVPI.ID,
 				Name:                         "whisk",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -515,7 +515,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "medium bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -526,7 +526,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -548,7 +548,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "whisked dressing",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -557,7 +557,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				Name:                             "kosher salt",
 				QuantityNotes:                    "to taste",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0.5,
 				},
 				Optional: true,
@@ -567,7 +567,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
 				QuantityNotes:                   "to taste",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 				Optional: true,
@@ -578,7 +578,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "medium bowl",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -589,7 +589,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -602,7 +602,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 		Source:              "https://www.seriouseats.com/the-best-caesar-salad-recipe",
 		Description:         "A modern emulsified Caesar salad dressing made with egg yolk, anchovies, parmesan, and two oils.",
 		YieldsComponentType: mealplanning.MealComponentTypesSide,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Min: 4,
 			Max: new(float32(8)),
 		},

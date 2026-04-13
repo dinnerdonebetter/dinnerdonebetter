@@ -5,7 +5,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // BuildFakeRecipe builds a faked recipe.
@@ -43,7 +43,7 @@ func BuildFakeRecipe() *mealplanning.Recipe {
 		PrepTasks:          prepTasks,
 		Status:             mealplanning.RecipeStatusSubmitted,
 		Media:              recipeMedia,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Max: new(float32(buildFakeNumber())),
 			Min: float32(buildFakeNumber()),
 		},

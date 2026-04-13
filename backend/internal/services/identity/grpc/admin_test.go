@@ -13,7 +13,7 @@ import (
 	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/reflection"
 
@@ -26,7 +26,7 @@ import (
 func buildTestServiceWithAdminPermissions(t *testing.T) (*serviceImpl, *managermock.IdentityDataManager) {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
+	logger := loggingnoop.NewLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	identityDataManager := &managermock.IdentityDataManager{}
 
@@ -55,7 +55,7 @@ func buildTestServiceWithAdminPermissions(t *testing.T) (*serviceImpl, *managerm
 func buildTestServiceWithInsufficientPermissions(t *testing.T) *serviceImpl {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
+	logger := loggingnoop.NewLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	identityDataManager := &managermock.IdentityDataManager{}
 

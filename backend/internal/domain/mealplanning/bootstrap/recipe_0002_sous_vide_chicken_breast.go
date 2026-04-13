@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
@@ -131,7 +131,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 			},
@@ -140,7 +140,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -149,7 +149,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -162,7 +162,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -174,7 +174,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        heatPrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Preheat a water bath to 150°F (66°C) using a sous vide cooker. This temperature produces tender and juicy chicken, ideal for chicken salad when served cold.",
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(66)), // 150°F = 66°C
 			Max: new(float32(66)), // 150°F = 66°C
 		},
@@ -182,7 +182,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &heatSousVideCookerVPI.ID,
 				Name:                         "sous vide cooker",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -191,7 +191,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &heatWaterBathVPV.ID,
 				Name:                     "water bath",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -215,7 +215,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenGramVIMU.ID,
 				Name:                             "boneless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 900,
 				},
 			},
@@ -223,7 +223,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 				ToTaste: true,
@@ -232,7 +232,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 0,
 				},
 				ToTaste: true,
@@ -242,7 +242,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -253,7 +253,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(900)),
 				},
 			},
@@ -270,7 +270,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned boneless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 900,
 				},
 			},
@@ -278,7 +278,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &bagThymeVIP.ID,
 				ValidIngredientMeasurementUnitID: &thymeSprigVIMU.ID,
 				Name:                             "thyme",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 				Optional: true,
@@ -287,7 +287,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &bagRosemaryVIP.ID,
 				ValidIngredientMeasurementUnitID: &rosemarySprigVIMU.ID,
 				Name:                             "rosemary",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 4,
 				},
 				Optional: true,
@@ -297,14 +297,14 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &bagPlasticBagVPV.ID,
 				Name:                     "zipper-lock bag",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationVesselID: &bagVacuumBagVPV.ID,
 				Name:                     "vacuum bag",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -315,7 +315,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(900)),
 				},
 			},
@@ -323,7 +323,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "bag with chicken",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -340,7 +340,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "bagged seasoned boneless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 900,
 				},
 			},
@@ -351,7 +351,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &sealPlasticBagVPV.ID,
 				Name:                            "bag with chicken",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -362,7 +362,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &sealVacuumBagVPV.ID,
 				Name:                            "bag with chicken",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 				Index:       new(uint16(0)),
@@ -375,7 +375,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(900)),
 				},
 			},
@@ -387,11 +387,11 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        sousVidePrep.ID,
 		Index:                5,
 		ExplicitInstructions: "Add the sealed bagged chicken to the preheated water bath and cook at 150°F (66°C) for 1 to 4 hours.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(3600)),  // 1 hour minimum
 			Max: new(uint32(14400)), // 4 hours maximum
 		},
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(66)), // 150°F = 66°C
 			Max: new(float32(66)), // 150°F = 66°C
 		},
@@ -400,7 +400,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "sealed bagged seasoned boneless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 900,
 				},
 			},
@@ -409,7 +409,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &sousVideCookerVPI.ID,
 				Name:                         "sous vide cooker",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -420,7 +420,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &sousVideWaterBathVPV.ID,
 				Name:                            "preheated water bath",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -431,7 +431,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(900)),
 				},
 			},
@@ -458,7 +458,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &removeChickenVIP.ID,
 				Name:                            "sous vide cooked boneless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 900,
 				},
 			},
@@ -467,7 +467,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &removeTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -478,7 +478,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(900)),
 				},
 			},
@@ -497,7 +497,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &dryChickenVIP.ID,
 				Name:                            "unbagged sous vide boneless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 900,
 				},
 			},
@@ -505,7 +505,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &dryPaperTowelsVIP.ID,
 				ValidIngredientMeasurementUnitID: &paperTowelsUnitVIMU.ID,
 				Name:                             "paper towels",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 1,
 				},
 				Index:       new(uint16(1)),
@@ -516,7 +516,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &dryBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -527,7 +527,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(900)),
 				},
 			},
@@ -540,7 +540,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Index:                8,
 		Optional:             true,
 		ExplicitInstructions: "Heat the oil in a heavy cast iron or stainless steel skillet over medium-high heat until shimmering.",
-		TemperatureInCelsius: types.OptionalFloat32Range{
+		TemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: new(float32(180)), // Medium-high heat
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -548,7 +548,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &heatOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oilMilliliterVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 15, // Enough to coat the pan
 				},
 			},
@@ -557,7 +557,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &heatStovetopVPI.ID,
 				Name:                         "stovetop",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -566,7 +566,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
 				Name:                     "cast iron skillet",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -577,7 +577,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &milliliterMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(15)),
 				},
 			},
@@ -585,7 +585,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "cast iron skillet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -606,7 +606,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Index:                9,
 		Optional:             true,
 		ExplicitInstructions: "Gently lay the chicken in the skillet using your fingers or a set of tongs. Hold the chicken down flat in the pan with a flexible metal spatula or your fingers (be careful of splattering oil). Cook until golden brown and crisp, about 2 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(120)), // 2 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -614,7 +614,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dried sous vide boneless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 900,
 				},
 			},
@@ -622,7 +622,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated shimmering oil",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 15,
 				},
 				Index:       new(uint16(1)),
@@ -633,14 +633,14 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &panSearSpatulaVPI.ID,
 				Name:                         "flexible metal spatula",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
 			{
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 				Index:       new(uint16(1)),
@@ -653,7 +653,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:                            "cast iron skillet",
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -664,7 +664,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(900)),
 				},
 			},
@@ -672,7 +672,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:  "cast iron skillet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: types.OptionalFloat32Range{
+				ItemQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(1)),
 				},
 			},
@@ -692,7 +692,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID:        restPrep.ID,
 		Index:                10,
 		ExplicitInstructions: "Remove from the pan and let rest until cool enough to handle, about 2 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
+		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 			Min: new(uint32(120)), // 2 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -700,7 +700,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "pan-seared sous vide boneless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 900,
 				},
 				Optional: true, // From step 7 if pan finishing chosen
@@ -710,7 +710,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &restTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -719,7 +719,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &restPlateVPV.ID,
 				Name:                     "serving plate",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -730,7 +730,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(900)),
 				},
 			},
@@ -748,7 +748,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &sliceChickenVIP.ID,
 				Name:                            "rested sous vide boneless chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[float32]{
 					Min: 900,
 				},
 			},
@@ -757,7 +757,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint32]{
 					Min: 1,
 				},
 			},
@@ -766,7 +766,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
+				Quantity: numbers.MinRange[uint16]{
 					Min: 1,
 				},
 			},
@@ -777,7 +777,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
+				MeasurementQuantity: numbers.OpenRange[float32]{
 					Min: new(float32(900)),
 				},
 			},
@@ -792,10 +792,10 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the sealed chicken breasts in the refrigerator for up to 24 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: new(float32(4)), // Refrigerator temperature
 		},
-		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(86400)), // 24 hours
 		},
@@ -813,7 +813,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			Source:              "https://www.seriouseats.com/sous-vide-chicken-breast-recipe",
 			Description:         "",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: 2,
 			},
 			PortionName:       "serving",

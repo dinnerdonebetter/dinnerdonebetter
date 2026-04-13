@@ -37,13 +37,12 @@ jobs:
         with:
           path: backend/vendor
           key: go-vendor-${{ hashFiles('backend/go.sum') }}
+          restore-keys: |
+            go-vendor-
 
       - name: Vendor dependencies
         working-directory: backend
-        run: |
-          if [ ! -d vendor ]; then
-            make vendor
-          fi
+        run: make vendor
 
       - name: Ensure configs can be generated
         working-directory: backend
@@ -74,13 +73,12 @@ jobs:
         with:
           path: backend/vendor
           key: go-vendor-${{ hashFiles('backend/go.sum') }}
+          restore-keys: |
+            go-vendor-
 
       - name: Vendor dependencies
         working-directory: backend
-        run: |
-          if [ ! -d vendor ]; then
-            make vendor
-          fi
+        run: make vendor
 
       - name: Ensure queries and querier can be generated
         working-directory: backend
@@ -111,13 +109,12 @@ jobs:
         with:
           path: backend/vendor
           key: go-vendor-${{ hashFiles('backend/go.sum') }}
+          restore-keys: |
+            go-vendor-
 
       - name: Vendor dependencies
         working-directory: backend
-        run: |
-          if [ ! -d vendor ]; then
-            make vendor
-          fi
+        run: make vendor
 
       - name: generate env vars file
         working-directory: backend

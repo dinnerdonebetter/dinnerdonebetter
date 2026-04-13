@@ -18,8 +18,6 @@ These variables must be configured in Terraform Cloud for each relevant workspac
 | `CONSUMER_WEBAPP_OAUTH2_CLIENT_SECRET` | OAuth2 client secret for the consumer webapp.                                            |
 | `MCP_SERVICE_OAUTH2_CLIENT_ID`         | OAuth2 client ID for the MCP (Model Context Protocol) service.                           |
 | `MCP_SERVICE_OAUTH2_CLIENT_SECRET`     | OAuth2 client secret for the MCP service.                                                |
-| `GOOGLE_SSO_OAUTH2_CLIENT_ID`          | Google OAuth2 client ID for "Sign in with Google" (SSO).                                 |
-| `GOOGLE_SSO_OAUTH2_CLIENT_SECRET`      | Google OAuth2 client secret for SSO.                                                     |
 
 ### Cloud Infrastructure
 

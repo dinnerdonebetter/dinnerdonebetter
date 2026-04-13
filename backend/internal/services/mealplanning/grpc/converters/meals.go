@@ -8,8 +8,8 @@ import (
 	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/pointer"
-	"github.com/primandproper/platform/types"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -149,7 +149,7 @@ func ConvertGRPCMealToMeal(input *mealplanningsvc.Meal) *mealplanning.Meal {
 		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
 		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
@@ -248,7 +248,7 @@ func ConvertGRPCMealPlanGroceryListItemToMealPlanGroceryListItem(input *mealplan
 		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
 		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		QuantityNeeded: types.Float32RangeWithOptionalMax{
+		QuantityNeeded: numbers.MinRange[float32]{
 			Max: input.QuantityNeeded.Max,
 			Min: input.QuantityNeeded.Min,
 		},
@@ -570,7 +570,7 @@ func ConvertGRPCMealCreationRequestInputToMealCreationRequestInput(input *mealpl
 	}
 
 	return &mealplanning.MealCreationRequestInput{
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Min: input.EstimatedPortions.Min,
 			Max: input.EstimatedPortions.Max,
 		},
@@ -743,7 +743,7 @@ func ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryList
 		ValidIngredientID:          input.ValidIngredientId,
 		ValidMeasurementUnitID:     input.ValidMeasurementUnitId,
 		StatusExplanation:          input.StatusExplanation,
-		QuantityNeeded: types.Float32RangeWithOptionalMax{
+		QuantityNeeded: numbers.MinRange[float32]{
 			Max: input.QuantityNeeded.Max,
 			Min: input.QuantityNeeded.Min,
 		},
@@ -852,9 +852,9 @@ func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListIt
 		status = new(ConvertMealPlanGroceryListItemStatusToString(*input.Status))
 	}
 
-	var quantityNeeded types.Float32RangeWithOptionalMaxUpdateRequestInput
+	var quantityNeeded numbers.OpenRangeUpdateRequestInput[float32]
 	if input.QuantityNeeded != nil {
-		quantityNeeded = types.Float32RangeWithOptionalMaxUpdateRequestInput{
+		quantityNeeded = numbers.OpenRangeUpdateRequestInput[float32]{
 			Min: input.QuantityNeeded.Min,
 			Max: input.QuantityNeeded.Max,
 		}

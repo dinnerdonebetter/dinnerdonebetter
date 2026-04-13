@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigDatabaseCreationInput creates a ValidPrepTaskConfigDatabaseCreationInput from a ValidPrepTaskConfigCreationRequestInput.
@@ -25,7 +25,7 @@ func ConvertValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigDatabase
 // ConvertValidPrepTaskConfigToValidPrepTaskConfigUpdateRequestInput builds a ValidPrepTaskConfigUpdateRequestInput from a ValidPrepTaskConfig.
 func ConvertValidPrepTaskConfigToValidPrepTaskConfigUpdateRequestInput(validPrepTaskConfig *mealplanning.ValidPrepTaskConfig) *mealplanning.ValidPrepTaskConfigUpdateRequestInput {
 	return &mealplanning.ValidPrepTaskConfigUpdateRequestInput{
-		StorageDurationInSeconds: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
+		StorageDurationInSeconds: numbers.OpenRangeUpdateRequestInput[uint32]{
 			Min: &validPrepTaskConfig.StorageDurationInSeconds.Min,
 			Max: validPrepTaskConfig.StorageDurationInSeconds.Max,
 		},

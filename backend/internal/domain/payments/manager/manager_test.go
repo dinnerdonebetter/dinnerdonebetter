@@ -15,8 +15,8 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
@@ -47,8 +47,8 @@ func buildPaymentsManagerForTest(t *testing.T) *paymentsManager {
 	})
 	m, err := NewPaymentsDataManager(
 		ctx,
-		tracing.NewNoopTracerProvider(),
-		logging.NewNoopLogger(),
+		tracingnoop.NewTracerProvider(),
+		loggingnoop.NewLogger(),
 		&paymentsmock.Repository{},
 		registry,
 		&identitymock.IdentityDataManager{},

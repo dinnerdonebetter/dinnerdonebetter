@@ -9,8 +9,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
@@ -22,7 +22,7 @@ func buildDataPrivacyManagerForTest(t *testing.T) (*dataPrivacyManager, *datapri
 	t.Helper()
 
 	repo := &dataprivacymock.Repository{}
-	m := NewDataPrivacyManager(tracing.NewNoopTracerProvider(), logging.NewNoopLogger(), repo)
+	m := NewDataPrivacyManager(tracingnoop.NewTracerProvider(), loggingnoop.NewLogger(), repo)
 	return m.(*dataPrivacyManager), repo
 }
 

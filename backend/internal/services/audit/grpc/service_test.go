@@ -13,8 +13,9 @@ import (
 
 	"github.com/primandproper/platform/database/filtering"
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
@@ -26,7 +27,7 @@ import (
 func buildTestService(t *testing.T) (*serviceImpl, *auditmock.Repository) {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
+	logger := loggingnoop.NewLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	auditManager := &auditmock.Repository{}
 
@@ -45,8 +46,8 @@ func TestNewService(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		auditManager := &auditmock.Repository{}
 
 		service := NewService(logger, tracerProvider, auditManager)

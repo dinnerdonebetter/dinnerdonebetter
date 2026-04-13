@@ -9,13 +9,10 @@ import (
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
-	"github.com/primandproper/platform/analytics"
-	"github.com/primandproper/platform/encoding"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/routing"
 
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
@@ -52,11 +49,8 @@ func RegisterAuthHTTPService(i do.Injector) {
 			do.MustInvoke[authn.Authenticator](i),
 			do.MustInvoke[oauth.Repository](i),
 			do.MustInvoke[identitymanager.IdentityDataManager](i),
-			do.MustInvoke[encoding.ServerEncoderDecoder](i),
 			do.MustInvoke[tracing.TracerProvider](i),
 			do.MustInvoke[messagequeue.PublisherProvider](i),
-			do.MustInvoke[analytics.EventReporter](i),
-			do.MustInvoke[routing.RouteParamManager](i),
 			do.MustInvoke[*msgconfig.QueuesConfig](i),
 		)
 	})

@@ -11,9 +11,9 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -63,7 +63,7 @@ func (q *repository) GetValidIngredientMeasurementUnit(ctx context.Context, vali
 		CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-		AllowableQuantity: types.Float32RangeWithOptionalMax{
+		AllowableQuantity: numbers.MinRange[float32]{
 			Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
 			Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 		},
@@ -88,7 +88,7 @@ func (q *repository) GetValidIngredientMeasurementUnit(ctx context.Context, vali
 			CreatedAt:     result.ValidIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 				Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			},
@@ -199,7 +199,7 @@ func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 				CreatedAt:     result.ValidIngredientCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+				StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				},
@@ -236,7 +236,7 @@ func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 				IsAcid:                 result.ValidIngredientIsAcid,
 				IsHeat:                 result.ValidIngredientIsHeat,
 			},
-			AllowableQuantity: types.Float32RangeWithOptionalMax{
+			AllowableQuantity: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
 				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 			},
@@ -323,7 +323,7 @@ func (q *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 				CreatedAt:     result.ValidIngredientCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+				StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				},
@@ -360,7 +360,7 @@ func (q *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 				IsAcid:                 result.ValidIngredientIsAcid,
 				IsHeat:                 result.ValidIngredientIsHeat,
 			},
-			AllowableQuantity: types.Float32RangeWithOptionalMax{
+			AllowableQuantity: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
 				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 			},
@@ -419,7 +419,7 @@ func (q *repository) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 			CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-			AllowableQuantity: types.Float32RangeWithOptionalMax{
+			AllowableQuantity: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
 				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 			},
@@ -444,7 +444,7 @@ func (q *repository) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 				CreatedAt:     result.ValidIngredientCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+				StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				},
@@ -517,7 +517,7 @@ func (q *repository) GetValidIngredientMeasurementUnitsByIDs(ctx context.Context
 			CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-			AllowableQuantity: types.Float32RangeWithOptionalMax{
+			AllowableQuantity: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
 				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 			},
@@ -542,7 +542,7 @@ func (q *repository) GetValidIngredientMeasurementUnitsByIDs(ctx context.Context
 				CreatedAt:     result.ValidIngredientCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+				StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				},
@@ -613,7 +613,7 @@ func (q *repository) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 		Notes:           input.Notes,
 		MeasurementUnit: mealplanning.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
 		Ingredient:      mealplanning.ValidIngredient{ID: input.ValidIngredientID},
-		AllowableQuantity: types.Float32RangeWithOptionalMax{
+		AllowableQuantity: numbers.MinRange[float32]{
 			Max: input.AllowableQuantity.Max,
 			Min: input.AllowableQuantity.Min,
 		},

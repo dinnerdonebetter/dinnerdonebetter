@@ -19,7 +19,9 @@ import (
 	"github.com/primandproper/platform/database/filtering"
 	"github.com/primandproper/platform/database/postgres"
 	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/spf13/cobra"
 )
@@ -89,8 +91,8 @@ func main() {
 
 func runExport(dbHost string, dbPort uint16, dbUser, dbPassword, dbName string, dbSSLDisable bool, outputFile string) error {
 	ctx := context.Background()
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
+	logger := loggingnoop.NewLogger()
+	tracerProvider := tracingnoop.NewTracerProvider()
 
 	client, err := connectDB(ctx, logger, tracerProvider, dbHost, dbPort, dbUser, dbPassword, dbName, dbSSLDisable)
 	if err != nil {

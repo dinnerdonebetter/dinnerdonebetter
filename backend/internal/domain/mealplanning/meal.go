@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -57,16 +57,16 @@ type (
 	Meal struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt            time.Time                         `json:"createdAt"`
-		ArchivedAt           *time.Time                        `json:"archivedAt"`
-		LastUpdatedAt        *time.Time                        `json:"lastUpdatedAt"`
-		EstimatedPortions    types.Float32RangeWithOptionalMax `json:"estimatedPortions"`
-		ID                   string                            `json:"id"`
-		Description          string                            `json:"description"`
-		CreatedByUser        string                            `json:"createdByUser"`
-		Name                 string                            `json:"name"`
-		Components           []*MealComponent                  `json:"components"`
-		EligibleForMealPlans bool                              `json:"eligibleForMealPlans"`
+		CreatedAt            time.Time                 `json:"createdAt"`
+		ArchivedAt           *time.Time                `json:"archivedAt"`
+		LastUpdatedAt        *time.Time                `json:"lastUpdatedAt"`
+		EstimatedPortions    numbers.MinRange[float32] `json:"estimatedPortions"`
+		ID                   string                    `json:"id"`
+		Description          string                    `json:"description"`
+		CreatedByUser        string                    `json:"createdByUser"`
+		Name                 string                    `json:"name"`
+		Components           []*MealComponent          `json:"components"`
+		EligibleForMealPlans bool                      `json:"eligibleForMealPlans"`
 	}
 
 	// MealComponent is a recipe with some extra data attached to it.
@@ -82,7 +82,7 @@ type (
 	MealCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedPortions    types.Float32RangeWithOptionalMax    `json:"estimatedPortions"`
+		EstimatedPortions    numbers.MinRange[float32]            `json:"estimatedPortions"`
 		Name                 string                               `json:"name"`
 		Description          string                               `json:"description"`
 		Components           []*MealComponentCreationRequestInput `json:"components"`
@@ -102,7 +102,7 @@ type (
 	MealDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedPortions    types.Float32RangeWithOptionalMax     `json:"-"`
+		EstimatedPortions    numbers.MinRange[float32]             `json:"-"`
 		ID                   string                                `json:"-"`
 		Name                 string                                `json:"-"`
 		Description          string                                `json:"-"`
@@ -124,12 +124,12 @@ type (
 	MealUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Name                 *string                                             `json:"name,omitempty"`
-		Description          *string                                             `json:"description,omitempty"`
-		CreatedByUser        *string                                             `json:"-"`
-		EstimatedPortions    types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimatedPortions"`
-		EligibleForMealPlans *bool                                               `json:"eligibleForMealPlans"`
-		Components           []*MealComponentUpdateRequestInput                  `json:"recipes,omitempty"`
+		Name                 *string                                      `json:"name,omitempty"`
+		Description          *string                                      `json:"description,omitempty"`
+		CreatedByUser        *string                                      `json:"-"`
+		EstimatedPortions    numbers.OpenRangeUpdateRequestInput[float32] `json:"estimatedPortions"`
+		EligibleForMealPlans *bool                                        `json:"eligibleForMealPlans"`
+		Components           []*MealComponentUpdateRequestInput           `json:"recipes,omitempty"`
 	}
 
 	// MealComponentUpdateRequestInput represents what a user could set as input for creating meal recipes.

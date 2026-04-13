@@ -10,7 +10,7 @@ SCRIPTS_DIR   := scripts
 COVERAGE_OUT  := $(ARTIFACTS_DIR)/coverage.out
 
 # COMPUTED
-TOTAL_PACKAGE_LIST := `go list $(THIS)/...`
+TOTAL_PACKAGE_LIST := $(shell go list $(THIS)/...)
 
 # CONTAINER VERSIONS
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0

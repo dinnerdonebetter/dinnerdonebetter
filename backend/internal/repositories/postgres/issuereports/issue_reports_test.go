@@ -147,7 +147,7 @@ func TestQuerier_Integration_IssueReports(t *testing.T) {
 func TestQuerier_GetIssueReport(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid issue report MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid issue report ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -204,7 +204,7 @@ func TestQuerier_GetIssueReports(T *testing.T) {
 func TestQuerier_GetIssueReportsForAccount(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -248,7 +248,7 @@ func TestQuerier_GetIssueReportsForRecord(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid record MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid record ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -293,7 +293,7 @@ func TestQuerier_UpdateIssueReport(T *testing.T) {
 func TestQuerier_ArchiveIssueReport(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid issue report MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid issue report ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

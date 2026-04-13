@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -18,7 +18,7 @@ func TestRecipeStepInstrument_Update(T *testing.T) {
 
 		x := &RecipeStepInstrument{
 			RecipeStepProductID: new(t.Name()),
-			Quantity:            types.Uint32RangeWithOptionalMax{Max: new(uint32(321))},
+			Quantity:            numbers.MinRange[uint32]{Max: new(uint32(321))},
 		}
 		input := &RecipeStepInstrumentUpdateRequestInput{}
 
@@ -55,7 +55,7 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			Notes:                        t.Name(),
 			PreferenceRank:               uint8(fake.Number(1, math.MaxUint8)),
 			Optional:                     fake.Bool(),
-			Quantity: types.Uint32RangeWithOptionalMax{
+			Quantity: numbers.MinRange[uint32]{
 				Max: new(fake.Uint32()),
 				Min: fake.Uint32(),
 			},
@@ -76,7 +76,7 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			Notes:                           t.Name(),
 			PreferenceRank:                  uint8(fake.Number(1, math.MaxUint8)),
 			Optional:                        fake.Bool(),
-			Quantity: types.Uint32RangeWithOptionalMax{
+			Quantity: numbers.MinRange[uint32]{
 				Max: new(fake.Uint32()),
 				Min: fake.Uint32(),
 			},
@@ -136,7 +136,7 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			Notes:               new(t.Name()),
 			PreferenceRank:      new(uint8(fake.Number(1, math.MaxUint8))),
 			Optional:            new(fake.Bool()),
-			Quantity: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
+			Quantity: numbers.OpenRangeUpdateRequestInput[uint32]{
 				Min: new(fake.Uint32()),
 				Max: new(fake.Uint32()),
 			},

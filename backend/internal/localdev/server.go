@@ -42,6 +42,7 @@ import (
 	"github.com/primandproper/platform/messagequeue/redis"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/random"
 
 	"github.com/testcontainers/testcontainers-go"
@@ -171,7 +172,7 @@ func BuildInProcessServer(ctx context.Context, cfg *config.APIServiceConfig) (se
 	cfg.Database.WriteConnection = dbCfg.WriteConnection
 	cfg.Database.ReadConnection = dbCfg.ReadConnection
 
-	tracerProvider := tracing.NewNoopTracerProvider()
+	tracerProvider := tracingnoop.NewTracerProvider()
 	migrator := repositories.ProvideMigrator(&cfg.Database, logger)
 	databaseClient, err = databasecfg.ProvideDatabase(ctx, logger, tracerProvider, &cfg.Database, migrator, nil)
 	if err != nil {

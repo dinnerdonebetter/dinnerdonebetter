@@ -50,6 +50,7 @@ artifacts/
 deploy/environments/localdev/generated
 
 cmd/services/demo
+async_message_handler
 main
 
 TODO.md

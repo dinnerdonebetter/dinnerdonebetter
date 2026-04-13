@@ -13,8 +13,8 @@ import (
 
 	msgqueuemock "github.com/primandproper/platform/messagequeue/mock"
 	notifications "github.com/primandproper/platform/notifications/mobile"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
@@ -26,8 +26,8 @@ func TestScheduler_ScheduleNotifications_publishesMobileNotificationRequest(t *t
 	t.Parallel()
 
 	ctx := t.Context()
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
+	logger := loggingnoop.NewLogger()
+	tracerProvider := tracingnoop.NewTracerProvider()
 
 	taskID := fakes.BuildFakeID()
 	task := fakes.BuildFakeMealPlanTask()

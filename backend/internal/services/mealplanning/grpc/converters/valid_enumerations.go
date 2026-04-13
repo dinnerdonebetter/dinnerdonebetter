@@ -11,13 +11,13 @@ import (
 	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 	uploadedmediaconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/pointer"
-	"github.com/primandproper/platform/types"
 )
 
 func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInput(request *mealplanninggrpc.ValidIngredientCreationRequestInput) *mealplanning.ValidIngredientCreationRequestInput {
 	return &mealplanning.ValidIngredientCreationRequestInput{
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: request.StorageTemperatureInCelsius.Max,
 			Min: request.StorageTemperatureInCelsius.Min,
 		},
@@ -57,9 +57,9 @@ func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInpu
 }
 
 func ConvertGRPCValidIngredientUpdateRequestInputToValidIngredientUpdateRequestInput(x *mealplanninggrpc.ValidIngredientUpdateRequestInput) *mealplanning.ValidIngredientUpdateRequestInput {
-	storageTemperatureInCelsius := types.OptionalFloat32Range{}
+	storageTemperatureInCelsius := numbers.OpenRange[float32]{}
 	if x.StorageTemperatureInCelsius != nil {
-		storageTemperatureInCelsius = types.OptionalFloat32Range{
+		storageTemperatureInCelsius = numbers.OpenRange[float32]{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
 		}
@@ -205,7 +205,7 @@ func ConvertGRPCValidIngredientToValidIngredient(x *mealplanninggrpc.ValidIngred
 		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
 		},
@@ -387,7 +387,7 @@ func ConvertGRPCCreateValidIngredientMeasurementUnitRequestToValidIngredientMeas
 		Notes:                  request.Notes,
 		ValidMeasurementUnitID: request.ValidMeasurementUnitId,
 		ValidIngredientID:      request.ValidIngredientId,
-		AllowableQuantity: types.Float32RangeWithOptionalMax{
+		AllowableQuantity: numbers.MinRange[float32]{
 			Max: request.AllowableQuantity.Max,
 			Min: request.AllowableQuantity.Min,
 		},
@@ -411,7 +411,7 @@ func ConvertGRPCValidIngredientMeasurementUnitUpdateRequestInputToValidIngredien
 		Notes:                  x.Notes,
 		ValidMeasurementUnitID: x.ValidMeasurementUnitId,
 		ValidIngredientID:      x.ValidIngredientId,
-		AllowableQuantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+		AllowableQuantity: numbers.OpenRangeUpdateRequestInput[float32]{
 			Min: x.AllowableQuantity.Min,
 			Max: x.AllowableQuantity.Max,
 		},
@@ -453,7 +453,7 @@ func ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(x
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		Notes:         x.Notes,
 		ID:            x.Id,
-		AllowableQuantity: types.Float32RangeWithOptionalMax{
+		AllowableQuantity: numbers.MinRange[float32]{
 			Max: x.AllowableQuantity.Max,
 			Min: x.AllowableQuantity.Min,
 		},
@@ -983,15 +983,15 @@ func ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(x
 
 func ConvertGRPCValidPreparationCreationRequestInputToValidPreparationCreationRequestInput(x *mealplanninggrpc.ValidPreparationCreationRequestInput) *mealplanning.ValidPreparationCreationRequestInput {
 	return &mealplanning.ValidPreparationCreationRequestInput{
-		InstrumentCount: types.Uint16RangeWithOptionalMax{
+		InstrumentCount: numbers.MinRange[uint16]{
 			Min: uint16(x.InstrumentCount.Min),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
 		},
-		IngredientCount: types.Uint16RangeWithOptionalMax{
+		IngredientCount: numbers.MinRange[uint16]{
 			Min: uint16(x.IngredientCount.Min),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
 		},
-		VesselCount: types.Uint16RangeWithOptionalMax{
+		VesselCount: numbers.MinRange[uint16]{
 			Min: uint16(x.VesselCount.Min),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
 		},
@@ -1041,15 +1041,15 @@ func ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRe
 
 func ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateRequestInput(x *mealplanninggrpc.ValidPreparationUpdateRequestInput) *mealplanning.ValidPreparationUpdateRequestInput {
 	return &mealplanning.ValidPreparationUpdateRequestInput{
-		InstrumentCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+		InstrumentCount: numbers.OpenRangeUpdateRequestInput[uint16]{
 			Min: new(uint16(pointer.Dereference(x.InstrumentCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
 		},
-		IngredientCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+		IngredientCount: numbers.OpenRangeUpdateRequestInput[uint16]{
 			Min: new(uint16(pointer.Dereference(x.IngredientCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
 		},
-		VesselCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+		VesselCount: numbers.OpenRangeUpdateRequestInput[uint16]{
 			Min: new(uint16(pointer.Dereference(x.VesselCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
 		},
@@ -1133,15 +1133,15 @@ func ConvertValidPreparationToGRPCValidPreparation(x *mealplanning.ValidPreparat
 
 func ConvertGRPCValidPreparationToValidPreparation(x *mealplanninggrpc.ValidPreparation) *mealplanning.ValidPreparation {
 	return &mealplanning.ValidPreparation{
-		InstrumentCount: types.Uint16RangeWithOptionalMax{
+		InstrumentCount: numbers.MinRange[uint16]{
 			Min: uint16(x.InstrumentCount.Min),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
 		},
-		IngredientCount: types.Uint16RangeWithOptionalMax{
+		IngredientCount: numbers.MinRange[uint16]{
 			Min: uint16(x.IngredientCount.Min),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
 		},
-		VesselCount: types.Uint16RangeWithOptionalMax{
+		VesselCount: numbers.MinRange[uint16]{
 			Min: uint16(x.VesselCount.Min),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
 		},
@@ -1467,11 +1467,11 @@ func ConvertGRPCValidVesselToValidVessel(x *mealplanninggrpc.ValidVessel) *mealp
 
 func ConvertGRPCValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigCreationRequestInput(x *mealplanninggrpc.ValidPrepTaskConfigCreationRequestInput) *mealplanning.ValidPrepTaskConfigCreationRequestInput {
 	return &mealplanning.ValidPrepTaskConfigCreationRequestInput{
-		StorageDurationInSeconds: types.Uint32RangeWithOptionalMax{
+		StorageDurationInSeconds: numbers.MinRange[uint32]{
 			Min: x.StorageDurationInSeconds.Min,
 			Max: x.StorageDurationInSeconds.Max,
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: x.StorageTemperatureInCelsius.Min,
 			Max: x.StorageTemperatureInCelsius.Max,
 		},
@@ -1505,11 +1505,11 @@ func ConvertValidPrepTaskConfigCreationRequestInputToGRPCValidPrepTaskConfigCrea
 
 func ConvertGRPCValidPrepTaskConfigUpdateRequestInputToValidPrepTaskConfigUpdateRequestInput(x *mealplanninggrpc.ValidPrepTaskConfigUpdateRequestInput) *mealplanning.ValidPrepTaskConfigUpdateRequestInput {
 	return &mealplanning.ValidPrepTaskConfigUpdateRequestInput{
-		StorageDurationInSeconds: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
+		StorageDurationInSeconds: numbers.OpenRangeUpdateRequestInput[uint32]{
 			Min: x.StorageDurationInSeconds.Min,
 			Max: x.StorageDurationInSeconds.Max,
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: x.StorageTemperatureInCelsius.Min,
 			Max: x.StorageTemperatureInCelsius.Max,
 		},
@@ -1569,11 +1569,11 @@ func ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(x *mealplanninggrpc.Val
 		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
-		StorageDurationInSeconds: types.Uint32RangeWithOptionalMax{
+		StorageDurationInSeconds: numbers.MinRange[uint32]{
 			Min: x.StorageDurationInSeconds.Min,
 			Max: x.StorageDurationInSeconds.Max,
 		},
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 			Min: x.StorageTemperatureInCelsius.Min,
 			Max: x.StorageTemperatureInCelsius.Max,
 		},

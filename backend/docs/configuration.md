@@ -85,8 +85,6 @@ Backend Terraform (`backend/deploy/environments/prod/terraform`) requires these 
 | `SENDGRID_API_KEY`                     | SendGrid API token                                                                                                                                 |
 | `ALGOLIA_APPLICATION_ID`               | Algolia app ID                                                                                                                                     |
 | `ALGOLIA_API_KEY`                      | Algolia write API key                                                                                                                              |
-| `GOOGLE_SSO_OAUTH2_CLIENT_ID`          | Google OAuth2 client ID                                                                                                                            |
-| `GOOGLE_SSO_OAUTH2_CLIENT_SECRET`      | Google OAuth2 client secret                                                                                                                        |
 | `ADMIN_WEBAPP_OAUTH2_CLIENT_ID`        | Admin OAuth2 client ID                                                                                                                             |
 | `ADMIN_WEBAPP_OAUTH2_CLIENT_SECRET`    | Admin OAuth2 client secret                                                                                                                         |
 | `CONSUMER_WEBAPP_OAUTH2_CLIENT_ID`     | Consumer webapp (root site) OAuth2 client ID                                                                                                       |

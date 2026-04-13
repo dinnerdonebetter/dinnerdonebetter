@@ -9,9 +9,9 @@ import (
 	notifications "github.com/primandproper/platform/notifications/mobile"
 	"github.com/primandproper/platform/notifications/mobile/apns"
 	"github.com/primandproper/platform/notifications/mobile/fcm"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/metrics"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/spf13/pflag"
 )
@@ -57,9 +57,9 @@ func run() error {
 	}
 
 	ctx := context.Background()
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
-	metricsProvider := metrics.NewNoopMetricsProvider()
+	logger := loggingnoop.NewLogger()
+	tracerProvider := tracingnoop.NewTracerProvider()
+	metricsProvider := metricsnoop.NewMetricsProvider()
 
 	var sender notifications.PushNotificationSender
 

@@ -6,9 +6,9 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
-	"github.com/primandproper/platform/observability/logging"
+	"github.com/primandproper/platform/numbers"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,7 +21,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -69,7 +69,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -105,7 +105,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: carrot,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -141,7 +141,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: celery,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -177,7 +177,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: salt,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -213,7 +213,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -245,7 +245,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option1ID, // First occurrence
 				RecipeID:                &recipe1ID,
 				RecipeStepID:            &step1ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(200)),
 					Min: 200,
 				},
@@ -258,7 +258,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option2ID,
 				RecipeID:                &recipe2ID,
 				RecipeStepID:            &step2ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(100)),
 					Min: 100,
 				},
@@ -271,7 +271,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option3ID,
 				RecipeID:                &recipe3ID,
 				RecipeStepID:            &step3ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(100)),
 					Min: 100,
 				},
@@ -284,7 +284,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option4ID,
 				RecipeID:                &recipe4ID,
 				RecipeStepID:            &step4ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(100)),
 					Min: 100,
 				},
@@ -307,7 +307,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -348,7 +348,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -384,7 +384,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: carrot,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -420,7 +420,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: celery,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -452,7 +452,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option1ID,
 				RecipeID:                &recipe1ID,
 				RecipeStepID:            &step1ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(100)),
 					Min: 100,
 				},
@@ -465,7 +465,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option2ID,
 				RecipeID:                &recipe2ID,
 				RecipeStepID:            &step2ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(200)),
 					Min: 200,
 				},
@@ -478,7 +478,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option3ID,
 				RecipeID:                &recipe3ID,
 				RecipeStepID:            &step3ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(300)),
 					Min: 300,
 				},
@@ -501,7 +501,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -534,7 +534,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -569,7 +569,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -605,7 +605,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														// Option group: same index (0), different option_index
 														{
 															Ingredient: spaghetti,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -615,7 +615,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														},
 														{
 															Ingredient: angelHair,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -626,7 +626,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														// Non-option ingredient at different index
 														{
 															Ingredient: onion,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(50)),
 																Min: 50,
 															},
@@ -697,7 +697,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -736,7 +736,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														// Option group
 														{
 															Ingredient: spaghetti,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -746,7 +746,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														},
 														{
 															Ingredient: angelHair,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(100)),
 																Min: 100,
 															},
@@ -757,7 +757,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														// Non-option ingredient
 														{
 															Ingredient: onion,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(50)),
 																Min: 50,
 															},
@@ -794,7 +794,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														// Same onion ingredient, should aggregate
 														{
 															Ingredient: onion,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(50)),
 																Min: 50,
 															},
@@ -853,7 +853,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -900,7 +900,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															ID:              fakes.BuildFakeID(),
 															Ingredient:      spaghetti,
 															MeasurementUnit: *grams,
-															Quantity:        types.Float32RangeWithOptionalMax{Min: 100},
+															Quantity:        numbers.MinRange[float32]{Min: 100},
 															Index:           0,
 															OptionIndex:     0,
 														},
@@ -909,7 +909,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															ID:              fakes.BuildFakeID(),
 															Ingredient:      angelHair,
 															MeasurementUnit: *grams,
-															Quantity:        types.Float32RangeWithOptionalMax{Min: 100},
+															Quantity:        numbers.MinRange[float32]{Min: 100},
 															Index:           0,
 															OptionIndex:     1,
 														},
@@ -918,7 +918,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															ID:              fakes.BuildFakeID(),
 															Ingredient:      onion,
 															MeasurementUnit: *grams,
-															Quantity:        types.Float32RangeWithOptionalMax{Min: 50},
+															Quantity:        numbers.MinRange[float32]{Min: 50},
 															Index:           1,
 															OptionIndex:     0,
 														},
@@ -985,7 +985,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -1024,7 +1024,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: chicken,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(500)),
 																Min: 500,
 															},
@@ -1045,7 +1045,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															Ingredients: []*mealplanning.RecipeStepIngredient{
 																{
 																	Ingredient: oliveOil,
-																	Quantity: types.Float32RangeWithOptionalMax{
+																	Quantity: numbers.MinRange[float32]{
 																		Max: new(float32(100)),
 																		Min: 100,
 																	},
@@ -1055,7 +1055,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																},
 																{
 																	Ingredient: lemon,
-																	Quantity: types.Float32RangeWithOptionalMax{
+																	Quantity: numbers.MinRange[float32]{
 																		Max: new(float32(50)),
 																		Min: 50,
 																	},
@@ -1124,7 +1124,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -1162,7 +1162,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: chicken,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(500)),
 																Min: 500,
 															},
@@ -1182,7 +1182,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															Ingredients: []*mealplanning.RecipeStepIngredient{
 																{
 																	Ingredient: oliveOil,
-																	Quantity: types.Float32RangeWithOptionalMax{
+																	Quantity: numbers.MinRange[float32]{
 																		Max: new(float32(100)),
 																		Min: 100,
 																	},
@@ -1234,7 +1234,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -1271,7 +1271,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: chicken,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(500)),
 																Min: 500,
 															},
@@ -1281,7 +1281,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														},
 														{
 															Ingredient: salt,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(10)),
 																Min: 10,
 															},
@@ -1301,7 +1301,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															Ingredients: []*mealplanning.RecipeStepIngredient{
 																{
 																	Ingredient: salt, // Same salt ingredient
-																	Quantity: types.Float32RangeWithOptionalMax{
+																	Quantity: numbers.MinRange[float32]{
 																		Max: new(float32(5)),
 																		Min: 5,
 																	},
@@ -1353,7 +1353,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		t.Parallel()
 
 		listGenerator := &groceryListCreator{
-			logger: logging.NewNoopLogger(),
+			logger: loggingnoop.NewLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 
@@ -1387,7 +1387,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: carrot,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(3.01)),
 																Min: 3.01,
 															},
@@ -1397,7 +1397,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														},
 														{
 															Ingredient: thyme,
-															Quantity: types.Float32RangeWithOptionalMax{
+															Quantity: numbers.MinRange[float32]{
 																Max: new(float32(1.5)),
 																Min: 1.5,
 															},

@@ -12,8 +12,8 @@ import (
 	"github.com/primandproper/platform/database"
 	databasecfg "github.com/primandproper/platform/database/config"
 	"github.com/primandproper/platform/database/postgres"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/spf13/cobra"
 )
@@ -62,8 +62,8 @@ func runMigrate(dbHost string, dbPort uint16, dbUser, dbPassword, dbName string,
 	}
 
 	ctx := context.Background()
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
+	logger := loggingnoop.NewLogger()
+	tracerProvider := tracingnoop.NewTracerProvider()
 
 	connDetails := databasecfg.ConnectionDetails{
 		Host:       dbHost,

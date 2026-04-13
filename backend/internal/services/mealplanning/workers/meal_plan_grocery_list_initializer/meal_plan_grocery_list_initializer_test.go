@@ -13,11 +13,11 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/metrics"
-	"github.com/primandproper/platform/observability/tracing"
+	"github.com/primandproper/platform/numbers"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
-	"github.com/primandproper/platform/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -42,12 +42,12 @@ func buildNewMealPlanGroceryListInitializerForTest(t *testing.T) *Worker {
 
 	x, err := NewMealPlanGroceryListInitializer(
 		ctx,
-		logging.NewNoopLogger(),
-		tracing.NewNoopTracerProvider(),
-		metrics.NewNoopMetricsProvider(),
+		loggingnoop.NewLogger(),
+		tracingnoop.NewTracerProvider(),
+		metricsnoop.NewMetricsProvider(),
 		pp,
 		&mealplanningmock.Repository{},
-		grocerylistpreparation2.NewGroceryListCreator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+		grocerylistpreparation2.NewGroceryListCreator(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider()),
 		cfg,
 	)
 	require.NoError(t, err)
@@ -88,7 +88,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: onion,
-																Quantity: types.Float32RangeWithOptionalMax{
+																Quantity: numbers.MinRange[float32]{
 																	Max: new(float32(100)),
 																	Min: 100,
 																},
@@ -117,7 +117,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: carrot,
-																Quantity: types.Float32RangeWithOptionalMax{
+																Quantity: numbers.MinRange[float32]{
 																	Max: new(float32(100)),
 																	Min: 100,
 																},
@@ -146,7 +146,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: celery,
-																Quantity: types.Float32RangeWithOptionalMax{
+																Quantity: numbers.MinRange[float32]{
 																	Max: new(float32(100)),
 																	Min: 100,
 																},
@@ -175,7 +175,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: salt,
-																Quantity: types.Float32RangeWithOptionalMax{
+																Quantity: numbers.MinRange[float32]{
 																	Max: new(float32(100)),
 																	Min: 100,
 																},
@@ -204,7 +204,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: onion,
-																Quantity: types.Float32RangeWithOptionalMax{
+																Quantity: numbers.MinRange[float32]{
 																	Max: new(float32(100)),
 																	Min: 100,
 																},
@@ -235,7 +235,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(200)),
 					Min: 200,
 				},
@@ -245,7 +245,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(100)),
 					Min: 100,
 				},
@@ -255,7 +255,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(100)),
 					Min: 100,
 				},
@@ -265,7 +265,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
-				QuantityNeeded: types.Float32RangeWithOptionalMax{
+				QuantityNeeded: numbers.MinRange[float32]{
 					Max: new(float32(100)),
 					Min: 100,
 				},

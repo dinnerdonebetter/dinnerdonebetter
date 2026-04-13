@@ -9,7 +9,7 @@ import (
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,7 +23,7 @@ func TestNewOAuth2ClientStore(T *testing.T) {
 		t.Parallel()
 
 		domain := "example.com"
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		tracer := tracing.NewTracerForTest("test")
 		dataManager := &oauthmock.RepositoryMock{}
 
@@ -47,7 +47,7 @@ func TestOAuth2ClientStoreImpl_GetByID(T *testing.T) {
 
 		ctx := t.Context()
 		domain := "example.com"
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		tracer := tracing.NewTracerForTest("test")
 
 		client := fakes.BuildFakeOAuth2Client()
@@ -82,7 +82,7 @@ func TestOAuth2ClientStoreImpl_GetByID(T *testing.T) {
 
 		ctx := t.Context()
 		domain := "example.com"
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 		tracer := tracing.NewTracerForTest("test")
 
 		clientID := "test-client-id"

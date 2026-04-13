@@ -8,8 +8,8 @@ import (
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 	textsearch "github.com/primandproper/platform/search/text"
 	mocksearch "github.com/primandproper/platform/search/text/mock"
@@ -27,7 +27,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		identityRepo := &identitymock.RepositoryMock{}
 		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
@@ -39,7 +39,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewCoreDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			identityRepo,
 			mim,
 		)
@@ -61,7 +61,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
+		logger := loggingnoop.NewLogger()
 
 		identityRepo := &identitymock.RepositoryMock{}
 		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
@@ -72,7 +72,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		cdi := NewCoreDataIndexer(
 			logger,
-			tracing.NewNoopTracerProvider(),
+			tracingnoop.NewTracerProvider(),
 			identityRepo,
 			mim,
 		)

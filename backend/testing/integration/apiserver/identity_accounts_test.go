@@ -408,7 +408,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		require.NotNil(t, webhook)
 	})
 
-	T.Run("invite user via token and invite MealPlanTaskID", func(t *testing.T) {
+	T.Run("invite user via token and invite ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 

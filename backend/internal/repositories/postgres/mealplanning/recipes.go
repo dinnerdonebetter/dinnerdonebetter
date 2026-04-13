@@ -18,10 +18,10 @@ import (
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
 	"github.com/primandproper/platform/identifiers"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
 	"github.com/primandproper/platform/pointer"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -100,7 +100,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 				SourceISBN:          result.SourceIsbn,
 				Slug:                result.Slug,
 				YieldsComponentType: string(result.YieldsComponentType),
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
+				EstimatedPortions: numbers.MinRange[float32]{
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 				},
@@ -113,11 +113,11 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 		if result.RecipeStepID.Valid {
 			x.Steps = append(x.Steps, &mealplanning.RecipeStep{
 				CreatedAt: result.RecipeStepCreatedAt.Time,
-				EstimatedTimeInSeconds: types.OptionalUint32Range{
+				EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 					Max: database.Uint32PointerFromNullInt64(result.RecipeStepMaximumEstimatedTimeInSeconds),
 					Min: database.Uint32PointerFromNullInt64(result.RecipeStepMinimumEstimatedTimeInSeconds),
 				},
-				TemperatureInCelsius: types.OptionalFloat32Range{
+				TemperatureInCelsius: numbers.OpenRange[float32]{
 					Max: database.Float32PointerFromNullString(result.RecipeStepMaximumTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.RecipeStepMinimumTemperatureInCelsius),
 				},
@@ -130,15 +130,15 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 				ExplicitInstructions: result.RecipeStepExplicitInstructions.String,
 				Preparation: mealplanning.ValidPreparation{
 					CreatedAt: result.RecipeStepPreparationCreatedAt.Time,
-					InstrumentCount: types.Uint16RangeWithOptionalMax{
+					InstrumentCount: numbers.MinRange[uint16]{
 						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),
 						Min: uint16(result.RecipeStepPreparationMinimumInstrumentCount.Int32),
 					},
-					IngredientCount: types.Uint16RangeWithOptionalMax{
+					IngredientCount: numbers.MinRange[uint16]{
 						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
 						Min: uint16(result.RecipeStepPreparationMinimumIngredientCount.Int32),
 					},
-					VesselCount: types.Uint16RangeWithOptionalMax{
+					VesselCount: numbers.MinRange[uint16]{
 						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),
 						Min: uint16(result.RecipeStepPreparationMinimumVesselCount.Int32),
 					},
@@ -466,7 +466,7 @@ func (q *repository) GetRecipes(ctx context.Context, status string, filter *filt
 			SourceISBN:          result.SourceIsbn,
 			Slug:                result.Slug,
 			YieldsComponentType: string(result.YieldsComponentType),
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
@@ -543,7 +543,7 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 			SourceISBN:          result.SourceIsbn,
 			Slug:                result.Slug,
 			YieldsComponentType: string(result.YieldsComponentType),
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
@@ -600,7 +600,7 @@ func (q *repository) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*me
 				SourceISBN:          result.SourceIsbn,
 				Slug:                result.Slug,
 				YieldsComponentType: string(result.YieldsComponentType),
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
+				EstimatedPortions: numbers.MinRange[float32]{
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 				},
@@ -637,11 +637,11 @@ func (q *repository) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*me
 					YieldsNothing:         database.BoolFromNullBool(result.RecipeStepPreparationYieldsNothing),
 					RestrictToIngredients: database.BoolFromNullBool(result.RecipeStepPreparationRestrictToIngredients),
 					PastTense:             result.RecipeStepPreparationPastTense.String,
-					IngredientCount: types.Uint16RangeWithOptionalMax{
+					IngredientCount: numbers.MinRange[uint16]{
 						Min: ingMin,
 						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
 					},
-					InstrumentCount: types.Uint16RangeWithOptionalMax{
+					InstrumentCount: numbers.MinRange[uint16]{
 						Min: instMin,
 						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),
 					},
@@ -650,7 +650,7 @@ func (q *repository) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*me
 					ConditionExpressionRequired: database.BoolFromNullBool(result.RecipeStepPreparationConditionExpressionRequired),
 					ConsumesVessel:              database.BoolFromNullBool(result.RecipeStepPreparationConsumesVessel),
 					OnlyForVessels:              database.BoolFromNullBool(result.RecipeStepPreparationOnlyForVessels),
-					VesselCount: types.Uint16RangeWithOptionalMax{
+					VesselCount: numbers.MinRange[uint16]{
 						Min: vesselMin,
 						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),
 					},
@@ -669,11 +669,11 @@ func (q *repository) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*me
 				ID:              result.RecipeStepID.String,
 				BelongsToRecipe: result.RecipeStepBelongsToRecipe.String,
 				Index:           stepIndex,
-				EstimatedTimeInSeconds: types.OptionalUint32Range{
+				EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
 					Min: database.Uint32PointerFromNullInt64(result.RecipeStepMinimumEstimatedTimeInSeconds),
 					Max: database.Uint32PointerFromNullInt64(result.RecipeStepMaximumEstimatedTimeInSeconds),
 				},
-				TemperatureInCelsius: types.OptionalFloat32Range{
+				TemperatureInCelsius: numbers.OpenRange[float32]{
 					Min: database.Float32PointerFromNullString(result.RecipeStepMinimumTemperatureInCelsius),
 					Max: database.Float32PointerFromNullString(result.RecipeStepMaximumTemperatureInCelsius),
 				},
@@ -760,7 +760,7 @@ func (q *repository) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 			SourceISBN:          result.SourceIsbn,
 			Slug:                result.Slug,
 			YieldsComponentType: string(result.YieldsComponentType),
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
@@ -831,7 +831,7 @@ func (q *repository) SearchForMealEligibleRecipes(ctx context.Context, recipeNam
 			SourceISBN:          result.SourceIsbn,
 			Slug:                result.Slug,
 			YieldsComponentType: string(result.YieldsComponentType),
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
@@ -903,7 +903,7 @@ func (q *repository) SearchForRecipesWithInstrumentOwnership(ctx context.Context
 			SourceISBN:          result.SourceIsbn,
 			Slug:                result.Slug,
 			YieldsComponentType: string(result.YieldsComponentType),
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
@@ -1028,7 +1028,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		CreatedByUser:      input.CreatedByUser,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
+		EstimatedPortions: numbers.MinRange[float32]{
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
@@ -1088,7 +1088,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 			ID:          identifiers.New(),
 			Name:        x.Name,
 			Description: x.Description,
-			EstimatedPortions: types.Float32RangeWithOptionalMax{
+			EstimatedPortions: numbers.MinRange[float32]{
 				Min: x.EstimatedPortions.Min,
 				Max: x.EstimatedPortions.Max,
 			},

@@ -11,8 +11,8 @@ import (
 
 	"github.com/primandproper/platform/database/filtering"
 	mockdatabase "github.com/primandproper/platform/database/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
@@ -24,7 +24,7 @@ func buildAuditManagerForTest(t *testing.T) (*auditManager, *auditmock.Repositor
 	t.Helper()
 
 	repo := &auditmock.Repository{}
-	m := NewAuditDataManager(tracing.NewNoopTracerProvider(), logging.NewNoopLogger(), repo)
+	m := NewAuditDataManager(tracingnoop.NewTracerProvider(), loggingnoop.NewLogger(), repo)
 	return m.(*auditManager), repo
 }
 

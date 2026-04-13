@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertValidPreparationToValidPreparationUpdateRequestInput creates a ValidPreparationUpdateRequestInput from a ValidPreparation.
@@ -17,15 +17,15 @@ func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *mealplan
 		RestrictToIngredients: &input.RestrictToIngredients,
 		Slug:                  &input.Slug,
 		PastTense:             &input.PastTense,
-		IngredientCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+		IngredientCount: numbers.OpenRangeUpdateRequestInput[uint16]{
 			Max: input.IngredientCount.Max,
 			Min: &input.IngredientCount.Min,
 		},
-		InstrumentCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+		InstrumentCount: numbers.OpenRangeUpdateRequestInput[uint16]{
 			Max: input.InstrumentCount.Max,
 			Min: &input.InstrumentCount.Min,
 		},
-		VesselCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+		VesselCount: numbers.OpenRangeUpdateRequestInput[uint16]{
 			Max: input.VesselCount.Max,
 			Min: &input.VesselCount.Min,
 		},
@@ -50,15 +50,15 @@ func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreati
 		RestrictToIngredients: input.RestrictToIngredients,
 		Slug:                  input.Slug,
 		PastTense:             input.PastTense,
-		IngredientCount: types.Uint16RangeWithOptionalMax{
+		IngredientCount: numbers.MinRange[uint16]{
 			Max: input.IngredientCount.Max,
 			Min: input.IngredientCount.Min,
 		},
-		InstrumentCount: types.Uint16RangeWithOptionalMax{
+		InstrumentCount: numbers.MinRange[uint16]{
 			Max: input.InstrumentCount.Max,
 			Min: input.InstrumentCount.Min,
 		},
-		VesselCount: types.Uint16RangeWithOptionalMax{
+		VesselCount: numbers.MinRange[uint16]{
 			Max: input.VesselCount.Max,
 			Min: input.VesselCount.Min,
 		},
@@ -82,15 +82,15 @@ func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparat
 		RestrictToIngredients: validPreparation.RestrictToIngredients,
 		Slug:                  validPreparation.Slug,
 		PastTense:             validPreparation.PastTense,
-		IngredientCount: types.Uint16RangeWithOptionalMax{
+		IngredientCount: numbers.MinRange[uint16]{
 			Max: validPreparation.IngredientCount.Max,
 			Min: validPreparation.IngredientCount.Min,
 		},
-		InstrumentCount: types.Uint16RangeWithOptionalMax{
+		InstrumentCount: numbers.MinRange[uint16]{
 			Max: validPreparation.InstrumentCount.Max,
 			Min: validPreparation.InstrumentCount.Min,
 		},
-		VesselCount: types.Uint16RangeWithOptionalMax{
+		VesselCount: numbers.MinRange[uint16]{
 			Max: validPreparation.VesselCount.Max,
 			Min: validPreparation.VesselCount.Min,
 		},
@@ -113,15 +113,15 @@ func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPrepara
 		RestrictToIngredients: validPreparation.RestrictToIngredients,
 		Slug:                  validPreparation.Slug,
 		PastTense:             validPreparation.PastTense,
-		IngredientCount: types.Uint16RangeWithOptionalMax{
+		IngredientCount: numbers.MinRange[uint16]{
 			Max: validPreparation.IngredientCount.Max,
 			Min: validPreparation.IngredientCount.Min,
 		},
-		InstrumentCount: types.Uint16RangeWithOptionalMax{
+		InstrumentCount: numbers.MinRange[uint16]{
 			Max: validPreparation.InstrumentCount.Max,
 			Min: validPreparation.InstrumentCount.Min,
 		},
-		VesselCount: types.Uint16RangeWithOptionalMax{
+		VesselCount: numbers.MinRange[uint16]{
 			Max: validPreparation.VesselCount.Max,
 			Min: validPreparation.VesselCount.Min,
 		},

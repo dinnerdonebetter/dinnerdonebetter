@@ -11,9 +11,9 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -97,7 +97,7 @@ func (q *repository) GetRecipeStepVessel(ctx context.Context, recipeID, recipeSt
 	}
 	recipeStepVessel := &mealplanning.RecipeStepVessel{
 		CreatedAt: result.CreatedAt,
-		Quantity: types.Uint16RangeWithOptionalMax{
+		Quantity: numbers.MinRange[uint16]{
 			Max: database.Uint16PointerFromNullInt32(result.MaximumQuantity),
 			Min: uint16(result.MinimumQuantity),
 		},
@@ -217,7 +217,7 @@ func (q *repository) GetRecipeStepVessels(ctx context.Context, recipeID, recipeS
 		}
 		recipeStepVessel := &mealplanning.RecipeStepVessel{
 			CreatedAt: result.CreatedAt,
-			Quantity: types.Uint16RangeWithOptionalMax{
+			Quantity: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.MaximumQuantity),
 				Min: uint16(result.MinimumQuantity),
 			},
@@ -317,7 +317,7 @@ func (q *repository) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID
 		}
 		recipeStepVessel := &mealplanning.RecipeStepVessel{
 			CreatedAt: result.CreatedAt,
-			Quantity: types.Uint16RangeWithOptionalMax{
+			Quantity: numbers.MinRange[uint16]{
 				Max: database.Uint16PointerFromNullInt32(result.MaximumQuantity),
 				Min: uint16(result.MinimumQuantity),
 			},
@@ -419,7 +419,7 @@ func (q *repository) createRecipeStepVessel(ctx context.Context, querier databas
 		Name:                input.Name,
 		Notes:               input.Notes,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		Quantity: types.Uint16RangeWithOptionalMax{
+		Quantity: numbers.MinRange[uint16]{
 			Max: input.Quantity.Max,
 			Min: input.Quantity.Min,
 		},

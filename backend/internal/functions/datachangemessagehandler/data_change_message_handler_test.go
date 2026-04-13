@@ -22,10 +22,12 @@ import (
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	msgqueuemock "github.com/primandproper/platform/messagequeue/mock"
 	noopnotifications "github.com/primandproper/platform/notifications/mobile/noop"
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/metrics"
 	mockmetrics "github.com/primandproper/platform/observability/metrics/mock"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	uploadsmock "github.com/primandproper/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -52,7 +54,7 @@ func (noopPasswordResetTokenDataManager) RedeemPasswordResetToken(context.Contex
 func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessageHandler, *identitymock.RepositoryMock, *webhooksmock.Repository, *msgqueuemock.ConsumerProviderMock, *msgqueuemock.PublisherProviderMock, *analyticsmock.EventReporterMock, *emailmock.EmailerMock, *uploadsmock.UploadManagerMock, *mockmetrics.ProviderMock, *encodingmock.ServerEncoderDecoderMock, *dataprivacymock.Repository) {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
+	logger := loggingnoop.NewLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 
 	identityRepo := &identitymock.RepositoryMock{}
@@ -81,7 +83,7 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 	}
 
 	// Set up mock histograms and counters
-	noopProvider := metrics.NewNoopMetricsProvider()
+	noopProvider := metricsnoop.NewMetricsProvider()
 	noopHistogram, _ := noopProvider.NewFloat64Histogram("test")
 	noopCounter, _ := noopProvider.NewInt64Counter("test")
 	metricsProvider.NewFloat64HistogramFunc = func(_ string, _ ...metric.Float64HistogramOption) (metrics.Float64Histogram, error) {
@@ -156,8 +158,8 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		cfg := &config.AsyncMessageHandlerConfig{
 			Queues: msgconfig.QueuesConfig{
 				OutboundEmailsTopicName:           "outbound-emails",
@@ -180,7 +182,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		eatingDataIndexer := &mealplanningindexing.MealPlanningDataIndexer{}
 
 		// Set up metrics expectations
-		noopProvider := metrics.NewNoopMetricsProvider()
+		noopProvider := metricsnoop.NewMetricsProvider()
 		noopHistogram, _ := noopProvider.NewFloat64Histogram("test")
 		noopCounter, _ := noopProvider.NewInt64Counter("test")
 		metricsProvider.NewFloat64HistogramFunc = func(_ string, _ ...metric.Float64HistogramOption) (metrics.Float64Histogram, error) {

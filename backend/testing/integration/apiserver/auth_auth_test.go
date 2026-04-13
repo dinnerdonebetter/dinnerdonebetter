@@ -17,8 +17,8 @@ import (
 	authrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -526,8 +526,8 @@ func TestAuth_RequestingPasswordReset(T *testing.T) {
 		queryErr := databaseClient.ReadDB().QueryRow(`SELECT token FROM password_reset_tokens WHERE belongs_to_user = $1`, user.ID).Scan(&token)
 		require.NoError(t, queryErr)
 
-		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), databaseClient)
-		authRepo := authrepo.ProvideAuthRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogRepo, databaseClient)
+		auditLogRepo := auditlogentries.ProvideAuditLogRepository(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), databaseClient)
+		authRepo := authrepo.ProvideAuthRepository(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider(), auditLogRepo, databaseClient)
 
 		resetToken, err := authRepo.GetPasswordResetTokenByToken(ctx, token)
 		require.NoError(t, err)

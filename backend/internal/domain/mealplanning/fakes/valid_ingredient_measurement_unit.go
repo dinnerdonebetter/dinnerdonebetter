@@ -5,7 +5,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 )
 
 // BuildFakeValidIngredientMeasurementUnit builds a faked valid ingredient measurement unit.
@@ -45,7 +45,7 @@ func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *mealplanning.V
 		Notes:                  &validIngredientMeasurementUnit.Notes,
 		ValidMeasurementUnitID: &validIngredientMeasurementUnit.MeasurementUnit.ID,
 		ValidIngredientID:      &validIngredientMeasurementUnit.Ingredient.ID,
-		AllowableQuantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+		AllowableQuantity: numbers.OpenRangeUpdateRequestInput[float32]{
 			Min: &validIngredientMeasurementUnit.AllowableQuantity.Min,
 			Max: validIngredientMeasurementUnit.AllowableQuantity.Max,
 		},

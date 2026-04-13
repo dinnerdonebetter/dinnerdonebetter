@@ -14,8 +14,9 @@ import (
 	"github.com/primandproper/platform/encoding"
 	"github.com/primandproper/platform/featureflags"
 	"github.com/primandproper/platform/featureflags/mock"
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -23,8 +24,8 @@ import (
 func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.IdentityDataManager, *authmock.AuthManager, *authenticationmock.Manager, *mock.FeatureFlagManagerMock) {
 	t.Helper()
 
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
+	logger := loggingnoop.NewLogger()
+	tracerProvider := tracingnoop.NewTracerProvider()
 	tracer := tracing.NewTracerForTest(t.Name())
 	identityDataManager := &identitymanagermock.IdentityDataManager{}
 	authManager := &authmock.AuthManager{}
@@ -69,8 +70,8 @@ func TestNewAuthService(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider()
+		logger := loggingnoop.NewLogger()
+		tracerProvider := tracingnoop.NewTracerProvider()
 		identityDataManager := &identitymanagermock.IdentityDataManager{}
 		authManager := &authmock.AuthManager{}
 		authenticationManager := &authenticationmock.Manager{}

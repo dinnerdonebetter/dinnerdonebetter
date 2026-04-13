@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -41,14 +41,14 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 			Name:              t.Name(),
 			Type:              RecipeStepProductIngredientType,
 			MeasurementUnitID: new(t.Name()),
-			MeasurementQuantity: types.OptionalFloat32Range{
+			MeasurementQuantity: numbers.OpenRange[float32]{
 				Max: nil,
 				Min: new(fake.Float32()),
 			},
 			QuantityNotes:            t.Name(),
 			Compostable:              fake.Bool(),
-			StorageDurationInSeconds: types.OptionalUint32Range{Max: new(fake.Uint32())},
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			StorageDurationInSeconds: numbers.OpenRange[uint32]{Max: new(fake.Uint32())},
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
 				Max: new(fake.Float32()),
 				Min: new(fake.Float32()),
 			},
@@ -78,11 +78,11 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 			Name:                        new(t.Name()),
 			Type:                        new(RecipeStepProductIngredientType),
 			MeasurementUnitID:           new(t.Name()),
-			MeasurementQuantity:         types.OptionalFloat32Range{Max: new(fake.Float32()), Min: new(fake.Float32())},
+			MeasurementQuantity:         numbers.OpenRange[float32]{Max: new(fake.Float32()), Min: new(fake.Float32())},
 			QuantityNotes:               new(t.Name()),
 			Compostable:                 new(fake.Bool()),
-			StorageTemperatureInCelsius: types.OptionalFloat32Range{Max: new(fake.Float32()), Min: new(fake.Float32())},
-			StorageDurationInSeconds:    types.OptionalUint32Range{Max: new(fake.Uint32()), Min: new(fake.Uint32())},
+			StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(fake.Float32()), Min: new(fake.Float32())},
+			StorageDurationInSeconds:    numbers.OpenRange[uint32]{Max: new(fake.Uint32()), Min: new(fake.Uint32())},
 		}
 
 		actual := x.ValidateWithContext(t.Context())

@@ -14,8 +14,8 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/random"
 	randommock "github.com/primandproper/platform/random/mock"
 	"github.com/primandproper/platform/reflection"
@@ -45,12 +45,12 @@ func buildOAuthManagerForTest(t *testing.T) *manager {
 		return sessionData, nil
 	}
 
-	secretGen := random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+	secretGen := random.NewGenerator(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider())
 
 	m, err := NewOAuth2Manager(
 		ctx,
-		logging.NewNoopLogger(),
-		tracing.NewNoopTracerProvider(),
+		loggingnoop.NewLogger(),
+		tracingnoop.NewTracerProvider(),
 		secretGen,
 		sessionFetcher,
 		mpp,

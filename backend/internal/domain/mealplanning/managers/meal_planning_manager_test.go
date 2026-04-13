@@ -16,9 +16,9 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/metrics"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	"github.com/primandproper/platform/reflection"
 	textsearchcfg "github.com/primandproper/platform/search/text/config"
 
@@ -42,13 +42,13 @@ func buildMealPlanManagerForTest(t *testing.T) *mealPlanningManager {
 
 	m, err := NewMealPlanningManager(
 		t.Context(),
-		logging.NewNoopLogger(),
-		tracing.NewNoopTracerProvider(),
+		loggingnoop.NewLogger(),
+		tracingnoop.NewTracerProvider(),
 		&mealplanningmock.Repository{},
 		queueCfg,
 		mpp,
 		&textsearchcfg.Config{},
-		metrics.NewNoopMetricsProvider(),
+		metricsnoop.NewMetricsProvider(),
 		nil, // groceryListInitializer - not needed for most tests
 		nil, // taskCreator - not needed for most tests
 	)
@@ -72,13 +72,13 @@ func buildMealPlanManagerForTestWithWorkers(t *testing.T, groceryWorker, taskWor
 
 	m, err := NewMealPlanningManager(
 		t.Context(),
-		logging.NewNoopLogger(),
-		tracing.NewNoopTracerProvider(),
+		loggingnoop.NewLogger(),
+		tracingnoop.NewTracerProvider(),
 		&mealplanningmock.Repository{},
 		queueCfg,
 		mpp,
 		&textsearchcfg.Config{},
-		metrics.NewNoopMetricsProvider(),
+		metricsnoop.NewMetricsProvider(),
 		groceryWorker,
 		taskWorker,
 	)

@@ -157,7 +157,7 @@ func TestQuerier_GetValidPreparation(T *testing.T) {
 func TestQuerier_SearchForValidPreparations(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid preparation MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid valid preparation ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -215,7 +215,7 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 func TestQuerier_ArchiveValidPreparation(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid preparation MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid valid preparation ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

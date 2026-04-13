@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -36,7 +36,7 @@ func Test_buildDataChangeMessageFromContext(T *testing.T) {
 			AccountID: sessionContextData.ActiveAccountID,
 		}
 
-		actual := BuildDataChangeMessageFromContext(ctx, logging.NewNoopLogger(), expected.EventType, expected.Context)
+		actual := BuildDataChangeMessageFromContext(ctx, loggingnoop.NewLogger(), expected.EventType, expected.Context)
 
 		assert.Equal(t, expected, actual)
 	})

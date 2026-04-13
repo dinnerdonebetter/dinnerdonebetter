@@ -6,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 
-	"github.com/primandproper/platform/observability/logging"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -36,7 +36,7 @@ func TestSessionContextData_AttachToLogger(T *testing.T) {
 			Requester: sessions.RequesterInfo{ServicePermissions: authorization.NewServiceRolePermissionChecker([]string{t.Name()}, nil)},
 		}
 
-		assert.NotNil(t, x.AttachToLogger(logging.NewNoopLogger()))
+		assert.NotNil(t, x.AttachToLogger(loggingnoop.NewLogger()))
 	})
 }
 

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -37,29 +37,29 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_                   struct{}                          `json:"-"`
-		CreatedAt           time.Time                         `json:"createdAt"`
-		EstimatedPortions   types.Float32RangeWithOptionalMax `json:"estimatedPortions"`
-		InspiredByRecipeID  *string                           `json:"inspiredByRecipeID"`
-		LastUpdatedAt       *time.Time                        `json:"lastUpdatedAt"`
-		ArchivedAt          *time.Time                        `json:"archivedAt"`
-		ID                  string                            `json:"id"`
-		Slug                string                            `json:"slug"`
-		Name                string                            `json:"name"`
-		PortionName         string                            `json:"portionName"`
-		Source              string                            `json:"source"`
-		SourceISBN          string                            `json:"sourceISBN"`
-		CreatedByUser       string                            `json:"createdByUser"`
-		PluralPortionName   string                            `json:"pluralPortionName"`
-		Description         string                            `json:"description"`
-		YieldsComponentType string                            `json:"yieldsComponentType"`
-		Status              string                            `json:"status"`
-		Steps               []*RecipeStep                     `json:"steps"`
-		Media               []*RecipeMedia                    `json:"media"`
-		PrepTasks           []*RecipePrepTask                 `json:"prepTasks"`
-		AssociatedRecipes   []*Recipe                         `json:"associatedRecipes"`
-		SealOfApproval      bool                              `json:"sealOfApproval"`
-		EligibleForMeals    bool                              `json:"eligibleForMeals"`
+		_                   struct{}                  `json:"-"`
+		CreatedAt           time.Time                 `json:"createdAt"`
+		EstimatedPortions   numbers.MinRange[float32] `json:"estimatedPortions"`
+		InspiredByRecipeID  *string                   `json:"inspiredByRecipeID"`
+		LastUpdatedAt       *time.Time                `json:"lastUpdatedAt"`
+		ArchivedAt          *time.Time                `json:"archivedAt"`
+		ID                  string                    `json:"id"`
+		Slug                string                    `json:"slug"`
+		Name                string                    `json:"name"`
+		PortionName         string                    `json:"portionName"`
+		Source              string                    `json:"source"`
+		SourceISBN          string                    `json:"sourceISBN"`
+		CreatedByUser       string                    `json:"createdByUser"`
+		PluralPortionName   string                    `json:"pluralPortionName"`
+		Description         string                    `json:"description"`
+		YieldsComponentType string                    `json:"yieldsComponentType"`
+		Status              string                    `json:"status"`
+		Steps               []*RecipeStep             `json:"steps"`
+		Media               []*RecipeMedia            `json:"media"`
+		PrepTasks           []*RecipePrepTask         `json:"prepTasks"`
+		AssociatedRecipes   []*Recipe                 `json:"associatedRecipes"`
+		SealOfApproval      bool                      `json:"sealOfApproval"`
+		EligibleForMeals    bool                      `json:"eligibleForMeals"`
 	}
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
@@ -75,7 +75,7 @@ type (
 		PortionName         string                                            `json:"portionName"`
 		Slug                string                                            `json:"slug"`
 		YieldsComponentType string                                            `json:"yieldsComponentType"`
-		EstimatedPortions   types.Float32RangeWithOptionalMax                 `json:"estimatedPortions"`
+		EstimatedPortions   numbers.MinRange[float32]                         `json:"estimatedPortions"`
 		PrepTasks           []*RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks"`
 		Steps               []*RecipeStepCreationRequestInput                 `json:"steps"`
 		AlsoCreateMeal      bool                                              `json:"alsoCreateMeal"`
@@ -97,7 +97,7 @@ type (
 		PortionName         string                                 `json:"-"`
 		Description         string                                 `json:"-"`
 		YieldsComponentType string                                 `json:"-"`
-		EstimatedPortions   types.Float32RangeWithOptionalMax      `json:"-"`
+		EstimatedPortions   numbers.MinRange[float32]              `json:"-"`
 		PrepTasks           []*RecipePrepTaskDatabaseCreationInput `json:"-"`
 		Steps               []*RecipeStepDatabaseCreationInput     `json:"-"`
 		AlsoCreateMeal      bool                                   `json:"-"`
@@ -108,17 +108,17 @@ type (
 	RecipeUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Name                *string                                             `json:"name,omitempty"`
-		Slug                *string                                             `json:"slug"`
-		Source              *string                                             `json:"source,omitempty"`
-		SourceISBN          *string                                             `json:"sourceISBN,omitempty"`
-		Description         *string                                             `json:"description,omitempty"`
-		InspiredByRecipeID  *string                                             `json:"inspiredByRecipeID,omitempty"`
-		EstimatedPortions   types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimatedPortions"`
-		PortionName         *string                                             `json:"portionName"`
-		PluralPortionName   *string                                             `json:"pluralPortionName"`
-		EligibleForMeals    *bool                                               `json:"eligibleForMeals"`
-		YieldsComponentType *string                                             `json:"yieldsComponentType"`
+		Name                *string                                      `json:"name,omitempty"`
+		Slug                *string                                      `json:"slug"`
+		Source              *string                                      `json:"source,omitempty"`
+		SourceISBN          *string                                      `json:"sourceISBN,omitempty"`
+		Description         *string                                      `json:"description,omitempty"`
+		InspiredByRecipeID  *string                                      `json:"inspiredByRecipeID,omitempty"`
+		EstimatedPortions   numbers.OpenRangeUpdateRequestInput[float32] `json:"estimatedPortions"`
+		PortionName         *string                                      `json:"portionName"`
+		PluralPortionName   *string                                      `json:"pluralPortionName"`
+		EligibleForMeals    *bool                                        `json:"eligibleForMeals"`
+		YieldsComponentType *string                                      `json:"yieldsComponentType"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.

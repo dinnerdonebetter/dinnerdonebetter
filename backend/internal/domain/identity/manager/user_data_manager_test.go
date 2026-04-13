@@ -15,8 +15,8 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/observability/logging"
-	"github.com/primandproper/platform/observability/tracing"
+	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
+	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
 	randommock "github.com/primandproper/platform/random/mock"
 	"github.com/primandproper/platform/reflection"
 	mocksearch "github.com/primandproper/platform/search/text/mock"
@@ -42,8 +42,8 @@ func buildIdentityDataManagerForTest(t *testing.T) *manager {
 
 	m, err := NewIdentityDataManager(
 		ctx,
-		tracing.NewNoopTracerProvider(),
-		logging.NewNoopLogger(),
+		tracingnoop.NewTracerProvider(),
+		loggingnoop.NewLogger(),
 		mpp,
 		&identitymock.RepositoryMock{},
 		&randommock.GeneratorMock{},

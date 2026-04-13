@@ -79,15 +79,6 @@ const (
 	// AuthSessionStoreProviderEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.SessionStore.Provider`.
 	AuthSessionStoreProviderEnvVarKey = "DINNER_DONE_BETTER_AUTH_SESSION_STORE_PROVIDER"
 
-	// AuthSsoConfigGoogleSsoCallbackURLEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.SSO.Google.CallbackURL`.
-	AuthSsoConfigGoogleSsoCallbackURLEnvVarKey = "DINNER_DONE_BETTER_AUTH_SSO_CONFIG_GOOGLE_SSO_CALLBACK_URL"
-
-	// AuthSsoConfigGoogleSsoClientIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.SSO.Google.ClientID`.
-	AuthSsoConfigGoogleSsoClientIDEnvVarKey = "DINNER_DONE_BETTER_AUTH_SSO_CONFIG_GOOGLE_SSO_CLIENT_ID"
-
-	// AuthSsoConfigGoogleSsoClientSecretEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.SSO.Google.ClientSecret`.
-	AuthSsoConfigGoogleSsoClientSecretEnvVarKey = "DINNER_DONE_BETTER_AUTH_SSO_CONFIG_GOOGLE_SSO_CLIENT_SECRET"
-
 	// AuthTokensAudienceEnvVarKey is the environment variable name to set to override `APIServiceConfig.Auth.Tokens.Audience`.
 	AuthTokensAudienceEnvVarKey = "DINNER_DONE_BETTER_AUTH_TOKENS_AUDIENCE"
 
@@ -585,15 +576,6 @@ const (
 
 	// ServiceAuthOauth2RefreshTokenLifespanEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.OAuth2.RefreshTokenLifespan`.
 	ServiceAuthOauth2RefreshTokenLifespanEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_OAUTH2REFRESH_TOKEN_LIFESPAN"
-
-	// ServiceAuthSsoConfigGoogleCallbackURLEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.SSO.Google.CallbackURL`.
-	ServiceAuthSsoConfigGoogleCallbackURLEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CALLBACK_URL"
-
-	// ServiceAuthSsoConfigGoogleClientIDEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.SSO.Google.ClientID`.
-	ServiceAuthSsoConfigGoogleClientIDEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_ID"
-
-	// ServiceAuthSsoConfigGoogleClientSecretEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.SSO.Google.ClientSecret`.
-	ServiceAuthSsoConfigGoogleClientSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET"
 
 	// ServiceAuthTokensAudienceEnvVarKey is the environment variable name to set to override `APIServiceConfig.Services.Auth.Tokens.Audience`.
 	ServiceAuthTokensAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_AUDIENCE"

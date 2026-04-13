@@ -4,8 +4,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/pointer"
-	"github.com/primandproper/platform/types"
 )
 
 // AllMeals returns all bootstrap meal creation inputs.
@@ -74,7 +74,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 "Pan-Seared Steak with Mashed Potatoes",
 				Description:          "A classic steak dinner with creamy mashed potatoes.",
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})
@@ -98,7 +98,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 "Sous Vide Chicken Breast with Rice",
 				Description:          "Tender chicken breast served with fluffy white rice.",
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})
@@ -121,7 +121,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 "Roast Chicken with Glazed Carrots",
 				Description:          "Classic roast chicken with brown butter glazed carrots and sage.",
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})
@@ -144,7 +144,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 "Sous Vide Pork Chops with Green Beans",
 				Description:          "Tender pork chops with French-style green beans and almonds.",
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})
@@ -167,7 +167,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 "Soy Sauce Braised Chicken Thighs and Mixed Green Salad",
 				Description:          "Flavorful braised chicken thighs served with mixed green salad.",
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})
@@ -190,7 +190,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 "Butter Chicken with Rice",
 				Description:          "Creamy Indian butter chicken served with white rice.",
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})
@@ -213,7 +213,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 "Grilled Whole Cauliflower with Brussels Sprouts",
 				Description:          "Smoky grilled cauliflower with teriyaki and balsamic-glazed Brussels sprouts.",
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})
@@ -237,7 +237,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 "Pan-Seared Salmon with Stir-Fried Green Beans",
 				Description:          "Crispy salmon with wok-tossed green beans.",
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})
@@ -261,7 +261,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 "Sous Vide Pork Chops with Cornbread",
 				Description:          "Tender pork chops with sweet cornbread.",
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})
@@ -293,7 +293,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 				CreatedByUser:        userID,
 				Name:                 m.mealName,
 				Description:          m.desc,
-				EstimatedPortions:    types.Float32RangeWithOptionalMax{Min: mainMin, Max: mainMax},
+				EstimatedPortions:    numbers.MinRange[float32]{Min: mainMin, Max: mainMax},
 				Components:           components,
 				EligibleForMealPlans: true,
 			})

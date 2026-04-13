@@ -20,7 +20,7 @@ import (
 func checkWebhookEquality(t *testing.T, expected, actual *webhooks.Webhook) {
 	t.Helper()
 
-	assert.NotEmpty(t, actual.ID, "expected Webhook to have MealPlanTaskID")
+	assert.NotEmpty(t, actual.ID, "expected Webhook to have ID")
 	assert.NotZero(t, actual.CreatedAt, "expected Webhook to have CreatedAt")
 
 	assert.Equal(t, expected.Name, actual.Name, "expected Webhook Name")

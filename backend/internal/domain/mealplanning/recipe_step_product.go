@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/types"
+	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -40,10 +40,10 @@ type (
 		_ struct{} `json:"-"`
 
 		CreatedAt                   time.Time                  `json:"createdAt"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
-		StorageDurationInSeconds    types.OptionalUint32Range  `json:"storageDurationInSeconds"`
-		MeasurementQuantity         types.OptionalFloat32Range `json:"measurementQuantity"`
-		ItemQuantity                types.OptionalFloat32Range `json:"itemQuantity"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"storageTemperatureInCelsius"`
+		StorageDurationInSeconds    numbers.OpenRange[uint32]  `json:"storageDurationInSeconds"`
+		MeasurementQuantity         numbers.OpenRange[float32] `json:"measurementQuantity"`
+		ItemQuantity                numbers.OpenRange[float32] `json:"itemQuantity"`
 		ArchivedAt                  *time.Time                 `json:"archivedAt"`
 		LastUpdatedAt               *time.Time                 `json:"lastUpdatedAt"`
 		MeasurementUnit             *ValidMeasurementUnit      `json:"measurementUnit"`
@@ -64,10 +64,10 @@ type (
 	RecipeStepProductCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
-		StorageDurationInSeconds    types.OptionalUint32Range  `json:"storageDurationInSeconds"`
-		MeasurementQuantity         types.OptionalFloat32Range `json:"measurementQuantity"`
-		ItemQuantity                types.OptionalFloat32Range `json:"itemQuantity"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"storageTemperatureInCelsius"`
+		StorageDurationInSeconds    numbers.OpenRange[uint32]  `json:"storageDurationInSeconds"`
+		MeasurementQuantity         numbers.OpenRange[float32] `json:"measurementQuantity"`
+		ItemQuantity                numbers.OpenRange[float32] `json:"itemQuantity"`
 		MeasurementUnitID           *string                    `json:"measurementUnitID"`
 		ContainedInVesselIndex      *uint16                    `json:"containedInVesselIndex"`
 		QuantityNotes               string                     `json:"quantityNotes"`
@@ -84,10 +84,10 @@ type (
 	RecipeStepProductDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"-"`
-		StorageDurationInSeconds    types.OptionalUint32Range  `json:"-"`
-		MeasurementQuantity         types.OptionalFloat32Range `json:"-"`
-		ItemQuantity                types.OptionalFloat32Range `json:"-"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"-"`
+		StorageDurationInSeconds    numbers.OpenRange[uint32]  `json:"-"`
+		MeasurementQuantity         numbers.OpenRange[float32] `json:"-"`
+		ItemQuantity                numbers.OpenRange[float32] `json:"-"`
 		MeasurementUnitID           *string                    `json:"-"`
 		ContainedInVesselIndex      *uint16                    `json:"-"`
 		Name                        string                     `json:"-"`
@@ -111,10 +111,10 @@ type (
 		MeasurementUnitID           *string                    `json:"measurementUnitID,omitempty"`
 		QuantityNotes               *string                    `json:"quantityNotes,omitempty"`
 		BelongsToRecipeStep         *string                    `json:"belongsToRecipeStep,omitempty"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
-		StorageDurationInSeconds    types.OptionalUint32Range  `json:"storageDurationInSeconds"`
-		MeasurementQuantity         types.OptionalFloat32Range `json:"measurementQuantity"`
-		ItemQuantity                types.OptionalFloat32Range `json:"itemQuantity"`
+		StorageTemperatureInCelsius numbers.OpenRange[float32] `json:"storageTemperatureInCelsius"`
+		StorageDurationInSeconds    numbers.OpenRange[uint32]  `json:"storageDurationInSeconds"`
+		MeasurementQuantity         numbers.OpenRange[float32] `json:"measurementQuantity"`
+		ItemQuantity                numbers.OpenRange[float32] `json:"itemQuantity"`
 		Compostable                 *bool                      `json:"compostable,omitempty"`
 		StorageInstructions         *string                    `json:"storageInstructions,omitempty"`
 		IsLiquid                    *bool                      `json:"isLiquid,omitempty"`

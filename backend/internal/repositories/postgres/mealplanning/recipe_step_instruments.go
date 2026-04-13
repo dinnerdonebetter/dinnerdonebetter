@@ -11,9 +11,9 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
-	"github.com/primandproper/platform/types"
 )
 
 var (
@@ -101,7 +101,7 @@ func (q *repository) GetRecipeStepInstrument(ctx context.Context, recipeID, reci
 		LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 		RecipeStepProductID: database.StringPointerFromNullString(result.RecipeStepProductID),
 		ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
-		Quantity: types.Uint32RangeWithOptionalMax{
+		Quantity: numbers.MinRange[uint32]{
 			Max: database.Uint32PointerFromNullInt32(result.MaximumQuantity),
 			Min: uint32(result.MinimumQuantity),
 		},
@@ -201,7 +201,7 @@ func (q *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 			Name:                result.Name,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,
 			ID:                  result.ID,
-			Quantity: types.Uint32RangeWithOptionalMax{
+			Quantity: numbers.MinRange[uint32]{
 				Max: database.Uint32PointerFromNullInt32(result.MaximumQuantity),
 				Min: uint32(result.MinimumQuantity),
 			},
@@ -277,7 +277,7 @@ func (q *repository) getRecipeStepInstrumentsForRecipe(ctx context.Context, reci
 			Name:                result.Name,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,
 			ID:                  result.ID,
-			Quantity: types.Uint32RangeWithOptionalMax{
+			Quantity: numbers.MinRange[uint32]{
 				Max: database.Uint32PointerFromNullInt32(result.MaximumQuantity),
 				Min: uint32(result.MinimumQuantity),
 			},
