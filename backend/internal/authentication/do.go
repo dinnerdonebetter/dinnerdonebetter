@@ -3,11 +3,12 @@ package authentication
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
-	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
+	"github.com/primandproper/platform/authentication/tokens"
+	tokenscfg "github.com/primandproper/platform/authentication/tokens/config"
+	"github.com/primandproper/platform/authentication/totp"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	"github.com/primandproper/platform/observability/logging"
@@ -29,12 +30,17 @@ func RegisterAuth(i do.Injector) {
 		return ProvideHasher(do.MustInvoke[Authenticator](i)), nil
 	})
 
+	do.Provide[totp.Verifier](i, func(i do.Injector) (totp.Verifier, error) {
+		return totp.NewVerifier(do.MustInvoke[tracing.TracerProvider](i)), nil
+	})
+
 	do.Provide[Manager](i, func(i do.Injector) (Manager, error) {
 		return NewManager(
 			do.MustInvoke[context.Context](i),
 			do.MustInvoke[*msgconfig.QueuesConfig](i),
 			do.MustInvoke[tokens.Issuer](i),
 			do.MustInvoke[Authenticator](i),
+			do.MustInvoke[totp.Verifier](i),
 			do.MustInvoke[tracing.TracerProvider](i),
 			do.MustInvoke[logging.Logger](i),
 			do.MustInvoke[messagequeue.PublisherProvider](i),

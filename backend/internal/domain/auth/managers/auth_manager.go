@@ -17,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
+	platformtotp "github.com/primandproper/platform/authentication/totp"
 	"github.com/primandproper/platform/database/filtering"
 	perrors "github.com/primandproper/platform/errors"
 	"github.com/primandproper/platform/identifiers"
@@ -69,6 +70,7 @@ type AuthManager struct {
 	userDataManager               identity.UserDataManager
 	tracer                        tracing.Tracer
 	authenticator                 authentication.Authenticator
+	totpVerifier                  platformtotp.Verifier
 	logger                        logging.Logger
 	dataChangesPublisher          messagequeue.Publisher
 	secretGenerator               random.Generator
@@ -85,6 +87,7 @@ func ProvideAuthManager(
 	sessionDataManager auth.UserSessionDataManager,
 	userDataManager identity.UserDataManager,
 	authenticator authentication.Authenticator,
+	totpVerifier platformtotp.Verifier,
 	publisherProvider messagequeue.PublisherProvider,
 	secretGenerator random.Generator,
 	qrCodeBuilder qrcodes.Builder,
@@ -106,6 +109,7 @@ func ProvideAuthManager(
 		sessionDataManager:            sessionDataManager,
 		userDataManager:               userDataManager,
 		authenticator:                 authenticator,
+		totpVerifier:                  totpVerifier,
 		secretGenerator:               secretGenerator,
 		qrCodeBuilder:                 qrCodeBuilder,
 		dataChangesPublisher:          dataChangesPublisher,
@@ -243,12 +247,16 @@ func (l *AuthManager) NewTOTPSecret(ctx context.Context, input *auth.TOTPSecretR
 	}
 
 	if user.TwoFactorSecretVerifiedAt != nil {
-		// validate login.
-		valid, validationErr := l.authenticator.CredentialsAreValid(ctx, user.HashedPassword, input.CurrentPassword, user.TwoFactorSecret, input.TOTPToken)
+		// validate password.
+		matches, validationErr := l.authenticator.PasswordMatches(ctx, user.HashedPassword, input.CurrentPassword)
 		if validationErr != nil {
 			return nil, observability.PrepareError(validationErr, span, "validating credentials")
-		} else if !valid {
+		} else if !matches {
 			return nil, observability.PrepareError(validationErr, span, "invalid credentials")
+		}
+
+		if verifyErr := l.totpVerifier.Verify(ctx, user.TwoFactorSecret, input.TOTPToken); verifyErr != nil {
+			return nil, observability.PrepareError(verifyErr, span, "invalid credentials")
 		}
 	} else {
 		return nil, observability.PrepareError(err, span, "two factor secret not yet verified")
@@ -739,12 +747,20 @@ func (l *AuthManager) validateCredentialsForUpdateRequest(ctx context.Context, u
 		totpToken = ""
 	}
 
-	// validate login.
-	valid, err := l.authenticator.CredentialsAreValid(ctx, user.HashedPassword, password, tfs, totpToken)
+	// validate password.
+	matches, err := l.authenticator.PasswordMatches(ctx, user.HashedPassword, password)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "error validating credentials")
-	} else if !valid {
+	} else if !matches {
 		return nil, observability.PrepareError(err, span, "credentials are not valid")
+	}
+
+	// verify TOTP code (if applicable). If TOTP is not enabled on the user, tfs is
+	// empty and totpToken is empty, so we skip TOTP verification entirely.
+	if tfs != "" {
+		if verifyErr := l.totpVerifier.Verify(ctx, tfs, totpToken); verifyErr != nil {
+			return nil, observability.PrepareError(verifyErr, span, "credentials are not valid")
+		}
 	}
 
 	return user, nil

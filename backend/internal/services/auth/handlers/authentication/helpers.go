@@ -9,6 +9,7 @@ import (
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
+	"github.com/primandproper/platform/authentication/totp"
 	"github.com/primandproper/platform/observability"
 )
 
@@ -21,24 +22,26 @@ func (s *service) validateLogin(ctx context.Context, user *types.User, loginInpu
 	// alias the relevant data.
 	logger := s.logger.WithValue(identitykeys.UsernameKey, user.Username)
 
-	// check for login validity.
-	loginValid, err := s.authenticator.CredentialsAreValid(
-		ctx,
-		user.HashedPassword,
-		loginInput.Password,
-		user.TwoFactorSecret,
-		loginInput.TOTPToken,
-	)
-
-	if errors.Is(err, authentication.ErrInvalidTOTPToken) || errors.Is(err, authentication.ErrPasswordDoesNotMatch) {
-		return false, err
+	// verify the password first; a non-match returns (false, nil) from platform's Authenticator.
+	matches, err := s.authenticator.PasswordMatches(ctx, user.HashedPassword, loginInput.Password)
+	if err != nil {
+		return false, observability.PrepareError(err, span, "validating password")
+	}
+	if !matches {
+		return false, authentication.ErrPasswordDoesNotMatch
 	}
 
-	if err != nil {
-		return false, observability.PrepareError(err, span, "validating login")
+	// verify TOTP separately when required.
+	if user.TwoFactorSecretVerifiedAt != nil {
+		if verifyErr := s.totpVerifier.Verify(ctx, user.TwoFactorSecret, loginInput.TOTPToken); verifyErr != nil {
+			if errors.Is(verifyErr, totp.ErrCodeRequired) || errors.Is(verifyErr, totp.ErrInvalidCode) {
+				return false, verifyErr
+			}
+			return false, observability.PrepareError(verifyErr, span, "verifying TOTP code")
+		}
 	}
 
 	logger.Debug("login validated")
 
-	return loginValid, nil
+	return true, nil
 }

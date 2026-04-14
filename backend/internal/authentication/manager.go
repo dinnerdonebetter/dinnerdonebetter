@@ -7,13 +7,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
-	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 
+	"github.com/primandproper/platform/authentication/tokens"
+	tokenscfg "github.com/primandproper/platform/authentication/tokens/config"
+	"github.com/primandproper/platform/authentication/totp"
 	"github.com/primandproper/platform/identifiers"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
@@ -42,6 +43,7 @@ type (
 	manager struct {
 		tokenIssuer             tokens.Issuer
 		authenticator           Authenticator
+		totpVerifier            totp.Verifier
 		tracer                  tracing.Tracer
 		logger                  logging.Logger
 		dataChangesPublisher    messagequeue.Publisher
@@ -57,6 +59,7 @@ func NewManager(
 	queuesConfig *msgconfig.QueuesConfig,
 	tokenIssuer tokens.Issuer,
 	authenticator Authenticator,
+	totpVerifier totp.Verifier,
 	tracingProvider tracing.TracerProvider,
 	logger logging.Logger,
 	publisherProvider messagequeue.PublisherProvider,
@@ -76,6 +79,7 @@ func NewManager(
 		logger:                  logging.NewNamedLogger(logger, name),
 		tokenIssuer:             tokenIssuer,
 		authenticator:           authenticator,
+		totpVerifier:            totpVerifier,
 		dataChangesPublisher:    dataChangesPublisher,
 		userAuthDataManager:     userAuthDataManager,
 		sessionDataManager:      sessionDataManager,
@@ -97,26 +101,30 @@ func (m *manager) validateLogin(ctx context.Context, user *identity.User, loginI
 	// alias the relevant data.
 	logger := m.logger.WithValue(identitykeys.UsernameKey, user.Username)
 
-	// check for login validity.
-	loginValid, err := m.authenticator.CredentialsAreValid(
-		ctx,
-		user.HashedPassword,
-		loginInput.Password,
-		user.TwoFactorSecret,
-		loginInput.TOTPToken,
-	)
-
-	if errors.Is(err, ErrInvalidTOTPToken) || errors.Is(err, ErrPasswordDoesNotMatch) {
-		return false, err
+	// check the password first. platform's Authenticator.PasswordMatches returns
+	// (false, nil) on a non-match; callers are responsible for turning that into
+	// whatever error the app exposes.
+	matches, err := m.authenticator.PasswordMatches(ctx, user.HashedPassword, loginInput.Password)
+	if err != nil {
+		return false, observability.PrepareError(err, span, "validating password")
+	}
+	if !matches {
+		return false, ErrPasswordDoesNotMatch
 	}
 
-	if err != nil {
-		return false, observability.PrepareError(err, span, "validating login")
+	// if the user has TOTP enabled, verify the code separately.
+	if user.TwoFactorSecretVerifiedAt != nil {
+		if err = m.totpVerifier.Verify(ctx, user.TwoFactorSecret, loginInput.TOTPToken); err != nil {
+			if errors.Is(err, totp.ErrCodeRequired) || errors.Is(err, totp.ErrInvalidCode) {
+				return false, err
+			}
+			return false, observability.PrepareError(err, span, "verifying TOTP code")
+		}
 	}
 
 	logger.Debug("login validated")
 
-	return loginValid, nil
+	return true, nil
 }
 
 func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *auth.UserLoginInput, meta *LoginMetadata) (*auth.TokenResponse, error) {
@@ -156,21 +164,18 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 	logger.WithValue("login_valid", loginValid)
 
 	if err != nil {
-		if errors.Is(err, ErrInvalidTOTPToken) {
+		switch {
+		case errors.Is(err, ErrInvalidTOTPToken):
 			return nil, observability.PrepareError(err, span, "invalid TOTP AccessToken")
-		}
-
-		if errors.Is(err, ErrPasswordDoesNotMatch) {
+		case errors.Is(err, ErrTOTPRequired):
+			return nil, observability.PrepareError(err, span, "processing login")
+		case errors.Is(err, ErrPasswordDoesNotMatch):
 			return nil, observability.PrepareError(err, span, "password did not match")
+		default:
+			return nil, observability.PrepareError(err, span, "validating login")
 		}
-
-		return nil, observability.PrepareError(err, span, "validating login")
 	} else if !loginValid {
 		return nil, observability.PrepareError(err, span, "login was invalid")
-	}
-
-	if user.TwoFactorSecretVerifiedAt != nil && loginData.TOTPToken == "" {
-		return nil, observability.PrepareError(ErrTOTPRequired, span, "processing login")
 	}
 
 	var accountID string
@@ -274,10 +279,11 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desire
 
 	logger := m.logger.Clone()
 
-	userID, err := m.tokenIssuer.ParseUserIDFromToken(ctx, refreshToken)
+	claims, err := m.tokenIssuer.ParseToken(ctx, refreshToken)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "parsing userID from token")
 	}
+	userID := claims.Subject()
 
 	user, err := m.userAuthDataManager.GetUser(ctx, userID)
 	if err != nil || user == nil {
@@ -296,15 +302,8 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desire
 	}
 
 	// Validate the existing session via refresh token JTI.
-	refreshJTI, jtiErr := m.tokenIssuer.ParseJTIFromToken(ctx, refreshToken)
-	sessionID, sidErr := m.tokenIssuer.ParseSessionIDFromToken(ctx, refreshToken)
-
-	if jtiErr != nil {
-		refreshJTI = ""
-	}
-	if sidErr != nil {
-		sessionID = ""
-	}
+	refreshJTI := claims.JTI()
+	sessionID, _ := claims.GetString("sid")
 
 	if refreshJTI != "" && sessionID != "" {
 		session, sessErr := m.sessionDataManager.GetUserSessionByRefreshTokenID(ctx, refreshJTI)
@@ -341,12 +340,14 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desire
 		ExpiresUTC: time.Now().Add(m.maxAccessTokenLifetime).UTC(),
 	}
 
-	response.AccessToken, accessJTI, err = m.tokenIssuer.IssueToken(ctx, user, m.maxAccessTokenLifetime, accountID, sessionID)
+	extraClaims := tokenClaims(accountID, sessionID)
+
+	response.AccessToken, accessJTI, err = m.tokenIssuer.IssueToken(ctx, user.ID, m.maxAccessTokenLifetime, extraClaims)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating access token")
 	}
 
-	response.RefreshToken, refreshJTINew, err = m.tokenIssuer.IssueToken(ctx, user, m.maxRefreshTokenLifetime, accountID, sessionID)
+	response.RefreshToken, refreshJTINew, err = m.tokenIssuer.IssueToken(ctx, user.ID, m.maxRefreshTokenLifetime, extraClaims)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating refresh token")
 	}
@@ -394,12 +395,14 @@ func (m *manager) issueTokensWithSession(ctx context.Context, user *identity.Use
 		err                   error
 		accessJTI, refreshJTI string
 	)
-	response.AccessToken, accessJTI, err = m.tokenIssuer.IssueToken(ctx, user, m.maxAccessTokenLifetime, accountID, sessionID)
+	extraClaims := tokenClaims(accountID, sessionID)
+
+	response.AccessToken, accessJTI, err = m.tokenIssuer.IssueToken(ctx, user.ID, m.maxAccessTokenLifetime, extraClaims)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "creating access token")
 	}
 
-	response.RefreshToken, refreshJTI, err = m.tokenIssuer.IssueToken(ctx, user, m.maxRefreshTokenLifetime, accountID, sessionID)
+	response.RefreshToken, refreshJTI, err = m.tokenIssuer.IssueToken(ctx, user.ID, m.maxRefreshTokenLifetime, extraClaims)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "creating refresh token")
 	}
@@ -419,6 +422,16 @@ func (m *manager) issueTokensWithSession(ctx context.Context, user *identity.Use
 	}
 
 	return response, nil
+}
+
+// tokenClaims builds the extraClaims map passed to tokens.Issuer.IssueToken. Empty
+// values are always included so issued tokens have a stable shape; parsers tolerate
+// empty string values for these optional claims.
+func tokenClaims(accountID, sessionID string) map[string]any {
+	return map[string]any{
+		"account_id": accountID,
+		"sid":        sessionID,
+	}
 }
 
 const defaultSessionExpiry = 72 * time.Hour

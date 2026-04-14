@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
+	"github.com/primandproper/platform/authentication/totp"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	"github.com/primandproper/platform/observability/logging"
@@ -28,6 +29,7 @@ func RegisterAuthManager(i do.Injector) {
 			do.MustInvoke[auth.UserSessionDataManager](i),
 			do.MustInvoke[identity.UserDataManager](i),
 			do.MustInvoke[authentication.Authenticator](i),
+			do.MustInvoke[totp.Verifier](i),
 			do.MustInvoke[messagequeue.PublisherProvider](i),
 			do.MustInvoke[random.Generator](i),
 			do.MustInvoke[qrcodes.Builder](i),

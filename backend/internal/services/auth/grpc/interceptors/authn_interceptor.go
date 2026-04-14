@@ -9,11 +9,11 @@ import (
 	"sync"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 
+	"github.com/primandproper/platform/authentication/tokens"
 	errorsgrpc "github.com/primandproper/platform/errors/grpc"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/logging"
@@ -171,33 +171,37 @@ func (s *AuthInterceptor) extractSessionContextData(ctx context.Context, metaDat
 	}
 
 	// Fallback: treat Bearer token as JWT (e.g. from LoginForToken with DesiredAccountID).
-	userID, accountID, parseErr := s.tokenIssuer.ParseUserIDAndAccountIDFromToken(ctx, accessToken)
-	if parseErr == nil && userID != "" {
-		// Validate session if token has a session ID.
-		sessionID, sidErr := s.tokenIssuer.ParseSessionIDFromToken(ctx, accessToken)
-		if sidErr == nil && sessionID != "" {
-			jti, jtiErr := s.tokenIssuer.ParseJTIFromToken(ctx, accessToken)
-			if jtiErr == nil && jti != "" {
-				if _, sessErr := s.sessionDataManager.GetUserSessionBySessionTokenID(ctx, jti); sessErr != nil {
-					return nil, Unauthenticated("session has been revoked or expired")
-				}
-				// Touch last active asynchronously so it doesn't block the request.
-				touchJTI := jti
-				touchCtx := context.WithoutCancel(ctx)
-				go func() {
-					if err = s.sessionDataManager.TouchSessionLastActive(touchCtx, touchJTI); err != nil {
-						logger.Error("touch session last active failed", err)
+	claims, parseErr := s.tokenIssuer.ParseToken(ctx, accessToken)
+	if parseErr == nil {
+		userID := claims.Subject()
+		if userID != "" {
+			accountID, _ := claims.GetString("account_id")
+			// Validate session if token has a session ID.
+			sessionID, _ := claims.GetString("sid")
+			if sessionID != "" {
+				jti := claims.JTI()
+				if jti != "" {
+					if _, sessErr := s.sessionDataManager.GetUserSessionBySessionTokenID(ctx, jti); sessErr != nil {
+						return nil, Unauthenticated("session has been revoked or expired")
 					}
-				}()
+					// Touch last active asynchronously so it doesn't block the request.
+					touchJTI := jti
+					touchCtx := context.WithoutCancel(ctx)
+					go func() {
+						if err = s.sessionDataManager.TouchSessionLastActive(touchCtx, touchJTI); err != nil {
+							logger.Error("touch session last active failed", err)
+						}
+					}()
+				}
 			}
-		}
 
-		sessionCtxData, sessionErr := s.identityDataManager.BuildSessionContextDataForUser(ctx, userID, accountID)
-		if sessionErr != nil {
-			return nil, observability.PrepareAndLogError(sessionErr, logger, span, "fetching user info from token")
+			sessionCtxData, sessionErr := s.identityDataManager.BuildSessionContextDataForUser(ctx, userID, accountID)
+			if sessionErr != nil {
+				return nil, observability.PrepareAndLogError(sessionErr, logger, span, "fetching user info from token")
+			}
+			sessionCtxData.SessionID = sessionID
+			return s.applyZuckMode(ctx, metaData, sessionCtxData)
 		}
-		sessionCtxData.SessionID = sessionID
-		return s.applyZuckMode(ctx, metaData, sessionCtxData)
 	}
 
 	return nil, Unauthenticated("invalid or expired token")

@@ -17,6 +17,8 @@ import (
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
+	platformtotp "github.com/primandproper/platform/authentication/totp"
+	mocktotp "github.com/primandproper/platform/authentication/totp/mock"
 	"github.com/primandproper/platform/database/filtering"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
@@ -135,6 +137,7 @@ func TestProvideAuthManager(t *testing.T) {
 			&mockUserSessionDataManager{},
 			&identitymock.RepositoryMock{},
 			&mockauthn.Authenticator{},
+			&mocktotp.VerifierMock{},
 			mpp,
 			random.NewGenerator(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider()),
 			qrcodes.NewBuilder(qrcodes.Issuer("test"), tracingnoop.NewTracerProvider(), loggingnoop.NewLogger()),
@@ -260,6 +263,7 @@ func TestProvideAuthManager_NilConfig(t *testing.T) {
 		&mockUserSessionDataManager{},
 		&identitymock.RepositoryMock{},
 		&mockauthn.Authenticator{},
+		&mocktotp.VerifierMock{},
 		mpp,
 		random.NewGenerator(loggingnoop.NewLogger(), tracingnoop.NewTracerProvider()),
 		qrcodes.NewBuilder(qrcodes.Issuer("test"), tracingnoop.NewTracerProvider(), loggingnoop.NewLogger()),
@@ -634,7 +638,7 @@ func TestAuthManager_UpdatePassword_Success(t *testing.T) {
 	userDataManager.On(reflection.GetMethodName(userDataManager.UpdateUserPassword), testutils.ContextMatcher, user.ID, mock.AnythingOfType("string")).Return(nil)
 
 	authenticator := &mockauthn.Authenticator{}
-	authenticator.On(reflection.GetMethodName(authenticator.CredentialsAreValid), testutils.ContextMatcher, user.HashedPassword, "current", "", "").Return(true, nil)
+	authenticator.On(reflection.GetMethodName(authenticator.PasswordMatches), testutils.ContextMatcher, user.HashedPassword, "current").Return(true, nil)
 	authenticator.On(reflection.GetMethodName(authenticator.HashPassword), testutils.ContextMatcher, "Abcdefghij123!@#$%^&*()").Return("hashed", nil)
 
 	publisher := &mockpublishers.PublisherMock{
@@ -672,7 +676,7 @@ func TestAuthManager_UpdateUserEmailAddress_Success(t *testing.T) {
 	userDataManager.On(reflection.GetMethodName(userDataManager.UpdateUserEmailAddress), testutils.ContextMatcher, user.ID, input.NewEmailAddress).Return(nil)
 
 	authenticator := &mockauthn.Authenticator{}
-	authenticator.On(reflection.GetMethodName(authenticator.CredentialsAreValid), testutils.ContextMatcher, user.HashedPassword, "current", "", "").Return(true, nil)
+	authenticator.On(reflection.GetMethodName(authenticator.PasswordMatches), testutils.ContextMatcher, user.HashedPassword, "current").Return(true, nil)
 
 	publisher := &mockpublishers.PublisherMock{
 		PublishAsyncFunc: func(_ context.Context, _ any) {},
@@ -709,7 +713,7 @@ func TestAuthManager_UpdateUserUsername_Success(t *testing.T) {
 	userDataManager.On(reflection.GetMethodName(userDataManager.UpdateUserUsername), testutils.ContextMatcher, user.ID, input.NewUsername).Return(nil)
 
 	authenticator := &mockauthn.Authenticator{}
-	authenticator.On(reflection.GetMethodName(authenticator.CredentialsAreValid), testutils.ContextMatcher, user.HashedPassword, "current", "", "").Return(true, nil)
+	authenticator.On(reflection.GetMethodName(authenticator.PasswordMatches), testutils.ContextMatcher, user.HashedPassword, "current").Return(true, nil)
 
 	publisher := &mockpublishers.PublisherMock{
 		PublishAsyncFunc: func(_ context.Context, _ any) {},
@@ -792,7 +796,16 @@ func TestAuthManager_NewTOTPSecret_Success(t *testing.T) {
 	userDataManager.On(reflection.GetMethodName(userDataManager.MarkUserTwoFactorSecretAsUnverified), testutils.ContextMatcher, user.ID, mock.AnythingOfType("string")).Return(nil)
 
 	authenticator := &mockauthn.Authenticator{}
-	authenticator.On(reflection.GetMethodName(authenticator.CredentialsAreValid), testutils.ContextMatcher, user.HashedPassword, "current", user.TwoFactorSecret, token).Return(true, nil)
+	authenticator.On(reflection.GetMethodName(authenticator.PasswordMatches), testutils.ContextMatcher, user.HashedPassword, "current").Return(true, nil)
+
+	totpVerifier := &mocktotp.VerifierMock{
+		VerifyFunc: func(_ context.Context, secret, code string) error {
+			if secret == user.TwoFactorSecret && code == token {
+				return nil
+			}
+			return platformtotp.ErrInvalidCode
+		},
+	}
 
 	secretGen := &randommock.GeneratorMock{
 		GenerateBase32EncodedStringFunc: func(_ context.Context, _ int) (string, error) {
@@ -811,6 +824,7 @@ func TestAuthManager_NewTOTPSecret_Success(t *testing.T) {
 	manager := &AuthManager{
 		userDataManager:           userDataManager,
 		authenticator:             authenticator,
+		totpVerifier:              totpVerifier,
 		secretGenerator:           secretGen,
 		qrCodeBuilder:             qrBuilder,
 		dataChangesPublisher:      publisher,
@@ -918,7 +932,7 @@ func TestAuthManager_UpdatePassword_InvalidNewPassword(t *testing.T) {
 	userDataManager.On(reflection.GetMethodName(userDataManager.GetUser), testutils.ContextMatcher, user.ID).Return(user, nil)
 
 	authenticator := &mockauthn.Authenticator{}
-	authenticator.On(reflection.GetMethodName(authenticator.CredentialsAreValid), testutils.ContextMatcher, user.HashedPassword, "current", "", "").Return(true, nil)
+	authenticator.On(reflection.GetMethodName(authenticator.PasswordMatches), testutils.ContextMatcher, user.HashedPassword, "current").Return(true, nil)
 
 	sessionData := &sessions.ContextData{Requester: sessions.RequesterInfo{UserID: user.ID}}
 

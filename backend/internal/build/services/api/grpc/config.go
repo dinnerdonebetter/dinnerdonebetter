@@ -2,7 +2,6 @@ package grpcapi
 
 import (
 	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
-	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 	dataprivacycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/dataprivacy/config"
@@ -13,6 +12,7 @@ import (
 	uploadedmediacfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 
 	analyticscfg "github.com/primandproper/platform/analytics/config"
+	tokenscfg "github.com/primandproper/platform/authentication/tokens/config"
 	databasecfg "github.com/primandproper/platform/database/config"
 	emailcfg "github.com/primandproper/platform/email/config"
 	"github.com/primandproper/platform/encoding"

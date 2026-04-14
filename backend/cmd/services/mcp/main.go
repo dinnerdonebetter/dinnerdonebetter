@@ -21,6 +21,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/webhooks"
 	waitlistsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 
+	"github.com/primandproper/platform/authentication/totp"
 	"github.com/primandproper/platform/encoding"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/routing"
@@ -92,6 +93,7 @@ func main() {
 	issueReportsRepo := do.MustInvoke[issuereports.Repository](injector)
 	identityRepo := do.MustInvoke[identity.Repository](injector)
 	authenticator := do.MustInvoke[authentication.Authenticator](injector)
+	totpVerifier := do.MustInvoke[totp.Verifier](injector)
 
 	// Create token store for per-user auth.
 	tokens := newTokenStore()
@@ -133,7 +135,7 @@ func main() {
 			return server
 		}, &mcp.SSEOptions{})
 
-		router, routerErr := buildRouter(sseHandler, tokens, pillars, &cfg.Routing, *baseURL, identityRepo, authenticator)
+		router, routerErr := buildRouter(sseHandler, tokens, pillars, &cfg.Routing, *baseURL, identityRepo, authenticator, totpVerifier)
 		if routerErr != nil {
 			log.Fatalf("failed to build router: %v", routerErr)
 		}
@@ -161,7 +163,7 @@ func main() {
 			return server
 		}, handlerOpts)
 
-		router, routerErr := buildRouter(streamHandler, tokens, pillars, &cfg.Routing, *baseURL, identityRepo, authenticator)
+		router, routerErr := buildRouter(streamHandler, tokens, pillars, &cfg.Routing, *baseURL, identityRepo, authenticator, totpVerifier)
 		if routerErr != nil {
 			log.Fatalf("failed to build router: %v", routerErr)
 		}
@@ -181,7 +183,7 @@ func main() {
 }
 
 // buildRouter creates a router with OAuth2 routes (unauthenticated) and the MCP handler (authenticated).
-func buildRouter(mcpHandler http.Handler, tokens *tokenStore, pillars *observability.Pillars, routingCfg *routingcfg.Config, baseURL string, identityRepo identity.Repository, authenticator authentication.Authenticator) (routing.Router, error) {
+func buildRouter(mcpHandler http.Handler, tokens *tokenStore, pillars *observability.Pillars, routingCfg *routingcfg.Config, baseURL string, identityRepo identity.Repository, authenticator authentication.Authenticator, totpVerifier totp.Verifier) (routing.Router, error) {
 	router, err := routingCfg.ProvideRouter(pillars.Logger, pillars.TracerProvider, pillars.MetricsProvider)
 	if err != nil {
 		return nil, err
@@ -204,7 +206,7 @@ func buildRouter(mcpHandler http.Handler, tokens *tokenStore, pillars *observabi
 	})
 
 	// Register OAuth2 routes (no auth middleware — these handle authentication themselves).
-	registerOAuth2Routes(router, tokens, baseURL, identityRepo, authenticator)
+	registerOAuth2Routes(router, tokens, baseURL, identityRepo, authenticator, totpVerifier)
 
 	// Wrap the MCP handler with bearer token auth middleware.
 	authMiddleware := auth.RequireBearerToken(tokens.verifyToken, &auth.RequireBearerTokenOptions{

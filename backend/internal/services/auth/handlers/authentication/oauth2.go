@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 	identitykeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/keys"
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 	oauthkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/keys"
 
+	"github.com/primandproper/platform/authentication/tokens"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
@@ -138,19 +138,13 @@ func buildPasswordAuthorizationHandler(logger logging.Logger, authenticator auth
 			return "", errors.New("invalid username or password")
 		}
 
-		valid, err := authenticator.CredentialsAreValid(
-			ctx,
-			user.HashedPassword,
-			password,
-			"",
-			"",
-		)
+		matches, err := authenticator.PasswordMatches(ctx, user.HashedPassword, password)
 		if err != nil {
 			l.Error("validating credentials", err)
 			return "", errors.New("invalid username or password")
 		}
 
-		if !valid {
+		if !matches {
 			l.Info("invalid credentials")
 			return "", errors.New("invalid username or password")
 		}
@@ -170,13 +164,13 @@ func buildUserAuthorizationHandler(tracer tracing.Tracer, logger logging.Logger,
 		rawToken := req.Header.Get("Authorization")
 		token := strings.TrimPrefix(rawToken, "Bearer ")
 
-		subject, err := tokenIssuer.ParseUserIDFromToken(ctx, token)
+		claims, err := tokenIssuer.ParseToken(ctx, token)
 		if err != nil {
 			l.Error("parsing token in UserAuthorizationHandler", err)
 			return "", errors.ErrAccessDenied
 		}
 
-		return subject, nil
+		return claims.Subject(), nil
 	}
 }
 

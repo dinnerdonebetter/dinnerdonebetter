@@ -1,7 +1,7 @@
 package authcfg
 
 import (
-	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	tokenscfg "github.com/primandproper/platform/authentication/tokens/config"
 
 	"github.com/samber/do/v2"
 )

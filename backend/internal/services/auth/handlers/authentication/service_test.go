@@ -6,11 +6,12 @@ import (
 	"testing"
 
 	mockauthn "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mock"
-	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
+	tokenscfg "github.com/primandproper/platform/authentication/tokens/config"
+	mocktotp "github.com/primandproper/platform/authentication/totp/mock"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
@@ -51,6 +52,7 @@ func buildTestService(t *testing.T) *service {
 		logger,
 		cfg,
 		&mockauthn.Authenticator{},
+		&mocktotp.VerifierMock{},
 		&oauthmock.RepositoryMock{},
 		&identitymanagermock.IdentityDataManager{},
 		tracingnoop.NewTracerProvider(),
@@ -95,6 +97,7 @@ func TestProvideService(T *testing.T) {
 			logger,
 			cfg,
 			&mockauthn.Authenticator{},
+			&mocktotp.VerifierMock{},
 			&oauthmock.RepositoryMock{},
 			&identitymanagermock.IdentityDataManager{},
 			tracingnoop.NewTracerProvider(),

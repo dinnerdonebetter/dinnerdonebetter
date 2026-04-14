@@ -16,7 +16,6 @@ tool (
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/GuiaBolso/darwin v0.0.0-20191218124601-fd6d2aa3d244
-	github.com/alexedwards/argon2id v1.0.0
 	github.com/boombuler/barcode v1.1.0
 	github.com/brianvoe/gofakeit/v7 v7.14.1
 	github.com/caarlos0/env/v11 v11.4.0
@@ -28,8 +27,6 @@ require (
 	github.com/go-oauth2/oauth2/v4 v4.5.4
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-webauthn/webauthn v0.16.0
-	github.com/golang-jwt/jwt/v5 v5.3.1
-	github.com/gorilla/securecookie v1.1.2
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/heimdalr/dag v1.5.0
@@ -37,9 +34,8 @@ require (
 	github.com/lib/pq v1.11.2
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/modelcontextprotocol/go-sdk v1.4.0
-	github.com/o1egl/paseto/v2 v2.1.1
 	github.com/pquerna/otp v1.5.0
-	github.com/primandproper/platform v0.0.2
+	github.com/primandproper/platform v0.0.3
 	github.com/samber/do/v2 v2.0.0
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/cobra v1.10.2
@@ -72,6 +68,7 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.31.0 // indirect
 	github.com/XSAM/otelsql v0.41.0 // indirect
 	github.com/air-verse/air v1.64.5 // indirect
+	github.com/alexedwards/argon2id v1.0.0 // indirect
 	github.com/alfatraining/structtag v1.0.0 // indirect
 	github.com/algolia/algoliasearch-client-go/v3 v3.32.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.97.1 // indirect
@@ -107,9 +104,11 @@ require (
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-json v0.10.6 // indirect
 	github.com/gohugoio/hugo v0.149.1 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/gnostic-models v0.7.0 // indirect
 	github.com/google/go-tpm v0.9.8 // indirect
 	github.com/google/wire v0.7.0 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
 	github.com/grafana/jsonparser v0.0.0-20250909130937-5f438463be34 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
@@ -134,6 +133,7 @@ require (
 	github.com/mssola/useragent v1.0.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
+	github.com/o1egl/paseto/v2 v2.1.1 // indirect
 	github.com/olekukonko/cat v0.0.0-20250911104152-50322a0618f6 // indirect
 	github.com/olekukonko/errors v1.2.0 // indirect
 	github.com/olekukonko/ll v0.1.7 // indirect

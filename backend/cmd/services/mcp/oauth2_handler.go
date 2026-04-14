@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
@@ -11,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 
+	"github.com/primandproper/platform/authentication/totp"
 	"github.com/primandproper/platform/routing"
 
 	"github.com/modelcontextprotocol/go-sdk/auth"
@@ -18,7 +20,7 @@ import (
 )
 
 // registerOAuth2Routes adds all OAuth2 authorization server endpoints to the router.
-func registerOAuth2Routes(router routing.Router, ts *tokenStore, baseURL string, identityRepo identity.Repository, authenticator authentication.Authenticator) {
+func registerOAuth2Routes(router routing.Router, ts *tokenStore, baseURL string, identityRepo identity.Repository, authenticator authentication.Authenticator, totpVerifier totp.Verifier) {
 	// Protected Resource Metadata (RFC 9728)
 	router.Get("/.well-known/oauth-protected-resource", auth.ProtectedResourceMetadataHandler(&oauthex.ProtectedResourceMetadata{
 		Resource:               baseURL,
@@ -47,7 +49,7 @@ func registerOAuth2Routes(router routing.Router, ts *tokenStore, baseURL string,
 
 	// Authorization endpoint — serves login form and processes login
 	router.Get("/authorize", handleAuthorizeGET)
-	router.Post("/authorize", handleAuthorizePOST(ts, identityRepo, authenticator))
+	router.Post("/authorize", handleAuthorizePOST(ts, identityRepo, authenticator, totpVerifier))
 
 	// Token endpoint — exchanges codes for tokens and handles refresh
 	router.Post("/token", handleToken(ts))
@@ -148,7 +150,7 @@ func handleAuthorizeGET(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleAuthorizePOST processes the login form submission by validating credentials directly against the database.
-func handleAuthorizePOST(ts *tokenStore, identityRepo identity.Repository, authenticator authentication.Authenticator) http.HandlerFunc {
+func handleAuthorizePOST(ts *tokenStore, identityRepo identity.Repository, authenticator authentication.Authenticator, totpVerifier totp.Verifier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, "invalid form data", http.StatusBadRequest)
@@ -196,17 +198,23 @@ func handleAuthorizePOST(ts *tokenStore, identityRepo identity.Repository, authe
 			return
 		}
 
-		// Validate password and TOTP.
-		valid, err := authenticator.CredentialsAreValid(r.Context(), user.HashedPassword, password, user.TwoFactorSecret, totpToken)
-		if err != nil || !valid {
+		// Validate the password; TOTP is verified separately below.
+		matches, err := authenticator.PasswordMatches(r.Context(), user.HashedPassword, password)
+		if err != nil || !matches {
 			renderLoginError("Access denied. Admin credentials required.")
 			return
 		}
 
-		// Check if TOTP is required but not provided.
-		if user.TwoFactorSecretVerifiedAt != nil && totpToken == "" {
-			renderLoginError("TOTP code is required.")
-			return
+		// If TOTP is enabled, verify the code.
+		if user.TwoFactorSecretVerifiedAt != nil {
+			if verifyErr := totpVerifier.Verify(r.Context(), user.TwoFactorSecret, totpToken); verifyErr != nil {
+				if errors.Is(verifyErr, totp.ErrCodeRequired) {
+					renderLoginError("TOTP code is required.")
+					return
+				}
+				renderLoginError("Access denied. Admin credentials required.")
+				return
+			}
 		}
 
 		// Get the user's default account.

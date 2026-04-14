@@ -4,11 +4,12 @@ import (
 	"context"
 
 	authn "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
+	"github.com/primandproper/platform/authentication/tokens"
+	"github.com/primandproper/platform/authentication/totp"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	"github.com/primandproper/platform/observability/logging"
@@ -47,6 +48,7 @@ func RegisterAuthHTTPService(i do.Injector) {
 			do.MustInvoke[logging.Logger](i),
 			do.MustInvoke[*Config](i),
 			do.MustInvoke[authn.Authenticator](i),
+			do.MustInvoke[totp.Verifier](i),
 			do.MustInvoke[oauth.Repository](i),
 			do.MustInvoke[identitymanager.IdentityDataManager](i),
 			do.MustInvoke[tracing.TracerProvider](i),
